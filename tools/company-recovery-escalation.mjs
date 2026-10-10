@@ -15,7 +15,9 @@ function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of arg
 function evidenceSignature(task={}){
   const ev=uniq(task.evidence);
   // 실제 실패 서명만 허용한다. 외부 학습 후보/알고리즘 추천 문구는 복구 트리거가 아니다.
-  const observed=[task.failureSignature,task.blocker,task.lastOutcome,...[...ev].reverse()
+  const currentFanInMissing=clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
+    ?[...ev].reverse().find(x=>x.startsWith('package-review-missing:'))||'':'';
+  const observed=[task.failureSignature,task.blocker,currentFanInMissing,task.lastOutcome,...[...ev].reverse()
     .filter(x=>/^(?:failure-cause:|failure-stage:|system-steward:failure-signature:)/i.test(x))].map(clean);
   for(const row of observed){
     const match=row.match(VERIFIED_EXTERNAL_APPLICATION_FAILURE);
@@ -34,6 +36,8 @@ function systemAiCohortKey(task={},signature=''){
 }
 function failureStage(task={}){
   const ev=uniq(task.evidence);
+  if(clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
+    &&ev.some(x=>x.startsWith('package-review-missing:')&&VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(x)))return'FAN_IN_REVIEW';
   const recoveryExact=[...ev].reverse().find(x=>x.startsWith('recovery-exact-stage:'));
   if(recoveryExact)return clean(recoveryExact.slice('recovery-exact-stage:'.length));
   const explicit=[...ev].reverse().find(x=>x.startsWith('failure-stage:'));
@@ -113,7 +117,9 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
     const externalApplication=VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(sig);
     const exactQueuedFailure=externalApplication&&status==='queued'&&
       (VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(clean(task.failureSignature||task.blocker))
-        ||ev.some(x=>/^(?:failure-cause:|system-steward:failure-signature:)/i.test(x)&&VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(x)));
+        ||ev.some(x=>/^(?:failure-cause:|system-steward:failure-signature:)/i.test(x)&&VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(x))
+        ||(clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
+          &&ev.some(x=>x.startsWith('package-review-missing:')&&VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(x))));
     const repeated=Number(task.recoveryGeneration||0)>0||ev.some(x=>x.startsWith('system-steward:retry-exhausted-regenerated:'))||status==='failed'||exactQueuedFailure;
     if(repeated&&sig)candidates.push({sourceQueue:'vibe2',task,signature:sig,stage:failureStage(task)});
   }

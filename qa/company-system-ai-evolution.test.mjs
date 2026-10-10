@@ -706,3 +706,17 @@ test('System AI observes exact external-learning application blockers without tr
   assert.ok(snapshot.actions.includes('ROUTE_EXTERNAL_LEARNING_SECURITY_TO_IMMUNE_REVIEW'));
   assert.equal(external.optionalAlgorithmMatchesAreNotFailures,true);
 });
+
+test('System AI sensor reads the current fan-in package-review failure and ignores unrelated older outcomes',()=>{
+  const tasks=[
+    {id:'current',gameId:'alpha',status:'queued',lastOutcome:'FAN_IN_REVIEW_BLOCKED_REQUEUE',
+      responsibleFiles:['roblox-games/alpha/client/Main.client.luau'],
+      evidence:['package-review-missing:GRAPHICS_VERIFICATION|VERIFIED_EXTERNAL_LEARNING_SILENTLY_IGNORED']},
+    {id:'historical',gameId:'beta',status:'queued',lastOutcome:'NEXT_INDEPENDENT_TASK',
+      responsibleFiles:['roblox-games/beta/client/Main.client.luau'],
+      evidence:['package-review-missing:VERIFIED_EXTERNAL_LEARNING_TRUNCATED']}
+  ];
+  const snapshot=analyzeSystemAiBottlenecks({gameQueue:{tasks}});
+  assert.equal(snapshot.externalLearningApplications.gameTaskFailureCount,1);
+  assert.equal(snapshot.externalLearningApplications.gameTaskFailures[0].signature,'VERIFIED_EXTERNAL_LEARNING_SILENTLY_IGNORED');
+});

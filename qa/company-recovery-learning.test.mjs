@@ -475,7 +475,11 @@ test('external learning failures stay game-local and system-code repair uses the
   assert.equal(system.queue.tasks.length,1);
   const rec=system.queue.tasks[0];
   assert.equal(rec.recoveryOwner,'SYSTEM_AI');
-  const dispatched=dispatchRecovery({recoveryInput:system.queue,systemAiQueueInput:{tasks:[]}});
+  const dispatched=dispatchRecovery({recoveryInput:system.queue,systemAiQueueInput:{tasks:[{
+    id:'system-binding',status:'failed',retries:2,taskType:'bottleneck-repair',
+    responsibleFiles:['tools/company-development-roblox-bootstrap.mjs'],
+    failureSignature:'VERIFIED_EXTERNAL_LEARNING_NATIVE_SOURCE_STALE'
+  }]}});
   assert.equal(dispatched.systemAi.tasks.length,1);
   assert.deepEqual(dispatched.systemAi.tasks[0].responsibleFiles,['tools/company-development-roblox-bootstrap.mjs']);
 });
@@ -488,4 +492,22 @@ test('unverified optional matching and commercial expression security findings c
       failureSignature:'RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED'}
   ]}});
   assert.equal(result.queue.tasks.length,0);
+});
+
+test('fan-in package-review learning error is recovered immediately from the exact pending task',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const task={id:'fanin-alpha',gameId:'alpha',status:'queued',lastOutcome:'FAN_IN_REVIEW_BLOCKED_REQUEUE',
+    target:'roblox',sourceRoot:'roblox-games/alpha',
+    responsibleFiles:['roblox-games/alpha/client/Main.client.luau'],
+    evidence:['role-result:review:BLOCKED','package-review-missing:VISUAL_GATE|VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION']};
+  const result=escalateRecoveryCandidates({gameQueueInput:{tasks:[task]}});
+  assert.equal(result.added.length,1);
+  assert.equal(result.queue.tasks[0].failureStage,'FAN_IN_REVIEW');
+  assert.equal(result.queue.tasks[0].failureSignature,'VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION');
+  assert.equal(result.queue.tasks[0].recoveryOwner,'VIBE2_VIBE3');
+  const dispatched=dispatchRecovery({recoveryInput:result.queue,gameQueueInput:{tasks:[task]}});
+  assert.equal(dispatched.gameQueue.tasks[0].status,'queued');
+  assert.ok(dispatched.gameQueue.tasks[0].evidence.some(x=>x.startsWith('recovery-queue:')));
+  const stale=escalateRecoveryCandidates({gameQueueInput:{tasks:[{...task,lastOutcome:'DIFFERENT_TASK'}]}});
+  assert.equal(stale.queue.tasks.length,0);
 });

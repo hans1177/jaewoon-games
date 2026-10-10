@@ -264,7 +264,9 @@ export function analyzeSystemAiBottlenecks({
     const status=clean(task.status).toLowerCase();
     if(['done','completed','cancelled','verified'].includes(status))continue;
     const evidence=uniq(task.evidence);
-    const failureText=[task.failureSignature,task.blocker,task.lastOutcome,
+    const currentFanInMissing=clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
+      ?[...evidence].reverse().find(x=>x.startsWith('package-review-missing:'))||'':'';
+    const failureText=[task.failureSignature,task.blocker,task.lastOutcome,currentFanInMissing,
       ...evidence.filter(x=>/^(?:failure-cause:|failure-stage:|system-steward:failure-signature:|recovery-exact-stage:)/i.test(x)).slice(-12)].map(clean).join(' ');
     const match=failureText.match(VERIFIED_EXTERNAL_APPLICATION_FAILURE);
     if(!match)continue;
