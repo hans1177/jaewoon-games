@@ -97,25 +97,37 @@
       },
       "playerFantasy": "마을에서 퀘스트와 장비를 준비하고, 포탈 사냥터로 이동하며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG의 플레이어 역할. 다양한 직업과 전직 선택으로 성장 재미가 있으며, 보스 격파 및 동료 해금 과정에서 기여도에 따른 보상이 제공된다.",
       "coreFun": "5개 대형 지역을 직접 전투로 돌파하고, 10명의 AI 유저 중 원하는 역할을 골라 파티 사냥을 하며 기여도로 더 큰 보상을 얻는 성장 재미. 마을 귀환/회복/강화 과정에서 게임 진행을 조절하고, 보스 공략 → 보스 동료 해금 → 파티 조합 확장 순서로 진입한다. AI 유저 두 번 클릭하여 파티 초대/제외 가능. 15킬 파티사냥 시 종료되고, 최대 3명의 파티 구성이 가능하다. 보스 첫 처치로 AI 동료 해금되며, 이후 파티 조합 확장을 통해 게임을 계속적으로 발전시킨다."
+    },
+    "local_authoring_parts::22fc1ace981fbb239702e438f54c9af1987756c8e16dee3a217192da906bb7be:coreLoop": {
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥 및 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 144176,
-      "lastMs": 144176,
+      "totalMs": 174525,
+      "lastMs": 30349,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:42:03.700Z"
+      "updatedAt": "2026-10-10T08:42:34.050Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:39:39.444Z",
-  "updatedAt": "2026-10-10T08:42:03.700Z",
+  "updatedAt": "2026-10-10T08:42:34.050Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1890,7 +1902,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:42:03.700Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:42:34.050Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
