@@ -97,25 +97,34 @@
       },
       "playerFantasy": "Player becomes a master builder and strategist, shaping the island with every resource they collect. They decide which structures to build, how to improve the village, and where to expand next. Each decision impacts the world around them, creating a dynamic and evolving landscape.",
       "coreFun": "Collect resources → Build structures → Improve village function → Unlock new goals → Continue growing the community. This process is repeated until all possible outcomes are explored. The player gains mastery over their environment while facing challenges that test their strategic thinking and adaptability. Every action has immediate consequences, and each choice affects future possibilities. The game encourages deep engagement through discovery, learning, and progression across multiple levels of complexity and difficulty.', "
+    },
+    "local_authoring_parts::6d65c7225a72ae8daea5396fc31f6a576f9127e7b2550d8cd2059db576027fab:coreLoop": {
+      "coreLoop": [
+        "Input: Player collects island resources",
+        "State Change: Resources are gathered and stored in the village storage system",
+        "Reward: Improved construction efficiency",
+        "Risk: Limited resource access leads to reduced building capabilities",
+        "Next Choice: Select new building material or method"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 280861,
-      "lastMs": 280861,
+      "totalMs": 327515,
+      "lastMs": 46654,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:49:10.467Z"
+      "updatedAt": "2026-10-10T01:49:57.123Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:44:29.587Z",
-  "updatedAt": "2026-10-10T01:49:10.467Z",
+  "updatedAt": "2026-10-10T01:49:57.123Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1716,7 +1725,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:49:10.467Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:49:57.123Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
