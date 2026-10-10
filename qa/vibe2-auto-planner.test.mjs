@@ -1130,8 +1130,17 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
-  if(autoExpanded){
+  const nativeUnityBootstrap=first.task.evidence.includes('unity-web-first-stage')
+    &&first.task.evidence.includes('source-root-bootstrap-required');
+  if(nativeUnityBootstrap){
+    // Unity Web 원본 코어 부트스트랩은 병렬 자산이 없더라도 유효한 최소 작업이다.
+    assert.equal(first.task.sourceRoot,'unity-games/demo');
+    assert.equal(first.task.unityWebDevelopment,true);
+    assert.deepEqual(first.task.responsibleFiles,[
+      'unity-games/demo/Assets/Scripts/GameCore.cs',
+      'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'
+    ]);
+  }else if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
   }else{
@@ -2081,6 +2090,11 @@ test('Unity Web 3D source and separate asset responsibilities are scheduled toge
     'public static class UnityWebBuild { public static void BuildWeb(){} }\n');
   fs.writeFileSync(path.join(projectDir,'Packages','manifest.json'),'{}\n');
   fs.writeFileSync(path.join(projectDir,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  // 3D 시각 책임 파일은 존재하지만 코어 수리 대상 파일과 독립적이다.
+  const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
+  fs.mkdirSync(path.dirname(visualFile),{recursive:true});
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private MeshRenderer actor; }\n');
   const project={
     gameId,name:'Unity Web Asset Parallel',engine:'unity',target:'unity',
     releaseState:'development-confirmed',projectPath:`unity-games/${gameId}`,
@@ -2097,8 +2111,6 @@ test('Unity Web 3D source and separate asset responsibilities are scheduled toge
   assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false);
 
   // 이미 있는 표현 파일을 3D 원본 수리가 소유하면 자산 작업은 동일 파일을 병행 수정할 수 없다.
-  const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
-  fs.mkdirSync(path.dirname(visualFile),{recursive:true});
   fs.writeFileSync(visualFile,
     'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
   const conflictRows=findSafeTasks(project,root,{tasks:[]});
