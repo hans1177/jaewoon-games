@@ -481,3 +481,44 @@ test('seed migration starts new designs and unverified or failed sources at sour
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+
+test('canonical promotion feeds exactly one grounded Vibe starter into native coding while strict review remains pending',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-minimum-promotion-one-'));
+  try{
+    base(root);
+    const seed=id=>({
+      seedId:'OWNER-'+id.toUpperCase(),gameId:id,gameName:id,
+      status:'ACTIVE',productionClass:'DESIGN_ONLY',GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      DISTINCT_IDENTITY:'웨이브별 곤충 종류와 서식 환경의 상성을 활용하는 수비 전략 게임',
+      CORE_LOOP:['다가오는 웨이브의 위험을 분석한다','제한된 자원으로 수비 유닛을 배치한다','웨이브를 견디고 다음 수비를 준비한다'],
+      CORE_FUN_TO_LEARN:['배치의 선택','적의 종류에 따른 전략 조합'],
+      SAVE_POLICY:'PRESERVE_EXISTING_SAVES',
+      GAMEPLAY_SKETCH:{flowArchitecture:{systemBlueprint:{requiredSystems:[
+        {id:'DEFENSE_PLACEMENT',purpose:'유닛 배치 위치에 따라 사거리와 방어 효율이 변한다'},
+        {id:'WAVE_ENCOUNTER',purpose:'웨이브별 곤충 행동 변화가 대응 전술을 요구한다'}
+      ]}}}
+    });
+    write(root,'game-seed-state.json',{version:1,seeds:[seed('one-defense'),seed('two-defense')]});
+    write(root,'game-catalog.json',{version:1,games:[
+      {id:'one-defense',description:'30웨이브 곤충 디펜스',lifecycleState:'ACTIVE'},
+      {id:'two-defense',description:'곤충 배치 디펜스',lifecycleState:'ACTIVE'}
+    ]});
+    const first=promoteReadyDesignSeeds({root});
+    assert.deepEqual(first.vibeMinimumCreated.map(row=>row.gameId),['one-defense']);
+    assert.deepEqual(first.promoted,['one-defense']);
+    const firstRecord=read(root,first.vibeMinimumCreated[0].file);
+    assert.equal(firstRecord.strictDesignReviewed,false);
+    assert.equal(firstRecord.strictDesignPass,false);
+    assert.equal(firstRecord.runtimePass,false);
+    assert.equal(firstRecord.releasePass,false);
+    assert.equal(firstRecord.content.multiplayerMode,'SINGLE');
+    assert.equal(firstRecord.content.coreNumbersAndBalance.catalogScope,'30웨이브 곤충 디펜스');
+    assert.deepEqual(read(root,'development-queue.json').items.map(item=>item.gameId),['one-defense']);
+    const second=promoteReadyDesignSeeds({root});
+    assert.deepEqual(second.vibeMinimumCreated.map(row=>row.gameId),['two-defense']);
+    assert.deepEqual(new Set(read(root,'development-queue.json').items.map(item=>item.gameId)),
+      new Set(['one-defense','two-defense']));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
