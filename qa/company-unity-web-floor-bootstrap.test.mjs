@@ -609,3 +609,18 @@ test('Unity Web design admission is independent of native F0 and duplicate sourc
   assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED/);
   assert.doesNotMatch(bootstrap,/git push origin HEAD:main/);
 });
+
+test('Unity Web bootstrap skips redundant source generation for already-promoted current main game',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  const context=workflow.indexOf('Synchronize central worker context before Unity source work');
+  const early=workflow.indexOf('Detect already-promoted canonical Unity source');
+  const generate=workflow.indexOf('Generate canonical Unity Web floor sources');
+  assert.ok(context>=0&&early>context&&generate>early);
+  assert.ok(workflow.includes('origin/main:unity-games/$GAME_ID/ProjectSettings/ProjectVersion.txt'));
+  assert.ok(workflow.includes("echo 'present=true' >> \"$GITHUB_OUTPUT\""));
+  assert.equal((workflow.match(/if: steps\\.existing\\.outputs\\.present != 'true'/g)||[]).length,4);
+  assert.ok(workflow.includes('if git cat-file -e "origin/main:unity-games/$GAME_ID"'));
+  assert.ok(workflow.includes('git diff --name-only "$staged_game_tree" "$pr_game_tree"'));
+  assert.ok(workflow.includes('--match-head-commit'));
+  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+});
