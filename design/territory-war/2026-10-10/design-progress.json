@@ -2,31 +2,30 @@
   "version": 2,
   "gameId": "territory-war",
   "date": "2026-10-10",
-  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-10T10:51:49.526Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')",
-  "designerSeed": null,
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 1437803,
-      "lastMs": 77311,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:51:49.526Z"
-    }
+  "engineDigest": "0764aae8ff08370ba78e035644b427ff29805e71ab79c6bb19aa747d50e36643",
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "deterministic_department_evidence"
+  ],
+  "completedPhaseCount": 3,
+  "cachedTaskCount": 11,
+  "lastSuccessfulModelCallAt": null,
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "designerSeed": {
+    "file": "design/territory-war/2026-10-10/design-seed.json",
+    "contentDigest": "ff59b23ffc245c62251f83faaf284dd77cc603f1ebbb800503c4de1528c3010c",
+    "authorModel": "vibe-native:causal-design-v1",
+    "status": "AUTHORED_CANDIDATE"
   },
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-10T10:51:49.542Z"
+  "updatedAt": "2026-10-10T11:18:49.233Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
