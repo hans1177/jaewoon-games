@@ -2775,16 +2775,24 @@ export function evaluateMotionTransition({
   });
 }
 
+// 연구 적용: RigMo(2026) 리그 정합성, PhysSkin(2026) 스킨 정규화,
+// PhyMotion(2026) 물리·접촉 검사, DeepMotion 발 고정, Cascadeur 지지중심.
+// 논문·제품의 신경망을 실행했다는 뜻이 아니며 실제 관측치만 검증한다.
 export function auditMotionContact(input={}){
   const {footSlideNormalized,footPlantDriftNormalized,handWeaponOffsetNormalized,
     attackContactOffsetNormalized,pairContactOffsetNormalized,impactEventNormalizedTimeOffset,
-    groundPenetration,meshIntersection,thresholds={},notApplicable={}}=input;
+    groundPenetration,meshIntersection,thresholds={},notApplicable={},rigPhysics=null}=input;
   const limits={
     footSlideNormalizedMax:Number(thresholds.footSlideNormalizedMax??0.035),
     handWeaponNormalizedMax:Number(thresholds.handWeaponNormalizedMax??0.04),
     attackContactNormalizedMax:Number(thresholds.attackContactNormalizedMax??0.06),
     pairContactNormalizedMax:Number(thresholds.pairContactNormalizedMax??0.05),
-    impactEventNormalizedTimeMax:Number(thresholds.impactEventNormalizedTimeMax??0.04)
+    impactEventNormalizedTimeMax:Number(thresholds.impactEventNormalizedTimeMax??0.04),
+    balanceOutsideSupportNormalizedMax:Number(thresholds.balanceOutsideSupportNormalizedMax??0.025),
+    jointJerkNormalizedMax:Number(thresholds.jointJerkNormalizedMax??35),
+    skinWeightSumErrorMax:Number(thresholds.skinWeightSumErrorMax??0.002),
+    boneLengthDriftNormalizedMax:Number(thresholds.boneLengthDriftNormalizedMax??0.015),
+    restPoseAlignmentErrorNormalizedMax:Number(thresholds.restPoseAlignmentErrorNormalizedMax??0.05)
   };
   const failures=[];
   const numeric=['footSlideNormalized','footPlantDriftNormalized','handWeaponOffsetNormalized','attackContactOffsetNormalized','pairContactOffsetNormalized','impactEventNormalizedTimeOffset'];
@@ -2804,6 +2812,21 @@ export function auditMotionContact(input={}){
   if(Number(impactEventNormalizedTimeOffset)>limits.impactEventNormalizedTimeMax)failures.push('IMPACT_EVENT_OFFSET');
   if(groundPenetration===true)failures.push('GROUND_PENETRATION');
   if(meshIntersection===true)failures.push('MESH_INTERSECTION');
+  const rigFields=[
+    ['balanceOutsideSupportNormalized','balanceOutsideSupportNormalizedMax','CENTER_OF_MASS_OUTSIDE_SUPPORT'],
+    ['jointJerkNormalized','jointJerkNormalizedMax','POSE_JERK_EXCESS'],
+    ['skinWeightSumError','skinWeightSumErrorMax','SKIN_WEIGHT_NOT_NORMALIZED'],
+    ['boneLengthDriftNormalized','boneLengthDriftNormalizedMax','BONE_LENGTH_DRIFT'],
+    ['restPoseAlignmentErrorNormalized','restPoseAlignmentErrorNormalizedMax','RETARGET_REST_POSE_MISMATCH']
+  ];
+  if(rigPhysics!==null){
+    if(!rigPhysics||typeof rigPhysics!=='object'||Array.isArray(rigPhysics))missing.push('RIG_PHYSICS_OBJECT_REQUIRED');
+    else for(const [field,limit,failure]of rigFields){
+      const value=rigPhysics[field];
+      if(typeof value!=='number'||!Number.isFinite(value)||value<0)missing.push('RIG_PHYSICS_MEASUREMENT_REQUIRED:'+field);
+      else if(value>limits[limit])failures.push(failure);
+    }
+  }
   const observedCount=required.length-missing.length-exempt.length;
   if(!observedCount)missing.push('ACTUAL_CONTACT_OBSERVATION_REQUIRED');
   const score=missing.length?null:Math.max(0,100-failures.length*18);
@@ -2816,6 +2839,7 @@ export function auditMotionContact(input={}){
     notApplicable:Object.freeze(Object.fromEntries(exempt.map(key=>[key,text(notApplicable[key])]))),
     failures:Object.freeze(failures),
     limits:Object.freeze(limits),
+    rigPhysics:rigPhysics===null?null:Object.freeze({measurementRequired:true,measuredKeys:Object.freeze(Object.keys(rigPhysics&&typeof rigPhysics==='object'?rigPhysics:{})),runtimeVerified:false}),
     blocksVerifiedPromotion:!pass
   });
 }
@@ -3618,6 +3642,14 @@ export function createMotionDirectorPlan({
     pairMotion:pair?createPairMotionContract(pair):null,
     transition:transition?evaluateMotionTransition(transition):null,
     contactQa:contactQa?auditMotionContact(contactQa):null,
+    researchAlgorithmSources:Object.freeze({
+      rigAndMotion:'https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html',
+      neuralSkinning:'https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html',
+      composableAction:'https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html',
+      physicsTrace:'https://arxiv.org/abs/2605.14269',
+      pbrMaterial:'https://arxiv.org/abs/2506.15442',
+      modelInferenceRan:false,applied:'PAPER_INSPIRED_DETERMINISTIC_QA_ONLY'
+    }),
     gameplayEventBinding:gameplayEvent?bindGameplayEventToMotion(gameplayEvent):null,
     proceduralMotion:procedural?createProceduralMotionProfile(procedural):null,
     groupMotion:group?createGroupMotionPlan(group):null,
