@@ -76,6 +76,8 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(unityModules['com.unity.modules.imgui'],'1.0.0');
     assert.equal(unityModules['com.unity.modules.physics'],'1.0.0');
     assert.equal(unityModules['com.unity.modules.animation'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.audio'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.jsonserialize'],'1.0.0');
     assert.equal(source.purpose,'UNITY_WEB_DEVELOPMENT_FLOOR');
     assert.equal(source.presentationState,'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP');
     assert.equal(source.upperPlatformReady,false);
