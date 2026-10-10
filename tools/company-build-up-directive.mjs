@@ -800,14 +800,19 @@ export function buildDesignToPlatformCodingTrace({
     ...responsibleFiles
   ].map(safeSourcePath).filter(Boolean));
   // 정적 함수/행동 증거는 최소 소스 후보만 의미한다. 코멘트·태그·설정 파일만으로는 구현을 인정하지 않는다.
+  // 임포트/주석/문구의 상태 키는 실행 증거가 아니다. 기존 소스 파일 한 번만 읽어 추적에 재사용한다.
+  const nativeCodeByFile=new Map();
   const codeSignalFiles=observedFiles.filter(file=>{
     try{
       const original=fs.readFileSync(path.resolve(rootReal,file),'utf8');
-      const source=original.split('\n').map(line=>{
-        const comment=file.endsWith('.cs')?'//':'--';
-        const at=line.indexOf(comment);
-        return at<0?line:line.slice(0,at);
-      }).join('\n');
+      const withoutStrings=original.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,' ');
+      const source=withoutStrings.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/--\[\[[\s\S]*?\]\]/g,' ')
+        .split('\n').map(line=>{
+          const comment=file.endsWith('.cs')?'//':'--';
+          const at=line.indexOf(comment);
+          return at<0?line:line.slice(0,at);
+        }).join('\n');
+      nativeCodeByFile.set(file,source);
       if(file.endsWith('.cs')){
         return /\b(?:void|Task|IEnumerator|bool|int|float|string|GameObject|Coroutine)\s+\w+\s*\(/.test(source);
       }
@@ -836,18 +841,44 @@ export function buildDesignToPlatformCodingTrace({
       .map(file=>({file,score:priority(file,role)}))
       .sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file))
       .slice(0,3).map(row=>row.file);
-    const inputKeys=uniq(system.stateInputs||[]);
-    const outputKeys=uniq(system.stateOutputs||[]);
+    const inputKeys=uniq(rows.flatMap(row=>row?.stateInputs||[]));
+    const outputKeys=uniq(rows.flatMap(row=>row?.stateOutputs||[]));
     const id=clean(system.id);
     const roleIds=new Set(rows.map(row=>clean(row.id)).filter(Boolean));
     const connected=connections.filter(edge=>roleIds.has(clean(edge?.fromId))||roleIds.has(clean(edge?.toId))).map(edge=>({
       fromId:clean(edge.fromId),toId:clean(edge.toId),stateKeys:uniq(edge.stateKeys||[])
     })).slice(0,12);
+    // 소스의 식별자 참조/대입만 후보로 추적한다. 정적 발견은 실제 규칙·밸런스·런타임 검증이 아니다.
+    const executableOwnerFiles=candidates.filter(file=>codeSignalFiles.includes(file));
+    const ownerProgram=executableOwnerFiles.map(file=>nativeCodeByFile.get(file)||'').join('\n');
+    const stateIdentifier=key=>/^[A-Za-z_$][\w$]*$/.test(key);
+    const stateReferenced=key=>stateIdentifier(key)
+      &&new RegExp('\\b'+key+'\\b').test(ownerProgram);
+    const stateWritten=key=>stateIdentifier(key)
+      &&new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%-]?=(?!=))').test(ownerProgram);
+    const foundInputs=inputKeys.filter(stateReferenced);
+    const foundOutputs=outputKeys.filter(stateWritten);
+    const missingInputs=inputKeys.filter(key=>!foundInputs.includes(key));
+    const missingOutputs=outputKeys.filter(key=>!foundOutputs.includes(key));
+    const nativeStateMapping=Object.freeze({
+      state:!rows.length||!inputKeys.length||!outputKeys.length?'DESIGN_STATE_KEYS_INCOMPLETE'
+        :!executableOwnerFiles.length?'EXECUTABLE_SOURCE_REQUIRED'
+          :missingInputs.length||missingOutputs.length?'SOURCE_STATE_KEYS_NOT_MAPPED'
+            :'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED',
+      matchedInputKeys:Object.freeze(foundInputs),
+      matchedWrittenOutputKeys:Object.freeze(foundOutputs),
+      missingInputKeys:Object.freeze(missingInputs),
+      missingWrittenOutputKeys:Object.freeze(missingOutputs),
+      inspectedExecutableFiles:Object.freeze(executableOwnerFiles),
+      exactRuntimeStateTransitionVerified:false,
+      rule:'IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS'
+    });
     return Object.freeze({
       role:role==='DELVE'?'@':role,grammarRole:role,systemId:id||null,
       systemIds:[...roleIds],names:rows.map(row=>clean(row.name)).filter(Boolean),
       name:clean(system.name)||null,
       stateInputs:inputKeys,stateOutputs:outputKeys,connections:connected,
+      nativeStateMapping,
       suggestedExistingOwnerFiles:candidates,
       inspectedSymbols:symbols.filter(row=>candidates.includes(row.file)).slice(0,5),
       designStatus:everySystemAuthored&&(['MAIN','A','B'].includes(role)?rows.length===1:rows.length>=1)?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
@@ -857,6 +888,19 @@ export function buildDesignToPlatformCodingTrace({
       actualRuntimeVerified:false,
       evidenceNeeded:'EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA'
     });
+  });
+  // 연결된 두 설계 시스템은 동일한 상태 키의 생산/소비 계약을 공유해야 한다.
+  const systemById=new Map(designRoles.filter(row=>clean(row?.id)).map(row=>[clean(row.id),row]));
+  const edgeStateMismatches=connections.flatMap(edge=>{
+    const from=systemById.get(clean(edge?.fromId)),to=systemById.get(clean(edge?.toId));
+    if(!from||!to)return[];
+    const keys=uniq(edge?.stateKeys||[]);
+    const mismatched=keys.filter(key=>!uniq(from.stateOutputs||[]).includes(key)||!uniq(to.stateInputs||[]).includes(key));
+    return mismatched.length?[Object.freeze({
+      fromId:clean(edge.fromId),toId:clean(edge.toId),
+      mismatchedStateKeys:Object.freeze(mismatched),
+      cause:'FROM_OUTPUT_AND_TO_INPUT_MUST_SHARE_DECLARED_STATE_KEY'
+    })]:[];
   });
   const authoredRolesComplete=roles.every(role=>['MAIN','A','B'].includes(role)?(roleByName.get(role)||[]).length===1:(roleByName.get(role)||[]).length>=1)
     &&bindings.every(row=>row.designStatus==='AUTHORED')
@@ -942,6 +986,9 @@ export function buildDesignToPlatformCodingTrace({
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
     ...(observedCode&&!codeSignalFiles.length?['EXECUTABLE_GAMEPLAY_SOURCE_NOT_FOUND']:[]),
+    ...bindings.filter(row=>row.designStatus==='AUTHORED'&&row.nativeStateMapping.state==='SOURCE_STATE_KEYS_NOT_MAPPED')
+      .map(row=>'DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:'+row.role),
+    ...edgeStateMismatches.map(row=>'DESIGN_EDGE_STATE_KEYS_INCONSISTENT:'+row.fromId+'->'+row.toId),
     ...bindings.filter(row=>row.designStatus!=='AUTHORED').map(row=>'DESIGN_ROLE_NOT_AUTHORED:'+row.role),
     ...bindings.filter(row=>row.codingStatus==='SOURCE_OWNER_MISSING').map(row=>'GAME_CODE_OWNER_MISSING:'+row.role)
   ];
@@ -953,6 +1000,14 @@ export function buildDesignToPlatformCodingTrace({
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
     platformCodingPlans:Object.freeze(platforms),
     roleBindings:Object.freeze(bindings),
+    edgeStateMismatches:Object.freeze(edgeStateMismatches),
+    nativeStateMappingSummary:Object.freeze({
+      authoredRoles:bindings.filter(row=>row.designStatus==='AUTHORED').length,
+      mappedStaticCandidates:bindings.filter(row=>row.nativeStateMapping.state==='STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED').length,
+      unmappedRoles:bindings.filter(row=>row.nativeStateMapping.state==='SOURCE_STATE_KEYS_NOT_MAPPED').map(row=>row.role),
+      edgeMismatches:edgeStateMismatches.length,
+      staticSourceMappingIsNotRuntimeParity:true
+    }),
     creativeCBinding:hasCreativeGrammar?Object.freeze({
       themes:Object.freeze(cThemes.map(row=>Object.freeze({name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
       genres:Object.freeze(cGenres.map(row=>Object.freeze({role:clean(row?.role),name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),

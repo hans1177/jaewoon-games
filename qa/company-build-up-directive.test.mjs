@@ -1003,7 +1003,9 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.equal(trace.sourceImplementationPassed,false);
       assert.equal(trace.actualTwoClientPassed,false);
       assert.equal(trace.independentQaPassed,false);
-      assert.equal(trace.codingReviewState,'SOURCE_CANDIDATES_PRESENT_NOT_IMPLEMENTATION_PASS');
+      assert.equal(trace.codingReviewState,'GAME_STAGE_LOCAL_REPAIR_REQUIRED');
+      assert.ok(trace.gapReasons.includes('DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN'));
+      assert.equal(trace.nativeStateMappingSummary.staticSourceMappingIsNotRuntimeParity,true);
       assert.deepEqual(trace.roleBindings.map(x=>x.role),['MAIN','A','B','c','@']);
       assert.deepEqual(trace.roleBindings.map(x=>x.systemId),roles.map((_,i)=>'rule-'+i));
       assert.ok(trace.roleBindings.every(x=>x.suggestedExistingOwnerFiles.every(file=>expectedFiles.includes(file))));
@@ -1026,6 +1028,65 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+test('Unity Web design role keys and cross-system keys are audited against executable source without false PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-state-parity-'));
+  const gameId='unity-state-parity';
+  const sourceRoot='unity-games/'+gameId;
+  const owner=sourceRoot+'/Assets/Scripts/GameCore.cs';
+  const sourceFile=path.join(root,owner);
+  const design={
+    multiplayerMode:'COOP',
+    signatureSystems:[
+      {id:'main',grammarRole:'MAIN',name:'전투',stateInputs:['Health'],stateOutputs:['Health']},
+      {id:'reward',grammarRole:'A',name:'보상',stateInputs:['Reward'],stateOutputs:['Reward']},
+      {id:'battle',grammarRole:'B',name:'회복',stateInputs:['Health'],stateOutputs:['Health']},
+      {id:'delve',grammarRole:'DELVE',name:'탐험',stateInputs:['Health'],stateOutputs:['Health']}
+    ],
+    systemInterconnections:[{fromId:'main',toId:'reward',stateKeys:['Reward']}],
+    platformProfiles:{UNITY:{unityWebSpatialPresentation:{
+      dimension:'3D',
+      worldDepth:'실제 3D 공간의 높이와 깊이를 사용한다'.repeat(2),
+      cameraAndOcclusion:'실제 카메라 가림과 거리 변화를 구현한다'.repeat(2),
+      lightingAndMaterials:'실제 메시 기반 조명과 재질을 적용한다'.repeat(2),
+      mobileWebglEvidence:'모바일 WebGL에서 실제 플레이 화면을 검사한다'.repeat(2)
+    }}}
+  };
+  const write=code=>{
+    fs.mkdirSync(path.dirname(sourceFile),{recursive:true});
+    fs.writeFileSync(sourceFile,code);
+  };
+  const check=()=>{
+    const sourceObservation=inspectGameSources({repoRoot:root,sourceRoots:[sourceRoot]});
+    return buildDesignToPlatformCodingTrace({
+      gameId,design,platform:'UNITY_WEB',sourceRoot,repoRoot:root,sourceObservation,
+      responsibleFiles:[owner],multiplayerRequired:true
+    });
+  };
+  try{
+    write('public class GameCore {\n  public int Health = 10;\n  public void Damage() { Health -= 2; }\n  // Reward += 5; is only a comment\n  public void Label() { System.Console.WriteLine("Reward += 5;"); }\n}\n');
+    const first=check();
+    const main=first.roleBindings.find(row=>row.role==='MAIN');
+    const reward=first.roleBindings.find(row=>row.role==='A');
+    assert.equal(main.nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+    assert.deepEqual(reward.nativeStateMapping.missingInputKeys,['Reward']);
+    assert.deepEqual(reward.nativeStateMapping.missingWrittenOutputKeys,['Reward']);
+    assert.ok(first.gapReasons.includes('DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A'));
+    assert.ok(first.gapReasons.includes('DESIGN_EDGE_STATE_KEYS_INCONSISTENT:main->reward'));
+    assert.deepEqual(first.edgeStateMismatches[0].mismatchedStateKeys,['Reward']);
+    assert.equal(first.sourceImplementationPassed,false);
+    assert.equal(first.actualWebglRenderPassed,false);
+    write('public class GameCore {\n  public int Health = 10;\n  public int Reward;\n  public void Damage() { Health -= 2; }\n  public void Gain() { Reward += 5; }\n}\n');
+    const second=check();
+    const rewardUpdated=second.roleBindings.find(row=>row.role==='A');
+    assert.equal(rewardUpdated.nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+    assert.deepEqual(rewardUpdated.nativeStateMapping.missingWrittenOutputKeys,[]);
+    assert.ok(!second.gapReasons.includes('DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A'));
+    assert.notEqual(second.sourceTreeFingerprint,first.sourceTreeFingerprint);
+    assert.equal(second.sourceImplementationPassed,false,'matching tokens are still not playable rule parity');
+    assert.ok(second.gapReasons.includes('DESIGN_EDGE_STATE_KEYS_INCONSISTENT:main->reward'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('Roblox coding reads the same game Unity Web C# origin with exact change fingerprint and native-only authority',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-roblox-source-sync-'));

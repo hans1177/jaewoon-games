@@ -2474,7 +2474,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     outputs:(row.stateOutputs||[]).map(clean).filter(Boolean).slice(0,2),
     owner:(row.suggestedExistingOwnerFiles||[]).find(file=>!responsibleFiles.length||responsibleFiles.some(p=>posix(file)===posix(p)||posix(file).endsWith('/'+posix(p))))||
       clean(row.suggestedExistingOwnerFiles?.[0]),
-    status:clean(row.codingStatus)
+    status:clean(row.codingStatus),
+    nativeState:clean(row?.nativeStateMapping?.state),
+    missingInputs:(row?.nativeStateMapping?.missingInputKeys||[]).map(clean).filter(Boolean),
+    missingOutputs:(row?.nativeStateMapping?.missingWrittenOutputKeys||[]).map(clean).filter(Boolean)
   }));
   // 기존 DESIGN_TO_PLATFORM_CODING_CHECK의 단일 읽기 전용 C# 소스 관측을 재사용한다.
   // 여기서 Unity 파일을 다시 스캔하면 지문과 소스 책임이 이중화되므로 절대 재검사하지 않는다.
@@ -2532,7 +2535,9 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE; the canonical shared design governs MAIN/A/B/C/@ and all game-rule semantics. Compare exact Unity Web C# input, method and state transitions with existing Roblox server/shared/client source and implement the matching behavior in native Luau owner functions. Do not copy Unity C# or placeholder resource, level or save constants. Preserve current authorized combat/balance, progression, economy, rewards, save keys and network server authority. Optimize Roblox touch, StreamingEnabled, server Remote validation/rate-limits, bounded replication and client visual pooling only when relevant. A source reference or marker is never gameplay parity, synchronization QA or runtime PASS. Missing/unverified Unity Web does not block independent Roblox coding. Do not create a wrapper, alternate queue or shadow pipeline.',
       `unityWebSourceReference=${JSON.stringify(canonicalUnityWebReference)}`
     ]:[]),
-    ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
+    ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status};state=${row.nativeState};missingRead=${row.missingInputs.join(',')||'NONE'};missingWrite=${row.missingOutputs.join(',')||'NONE'}`),
+    ...(Array.isArray(codingTrace.gapReasons)&&codingTrace.gapReasons.length
+      ?[`designCodeGap=${codingTrace.gapReasons.slice(0,12).map(clean).join('|')};action=REPAIR_EXACT_EXISTING_SOURCE_AND_REPLAY_NATIVE_RUNTIME`]:[]),
     ...(codingTrace?.creativeCBinding?[`designCodeCreativeC=${JSON.stringify({
       designAuthored:codingTrace.creativeCBinding.designAuthored===true,
       themes:(codingTrace.creativeCBinding.themes||[]).map(row=>clean(row.name)).slice(0,2),
@@ -2541,7 +2546,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       abEffect:boundedPromptText(clean(codingTrace.creativeCBinding.abGameplayEffect),220),
       runtimeVerified:false
     })}`]:[]),
-    'designCodeVerification=MAIN/A/B/C/@ must follow the authored rule IDs and creative C themes, PRIMARY and SECONDARY genres, with their causal effects on the existing gameplay state dependencies. Legacy c is optional in V5, required only for actual legacy-role designs. Inspect executable owner functions, preserve save/balance and authority, verify gameplay action/state/result/reconnect and independent platform QA. No design or source marker may claim implementation PASS.',
+    'designCodeVerification=MAIN/A/B/C/@ must follow authored rule IDs and creative C cause/effect. Check missingRead and missingWrite in existing native owner functions, and shared state keys on both sides of each design connection. Static identifiers, assignments and role markers are candidates only; implement exact input/state/result/reconnect behavior, preserve save/balance and authority, and independently replay native platform QA. Legacy c is optional in V5. Never claim implementation PASS from source or design markers.',
     'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must use real native 3D meshes and depth; flat 2D or 2.5D cannot be a final PASS; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
@@ -2595,11 +2600,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2657,7 +2662,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
