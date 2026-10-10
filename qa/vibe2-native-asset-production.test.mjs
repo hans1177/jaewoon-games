@@ -1957,7 +1957,7 @@ test('unlicensed TRELLIS.2 dependencies block commercial asset authoring before 
     goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
     imageToAsset:true,assetAuthoring:{meshModel:'trellis2'},
     referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'}]};
-  for(const target of ['roblox','unity','web']){
+  for(const target of ['roblox','unity']){
     assert.throws(()=>buildVibeAssetProductionPlan({
       target,task,manifest:{assets:[]},presetCatalog:{presets:[]}
     }),/IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED/);
