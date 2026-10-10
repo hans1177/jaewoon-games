@@ -95,25 +95,117 @@
         "delveGrowthRule": "4개 이상 초기 사례(단서→실험→새 선택)를 갖는 4개 이상 발전 규칙, 단순 수치 강화 및 기능 나열은 금지",
         "finalGameIdentity": "주요 축인 생존·액션·수집을 인과적으로 결합한 새 정체성"
       }
+    },
+    "local_authoring_parts::0655f63aa53b46eeea2d70ae674114bd724955db768232ddc47c4954fcfae361:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 모바일 키트와 빌드 시스템을 활용해 무협 전략을 숙련하며, 역사를 통한 철학적 성찰과 예술적 창작을 통해 진보하는 생존 게임 경험을 누릴 수 있다.",
+      "coreFun": "플레이어 선택 → 상태 변화 → 다음 선택 연결된 콘텐츠 구조가 실제 게임에서 실행되며, 이 과정에서 무협 빌드 시스템의 융합과 역사/철학/예술 소재의 인과적 연관성이 확립된다."
+    },
+    "local_authoring_parts::bb6bed869afec1427d6db9612d31fa751b4f943adbbe304b95681f0e0e6e97c3:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "보석 생존전",
+      "creativeGrammar": {
+        "mainIdentity": "기본 게임 주제: 생존, 액션, 수집",
+        "a": {
+          "system": "생존",
+          "material": "모바일 키트 및 빌드 시스템 결합(역사/철학/예술)",
+          "materialDomain": "역사, 철학, 예술",
+          "stateChange": "플레이어 선택 → 상태 변화 → 다음 선택 연결"
+        },
+        "b": {
+          "system": "액션",
+          "material": "2차 대응 시스템(무협/과학/기술)",
+          "materialDomain": "무협, 과학, 기술",
+          "stateChange": "시작 단계 → 중간 경로 → 종료 결과"
+        },
+        "abCausality": "양방향 실제 상태 교환: A→B, B→A, 중후반 두 시스템의 관계 변화",
+        "abEvolution": {
+          "aChangesB": "A의 선택이 B의 상태 변화를 유도하는 조건과 피드백",
+          "bChangesA": "B의 상태 변화가 A의 새로운 선택을 유도하는 조건과 피드백",
+          "lateGameChange": "중후반 두 시스템 간의 상호 작용 변화와 피드백"
+        },
+        "materialFusion": {
+          "contrast": "주제/소재 2개씩 서로 다른 장르에 분배하여 인과적 연관성 강화",
+          "causalBridge": "플레이어 선택 → 상태 변화 → 다음 선택으로 연결된 콘텐츠 구조",
+          "removalConsequence": "보조 장르 제거 시 플레이 규칙·위험·정보·선택 바뀌어야 하며 주요 축 유지"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 및 이전 상태 변화 기반",
+          "characterConflict": "시작 단계부터 세계 규칙과 대립 형성",
+          "playerChoice": "플레이어 선택, 상태 변화, 다음 사건 발생",
+          "worldChange": "플레이어 선택이 실제 세계 상태 변화를 유도하는 역할",
+          "nextEvent": "플레이어 선택이 실제로 일어나는 새로운 사건"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "MATERIAL",
+            "gameplayEffect": "모바일 키트 및 빌드 시스템 결합"
+          },
+          {
+            "name": "무협",
+            "kind": "MATERIAL",
+            "gameplayEffect": "역사/철학/예술 소재 융합(2차 대응 시스템)"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "모바일 키트 및 빌드 시스템 결합"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "무협",
+            "gameplayEffect": "역사/철학/예술 소재 융합(2차 대응 시스템)"
+          }
+        ],
+        "cGenreInterlock": "주제/소재 2개씩 서로 다른 장르에 분배하여 인과적 연관성 강화, 보조 장르 제거 시 플레이 규칙·위험·정보·선택 바뀌어야 하며 주요 축 유지",
+        "cWorldAndGameplayEffect": "플레이어 선택이 실제 세계 상태 변화를 유도하는 역할, 중후반 두 시스템의 관계 변화와 피드백 포함",
+        "delveDiscoveries": [
+          {
+            "clue": "보석 생존전의 핵심 재미",
+            "discovery": "플레이어 선택 → 상태 변화 → 다음 선택 연결된 콘텐츠 구조",
+            "newChoice": "다음 사건 발생 조건과 피드백"
+          },
+          {
+            "clue": "생존 전략 수준 확장",
+            "discovery": "시작 단계부터 세계 규칙과 대립 형성",
+            "newChoice": "플레이어 선택 및 이전 상태 변화 기반"
+          },
+          {
+            "clue": "무협 빌드 시스템 결합",
+            "discovery": "플레이어 선택 → 상태 변화 → 다음 선택으로 연결된 콘텐츠 구조",
+            "newChoice": "중후반 두 시스템 간의 상호 작용 변화와 피드백"
+          },
+          {
+            "clue": "역사/철학/예술 소재 융합",
+            "discovery": "플레이어 선택 → 상태 변화 → 다음 선택으로 연결된 콘텐츠 구조",
+            "newChoice": "중후반 두 시스템 간의 상호 작용 변화와 피드백"
+          }
+        ],
+        "delveGrowthRule": "4개 이상 초기 사례(단서→실험→새 선택)를 갖는 4개 이상 발전 규칙, 단순 수치 강화 및 기능 나열은 금지",
+        "finalGameIdentity": "주요 축인 생존·액션·수집을 인과적으로 결합한 새 정체성"
+      },
+      "playerFantasy": "플레이어는 모바일 키트와 빌드 시스템을 활용해 무협 전략을 숙련하며, 역사를 통한 철학적 성찰과 예술적 창작을 통해 진보하는 생존 게임 경험을 누릴 수 있다.",
+      "coreFun": "플레이어 선택 → 상태 변화 → 다음 선택 연결된 콘텐츠 구조가 실제 게임에서 실행되며, 이 과정에서 무협 빌드 시스템의 융합과 역사/철학/예술 소재의 인과적 연관성이 확립된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 460559,
-      "lastMs": 160534,
+      "totalMs": 525038,
+      "lastMs": 64479,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:01:02.737Z"
+      "updatedAt": "2026-10-10T10:02:07.218Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:53:22.157Z",
-  "updatedAt": "2026-10-10T10:01:02.737Z",
+  "updatedAt": "2026-10-10T10:02:07.220Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1841,7 +1933,7 @@
   "localAuthoringSplits": {
     "0655f63aa53b46eeea2d70ae674114bd724955db768232ddc47c4954fcfae361": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:01:02.737Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:02:07.220Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
