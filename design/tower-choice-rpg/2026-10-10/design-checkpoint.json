@@ -309,25 +309,102 @@
           "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation in Real-Time Combat Scenarios,"
         }
       ]
+    },
+    "local_authoring_parts::a67ff5b15755ba0c4289fc463b7870695dda249ece982c19aca106205913e583:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::e5d3330e7792b2f2ac6f17daa5eff83a1ecff2415555ee8a2cef0636550cbedb:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택에 따른 실제 상태 변화 및 피드백 제공",
+        "주기적인 반복 속도, 위험, 보상의 교차로 통해 핵심 루프 형성"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "SYSTEM INTEGRATION AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Survival Action System Integration with Strategic Positioning Mechanics",
+          "purpose": "Player's strategic decision-making that affects the outcome of each wave, integrating real-time combat and resource management with tactical positioning.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Dynamic Threat Evolution from Base to Boss Tier"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+          "purpose": "Enables adaptive risk management through variable threat scaling and dynamic difficulty adjustment.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation Strategy,"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+          "purpose": "Enables dynamic difficulty scaling and adaptive combat logic through player-driven risk management.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "REAL-TIME COMBAT WITH STRATEGICAL POSITIONING MECHANICS"
+          ],
+          "name": "Dynamic Threat Evolution with Adaptive Combat Logic",
+          "purpose": "Enables player-driven evolution of threat patterns and combat strategies through adaptive decision-making.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation in Real-Time Combat Scenarios,"
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 708274,
-      "lastMs": 70887,
+      "totalMs": 765296,
+      "lastMs": 57022,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:07:55.289Z"
+      "updatedAt": "2026-10-10T03:08:52.314Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:07:55.291Z",
+  "updatedAt": "2026-10-10T03:08:52.322Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2033,12 +2110,144 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:07:55.291Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]",
+            "signatureSystems[3]"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "10층 탑 RPG",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival Action System",
+          "material": "Dynamic Upgrade Kit with Adaptive Combat Logic",
+          "materialDomain": "Real-Time Strategy & Resource Management",
+          "stateChange": "Build Composition Evolution from Base to Boss Tier"
+        },
+        "b": {
+          "system": "Progressive Risk Engine",
+          "material": "Variable Threat Matrix with Dynamic Difficulty Scaling",
+          "materialDomain": "Adaptive Challenge & Survival Mechanics",
+          "stateChange": "Risk-Response Loop Expansion from Low to High Stakes"
+        },
+        "abCausality": "Bi-directional State Exchange Between Core Mechanic and Progressive Threats",
+        "abEvolution": {
+          "aChangesB": "Threat Pattern Shift: From Linear Wave Pressure to Spatialized Enemy Density",
+          "bChangesA": "Risk Reward Dynamics Adjustment: From Simple Damage to Complex Scenario-Based Consequences",
+          "lateGameChange": "System Integration: Merge Survival Action with Strategic Positioning Mechanics"
+        },
+        "materialFusion": {
+          "contrast": "Enemy Behavior Fusion: Hybridized Combat Patterns with Environmental Interaction",
+          "causalBridge": "Environmental Impact on Combat Decision Making",
+          "removalConsequence": "Loss of Tactical Flexibility in Adverse Weather Conditions"
+        },
+        "storyCausalChain": {
+          "cause": "Player's Initial Strategy Selection",
+          "characterConflict": "Dynamic Threat Evolution from Base to Boss Tier",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation",
+          "worldChange": "Survival Action System Integration with Strategic Positioning Mechanics",
+          "nextEvent": "Progressive Difficulty Scaling and Adaptive Combat Logic Update"
+        },
+        "cThemes": [
+          {
+            "name": "Action & Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Real-Time Combat & Resource Management"
+          },
+          {
+            "name": "Strategy & Positioning",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Tactical Decision Making & Spatial Awareness"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival Action System",
+            "gameplayEffect": "Real-Time Combat & Resource Management"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Strategic Positioning Engine",
+            "gameplayEffect": "Tactical Decision Making & Spatial Awareness"
+          }
+        ],
+        "cGenreInterlock": "Systemic Integration: Merge Survival Action with Strategic Positioning Mechanics",
+        "cWorldAndGameplayEffect": "Combination of Real-Time Combat, Resource Management, and Tactical Decision Making",
+        "delveDiscoveries": [
+          {
+            "clue": "Player's Initial Strategy Selection",
+            "discovery": "Adaptive Risk Management through Resource Allocation",
+            "newChoice": "Dynamic Threat Evolution from Base to Boss Tier"
+          },
+          {
+            "clue": "Environmental Impact on Combat Decision Making",
+            "discovery": "Variable Threat Matrix with Dynamic Difficulty Scaling",
+            "newChoice": "Spatialized Enemy Density in Adverse Weather Conditions"
+          },
+          {
+            "clue": "Integration of Survival Action with Strategic Positioning",
+            "discovery": "Progressive Difficulty Scaling and Adaptive Combat Logic Update",
+            "newChoice": "Real-Time Combat with Strategic Positioning Mechanics"
+          },
+          {
+            "clue": "Loss of Tactical Flexibility in Adverse Weather Conditions",
+            "discovery": "Hybridized Combat Patterns with Environmental Interaction",
+            "newChoice": "Adaptive Combat Logic under Environmental Constraints"
+          }
+        ],
+        "delveGrowthRule": "Bi-directional State Exchange Between Core Mechanic and Progressive Threats",
+        "finalGameIdentity": "Survival Action System Integration with Strategic Positioning Mechanics"
+      },
+      "playerFantasy": "A player who navigates a rapidly evolving battlefield, making strategic decisions that affect the outcome of each wave. The game is about mastering combat while adapting to changing threats and resource constraints.",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택에 따른 실제 상태 변화 및 피드백 제공",
+        "주기적인 반복 속도, 위험, 보상의 교차로 통해 핵심 루프 형성"
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T03:08:52.317Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
