@@ -105,25 +105,40 @@
         "손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다.",
         "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다."
       ]
+    },
+    "local_authoring_parts::a5cdbc0238811c430515d0f54c390756db31784cfdd132f1f680dfbe209f5b05:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 놀이기구의 배치를 결정하여 손님의 이동 흐름을 제어함",
+        "손님의 감정 상태를 실시간으로 추적하며 공원의 평판과 수익에 영향을 미침"
+      ],
+      "stateOutputs": [
+        "길의 너비와 입구 위치를 최적화하여 병목 현상을 방지함",
+        "음식 가격 및 스릴 강도를 조절하여 속성 기반 만족도를 증대시킴"
+      ],
+      "name": "로드맵",
+      "purpose": "플레이어 선택에 따른 공간 재배치와 감정 관리 시스템의 인과 변화를 구현하는 핵심 메커니즘",
+      "playerChoice": "놀이기구의 배치, 휴식 공간 위치, 음식 가격 조정을 통해 속성 변화 유도"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 203525,
-      "lastMs": 8787,
+      "totalMs": 225134,
+      "lastMs": 21609,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:33:01.504Z"
+      "updatedAt": "2026-10-10T09:33:23.115Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:29:37.961Z",
-  "updatedAt": "2026-10-10T09:33:01.505Z",
+  "updatedAt": "2026-10-10T09:33:23.115Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1409,8 +1424,8 @@
     "local_authoring_parts::a5cdbc0238811c430515d0f54c390756db31784cfdd132f1f680dfbe209f5b05:signatureSystems:0:4f53cda18c2baa0c": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:33:01.504Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:33:23.115Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
