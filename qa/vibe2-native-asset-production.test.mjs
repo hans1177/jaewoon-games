@@ -1477,9 +1477,13 @@ test('customization and detailed style instructions reach the existing asset wor
 test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));
   try{
+    // 기존 자산 검증 계약: 등록 상태뿐 아니라 실제 소스 파일도 있어야 재사용 후보가 된다.
+    const ownedPath='assets/roblox/owned-motion.luau';
+    fs.mkdirSync(path.join(root,'assets','roblox'),{recursive:true});
+    fs.writeFileSync(path.join(root,ownedPath),'-- 원본 클립 저작 참조, 엔진 런타임 검증은 별도\nreturn {}\n');
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[{
       id:'owned-motion',category:'MOTION',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-      license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
+      license:'company-owned',platforms:['roblox'],path:ownedPath,states:['idle','attack'],rigType:'R15'
     }]}));
     const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[
       {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
