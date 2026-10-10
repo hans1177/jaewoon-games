@@ -497,3 +497,23 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     assert.equal(design.multiplayerMode,'COOP');
   }
 }
+
+
+// 메인: 오비 장르는 정상 인정하고 플랫폼 설정 문자열은 장르 판정에서 제외한다.
+for(const item of [
+  {category:'OBBY',identity:'구름길 오비',loop:['장애물 타이밍 관찰','점프와 착지','체크포인트 진행'],genre:'Obby & platformer',subgenre:'Classic Obby'},
+  {category:'OBBY',identity:'수직 타워 오비',loop:['타워 구간 점프','높이별 장애물 통과'],genre:'Obby & platformer',subgenre:'Tower Obby'},
+  {category:'OBBY',identity:'달리기 오비 러너',loop:['자동 이동 중 점프','실패 지점 복구'],genre:'Obby & platformer',subgenre:'Runner'},
+  {category:'PLATFORMER',identity:'횡스크롤 플랫포머',loop:['발판 점프','구간별 기술 숙련'],genre:'Obby & platformer',subgenre:'Classic Obby'},
+  {category:'TYCOON',identity:'학교 타이쿤',loop:['시설 건설','학생과 교사 운영'],genre:'Simulation',subgenre:'Tycoon'},
+  {category:'PUZZLE',identity:'단서 퍼즐',loop:['단서 해독','공간 변환'],genre:'Puzzle',subgenre:null},
+  {category:'SURVIVAL',identity:'협곡 생존',loop:['탐험','재료 제작'],genre:'Survival',subgenre:null}
+]){
+  const actual=classifyRobloxGenre({
+    category:item.category,identity:item.identity,coreLoop:item.loop,multiplayerMode:'COOP',
+    designText:JSON.stringify({platformProfiles:{ROBLOX:{platform:'ROBLOX'},UNITY:{platform:'UNITY'}},platformFitPlan:{targetPlatform:'ROBLOX'}})
+  });
+  assert.equal(actual.genre,item.genre,item.identity+' 기본 장르 유지');
+  assert.equal(actual.subgenre,item.subgenre,item.identity+' 세부 장르 유지');
+  assert.equal(actual.playMode,'COOP',item.identity+' 기존 멀티 규칙 보존');
+}
