@@ -169,7 +169,12 @@ authoredV5.content.creativeGrammar={
   cGenres:[{role:'PRIMARY',name:'미스터리',gameplayEffect:'다양한 단서의 진위를 검증하는 추리가 중심 목표를 이룬다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'우스운 오해가 현장 증언과 공간 퍼즐의 해법을 실제로 바꾼다.'}],
   cGenreInterlock:'진실을 찾는 미스터리 과정에 코믹한 오해를 섞으면 증언의 신뢰와 접근 경로가 바뀐다.',
   cWorldAndGameplayEffect:'철학과 엽기가 만든 사회적 금기가 탐색, 설득, 공간 전개를 변화시킨다.',
-  delveDiscoveries:Array.from({length:4},(_,i)=>({clue:'증언을 다른 순서로 듣고 반응을 관찰한다 '+i,discovery:'소문의 숨겨진 공통 원인과 연결을 발견한다 '+i,newChoice:'예전에는 없던 우회 통로와 대화 해결법을 선택한다 '+i})),
+  delveDiscoveries:[
+    {clue:'폐교 서고의 기록을 주민의 반대 증언과 비교한다.',discovery:'낡은 지도에 지워진 비밀 통로의 개방 조건을 알아낸다.',newChoice:'기록을 공개하는 대신 지도를 바꿔 안전한 잠입 경로로 이동한다.'},
+    {clue:'시장 공연이 끝날 때마다 같은 가짜 소문이 퍼지는 원인을 관찰한다.',discovery:'웃음의 강도에 따라 증언 신뢰도가 뒤바뀌는 법칙을 파악한다.',newChoice:'공연 순서를 조정해 주민의 의심을 다른 증인에게 돌린다.'},
+    {clue:'재판 기록에 숨겨진 모순과 증언 순서의 영향을 추적한다.',discovery:'진실을 먼저 밝힐수록 특정 문이 영구 봉쇄되는 규칙을 발견한다.',newChoice:'일부 진실을 보류하고 우회 증거를 모아 봉쇄를 해제한다.'},
+    {clue:'옛 마을로 돌아왔을 때 소문이 달라진 장소를 조사한다.',discovery:'과거 선택을 증언으로 되살리면 지역 배치를 역전할 수 있음을 확인한다.',newChoice:'과거 관계를 수정해 새로운 협상 루트와 귀환 선택지를 연다.'}
+  ],
   delveGrowthRule:'새 발견과 숙련 단계마다 두 시스템을 교차 응용해 끝없는 고급 운용을 추가한다.',
   finalGameIdentity:'철학과 엽기 소재, 미스터리와 코믹 장르를 합친 증언 현실변형 퍼즐극'
 };
@@ -179,6 +184,20 @@ assert.equal(v5Score.grammarCarryEvidence.creativityCarried,true);
 const repeatedCTheme=structuredClone(authoredV5);
 repeatedCTheme.content.creativeGrammar.cThemes[1].name='철학';
 assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedCTheme,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
+const genreInMaterialSlot=structuredClone(authoredV5);
+genreInMaterialSlot.content.creativeGrammar.cThemes[0].kind='GENRE';
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:genreInMaterialSlot,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
+const repeatedSystem=structuredClone(authoredV5);
+repeatedSystem.content.creativeGrammar.b.system=repeatedSystem.content.creativeGrammar.a.system;
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedSystem,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_A_B_SYSTEM_DISTINCTNESS_MISSING'));
+const repeatedDelve=structuredClone(authoredV5);
+const repeatedDiscovery=repeatedDelve.content.creativeGrammar.delveDiscoveries[0];
+repeatedDelve.content.creativeGrammar.delveDiscoveries=Array.from({length:4},(_,i)=>({
+  clue:repeatedDiscovery.clue+' '+i,
+  discovery:repeatedDiscovery.discovery+' '+i,
+  newChoice:repeatedDiscovery.newChoice+' '+i
+}));
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedDelve,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING'));
 // V5에는 더 이상 소문자 c 보조 시스템을 강제하지 않는다. C 소재·장르 검증은 별도로 유지한다.
 // 아직 시스템 간에 공통 입출력 키가 없는 V5는 연결 조각 작성 전에 되돌려 수리한다.
 const v5HandoffSeed={GAMEPLAY_SKETCH:{version:5}};
@@ -238,9 +257,17 @@ for(const [index,axis] of flaggedButAuthored.GAMEPLAY_SKETCH.novelGameGrammar.ga
   axis.sourceDomain=index?'PHILOSOPHY':'THEATRE';
   axis.materialRule=index?'증언 신뢰도가 공간 퍼즐의 접근 조건을 바꾼다.':'희극적 오해가 증언 전달과 대화의 다음 선택 비용을 바꾼다.';
 }
-const authoredCarry=scoreDesignGateV2({seed:flaggedButAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+const flaggedStillPending=scoreDesignGateV2({seed:flaggedButAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(flaggedStillPending.pendingSeedGrammarNotAuthored,true,'filled fields cannot erase authoringPending');
+assert.equal(flaggedStillPending.grammarCarryEvidence,null);
+const confirmedAuthored=structuredClone(flaggedButAuthored);
+confirmedAuthored.novelGrammarBackfill.authoringPending=false;
+const authoredCarry=scoreDesignGateV2({seed:confirmedAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
 assert.equal(authoredCarry.pendingSeedGrammarNotAuthored,false);
-assert.ok(authoredCarry.grammarCarryEvidence,'a complete V5 source keeps the authored-seed carry contract');
+assert.ok(authoredCarry.grammarCarryEvidence,'a non-pending V5 source keeps the authored-seed carry contract');
+const unflaggedIntake=structuredClone(confirmedAuthored);
+unflaggedIntake.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
+assert.equal(scoreDesignGateV2({seed:unflaggedIntake,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile}).pendingSeedGrammarNotAuthored,true);
 const unmarkedPlaceholder=structuredClone(placeholderV5);
 unmarkedPlaceholder.novelGrammarBackfill.authoringPending=false;
 assert.ok(scoreDesignGateV2({seed:unmarkedPlaceholder,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile})

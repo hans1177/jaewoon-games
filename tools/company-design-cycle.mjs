@@ -91,14 +91,12 @@ if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
 const inputGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
 const seedGameplaySketchVersion=Math.max(5,Number(seed?.novelGrammarBackfill?.version||0),inputGameplaySketchVersion);
-// 자동 접수 V5의 미완성 임시 문구는 디자이너가 재사용해야 할 확정 창작안이 아니다.
-const intakeFusion=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion;
+// 자동 접수 시드는 필드가 채워져 있어도 디자이너가 작성한 원본 설계가 아니다.
+// 작성 대기 플래그 또는 접수용 출처가 있으면 기존 내용을 정답으로 주입하지 않는다.
 const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
-  &&(seed?.novelGrammarBackfill?.authoringPending===true||!seedGameplaySketch)
-  &&(!Array.isArray(intakeFusion?.majorAxes)||intakeFusion.majorAxes.length!==2
-    ||intakeFusion.majorAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
-    ||!Array.isArray(intakeFusion?.themeFusion?.themes)||intakeFusion.themeFusion.themes.length!==2
-    ||!Array.isArray(intakeFusion?.themeFusion?.genres)||intakeFusion.themeFusion.genres.length!==2);
+  &&(seed?.novelGrammarBackfill?.authoringPending===true
+    ||!seedGameplaySketch
+    ||seedGameplaySketch?.source==='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN');
 const advancedSeedDesignDepth=inputGameplaySketchVersion>=2;
 const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
 const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
@@ -517,7 +515,7 @@ const STABILITY_PRIORITY_PLAN={type:'object',required:['signals','priorityRule']
 
 // MAIN×A×B×C+@는 모든 게임에서 원본 설계로 작성한다. 이전 MAIN-only 설계는 재작성 대상이다.
 const CREATIVE_THEME={type:'object',required:['name','kind','gameplayEffect'],properties:{
-  name:{type:'string',minLength:2,maxLength:160},kind:{type:'string',enum:['GENRE','MATERIAL']},
+  name:{type:'string',minLength:2,maxLength:160},kind:{type:'string',enum:seedGameplaySketchVersion>=5?['MATERIAL']:['GENRE','MATERIAL']},
   gameplayEffect:{type:'string',minLength:16,maxLength:600}
 },additionalProperties:false};
 const CREATIVE_AXIS={type:'object',required:['system','material','materialDomain','stateChange'],properties:{
@@ -897,7 +895,7 @@ function repairStructureContract(fields){
   if(fields.includes('identity'))rules.push('identity: 공백 포함 최소 60자 이상의 구체적 게임 정체성. 무슨 게임인지와 같은 장르와의 차이를 즉시 읽을 수 있고, 대표 행동·대표 선택·시그니처 세계 규칙이 coreLoop/signatureSystems와 직접 연결되어야 한다.');
   if(fields.includes('playerFantasy'))rules.push('playerFantasy: 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지. 관찰자 설명이 아니라 플레이어가 실제로 무엇을 하는지 명시.');
   if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하고 정체성 문장과 같은 플레이 약속을 증명.');
-  if(fields.includes('creativeGrammar'))rules.push('creativeGrammar는 materialFusion에서 A/B 소재가 어떻게 낯설고도 인과적으로 연결되는지·하나를 빼면 사라지는 플레이를 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고, abEvolution에서 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다. creativeGrammar는 MAIN=기본 게임 주제/정체성, A=게임 시스템+해당 축 창작 소재, B=다른 시스템+해당 축 창작 소재, abCausality=양방향 실제 상태 교환, C=cThemes에 인물·예술·역사·종교·철학·과학·무협·엽기 등 아무 주제/소재 두 개를 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 장르 사전은 무제한이다. PRIMARY는 가장 중요한 플레이·갈등·위험을 정의하고 SECONDARY는 그 선택과 A/B 시스템에 실질적 인과 변화를 줘야 한다. cGenreInterlock에 둘의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다, @=발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙, finalGameIdentity=모든 축을 인과적으로 결합한 새 정체성이다. MAIN에만 소재를 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다.');
+  if(fields.includes('creativeGrammar'))rules.push('creativeGrammar는 materialFusion에서 A/B 소재가 어떻게 낯설고도 인과적으로 연결되는지·하나를 빼면 사라지는 플레이를 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고, abEvolution에서 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다. creativeGrammar는 MAIN=기본 게임 주제/정체성, A=게임 시스템+해당 축 창작 소재, B=다른 시스템+해당 축 창작 소재, abCausality=양방향 실제 상태 교환, C=cThemes에 인물·예술·역사·종교·철학·과학·무협·엽기 등 서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 장르 사전은 무제한이다. PRIMARY는 가장 중요한 플레이·갈등·위험을 정의하고 SECONDARY는 그 선택과 A/B 시스템에 실질적 인과 변화를 줘야 한다. cGenreInterlock에 둘의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다, @=서로 다른 단서·발견·새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지) 및 상한 없는 발전 규칙, finalGameIdentity=모든 축을 인과적으로 결합한 새 정체성이다. MAIN에만 소재를 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다.');
   if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
   if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B와 DELVE(@)를 기존 원본 규칙·상태 입출력으로 구분한다. 최소 4개 고유 역할로 구성하되 c 보조 시스템은 있을 때만 유지하고 C의 두 창작 소재·메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명한다. 이름·역할·선택을 복제하거나 없는 기능·보상·저장 키를 추가하지 않는다.');
   if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B/c/DELVE(@) 역할을 각각 포함하는 최소 5개 서로 다른 기존 또는 신규 시스템. 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상.');
