@@ -28,8 +28,9 @@ PARSER.add_argument('--genre', default='')
 PARSER.add_argument('--source-image', default='')
 PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
-PARSER.add_argument('--module', choices=['auto','mesh-ai','clothing','design','medical'], default='auto')
+PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical'], default='auto')
 PARSER.add_argument('--source-model', default='')
+PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
@@ -100,9 +101,12 @@ ASSET_OBJECTS = []
 IMAGE_PROVENANCE = None
 MODULE_PROVENANCE = None
 SOURCE_PROVENANCE = None
+ASSET_ARMATURES = []
 # 기존 실행기 안에서만 사용하는 오픈소스 기능. 설치되지 않은 외부 엔진의 PASS를 만들지 않는다.
 OPEN_SOURCE_MODULES = {
     'mesh-ai': {'source': 'https://github.com/VAST-AI-Research/TripoSR', 'engine': 'TripoSR', 'license': 'MIT'},
+    'human': {'source': 'https://github.com/makehumancommunity/mpfb2', 'engine': 'MPFB2', 'license': 'GPL-3.0-or-later', 'assetLicense': 'CC0'},
+    'object': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderNativeGeometry', 'license': 'GPL-2.0-or-later'},
     'clothing': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderMeshAndCloth', 'license': 'GPL-2.0-or-later'},
     'design': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderParametricGeometry', 'license': 'GPL-2.0-or-later'},
     'medical': {'source': 'https://github.com/Slicer/Slicer', 'engine': 'SlicerCompatibleSurfaceImportAndBlender', 'license': 'BSD-style-Slicer-GPL-Blender'},
@@ -332,6 +336,76 @@ def image_mesh_asset():
 
 
 # 메인: 블렌더 오픈소스 패턴을 사용해 실제 입체 의류 패널과 소매를 제작한다.
+# 메인: MPFB2의 CC0 인체 베이스와 실제 아마추어 리그를 사용한다. 애드온이 없으면 실패한다.
+def human_asset():
+    global MODULE_PROVENANCE
+    addon_home=os.environ.get('VIBE_MPFB_HOME','')
+    home=Path(addon_home).expanduser().resolve() if addon_home else None
+    if home is None or not (home/'src'/'mpfb'/'__init__.py').is_file():
+        raise RuntimeError('HUMAN_MPFB_ADDON_NOT_INSTALLED')
+    code_file=home/'LICENSE.CODE.md'
+    assets_file=home/'LICENSE.ASSETS.md'
+    if not code_file.is_file() or not assets_file.is_file():
+        raise RuntimeError('HUMAN_MPFB_LICENSE_FILES_REQUIRED')
+    if 'gnu general public license' not in code_file.read_text(encoding='utf-8',errors='replace').lower() or 'cc0' not in assets_file.read_text(encoding='utf-8',errors='replace').lower():
+        raise RuntimeError('HUMAN_MPFB_SOURCE_LICENSE_UNVERIFIED')
+    if str(home/'src') not in sys.path:sys.path.insert(0,str(home/'src'))
+    try:
+        from mpfb.services.humanservice import HumanService
+        body=HumanService.create_human(scale=.1,feet_on_ground=True)
+        rig=HumanService.add_builtin_rig(body,'game_engine')
+    except Exception as exc:
+        raise RuntimeError('HUMAN_MPFB_REAL_MODEL_AND_RIG_FAILED') from exc
+    if not body or body.type!='MESH' or not rig or rig.type!='ARMATURE':
+        raise RuntimeError('HUMAN_MPFB_ARMATURE_REQUIRED')
+    if not any(mod.type=='ARMATURE' for mod in body.modifiers):
+        raise RuntimeError('HUMAN_MPFB_WEIGHT_BINDING_REQUIRED')
+    body.name='VibeHumanBody'
+    rig.name='VibeHumanRig'
+    if not body.data.materials:body.data.materials.append(BASE)
+    ASSET_OBJECTS.append(body)
+    ASSET_ARMATURES.append(rig)
+    human_motion(rig)
+    MODULE_PROVENANCE={'kind':'human','source':OPEN_SOURCE_MODULES['human'],
+        'method':'MPFB2_CC0_BASE_MESH_AND_GAME_RIG_WITH_BONE_ANIMATION',
+        'generatedGeometry':True,'hasRig':True,'clinicalUseApproved':False,'runtimeVerified':False}
+
+
+# 헬퍼: 인체 스킨 뼈에 직접 시각적 기본 모션 키를 기록한다. 게임 판정·체력·저장과 무관하다.
+def human_motion(rig):
+    bones=list(rig.pose.bones)
+    if len(bones)<10:raise RuntimeError('HUMAN_RIG_BONE_COUNT_INVALID')
+    groups={
+        'arm':[b for b in bones if any(v in b.name.lower() for v in ('arm','shoulder'))],
+        'leg':[b for b in bones if any(v in b.name.lower() for v in ('thigh','leg','calf'))],
+        'spine':[b for b in bones if any(v in b.name.lower() for v in ('spine','chest','torso'))],
+        'head':[b for b in bones if any(v in b.name.lower() for v in ('head','neck'))],
+    }
+    movers=groups['arm'][:2]+groups['leg'][:2]+groups['spine'][:1]+groups['head'][:1]
+    if not movers:raise RuntimeError('HUMAN_RIG_ANIMATABLE_BONES_REQUIRED')
+    scene=bpy.context.scene
+    clips={'IDLE':(.028,0,.025),'WALK':(.26,.48,.06),'ATTACK':(.48,.07,.18),
+           'HIT':(-.20,.04,.17),'DEATH':(.38,.26,.42)}
+    rig.animation_data_create()
+    for clip,axes in clips.items():
+        rig.animation_data.action=None
+        action=bpy.data.actions.new(clip)
+        rig.animation_data.action=action
+        for frame,sign in ((1,-1),(13,1),(25,-1)):
+            scene.frame_set(frame)
+            for idx,bone in enumerate(movers):
+                bone.rotation_mode='XYZ'
+                direction=sign*(1 if idx%2==0 else -1)
+                value=axes[0] if bone in groups['arm'] else axes[1] if bone in groups['leg'] else axes[2]
+                bone.rotation_euler=(value*direction,value*.28,0)
+                bone.keyframe_insert(data_path='rotation_euler',frame=frame,group=bone.name)
+        track=rig.animation_data.nla_tracks.new()
+        track.name=clip
+        track.strips.new(clip,1,action)
+    rig.animation_data.action=None
+    scene.frame_set(1)
+
+
 def clothing_asset():
     global MODULE_PROVENANCE
     verts, faces = [], []
@@ -442,8 +516,12 @@ elif ARGS.source_image:
         MODULE_PROVENANCE={'kind':'mesh-ai','source':OPEN_SOURCE_MODULES['mesh-ai'],
                            'method':'LOCAL_TRIPOSR_INFERENCE','generatedGeometry':True,
                            'runtimeVerified':False}
+elif ARGS.module == 'human':
+    human_asset()
 elif ARGS.module == 'clothing':
     clothing_asset()
+elif ARGS.module == 'object':
+    object_asset()
 elif ARGS.module == 'design':
     design_asset()
 elif ARGS.subject=='rock':
