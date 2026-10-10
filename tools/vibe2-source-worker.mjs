@@ -2628,7 +2628,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     if(line.startsWith('unityWebSourceReference=')){
       try{
         const reference=JSON.parse(line.slice('unityWebSourceReference='.length));
-        if(!/^unity-games\\/[a-z0-9][a-z0-9-]*\\/Assets\\/Scripts\\//.test(clean(reference?.path))
+        if(!/^unity-games\/[a-z0-9][a-z0-9-]*\/Assets\/Scripts\//.test(clean(reference?.path))
           ||!/^[0-9a-f]{64}$/.test(clean(reference?.sha256)))return[];
         return['unityWebSourceReference='+JSON.stringify({
           path:reference.path,sha256:reference.sha256,
