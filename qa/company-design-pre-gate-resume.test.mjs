@@ -1246,3 +1246,157 @@ test('platform views derive from the authored original without changing rules or
   normalizeWebCanonicalAndExpansionPolicy(fixture.design,fixture.seed,fixture.design.multiplayerMode,[]);
   assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
 });
+
+
+test('the designer uses a short owner-grounded prompt for recursive local authoring',async()=>{
+  const src=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const seen=[];
+  const author=runInNewContext(src+'\ncallLocalDesignerModel',{
+    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'test',designerRoute:{id:'test'},
+    seed:{gameId:'daechung-rpg',gameName:'대충 RPG',CORE_LOOP:['마을 준비','포탈 전투','보스 동료 영입'],
+      originalDesignContext:{content:{signatureSystems:[{name:'파티 구성',purpose:'AI 동료 편성'}]}}},
+    designAssetLibraryContext:{status:'UNAVAILABLE'},designCheckpoint:{},modelCallStats:[],
+    console:{log(){}},recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async prompt=>{seen.push(prompt);return '{"identity":"원본의 포탈과 동료 전투를 새 규칙으로 연결한다"}';},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue(){},
+  });
+  const user='긴 전체 설계 컨텍스트 '.repeat(1800)+'\nLOCAL_OUTPUT_PATH=identity\n대충 RPG 원본';
+  const value=await author('설계 전반 지시 '.repeat(900),user,{type:'object',required:['identity'],properties:{identity:{type:'string'}},additionalProperties:false},{includeAssetContext:false});
+  assert.match(value.identity,/포탈/);
+  assert.ok(seen[0].length<15000,'nested design role input must remain bounded');
+  assert.match(seen[0],/OWNER_ORIGINAL=.*daechung-rpg/);
+  assert.match(seen[0],/LOCAL_OUTPUT_PATH=identity/);
+});
+
+test('system interconnection children can use only causal edges from designer-authored state handoffs',async()=>{
+  const src=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const edgeItem={type:'object',required:['fromId','toId','stateKeys','fromSystem','toSystem','trigger','stateChange'],properties:{
+    fromId:{type:'string'},toId:{type:'string'},stateKeys:{type:'array',minItems:1,items:{type:'string'}},
+    fromSystem:{type:'string'},toSystem:{type:'string'},trigger:{type:'string'},stateChange:{type:'string'}
+  },additionalProperties:false};
+  const schema={type:'object',required:['systemInterconnections'],properties:{systemInterconnections:{type:'array',minItems:5,maxItems:5,items:edgeItem}},additionalProperties:false};
+  const authoredRoles={MAIN:'main_route',A:'a_supply',B:'b_combat',DELVE:'delve_secret'};
+  const edges=[
+    {fromId:'main_route',toId:'a_supply',stateKeys:['PortalUnlocked']},
+    {fromId:'a_supply',toId:'b_combat',stateKeys:['EquipmentReady']},
+    {fromId:'b_combat',toId:'a_supply',stateKeys:['FightReward']},
+    {fromId:'main_route',toId:'delve_secret',stateKeys:['BossDiscovered']},
+    {fromId:'delve_secret',toId:'main_route',stateKeys:['SecretRevealed']}
+  ];
+  const modelValue=schema=>{
+    if(Array.isArray(schema.enum))return schema.enum[0];
+    if(schema.type==='object')return Object.fromEntries((schema.required||[]).map(key=>[key,modelValue(schema.properties[key])]));
+    if(schema.type==='array')return Array.from({length:schema.minItems||1},()=>modelValue(schema.items));
+    if(schema.type==='string')return '원본 규칙에 연결되는 실제 전투 행동과 상태 변화';
+    throw Error('unhandled test schema '+schema.type);
+  };
+  const seen=[];
+  const author=runInNewContext(src+'\ncallLocalDesignerModel',{
+    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'test',designerRoute:{id:'test'},
+    designCheckpoint:{tasks:{}},designAssetLibraryContext:{status:'UNAVAILABLE'},modelCallStats:[],
+    console:{log(){}},recordModelHealth(){},persistDesignCheckpoint(){},
+    runCheckpointTask:async(_phase,_key,work)=>await work(),
+    requestLocalDesignerRaw:async(_prompt,options)=>{seen.push(options.schema);return JSON.stringify(modelValue(options.schema));},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
+  });
+  const result=await author('같은 게임 디자이너','원본 포탈과 AI 동료를 연결한다',schema,{
+    authoredHandoffs:edges,authoredRoles,predict:900,includeAssetContext:false
+  });
+  const rows=JSON.parse(JSON.stringify(result.systemInterconnections));
+  assert.equal(rows.length,5);
+  assert.deepEqual(rows.map(row=>({fromId:row.fromId,toId:row.toId,stateKeys:row.stateKeys})),edges);
+  assert.ok(seen.length>=5,'every edge still has designer-authored action and state explanation');
+});
+
+
+test('homepage-only policy migration reuses exact authored slices but rejects any stale input fingerprint',()=>{
+  const begin=design.indexOf('const homepageOnlyDesignCheckpointEligible=');
+  const end=design.indexOf('if(!checkpointReusable&&(',begin);
+  assert.ok(begin>0&&end>begin);
+  const source=design.slice(begin,end);
+  const previousPolicy='91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f';
+  const currentPolicy='e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef';
+  const engine='90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71';
+  const context={contractVersion:4,gameId:'daechung-rpg',date:'2026-10-10',seed:{seedId:'GAME'},policyDigest:currentPolicy,engineDigest:'new'};
+  const checkpoint={contractVersion:4,gameId:'daechung-rpg',date:'2026-10-10',seedId:'GAME',
+    policyDigest:previousPolicy,engineDigest:engine,phases:{},tasks:{savedRole:{id:'a_supply'}},modelHealth:{}};
+  checkpoint.fingerprint=createHash('sha256').update(JSON.stringify({...context,policyDigest:previousPolicy,engineDigest:engine})).digest('hex');
+  const evaluate=(value,policy=currentPolicy,version=560,locked=true)=>runInNewContext(source+'\nhomepageOnlyDesignCheckpointEligible',{
+    designCheckpoint:value,DESIGN_CHECKPOINT_CONTRACT_VERSION:4,policyDigest:policy,
+    CANONICAL_POLICY_PATH:'policy.json',
+    readJson:()=>({version,finalDevelopmentLock:{sequenceLock:{status:locked?'LOCKED':'UNLOCKED'}}}),
+    gameId:'daechung-rpg',date:'2026-10-10',seed:{seedId:'GAME'},
+    checkpointCompatibleEngineDigests:new Set([engine]),checkpointInputContext:context,
+    createHash,clean:v=>String(v??'').trim()
+  });
+  assert.equal(evaluate(checkpoint),true,'verified 558-to-560 homepage-only change preserves authored slices');
+  assert.equal(evaluate({...checkpoint,fingerprint:'stale'}),false,'different designer input must never reuse old content');
+  assert.equal(evaluate({...checkpoint,engineDigest:'unknown'}),false,'unknown engine change must not migrate');
+  assert.equal(evaluate(checkpoint,currentPolicy,559),false,'wrong current policy version cannot migrate');
+  assert.equal(evaluate(checkpoint,currentPolicy,560,false),false,'sequence lock must remain intact');
+});
+
+
+test('grammar-role timeout must not split the atomic seven-field rule or invent a partial role',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const schema={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:['B']},name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  let attempts=0;
+  const logs=[];
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,seedGameplaySketchVersion:5,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,
+    localDesignerModel:'test',designerRoute:{id:'test'},designCheckpoint:{tasks:{}},
+    designAssetLibraryContext:{status:'UNAVAILABLE'},modelCallStats:[],
+    console:{log:value=>logs.push(value)},clean:value=>String(value??'').trim(),persistDesignCheckpoint(){},
+    recordModelHealth(){},requestLocalDesignerRaw:async()=>{attempts++;throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema
+  });
+  await assert.rejects(author('원본 디자이너','LOCAL_OUTPUT_PATH=signatureSystems[2]',schema,{predict:1600,includeAssetContext:false}),/OLLAMA_DESIGN_TIMEOUT/);
+  assert.equal(attempts,1,'timeout must leave the exact role for a later checkpointed retry');
+  assert.equal(logs.some(line=>line.includes('DESIGN_LOCAL_SPLIT=')),false,'a grammar rule cannot be authored as unrelated disconnected pieces');
+});
+
+test('V5 B role repairs a clone and maintains A-to-B and B-to-A state exchange',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},name:{type:'string'},purpose:{type:'string'},
+    playerChoice:{type:'string'},stateInputs:{type:'array',minItems:1,items:{type:'string'}},stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
+  const candidates={
+    MAIN:{id:'main_portal',name:'포탈 출발',purpose:'마을과 포탈 진행을 연결한다',playerChoice:'입장할 지역을 선택한다',stateInputs:['PartyReady'],stateOutputs:['PortalOpen','SecretSignal']},
+    A:{id:'a_equipment',name:'장비 준비',purpose:'장비 및 동료를 편성한다',playerChoice:'전투 전에 장비를 선택한다',stateInputs:['PortalOpen'],stateOutputs:['PartyReady']},
+    B:{id:'b_combat',name:'보스 패링',purpose:'보스 공격 전조를 읽고 반격한다',playerChoice:'보스 패링 시점을 선택한다',stateInputs:['PartyReady'],stateOutputs:['PortalOpen']},
+    DELVE:{id:'delve_secret',name:'비밀 발견',purpose:'세계의 숨겨진 보상을 발견한다',playerChoice:'비밀 장소를 조사한다',stateInputs:['SecretSignal'],stateOutputs:['PartyReady']}
+  };
+  const calls=[],prompts=[],cache={tasks:{}};
+  const authoredCreativeGrammar={mainIdentity:'포탈 전투형 RPG',a:{system:'포탈 전투',material:'몬스터와 보스'},b:{system:'AI 동료 편성',material:'파티 3명'},delveDiscoveries:[{clue:'비밀 보스',discovery:'동료 영입'}]};
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,seedGameplaySketchVersion:5,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,
+    localDesignerModel:'test',designerRoute:{id:'test'},designCheckpoint:cache,
+    designAssetLibraryContext:{status:'UNAVAILABLE'},modelCallStats:[],console:{log(){}},
+    seed:{gameId:'daechung-rpg',CORE_LOOP:['준비','전투','보상']},
+    clean:value=>String(value??'').trim(),persistDesignCheckpoint(){},recordModelHealth(){},
+    runCheckpointTask:async(phase,key,work)=>cache.tasks[phase+'::'+key]||(cache.tasks[phase+'::'+key]=await work()),
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      const role=contract.properties.grammarRole.enum[0],count=calls.filter(x=>x===role).length+1;
+      calls.push(role);prompts.push({role,prompt});
+      const value={...candidates[role],grammarRole:role};
+      if(role==='B'&&count===1){value.name=candidates.A.name;value.purpose=candidates.A.purpose;}
+      return JSON.stringify(value);
+    },
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema
+  });
+  const value=await author('게임 설계','원본의 포탈·전투·동료 규칙 보존',schema,{predict:1600,includeAssetContext:false,authoredCreativeGrammar});
+  const rows=JSON.parse(JSON.stringify(value.signatureSystems));
+  const a=rows.find(row=>row.grammarRole==='A'),b=rows.find(row=>row.grammarRole==='B');
+  assert.equal(rows.length,4);
+  assert.equal(calls.filter(role=>role==='B').length,2,'the cloned B role must be rewritten');
+  assert.ok(a.stateOutputs.some(key=>b.stateInputs.includes(key)),'A output must reach B');
+  assert.ok(b.stateOutputs.some(key=>a.stateInputs.includes(key)),'B output must reach A');
+  assert.equal(new Set(rows.map(row=>row.id)).size,4);
+  assert.ok(prompts.some(row=>row.role==='A'&&row.prompt.includes('포탈 전투')),'A must consume the authored A creative axis');
+  assert.ok(prompts.some(row=>row.role==='B'&&row.prompt.includes('AI 동료 편성')),'B must consume the authored B creative axis');
+});
