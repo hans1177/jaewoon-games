@@ -127,7 +127,9 @@ jobs:
             # promotion is recalculated from the newest runtime state below.
             git reset --hard HEAD
             git clean -fd
-            git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            # A checkout of the ephemeral runner can leave tracked LFS art files dirty.
+            # This worktree is intentionally discarded before recalculating on the runtime branch.
+            git checkout -f -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
 
