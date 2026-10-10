@@ -444,25 +444,40 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::c2c08952fcd1f6b529c867f34926d238458d32f2ba8165f4314a0899473f9244:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "선택",
+        "위험 인식"
+      ],
+      "stateOutputs": [
+        "새로운 전략 경로 생성",
+        "세계 상태 변화"
+      ],
+      "name": "별길 개척자 - 진보형 플레이어 역할",
+      "purpose": "역사와 철학 소재로 가득 차 있는 전략적 빌드에서 세계 재구성에 중요한 선택을 내리는 과程",
+      "playerChoice": "플레이어의 선택 -> 위험 증가 -> 새로운 상태 변화 및 대응 방식 결정 시도 중인 선택입니다. 이 선택은 역사와 철학의 영향 아래 이루어집니다. 주제: 전략적 빌드, 소재: 역사, 보조 장르: 모바일 환경, 메인 장르: 전략적 빌드, 보조 장르: 모바일 환경으로 구성됩니다. A→B, B→A 양방향 관계 유지하며, 중후반 두 시스템 간의 상호작용이 실제 상태 교환을 통해 구현됩니다. 게임 정체성의 대표 행동이며, 다양한 조합과 유효한 해법을 통한 숙련 가능성이 있습니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1039087,
-      "lastMs": 56042,
+      "totalMs": 1126696,
+      "lastMs": 87609,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:11:27.951Z"
+      "updatedAt": "2026-10-10T03:12:55.570Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:08.629Z",
-  "updatedAt": "2026-10-10T03:11:27.960Z",
+  "updatedAt": "2026-10-10T03:12:55.570Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2080,10 +2095,10 @@
   "localAuthoringSplits": {
     "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:11:27.954Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:12:55.570Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
