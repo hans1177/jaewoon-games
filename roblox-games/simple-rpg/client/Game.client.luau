@@ -2,44 +2,18 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local ContextActionService = game:GetService("ContextActionService")
-local STUDIO_ASSET_BINDING_VERSION = 2
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
-local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
-local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
-local nativeTouchEnabled = UserInputService.TouchEnabled
-local nativeFoundationCamera = workspace.CurrentCamera
-local function reportNativeFoundationReady()
-  local character = player.Character or player.CharacterAdded:Wait()
-  local humanoid = character:WaitForChild("Humanoid")
-  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
-    foundationRemote:FireServer("CAMERA_READY")
-  end
-  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
-end
-task.defer(reportNativeFoundationReady)
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
+local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
+local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
+local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
+local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContext.GameDevelopmentPrinciples or {}
+local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpecificSemanticMappings or {}
+local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 
-local gui = Instance.new("ScreenGui")
-gui.Name = "ApprovedScopeHud"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-local root = Instance.new("Frame")
-root.Name = "Root"
-root.AnchorPoint = Vector2.new(0.5, 1)
-root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 360)
-root.BackgroundTransparency = 0.15
-local studioAssetFamilies = Config.StudioAssets and Config.StudioAssets.Families or {}
-local function studioAssetFamily(family)
-  local atoms = studioAssetFamilies[family]
-  return type(atoms) == "table" and atoms or {}
-end
-local function hasStudioAtom(familyOrAtom, atom)
-  local family = atom == nil and "UI" or familyOrAtom
-  local assetAtom = atom == nil and familyOrAtom or atom
-  return table.find(studioAssetFamily(family), assetAtom) ~= nil
-end
 -- STUDIO_ASSET_BINDING_CLIENT_BEGIN
 local STUDIO_ASSET_BINDING_VERSION = 2
 local studioAssetConfig = Config.StudioAssets or {}
@@ -83,11 +57,68 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   PROP = "NOT_APPLICABLE",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
+local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
+local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
+local nativeTouchEnabled = UserInputService.TouchEnabled
+local nativeFoundationCamera = workspace.CurrentCamera
+local function reportNativeFoundationReady()
+  local character = player.Character or player.CharacterAdded:Wait()
+  local humanoid = character:WaitForChild("Humanoid")
+  if nativeFoundationCamera and nativeFoundationCamera.CameraSubject == humanoid then
+    foundationRemote:FireServer("CAMERA_READY")
+  end
+  foundationRemote:FireServer(nativeTouchEnabled and "INPUT_READY_TOUCH" or "INPUT_READY")
+end
+task.defer(reportNativeFoundationReady)
+
+local gui = Instance.new("ScreenGui")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
+gui:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+gui:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
+gui:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+gui:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+gui:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+gui:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+gui:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+gui:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+gui:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+gui:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+gui:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
+
+gui.Name = "ApprovedScopeHud"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+local root = Instance.new("Frame")
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = root
+end
+
+root.Name = "Root"
+root.AnchorPoint = Vector2.new(0.5, 1)
+root.Position = UDim2.fromScale(0.5, 0.98)
+root.Size = UDim2.new(1, -24, 0, 360)
+root.BackgroundTransparency = 0.15
+local studioAssetFamilies = Config.StudioAssets and Config.StudioAssets.Families or {}
+local function studioAssetFamily(family)
+  local atoms = studioAssetFamilies[family]
+  return type(atoms) == "table" and atoms or {}
+end
+local function hasStudioAtom(familyOrAtom, atom)
+  local family = atom == nil and "UI" or familyOrAtom
+  local assetAtom = atom == nil and familyOrAtom or atom
+  return table.find(studioAssetFamily(family), assetAtom) ~= nil
+end
 local studioUi = STUDIO_ASSET_SELECTION.UI
 root.BackgroundColor3 = hasStudioAtom("UI", "FRAME_PANEL") and Color3.fromRGB(22, 34, 58) or Color3.fromRGB(18, 28, 48)
 root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
 root:SetAttribute("StudioAssetSelectionFingerprint", Config.StudioAssets and Config.StudioAssets.SelectionFingerprint or "")
-root:SetAttribute("StudioAssetAtoms", table.concat(studioUi, ","))
+root:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
 root.Parent = gui
 local title = Instance.new("TextLabel")
 title.Name = "Title"
@@ -178,7 +209,7 @@ local verifiedLearningContext = Config.VerifiedExternalLearning or Config.Learni
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = root
+local verifiedLearningRoot = gui
 local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
