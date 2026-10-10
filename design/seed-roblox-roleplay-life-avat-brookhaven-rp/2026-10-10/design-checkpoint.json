@@ -97,25 +97,33 @@
       },
       "playerFantasy": "플레이어는 실시간으로 증가하는 헤드로를 통한 생존을 수행하며, 적의 압박에 대응하여 다양한 전략과 장비를 선택하고, 이를 바탕으로 새로운 경로와 플레이스타일을 개발한다.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::f9eb26f8fe6c738e8daacae17053721965bc7a9a2ff99039b7fb80bb4bfda85c:coreLoop": {
+      "coreLoop": [
+        "Player chooses to fight through escalating horde with positioning around enemy pressure",
+        "Enemy Pressure increases, Build Strength strengthens, New Route/Playstyle emerges",
+        "Player selects upgrades, perks, weapons, or skills that change the current build",
+        "Build strengthens, Wave survived, Boss defeated, New progression choice is made"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 120883,
-      "lastMs": 120883,
+      "totalMs": 139585,
+      "lastMs": 18702,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:34:12.065Z"
+      "updatedAt": "2026-10-10T08:34:30.768Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:32:11.036Z",
-  "updatedAt": "2026-10-10T08:34:12.065Z",
+  "updatedAt": "2026-10-10T08:34:30.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1840,8 +1848,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:34:12.065Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:34:30.768Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
