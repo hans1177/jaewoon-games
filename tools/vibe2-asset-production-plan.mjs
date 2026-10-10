@@ -3563,7 +3563,7 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
 }
 
 function normalizeFlowAssetRequirements(requirements=[]){
-  return freezeList((Array.isArray(requirements)?requirements:[]).map(row=>freeze({
+  const normalized=(Array.isArray(requirements)?requirements:[]).map(row=>freeze({
     ...(row&&typeof row==='object'?row:{}),
     family:clean(row?.family).toUpperCase(),
     subfamily:clean(row?.subfamily).toUpperCase(),
@@ -3579,7 +3579,15 @@ function normalizeFlowAssetRequirements(requirements=[]){
     progressionAuthority:false,
     saveAuthority:false,
     networkingAuthority:false
-  })).filter(row=>row.family));
+  })).filter(row=>row.family&&row.subfamily);
+  const byRole=new Map();
+  for(const row of normalized){
+    const key=row.family+':'+row.subfamily;
+    const previous=byRole.get(key);
+    if(!previous){byRole.set(key,row);continue;}
+    if(!previous.required&&row.required)byRole.set(key,freeze({...previous,required:true}));
+  }
+  return freezeList([...byRole.values()]);
 }
 
 
@@ -3763,7 +3771,13 @@ export function buildVibeAssetProductionPlan({
   const targetResolution=resolveAssetProductionTarget({target,task,repoRoot});
   const resolvedTarget=targetResolution.target;
   const request=clean(task.goal||task.request||task.gameId||'game asset production');
-  const flowAssetRequirements=normalizeFlowAssetRequirements(task.assetRequirements);
+  // 설계/시드 단계에서 결정한 게임 도구 자산 역할을 기존 실행 라이브러리 해석기로 바로 전달한다.
+  // 명시된 게임 자산이 우선하며 중복/미검증 후보의 임의 승격은 허용하지 않는다.
+  const designRoles=task.flowArchitecture?.assetFlow?.requirements||task.designToolSync?.assetRequirements||[];
+  const flowAssetRequirements=normalizeFlowAssetRequirements([
+    ...(Array.isArray(task.assetRequirements)?task.assetRequirements:[]),
+    ...(Array.isArray(designRoles)?designRoles:[])
+  ]);
   const currentDemandFamilies=requiredAssetFamilies({request,requirements:flowAssetRequirements});
   const manifestBase=manifest||readJson(path.join(repoRoot,'assets','asset-manifest.json'),{version:0,assets:[]});
   const currentGameId=clean(task.gameId);
@@ -4497,7 +4511,7 @@ export function buildVibeAssetProductionPlan({
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
   const spatialFamilies=new Set(['ENVIRONMENT','BUILDING','PROP','CREATURE','CHARACTER','MATERIAL']);
-  const spatialDemand=(task.assetRequirements||[]).some(item=>spatialFamilies.has(clean(item?.family).toUpperCase()))
+  const spatialDemand=flowAssetRequirements.some(item=>spatialFamilies.has(clean(item?.family).toUpperCase()))
     ||/(?:WORLD|MAP|REGION|BIOME|TERRAIN|ENVIRONMENT|DUNGEON|VILLAGE|SETTLEMENT|CAVE|맵|지형|지역|배경|생태|마을|던전|건축|도시|호수|바다)/i.test(request);
   const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0&&spatialDemand
     ?{
