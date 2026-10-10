@@ -95,25 +95,117 @@
         "delveGrowthRule": "Player choices determine world state and subsequent gameplay options; reward system influences build progression and next playstyle.",
         "finalGameIdentity": "Real-time survival, player agency, immediate feedback: Player action directly affects world state and subsequent gameplay options. Reward system influences build progression and next playstyle."
       }
+    },
+    "local_authoring_parts::9fd8fc43119584443f7069c705b650d04170cd59bac3b572b847532b30374905:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간 모바일 플레이에서 단순한 입력/피드백 루프를 통해 좀비 아포칼립스 생존 게임을 숙련하며, 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+      "coreFun": "플레이어가 실시간 모바일 플레이 중에 주요 행동은 다음과 같다: 1) 적 대응 및 위치 조절 → 2) 업그레이드 선택 및 건축 결합 → 3) 새로운 전략 또는 경로 개발 → 4) 보상 수집 및 다음 선택 결정. 이 과정에서 플레이어는 지속적으로 성장하여 다양한 상황에서 즉각적인 결과와 피드백을 받으며 게임의 핵심 재미를 증대시킨다."
+    },
+    "local_authoring_parts::ea00b630cbee02a9b441c12869956d675053492d0a37cff54009ae526a79f569:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "좀비 생존기: 선택형 생존 게임, 실시간 모바일 플레이, 단순한 입력/피드백 루프",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival",
+          "material": "Build progression and upgrade selection",
+          "materialDomain": "Action & Strategy",
+          "stateChange": "Upgrade choice → Build combination → Wave survival"
+        },
+        "b": {
+          "system": "Reward System",
+          "material": "Run rewards and experience",
+          "materialDomain": "Experience & Progression",
+          "stateChange": "Rewards collection → Upgrade selection → Next build progression"
+        },
+        "abCausality": "Build progression is determined by the combination of upgrades and wave difficulty; reward system influences next playstyle and strategy choices.",
+        "abEvolution": {
+          "aChangesB": "Upgrades are selected based on current build strength and wave difficulty; rewards influence next playstyle and strategy.",
+          "bChangesA": "Rewards are collected and used to determine which upgrades to select; wave difficulty affects build progression.",
+          "lateGameChange": "Build progression becomes more complex as rewards increase and wave difficulty rises."
+        },
+        "materialFusion": {
+          "contrast": "Main identity: Real-time survival, player agency, immediate feedback",
+          "causalBridge": "Player action → World state change → Reward/pressure influence → Next playstyle",
+          "removalConsequence": "Player choice determines world state and subsequent gameplay options"
+        },
+        "storyCausalChain": {
+          "cause": "Player selects upgrades and strategies in real time",
+          "characterConflict": "Reward system dictates what builds are viable for future waves",
+          "playerChoice": "Upgrade selection impacts both current playstyle and next progression path",
+          "worldChange": "Wave difficulty and reward availability alter the game's perceived challenge and strategy landscape",
+          "nextEvent": "New build progression or enemy behavior is introduced based on player choices"
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Real-time combat, resource management"
+          },
+          {
+            "name": "Progression",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Build development, upgrade selection"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Action & Strategy",
+            "gameplayEffect": "Immediate feedback, player agency"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Experience & Progression",
+            "gameplayEffect": "Reward system influences build progression"
+          }
+        ],
+        "cGenreInterlock": "Primary genre: Real-time survival; secondary genre: Experience-driven progression. Player action directly affects world state and subsequent gameplay options.",
+        "cWorldAndGameplayEffect": "Player choice determines world state and subsequent gameplay options. Reward system influences build progression and next playstyle.",
+        "delveDiscoveries": [
+          {
+            "clue": "Upgrades are selected based on current build strength and wave difficulty",
+            "discovery": "Rewards influence next playstyle and strategy",
+            "newChoice": "New build progression or enemy behavior"
+          },
+          {
+            "clue": "Wave difficulty and reward availability alter the game's perceived challenge",
+            "discovery": "Player choice determines world state and subsequent gameplay options",
+            "newChoice": "New build progression or enemy behavior"
+          },
+          {
+            "clue": "Build progression becomes more complex as rewards increase and wave difficulty rises",
+            "discovery": "Reward system influences build progression and next playstyle",
+            "newChoice": "New build progression or enemy behavior"
+          },
+          {
+            "clue": "Player selection impacts both current playstyle and next progression path",
+            "discovery": "Reward system dictates what builds are viable for future waves",
+            "newChoice": "New build progression or enemy behavior"
+          }
+        ],
+        "delveGrowthRule": "Player choices determine world state and subsequent gameplay options; reward system influences build progression and next playstyle.",
+        "finalGameIdentity": "Real-time survival, player agency, immediate feedback: Player action directly affects world state and subsequent gameplay options. Reward system influences build progression and next playstyle."
+      },
+      "playerFantasy": "플레이어는 실시간 모바일 플레이에서 단순한 입력/피드백 루프를 통해 좀비 아포칼립스 생존 게임을 숙련하며, 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
+      "coreFun": "플레이어가 실시간 모바일 플레이 중에 주요 행동은 다음과 같다: 1) 적 대응 및 위치 조절 → 2) 업그레이드 선택 및 건축 결합 → 3) 새로운 전략 또는 경로 개발 → 4) 보상 수집 및 다음 선택 결정. 이 과정에서 플레이어는 지속적으로 성장하여 다양한 상황에서 즉각적인 결과와 피드백을 받으며 게임의 핵심 재미를 증대시킨다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 427291,
-      "lastMs": 127190,
+      "totalMs": 486304,
+      "lastMs": 59013,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:00:10.746Z"
+      "updatedAt": "2026-10-10T09:01:09.761Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:03.435Z",
-  "updatedAt": "2026-10-10T09:00:10.746Z",
+  "updatedAt": "2026-10-10T09:01:09.762Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1841,7 +1933,7 @@
   "localAuthoringSplits": {
     "9fd8fc43119584443f7069c705b650d04170cd59bac3b572b847532b30374905": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:00:10.746Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:01:09.762Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
