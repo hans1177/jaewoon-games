@@ -2077,3 +2077,59 @@ test('animal and insect visual knowledge is retrieved by matching graphics tasks
   }
 });
 
+
+test('official platform coding knowledge is scoped to Roblox, Unity Web and native Android',()=>{
+  const roblox=retrieveUnifiedLearning({task:{
+    target:'roblox',gameId:'demo',goal:'RemoteEvent purchase and DataStore save',
+    responsibleFiles:['roblox-games/demo/server/Main.server.luau']
+  }});
+  const robloxIds=roblox.officialGameCodingReferences.map(row=>row.id);
+  assert.ok(robloxIds.includes('roblox-luau-types'));
+  assert.ok(robloxIds.includes('roblox-remote-boundary'));
+  assert.ok(robloxIds.includes('roblox-datastore-lifecycle'));
+  assert.ok(!robloxIds.includes('roblox-profile-before-optimization'));
+  assert.ok(roblox.officialGameCodingReferences.every(row=>row.platform==='ROBLOX'));
+
+  const web=retrieveUnifiedLearning({task:{
+    target:'unity',gameId:'demo',goal:'Unity WebGL mobile browser loading and memory repair',
+    unityWebDevelopment:true
+  }});
+  const webIds=web.officialGameCodingReferences.map(row=>row.id);
+  assert.ok(webIds.includes('unity-web-mobile-delivery'));
+  assert.ok(webIds.includes('unity-web-memory'));
+  assert.ok(!webIds.some(id=>id.startsWith('unity-android-')));
+
+  const android=retrieveUnifiedLearning({task:{
+    target:'unity',gameId:'demo',goal:'Unity Android APK frame pacing thermal performance'
+  }});
+  const androidIds=android.officialGameCodingReferences.map(row=>row.id);
+  assert.ok(androidIds.includes('unity-android-device-performance'));
+  assert.ok(androidIds.includes('unity-android-thermal-frame-pacing'));
+  assert.ok(!androidIds.some(id=>id.startsWith('unity-web-')));
+
+  const browserOnAndroid=retrieveUnifiedLearning({task:{
+    target:'unity',goal:'Unity Android WebGL mobile browser memory repair'
+  }});
+  assert.ok(browserOnAndroid.officialGameCodingReferences.some(row=>row.platform==='UNITY_WEB'));
+  assert.ok(!browserOnAndroid.officialGameCodingReferences.some(row=>row.platform==='UNITY_ANDROID'));
+
+  const legacyWeb=retrieveUnifiedLearning({task:{target:'web',goal:'HTML Canvas touch button'}});
+  assert.deepEqual(legacyWeb.officialGameCodingReferences,[]);
+});
+
+test('official source advice stays advisory and cannot become verified learning or native QA evidence',()=>{
+  const context=retrieveUnifiedLearning({task:{target:'roblox',goal:'save restore inventory and remote validation'}});
+  assert.ok(context.officialGameCodingReferences.length>=2);
+  assert.deepEqual(context.exactKnowledgeIds,[]);
+  assert.ok(context.officialGameCodingReferences.every(row=>
+    row.advisoryOnly===true&&row.verifiedForProject===false
+    &&row.trainingSample===false&&row.productionPass===false
+    &&row.sourceWriteAuthorized===false&&row.authority==='OFFICIAL_PLATFORM_DOCUMENTATION_ADVISORY'
+    &&row.source.startsWith('https://create.roblox.com/')
+  ));
+  const guidance=learningGuidance(context);
+  assert.match(guidance,/official-coding-guidance=ADVISORY_ONLY_NOT_A_VERIFIED_SAMPLE/);
+  assert.match(guidance,/official-coding-reference=roblox-datastore-lifecycle/);
+  const runner=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
+  assert.match(runner,/const unifiedLearningGuidance = buildMotorGuidance\(unifiedLearning\)/);
+});
