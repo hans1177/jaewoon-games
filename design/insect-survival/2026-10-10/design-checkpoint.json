@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::60f3a02ce1cf1f216dd146fd01ef0f031195d60eefa49be46d483b2b6be5979c:identity,creativeGrammar": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+        "a": {
+          "system": "생존",
+          "material": "곤충 생태 및 먹이사슬의 선택과 위험",
+          "materialDomain": "생태학적 선택",
+          "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+        },
+        "b": {
+          "system": "제작",
+          "material": "재료 수집 및 전략 수립",
+          "materialDomain": "제작 기술",
+          "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+        },
+        "abCausality": "생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건",
+        "abEvolution": {
+          "aChangesB": "생태적 선택 변경 → 재료 수집 변경 → 전략 수립 변경",
+          "bChangesA": "재료 수집 변경 → 전략 수립 변경 → 세계 변화 변경",
+          "lateGameChange": "세계 변화 → 다음 사건 변화에 따른 관계 변화"
+        },
+        "materialFusion": {
+          "contrast": "생태적 선택 vs. 제작 기술의 상호작용을 통해 인과적으로 연결되는 플레이를 적고, 한쪽만 빼면 사라지는 조건을 만족시킨다.",
+          "causalBridge": "생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건",
+          "removalConsequence": "생태적 선택이 없으면 재료 수집 또는 전략 수립이 사라지며, 재료 수집이 없으면 전략 수립이 사라지고, 전략 수립이 없으면 세계 변화가 사라진다."
+        },
+        "storyCausalChain": {
+          "cause": "생태적 선택 및 재료 수집의 초기 상태",
+          "characterConflict": "전략 수립과 세계 변화의 갈등 발생 시 플레이어 선택",
+          "playerChoice": "세계 변화와 다음 사건의 결정 과정에서 실제 세계 상태 변화가 일어나는 구체적인 사례",
+          "worldChange": "플레이어 선택으로 인해 실제 세계 상태 변화가 일어나는 구체적인 사례",
+          "nextEvent": "플레이어 선택에 따른 새로운 사건 발생"
+        },
+        "cThemes": [
+          {
+            "name": "생태학적 선택",
+            "kind": "GENRE",
+            "gameplayEffect": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+          },
+          {
+            "name": "제작 기술",
+            "kind": "GENRE",
+            "gameplayEffect": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "제작",
+            "gameplayEffect": "재료 수집 → 전략 수립 → 세계 변화 → 다음 사건"
+          }
+        ],
+        "cGenreInterlock": "생태적 선택과 제작 기술의 상호작용이 플레이어 선택을 통해 세계 변화를 유도하며, 보조 장르 제거 시 플레이 방식이 바뀌며, @의 발견 및 숙련은 게임 정체성으로 완전히 결정된다.",
+        "cWorldAndGameplayEffect": "생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건",
+        "delveDiscoveries": [
+          {
+            "clue": "생태적 선택의 초기 상태",
+            "discovery": "재료 수집 및 전략 수립의 구체적인 사례",
+            "newChoice": "세계 변화와 다음 사건의 결정 과정에서 실제 세계 상태 변화가 일어나는 구체적인 사례"
+          },
+          {
+            "clue": "재료 수집의 초기 상태",
+            "discovery": "전략 수립 및 세계 변화의 구체적인 사례",
+            "newChoice": "플레이어 선택에 따른 새로운 사건 발생"
+          },
+          {
+            "clue": "전략 수립의 초기 상태",
+            "discovery": "세계 변화와 다음 사건의 구체적인 사례",
+            "newChoice": "플레이어 선택에 따른 새로운 사건 발생"
+          },
+          {
+            "clue": "세계 변화의 초기 상태",
+            "discovery": "플레이어 선택과 다음 사건의 구체적인 사례",
+            "newChoice": "플레이어 선택에 따른 새로운 사건 발생"
+          }
+        ],
+        "delveGrowthRule": "각 단서마다 4개 이상의 초기 사례를 제공하며, 무한 발전 규칙을 따르며, 발견 후 다음 질문으로 이어지게 한다.",
+        "finalGameIdentity": "생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건"
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300101,
-      "lastMs": 300101,
+      "totalMs": 513155,
+      "lastMs": 213054,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:46:44.332Z"
+      "updatedAt": "2026-10-10T01:50:17.388Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:41:44.101Z",
-  "updatedAt": "2026-10-10T01:46:44.332Z",
+  "updatedAt": "2026-10-10T01:50:17.388Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1701,5 +1788,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "60f3a02ce1cf1f216dd146fd01ef0f031195d60eefa49be46d483b2b6be5979c": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T01:50:17.388Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
