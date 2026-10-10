@@ -1551,3 +1551,49 @@ test('novel grammar dilution explicitly reopens creativeGrammar while unrelated 
   const ordinary=Array.from(repair({rejectionReasons:[{code:'CORE_FUN_WEAK',axis:'IDEA_AND_DISTINCTNESS'}],criticalAxisFailures:[]}));
   assert.deepEqual(ordinary,['identity','coreFun']);
 });
+
+test('V5 canonical state handoff reuses authored interfaces when focused model cannot echo keys',async()=>{
+  const authorSource=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const roles=['MAIN','A','B','DELVE'],checkpoint={tasks:{}},calls=[];
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
+    purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
+    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
+  const logs=[];
+  const author=runInNewContext(taskSource+'\n'+authorSource+'\ncallLocalDesignerModel',{
+    seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{},localDesignerFallbackReady:true,
+    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    gameId:'original-handoff',game:{name:'원본 상태 연결'},
+    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'원본 선택과 상태 흐름',CORE_LOOP:['탐험','대응','회복'],OWNER_LATEST_DESIGN_REQUEST:'원본 게임 규칙 유지'},
+    clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
+    console:{log:line=>logs.push(line)},clean:v=>String(v??'').trim(),
+    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
+    recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(_,{schema:contract})=>{
+      const role=contract.properties.grammarRole?.enum?.[0];
+      calls.push(role||'FOCUSED');
+      if(!role)throw new Error('SIMULATED_MODEL_STATE_SELECTION_FAILURE');
+      return JSON.stringify({grammarRole:role,id:role.toLowerCase()+'_unique_rule',
+        name:role+' 고유 규칙',purpose:role+' 원본의 다른 상태를 변형하는 실제 선택 규칙',
+        playerChoice:role+' 역할의 위험과 기회를 판단하고 선택한다',
+        stateInputs:[role==='MAIN'?'WorldState':role+'UniqueInput'],
+        stateOutputs:[role==='MAIN'?'RiskState':role+'UniqueOutput']});
+    }
+  });
+  const output=await author('designer','original system rules',schema,{predict:900,includeAssetContext:false});
+  const rows=JSON.parse(JSON.stringify(output.signatureSystems));
+  assert.deepEqual(calls,['MAIN','A','FOCUSED','B','FOCUSED','DELVE','FOCUSED']);
+  assert.equal(rows.length,4);
+  for(let i=1;i<rows.length;i++){
+    assert.ok(rows[i].stateInputs.includes(rows[i-1].stateOutputs[0]));
+    assert.ok(rows[i].stateOutputs.includes(rows[i-1].stateInputs[0]));
+    assert.ok(rows[i].stateInputs.includes(rows[i].grammarRole+'UniqueInput'));
+    assert.ok(rows[i].stateOutputs.includes(rows[i].grammarRole+'UniqueOutput'));
+  }
+  assert.ok(logs.filter(s=>s.includes('DESIGN_GRAMMAR_STATE_HANDOFF_ORIGINAL_KEYS_BOUND=')).length===3);
+  assert.equal(Object.keys(checkpoint.tasks).length,4);
+});
