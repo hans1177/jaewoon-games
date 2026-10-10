@@ -532,25 +532,32 @@
       },
       "playerFantasy": "진보형 플레이어는 선택의 결과와 세계 상태 변화에 따라 전투 행위를 유도하며, 숙련도와 세계 규칙 변화에 따른 새로운 사건을 생성하여 게임을 진화시키는 역할을 수행합니다.",
       "coreFun": "{\"function\": \"선택의 결과 ↔ 세계 상태 변화 ↔ 보상/위험/다음 선택\"}\n{\"input\": \"플레이어 선택\", \"output\": \"세계 상태 변화\", \"causalBridge\": \"플레이어 숙련도 ↔ 세계 규칙 변화\"}\n{\"growth\": \"선택의 결과 ↔ 세계 상태 변화 ↔ 보상/위험/다음 선택\"}\""
+    },
+    "local_authoring_parts::06c2419ac3be06c22513d58d3baf50faa6ce57962b2bbacc91f413edf14eba30:coreLoop": {
+      "coreLoop": [
+        "{\"input\": \"플레이어 선택\", \"output\": \"세계 상태 변화\", \"causalBridge\": \"플레이어 숙련도 ↔ 세계 규칙 변화\"}",
+        "{\"growth\": \"선택의 결과 ↔ 세계 상태 변화 ↔ 보상/위험/다음 선택\"}",
+        "{\"interaction\": \"플레이어 선택 → 상태 변화 → 보상/위험/다음 선택\"}"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1372749,
-      "lastMs": 73609,
+      "totalMs": 1436005,
+      "lastMs": 63256,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:15:40.352Z"
+      "updatedAt": "2026-10-10T10:16:43.613Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:52:47.341Z",
-  "updatedAt": "2026-10-10T10:15:40.353Z",
+  "updatedAt": "2026-10-10T10:16:43.625Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2432,8 +2439,8 @@
     "23e62934c0e5fc6c39cada1acc104f73f612d2c98b5bf7aa7d5bba77def79d04": true,
     "af1b550662366c367bd39b498dc60d8221b8fa70e6e6f2a0bc20eb49a94d8a02": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:15:40.353Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:16:43.613Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
