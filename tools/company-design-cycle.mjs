@@ -736,7 +736,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
   const merged={...currentDesign};
   // 고정 입력을 앞에 유지해 다음 요청에서도 같은 접두부를 재사용한다.
   // 오너 원본 모드의 호환용 자동 스케치는 설계 원본 입력이 아니다.
-  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n설계 원본은 게임당 하나다. MAIN/A/B/C/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
+  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n기본설계 문법=MAIN × A × B × C + @. MAIN은 누가 무엇을 반복하는 게임인지 정한다. A와 B는 각각 서로 다른 게임 시스템과 구체적 창작 소재(신화·역사·철학·과학·예술 등 제한 없음)를 결합한다. 자원수집·이동·전투처럼 시스템 동작 자체를 창작 소재라고 쓰지 않는다. A의 선택→B의 상태 변화→다음 A의 새로운 선택을 실제 원인·상태 키로 연결한다. C는 창작 소재 2개와 서로 다른 메인/보조 장르 2개를 융합하고, 보조 장르를 제거하면 플레이 규칙·위험·정보·선택이 바뀌어야 한다. @는 초기 발견 4개 이상(단서→실험→새 선택), 상한 없이 확장하되 단순 수치 강화와 기능 나열은 제외한다. 세계·스토리는 원인→인물 갈등→플레이어 선택→상태 변화→다음 사건으로 생성한다. A/B/C 제거 전후 플레이 차이를 설명한다. 기존 소스·저장·밸런스는 변경하지 말고 검증 전 설계를 통과라고 주장하지 않는다. 설계 원본은 게임당 하나다. MAIN/A/B/C/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
   for(const slice of DESIGN_AUTHORING_SLICES){
     // 웹 호환 뷰와 플랫폼 적용 정책은 마지막에 같은 원본에서 투영한다.
     if(slice.derived)continue;
@@ -1430,17 +1430,18 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/C/@ 역할별 원본 설계 검사
           // 메인: 작은 모델에는 원본 게임 규칙과 역할의 차이만 전달하고 중복 지시를 줄인다.
           // 게임의 숫자·저장 의미는 유지하며 규칙 내용은 모델이 직접 작성한다.
+          const roleMaterial=grammarRole==='A'?grammarContext?.a:grammarRole==='B'?grammarContext?.b
+            :grammarRole==='DELVE'?grammarContext?.delveDiscoveries?.slice(0,4)
+            :grammarRole==='MAIN'?grammarContext?.mainIdentity:null;
+          // 같은 게임의 오픈소스 로컬 디자이너가 쓴 A/B 소재를 그대로 이어받아 각 역할의 실제 선택을 구분한다.
           const roleObjective={
-            MAIN:'플레이어의 대표 행동과 그 행동이 바꾸는 관찰 가능한 세계 상태',
-            A:'MAIN의 결과로 가능해지는 첫 번째 고유 전술과 선택 비용',
-            B:'A의 결과를 바꾸고 A에 다시 영향을 주는 별개 전술과 대응',
-            c:'기존 선택의 조건을 바꾸는 장르·소재의 인과적 변주',
-            DELVE:'앞 규칙의 결과에서 발견하는 숨은 정보와 새 대응법'
+            MAIN:'MAIN의 게임 주제·플레이어 정체성과 대표 행동이 바꾸는 관찰 가능한 세계 상태',
+            A:`A 시스템=${clean(roleMaterial?.system)}; 고유 창작 소재=${clean(roleMaterial?.material)}; 다른 역할과 다른 시스템 선택·비용 및 B의 다음 상태 변화`,
+            B:`B 시스템=${clean(roleMaterial?.system)}; 고유 창작 소재=${clean(roleMaterial?.material)}; A의 이전 결과를 받아 다른 대응을 만들고 B의 결과가 A의 다음 결정을 바꿈`,
+            c:'C의 소재 두 개 및 서로 다른 메인·보조 장르가 실제 위험과 선택을 바꾸는 변주',
+            DELVE:'MAIN/A/B/C 중 두 개 이상을 결합해 단서·실험·숙련으로 여는 숨은 선택'
           }[grammarRole]||'현재 규칙의 독립적인 플레이 역할';
-           const roleMaterial=grammarRole==='A'?grammarContext?.a:grammarRole==='B'?grammarContext?.b
-             :grammarRole==='DELVE'?grammarContext?.delveDiscoveries?.slice(0,4)
-             :grammarRole==='MAIN'?grammarContext?.mainIdentity:null;
-           const roleContext=grammarRole?`GAME_ID=${gameId}\nGAME_NAME=${game.name}\nGENRE=${clean(seed.GAME_CATEGORY)}\nOWNER_IDENTITY=${clip(seed.DISTINCT_IDENTITY,850)}\nOWNER_CORE_LOOP=${clip(seed.CORE_LOOP,1350)}\nOWNER_LOCKED_REQUEST=${clip(seed.OWNER_LATEST_DESIGN_REQUEST,1200)}\nORIGINAL_RULES=${clip(seed.originalDesignContext?.content?.signatureSystems||[],1250)}\nCURRENT_ROLE_GOAL=${roleObjective}\nAUTHORED_GRAMMAR_ROLE_MATERIAL=${clip(roleMaterial||'NOT_YET_AUTHORED',1000)}\nAUTHORED_GRAMMAR_C_GENRE_INTERLOCK=${clip(grammarContext?.cGenreInterlock||'',380)}\nAUTHORED_GRAMMAR_A_B_CAUSALITY=${clip(grammarContext?.abCausality||'',450)}\n이 게임에서 확정한 MAIN/A/B/C/@의 소재와 인과를 현재 규칙의 실제 선택·상태 연결에 반영한다. 앞선 역할의 선택·목적을 복제하지 않고 원본 규칙·수치와 저장 의미를 보존한다.`:user;
+           const roleContext=grammarRole?`GAME_ID=${gameId}\nGAME_NAME=${game.name}\nGENRE=${clean(seed.GAME_CATEGORY)}\nOWNER_IDENTITY=${clip(seed.DISTINCT_IDENTITY,850)}\nOWNER_CORE_LOOP=${clip(seed.CORE_LOOP,1350)}\nOWNER_LOCKED_REQUEST=${clip(seed.OWNER_LATEST_DESIGN_REQUEST,1200)}\nORIGINAL_RULES=${clip(seed.originalDesignContext?.content?.signatureSystems||[],1250)}\nCURRENT_ROLE_GOAL=${roleObjective}\nAUTHORED_GRAMMAR_ROLE_MATERIAL=${clip(roleMaterial||'NOT_YET_AUTHORED',1000)}\nAUTHORED_GRAMMAR_C_GENRE_INTERLOCK=${clip(grammarContext?.cGenreInterlock||'',380)}\nAUTHORED_GRAMMAR_A_B_CAUSALITY=${clip(grammarContext?.abCausality||'',450)}\n이 게임에서 확정한 MAIN/A/B/C/@의 소재와 인과를 현재 규칙의 실제 선택·상태 연결에 반영한다. MAIN은 전체 목적, A는 첫 시스템×창작 소재, B는 둘째 시스템×별도 소재, DELVE는 숨은 사용법이다. 역할의 명칭뿐 아니라 목적과 플레이어 선택도 서로 달라야 한다. 일반적인 선택·상태변화 설명을 재사용하지 말고 현재 역할의 고유 행동→세계 반응을 구체적으로 작성한다. 앞선 역할의 선택·목적을 복제하지 않고 원본 규칙·수치와 저장 의미를 보존한다.`:user;
           const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
           // 메인: 직전 디자이너가 실제 작성한 상태 입출력만 다음 역할의 연결 근거로 사용한다.
           const previousRule=grammarRole?rows.at(-1):null;
@@ -1548,7 +1549,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
                 'GAME='+game.name+';ROLE='+grammarRole+
                 '\nROLE_MATERIAL='+clip(roleMaterial||'',500)+
                 '\nALREADY_AUTHORED='+clip(rows.map(row=>({name:row.name,purpose:row.purpose,playerChoice:row.playerChoice})),900)+
-                '\n이 역할의 창작 소재와 실제 행동을 다른 역할과 겹치지 않게 작성한다. 상태 키·기존 수치·저장 규칙은 바꾸지 않는다.',
+                '\n이번 역할의 고유 시스템과 소재에서 발생하는 독립적인 플레이어 행동, 위험·비용, 다음 상태 변화를 명시하라. 이미 작성한 다른 역할의 이름·목적·선택 세 가지 중 어느 것도 그대로 복사하지 마라. 단순히 A/B나 이름만 바꾼 문장도 무효다. 상태 키·기존 수치·저장 규칙은 바꾸지 않는다.',
                 contentSchema,{predict:1300,temperature:0.2,numCtx:4096,includeAssetContext:false,grammarContext});
               if(fields.every(key=>clean(rewrite?.[key]))&&!rows.some(row=>fields.filter(key=>clean(rewrite[key])===clean(row[key])).length>=2)){
                 for(const key of fields)value[key]=rewrite[key];
