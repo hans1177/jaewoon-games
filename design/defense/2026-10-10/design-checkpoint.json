@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 게임 시작 단계부터 다음 전략, 경로, 성장 가능성의 실제 차이를 반복적으로 경험하게 되며, 이는 전략적 선택과 위험/보상의 연계가 깊이 있게 연결되어야 한다.",
       "coreFun": "{\"function\": \"플레이어의 선택 → 상태 변화 → 보상/위험/다음 선택\"}\n{\"causalBridge\": \"게임 구조의 상태 변화가 플레이어의 선택에 반복적으로 영향을 주며, 이는 전략적 선택과 경로 확장에 기여함\"}\n{\"removalConsequence\": \"게임 구조의 상태 변화가 플레이어의 선택에 의해 결정되므로, 이는 전략적 선택의 결과로서 숙련과 성장을 유도하는 중요한 요소이다\"}"
+    },
+    "local_authoring_parts::8f896154fdc918e289b674398b221033eeda3de9a2559de69ee83632ecd627b3:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어의 선택",
+        " 상태변화: 전략적 선택 → 경로 확장 → 위험/보상",
+        " 보상: 새로운 경로 확장 또는 위험/보상, 다음 선택"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1329236,
-      "lastMs": 107088,
+      "totalMs": 1410020,
+      "lastMs": 80784,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:15:30.541Z"
+      "updatedAt": "2026-10-10T09:16:51.331Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:21.265Z",
-  "updatedAt": "2026-10-10T09:15:30.545Z",
+  "updatedAt": "2026-10-10T09:16:51.342Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2275,8 +2282,8 @@
     "04f5edf75ead7d3110525be2e7e6c1d0a3d036c44cfbbf8554e6caf3cdbe628e": true,
     "fda8783284de4e16ace5e2d1d5884e6fe4675651411f3c6214dab441c9f34fe5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:15:30.545Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:16:51.331Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
