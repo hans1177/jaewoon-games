@@ -441,7 +441,9 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
   const start=nativeSource.indexOf('function computeVibeNativeDesign(){');
   const end=nativeSource.indexOf('let cachedVibeNativeDesign=',start);
   assert.ok(start>0&&end>start,'the canonical native design authoring function must exist');
-  assert.doesNotMatch(nativeSource,/127\\.0\\.0\\.1:11434|async function requestLocalDesignerRaw|callLocalDesignerModel\\(/);
+  assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
+  assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
+  assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
   for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE']){
     const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
     const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
@@ -459,7 +461,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
     };
     const design=runInNewContext(
-      nativeSource.slice(start,end)+'\\ncomputeVibeNativeDesign()',
+      nativeSource.slice(start,end)+String.fromCharCode(10)+'computeVibeNativeDesign()',
       {
         seed,gameId:'native-qa',game:{name:proposal.gameName},
         seedState:{seedMaterials:target.materials},
@@ -471,7 +473,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         designAssetFamilies:[],designAssetLibrary:null,
         seedFlowSystemBlueprint:{},factPack:{},fs,
         computeVibeSeedProposal,repairDesignRequiredFields,
-        clean:value=>String(value??'').replace(/\\s+/g,' ').trim()
+        clean:value=>String(value??'').trim()
       }
     );
     const feedback=validateDesignAuthoringContent({
