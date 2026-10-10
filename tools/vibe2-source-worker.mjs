@@ -601,6 +601,13 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             ||cinematic.productionVerified!==false||cinematic.nativeRuntimeVerified!==false
             ||storyboard.gameplayMutationAllowed!==false||storyboard.nativeRuntimeVerified!==false
             ||!Array.isArray(storyboard.shots)||storyboard.shots.length!==4
+            ||storyboard.presentationAnimation?.type!=='ROOT_SWAY_AND_MICRO_LIFT'
+            ||storyboard.presentationAnimation?.sourceMeshUnchanged!==true
+            ||!Array.isArray(storyboard.presentationAnimation?.keyframes)
+            ||storyboard.presentationAnimation.keyframes.length!==4
+            ||storyboard.presentationAnimation.keyframes.some(row=>
+              !Number.isInteger(row.frame)||!Number.isFinite(row.yawRadians)||!Number.isFinite(row.liftMeters)
+              ||Math.abs(row.yawRadians)>0.1||row.liftMeters<0||row.liftMeters>0.05)
             ||!Number.isInteger(storyboard.frameCount)||storyboard.frameCount<24||storyboard.frameCount>72
             ||![12,24].includes(storyboard.fps)||![640,960].includes(storyboard.resolution?.width)
             ||storyboard.resolution?.height!==storyboard.resolution.width*9/16
