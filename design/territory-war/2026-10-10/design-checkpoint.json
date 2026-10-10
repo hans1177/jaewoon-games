@@ -9,12 +9,203 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a:identity,creativeGrammar": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
+        "a": {
+          "system": "지역 관리",
+          "material": "지역 경계 힘, 자원 배분 방식, 전선 변화 대응 전략",
+          "materialDomain": "전략적 자원 배분",
+          "stateChange": "지역 경계 강도 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행"
+        },
+        "b": {
+          "system": "군사 전술",
+          "material": "전선 변화 전략, 자원 분배 계획, 군대 구성",
+          "materialDomain": "전략적 군사 구조",
+          "stateChange": "전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화"
+        },
+        "abCausality": "주요 지역과 군사 전술의 상태 교환, 자원 배분 방식과 전략적 군사 구조의 상호작용 변화",
+        "abEvolution": {
+          "aChangesB": "주요 지역 전략을 바탕으로 군사 전술 재설계, 자원 배분 방식에 따른 군대 구성 조정",
+          "bChangesA": "전선 변화 전략을 기반으로 자원 배분 방식 개선, 군사 전술에 따라 군대 구성 재구성",
+          "lateGameChange": "주요 지역 전략 및 군사 전술의 상호 작용 변화, 자원 배분 방식과 군사 구조의 복합적 관계 형성"
+        },
+        "materialFusion": {
+          "contrast": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
+          "causalBridge": "지역 경계 힘 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행; 전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화",
+          "removalConsequence": "지역 경계 힘 감소 시 자원 배분 방식 반복, 군사 전술 강도 하락 시 자원 분배 계획 무효화"
+        },
+        "storyCausalChain": {
+          "cause": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
+          "characterConflict": "군사 전술 제안자와 지리학자 갈등, 자원 배분 계획에 대한 논쟁",
+          "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립",
+          "worldChange": "지역 경계 힘 재설정, 자원 배분 방식 개선, 전선 변화 전략 실행",
+          "nextEvent": "전선 변화 대응 전략 실행, 자원 배분 계획 확정, 주요 지역 전략 구체화"
+        },
+        "cThemes": [
+          {
+            "name": "지역 경계 힘",
+            "kind": "GENRE",
+            "gameplayEffect": "전선 변화 대응 전략 실행, 자원 배분 방식 변경"
+          },
+          {
+            "name": "군사 전술",
+            "kind": "GENRE",
+            "gameplayEffect": "자원 배분 계획 수정, 군대 구성 최종화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "지역 관리 시스템",
+            "gameplayEffect": "지역 경계 강도 증가, 자원 배분 방식 변경"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "군사 전술 시스템",
+            "gameplayEffect": "전선 변화 전략 적용, 자원 분배 계획 수정"
+          }
+        ],
+        "cGenreInterlock": "지역 관리 시스템과 군사 전술 시스템의 상호 작용이 전선 변화 대응 전략에 영향을 미치며, 굳은 보조 장르 제거 시 플레이어 선택에 새로운 가능성이 생긴다.",
+        "cWorldAndGameplayEffect": "지역 경계 힘과 군사 전술의 상태 교환으로 전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조의 복합적 관계 형성",
+        "delveDiscoveries": [
+          {
+            "clue": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
+            "discovery": "주요 지역 전략 결정, 자원 분배 계획 확정, 전선 변화 전략 실행",
+            "newChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
+          },
+          {
+            "clue": "군사 전술 강도 하락, 자원 배분 방식 무효화",
+            "discovery": "전선 변화 전략 실행, 자원 분배 계획 수정, 군대 구성 최종화",
+            "newChoice": "전선 변화 전략 적용, 자원 분배 계획 재설계, 군사 전술 재구성"
+          },
+          {
+            "clue": "지역 경계 힘 증가, 자원 배분 방식 변경",
+            "discovery": "전선 변화 대응 전략 실행, 자원 분배 계획 확정",
+            "newChoice": "전선 변화 대응 전략 결정, 자원 분배 계획 구체화, 주요 지역 전략 수립"
+          },
+          {
+            "clue": "군사 전술 제안자와 지리학자의 갈등",
+            "discovery": "자원 분배 계획 수정, 군대 구성 최종화",
+            "newChoice": "자원 분배 계획 재설계, 군사 전술 재구성, 주요 지역 전략 결정"
+          }
+        ],
+        "delveGrowthRule": "주요 지역 전략 선택 -> 자원 분배 계획 결정 -> 전선 변화 전략 실행; 전선 변화 전략 수립 -> 자원 분배 계획 수정 -> 군대 구성 최终化; 주요 지역 전략 결정 -> 자원 분배 계획 구체화 -> 전선 변화 대응 전략 실행",
+        "finalGameIdentity": "지역 경계 힘과 군사 전술의 상호 작용을 바탕으로 한 새 정체성, 자원 배분 방식과 군사 구조의 복합적 관계를 반영한 게임 전체"
+      }
+    },
+    "local_authoring_parts::039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a:playerFantasy,coreFun": {
+      "playerFantasy": "주요 지역 전략 선택 시, 지역 경계 힘과 군사 전술의 상호작용을 통해 자원 배분 방식을 결정하며, 전선 변화 대응 전략에 따라 실제 세계 상태가 변하게 된다.",
+      "coreFun": "{\"required\": true, \"infection\": false, \"phases\": [\"OPENING\", \"DEVELOPMENT\", \"RESOLUTION\"], \"lockedNumbers\": {}, \"abilityFacts\": [], \"humanRoster\": [], \"monsterRoster\": []}"
+    },
+    "local_authoring_parts::8c1faff4313e9e755c4c0f6ebfdecdb1cf265f3b029f676f38d792adfacbe3ba:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
+        "a": {
+          "system": "지역 관리",
+          "material": "지역 경계 힘, 자원 배분 방식, 전선 변화 대응 전략",
+          "materialDomain": "전략적 자원 배분",
+          "stateChange": "지역 경계 강도 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행"
+        },
+        "b": {
+          "system": "군사 전술",
+          "material": "전선 변화 전략, 자원 분배 계획, 군대 구성",
+          "materialDomain": "전략적 군사 구조",
+          "stateChange": "전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화"
+        },
+        "abCausality": "주요 지역과 군사 전술의 상태 교환, 자원 배분 방식과 전략적 군사 구조의 상호작용 변화",
+        "abEvolution": {
+          "aChangesB": "주요 지역 전략을 바탕으로 군사 전술 재설계, 자원 배분 방식에 따른 군대 구성 조정",
+          "bChangesA": "전선 변화 전략을 기반으로 자원 배분 방식 개선, 군사 전술에 따라 군대 구성 재구성",
+          "lateGameChange": "주요 지역 전략 및 군사 전술의 상호 작용 변화, 자원 배분 방식과 군사 구조의 복합적 관계 형성"
+        },
+        "materialFusion": {
+          "contrast": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
+          "causalBridge": "지역 경계 힘 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행; 전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화",
+          "removalConsequence": "지역 경계 힘 감소 시 자원 배분 방식 반복, 군사 전술 강도 하락 시 자원 분배 계획 무효화"
+        },
+        "storyCausalChain": {
+          "cause": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
+          "characterConflict": "군사 전술 제안자와 지리학자 갈등, 자원 배분 계획에 대한 논쟁",
+          "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립",
+          "worldChange": "지역 경계 힘 재설정, 자원 배분 방식 개선, 전선 변화 전략 실행",
+          "nextEvent": "전선 변화 대응 전략 실행, 자원 배분 계획 확정, 주요 지역 전략 구체화"
+        },
+        "cThemes": [
+          {
+            "name": "지역 경계 힘",
+            "kind": "GENRE",
+            "gameplayEffect": "전선 변화 대응 전략 실행, 자원 배분 방식 변경"
+          },
+          {
+            "name": "군사 전술",
+            "kind": "GENRE",
+            "gameplayEffect": "자원 배분 계획 수정, 군대 구성 최종화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "지역 관리 시스템",
+            "gameplayEffect": "지역 경계 강도 증가, 자원 배분 방식 변경"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "군사 전술 시스템",
+            "gameplayEffect": "전선 변화 전략 적용, 자원 분배 계획 수정"
+          }
+        ],
+        "cGenreInterlock": "지역 관리 시스템과 군사 전술 시스템의 상호 작용이 전선 변화 대응 전략에 영향을 미치며, 굳은 보조 장르 제거 시 플레이어 선택에 새로운 가능성이 생긴다.",
+        "cWorldAndGameplayEffect": "지역 경계 힘과 군사 전술의 상태 교환으로 전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조의 복합적 관계 형성",
+        "delveDiscoveries": [
+          {
+            "clue": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
+            "discovery": "주요 지역 전략 결정, 자원 분배 계획 확정, 전선 변화 전략 실행",
+            "newChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
+          },
+          {
+            "clue": "군사 전술 강도 하락, 자원 배분 방식 무효화",
+            "discovery": "전선 변화 전략 실행, 자원 분배 계획 수정, 군대 구성 최종화",
+            "newChoice": "전선 변화 전략 적용, 자원 분배 계획 재설계, 군사 전술 재구성"
+          },
+          {
+            "clue": "지역 경계 힘 증가, 자원 배분 방식 변경",
+            "discovery": "전선 변화 대응 전략 실행, 자원 분배 계획 확정",
+            "newChoice": "전선 변화 대응 전략 결정, 자원 분배 계획 구체화, 주요 지역 전략 수립"
+          },
+          {
+            "clue": "군사 전술 제안자와 지리학자의 갈등",
+            "discovery": "자원 분배 계획 수정, 군대 구성 최종화",
+            "newChoice": "자원 분배 계획 재설계, 군사 전술 재구성, 주요 지역 전략 결정"
+          }
+        ],
+        "delveGrowthRule": "주요 지역 전략 선택 -> 자원 분배 계획 결정 -> 전선 변화 전략 실행; 전선 변화 전략 수립 -> 자원 분배 계획 수정 -> 군대 구성 최终化; 주요 지역 전략 결정 -> 자원 분배 계획 구체화 -> 전선 변화 대응 전략 실행",
+        "finalGameIdentity": "지역 경계 힘과 군사 전술의 상호 작용을 바탕으로 한 새 정체성, 자원 배분 방식과 군사 구조의 복합적 관계를 반영한 게임 전체"
+      },
+      "playerFantasy": "주요 지역 전략 선택 시, 지역 경계 힘과 군사 전술의 상호작용을 통해 자원 배분 방식을 결정하며, 전선 변화 대응 전략에 따라 실제 세계 상태가 변하게 된다.",
+      "coreFun": "{\"required\": true, \"infection\": false, \"phases\": [\"OPENING\", \"DEVELOPMENT\", \"RESOLUTION\"], \"lockedNumbers\": {}, \"abilityFacts\": [], \"humanRoster\": [], \"monsterRoster\": []}"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 3,
+      "successes": 2,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 611624,
+      "lastMs": 99751,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T06:26:45.047Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:33.400Z",
-  "updatedAt": "2026-10-10T06:16:33.415Z",
+  "updatedAt": "2026-10-10T06:26:45.049Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1550,5 +1741,16 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "localAuthoringSplits": {
+    "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T06:26:45.049Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
