@@ -41,6 +41,13 @@ export const AWARD_CALIBER_SYSTEM_PRINCIPLES=Object.freeze([
 
 const SYSTEM_CATALOG=Object.freeze({
   SURVIVAL_VITALS:Object.freeze({owners:['PLAYER','CORE_STATE'],libraries:[],purpose:'bounded health hunger energy temperature or equivalent survival pressure when concept-relevant'}),
+  STATUS_HUD:Object.freeze({owners:['PRESENTATION','PLAYER','INPUT'],libraries:['assets/vibe-presentation-director.js'],purpose:'live health stats effects resources and navigation reflect existing authoritative game snapshots without owning game state'}),
+  SETTINGS_ACCESSIBILITY:Object.freeze({owners:['PRESENTATION','INPUT','SAVE'],libraries:['assets/vibe-presentation-director.js'],purpose:'device input focus readable scaling contrast reduced motion audio and existing preference persistence without changing saved gameplay rules'}),
+  PLAYER_TRADE_ESCROW:Object.freeze({owners:['ECONOMY','SAVE','MULTIPLAYER'],libraries:['assets/inventory-equipment.js','assets/economy-loot-shop.js'],purpose:'two-sided peer exchange uses server-authoritative offer locks revision checks two-party confirmation atomic settlement expiry and anti-duplication'}),
+  SKILL_TREE:Object.freeze({owners:['PROGRESSION','COMBAT','SAVE'],libraries:['assets/skill-effects.js'],purpose:'internal active passive mastery and external profession companion faction environment branches expose prerequisite DAG and server-authoritative unlock rules'}),
+  JOURNAL_CHRONICLE:Object.freeze({owners:['NARRATIVE','SAVE','PRESENTATION'],libraries:['assets/quest-dialogue.js'],purpose:'ordered journal entries derive only from verified quest exploration encounter and narrative event facts; event-id dedupe and provenance protect persistence'}),
+  WORLD_EVENT_DIRECTOR:Object.freeze({owners:['WORLD','AI','NARRATIVE','PROGRESSION'],libraries:['assets/common-ai.js','assets/quest-dialogue.js'],purpose:'state-machine scheduled events and biomes NPCs creatures quests scenes share one causal world event with bounds cooldowns and game-owned rewards'}),
+  CINEMATIC_PRESENTATION:Object.freeze({owners:['PRESENTATION','CAMERA','AUDIO'],libraries:['assets/vibe-presentation-director.js'],purpose:'event intro discovery boss and ending camera audio UI presentation replay without changing game rule outcome or blocking player control'}),
   GATHERING_RESOURCE:Object.freeze({owners:['WORLD','INTERACTION','ECONOMY'],libraries:['assets/inventory-equipment.js'],purpose:'world resources become real inventory inputs through spatial interaction'}),
   INVENTORY_EQUIPMENT:Object.freeze({owners:['PLAYER','ECONOMY','SAVE'],libraries:['assets/inventory-equipment.js'],purpose:'acquire compare equip replace and persist items without shadow inventory authority'}),
   ITEM_LOOT:Object.freeze({owners:['ECONOMY','PROGRESSION'],libraries:['assets/economy-loot-shop.js','assets/inventory-equipment.js'],purpose:'drops and rewards have source tables rarity roles and meaningful use'}),
@@ -203,9 +210,15 @@ function novelGrammarFromBaseline(baseline={}){
 export function buildConceptSystemBlueprint({genre='',baseline={},architecture={}}={}){
   const {key,bundle}=normalizedGenreSystemBundle(genre);
   const semantic=baselineText(baseline).toUpperCase();
-  const required=new Set(bundle.required||[]),recommended=new Set(bundle.recommended||[]);
+  const required=new Set(['STATUS_HUD','SETTINGS_ACCESSIBILITY',...(bundle.required||[])]),recommended=new Set(bundle.recommended||[]);
   const promote=id=>{recommended.delete(id);required.add(id);};
   if(/CRAFT|제작/.test(semantic))promote('CRAFTING');
+  if(/TRADE|ESCROW|PLAYER.?MARKET|거래|교환|매매/.test(semantic))promote('PLAYER_TRADE_ESCROW');
+  if(/SKILL.?TREE|TALENT|MASTERY|스킬트리|특성트리|직업트리|내부.?외부.?스킬/.test(semantic)){promote('SKILL_BUILD');promote('SKILL_TREE');}
+  if(/JOURNAL|CHRONICLE|DIARY|저널|일지|기록장|모험록/.test(semantic))promote('JOURNAL_CHRONICLE');
+  if(/WORLD.?EVENT|DYNAMIC.?EVENT|EVENT.?DIRECTOR|월드.?이벤트|돌발.?이벤트|이벤트/.test(semantic))promote('WORLD_EVENT_DIRECTOR');
+  if(/CINEMATIC|CUTSCENE|STORY.?SCENE|연출|컷신|시네마틱/.test(semantic))promote('CINEMATIC_PRESENTATION');
+  if(/CODEX|BESTIARY|COLLECTION|도감|수집/.test(semantic))promote('CODEX_COLLECTION');
   if(/HOUSE|HOUSING|BASE|SHELTER|건축|집|기지|거점/.test(semantic))promote('HOUSING_BUILDING');
   if(/COMPANION|PARTY|동료|파티/.test(semantic))promote('COMPANION_PARTY');
   if(/NPC|DIALOG|QUEST|대화|퀘스트/.test(semantic)){promote('NPC_INTERACTION');promote('QUEST_DIALOGUE');}
@@ -220,7 +233,10 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
   const phasePlan={};
   for(const phase of ['EARLY','MID','LATE']){
     const ids=uniq(bundle.phases?.[phase]||[]).filter(id=>required.has(id)||recommended.has(id));
-    phasePlan[phase]=Object.freeze(ids);
+    if(phase==='EARLY')ids.unshift('STATUS_HUD','SETTINGS_ACCESSIBILITY');
+    if(phase==='MID')for(const id of ['PLAYER_TRADE_ESCROW','SKILL_TREE','JOURNAL_CHRONICLE'])if(required.has(id)&&!ids.includes(id))ids.push(id);
+    if(phase==='LATE')for(const id of ['WORLD_EVENT_DIRECTOR','CINEMATIC_PRESENTATION'])if(required.has(id)&&!ids.includes(id))ids.push(id);
+    phasePlan[phase]=Object.freeze(uniq(ids));
   }
   return Object.freeze({
     version:1,profile:key,
@@ -229,8 +245,38 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
     requiredSystems:Object.freeze(requiredRows),
     expansionSystems:Object.freeze(recommendedRows),
     phasePlan:Object.freeze(phasePlan),
-    interconnectionChains:Object.freeze(uniq(bundle.chains||[])),
+    interconnectionChains:Object.freeze(uniq([
+      ...(bundle.chains||[]),
+      'STATUS_HUD->SETTINGS_ACCESSIBILITY',
+      ...(required.has('SKILL_TREE')?['SKILL_BUILD->SKILL_TREE->INVENTORY_EQUIPMENT']:[]),
+      ...(required.has('JOURNAL_CHRONICLE')?['QUEST_DIALOGUE->JOURNAL_CHRONICLE->CODEX_COLLECTION']:[]),
+      ...(required.has('PLAYER_TRADE_ESCROW')?['INVENTORY_EQUIPMENT->PLAYER_TRADE_ESCROW->ECONOMY_SHOP']:[]),
+      ...(required.has('WORLD_EVENT_DIRECTOR')?['THREAT_ECOLOGY->WORLD_EVENT_DIRECTOR->QUEST_DIALOGUE']:[]),
+      ...(required.has('CINEMATIC_PRESENTATION')?['WORLD_EVENT_DIRECTOR->CINEMATIC_PRESENTATION->JOURNAL_CHRONICLE']:[])
+    ])),
     novelGrammarContract,
+    // UI / event algorithms specify safe integration, not a second source of game truth.
+    systemExperienceArchitecture:Object.freeze({
+      version:1,
+      applicability:'CONCEPT_AND_EXISTING_SOURCE_GATED',
+      uiRootRoles:Object.freeze(['STATUS_HUD','INVENTORY_EQUIPMENT','ECONOMY_SHOP','COMPANION_PARTY','SKILL_TREE','JOURNAL_CHRONICLE','CODEX_COLLECTION','QUEST_DIALOGUE','WORLD_EVENT_DIRECTOR','SETTINGS_ACCESSIBILITY']),
+      activeSystemIds:Object.freeze([...required]),
+      algorithmPatterns:Object.freeze([
+        'MODEL_VIEW_SNAPSHOT_BINDING','DEPENDENCY_DAG_TOPOLOGICAL_SORT_AND_CYCLE_REJECTION',
+        'CAUSAL_EVENT_STATE_MACHINE','EVENT_ID_IDEMPOTENCY_AND_PROVENANCE',
+        'TWO_PARTY_CONFIRMATION_AND_ATOMIC_TRADE_SETTLEMENT','ADAPTIVE_TOUCH_FOCUS_LAYOUT',
+        'CINEMATIC_TIMELINE_REDUCED_MOTION_AND_SAFE_SKIP'
+      ]),
+      nativeAuthority:'EXISTING_GAME_SOURCE_PLAYER_ECONOMY_COMBAT_QUEST_SAVE_NETWORK',
+      displayAuthority:'EXISTING_COMMON_UI_PRESENTATION_ONLY',
+      gameBindingRequired:true,
+      acceptedExternalAlgorithmUse:'DESIGN_PATTERN_ONLY_WITHOUT_UNLICENSED_CODE_OR_EXTERNAL_RUNTIME_DEPENDENCY',
+      assetResolution:'CANONICAL_INTERNAL_LIBRARY_FIRST_AND_VERIFIED_LICENSED_GAP_FILL',
+      stateSynchronization:'GAME_OWNED_VERSIONED_SNAPSHOT_WITH_EVENT_ID_AND_REFRESH',
+      conditionalFeaturesRequireGameEvidence:true,
+      saveKeysAndBalancesUnchanged:true,
+      verifiedRuntimeRequiredForCompletion:true
+    }),
     awardCaliberPrinciples:AWARD_CALIBER_SYSTEM_PRINCIPLES,
     libraryReusePolicy:Object.freeze({
       existingCompatibleLibraryFirst:true,
@@ -294,23 +340,30 @@ function pickModes(seed,items,min=2,max=3){const count=Math.min(items.length,min
 
 const SYSTEM_ASSET_ROLE_MAP=Object.freeze({
   SURVIVAL_VITALS:[['UI','STATUS']],
+  STATUS_HUD:[['UI','GAME_WINDOW_LAYOUT'],['UI','STATUS_OVERVIEW'],['UI','HUD'],['UI','STATUS']],
+  SETTINGS_ACCESSIBILITY:[['UI','SETTINGS_PANEL'],['UI','INPUT_HINT']],
+  PLAYER_TRADE_ESCROW:[['UI','TRADE_ESCROW_REVIEW'],['UI','INVENTORY'],['AUDIO','UI']],
+  SKILL_TREE:[['UI','SKILL_TREE_SCREEN'],['SKILL','VFX'],['UI','ICON']],
+  JOURNAL_CHRONICLE:[['UI','JOURNAL_TIMELINE'],['UI','CODEX']],
+  WORLD_EVENT_DIRECTOR:[['UI','WORLD_EVENT_TIMELINE'],['VFX','ENVIRONMENT'],['AUDIO','UI']],
+  CINEMATIC_PRESENTATION:[['UI','EVENT_CINEMATIC_CARD'],['VFX','BOSS'],['AUDIO','BOSS']],
   GATHERING_RESOURCE:[['PROP','RESOURCE'],['MOTION','SURVIVAL_CRAFTING'],['UI','ICON']],
-  INVENTORY_EQUIPMENT:[['UI','INVENTORY'],['UI','ICON'],['CHARACTER','ACCESSORY']],
+  INVENTORY_EQUIPMENT:[['UI','INVENTORY_FULL_SCREEN'],['UI','EQUIPMENT_FULL_SCREEN'],['UI','INVENTORY'],['UI','ICON'],['CHARACTER','ACCESSORY']],
   ITEM_LOOT:[['PROP','RESOURCE'],['UI','ICON']],
-  CRAFTING:[['PROP','CRAFTING'],['MOTION','SURVIVAL_CRAFTING'],['UI','INVENTORY']],
+  CRAFTING:[['PROP','CRAFTING'],['MOTION','SURVIVAL_CRAFTING'],['UI','CRAFTING_FULL_SCREEN'],['UI','INVENTORY']],
   HOUSING_BUILDING:[['BUILDING','MODULAR_EXTERIOR'],['BUILDING','INTERIOR'],['PROP','FURNITURE'],['UI','ICON']],
   WEATHER_ENVIRONMENT:[['ENVIRONMENT','WEATHER'],['VFX','WEATHER'],['AUDIO','WEATHER']],
-  EXPLORATION_REGION:[['ENVIRONMENT','BIOME'],['ENVIRONMENT','LANDMARK'],['UI','MAP']],
+  EXPLORATION_REGION:[['ENVIRONMENT','BIOME'],['ENVIRONMENT','LANDMARK'],['UI','MAP_FULL_SCREEN'],['UI','MAP']],
   THREAT_ECOLOGY:[['CREATURE','SPECIES'],['MOTION','COMBAT'],['AUDIO','CREATURE_VOCAL']],
   TARGETING_COMBAT:[['MOTION','COMBAT'],['VFX','IMPACT'],['AUDIO','HIT'],['UI','STATUS']],
   SKILL_BUILD:[['SKILL','VFX'],['MOTION','SKILL'],['UI','ICON']],
-  ECONOMY_SHOP:[['UI','FRAME'],['UI','ICON']],
-  QUEST_DIALOGUE:[['UI','FRAME'],['UI','ICON']],
+  ECONOMY_SHOP:[['UI','SHOP_FULL_SCREEN'],['UI','BUY_SELL_PANEL'],['UI','FRAME'],['UI','ICON']],
+  QUEST_DIALOGUE:[['UI','QUEST_LOG'],['UI','DIALOGUE_PANEL'],['UI','FRAME'],['UI','ICON']],
   NPC_INTERACTION:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME']],
-  COMPANION_PARTY:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME']],
+  COMPANION_PARTY:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','PARTY_ROLE_OVERVIEW'],['UI','FRAME']],
   SOCIAL_RELATIONSHIP:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','STATUS']],
   FACTION_WORLD_STATE:[['CHARACTER','ACCESSORY'],['UI','STATUS'],['ENVIRONMENT','LANDMARK']],
-  CODEX_COLLECTION:[['UI','FRAME'],['UI','ICON']],
+  CODEX_COLLECTION:[['UI','CODEX_SCREEN'],['UI','FRAME'],['UI','ICON']],
   WAVE_ENCOUNTER:[['CREATURE','BODY_PLAN'],['UI','HUD'],['VFX','STATUS']],
   DEFENSE_PLACEMENT:[['PROP','INTERACTIVE'],['UI','HUD']],
   RESEARCH_TECH:[['UI','FRAME'],['UI','ICON']],
@@ -321,6 +374,43 @@ const SYSTEM_ASSET_ROLE_MAP=Object.freeze({
   TRAVERSAL_CHECKPOINT:[['MOTION','TRAVERSAL'],['UI','STATUS']],
   TERRITORY_OBJECTIVE:[['UI','MAP'],['ENVIRONMENT','LANDMARK'],['VFX','STATUS']],
 });
+
+// 설계에서 선택한 내부 게임 도구를 기존 설계→자산→구현 경로와 같은 계약으로 동기화한다.
+function buildDesignToolSynchronization({systemBlueprint={},assetRequirements=[],genre=''}={}){
+  const required=Array.isArray(systemBlueprint.requiredSystems)?systemBlueprint.requiredSystems:[];
+  const optional=Array.isArray(systemBlueprint.expansionSystems)?systemBlueprint.expansionSystems:[];
+  const systemIds=rows=>uniq(rows.map(row=>row?.id));
+  const libraryHints=rows=>uniq(rows.flatMap(row=>row?.reusableLibraryHints||[]));
+  const uiRoles=rows=>uniq(rows.flatMap(row=>(SYSTEM_ASSET_ROLE_MAP[row?.id]||[])
+    .filter(([family])=>family==='UI').map(([,role])=>role)));
+  const requiredUi=uiRoles(required);
+  const optionalUi=uiRoles(optional).filter(role=>!requiredUi.includes(role));
+  const planned=(assetRequirements||[]).filter(row=>row?.family&&row?.subfamily);
+  return Object.freeze({
+    version:1,
+    phase:'DESIGN',
+    designGenre:clean(genre).toUpperCase(),
+    source:'CANONICAL_GAME_FLOW_SYSTEM_BLUEPRINT',
+    requiredSystems:Object.freeze(systemIds(required)),
+    optionalSystems:Object.freeze(systemIds(optional).filter(id=>!systemIds(required).includes(id))),
+    requiredUiRoles:Object.freeze(requiredUi),
+    optionalUiRoles:Object.freeze(optionalUi),
+    requiredNativeLibraryHints:Object.freeze(libraryHints(required)),
+    optionalNativeLibraryHints:Object.freeze(libraryHints(optional).filter(path=>!libraryHints(required).includes(path))),
+    assetRequirements:Object.freeze(planned),
+    assetSelection:'EXISTING_COMPATIBLE_COMPANY_LIBRARY_FIRST_AT_EXECUTION',
+    librarySnapshotMustMatchSourceRevision:true,
+    conditionalSystemsRequireActualGameDesignAndImplementation:true,
+    menuVisibility:'AUTHORITATIVE_GAME_CAPABILITIES_ONLY',
+    runtimeAssetBindingVerified:false,
+    noFeatureAutoEnableFromUiCatalog:true,
+    platformNativeImplementationRequired:true,
+    noDirectExternalSourceRuntime:true,
+    noShadowPipeline:true,
+    gameSaveEconomyCombatAndNetworkAuthorityUnchanged:true,
+    stageFlow:Object.freeze(['GAME_DESIGN','CANONICAL_TOOL_ROLE_SELECTION','EXISTING_LIBRARY_LOOKUP','NATIVE_RESPONSIBLE_SOURCE_BINDING','INDEPENDENT_RUNTIME_QA'])
+  });
+}
 
 const FLOW_ASSET_ROLE_MAP=Object.freeze({
   HUB_AND_SPOKE:[['ENVIRONMENT','LANDMARK'],['UI','MAP'],['PROP','INTERACTIVE']],
@@ -465,10 +555,49 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
   const explicit=explicitArchitecture(baseline);
   if(explicit){
     const base={...explicit,version:Math.max(3,Number(explicit.version||1)),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE'};
-    const systemBlueprint=base.systemBlueprint||buildConceptSystemBlueprint({genre,baseline,architecture:base});
+    const detected=buildConceptSystemBlueprint({genre,baseline,architecture:base});
+    const authored=base.systemBlueprint&&typeof base.systemBlueprint==='object'?base.systemBlueprint:null;
+    // 기존 설계에서 명시한 시스템은 보존하고, 새 엔진 도구 역할만 현재 설계 의미에 맞춰 병합한다.
+    let systemBlueprint=detected;
+    if(authored){
+      const normalizeRow=(row,priority)=>typeof row==='string'?systemDescriptor(row,priority):row;
+      const authoredRequired=(authored.requiredSystems||[]).map(row=>normalizeRow(row,'REQUIRED'));
+      const authoredOptional=(authored.expansionSystems||[]).map(row=>normalizeRow(row,'EXPANSION'));
+      const required=[...authoredRequired],seenRequired=new Set(required.map(row=>row.id));
+      for(const row of detected.requiredSystems)if(!seenRequired.has(row.id)){
+        required.push(row);seenRequired.add(row.id);
+      }
+      const optional=[],seenOptional=new Set();
+      for(const row of [...authoredOptional,...detected.expansionSystems]){
+        if(row?.id&&!seenRequired.has(row.id)&&!seenOptional.has(row.id)){
+          optional.push(row);seenOptional.add(row.id);
+        }
+      }
+      const phases={};
+      for(const phase of ['EARLY','MID','LATE']){
+        phases[phase]=Object.freeze(uniq([...(authored.phasePlan?.[phase]||[]),...(detected.phasePlan?.[phase]||[])]));
+      }
+      systemBlueprint={
+        ...detected,...authored,
+        requiredSystems:Object.freeze(required),
+        expansionSystems:Object.freeze(optional),
+        phasePlan:Object.freeze(phases),
+        interconnectionChains:Object.freeze(uniq([...(authored.interconnectionChains||[]),...(detected.interconnectionChains||[])])),
+        libraryReusePolicy:Object.freeze({...detected.libraryReusePolicy,...authored.libraryReusePolicy,
+          wrapperOrShadowSystemForbidden:true,existingGameplayAuthorityWins:true})
+      };
+    }
     const enriched={...base,systemBlueprint};
     const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
-    return{...enriched,assetFlow:base.assetFlow||{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:enriched,genre,baseline})};
+    const previousRequirements=Array.isArray(base.assetFlow?.requirements)?base.assetFlow.requirements:[];
+    const mergedRequirements=[...previousRequirements];
+    const known=new Set(mergedRequirements.map(row=>clean(row?.family).toUpperCase()+':'+clean(row?.subfamily).toUpperCase()));
+    for(const row of assetRequirements){
+      const key=row.family+':'+row.subfamily;
+      if(!known.has(key)){mergedRequirements.push(row);known.add(key);}
+    }
+    const designToolSync=buildDesignToolSynchronization({systemBlueprint,assetRequirements:mergedRequirements,genre});
+    return{...enriched,assetFlow:{...base.assetFlow,version:Math.max(1,Number(base.assetFlow?.version||1)),mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:mergedRequirements},designToolSync,qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:enriched,genre,baseline})};
   }
   // 설계용 inventory는 기존 플로우 선택 규칙을 유지한다. 실제 파일 검색 결과는 빌드업 증거에서 별도 처리한다.
   const seed=stableInt(`${gameId}|${genre}|${(inventory||[]).map(x=>`${x?.path||''}:${x?.label||''}`).join('|')}`),flowDNA=chooseFlowDNA({gameId,genre,baseline});
@@ -509,7 +638,8 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
   const systemBlueprint=buildConceptSystemBlueprint({genre,baseline,architecture});
   const enriched={...architecture,systemBlueprint};
   const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
-  return{...enriched,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:buildQualityGrowthContract({architecture:enriched,genre,baseline})};
+  const designToolSync=buildDesignToolSynchronization({systemBlueprint,assetRequirements,genre});
+  return{...enriched,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},designToolSync,qualityGrowthContract:buildQualityGrowthContract({architecture:enriched,genre,baseline})};
 }
 
 export function evaluateGameFlowArchitecture(architecture={}){

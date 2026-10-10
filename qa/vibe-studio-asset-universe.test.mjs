@@ -5519,3 +5519,83 @@ test('asset supply summary indexes registry and quality lookups instead of neste
   assert.doesNotMatch(summarySource,/assets\.find\(/);
 });
 
+
+
+test('genre responsive game window and system library atoms stay synchronized and authority-free',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const source=fs.readFileSync(path.join(root,'assets/roblox/common-ui-v1/RobloxCommonUI.luau'),'utf8');
+  const catalog=JSON.parse(fs.readFileSync(path.join(root,'assets/roblox/common-ui-v1/catalog.json'),'utf8'));
+  const evidence=JSON.parse(fs.readFileSync(path.join(root,'assets/roblox/common-ui-v1/quality-evidence.json'),'utf8'));
+  const registry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const required={
+    GAME_WINDOW_LAYOUT:'CreateGameWindowLayout',
+    STATUS_OVERVIEW:'CreateStatusOverview',
+    SKILL_TREE_SCREEN:'CreateSkillTreeScreen',
+    JOURNAL_TIMELINE:'CreateJournalTimeline',
+    WORLD_EVENT_TIMELINE:'CreateWorldEventTimeline',
+    TRADE_ESCROW_REVIEW:'CreateTradeEscrowReview',
+    EVENT_CINEMATIC_CARD:'CreateEventCinematicCard'
+  };
+  assert.equal(catalog.atoms.length,211);
+  assert.equal(evidence.sourceAssetCount,catalog.atoms.length);
+  assert.equal(evidence.deepSystemComponentCount,catalog.deepSystemContract.componentCount);
+  assert.equal(evidence.productionVerified,false);
+  assert.equal(evidence.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(catalog.deepSystemContract.genreMenuContract.gameDeclaredCapabilitiesOnly,true);
+  assert.equal(catalog.deepSystemContract.genreMenuContract.hideUnavailableMenus,true);
+  assert.equal(catalog.deepSystemContract.genreMenuContract.noExternalCodeRuntimeDependency,true);
+  assert.ok(source.includes('atomCount = 211'));
+  assert.ok(source.includes('GameReportedAvailable'));
+  assert.ok(source.includes('PrerequisiteGraphValid'));
+  assert.ok(source.includes('BoundWorldEventId'));
+  assert.ok(source.includes('GameOfferRevision'));
+  assert.ok(source.includes('OwnsTradeSettlement",false'));
+  assert.ok(source.includes('state.availableSystems'));
+  assert.ok(source.includes('safeBottom'));
+  for(const profile of catalog.deepSystemContract.genreMenuContract.profiles)assert.ok(source.includes(profile),profile);
+  const pack=registry.assets.find(row=>row.id==='roblox-common-ui-v1');
+  assert.equal(pack.assetCount,catalog.atoms.length);
+  assert.equal(pack.componentCount,catalog.atoms.length);
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  for(const [id,factory] of Object.entries(required)){
+    const item=catalog.atoms.find(row=>row.atomId===id);
+    assert.equal(item.factory,factory);
+    assert.match(source,new RegExp('function RobloxCommonUI\\.'+factory+'\\('));
+    assert.ok(source.includes('id == "'+id+'"'),id);
+    const record=registry.assets.find(row=>row.id==='roblox-common-ui-'+id.toLowerCase().replaceAll('_','-'));
+    assert.equal(record?.catalogVersion,catalog.version);
+    assert.equal(record?.atomId,id);
+    assert.equal(record?.productionVerified,false);
+    assert.equal(record?.runtimeVerificationState,'PENDING_STUDIO');
+    assert.equal(record?.usageContract?.ownsGameplayAuthority,false);
+    assert.ok(COMMON_UI_SURFACE_EXPECTATIONS.includes(item.surface),item.surface);
+  }
+  const ui=registry.commonLibrarySystemDepthAudit.rows.find(row=>row.domain==='UI');
+  assert.equal(ui.currentCount,211);
+  assert.ok(ui.requiredComponentCount>=40);
+  const permitted=Object.keys(COMMON_LIBRARY_SYSTEM_DEPTH_EXPECTATIONS.UI);
+  assert.ok(permitted.includes('minimumDepth'));
+  for(const forbidden of [/DataStoreService/,/RemoteEvent/,/RemoteFunction/,/FireServer\(/,/InvokeServer\(/]){
+    assert.equal(forbidden.test(source),false,String(forbidden));
+  }
+});
+
+
+test('game settings use only authorized choices and never persist or fake a successful local change',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const source=fs.readFileSync(path.join(root,'assets/roblox/common-ui-v1/RobloxCommonUI.luau'),'utf8');
+  const start=source.indexOf('function RobloxCommonUI.CreateSettingsPanel(options)');
+  const end=source.indexOf('function RobloxCommonUI.CreateSearchField',start);
+  assert.ok(start>0&&end>start);
+  const impl=source.slice(start,end);
+  for(const token of [
+    'CreateFilterBar','ScrollingFrame','AutomaticCanvasSize','type(options.onChange)=="function"',
+    'allowedValues','GameReportedEditable','onCategorySelect','GameSnapshotRevision',
+    'OwnsSettingsPersistence",false','OwnsSaveAuthority",false','return root,content,{Sync=sync'
+  ])assert.ok(impl.includes(token),token);
+  for(const forbidden of ['DataStoreService','FireServer(', 'InvokeServer(', 'SetAsync(', 'UpdateAsync(']){
+    assert.equal(impl.includes(forbidden),false,forbidden);
+  }
+});
