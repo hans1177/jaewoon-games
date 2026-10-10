@@ -558,25 +558,38 @@
       "name": "ecological adaptation",
       "purpose": "to simulate survival through environmental interaction and risk assessment",
       "playerChoice": "selecting between resource gathering or combat based on ecological context"
+    },
+    "local_authoring_parts::66218fad179277a7c8a7e0f550b6ff988708c602d580f2e44363111fa553aa42:signatureSystems:0": {
+      "id": "MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "player's initial exploration of the habitat",
+      "playerChoice": "choose between gathering resources or engaging in combat"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 683141,
-      "lastMs": 11177,
+      "totalMs": 745536,
+      "lastMs": 62395,
       "lastError": null,
-      "updatedAt": "2026-10-09T22:53:19.190Z"
+      "updatedAt": "2026-10-10T00:06:30.051Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-09T22:53:19.194Z",
+  "updatedAt": "2026-10-10T00:06:30.051Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2379,10 +2392,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:53:19.191Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:06:30.051Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
