@@ -28,25 +28,77 @@
         "stateChange": "플레이어는 전투 중에 철학적인 선택을 하게 됩니다."
       },
       "abCausality": "타운하우스 역사를 통해 전투 철학을 적용하여 실제 상태 변화가 일어납니다. 이는 단순한 수치 증가와 기능 나열보다 깊이 있는 인과 관계로 구성됩니다."
+    },
+    "local_authoring_parts::e11d3329959273180574023bbfc54a96a062854befd59fdfab968dbdb54bc5e0:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "타운하우스 역사에 기반한 전투 철학 적용 시 실제 상태 변화가 발생",
+        "bChangesA": "철학적 사고를 바탕으로 한 전투 선택이 주어진 상태 변화를 유도",
+        "lateGameChange": "전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비"
+      },
+      "materialFusion": {
+        "contrast": "역사의 흐름과 철학의 논리가 서로 다른 창작 소재를 융합",
+        "causalBridge": "타운하우스 역사를 통한 전투 철학이 실제 상태 변화에 직접 작용",
+        "removalConsequence": "보조 장르 제거 시 플레이어 선택과 세계 상태 변화가 바뀌어야 함"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어가 새로운 역사적 사건을 경험하게 되는 원인",
+        "characterConflict": "전투 중 철학적인 선택이 인물 갈등을 일으키는 상황",
+        "playerChoice": "전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 강화하는 선택",
+        "worldChange": "몬스터의 속성과 스킬을 고려한 전략적 선택으로 인해 세계 상태 변화 발생",
+        "nextEvent": "전투 보상으로 획득한 자원을 이용하여 다음 도전을 준비하는 즉각적인 성취감"
+      }
+    },
+    "local_authoring_parts::323ef448133b1092867ffdc0bf309964f797a03b3acee1964f7c3f7415ea94ec:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "몬스터 어드벤처는 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임으로, 플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탈출합니다.",
+      "a": {
+        "system": "타운하우스 시스템",
+        "material": "역사적 신화",
+        "materialDomain": "문화·철학",
+        "stateChange": "플레이어가 새로운 역사적 사건을 경험하게 됩니다."
+      },
+      "b": {
+        "system": "전투 시스템",
+        "material": "철학적 사고",
+        "materialDomain": "과학·예술",
+        "stateChange": "플레이어는 전투 중에 철학적인 선택을 하게 됩니다."
+      },
+      "abCausality": "타운하우스 역사를 통해 전투 철학을 적용하여 실제 상태 변화가 일어납니다. 이는 단순한 수치 증가와 기능 나열보다 깊이 있는 인과 관계로 구성됩니다.",
+      "abEvolution": {
+        "aChangesB": "타운하우스 역사에 기반한 전투 철학 적용 시 실제 상태 변화가 발생",
+        "bChangesA": "철학적 사고를 바탕으로 한 전투 선택이 주어진 상태 변화를 유도",
+        "lateGameChange": "전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비"
+      },
+      "materialFusion": {
+        "contrast": "역사의 흐름과 철학의 논리가 서로 다른 창작 소재를 융합",
+        "causalBridge": "타운하우스 역사를 통한 전투 철학이 실제 상태 변화에 직접 작용",
+        "removalConsequence": "보조 장르 제거 시 플레이어 선택과 세계 상태 변화가 바뀌어야 함"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어가 새로운 역사적 사건을 경험하게 되는 원인",
+        "characterConflict": "전투 중 철학적인 선택이 인물 갈등을 일으키는 상황",
+        "playerChoice": "전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 강화하는 선택",
+        "worldChange": "몬스터의 속성과 스킬을 고려한 전략적 선택으로 인해 세계 상태 변화 발생",
+        "nextEvent": "전투 보상으로 획득한 자원을 이용하여 다음 도전을 준비하는 즉각적인 성취감"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 674101,
-      "lastMs": 46083,
+      "totalMs": 737516,
+      "lastMs": 63415,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:29:55.244Z"
+      "updatedAt": "2026-10-10T10:30:58.660Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:40.867Z",
-  "updatedAt": "2026-10-10T10:29:55.244Z",
+  "updatedAt": "2026-10-10T10:30:58.661Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1575,7 +1627,7 @@
     "82830b2ba94e226a987ad9ed48e97be91250974bf7c5b21dc2e26af03f5071e0": true,
     "e7c304687e1453a0506ab056c588b7cfe21ec5d66e2921866ec31f77f7097ef5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:29:55.244Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:30:58.661Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
