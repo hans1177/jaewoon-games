@@ -2261,6 +2261,8 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    imageToMesh:recipe?.imageToMesh===true,sourceImage:clean(recipe?.sourceImage)||null,
+    sourceLicense:clean(recipe?.sourceLicense)||null,sourceCredit:clean(recipe?.sourceCredit)||null,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
     masterGlbRequired,masterGlbOutput,masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     primitivePartAssemblyPrototypeOnly:masterGlbRequired,
@@ -2278,6 +2280,25 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const family=nativeDccFamilyForTypes([typeName]);
   const concept=inferRequestedConcept(task,clean(task.goal||task.request));
   const expression=resolveInternalAssetStyleExpressionProfile({styleFamily:concept.styles?.[0]?.family,styles:concept.styles,artTone:concept.artTone,overrides:task.styleExpressionOverrides||task.styleExpression?.axes||{}});
+  // 메인: 이미지가 명시된 경우에만 기존 Blender DCC 레시피에 무료 로컬 TripoSR 추론을 연결한다.
+  // 저작권, 로컬 경로, 출처 확인 없이 이미지를 임의의 원본 에셋으로 위장하지 않는다.
+  const wantsImageMesh=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
+    ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
+  const imageRow=(Array.isArray(task.referenceImages)?task.referenceImages:[])
+    .find(row=>clean(row?.path||row?.imageRef||row?.imagePath));
+  const sourceImage=clean(task.assetAuthoring?.sourceImage||task.assetImagePath
+    ||imageRow?.path||imageRow?.imageRef||imageRow?.imagePath).replaceAll('\\','/');
+  const sourceLicense=clean(task.assetAuthoring?.imageLicense||task.assetAuthoring?.sourceLicense
+    ||imageRow?.license);
+  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||imageRow?.attribution||imageRow?.credit);
+  if(wantsImageMesh){
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:png|jpe?g|webp)$/i.test(sourceImage)
+      ||sourceImage.split('/').includes('..'))throw new Error('IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED');
+    if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
+      throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
+    if(sourceLicense.toLowerCase()==='cc-by'&&!sourceCredit)
+      throw new Error('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED');
+  }
   const requestedSubject=clean(task.assetSubject||task.assetAuthoring?.subject).toLowerCase();
   const subject=['rock','crate'].includes(requestedSubject)?requestedSubject
     :typeName==='prop'&&/\brock\b|\bstone\b|\bboulder\b|바위|돌(?:덩이|멩이|하나|\s)/i.test(clean(task.goal||task.request))?'rock':'generic';
@@ -2286,14 +2307,20 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
     family,
-    license:'project-original',
+    license:wantsImageMesh?sourceLicense:'project-original',
+    imageToMesh:wantsImageMesh,
+    sourceImage:wantsImageMesh?sourceImage:null,
+    sourceLicense:wantsImageMesh?sourceLicense:null,
+    sourceCredit:wantsImageMesh?sourceCredit:null,
     executor:'BLENDER_PYTHON',
     script:'assets/native-authoring/build-game-visual.py',
     editableSource:'assets/native-authoring/build-game-visual.py',
     types:[typeName],
     targetPlatforms:[targetName],
-    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre],
-    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`],
+    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre,
+      ...(wantsImageMesh?['--source-image',sourceImage,'--source-license',sourceLicense,'--source-credit',sourceCredit]:[])],
+    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
+      ...(wantsImageMesh?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[])],
     evidenceJson:`${outputRoot}/evidence.json`,
     preview:`${outputRoot}/preview.png`,
     runMode:'VERIFY_ONLY'
