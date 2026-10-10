@@ -15,49 +15,51 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "keep"
+        "keep: '지정된 담당 부서만 검토하라.'",
+        "fix: 'llama3.2:1b'",
+        "add: 'llama3.2:1b'"
       ],
       "challenge": [
-        "keep"
+        "risks: 'llama3.2:1b'",
+        "evidence: 'llama3.2:1b'"
       ],
       "revision": [
-        "keep"
+        "questions: 'llama3.2:1b'"
       ],
-      "reason": "The main points are kept as they are. The key elements are preserved for clarity and completeness."
+      "reason": "지정된 담당 부서만 검토하라."
     },
     "graphics": {
       "accept": [
-        "fix",
-        "add",
-        "risks"
+        "llama3.2:1b",
+        "add: 'Survival' - 'Survival' is required for this review."
       ],
       "challenge": [
-        "evidence",
-        "questions"
+        "llama3.2:1b",
+        "risks: 'Survival' - 'Survival' is required for this review."
       ],
       "revision": [
-        "keep",
-        "game-seed",
-        "survival Mechanics"
+        "llama3.2:1b",
+        "evidence: 'Survival' - 'Survival' is required for this review."
       ],
-      "reason": "Survival Mechanics"
+      "reason": "The 'Survival' feature is critical for the functionality of the llama3.2 model.  It is essential to prioritize this feature in the review process."
     },
     "development": {
       "accept": [
         "keep",
-        "fix",
-        "add"
-      ],
-      "challenge": [
-        "risks",
-        "evidence",
+        "add",
         "questions"
       ],
-      "revision": [
-        "OTHERS",
-        "OWN"
+      "challenge": [
+        "keep",
+        "add",
+        "risks"
       ],
-      "reason": "own"
+      "revision": [
+        "keep",
+        "add",
+        "questions"
+      ],
+      "reason": "Survival"
     },
     "qa": {
       "accept": [
@@ -66,20 +68,22 @@
       "challenge": [
         "qa"
       ],
-      "revision": [],
-      "reason": "qa 부서는 모든 요청에 대해 적절한 답변을 제공하고, 다른 네 부서의 의견을 수용하고 수정하는 데 적합하다."
+      "revision": [
+        "qa"
+      ],
+      "reason": "qa 부서의 의견을 수용합니다."
     },
     "balance": {
       "accept": [
-        "Survival Mechanics"
+        "Survival"
       ],
       "challenge": [
-        "Survival Mechanics"
+        "Survival"
       ],
       "revision": [
-        "Survival Mechanics"
+        "Survival"
       ],
-      "reason": "Survival Mechanics"
+      "reason": "Survival"
     }
   }
 }
