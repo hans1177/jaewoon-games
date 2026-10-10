@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::85f31c39ad39a95f54f92af39d0e2b49094e20d9e161d5d29e00f4c759590cc5:identity,creativeGrammar": {
+      "identity": "코어 전장 4대4 - 진보형 생존-액션 루프",
+      "creativeGrammar": {
+        "mainIdentity": "생존 전장, 액션 선택, 위험/보상 연결",
+        "a": {
+          "system": "역사적 무협 시스템",
+          "material": "무국가 역사 흐름, 층간 갈등, 병력 재배치",
+          "materialDomain": "역사적 인물, 철학적 논리, 과학적 예측",
+          "stateChange": "역사적 지도 변경 -> 군사 계획 수정 -> 새로운 전략 실행"
+        },
+        "b": {
+          "system": "전투 기술 시스템",
+          "material": "주요 카테고리의 전투 기법, 실용적인 장비 조합, 주기적인 전투 패턴",
+          "materialDomain": "전투 기술, 상호작용 방식, 전투 스타일",
+          "stateChange": "전투 전략 변화 -> 전투 속도 증가 -> 보상 형태 변환"
+        },
+        "abCausality": "{\"A\": \"역사적 지도 변경\", \"B\": \"군사 계획 수정\", \"C\": \"전투 기술과 전략 결합\"}",
+        "abEvolution": {
+          "aChangesB": "역사적 지도 → 군사 계획 → 전투 전략 변화",
+          "bChangesA": "군사 계획 → 전투 기술 → 전략 실행 변화}, ",
+          "lateGameChange": "전투 전략 최종화 -> 보상 형성 -> 다음 선택 생성"
+        },
+        "materialFusion": {
+          "contrast": "역사·철학·과학·예술 소재를 서로 다른 메인/보조 장르로 융합",
+          "causalBridge": "역사적 인물 갈등 → 플레이어 선택 → 세계 상태 변화 → 다음 사건 발생",
+          "removalConsequence": "보조 장르 제거 시 게임 규칙 및 선택이 바뀌어야 한다"
+        },
+        "storyCausalChain": {
+          "cause": "역사적 지도 변경, 군사 계획 수정, 전투 기술 조정",
+          "characterConflict": "역사적 인물 갈등, 전략적 대립, 카테고리별 상호작용",
+          "playerChoice": "플레이어의 선택으로 역사적 지도, 전략, 기술을 재배치",
+          "worldChange": "세계 상태 변화, 새로운 전략 실행, 보상 형태 변환",
+          "nextEvent": "다음 사건 발생: 전투 전략 최종화, 보상 형성, 다음 선택 생성"
+        },
+        "cThemes": [
+          {
+            "name": "역사적 무국가 흐름",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전쟁 전략과 병력 배치에 영향"
+          },
+          {
+            "name": "철학적 논리",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전략 결정 시 철학적 근거 제공"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "역사적 전장",
+            "gameplayEffect": "생존 전장 및 액션 선택의 핵심"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "철학적 전략",
+            "gameplayEffect": "전략 결정 시 철학적 논리를 반영"
+          }
+        ],
+        "cGenreInterlock": "역사적 인물 갈등 → 전략적 대립 → 카테고리별 상호작용 → 보조 장르 제거 시 게임 규칙 변경",
+        "cWorldAndGameplayEffect": "세계 상태 변화와 플레이어 선택이 서로 연결되어야 하며, 새로운 전략 실행이 발생해야 한다",
+        "delveDiscoveries": [
+          {
+            "clue": "역사적 지도 재배치",
+            "discovery": "군사 계획 수정 및 전투 전략 변화",
+            "newChoice": "다음 사건 발생: 전투 전략 최종화, 보상 형성, 다음 선택 생성"
+          },
+          {
+            "clue": "철학적 논리 적용 후 전략 결정",
+            "discovery": "전투 기술 조정과 역사적 인물 갈등 해결",
+            "newChoice": "다음 사건 발생: 전투 전략 최종화, 보상 형성, 다음 선택 생성"
+          },
+          {
+            "clue": "전략 최종화 이후 보상 형태 변환",
+            "discovery": "플레이어 선택으로 세계 상태 변화",
+            "newChoice": "다음 사건 발생: 전투 전략 최종화, 보상 형성, 다음 선택 생성"
+          },
+          {
+            "clue": "보상형식에 따른 다음 선택 생성",
+            "discovery": "플레이어 선택으로 역사적 지도 변경",
+            "newChoice": "다음 사건 발생: 전투 전략 최종화, 보상 형성, 다음 선택 생성"
+          }
+        ],
+        "delveGrowthRule": "{\"A\": \"역사적 지도 변경\", \"B\": \"군사 계획 수정\", \"C\": \"전투 기술과 전략 결합\"}",
+        "finalGameIdentity": "생존-액션 루프의 진보형 구조로 역사적 흐름, 철학적 논리, 과학적 예측을 융합한 새로운 정체성"
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300102,
-      "lastMs": 300102,
+      "totalMs": 472195,
+      "lastMs": 172093,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:09:09.591Z"
+      "updatedAt": "2026-10-10T10:12:01.685Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:04:09.468Z",
-  "updatedAt": "2026-10-10T10:09:09.591Z",
+  "updatedAt": "2026-10-10T10:12:01.685Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1753,5 +1840,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "85f31c39ad39a95f54f92af39d0e2b49094e20d9e161d5d29e00f4c759590cc5": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T10:12:01.685Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
