@@ -335,6 +335,7 @@ test('the same designer authors and checkpoints the seed before detailed slices 
     seed:{...fixture.seed,seedId:'test',designInputMode:'DESIGNER_SELF_SEED'},seedDesignDepthContext:{invented:'automatic sketch must not be input'},gameId:'demo',date:'2026-10-08',designerSeedPath:'design/demo/2026-10-08/design-seed.json',engineDigest:'engine',checkpointFingerprint:'input',activeDesignerRoute:{id:'ollama:test-model'},
     clip:(v,n)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.slice(0,n);},clean:v=>String(v??'').trim(),createHash,DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,repairStructureContract:v=>v,designCheckpoint:checkpoint,
     validateDesignAuthoringContent,assertSchemaValue:assertDesignSchema,writeJson:(file,value)=>writes.push({file,value:structuredClone(value)}),persistDesignCheckpoint(){},console:{log(){}},
+    buildConceptSystemBlueprint:()=>({libraryReusePolicy:{knownReusableLibraries:[]}}),fs:{existsSync:()=>false},
     runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[id]||(checkpoint.tasks[id]=await work()),
     callDesignerModel:async(system,user)=>{calls.push(user);if(user.includes('SLICE_ID=identity-core'))return structuredClone(content);if(failDetail)throw new Error('MODEL_TEMPORARILY_UNAVAILABLE');return{progressionDirection:'검사용 후속 설계가 같은 인원과 자원 상태를 이어받는다'};},
     repairDesignRequiredFields:value=>({value}),factPack:{},enforceOwnerPreservationDesign:v=>v,DESIGN:{}
@@ -349,7 +350,8 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   assert.equal(calls.filter(p=>p.includes('SLICE_ID=identity-core')).length,1,'resume reuses the same model-authored seed');
   const invalid={...content,signatureSystems:[{...content.signatureSystems[0],grammarRole:'MAIN'}]};
   const save=runInNewContext(design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('async function authorDesignInCheckpointedSlices('))+'\npersistDesignerSeed',{
-    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,clean:v=>String(v??'').trim(),seed:fixture.seed,ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');}
+    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,clean:v=>String(v??'').trim(),seed:fixture.seed,ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');},
+    buildConceptSystemBlueprint:()=>({libraryReusePolicy:{knownReusableLibraries:[]}}),fs:{existsSync:()=>false}
   });
   assert.throws(()=>save(invalid,'designer_draft'),/DESIGNER_SEED_REPAIR_REQUIRED/);
 });
