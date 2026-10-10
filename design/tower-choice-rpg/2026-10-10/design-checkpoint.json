@@ -420,25 +420,42 @@
       "name": "10층 탑 RPG",
       "purpose": "Bi-directional State Exchange Between Core Mechanic and Progressive Threats",
       "playerChoice": "Adaptive Risk Management through Resource Allocation (Initial Strategy Selection) → Dynamic Threat Evolution from Base to Boss Tier (Threat Pattern Shift) → Spatialized Enemy Density in Adverse Weather Conditions (Environmental Impact on Combat Decision Making) → Real-Time Combat with Strategic Positioning Mechanics (Integration of Survival Action with Strategic Positioning) → Adaptive Combat Logic under Environmental Constraints (Loss,"
+    },
+    "local_authoring_parts::cfe28f7735c96be89db551e8c9c2f017c04ee94ad48b47342c18a4b88f6a9b31:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "stateOutputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "name": "10층 탑 RPG",
+      "purpose": "Progressive Risk Engine",
+      "playerChoice": "Adaptive Risk Management through Resource Allocation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1140585,
-      "lastMs": 180539,
+      "totalMs": 1205227,
+      "lastMs": 64642,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:15:07.614Z"
+      "updatedAt": "2026-10-10T03:16:12.258Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:15:07.614Z",
+  "updatedAt": "2026-10-10T03:16:12.258Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2278,7 +2295,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:15:07.614Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:16:12.258Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
