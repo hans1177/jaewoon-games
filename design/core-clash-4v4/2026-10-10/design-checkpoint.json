@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 단순한 생존을 넘어 진입부터 선택까지 모든 단계에서 게임의 세계와 인과적 관계를 이해하고, 숙련된 전략으로 새로운 경로와 결과를 만들어내는 과정에 참여한다. 플레이어는 자신의 선택이 실제 세계 상태 변화 및 다음 사건에 영향을 미치는 것을 직접 경험하며, 이는 게임의 재미와 성장성을 높인다.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::4c3f8dc5934e81a57ada9c89780b39f90cbec93f125fd3013c720bf5f57c1b09:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택 → 실제 세계 상태 변화 → 다음 사건 발생",
+        "숙련 → 새로운 경로/보상/대응법 생성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 298895,
-      "lastMs": 298895,
+      "totalMs": 351343,
+      "lastMs": 52448,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:58:37.351Z"
+      "updatedAt": "2026-10-10T08:59:29.801Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:38.436Z",
-  "updatedAt": "2026-10-10T08:58:37.351Z",
+  "updatedAt": "2026-10-10T08:59:29.809Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1840,8 +1847,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:58:37.351Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:59:29.801Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
