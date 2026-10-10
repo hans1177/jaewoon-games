@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선점과 즉각적인 빌드 구성에 매 순간 선택이 있는 전략적 생존 게임입니다. 적의 공격을 피하면서 최적의 위치를 선점하고, 획득한 파편을 사용하여 실시간으로 무기/스킬/능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다. 이 과정에서 플레이어는 자신만의 전투 스타일을 진화시키며, 최종적으로 런의 결과를 메타 성장 재화로 변환할 수 있습니다.",
       "coreFun": "플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다. 수집된 파편은 즉시 빌드 변화를 반영하고, 이를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다."
+    },
+    "local_authoring_parts::52a32fa4ddbb022da9a8be12f9a21e221e7b97db8d4f752a0f4228bc377faed6:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT → 상태변화 → 보상/위험/다음 선택",
+        "플레이어가 파편을 사용하여 무기/스킬/능력치를 강화",
+        "강화된 빌드로 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 617964,
-      "lastMs": 101663,
+      "totalMs": 708852,
+      "lastMs": 90888,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:08:47.652Z"
+      "updatedAt": "2026-10-10T07:10:18.543Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:58:29.666Z",
-  "updatedAt": "2026-10-10T07:08:47.653Z",
+  "updatedAt": "2026-10-10T07:10:18.543Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1529,7 +1536,7 @@
   "localAuthoringSplits": {
     "021873febc37db4a387af98f3b1ccb1d5406c9442df1f6490cd8927b721be859": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:08:47.653Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:10:18.543Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
