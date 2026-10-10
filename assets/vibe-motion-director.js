@@ -1286,6 +1286,27 @@ function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
     rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
+// 공용 스킨 3D 몬스터 원본. 나머지 종족은 의미 준비 단계로만 유지한다.
+export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
+  ['WOLF','QUADRUPED_CANINE',17,'WOLF_PACK_HOWL'],
+  ['SPIDER','ARACHNID',29,'SPIDER_WEB_THREAT'],
+  ['BEETLE','HEXAPOD_INSECT',23,'BEETLE_HORN_CHARGE'],
+  ['GOLEM','HEAVY_GOLEM_OR_BOSS',15,'GOLEM_CORE_PULSE'],
+  ['SERPENT','REPTILE_OR_SERPENT',17,'SERPENT_COIL_STRIKE']
+].map(([id,bodyPlan,jointCount,signatureClip])=>[id,Object.freeze({
+  id:'shared-creature-'+id.toLowerCase(),
+  path:'assets/shared/creature-'+id.toLowerCase()+'.glb',
+  bodyPlan,rigProfile:'SHARED_CREATURE_'+id+'_SKINNED',
+  rigJointCount:jointCount,sourceAnimationCount:11,
+  sourceAnimationClips:freezeList([
+    'IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B',
+    'SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',signatureClip
+  ]),
+  signatureClip,sourceHasActualSkinnedMesh:true,
+  crossPlatformMasterSource:true,platformNativeAdaptationRequired:true,
+  gameSpecificStyleAndRigRetargetRequired:true,
+  gameplayAuthority:false,productionVerified:false,runtimeVerified:false
+})])));
 export function createCommonMonsterActionLoadout({
   speciesId='WOLF',genre='ACTION_RPG',platform='SHARED',bodyPlan='',
   rigProfile='',styleFamily='STYLIZED_FANTASY'
@@ -1301,9 +1322,11 @@ export function createCommonMonsterActionLoadout({
     throw Error('INCOMPATIBLE_COMMON_MONSTER_RIG:'+id+':HUMANOID');
   const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
+  const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
+  if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
   const profile=createCreatureMotionSetProfile({
     id:'common-'+id.toLowerCase(),archetype:id,bodyPlan:species.bodyPlan,
-    rigProfile:upper(rigProfile)||'SPECIES_RIG_AUTHORING_REQUIRED',
+    rigProfile:upper(rigProfile)||master?.rigProfile||'SPECIES_RIG_AUTHORING_REQUIRED',
     locomotion:unique([...detail.roles.locomotion,...species.locomotion]),
     attacks:unique([...detail.roles.attacks,...species.attacks]),
     defense:unique([...detail.roles.defense,...species.defense]),
@@ -1354,6 +1377,7 @@ export function createCommonMonsterActionLoadout({
   const coverage=auditMotionCoverage(profile);
   return Object.freeze({
     id,species,profile,genre:requestedGenre,platform:platformId,
+    master,masterActuallyExistsInSharedRepository:!!master,
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
     genreGroups:COMMON_GENRE_MOTION_CONTEXTS[requestedGenre],
     choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
