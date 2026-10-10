@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 몬스터를 포획하고 육성하며 미지의 세계를 탈출하는 모바일 어드벤처 게임에서, 역사적 사건을 경험하고 철학적인 결정을 내리는 전략적 플레이어로 성장합니다.",
       "coreFun": "타운하우스 역사를 통한 전투 철학 적용하여 실제 상태 변화가 발생하며, 새로운 역사적 사건을 경험하고 철학적인 선택을 하게 됩니다."
+    },
+    "local_authoring_parts::6b43cdf10a9156cbcf51a5ea5354c332801074058249308a638486d5b306a7a0:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어가 새로운 역사적 사건을 경험하게 됩니다.",
+        "상태변화: 플레이어는 전투 중에 철학적인 선택을 하게 됩니다.",
+        "보상/위험: 전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 958880,
-      "lastMs": 56030,
+      "totalMs": 1020731,
+      "lastMs": 61851,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:34:40.047Z"
+      "updatedAt": "2026-10-10T10:35:41.931Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:40.867Z",
-  "updatedAt": "2026-10-10T10:34:40.078Z",
+  "updatedAt": "2026-10-10T10:35:41.931Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2079,7 +2086,7 @@
     "82830b2ba94e226a987ad9ed48e97be91250974bf7c5b21dc2e26af03f5071e0": true,
     "e7c304687e1453a0506ab056c588b7cfe21ec5d66e2921866ec31f77f7097ef5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:34:40.078Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:35:41.931Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
