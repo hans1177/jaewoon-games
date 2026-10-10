@@ -155,3 +155,13 @@ test('design control jobs use slim runners while per-game design cycles retain f
   assert.match(finish,/- name: Continue seed supply and immediately repeat failed design gates\n\s+if: always\(\) && !cancelled\(\)/);
   assert.match(finish,/gh workflow run company-seed-design-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
 });
+
+test('canonical promotion safely discards ephemeral LFS art modifications before runtime checkout',()=>{
+  const persist=promotion.slice(promotion.indexOf('- name: Persist promoted state to company runtime branch'),promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill'));
+  assert.ok(persist.length>1000);
+  assert.match(persist,/git reset --hard HEAD\s+git clean -fd/);
+  assert.match(persist,/git checkout -f -B design-promotion-persist "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(persist,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(persist,/node tools\/design-only-promotion-sync\.mjs/);
+  assert.match(persist,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
+});
