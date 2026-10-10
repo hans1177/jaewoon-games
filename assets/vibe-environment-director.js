@@ -202,7 +202,7 @@ export function createVibeMapDNA({map={},region={},concept={},reference={}}={}){
 export function createVibeRouteGraph({mapDna={},nodes=[],edges=[]}={}){const safeNodes=(nodes.length?nodes:[{id:'START',role:'spawn'},{id:'LANDMARK',role:'landmark'},{id:'OBJECTIVE',role:'objective'},{id:'EXIT',role:'transition'}]).map((n,i)=>Object.freeze({id:String(n.id||'NODE_'+i),role:String(n.role||'route'),required:n.required!==false}));const ids=new Set(safeNodes.map(n=>n.id)),startNode=safeNodes.find(n=>/spawn|start|entry/i.test(n.role))||safeNodes[0],defaultEdges=[{from:'START',to:'LANDMARK',kind:'main'},{from:'LANDMARK',to:'OBJECTIVE',kind:'main'},{from:'OBJECTIVE',to:'EXIT',kind:'main'},{from:'START',to:'OBJECTIVE',kind:'alternate'}],safeEdges=(edges.length?edges:defaultEdges).filter(e=>ids.has(String(e.from))&&ids.has(String(e.to))).map(e=>Object.freeze({from:String(e.from),to:String(e.to),kind:String(e.kind||'route'),oneWay:e.oneWay===true}));const required=safeNodes.filter(n=>n.required).map(n=>n.id),reachable=new Set(startNode?[startNode.id]:[]);let changed=true;while(changed){changed=false;for(const e of safeEdges){if(reachable.has(e.from)&&!reachable.has(e.to)){reachable.add(e.to);changed=true}if(!e.oneWay&&reachable.has(e.to)&&!reachable.has(e.from)){reachable.add(e.from);changed=true}}}const unreachable=required.filter(id=>!reachable.has(id));return Object.freeze({startNodeId:startNode?.id||null,nodes:Object.freeze(safeNodes),edges:Object.freeze(safeEdges),unreachable:Object.freeze(unreachable),pass:unreachable.length===0,rules:Object.freeze(['main-objective-connectivity','alternate-route-when-genre-allows','shortcut-loop-support','choke-open-rhythm','terrain-aware-width-slope-curvature'])})}
 export function createVibeWorldStreamingPlan({mobile=true,initialPlayableRadius=1,activeChunkBudget=null,lodDistances=null}={}){const budget=activeChunkBudget??(mobile?9:25);return Object.freeze({perceivedSeamlessStreamingTarget:true,literalZeroLoadingClaim:false,initialPlayableZonePrewarm:true,initialPlayableRadius:Math.max(1,Number(initialPlayableRadius)||1),activeChunkBudget:Math.max(4,Number(budget)||9),lodDistances:Object.freeze(lodDistances||{near:1,mid:2,far:4}),objectPoolingPreferred:true,backgroundGenerationBudgeted:true,criticalGameplayStateBeforePresentationChunk:true,unloadMayNotDiscardSaveOrAuthoritativeWorldState:true,mobileBudget:Boolean(mobile)})}
 // 단순 지도에서 읽은 동선을 보존하고 구역별 세부 자산 요구를 만드는 기존 월드 제작 입력.
-export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFamily='STYLIZED_FANTASY',seed='map'}={}){
+export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFamily='STYLIZED_FANTASY',seed='map',gameId='',target='UNITY'}={}){
   const issues=[],nodes=Array.isArray(sketch.nodes)?sketch.nodes:[],edges=Array.isArray(sketch.edges)?sketch.edges:[];
   const ids=new Set(nodes.map(node=>node?.id));
   if(!nodes.length||ids.size!==nodes.length||nodes.some(node=>!node?.id))issues.push('ROUTE_NODES_REQUIRED_OR_DUPLICATED');
@@ -236,19 +236,50 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
   });
 
   let hash=2166136261;for(const char of String(seed)){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);}hash>>>=0;
+  const layerAssetUsage=new Map();
   const regions=districts.filter(row=>row?.id&&ids.has(row.anchorNodeId)).map((district,index)=>({
     id:district.id,anchorNodeId:district.anchorNodeId,function:district.function,
     landmark:district.landmark||null,styleFamily,
     productionSequence:['BLOCKOUT','STRUCTURAL_AUTHORING','FUNCTIONAL_DETAIL','MATERIAL_AND_HISTORY','AMBIENT_MOTION','PLATFORM_VARIANTS','APPLY_TO_WORLD'],
     detailByDistance:distanceDetail,
     layers:layerRules.map(([layer,family,detail,authoringPasses],layerIndex)=>{
-      const candidates=assets.filter(asset=>String(asset.family||asset.category).toUpperCase()===family&&(asset.sourceHash||asset.contentHash||asset.sha256)&&Array.isArray(asset.mapDetailRoles)&&asset.mapDetailRoles.includes(layer)&&(!asset.districtFunctions?.length||asset.districtFunctions.includes(district.function)));
-      const selected=candidates.length?candidates[(hash+index*7+layerIndex*3)%candidates.length]:null;
+      // 공개된 공용 원본을 모두 검사한다. 권리·3D 형식·지역 역할이 맞지 않으면 적용 자격이 아니다.
+      const spatial=['TERRAIN','STRUCTURE','VEGETATION','FUNCTIONAL_PROPS'].includes(layer);
+      const candidates=(Array.isArray(assets)?assets:[]).filter(asset=>{
+        const paths=[asset?.path,asset?.masterGlb,asset?.meshArtifact,...(asset?.sourceFiles||[]),...(asset?.nativeArtifacts||[])].map(value=>String(value||''));
+        const native3d=paths.some(value=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(value));
+        const roles=Array.isArray(asset?.mapDetailRoles)?asset.mapDetailRoles:[];
+        const license=String(asset?.license||'').toUpperCase();
+        const restricted=asset?.rightsPass===false||asset?.securityBlocked===true||asset?.quarantined===true||/NON.?COMMERCIAL|\bNC\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license);
+        return !restricted&&String(asset?.family||asset?.category).toUpperCase()===family
+          &&Boolean(asset?.id||asset?.assetId)&&Boolean(asset?.sourceHash||asset?.contentHash||asset?.sha256)
+          &&(!asset?.districtFunctions?.length||asset.districtFunctions.includes(district.function))
+          &&(roles.length?roles.includes(layer):(!spatial||native3d));
+      }).sort((a,b)=>String(a.id||a.assetId).localeCompare(String(b.id||b.assetId)));
+      const scored=candidates.map(asset=>{
+        const paths=[asset.path,asset.masterGlb,asset.meshArtifact,...(asset.sourceFiles||[]),...(asset.nativeArtifacts||[])].map(value=>String(value||''));
+        const native3d=paths.some(value=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(value));
+        const assetId=String(asset.id||asset.assetId),usage=layerAssetUsage.get(family+':'+assetId)||0;
+        const exact=Array.isArray(asset.mapDetailRoles)&&asset.mapDetailRoles.includes(layer);
+        const sameGame=Array.isArray(asset.consumerGameIds)&&asset.consumerGameIds.includes(gameId);
+        const matchStyle=!asset.styleFamily||String(asset.styleFamily)===String(styleFamily);
+        const jitter=proceduralCellHash(hash^index,layerIndex,assetId.split('').reduce((n,c)=>n+c.charCodeAt(0),0))%11;
+        return {asset,assetId,native3d,score:(exact?50:0)+(native3d?25:0)+(sameGame?18:0)+(matchStyle?8:0)-usage*35+jitter};
+      }).sort((a,b)=>b.score-a.score||a.assetId.localeCompare(b.assetId));
+      const chosen=scored[0]||null,selected=chosen?.asset||null;
+      if(chosen)layerAssetUsage.set(family+':'+chosen.assetId,(layerAssetUsage.get(family+':'+chosen.assetId)||0)+1);
+      const license=String(selected?.license||'').toUpperCase();
+      const rightsVerified=selected?.rightsPass===true||/^(?:CC0|CC-BY|MIT|APACHE|PUBLIC_DOMAIN|OWNED)/.test(license);
+      const nativeReady=Boolean(selected&&(!spatial||chosen.native3d)&&rightsVerified);
       return{
         layer,family,detail,authoringPasses:Object.freeze(authoringPasses),cause:district.function,
-        assetId:selected?.id||null,sourceHash:selected?.sourceHash||selected?.contentHash||selected?.sha256||null,
-        status:selected?'REUSE_AND_REAUTHOR':'AUTHORING_REQUIRED',
-        productionAction:selected?'ADAPT_EXISTING_ASSET_TO_DISTRICT_AND_STYLE':'CREATE_EDITABLE_NATIVE_ASSET',
+        assetId:chosen?.assetId||null,sourceHash:selected?.sourceHash||selected?.contentHash||selected?.sha256||null,
+        eligibleCandidateCount:candidates.length,
+        candidateAssetIds:Object.freeze(candidates.map(asset=>String(asset.id||asset.assetId))),
+        selectionAlgorithm:'DETERMINISTIC_ROLE_FIT_REUSE_PENALTY',
+        binding:Object.freeze({gameId:String(gameId),target:String(target).toUpperCase(),nativeReady,rightsVerified,sourceIs3d:chosen?.native3d===true,actualGameSourceBinding:false}),
+        status:nativeReady?'REUSE_AND_REAUTHOR':selected?'NATIVE_SOURCE_OR_RIGHTS_REVIEW_REQUIRED':'AUTHORING_REQUIRED',
+        productionAction:nativeReady?'ADAPT_EXISTING_ASSET_TO_DISTRICT_AND_STYLE':'VERIFY_RIGHTS_AND_CREATE_EDITABLE_NATIVE_3D_ASSET',
         applyAction:'BIND_TO_EXISTING_WORLD_REGION_AND_NAVIGATION_SAFE_PLACEMENT',
         runtimeVerified:false
       };
@@ -297,15 +328,77 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0}}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
   if(!Number.isInteger(width)||!Number.isInteger(height)||width<12||height<12||width>maximum||height>maximum||!validNumber(cellSize)||cellSize<=0||!['2D','3D'].includes(dimension)||!validNumber(density)||density<0||density>1||!validNumber(maxSlopeDegrees)||maxSlopeDegrees<=0||maxSlopeDegrees>=90||!validNumber(fovDegrees)||fovDegrees<=0||fovDegrees>180||!validNumber(cameraForward?.x)||!validNumber(cameraForward?.z)||Math.hypot(cameraForward.x,cameraForward.z)<1e-6){
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['DIMENSIONS_OR_BUDGET_INVALID']),...noMutation});
   }
+  const seasonKey=String(season).toUpperCase();
+  if(!['ANNUAL','SPRING','SUMMER','AUTUMN','WINTER'].includes(seasonKey))
+    return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['SEASON_INVALID']),...noMutation});
+  const requestedEra=String(era).toUpperCase(),requestedWater=String(waterMode).toUpperCase();
+  const worldWords=String(biome+' '+climate).toUpperCase(),buildingWords=String(buildingStyle).toUpperCase();
+  // 사용자가 옵션을 설정할 필요 없이 승인된 세계관·지리·건축 정보를 읽어 자동 선택한다.
+  const inferredEra=/HYBRID|MIXED|COMPOSITE|복합/.test(buildingWords)?'HYBRID'
+    :/FUTURE|FUTURIST|SCI.?FI|CYBER|SPACE|미래/.test(buildingWords)?'FUTURE'
+    :/MODERN|URBAN|CONTEMPORARY|현대/.test(buildingWords)?'MODERN'
+    :/ANCIENT|ROMAN|GREEK|EGYPT|고대/.test(buildingWords)?'ANCIENT'
+    :/MEDIEVAL|CASTLE|FEUDAL|GOTHIC|중세/.test(buildingWords)?'MEDIEVAL':'LOCAL';
+  const inferredWater=/ARCHIPELAGO|군도/.test(worldWords)?'ARCHIPELAGO'
+    :/ISLAND|섬/.test(worldWords)?'ISLAND'
+    :/LAKE|호수/.test(worldWords)?'LAKES'
+    :/COAST|BEACH|SEASHORE|해안/.test(worldWords)?'COASTAL'
+    :/OCEAN|SEA|MARINE|바다|해양/.test(worldWords)?'OCEAN':'AUTO';
+  const eraKey=requestedEra==='AUTO'?inferredEra:requestedEra;
+  const waterKey=requestedWater==='AUTO'?inferredWater:requestedWater;
+  const supportedEras=['AUTO','LOCAL','ANCIENT','MEDIEVAL','MODERN','FUTURE','HYBRID'];
+  const supportedWaters=['AUTO','OCEAN','COASTAL','ISLAND','ARCHIPELAGO','LAKES'];
+  if(!supportedEras.includes(requestedEra)||!supportedWaters.includes(requestedWater)||
+    !eraByZone||typeof eraByZone!=='object'||Array.isArray(eraByZone)||
+    Object.entries(eraByZone).some(([key,value])=>!['RESIDENTIAL','COMMERCIAL','WORKSHOP'].includes(key)||!supportedEras.includes(String(value).toUpperCase()))||
+    !Array.isArray(ecologyActors)||!Array.isArray(authoredDungeonSites)){
+    return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['ERA_WATER_OR_ACTOR_INPUT_INVALID']),...noMutation});
+  }
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
   const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
+  // 공용 자산은 게임에 통째로 복사하지 않는다. 실제 3D 원본+권리 확인 후보만 구조물에 매핑한다.
+  const pool=(Array.isArray(libraryAssets)?libraryAssets:[]).filter(asset=>{
+    const files=[asset?.path,asset?.masterGlb,asset?.meshArtifact,...(asset?.sourceFiles||[]),...(asset?.nativeArtifacts||[])];
+    const license=String(asset?.license||'').toUpperCase();
+    const family=String(asset?.family||asset?.category).toUpperCase();
+    const hasNativeMesh=files.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(file||'')));
+    const hasNativeMaterial=files.some(file=>/\.(?:png|jpe?g|webp|tga|ktx2|mat|shader)$/i.test(String(file||'')));
+    return Boolean(asset?.id||asset?.assetId)&&Boolean(asset?.sourceHash||asset?.contentHash||asset?.sha256)
+      &&(family==='MATERIAL'?hasNativeMaterial||hasNativeMesh:hasNativeMesh)
+      &&asset?.rightsPass!==false&&asset?.quarantined!==true&&asset?.securityBlocked!==true
+      &&!/NON.?COMMERCIAL|\bNC\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license)
+      &&(asset?.rightsPass===true||/^(?:CC0|CC-BY|MIT|APACHE|PUBLIC_DOMAIN|OWNED)/.test(license))
+      &&['BUILDING','ENVIRONMENT','PROP','MATERIAL','CREATURE','CHARACTER'].includes(family);
+  }).sort((a,b)=>String(a.id||a.assetId).localeCompare(String(b.id||b.assetId)));
+  const poolByFamily=new Map(['BUILDING','ENVIRONMENT','PROP','MATERIAL','CREATURE','CHARACTER'].map(family=>[family,pool.filter(row=>String(row.family||row.category).toUpperCase()===family)]));
+  const sourceUsage=new Map();
+  const pickSource=(family,kind,x,z)=>{
+    const candidates=poolByFamily.get(family)||[];
+    const salt=[gameId,styleFamily,kind].join(':').split('').reduce((n,c)=>Math.imul(n^c.charCodeAt(0),16777619)>>>0,2166136261);
+    const ranked=candidates.map(asset=>{
+      const identity=String(asset.id||asset.assetId),words=[asset.role,asset.subfamily,asset.title,asset.name,...(asset.tags||[])].join(' ').toUpperCase();
+      const match=words.includes(String(kind).toUpperCase());
+      const sameGame=(asset.consumerGameIds||[]).includes(gameId);
+      const sameStyle=!asset.styleFamily||String(asset.styleFamily).toUpperCase()===String(styleFamily).toUpperCase();
+      const stableIdHash=identity.split('').reduce((n,c)=>Math.imul(n^c.charCodeAt(0),16777619)>>>0,2166136261);
+      const variation=proceduralCellHash(hash^salt^stableIdHash,x,z)%17;
+      return{asset,identity,score:(match?70:0)+(sameGame?16:0)+(sameStyle?10:0)+variation-(sourceUsage.get(identity)||0)*12};
+    }).sort((a,b)=>b.score-a.score||a.identity.localeCompare(b.identity));
+    const chosen=ranked[0]?.asset||null;
+    if(chosen){const id=String(chosen.id||chosen.assetId);sourceUsage.set(id,(sourceUsage.get(id)||0)+1);}
+    return Object.freeze({status:chosen?'SOURCE_SELECTED_NATIVE_APPLICATION_REQUIRED':'NATIVE_ASSET_AUTHORING_REQUIRED',
+      assetId:chosen?.id||chosen?.assetId||null,sourceHash:chosen?.sourceHash||chosen?.contentHash||chosen?.sha256||null,
+      sourceFiles:Object.freeze(chosen?[...new Set([chosen.path,chosen.masterGlb,chosen.meshArtifact,...(chosen.sourceFiles||[]),...(chosen.nativeArtifacts||[])].filter(Boolean))]:[]),
+      family,kind,gameId:String(gameId),target:String(target).toUpperCase(),styleFamily:String(styleFamily),
+      originalImmutable:true,appliedToNativeGame:false,runtimeVerified:false});
+  };
   const at=(x,z)=>z*w+x,within=(x,z)=>x>=0&&x<w&&z>=0&&z<h;
   // 좌표는 동일한 격자 X/Z에서 계산하고 2D 최종 배치 위치만 X/Y로 변환한다.
   const worldPosition=(x,z,elevationY=0)=>dimension==='2D'?{x:x*cellSize,y:z*cellSize}:{x:x*cellSize,y:elevationY,z:z*cellSize};
@@ -322,7 +415,21 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
     const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
     const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
-    const type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    let type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    // 해양·섬·호수는 승인된 맵에서만 생성하며, 기본 AUTO는 과거 지형을 그대로 보존한다.
+    if(waterKey!=='AUTO'){
+      const sx=(x+.5)/w,sz=(z+.5)/h,radial=Math.hypot((sx-.5)*1.32,(sz-.5)*1.32);
+      const coastNoise=octave(sx*5,sz*5,0xc0a57)*.13;
+      const sea=waterKey==='COASTAL'?(sx<.27+coastNoise)
+        :waterKey==='OCEAN'?(sx<.43+coastNoise)
+        :waterKey==='ISLAND'?(radial>.54+coastNoise)
+        :waterKey==='ARCHIPELAGO'?(Math.min(Math.hypot(sx-.36,sz-.42),Math.hypot(sx-.69,sz-.6))>.2+coastNoise*.35)
+        :false;
+      const lake=waterKey==='LAKES'&&(Math.hypot((sx-.73)*1.5,(sz-.32)*1.5)<.115+coastNoise*.1);
+      if(sea||lake)type='WATER';
+      else if(waterKey==='LAKES'||waterKey==='OCEAN'||waterKey==='COASTAL'||waterKey==='ISLAND'||waterKey==='ARCHIPELAGO')
+        type=elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    }
     terrain.push({x,z,elevation:+elevation.toFixed(4),moisture:+moisture.toFixed(4),biome:type});
   }
   for(const tile of terrain){
@@ -331,6 +438,55 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     tile.slopeDegrees=+(Math.atan2(rise,cellSize)*180/Math.PI).toFixed(2);
     const lower=diffs.map(([a,b])=>terrain[at(a,b)]).filter(t=>t.elevation<tile.elevation).sort((a,b)=>a.elevation-b.elevation||a.z-b.z||a.x-b.x)[0];
     tile.drainageTo=lower?{x:lower.x,z:lower.z}:null;
+  }
+  // 수체 연결요소: 가장자리 바다와 내륙 호수를 별도 분류하고 염분·연안 생태계를 구분한다.
+  const waterComponents=[],waterComponentByCell=new Int32Array(w*h).fill(-1),visitWater=new Uint8Array(w*h);
+  for(const tile of terrain){
+    const start=at(tile.x,tile.z);
+    if(tile.biome!=='WATER'||visitWater[start])continue;
+    const queue=[start],cells=[];visitWater[start]=1;let touchesBoundary=false;
+    for(let i=0;i<queue.length;i++){
+      const id=queue[i],x=id%w,z=Math.floor(id/w);cells.push(id);
+      if(x===0||z===0||x===w-1||z===h-1)touchesBoundary=true;
+      for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+        const xx=x+dx,zz=z+dz;if(!within(xx,zz))continue;
+        const ni=at(xx,zz);
+        if(visitWater[ni]||terrain[ni].biome!=='WATER')continue;
+        visitWater[ni]=1;queue.push(ni);
+      }
+    }
+    const type=touchesBoundary?'OCEAN':'LAKE';
+    const index=waterComponents.length;
+    for(const id of cells)waterComponentByCell[id]=index;
+    waterComponents.push(Object.freeze({id:'WATER_BODY_'+index,kind:type,cellCount:cells.length,
+      salinityPpt:type==='OCEAN'?35:0,source:'SEEDED_WATER_BODY_CONNECTED_COMPONENT',
+      nativeWaterShaderVerified:false,gameplaySwimmingRulesChanged:false}));
+  }
+  const coastDistance=new Int16Array(w*h).fill(32767),coastQueue=[];
+  for(const tile of terrain){
+    const id=at(tile.x,tile.z);
+    const isWater=tile.biome==='WATER';
+    const adjacent=[[-1,0],[1,0],[0,-1],[0,1]].some(([dx,dz])=>within(tile.x+dx,tile.z+dz)&&
+      (terrain[at(tile.x+dx,tile.z+dz)].biome==='WATER')!==isWater);
+    if(adjacent){coastDistance[id]=0;coastQueue.push(id);}
+  }
+  for(let i=0;i<coastQueue.length;i++){
+    const id=coastQueue[i],x=id%w,z=Math.floor(id/w);
+    for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const xx=x+dx,zz=z+dz;if(!within(xx,zz))continue;
+      const ni=at(xx,zz);
+      if(coastDistance[ni]>coastDistance[id]+1){coastDistance[ni]=coastDistance[id]+1;coastQueue.push(ni);}
+    }
+  }
+  // 유역 유출량은 높은 셀부터 하류로 누적한다. 높이·충돌·하천 연결은 바꾸지 않는다.
+  const runoff=Float64Array.from(terrain,tile=>.15+tile.moisture*.85);
+  for(const tile of [...terrain].sort((a,b)=>b.elevation-a.elevation||a.z-b.z||a.x-b.x)){
+    if(tile.drainageTo)runoff[at(tile.drainageTo.x,tile.drainageTo.z)]+=runoff[at(tile.x,tile.z)];
+  }
+  for(const tile of terrain){
+    const accumulated=runoff[at(tile.x,tile.z)];
+    tile.catchment=Object.freeze({runoffUnits:+accumulated.toFixed(3),erosionRisk:+Math.min(1,Math.log1p(accumulated)*tile.slopeDegrees/65).toFixed(3),
+      model:'DOWNSLOPE_FLOW_ACCUMULATION',terrainEroded:false,actualFloodSimulation:false});
   }
   // 침식으로 고도를 바꾸지 않고, 경사가 낮아지는 기존 셀만 잇는 하천 후보를 만든다.
   const river=[],sources=terrain.filter(t=>t.elevation>.57&&t.biome!=='WATER').sort((a,b)=>b.elevation-a.elevation||a.z-b.z||a.x-b.x);
@@ -342,6 +498,101 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   }
   const riverType=/ARID|DRY|DESERT/.test(String(climate).toUpperCase()+' '+String(biome).toUpperCase())?'SEASONAL_DRY_CHANNEL':'PERENNIAL_FLOW_CANDIDATE';
   const waterway=new Set(riverType==='SEASONAL_DRY_CHANNEL'?[]:river.map(c=>at(c.x,c.z)));
+  // 지형 셀의 하천·지질·토양·서식지를 결정론적으로 연결한다. 게임 충돌·경제·스폰은 수정하지 않는다.
+  const wetDistance=new Int16Array(w*h).fill(32767),waterQueue=[];
+  for(const tile of terrain){
+    const id=at(tile.x,tile.z);
+    if(tile.biome==='WATER'||waterway.has(id)){wetDistance[id]=0;waterQueue.push(id);}
+  }
+  for(let head=0;head<waterQueue.length;head++){
+    const current=waterQueue[head],x=current%w,z=Math.floor(current/w);
+    for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const xx=x+dx,zz=z+dz;if(!within(xx,zz))continue;
+      const next=at(xx,zz),distance=wetDistance[current]+1;
+      if(distance<wetDistance[next]){wetDistance[next]=distance;waterQueue.push(next);}
+    }
+  }
+  const climateTag=String(climate+' '+biome).toUpperCase(),coldRegion=/SNOW|ICE|COLD|POLAR|ALPINE/.test(climateTag),aridRegion=/ARID|DESERT|DRY/.test(climateTag);
+  const volcanicRegion=/VOLCAN|LAVA|BASALT/.test(climateTag),seasonalThermal=seasonKey==='WINTER'?'COLD':seasonKey==='SUMMER'?'WARM':'NEUTRAL';
+  const clamp01=n=>Math.max(0,Math.min(1,n));
+  const materialCounts=new Map(),habitatCounts=new Map(),geologyRegions=new Map();
+  for(const tile of terrain){
+    const {x,z}=tile,id=at(x,z),waterDistance=wetDistance[id]===32767?null:wetDistance[id];
+    // Worley/Voronoi 최근접 구역: 지질·토양 경계가 픽셀 잡음처럼 끊어지지 않게 유도한다.
+    const scale=6,cx=Math.floor(x/scale),cz=Math.floor(z/scale);let nearest=null;
+    for(let dz=-1;dz<=1;dz++)for(let dx=-1;dx<=1;dx++){
+      const gx=cx+dx,gz=cz+dz,noise=proceduralCellHash(hash^0x62b4,gx,gz);
+      const sx=(gx+.2+.6*(noise/4294967296))*scale,sz=(gz+.2+.6*(proceduralCellHash(hash^0xfbe1,gx,gz)/4294967296))*scale;
+      const distance=(x-sx)**2+(z-sz)**2;
+      if(!nearest||distance<nearest.distance)nearest={gx,gz,distance};
+    }
+    const stratum=['GRANITE','LIMESTONE','SHALE','BASALT'][volcanicRegion?3:proceduralCellHash(hash^0x977d,nearest.gx,nearest.gz)%3];
+    const geologyId=nearest.gx+':'+nearest.gz;
+    const annualTemperature=clamp01((coldRegion?.27:aridRegion?.77:.58)-(tile.elevation-.45)*.38+
+      .08*proceduralGradientNoise(hash^0xbeef,x/8,z/8));
+    const temperature=clamp01(annualTemperature+(seasonKey==='WINTER'?-0.2:seasonKey==='SUMMER'?.12:0));
+    const humidity=clamp01(tile.moisture+(waterDistance!==null?.24*Math.exp(-waterDistance/3):0)-(aridRegion?.2:0));
+    const slope=tile.slopeDegrees,rocky=tile.biome==='RIDGE'||slope>22;
+    const waterIndex=waterComponentByCell[id],body=waterIndex>=0?waterComponents[waterIndex]:null;
+    const shoreline=coastDistance[id]===32767?null:coastDistance[id];
+    // Whittaker 기후-강수 원리를 이용해 육상과 해양의 생태 영역을 구분한다. 실측 기후로 주장하지 않는다.
+    const annualRainIndex=clamp01(humidity*.8+(waterDistance!==null?.06:0));
+    const isMarine=body?.kind==='OCEAN',isFresh=body?.kind==='LAKE';
+    const depthEstimate=body?+(Math.max(.5,(shoreline||0)*1.65+Math.max(0,.42-tile.elevation)*10)).toFixed(2):null;
+    const waterEnvironment=isMarine
+      ?annualTemperature>.64&&depthEstimate<8?'CORAL_REEF':annualTemperature<.52&&depthEstimate<12?'KELP_FOREST':
+        depthEstimate>=26?'DEEP_OCEAN':'OPEN_OCEAN'
+      :isFresh?'FRESHWATER_LAKE':null;
+    const earthBiome=body?waterEnvironment
+      :rocky&&annualTemperature<.35?'ALPINE'
+      :annualTemperature<.18?'TUNDRA':annualTemperature<.35?(annualRainIndex>.38?'BOREAL_FOREST':'COLD_STEPPE')
+      :annualTemperature>.69?(annualRainIndex>.72?'TROPICAL_RAINFOREST':annualRainIndex>.38?'SAVANNA':'HOT_DESERT')
+      :annualRainIndex<.25?'TEMPERATE_DESERT':annualRainIndex>.72?'TEMPERATE_RAINFOREST':
+        annualRainIndex>.42?'TEMPERATE_FOREST':'TEMPERATE_GRASSLAND';
+    const shoreBiome=!body&&shoreline!==null&&shoreline<=2
+      ?annualTemperature>.64&&annualRainIndex>.65?'MANGROVE':annualRainIndex>.67?'FRESHWATER_WETLAND':'COASTAL_MARGIN'
+      :null;
+    const habitat=body?waterEnvironment
+      :shoreBiome==='MANGROVE'?'MANGROVE':shoreBiome==='FRESHWATER_WETLAND'?'WETLAND'
+      :rocky?'ROCKY_RIDGE':aridRegion||humidity<.27?'DRY_SCRUB'
+      :temperature<.3?'COLD_UPLAND':waterDistance!==null&&waterDistance<=2?'RIPARIAN'
+      :tile.biome==='FOREST'?'CANOPY_FOREST':'GRASSLAND';
+    const primary=body?(isMarine?'COASTAL_SAND_SEABED':'FRESHWATER_SEDIMENT')
+      :shoreBiome==='MANGROVE'?'PEAT_AND_SILT':shoreBiome==='FRESHWATER_WETLAND'?'WET_SILT'
+      :rocky?stratum:temperature<.19&&tile.elevation>.5?'SNOW_COVER'
+      :aridRegion?'SAND_AND_GRAVEL':habitat==='RIPARIAN'?'FLOODPLAIN_SILT'
+      :tile.biome==='FOREST'?'MOSS_LOAM':'GRASS_SOIL';
+    const secondary=primary==='RIVER_SEDIMENT'?'WET_SILT':primary==='SAND_AND_GRAVEL'?'DRY_SOIL'
+      :rocky?'STONE_GRAVEL':humidity>.6?'MOSS_LOAM':'DRY_SOIL';
+    const soilDepth=+(clamp01(.58+.22*humidity-slope/85-tile.catchment.erosionRisk*.23)).toFixed(3);
+    const substrateStability=+(clamp01(.93-.4*(slope/90)-.2*tile.catchment.erosionRisk+
+      (stratum==='GRANITE'?.07:stratum==='SHALE'?-.13:0))).toFixed(3);
+    const blend=+(clamp01(.1+humidity*.27+(slope/90)*.13)).toFixed(3);
+    const carryingCapacity=tile.biome==='WATER'?0:+(clamp01(
+      (.18+humidity*.72)*(1-Math.min(.85,slope/65))*(habitat==='ROCKY_RIDGE'?.35:1)*
+      (annualTemperature<.18?.55:1))).toFixed(3);
+    tile.aquatic=body?Object.freeze({bodyId:body.id,kind:body.kind,visualZone:waterEnvironment,estimatedDepthMeters:depthEstimate,
+      salinityPpt:body.salinityPpt,tidalInfluence:isMarine&&shoreline!==null&&shoreline<=2,
+      openWater:depthEstimate>=12,sourceNative3dWaterMeshRequired:true,realHydrologyMeasured:false,
+      swimmingAndFishingAuthority:false,actualNativeWaterVerified:false}):null;
+    tile.earthBiome=Object.freeze({name:shoreBiome||earthBiome,climateClass:earthBiome,coastalTransition:shoreBiome||null,
+      wetnessIndex:+annualRainIndex.toFixed(3),meanTemperatureProxy:+annualTemperature.toFixed(3),
+      abioticDrivers:Object.freeze(['TEMPERATURE','PRECIPITATION','ALTITUDE','SOIL','FRESHWATER','SALINITY']),
+      ecologicalSuccessionIsVisualPlanningOnly:true,worldGameplayAuthority:false});
+    tile.surface=Object.freeze({primary,secondary,secondaryBlend:blend,geologyId,stratum,waterDistanceCells:waterDistance,
+      temperature: +temperature.toFixed(3),annualTemperature:+annualTemperature.toFixed(3),humidity:+humidity.toFixed(3),soilDepth,substrateStability,season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
+      nativeShaderAnd3dTerrainBindingRequired:true,nativeMaterialApplied:false});
+    tile.ecology=Object.freeze({habitat,carryingCapacity,visualCover:0,scenicOnly:true,
+      spawnRateAuthority:false,gameplayResourcesUnchanged:true});
+    materialCounts.set(primary,(materialCounts.get(primary)||0)+1);
+    habitatCounts.set(habitat,(habitatCounts.get(habitat)||0)+1);
+    geologyRegions.set(geologyId,(geologyRegions.get(geologyId)||0)+1);
+  }
+  const earthBiomeCounts=new Map();
+  for(const tile of terrain)earthBiomeCounts.set(tile.earthBiome.name,(earthBiomeCounts.get(tile.earthBiome.name)||0)+1);
+  const terrainMaterialGroups=[...materialCounts].sort(([a],[b])=>a.localeCompare(b)).map(([kind,count])=>Object.freeze({
+    kind,count,sourceBinding:pickSource('MATERIAL',kind,0,0),worldTerrainMaterialApplied:false
+  }));
   const passable=(x,z)=>within(x,z)&&!blocked.has(at(x,z))&&!waterway.has(at(x,z))&&terrain[at(x,z)].biome!=='WATER';
   const nearest=(x,z)=>{
     for(let radius=0;radius<Math.max(w,h);radius++)for(let dz=-radius;dz<=radius;dz++)for(let dx=-radius;dx<=radius;dx++){
@@ -392,6 +643,30 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const steps=Math.max(Math.abs(hub.x-landmark.x),Math.abs(hub.z-landmark.z))*2;
     for(let i=0;i<=steps;i++){const t=steps?i/steps:0;sightCells.add(at(Math.round(hub.x+(landmark.x-hub.x)*t),Math.round(hub.z+(landmark.z-hub.z)*t)));}
   }
+  // 도시계획: 실제 길 그래프 위 보행 도달 거리, 간선 위계, 대지 홍수·경사 위험을 계산한다.
+  const pedestrianDistance=new Int32Array(w*h).fill(-1),arterial=new Set(),collector=new Set(),roadDegree=new Map();
+  for(const line of routes){
+    const traffic=line.id==='ENTRY-HUB'||line.id==='HUB-LANDMARK'?arterial:collector;
+    for(const cell of line.cells)traffic.add(at(cell.x,cell.z));
+  }
+  const hubRoad=hub?at(hub.x,hub.z):-1;
+  if(roadSet.has(hubRoad)){
+    const queue=[hubRoad];pedestrianDistance[hubRoad]=0;
+    for(let i=0;i<queue.length;i++){
+      const id=queue[i],x=id%w,z=Math.floor(id/w);
+      for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+        if(!within(x+dx,z+dz))continue;
+        const next=at(x+dx,z+dz);
+        if(!roadSet.has(next)||pedestrianDistance[next]!==-1)continue;
+        pedestrianDistance[next]=pedestrianDistance[id]+1;queue.push(next);
+      }
+    }
+  }
+  for(const id of roadSet){
+    const x=id%w,z=Math.floor(id/w),neighbors=[[-1,0],[1,0],[0,-1],[0,1]].filter(([dx,dz])=>within(x+dx,z+dz)&&roadSet.has(at(x+dx,z+dz))).length;
+    roadDegree.set(id,neighbors);
+  }
+  const streetCategory=id=>arterial.has(id)?'ARTERIAL':collector.has(id)?'COLLECTOR':'LOCAL';
   const buildings=[],occupied=new Set([...roadSet,...blocked]),instanceGroups=new Map();
   const maxBuildings=mobile?22:56,style=String(buildingStyle||'LOCAL').toUpperCase();
   const addInstance=(name,x,z,rotation=0,levelY=terrain[at(x,z)].elevation*8)=>{
@@ -411,19 +686,73 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const roadSurfaceY=terrain[id].elevation*8;
       const riseToFoundationY=Math.max(...footing)-roadSurfaceY;
       if(Math.abs(riseToFoundationY)>maxAccessibleRise)continue;
+      // 대지 선정에 실제 지질·배수 적합도를 반영한다. 기존 게임 구조물은 수정하지 않는다.
+      const foundationStability=Math.min(...footprint.map(c=>terrain[at(c.x,c.z)].surface.substrateStability));
+      const floodBuffer=Math.min(...footprint.map(c=>terrain[at(c.x,c.z)].surface.waterDistanceCells??999));
+      const erosionRisk=Math.max(...footprint.map(c=>terrain[at(c.x,c.z)].catchment.erosionRisk));
+      const siteSuitability=Math.max(.65,1-(1-foundationStability)*.2-erosionRisk*.1-(floodBuffer<=1?.12:floodBuffer<=3?.05:0));
       const roll=proceduralCellHash(hash,x,z)/4294967296;
-      if(roll>density)continue;
+      if(roll>density*siteSuitability)continue;
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
       const distance=Math.hypot(x-(hub?.x??w/2),z-(hub?.z??h/2));
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
+      // 시대·기술 수준은 건축 모델과 문화층에만 적용한다. 전투·기술 해금·경제 단계는 바꾸지 않는다.
+      const eraRequest=String(eraByZone[zone]||eraKey).toUpperCase();
+      const localEra=eraRequest==='AUTO'?inferredEra:eraRequest;
+      const eras=['ANCIENT','MEDIEVAL','MODERN','FUTURE'];
+      const eraResolved=localEra==='HYBRID'
+        ?eras[proceduralCellHash(hash^0xe2a,x,z)%eras.length]:localEra;
       const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
-      const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
+      const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':
+        eraResolved==='ANCIENT'||eraResolved==='MODERN'||eraResolved==='FUTURE'||/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
       const levelY=Math.max(...footing),pivot=worldPosition(x,z,levelY),doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
       // 문 위치와 길 연결은 월드 배치의 검증된 제안이며 실제 네비/충돌 권한은 게임 런타임이 가진다.
       const doorGrid=doorFacing==='WEST'?{x:x-.5,z:z+.5}:doorFacing==='EAST'?{x:x+1.5,z:z+.5}:doorFacing==='NORTH'?{x:x+.5,z:z-.5}:{x:x+.5,z:z+1.5};
       const stableObjectId=objectNamespace+':LOT:'+x+':'+z;
       const doorway={facing:doorFacing,position:worldPosition(doorGrid.x,doorGrid.z,levelY),roadCell:{x:rx,z:rz},roadAdjacencyVerified:roadSet.has(id),roadSlopeVerified:true,roadSurfaceY,riseToFoundationY:+riseToFoundationY.toFixed(4),runtimeNavigationVerified:false};
-      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER',verifiedStructuralEngineering:false},modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true};
+      const shapeSeed=proceduralCellHash(hash^0xb17d,x,z)/4294967296;
+      const storeys=zone==='WORKSHOP'?1:1+(proceduralCellHash(hash^0x512, x,z)%(zone==='COMMERCIAL'?3:2));
+      const floorHeight=+(cellSize*(1.3+shapeSeed*.9)).toFixed(3);
+      const wallHeight=+(floorHeight*storeys).toFixed(3);
+      const roofRise=roof==='FLAT_ROOF'?0:+(wallHeight*(.24+shapeSeed*.15)).toFixed(3);
+      const sourceBinding=pickSource('BUILDING',eraResolved==='LOCAL'?zone:eraResolved+':'+zone,x,z);
+      const baseMaterial=eraResolved==='ANCIENT'?'STONE':eraResolved==='MEDIEVAL'?
+        (/GOTHIC|CASTLE/.test(style)?'STONE':'TIMBER_STONE'):
+        eraResolved==='MODERN'?'STEEL_GLASS':eraResolved==='FUTURE'?'ENGINEERED_COMPOSITE':
+        /GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER';
+      const eraModules=eraResolved==='ANCIENT'?['COLUMN','COURT','STONE_ARCH','ROOF_DRAIN']
+        :eraResolved==='MEDIEVAL'?['TIMBER_FRAME','WALL_INFILL','LOAD_BEAM','BATTLEMENT_OR_PITCHED_ROOF']
+        :eraResolved==='MODERN'?['REINFORCED_FRAME','GLAZED_FACADE','SERVICE_CORE','ELEVATOR_ACCESS']
+        :eraResolved==='FUTURE'?['MODULAR_STRUCTURAL_FRAME','SMART_ENVELOPE','SKYBRIDGE_SOCKET','SERVICE_SHAFT']
+        :['FOUNDATION','WALL','DOOR','ROOF'];
+      const eraArchitecture=Object.freeze({era:eraResolved,eraSelection:eraRequest,
+        structuralGrammar:Object.freeze(eraModules),constructionLayer:'ARCHITECTURAL_VISUAL_AUTHORING_ONLY',
+        gameTechnologyOrProgressionUnlockChanged:false,periodMixSupported:eraRequest==='HYBRID',
+        cultureIdentityPreserved:true,native3dComponentsRequired:true,nativeArchitectureVerified:false});
+      const materialBindings=Object.freeze({
+        foundation:pickSource('MATERIAL',terrain[at(x,z)].surface?.stratum||'STONE',x,z),
+        wall:pickSource('MATERIAL',baseMaterial,x,z),
+        roof:pickSource('MATERIAL',roof,x,z)
+      });
+      const minFloodBuffer=Math.min(...footprint.map(cell=>terrain[at(cell.x,cell.z)].surface?.waterDistanceCells??999));
+      const maxGroundSlope=Math.max(...footprint.map(cell=>terrain[at(cell.x,cell.z)].slopeDegrees));
+      const weakGround=Math.min(...footprint.map(cell=>terrain[at(cell.x,cell.z)].surface?.substrateStability??1));
+      const accessSteps=pedestrianDistance[id]>=0?pedestrianDistance[id]:null;
+      const accessScore=accessSteps===null?0:Math.max(0,1-accessSteps/Math.max(w,h));
+      const floodScore=minFloodBuffer<=1?0:minFloodBuffer<=3?.5:1;
+      const terrainScore=Math.max(0,1-maxGroundSlope/Math.max(1,maxSlopeDegrees));
+      const landUseScore=+(accessScore*.5+floodScore*.25+terrainScore*.15+weakGround*.1).toFixed(3);
+      const planning=Object.freeze({districtId:zone+':'+Math.floor(x/6)+':'+Math.floor(z/6),
+        landUse:zone,streetClass:streetCategory(id),roadIntersectionDegree:roadDegree.get(id)||0,
+        pedestrianStepsToHub:accessSteps,frontageRoadCell:{x:rx,z:rz},floodBufferCells:minFloodBuffer===999?null:minFloodBuffer,
+        maxGroundSlopeDegrees:maxGroundSlope,minimumSubstrateStability:weakGround,landUseScore,
+        stormwaterDrainage:terrain[at(x,z)].drainageTo||null,streetNetworkVerified:false,
+        zoningAlgorithm:'GRAPH_PEDESTRIAN_ACCESS_AND_MULTICRITERIA_TERRAIN_RISK',runtimeBuildingPermitted:false});
+      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,planning,era:eraResolved,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:baseMaterial,materialBindings,eraArchitecture,verifiedStructuralEngineering:false,
+        structure3d:dimension==='3D'?Object.freeze({footprintWidthMeters:cellSize*2,footprintDepthMeters:cellSize*2,wallHeightMeters:wallHeight,wallThicknessMeters:+Math.max(.12,cellSize*.08).toFixed(3),foundationThicknessMeters:+Math.max(.15,cellSize*.12).toFixed(3),
+          roofRiseMeters:roofRise,storeys,floorHeightMeters:floorHeight,structuralFloorSlabsRequired:storeys>1,doorOpeningWidthMeters:+(cellSize*.46).toFixed(3),doorOpeningHeightMeters:+(wallHeight*.7).toFixed(3),
+          geometryRoles:Object.freeze(['FOUNDATION','WALL_OPENINGS','STRUCTURAL_JOINTS','DOOR_DEPTH','ROOF_GEOMETRY','INTERIOR_SHELL']),realNative3dMeshRequired:true,geometryGenerated:false}):null},
+        modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true,sourceBinding};
       buildings.push(building);
       addInstance('FOUNDATION',x,z,0,levelY);
       addInstance('DOOR',x,z,0,levelY);
@@ -432,24 +761,222 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       break;
     }
   }
-  // 자연물은 기후·지형과 지표에 연결한다. 기존 동선·건물·시야·예약 셀은 건드리지 않는다.
-  const vegetation=[],natureGroups=new Map(),maxVegetation=mobile?64:160;
+  // 해시 우선순위 + 근접 금지(블루 노이즈 근사). 단순 격자 순회로 특정 구역만 채우지 않는다.
+  const vegetation=[],natureGroups=new Map(),maxVegetation=mobile?64:160,placedNatureCells=new Set();
   const climateHint=String(climate).toUpperCase(),biomeHint=String(biome).toUpperCase();
-  for(const tile of terrain){
-    if(vegetation.length>=maxVegetation)break;
+  const feedbackAccepted=ecosystemFeedback?.verifiedAgainstRuntime===true
+    &&String(ecosystemFeedback.gameId||'')===String(gameId)
+    &&Boolean(ecosystemFeedback.sourceRevision)
+    &&ecosystemFeedback.visualDensityDeltaByHabitat&&typeof ecosystemFeedback.visualDensityDeltaByHabitat==='object';
+  const visualDensityDelta=habitat=>{
+    const value=feedbackAccepted?ecosystemFeedback.visualDensityDeltaByHabitat[habitat]:0;
+    return Number.isFinite(value)?Math.max(-.2,Math.min(.2,value)):0;
+  };
+  const natureCandidates=terrain.filter(tile=>{
     const key=at(tile.x,tile.z);
-    if(occupied.has(key)||waterway.has(key)||sightCells.has(key)||tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees)continue;
+    if(occupied.has(key)||waterway.has(key)||sightCells.has(key)||tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees)return false;
     const chance=tile.biome==='FOREST'?.44:tile.biome==='PLAIN'?.1:tile.biome==='RIDGE'?.05:tile.biome==='DRY'?.04:0;
-    const roll=proceduralCellHash(hash^0x10face,tile.x,tile.z)/4294967296;
-    if(roll>chance)continue;
+    const capacity=tile.ecology?.carryingCapacity||0;
+    // 서식지의 부양 능력과 검증된 시각 관찰값으로 *배경 식생만* 조정한다.
+    const habitatChance=Math.max(.01,Math.min(.62,chance+capacity*.16+visualDensityDelta(tile.ecology?.habitat)));
+    return proceduralCellHash(hash^0x10face,tile.x,tile.z)/4294967296<=habitatChance;
+  }).sort((a,b)=>
+    proceduralCellHash(hash^0x71eeb,a.x,a.z)-proceduralCellHash(hash^0x71eeb,b.x,b.z)
+    ||a.z-b.z||a.x-b.x);
+  for(const tile of natureCandidates){
+    if(vegetation.length>=maxVegetation)break;
+    let tooClose=false;
+    for(let dz=-1;dz<=1&&!tooClose;dz++)for(let dx=-1;dx<=1;dx++){
+      if(within(tile.x+dx,tile.z+dz)&&placedNatureCells.has(at(tile.x+dx,tile.z+dz))){tooClose=true;break;}
+    }
+    if(tooClose)continue;
     const kind=tile.biome==='RIDGE'?'ROCK':/DRY|ARID|DESERT/.test(climateHint+' '+biomeHint)?'SCRUB':/COLD|SNOW|ALPINE|MOUNTAIN/.test(climateHint+' '+biomeHint)?'PINE':tile.biome==='FOREST'?'BROADLEAF':'BUSH';
     const size=+(0.75+(proceduralCellHash(hash^0x992,tile.x,tile.z)/4294967296)*.7).toFixed(2);
     const stableObjectId=objectNamespace+':NATURE:'+kind+':'+tile.x+':'+tile.z;
-    const placement={id:'NATURE_'+vegetation.length,stableObjectId,interactionBinding:{stableObjectId,kind:kind==='ROCK'?'MINE':'GATHER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false};
-    vegetation.push(placement);
+    const sourceBinding=pickSource(kind==='ROCK'?'PROP':'ENVIRONMENT',kind,tile.x,tile.z);
+    const surfaceMaterialBinding=pickSource('MATERIAL',tile.surface?.primary||'GRASS_SOIL',tile.x,tile.z);
+    const placement={id:'NATURE_'+vegetation.length,stableObjectId,interactionBinding:{stableObjectId,kind:kind==='ROCK'?'MINE':'GATHER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},kind,biome:tile.biome,x:tile.x,z:tile.z,position:worldPosition(tile.x,tile.z,tile.elevation*8),elevationY:tile.elevation*8,scale:size,physicsColliderGenerated:false,sourceBinding,surfaceMaterialBinding,habitat:tile.ecology?.habitat||null};
+    vegetation.push(placement);placedNatureCells.add(at(tile.x,tile.z));
     const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
     group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
   }
+  // 생태학: 로지스틱 부양량·생태 틈새·계절 적응을 시각적 자산 수요로만 모델링한다.
+  const observedCoverByHabitat=new Map(),habitatCapacityByType=new Map();
+  for(const tile of terrain){
+    const type=tile.ecology.habitat;
+    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,waterCells:0};
+    data.cells++;data.capacity+=tile.ecology.carryingCapacity;
+    if(tile.surface.waterDistanceCells!==null&&tile.surface.waterDistanceCells<=2)data.waterCells++;
+    habitatCapacityByType.set(type,data);
+  }
+  for(const plant of vegetation){
+    observedCoverByHabitat.set(plant.habitat,(observedCoverByHabitat.get(plant.habitat)||0)+1);
+    const tile=terrain[at(plant.x,plant.z)];
+    tile.ecology=Object.freeze({...tile.ecology,visualCover:1});
+    const leafBehavior=plant.kind==='PINE'||plant.kind==='ROCK'?'EVERGREEN_OR_NONLIVING'
+      :seasonKey==='WINTER'?'DORMANT':seasonKey==='AUTUMN'?'SEASONAL_COLOR_CHANGE':'ACTIVE_GROWTH';
+    plant.seasonalAppearance=Object.freeze({season:seasonKey,leafBehavior,geometryChangeRequiresNativeAuthoring:true,
+      productionSeasonAffectsGameDrops:false});
+  }
+  const habitatBalance=[...habitatCapacityByType].sort(([a],[b])=>a.localeCompare(b)).map(([habitat,row])=>{
+    const current=observedCoverByHabitat.get(habitat)||0,usableCapacity=row.capacity;
+    const desired=Math.min(row.cells,usableCapacity*.32),growthRate=.24;
+    // 공간 점유 제한을 고려한 로지스틱 균형(다음 화면 제작 목표, 실게임 생물 개체수 아님).
+    const nextVisualCover=usableCapacity>0?Math.max(0,Math.min(row.cells,
+      current+growthRate*current*(1-current/Math.max(1,desired)))):0;
+    const cue=habitat==='AQUATIC'?'RIPPLE_AND_WETLAND_AMBIENCE'
+      :habitat==='CANOPY_FOREST'?'CANOPY_SHADE_AND_BIRDCALL'
+      :habitat==='RIPARIAN'?'RIVERBANK_REEDS_AND_INSECT_AMBIENCE'
+      :habitat==='DRY_SCRUB'?'WIND_SCRUB_AND_DRY_SOIL'
+      :habitat==='ROCKY_RIDGE'?'CLIFF_SHADOW_AND_ROCK_DEBRIS'
+      :habitat==='COLD_UPLAND'?'SPARSE_CONIFER_AND_WIND':'GRASS_WIND_AND_SOIL_LIFE';
+    return Object.freeze({habitat,cellCount:row.cells,visualPlantCount:current,
+      carryingCapacitySum:+usableCapacity.toFixed(3),averageHabitatCapacity:+(usableCapacity/Math.max(1,row.cells)).toFixed(3),
+      idealVisualCover:+desired.toFixed(3),nextVisualCover:+nextVisualCover.toFixed(3),
+      validatedVisualDensityFeedbackApplied:feedbackAccepted,visualDensityFeedback:visualDensityDelta(habitat),
+      ambientCue:cue,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
+      decomposerGuild:'SOIL_AND_FALLEN_MATTER_CUE_ONLY',actualCreatureSpawnCount:0,
+      actualHarvestableResourceCount:0,actualNativeVisualsVerified:false});
+  });
+  // 도시공학: 통행 가능한 도로 이웃만 활용하는 광장/공공시설 후보. 길·저장 영역을 점유하지 않는다.
+  const civicCandidates=[...roadSet].filter(id=>(roadDegree.get(id)||0)>=2&&pedestrianDistance[id]>=0)
+    .map(id=>({id,importance:(roadDegree.get(id)||0)*4+(arterial.has(id)?3:0)-pedestrianDistance[id]*.08}))
+    .sort((a,b)=>b.importance-a.importance||a.id-b.id);
+  const civicSpaces=[],reservedPublic=new Set();
+  for(const road of civicCandidates){
+    if(civicSpaces.length>=(mobile?4:10))break;
+    const rx=road.id%w,rz=Math.floor(road.id/w);
+    for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const x=rx+dx,z=rz+dz;
+      if(!within(x,z))continue;
+      const id=at(x,z),tile=terrain[id];
+      if(occupied.has(id)||waterway.has(id)||reservedPublic.has(id)||sightCells.has(id)||
+        tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees||tile.surface?.waterDistanceCells===0)continue;
+      if(tile.ecology?.habitat==='ROCKY_RIDGE'||tile.surface?.substrateStability<.35)continue;
+      reservedPublic.add(id);
+      civicSpaces.push(Object.freeze({id:objectNamespace+':CIVIC:'+x+':'+z,worldPosition:worldPosition(x,z,tile.elevation*8),
+        proposalType:streetCategory(road.id)==='ARTERIAL'?'NEIGHBORHOOD_SQUARE':'POCKET_GREEN',
+        adjacentRoadCell:{x:rx,z:rz},roadClass:streetCategory(road.id),
+        sourceBinding:pickSource('PROP','CIVIC',x,z),status:'VISUAL_PROPOSAL_NOT_INSTALLED',
+        blocksRoad:false,requiresActualNative3dAndPedestrianQa:true}));
+      break;
+    }
+  }
+  const cityDistricts=new Map();
+  for(const building of buildings){
+    const districtId=building.planning.districtId;
+    const row=cityDistricts.get(districtId)||{districtId,landUse:building.zone,buildingCount:0,
+      sumWalk:0,connectedCount:0,highFloodRiskCount:0};
+    row.buildingCount++;
+    if(building.planning.pedestrianStepsToHub!==null){
+      row.connectedCount++;row.sumWalk+=building.planning.pedestrianStepsToHub;
+    }
+    if(building.planning.floodBufferCells!==null&&building.planning.floodBufferCells<=1)row.highFloodRiskCount++;
+    cityDistricts.set(districtId,row);
+  }
+  const urbanDistricts=[...cityDistricts.values()].sort((a,b)=>a.districtId.localeCompare(b.districtId))
+    .map(row=>Object.freeze({districtId:row.districtId,landUse:row.landUse,buildingCount:row.buildingCount,
+      connectedBuildingCount:row.connectedCount,
+      meanWalkingStepsToHub:row.connectedCount?+(row.sumWalk/row.connectedCount).toFixed(2):null,
+      floodBufferReviewCount:row.highFloodRiskCount,planningOnly:true}));
+
+  // 게임이 승인한 개체만 원본 ID로 계획한다. 없는 몬스터·NPC를 직접 생성하지 않는다.
+  const rosterIds=new Set(),rosterIssues=[],lifeAndEncounterSites=[];
+  const supportedTiers=['NORMAL','ELITE','BOSS','RARE_BOSS','LEGENDARY'];
+  const supportedKinds=['NPC','MONSTER','CREATURE','BOSS'];
+  const actorActionSet=['WORK','REST','TALK','TRADE','PATROL','SCOUT','FORAGE','HUNT','DEFEND','RAID','VILLAGE_BUILD','DUNGEON_GUARD','MIGRATE'];
+  const candidateBudget=mobile?48:128;
+  for(const [rosterIndex,actor] of ecologyActors.entries()){
+    const actorId=String(actor?.id||''),kind=String(actor?.kind||'CREATURE').toUpperCase();
+    const tier=String(actor?.tier||'NORMAL').toUpperCase();
+    if(!/^[a-zA-Z0-9_-]{1,80}$/.test(actorId)||rosterIds.has(actorId)||
+       !supportedKinds.includes(kind)||!supportedTiers.includes(tier)){
+      rosterIssues.push('INVALID_AUTHORED_ACTOR_AT_INDEX:'+rosterIndex);continue;
+    }
+    rosterIds.add(actorId);
+    if(rosterIndex>=candidateBudget){rosterIssues.push('ACTOR_PLANNING_BUDGET_EXCEEDED');continue;}
+    const aquatic=actor?.aquatic===true||(actor?.allowedHabitats||[]).some(name=>
+      /OCEAN|LAKE|AQUATIC|REEF|KELP|RIVER/.test(String(name).toUpperCase()));
+    const allowedHabitatSet=new Set((Array.isArray(actor.allowedHabitats)?actor.allowedHabitats:[])
+      .map(value=>String(value).toUpperCase()));
+    const playerRelevant=kind==='NPC',bossTier=['BOSS','RARE_BOSS','LEGENDARY'].includes(tier);
+    const authoredDungeon=authoredDungeonSites.find(row=>String(row?.id||'')===String(actor.dungeonId||'')&&row?.approved===true);
+    const authoredRank=actor?.approved===true&&actor?.tierAuthorized===true;
+    const homeAnchor=playerRelevant&&buildings.length?buildings[proceduralCellHash(hash^0xa773,rosterIndex,7)%buildings.length]:null;
+    let placements=terrain.filter(tile=>{
+      const id=at(tile.x,tile.z),isWater=tile.biome==='WATER';
+      if(blocked.has(id)||tile.slopeDegrees>maxSlopeDegrees)return false;
+      if(playerRelevant)return !isWater&&roadSet.has(id);
+      if(occupied.has(id)||aquatic!==isWater)return false;
+      if(!isWater&&(roadSet.has(id)||sightCells.has(id)))return false;
+      if(allowedHabitatSet.size&&!allowedHabitatSet.has(tile.ecology.habitat)&&
+         !allowedHabitatSet.has(tile.earthBiome.name)&&!allowedHabitatSet.has(tile.earthBiome.climateClass))return false;
+      return true;
+    });
+    // 거리·서식지 적합도·권리 있는 자산을 우선하면서 해시 안정성으로 개체별 영역을 나눈다.
+    const rosterSalt=actorId.split('').reduce((value,char)=>
+      Math.imul(value^char.charCodeAt(0),16777619)>>>0,2166136261);
+    const housing=homeAnchor?homeAnchor.roadAccess:null;
+    const sorted=placements.map(tile=>{
+      const id=at(tile.x,tile.z),distance=hub?Math.hypot(tile.x-hub.x,tile.z-hub.z):0;
+      const habitatScore=(tile.ecology.carryingCapacity||0)*20;
+      const ownTerritory=allowedHabitatSet.size?17:0;
+      const roadScore=playerRelevant?(housing?Math.max(0,15-Math.hypot(tile.x-housing.x,tile.z-housing.z)*3):5):0;
+      const safeDistance=playerRelevant?0:bossTier?Math.min(24,distance*1.5):Math.min(12,distance);
+      const aquaticBonus=aquatic&&tile.aquatic?.kind==='OCEAN'?3:0;
+      return{tile,id,score:habitatScore+ownTerritory+roadScore+safeDistance+aquaticBonus+
+        (proceduralCellHash(hash^rosterSalt,tile.x,tile.z)%19)};
+    }).sort((a,b)=>b.score-a.score||a.id-b.id);
+    const tile=sorted[0]?.tile||null,site=tile?worldPosition(tile.x,tile.z,tile.elevation*8):null;
+    const acceptedActions=Array.isArray(actor.allowedActions)?
+      [...new Set(actor.allowedActions.map(v=>String(v).toUpperCase()).filter(v=>actorActionSet.includes(v)))]:[];
+    const raidAuthorized=actor.raidApproved===true&&Boolean(actor.raidTargetId)&&
+      buildings.some(b=>b.stableObjectId===actor.raidTargetId);
+    const dungeonAuthorized=Boolean(authoredDungeon&&tile&&bossTier);
+    const utilities=acceptedActions.map(action=>{
+      let score=20+(proceduralCellHash(hash^rosterSalt,rosterIndex,action.length)%9);
+      if(playerRelevant&&['WORK','TRADE','VILLAGE_BUILD','TALK'].includes(action)&&buildings.length)score+=28;
+      if(kind!=='NPC'&&['FORAGE','HUNT','PATROL','SCOUT'].includes(action)&&tile)score+=tile.ecology.carryingCapacity*32;
+      if(['REST','DEFEND'].includes(action))score+=9;
+      if(action==='RAID')score=raidAuthorized?score+18:-1000;
+      if(action==='DUNGEON_GUARD')score=dungeonAuthorized?score+45:-1000;
+      if(action==='HUNT'&&aquatic&&tile?.aquatic)score+=8;
+      return{action,score:+score.toFixed(3)};
+    }).filter(row=>row.score>=0).sort((a,b)=>b.score-a.score||a.action.localeCompare(b.action));
+    const proposedIntent=utilities[0]?.action||null;
+    // 등급 변화는 기존 전투/드랍/저장 권한을 우회할 수 없고 승인된 전이 후보만 나온다.
+    const authoredLadder=(Array.isArray(actor.authorizedTierTransitions)?actor.authorizedTierTransitions:[])
+      .filter(row=>row&&String(row.from||'').toUpperCase()===tier&&supportedTiers.includes(String(row.to||'').toUpperCase())
+        &&row.ownerApproved===true);
+    const nextTier=authoredRank?String(authoredLadder[0]?.to||'').toUpperCase():null;
+    const physiologicalPressure=tile?+(1-(tile.ecology.carryingCapacity||0)).toFixed(3):null;
+    const adaptation=Object.freeze({currentTier:tier,nextTierProposal:nextTier||null,
+      trigger:nextTier?'OWNER_AUTHORED_ECOLOGICAL_EVOLUTION_GUARD':'NOT_AUTHORIZED',
+      phenotypeCue:tile?.ecology.habitat||null,ecologicalPressure:physiologicalPressure,
+      adaptiveVariation:'VISUAL_PHENOTYPE_AND_BEHAVIOR_PRIORITY_ONLY',
+      aiMayChangeCombatRank:false,aiMayChangeStats:false,aiMayChangeLoot:false,
+      ownerApprovedTierTransitionCandidate:!!nextTier,requiresAuthoritativeEngineRuleAndRuntimeQa:!!nextTier,
+      tierMutationPerformed:false});
+    const renderAsset=pickSource(playerRelevant?'CHARACTER':'CREATURE',String(actor.species||kind),tile?.x||0,tile?.z||0);
+    lifeAndEncounterSites.push(Object.freeze({actorId,kind,tier,species:String(actor.species||''),faction:String(actor.faction||''),
+      gameId:String(gameId),position:site,cell:tile?{x:tile.x,z:tile.z}:null,
+      homeSettlementId:homeAnchor?.stableObjectId||null,
+      habitat:tile?.ecology.habitat||null,earthBiome:tile?.earthBiome.name||null,
+      aquatic:!!tile?.aquatic,encounterTierAuthorized:authoredRank,
+      authoredDungeonId:dungeonAuthorized?String(authoredDungeon.id):null,
+      proposedIntent,behaviorUtilities:Object.freeze(utilities),
+      raidTargetAuthorized:raidAuthorized,blueprint:renderAsset,evolution:adaptation,
+      status:actor.approved===true&&site?'DESIGN_MAPPED_NATIVE_BINDING_REQUIRED':'UNAPPROVED_OR_NO_VALID_SITE',
+      exactActorSourceIdRequired:true,actualNpcOrMonsterSpawned:false,engineActionExecuted:false,
+      sourceRevisionAndAuthoritativeAiValidationRequired:true,saveSchemaChanged:false}));
+  }
+  // 없는 생명체를 만들지 않는 대신, 부족한 바이옴 역할을 다음 설계 입력에 제안한다.
+  const habitatDesignGaps=habitatBalance.filter(row=>row.cellCount>0&&!lifeAndEncounterSites.some(site=>site.habitat===row.habitat))
+    .map(row=>Object.freeze({habitat:row.habitat,suggestedRole:
+      /OCEAN|LAKE|REEF|KELP/.test(row.habitat)?'AQUATIC_CREATURE':
+      /FOREST|MANGROVE|WETLAND/.test(row.habitat)?'WILDLIFE_AND_SCOUT':'REGIONAL_WILDLIFE',
+      action:'DESIGN_AND_SOURCE_REVIEW_ONLY',generatedActorId:null,spawnPermission:false}));
+
   let sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov:false,visible:false,terrainObstructed:false,buildingObstructed:false};
   if(hub&&landmark){
     const ax=landmark.x-hub.x,az=landmark.z-hub.z,length=Math.hypot(ax,az);
@@ -469,6 +996,50 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
     size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
+    livingBiomePopulation:Object.freeze({algorithm:'DETERMINISTIC_HABITAT_FIT_AND_AUTHORED_UTILITY_AI_ADVISORY',
+      inputActorCount:ecologyActors.length,plannedActorCount:lifeAndEncounterSites.length,issues:Object.freeze(rosterIssues),
+      actorPlacements:Object.freeze(lifeAndEncounterSites),habitatDesignGaps:Object.freeze(habitatDesignGaps),
+      tierVocabulary:Object.freeze(supportedTiers),existingActorAiOwner:'assets/vibe-ai-role-director.js',
+      approvedDesignGameActorsOnly:true,autonomousNativeRuntimeActionRequired:true,
+      actualAiActorSpawns:0,actualMonsterRankChanges:0,actualNpcDungeonsCreated:0,actualRaidsLaunched:0,
+      noBossMonsterStatsLootSaveBalanceMutation:true}),
+    oceansAndLakes:Object.freeze({algorithm:'FLOOD_FILL_WATER_BODY_SALINITY_COASTAL_BIOME_CLASSIFICATION',
+      requestedWaterMode:requestedWater,selectedWaterMode:waterKey,
+      waterSelectionMode:requestedWater==='AUTO'?'WORLD_GEOGRAPHY_AUTO':'EXPLICIT_APPROVED_DESIGN',
+      waterBodies:Object.freeze(waterComponents),
+      oceanCount:waterComponents.filter(row=>row.kind==='OCEAN').length,lakeCount:waterComponents.filter(row=>row.kind==='LAKE').length,
+      coastlineCells:terrain.filter(tile=>tile.aquatic?.tidalInfluence).length,
+      nativeWaterAndMarineCreatureRuntimeQaRequired:true,actualOceanLakeRenderingVerified:false,
+      authoredSwimmingFishingMechanicsPreserved:true,waterWorldGameRulesChanged:false}),
+    earthBiomes:Object.freeze({algorithm:'WHITTAKER_INSPIRED_CLIMATE_MOISTURE_WITH_AQUATIC_SUCCESSION',
+      categories:Object.freeze(Object.fromEntries([...earthBiomeCounts].sort(([a],[b])=>a.localeCompare(b)))),
+      climaticClassificationIsApproximate:true,gameplaySpeciesAndSpawnUnaffected:true,actualEcologicalSimulationVerified:false}),
+    geologyAndMaterials:Object.freeze({algorithm:'SEEDED_VORONOI_FBM_CATCHMENT_RUNOFF',
+      geologyRegionCount:geologyRegions.size,materialDistribution:Object.freeze(Object.fromEntries([...materialCounts].sort(([a],[b])=>a.localeCompare(b)))),
+      surfaceMaterialGroups:Object.freeze(terrainMaterialGroups),nativeMaterialAndTerrainQaRequired:true,actualMaterialRuntimeVerified:false}),
+    ecologyBalance:Object.freeze({algorithm:'CARRYING_CAPACITY_HABITAT_SUITABILITY_LOGISTIC_VISUAL_TARGET',
+      season:seasonKey,seasonalThermal,habitatDistribution:Object.freeze(Object.fromEntries([...habitatCounts].sort(([a],[b])=>a.localeCompare(b)))),
+      habitats:Object.freeze(habitatBalance),feedbackAccepted,resourceAndCreatureSpawnAuthority:false,
+      originalGameplaySpeciesAndPopulationPreserved:true,realBiologySimulationClaimed:false,nativeVisualsVerified:false}),
+    eraAndCulture:Object.freeze({requestedEra,selectedEra:eraKey,eraSelectionMode:requestedEra==='AUTO'?'WORLD_DESIGN_AUTO':'EXPLICIT_APPROVED_DESIGN',eraByZone:Object.freeze({...eraByZone}),
+      supportedEras:Object.freeze(supportedEras),usedEras:Object.freeze([...new Set(buildings.map(row=>row.era))].sort()),
+      buildingCountByEra:Object.freeze(Object.fromEntries([...new Set(buildings.map(row=>row.era))].sort().map(period=>
+        [period,buildings.filter(row=>row.era===period).length]))),
+      structuralGrammarsAreNativeAuthoringInputs:true,noTechnologyEconomyOrGameplayProgressionMutation:true,
+      perBuildingEraAndStyleSynchronizationRequired:true,nativeEraWorldRuntimeVerified:false}),
+    urbanPlanning:Object.freeze({algorithm:'ROAD_GRAPH_BFS_WEIGHTED_LAND_USE_STORMWATER_AND_LOT_STRUCTURAL_GRAMMAR',
+      roadCellCount:roadSet.size,roadIntersections:[...roadDegree.values()].filter(degree=>degree>=3).length,
+      arterialRoadCells:arterial.size,walkableHubRoadCells:pedestrianDistance.filter(value=>value>=0).length,
+      districts:Object.freeze(urbanDistricts),civicSpaceProposals:Object.freeze(civicSpaces),
+      noNewPhysicalRoadsOrGameplayBuildingsCreated:true,actualCivilEngineeringVerified:false,
+      actualNativeUrbanWorldVerified:false}),
+    sharedLibraryBinding:Object.freeze({gameId:String(gameId),target:String(target).toUpperCase(),sourceCandidateCount:pool.length,
+      eligibleFamilies:Object.freeze(Object.fromEntries([...poolByFamily].map(([family,rows])=>[family,rows.length]))),
+      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation,...terrainMaterialGroups,...civicSpaces].flatMap(row=>[row.sourceBinding?.assetId,row.surfaceMaterialBinding?.assetId,...Object.values(row.construction?.materialBindings||{}).map(binding=>binding?.assetId)]).filter(Boolean))].sort()),
+      originalAssetsCopied:false,actualRuntimeBindingsVerified:false,missingNativeAssetRequiresExistingAuthoring:true}),
+    placementDiversity:Object.freeze({algorithm:'SEEDED_HASH_PRIORITY_SPATIAL_REJECTION_BLUE_NOISE_APPROXIMATION',minimumVegetationSeparationCells:2,
+      candidatesEvaluated:natureCandidates.length,selectedVegetation:vegetation.length,stableGameObjectIds:true,
+      spatialDepthMetersRequired:dimension==='3D',slopeAndNavClearancePreserved:true}),
     sightline:Object.freeze(sightline),drainage:'FOUR_NEIGHBOR_DOWNHILL',noise:'SEEDED_2D_GRADIENT_FBM',snapRules:Object.freeze({moduleGrid:cellSize,entrancesFaceConnectedRoad:true,foundationsFollowTerrain:true}),
     mobileBudget:Object.freeze({cellCount:terrain.length,buildingLimit:maxBuildings,vegetationLimit:maxVegetation,instanceGroupCount:instanceGroups.size+natureGroups.size,actualDrawCallsMeasured:false}),
     // 안정 식별자는 오브젝트 이름/생성 순서에 의존하지 않는다. 보상·피해·저장은 기존 게임 규칙만 따른다.

@@ -66,8 +66,10 @@ export class JaewoonCommonAI {
   }
 
   decide(context = {}) {
-    if (['enemy','monster','boss','elite'].includes(String(context.entityKind || '').toLowerCase())) return this.decideEnemy(context);
-    return context.entityKind === 'npc' ? this.decideNpc(context) : this.decideCompanion(context);
+    const kind=String(context.entityKind||'').toLowerCase().replace(/[-_\s]/g,'');
+    if (['enemy','monster','boss','elite','rareboss','rare','legendary','legendaryboss'].includes(kind))
+      return this.decideEnemy(context);
+    return kind==='npc'?this.decideNpc(context):this.decideCompanion(context);
   }
 
   decideCompanion(context = {}) {
@@ -186,6 +188,23 @@ export class JaewoonCommonAI {
       return this.action(S.GUIDE, 'npc_observed_progress_guidance', { id: String(advice.id), text: String(advice.text || '').slice(0, 240) });
     }
 
+    // 오토 바이옴: 이미 승인·배치된 동일 NPC가 해당 지역의 실제 길을 따라 생활한다.
+    // AI는 목적지만 제안한다. 작업/상점/집 건설의 게임 상태 갱신은 기존 서버 함수가 한다.
+    const biomeActorId=String(context.actorId||this.identity.id||'');
+    const biomeSite=context.biomeWorld?.livingBiomePopulation?.actorPlacements?.find(row=>
+      row.actorId===biomeActorId&&row.kind==='NPC'&&row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED');
+    if (biomeSite?.cell&&context.movementAuthorized===true&&context.canRoam===true
+      &&context.biomeSiteApproved===true&&context.hostile!==true){
+      const destination={id:biomeSite.homeSettlementId||biomeActorId,
+        x:biomeSite.position.x,y:biomeSite.position.y,
+        ...(Number.isFinite(biomeSite.position.z)?{z:biomeSite.position.z}:{})};
+      if (context.canInteract===true&&context.biomeWorkApproved===true
+        &&['WORK','TRADE','VILLAGE_BUILD'].includes(biomeSite.proposedIntent)
+        &&context.interactTarget?.engineApproved===true){
+        return this.action(S.INTERACT,'npc_biome_authorized_work',context.interactTarget);
+      }
+      return this.action(S.PATROL,'npc_biome_settlement_route',destination);
+    }
     // 마을/필드의 기존 경로만 따라 걸으며 실제 좌표·충돌·스폰 판정은 엔진에 위임한다.
     if (context.canRoam === true && context.movementAuthorized === true && Array.isArray(context.authoredAnchors)) {
       const activityAnchor = String(context.currentActivity?.anchorId || context.nextAnchorId || '');
@@ -237,6 +256,27 @@ export class JaewoonCommonAI {
       if (context.canFlank && personality.caution > 0.2 && pressure < 0.25) return this.action(S.SEARCH, 'enemy_flank', target);
       if (this.canAttack(target)) return this.action(S.ATTACK, pressure > 0.25 ? 'enemy_pressure' : 'enemy_attack', target);
       return this.action(S.SEARCH, context.territorial ? 'enemy_territory_intercept' : 'enemy_approach', target);
+    }
+    // 승인된 오토 바이옴의 생명체·보스는 경계/사냥/습격지 *이동 의도*만 제안한다.
+    // 원래 서버의 공격/드랍/스폰/웨이브 권한 또는 전설 등급 진화 조건은 변경하지 않는다.
+    const biomeActorId=String(context.actorId||this.identity.id||'');
+    const biomeSite=context.biomeWorld?.livingBiomePopulation?.actorPlacements?.find(row=>
+      row.actorId===biomeActorId&&['MONSTER','BOSS','CREATURE'].includes(row.kind)
+      &&row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED');
+    if(biomeSite?.cell&&context.biomeSiteApproved===true){
+      if(biomeSite.proposedIntent==='RAID'&&biomeSite.raidTargetAuthorized===true
+        &&context.raidApproved===true&&context.raidTarget?.engineApproved===true
+        &&String(context.raidTarget.id)===String(context.authoredRaidTargetId||context.raidTarget.id)){
+        return this.action(S.SEARCH,'enemy_biome_authored_raid_approach',context.raidTarget);
+      }
+      if(biomeSite.proposedIntent==='DUNGEON_GUARD'&&biomeSite.authoredDungeonId
+        &&context.dungeonGuardApproved===true)return this.action(S.GUARD,'enemy_biome_dungeon_guard');
+      if(context.movementAuthorized===true&&context.canRoam===true&&biomeSite.position){
+        return this.action(S.PATROL,'enemy_biome_ecological_patrol',{
+          id:biomeActorId,x:biomeSite.position.x,y:biomeSite.position.y,
+          ...(Number.isFinite(biomeSite.position.z)?{z:biomeSite.position.z}:{})
+        });
+      }
     }
     if (context.investigateTarget && personality.curiosity > 0) return this.action(S.SEARCH, 'enemy_investigate', context.investigateTarget);
     if (allies.length && context.groupObjective === 'guard') return this.action(S.GUARD, 'enemy_group_guard');
