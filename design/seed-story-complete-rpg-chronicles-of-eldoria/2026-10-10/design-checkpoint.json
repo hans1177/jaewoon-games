@@ -194,25 +194,40 @@
         "단서 해석을 통한 고대 문자 해독 및 지름길 개척",
         "속성 공명 시스템 사용 또는 고대 유물 파편 활용"
       ]
+    },
+    "local_authoring_parts::e122d2a2d7bbd0357fec960dcd307e4495834283dea76c326ba984a9d12b95b4:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "캐릭터가 탐험 중인 지역에서 유물 발견",
+        "유물 에너지를 소모하여 지형 복구 선택"
+      ],
+      "stateOutputs": [
+        "맵 접근성 증대 및 새로운 길 열림",
+        "플레이어의 전략적 자원 관리 능력 향상"
+      ],
+      "name": "지형 개척 전술",
+      "purpose": "탐험 시 유물을 사용해 지형을 변화시키거나 새로운 길을 열어, 전투의 전략적 난이도와 접근성을 조절하는 데 활용됩니다.",
+      "playerChoice": "유물 에너지 소비량에 따라 지형 복구 또는 전투 보너스 획득 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 645212,
-      "lastMs": 10408,
+      "totalMs": 692815,
+      "lastMs": 47603,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:47:36.545Z"
+      "updatedAt": "2026-10-10T10:48:24.150Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:36:51.303Z",
-  "updatedAt": "2026-10-10T10:47:36.546Z",
+  "updatedAt": "2026-10-10T10:48:24.150Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1750,8 +1765,8 @@
   "localAuthoringSplits": {
     "1c49f902ae7f6e55966a696147b665c64769f1cd4474acbd85ae2df4ac45ba33": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:47:36.545Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T10:48:24.150Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
