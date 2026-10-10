@@ -1538,3 +1538,16 @@ test('current reset priority correctly binds timestamps in both canonical checkp
     assert.match(source,/const resetDate=resetAt\?/);
   }
 });
+
+test('novel grammar dilution explicitly reopens creativeGrammar while unrelated axis failures stay focused',()=>{
+  const source=design.slice(design.indexOf('function repairFields('),design.indexOf('function repairStructureContract('));
+  const repair=runInNewContext(source+'\nrepairFields',{
+    uniq:values=>[...new Set(values)],
+    AXIS_FIELDS:{IDEA_AND_DISTINCTNESS:['identity','coreFun']},
+    DESIGN:{required:['creativeGrammar','identity','coreFun']}
+  });
+  const dilution=Array.from(repair({rejectionReasons:[{code:'NOVEL_GRAMMAR_DILUTED',axis:'IDEA_AND_DISTINCTNESS'}],criticalAxisFailures:[]}));
+  assert.deepEqual(dilution,['creativeGrammar','identity','coreFun']);
+  const ordinary=Array.from(repair({rejectionReasons:[{code:'CORE_FUN_WEAK',axis:'IDEA_AND_DISTINCTNESS'}],criticalAxisFailures:[]}));
+  assert.deepEqual(ordinary,['identity','coreFun']);
+});
