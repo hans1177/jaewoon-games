@@ -440,25 +440,117 @@
         "delveGrowthRule": "플레이어의 자원 수집 행동은 자연적 위험 증가를 유도하며, 이는 선택 가능성을 확대하고 전략 경로를 개척한다. 위험 농도 상승은 선택 복잡성으로 인해 게임 메타데이터에 영향을 미친다.",
         "finalGameIdentity": "생존, 동료, 자원 수집 및 위험 판단"
       }
+    },
+    "local_authoring_parts::8d1400d7007c78eaea4288dad042a8899b877b73238f6fb8a77088cf407da541:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 동료들과 함께 숲속에서 자원을 수집하며, 위협과 리스크를 읽고 선택하는 경험을 반복한다.\n\n주요 행동: '산책하면서 자원을 찾고, 위험을 읽으며 선택' → 상태 변화: '위험 농도 증가' → 보상: '새로운 장비/선택 가능성' → 다음 선택: '더 복잡한 전략 또는 새로운 경로 탐색'\n\n게임 정체성: '생존, 동료', 플레이어 역할: '생존자', 대표 행동: '자원 수집 및 위험 판단', 시그니처 세계 규칙: '자연적 위험과 조건적 선택'",
+      "coreFun": "{\"identity\": \"숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.\",\n\"creativeGrammar\": {\"mainIdentity\": \"생존, 동료, 자원 수집 및 위험 판단\", \"a\": {\"system\": \"환경 시스템\", \"material\": \"자연적 위험\", \"materialDomain\": \"생태학\", \"stateChange\": \"위험 농도 증가(0-100%)로 상태 전환\"}, \"b\": {\"system\": \"전략 시스템\", \"material\": \"선택 가능성\", \"materialDomain\": \"게임 메타데이터\", \"stateChange\": \"새로운 장비/선택 가능성이 추가됨(기존: 없음)\"}},\n\"abCausality\": \"위험 농도 상승 → 선택 가능성 확대 → 새로운 전략 경로 탐색(양방향)\",\n\"abEvolution\": {\"aChangesB\": \"환경 위험 증가 -> 선택 가능성 확대 -> 전략 경로 개발\", \"bChangesA\": \"선택 가능성 확대 -> 자원 수집 강화 -> 위험 판단 정量化\", \"lateGameChange\": \"전략 경로 탐색 -> 새로운 게임 메타데이터 생성 -> 세계 상태 변환\"},\n\"materialFusion\": {\"contrast\": \"생태학적 위험 소재 vs. 게임 메타데이터 소재\", \"causalBridge\": \"위험 농도 상승 → 선택 가능성 확대 → 전략 경로 탐색\", \"removalConsequence\": \"자연적 위험 제거 시 선택 가능성 감소, 게임 메타데이터 손실\"},\n\"storyCausalChain\": {\"cause\": \"플레이어의 자원 수집 행동으로 인해 환경 위험 증가\", \"characterConflict\": \"자연적 위험과 조건적 선택 갈등 발생\", \"playerChoic"
+    },
+    "local_authoring_parts::6f372849dd953859cfa9a2d133056c993b55e6dbc18268cc70b5c0bb1ba4959e:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.\n\n플레이어는 동료들과 함께 숲속에서 자원을 수집하며, 위협과 리스크를 읽고 선택하는 경험을 반복한다.\n\n주요 행동: '산책하면서 자원을 찾고, 위험을 읽으며 선택' → 상태 변화: '위험 농도 증가', 보상: '새로운 장비/선택 가능성' → 다음 선택: '더 복잡한 전략 또는 새로운 경로 탐색'\n\n게임 정체성: '생존, 동료', 플레이어 역할: '생존자', 대표 행동: '자원 수집 및 위험 판단', 시그니처 세계 규칙: '자연적 위험과 조건적 선택'",
+      "creativeGrammar": {
+        "mainIdentity": "생존, 동료, 자원 수집 및 위험 판단",
+        "a": {
+          "system": "환경 시스템",
+          "material": "자연적 위험",
+          "materialDomain": "생태학",
+          "stateChange": "위험 농도 증가(0-100%)로 상태 전환"
+        },
+        "b": {
+          "system": "전략 시스템",
+          "material": "선택 가능성",
+          "materialDomain": "게임 메타데이터",
+          "stateChange": "새로운 장비/선택 가능성이 추가됨(기존: 없음)"
+        },
+        "abCausality": "위험 농도 상승 → 선택 가능성 확대 → 새로운 전략 경로 탐색(양방향)",
+        "abEvolution": {
+          "aChangesB": "환경 위험 증가 -> 선택 가능성 확대 -> 전략 경로 개발",
+          "bChangesA": "선택 가능성 확대 -> 자원 수집 강화 -> 위험 판단 정量化",
+          "lateGameChange": "전략 경로 탐색 -> 새로운 게임 메타데이터 생성 -> 세계 상태 변환"
+        },
+        "materialFusion": {
+          "contrast": "생태학적 위험 소재 vs. 게임 메타데이터 소재",
+          "causalBridge": "위험 농도 상승 → 선택 가능성 확대 → 전략 경로 탐색",
+          "removalConsequence": "자연적 위험 제거 시 선택 가능성 감소, 게임 메타데이터 손실"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 자원 수집 행동으로 인해 환경 위험 증가",
+          "characterConflict": "자연적 위험과 조건적 선택 갈등 발생",
+          "playerChoice": "위험 농도를 읽고 선택 가능성을 확대하는 플레이어 선택",
+          "worldChange": "자연적 위험 증가로 인한 세계 상태 변화",
+          "nextEvent": "새로운 전략 경로 탐색 및 게임 메타데이터 생성"
+        },
+        "cThemes": [
+          {
+            "name": "생태학적 위험",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자연적 위험 증가로 인해 플레이어의 선택에 영향"
+          },
+          {
+            "name": "게임 메타데이터",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선택 가능성 확대 및 전략 경로 개발"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존 게임",
+            "gameplayEffect": "자원 수집, 위험 판단, 새로운 전략 탐색"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "협력 게임",
+            "gameplayEffect": "동료와의 협업, 자원 공유, 상호작용 강화"
+          }
+        ],
+        "cGenreInterlock": "플레이어의 자원 수집 행동 → 자연적 위험 증가 → 조건적 선택 갈등 발생 → 위험 농도 읽기 → 선택 가능성 확대 → 전략 경로 탐색",
+        "cWorldAndGameplayEffect": "자연적 위험은 플레이어의 선택을 제한하고, 선택 가능성은 전략 경로를 개척한다. 위험 농도는 선택의 복잡성을 유발하며, 이는 게임 메타데이터에 영향을 미친다.",
+        "delveDiscoveries": [
+          {
+            "clue": "자연적 위험 증가 → 환경 변화",
+            "discovery": "플레이어의 자원 수집 행동으로 인해 자연적 위험 증가",
+            "newChoice": "새로운 전략 경로 탐색 및 게임 메타데이터 생성"
+          },
+          {
+            "clue": "선택 가능성 확대 → 전략 경로 개발",
+            "discovery": "선택 가능성 확대 및 자원 수집 강화",
+            "newChoice": "위험 판단 정量化 및 새로운 전략 경로 탐색"
+          },
+          {
+            "clue": "전략 경로 탐색 → 세계 상태 변환",
+            "discovery": "전략 경로 탐색 및 게임 메타데이터 생성",
+            "newChoice": "새로운 게임 메타데이터 생성 및 세계 상태 변환"
+          },
+          {
+            "clue": "생태학적 위험 제거 시 선택 가능성 감소",
+            "discovery": "자연적 위험 제거 시 선택 가능성 감소",
+            "newChoice": "게임 메타데이터 손실 및 전략 경로 탐색 차이 발생"
+          }
+        ],
+        "delveGrowthRule": "플레이어의 자원 수집 행동은 자연적 위험 증가를 유도하며, 이는 선택 가능성을 확대하고 전략 경로를 개척한다. 위험 농도 상승은 선택 복잡성으로 인해 게임 메타데이터에 영향을 미친다.",
+        "finalGameIdentity": "생존, 동료, 자원 수집 및 위험 판단"
+      },
+      "playerFantasy": "플레이어는 동료들과 함께 숲속에서 자원을 수집하며, 위협과 리스크를 읽고 선택하는 경험을 반복한다.\n\n주요 행동: '산책하면서 자원을 찾고, 위험을 읽으며 선택' → 상태 변화: '위험 농도 증가' → 보상: '새로운 장비/선택 가능성' → 다음 선택: '더 복잡한 전략 또는 새로운 경로 탐색'\n\n게임 정체성: '생존, 동료', 플레이어 역할: '생존자', 대표 행동: '자원 수집 및 위험 판단', 시그니처 세계 규칙: '자연적 위험과 조건적 선택'",
+      "coreFun": "{\"identity\": \"숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.\",\n\"creativeGrammar\": {\"mainIdentity\": \"생존, 동료, 자원 수집 및 위험 판단\", \"a\": {\"system\": \"환경 시스템\", \"material\": \"자연적 위험\", \"materialDomain\": \"생태학\", \"stateChange\": \"위험 농도 증가(0-100%)로 상태 전환\"}, \"b\": {\"system\": \"전략 시스템\", \"material\": \"선택 가능성\", \"materialDomain\": \"게임 메타데이터\", \"stateChange\": \"새로운 장비/선택 가능성이 추가됨(기존: 없음)\"}},\n\"abCausality\": \"위험 농도 상승 → 선택 가능성 확대 → 새로운 전략 경로 탐색(양방향)\",\n\"abEvolution\": {\"aChangesB\": \"환경 위험 증가 -> 선택 가능성 확대 -> 전략 경로 개발\", \"bChangesA\": \"선택 가능성 확대 -> 자원 수집 강화 -> 위험 판단 정量化\", \"lateGameChange\": \"전략 경로 탐색 -> 새로운 게임 메타데이터 생성 -> 세계 상태 변환\"},\n\"materialFusion\": {\"contrast\": \"생태학적 위험 소재 vs. 게임 메타데이터 소재\", \"causalBridge\": \"위험 농도 상승 → 선택 가능성 확대 → 전략 경로 탐색\", \"removalConsequence\": \"자연적 위험 제거 시 선택 가능성 감소, 게임 메타데이터 손실\"},\n\"storyCausalChain\": {\"cause\": \"플레이어의 자원 수집 행동으로 인해 환경 위험 증가\", \"characterConflict\": \"자연적 위험과 조건적 선택 갈등 발생\", \"playerChoic"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1055869,
-      "lastMs": 123508,
+      "totalMs": 1278343,
+      "lastMs": 222474,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:46:36.461Z"
+      "updatedAt": "2026-10-10T08:50:18.942Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:29:00.323Z",
-  "updatedAt": "2026-10-10T08:46:36.467Z",
+  "updatedAt": "2026-10-10T08:50:18.944Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2187,7 +2279,7 @@
     "8d1400d7007c78eaea4288dad042a8899b877b73238f6fb8a77088cf407da541": true,
     "2127637d6f7a83d7f7dc5a02a0a73f5a78a5c9944401b43c34c1376249304cb9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:46:36.467Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:50:18.944Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
