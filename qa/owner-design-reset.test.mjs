@@ -200,7 +200,7 @@ test('no-op reset does not dispatch another competing design runtime',()=>{
 test('design queue preserves pending runs and stale engine snapshots cannot modify runtime',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const concurrent=workflow.slice(workflow.indexOf('concurrency:'),workflow.indexOf('\nenv:',workflow.indexOf('concurrency:')));
-  assert.match(concurrent,/group: company-seed-design-runtime/);
+  assert.match(concurrent,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}/);
   assert.match(concurrent,/queue: max/);
   assert.match(concurrent,/cancel-in-progress: false/);
   const resolver=workflow.slice(workflow.indexOf('  resolve-seed-targets:'),workflow.indexOf('  design-cycle:'));
