@@ -1318,13 +1318,20 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           }
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/C/@ 역할별 원본 설계 검사
-          const itemKey=`${identity}:${field}:${index}`;
-          const itemTaskKey=`local_authoring_parts::${itemKey}`;
           const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
+          // 메인: 직전 디자이너가 실제 작성한 상태 입출력만 다음 역할의 연결 근거로 사용한다.
+          const previousRule=grammarRole?rows.at(-1):null;
+          const roleHandoff=previousRule?{
+            inputKeysFromPreviousOutputs:previousRule.stateOutputs,
+            outputKeysToPreviousInputs:previousRule.stateInputs
+          }:null;
+          // 이전 역할을 수정했다면 같은 인덱스의 낡은 응답은 재사용하지 않는다.
+          const itemKey=`${identity}:${field}:${index}:${createHash('sha256').update(JSON.stringify(previousItems)).digest('hex').slice(0,16)}`;
+          const itemTaskKey=`local_authoring_parts::${itemKey}`;
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             const roleIssues=[];
@@ -1337,6 +1344,10 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             if([...inputKeys,...outputKeys].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
               roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
             if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
+            if(roleHandoff&&!inputKeys.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key)))
+              roleIssues.push('DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING');
+            if(roleHandoff&&!outputKeys.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key)))
+              roleIssues.push('DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING');
             if(!roleIssues.length){
               if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
               rows.push(value);break;
