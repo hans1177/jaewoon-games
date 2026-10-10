@@ -212,12 +212,22 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
   const districts=Array.isArray(sketch.districts)?sketch.districts:[];
   if(!districts.length)issues.push('DISTRICT_INTERPRETATION_REQUIRED');
   if(districts.some(row=>!row?.id||!ids.has(row.anchorNodeId)||!row.function)||new Set(districts.map(row=>row?.id)).size!==districts.length)issues.push('DISTRICT_ANCHOR_OR_FUNCTION_REQUIRED');
+  // 구문: 실측 고저차와 기존 연결 간선만 수직 이동 동선의 후보로 허용한다.
+  const elevationById=new Map(nodes.filter(node=>Number.isFinite(node?.elevationMeters)).map(node=>[node.id,node.elevationMeters]));
+  const verticalLinks=Array.isArray(sketch.verticalLinks)?sketch.verticalLinks:[];
+  if(sketch.verticalLinks!=null&&!Array.isArray(sketch.verticalLinks))issues.push('VERTICAL_LINKS_INVALID');
+  for(const link of verticalLinks){
+    const bound=edges.some(edge=>(edge.from===link?.from&&edge.to===link?.to)||(edge.oneWay!==true&&edge.from===link?.to&&edge.to===link?.from));
+    const fromHeight=elevationById.get(link?.from),toHeight=elevationById.get(link?.to);
+    if(!bound||!Number.isFinite(fromHeight)||!Number.isFinite(toHeight)||Math.abs(fromHeight-toHeight)<.5)
+      issues.push('VERTICAL_LINK_REQUIRES_EXISTING_EDGE_AND_MEASURED_HEIGHT:'+String(link?.from||'?')+'-'+String(link?.to||'?'));
+  }
 
   const layerRules=[
     ['TERRAIN','ENVIRONMENT','elevation drainage ground strata and traversable shoulders',
-      ['MACRO_ELEVATION','TRAVERSABLE_SLOPES','DRAINAGE_CHANNELS','SOIL_ROCK_STRATA','ROUTE_SHOULDERS','GROUND_MATERIAL_BLEND','EROSION_AND_USAGE_WEAR']],
+      ['MACRO_ELEVATION','TRAVERSABLE_SLOPES','DRAINAGE_CHANNELS','SOIL_ROCK_STRATA','ROUTE_SHOULDERS','GROUND_MATERIAL_BLEND','EROSION_AND_USAGE_WEAR','CLIFF_STRATA_AND_HEIGHT_LAYER_SILHOUETTE','THREE_DEPTH_GAME_CAMERA_READABILITY']],
     ['STRUCTURE','BUILDING','plot roof facade doorway window supports joints and back-side construction',
-      ['MASSING_AND_FOOTPRINT','FOUNDATION_FRAME','WALLS_OPENINGS','DOORS_WINDOWS_DEPTH','ROOF_AND_DRAINAGE','INTERIOR_SHELL','TRIM_FASTENERS_JOINTS','FUNCTIONAL_FIXTURES']],
+      ['MASSING_AND_FOOTPRINT','FOUNDATION_FRAME','WALLS_OPENINGS','DOORS_WINDOWS_DEPTH','ROOF_AND_DRAINAGE','INTERIOR_SHELL','TRIM_FASTENERS_JOINTS','FUNCTIONAL_FIXTURES','ARCH_BRIDGE_AND_RAISED_ROOF_SUPPORTS','LANDMARK_MASSING_FROM_GAME_CAMERA']],
     ['VEGETATION','ENVIRONMENT','species clusters age variation root-soil contact and canopy gaps',
       ['SPECIES_SELECTION','AGE_SCALE_VARIANTS','TRUNK_BRANCH_FORM','ROOT_SOIL_CONTACT','CANOPY_CLUSTERING','UNDERSTORY','DEAD_FALLEN_VARIANTS','WIND_RESPONSE']],
     ['FUNCTIONAL_PROPS','PROP','district-specific work storage seating signs tools and human use',
@@ -229,20 +239,64 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
   ];
 
   const distanceDetail=Object.freeze({
-    GAME_CAMERA:Object.freeze(['REGION_SILHOUETTE','LANDMARK_HIERARCHY','ROUTE_READABILITY','DISTRICT_VALUE_AND_COLOR_BLOCKS']),
-    MID_RANGE:Object.freeze(['BUILDING_MODULES','VEGETATION_CLUSTERS','FUNCTIONAL_PROP_GROUPS','SECONDARY_PATHS']),
+    GAME_CAMERA:Object.freeze(['REGION_SILHOUETTE','LANDMARK_HIERARCHY','ROUTE_READABILITY','DISTRICT_VALUE_AND_COLOR_BLOCKS','HEIGHT_LAYER_READABILITY','FOREGROUND_MIDGROUND_DISTANCE','ROUTE_CURVE_REVEAL']),
+    MID_RANGE:Object.freeze(['BUILDING_MODULES','VEGETATION_CLUSTERS','FUNCTIONAL_PROP_GROUPS','SECONDARY_PATHS','BRIDGE_UNDERSIDE_AND_CLIFF_LEDGE','STAIR_RAMP_SUPPORT_DETAILS']),
     CLOSEUP:Object.freeze(['JOINTS_FASTENERS','SURFACE_WEAR','ROOT_SOIL_CONTACT','GUTTERS_TRIM','SIGNS_TOOLS_STORAGE']),
     CONTACT:Object.freeze(['DOOR_STAIR_HANDLE','INTERACTION_ANCHOR','GROUND_FOOTING','RESOURCE_CLEARANCE','WALL_FLOOR_OBJECT_CONTACT'])
   });
 
   let hash=2166136261;for(const char of String(seed)){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619);}hash>>>=0;
+  // 메인: 기존 길 연결·일방향은 잠그고, 반복 통로가 아닌 입체 실루엣과 경로 곡률을 제안한다.
+  const routeForms=['TERRACED_SWITCHBACK','CLIFFSIDE_CURVE','ARCHED_SPAN','SUNKEN_ROCK_CUT','GATEHOUSE_TURN','ROOT_BRIDGE_WITH_UNDERSIDE'];
+  const routeGeometry=routes.edges.map((edge,index)=>{
+    const from=elevationById.get(edge.from),to=elevationById.get(edge.to);
+    return Object.freeze({
+      from:edge.from,to:edge.to,oneWay:edge.oneWay,
+      profile:routeForms[(hash+index*5)%routeForms.length],
+      heightDifferenceMeters:Number.isFinite(from)&&Number.isFinite(to)?Math.abs(from-to):null,
+      verticalLinkProposed:verticalLinks.some(link=>link.from===edge.from&&link.to===edge.to),
+      worldForms:Object.freeze(['EDITABLE_3D_TERRAIN','CURVED_3D_ROUTE_EDGE','SUPPORT_AND_UNDERSIDE','THREE_DEPTH_COMPOSITION']),
+      originalRouteAndCollisionLocked:true,extraRouteOrShortcutAdded:false,
+      slopeAndNativeMeshProofRequired:true,runtimeVerified:false
+    });
+  });
   const regions=districts.filter(row=>row?.id&&ids.has(row.anchorNodeId)).map((district,index)=>({
     id:district.id,anchorNodeId:district.anchorNodeId,function:district.function,
     landmark:district.landmark||null,styleFamily,
+    // 기존 구역의 기능·랜드마크에 맞는 깊이와 건축 구조를 설계한다.
+    spatialComposition:Object.freeze({
+      districtFunction:district.function,landmarkIdentity:district.landmark||null,
+      routeIds:Object.freeze(routeGeometry.filter(route=>route.from===district.anchorNodeId||route.to===district.anchorNodeId).map(route=>route.from+'-'+route.to)),
+      worldLayers:Object.freeze([
+        'LOWER_CLIFF_AND_FOUNDATION_SILHOUETTE',
+        'EXISTING_PLAYABLE_HEIGHT_TERRACES',
+        'UPPER_ROOF_BRIDGE_AND_DISTANT_LANDMARK_NONTRAVERSABLE_UNTIL_APPROVED'
+      ]),
+      identityForm:/FOREST|JUNGLE|WOOD|숲|밀림/.test(String(district.function).toUpperCase())?'ROOT_CANOPY_BRIDGE':
+        /DUNGEON|RUIN|CAVE|FORTRESS|성|폐허|동굴/.test(String(district.function).toUpperCase())?'STONE_ARCH_RUIN_CLIFF':
+        /DESERT|SAND|사막/.test(String(district.function).toUpperCase())?'SANDSTONE_TERRACE_CANYON':
+        /CITY|MARKET|VILLAGE|SCHOOL|TOWN|HUB|마을|학교|시장/.test(String(district.function).toUpperCase())?'MULTILEVEL_LIVED_IN_ARCHITECTURE':
+        'GAME_SPECIFIC_SPATIAL_MASSING',
+      lighting:Object.freeze(['LANDMARK_REVEAL','WARM_COOL_DEPTH_SEPARATION','CONTACT_SHADOW','MOBILE_LIGHT_BUDGET']),
+      causality:Object.freeze(['BRIDGE_SUPPORTS_CARRY_REAL_MASS','DRAINAGE_FOLLOWS_SLOPE','WEAR_FOLLOWS_FOOT_TRAFFIC','PROPS_HAVE_DISTRICT_FUNCTION']),
+      noNewGameRouteOrSaveSemantics:true,runtimeVerified:false
+    }),
     productionSequence:['BLOCKOUT','STRUCTURAL_AUTHORING','FUNCTIONAL_DETAIL','MATERIAL_AND_HISTORY','AMBIENT_MOTION','PLATFORM_VARIANTS','APPLY_TO_WORLD'],
     detailByDistance:distanceDetail,
     layers:layerRules.map(([layer,family,detail,authoringPasses],layerIndex)=>{
-      const candidates=assets.filter(asset=>String(asset.family||asset.category).toUpperCase()===family&&(asset.sourceHash||asset.contentHash||asset.sha256)&&Array.isArray(asset.mapDetailRoles)&&asset.mapDetailRoles.includes(layer)&&(!asset.districtFunctions?.length||asset.districtFunctions.includes(district.function)));
+      const candidates=assets.filter(asset=>{
+        if(String(asset.family||asset.category).toUpperCase()!==family||!(asset.sourceHash||asset.contentHash||asset.sha256)||!Array.isArray(asset.mapDetailRoles)||!asset.mapDetailRoles.includes(layer)||asset.districtFunctions?.length&&!asset.districtFunctions.includes(district.function))return false;
+        if(asset.securityBlocked===true||asset.quarantined===true||asset.rightsPass===false||asset.catalogActive===false)return false;
+        if(['ENVIRONMENT','BUILDING','PROP','WORLD_OBJECT','TERRAIN'].includes(family)){
+          // 유효한 원본 경로 배열만 탐색한다. 잘못된 자산 메타데이터는 승인하거나 예외로 전체 계획을 중단하지 않는다.
+          const sources=[asset.path,asset.masterGlb,asset.meshArtifact,asset.masterSourcePath,
+            ...(Array.isArray(asset.nativeArtifacts)?asset.nativeArtifacts:[]),
+            ...(Array.isArray(asset.sourceFiles)?asset.sourceFiles:[]),
+            ...(Array.isArray(asset.fileRoles?.models)?asset.fileRoles.models:[])];
+          if(!sources.some(item=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(item||''))))return false;
+        }
+        return true;
+      });
       const selected=candidates.length?candidates[(hash+index*7+layerIndex*3)%candidates.length]:null;
       return{
         layer,family,detail,authoringPasses:Object.freeze(authoringPasses),cause:district.function,
@@ -260,11 +314,11 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
   const productionChain=Object.freeze({
     sequence:Object.freeze(['INSPECT_MAP_AND_RUNTIME','DEFINE_REGION_REPAIR_SCOPE','AUTHOR_REGION_ASSETS_AND_MATERIALS','APPLY_TO_EXISTING_WORLD','REINSPECT_ROUTE_AND_GAME_CAMERA']),
     automaticAdvance:true,
-    inspect:Object.freeze(['SOURCE_MAP_TOPOLOGY','CURRENT_RUNTIME_CAMERA','LANDMARK_VISIBILITY','ROUTE_AND_INTERACTION_CLEARANCE','CURRENT_REGION_ASSET_BINDINGS']),
+    inspect:Object.freeze(['SOURCE_MAP_TOPOLOGY','CURRENT_RUNTIME_CAMERA','LANDMARK_VISIBILITY','ROUTE_AND_INTERACTION_CLEARANCE','CURRENT_REGION_ASSET_BINDINGS','SOURCE_ELEVATION_AND_VERTICAL_LINKS','REPEATED_CORRIDOR_AUDIT']),
     repair:Object.freeze(['KEEP_VALID_TOPOLOGY','TARGET_ONLY_WEAK_REGIONS','PRESERVE_SPAWN_OBJECTIVE_INTERACTION_COLLISION_SAVE_MEANING']),
-    author:Object.freeze(['EDITABLE_TERRAIN_OR_WORLD_SOURCE','MODULAR_BUILDING_KITS','VEGETATION_VARIANTS','FUNCTIONAL_PROP_KITS','MATERIAL_HISTORY_PASSES','AMBIENT_MOTION_VARIANTS']),
+    author:Object.freeze(['EDITABLE_TERRAIN_OR_WORLD_SOURCE','MODULAR_BUILDING_KITS','VEGETATION_VARIANTS','FUNCTIONAL_PROP_KITS','MATERIAL_HISTORY_PASSES','AMBIENT_MOTION_VARIANTS','BRIDGE_ARCH_CLIFF_AND_UNDERSIDE_3D_MESH','CURVED_ROUTE_MODULES_MATCHING_EXISTING_TOPOLOGY','GAME_SPECIFIC_HERO_LANDMARK','DEPTH_LIGHT_AND_SHADOW_PASS']),
     apply:Object.freeze(['USE_EXISTING_WORLD_RESPONSIBILITY','NO_SHADOW_MAP','BIND_NAV_COLLISION_WITHOUT_CHANGING_GAMEPLAY_MEANING','MOBILE_LOD_AND_STREAMING_VARIANTS']),
-    reinspect:Object.freeze(['TOP_DOWN_ROUTE_OVERLAY','EYE_LEVEL_WALKTHROUGH','LANDMARK_REVEAL','INTERACTION_RANGE_CLOSEUP','GAME_CAMERA_DETAIL_READABILITY']),
+    reinspect:Object.freeze(['TOP_DOWN_ROUTE_OVERLAY','EYE_LEVEL_WALKTHROUGH','LANDMARK_REVEAL','INTERACTION_RANGE_CLOSEUP','GAME_CAMERA_DETAIL_READABILITY','ELEVATION_CROSS_SECTION_NATIVE_MESH','SLOPE_BRIDGE_PLAYER_ROUTE_WALKTHROUGH','MOBILE_OCCLUSION_FRAMETIME_CHECK']),
     failedRegionOnlyLoops:true,
     reportOnlyCompletionForbidden:true
   });
@@ -272,6 +326,14 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
     version:2,status:issues.length?'MAP_INTERPRETATION_REQUIRED':'DETAIL_AUTHORING_PLAN',issues:Object.freeze(issues),seed:String(seed),styleFamily,
     sourceId:sketch.sourceId||null,sourceHash:sketch.sourceHash||null,
     topology:issues.length?null:routes,regions:Object.freeze(issues.length?[]:regions),
+    routeGeometry:Object.freeze(issues.length?[]:routeGeometry),
+    worldDepthEvidence:Object.freeze({
+      status:'NATIVE_WORLD_AUTHORING_AND_RUNTIME_QA_REQUIRED',
+      layerCountTarget:3,verticalLinks:Object.freeze(issues.length?[]:verticalLinks.map(link=>Object.freeze({from:link.from,to:link.to}))),
+      knownElevationCount:elevationById.size,routeConnectivityAndDirectionLocked:true,
+      actual3dTerrainBridgeLandmarkMeshRequired:true,flat2dWorldNotFinal:true,
+      mobileWalkthroughAndOcclusionQaRequired:true,runtimeVerified:false
+    }),
     productionChain,
     detailByDistance:distanceDetail,
     spatialScale:typeof sketch.metersPerUnit==='number'&&Number.isFinite(sketch.metersPerUnit)&&sketch.metersPerUnit>0?{metersPerUnit:sketch.metersPerUnit,measured:false}:{status:'SCALE_AUTHORING_REQUIRED',measured:false},

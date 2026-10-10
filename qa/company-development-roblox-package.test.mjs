@@ -32,12 +32,18 @@ test('stale same-game source trees are coalesced as superseded work instead of f
   assert.match(workflow,/source-tree-superseded/);
 });
 
-test('village-dungeons consumes the selected VFX family through a live ParticleEmitter',()=>{
+test('village-dungeons consumes selected VFX only after server-confirmed combat events',()=>{
   const source=fs.readFileSync('roblox-games/village-dungeons/client/Game.client.luau','utf8');
+  const server=fs.readFileSync('roblox-games/village-dungeons/server/Game.server.luau','utf8');
   assert.equal(robloxStudioAssetFamilyBoundInText(source,'VFX'),true);
   assert.match(source,/StudioVfxAtom/);
-  assert.match(source,/ParticleEmitter/);
-  assert.match(source,/emitter:Emit\(10\)/);
+  assert.match(source,/local emitter = Instance.new\("ParticleEmitter"\)/);
+  assert.match(source,/combatContactEmitter = emitter/);
+  assert.match(source,/eventName == "COMBAT_PRESENTATION"/);
+  assert.match(source,/combatContactEmitter:Emit\(isDeath and 12 or \(kind == "DODGE" and 4 or 7\)\)/);
+  assert.doesNotMatch(source,/emitter:Emit\(10\)/,'button-only visual contact must not fake a hit');
+  assert.match(server,/enemy:SetAttribute\("Health", nextHealth\)[\s\S]*?remote:FireClient\(player, "COMBAT_PRESENTATION"/);
+  assert.match(server,/if os.clock\(\) <= dodgeUntil then[\s\S]*?Kind = "DODGE"/);
 });
 
 test('survival consumes selected VFX atoms in the persistent native creature presentation',()=>{

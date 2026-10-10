@@ -343,6 +343,9 @@ root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
 root.Parent = gui
 
 -- 선택된 내부 자산 family를 기존 마을/던전 네이티브 표현에 직접 소비한다.
+-- VFX · 기존 서버가 확정한 전투 결과만 동일한 StudioSkillEmitter에서 출력한다.
+local combatContactAttachment = nil
+local combatContactEmitter = nil
 task.defer(function()
   local world = workspace:FindFirstChild("VillageDungeonWorld") or workspace:WaitForChild("VillageDungeonWorld", 5)
   if not world then return end
@@ -388,9 +391,10 @@ task.defer(function()
   end
 
   if #studioAssetFamily("SKILL") > 0 or #studioAssetFamily("VFX") > 0 then
-    local character = player.Character or player.CharacterAdded:Wait()
-    local rootPart = character:WaitForChild("HumanoidRootPart", 5)
-    if rootPart then
+    -- 그래픽 · 캐릭터 리스폰 시 기존 모션·VFX 소비자를 동일 책임 위치에서 다시 연결한다.
+    local function bindStudioCombatVisual(character)
+      local rootPart = character:WaitForChild("HumanoidRootPart", 5)
+      if not rootPart then return end
       local attachment = Instance.new("Attachment")
       attachment.Name = "StudioSkillAttachment"
       attachment.Position = Vector3.new(0, 0.5, 0)
@@ -404,15 +408,17 @@ task.defer(function()
       emitter.Lifetime = NumberRange.new(0.15, 0.28)
       emitter.Speed = NumberRange.new(3, 6)
       emitter.LightEmission = 0.65
+      emitter.LockedToPart = false
       if #studioAssetFamily("VFX") > 0 then
         emitter:SetAttribute("StudioVfxAtom", studioAssetFamily("VFX")[1] or "")
         emitter.LightEmission = table.find(studioAssetFamily("VFX"), "IMPACT_FLASH") and 0.8 or 0.65
+        combatContactAttachment = attachment
+        combatContactEmitter = emitter
       end
       emitter.Parent = attachment
-      player:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
-        if player:GetAttribute("LastApprovedScope") == "scope-corefun-029d85a01a" then emitter:Emit(10) end
-      end)
     end
+    if player.Character then task.defer(bindStudioCombatVisual, player.Character) end
+    player.CharacterAdded:Connect(bindStudioCombatVisual)
   end
 end)
 local title = Instance.new("TextLabel")
@@ -467,8 +473,30 @@ end
 for _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end
 render()
 
--- 기본 멀티 상태 수신
+-- 네트워크 · 원래 서버 권한·동기화 메시지를 유지하고 확정 전투 연출만 분기한다.
 remote.OnClientEvent:Connect(function(eventName, snapshot)
+  if eventName == "COMBAT_PRESENTATION" then
+    if typeof(snapshot) ~= "table" or typeof(snapshot.Position) ~= "Vector3" then return end
+    local kind = snapshot.Kind
+    if kind ~= "ENEMY_HIT" and kind ~= "ENEMY_DEATH"
+        and kind ~= "PLAYER_HIT" and kind ~= "PLAYER_DEATH" and kind ~= "DODGE" then return end
+    -- 클라이언트는 피해/회피 판정이나 위치를 송신하지 않고 서버에서 받은 결과만 연출한다.
+    if not combatContactAttachment or not combatContactEmitter
+        or not combatContactAttachment.Parent or not combatContactEmitter.Parent then return end
+    combatContactAttachment.WorldPosition = snapshot.Position + Vector3.new(0, 0.45, 0)
+    local isDeath = kind == "ENEMY_DEATH" or kind == "PLAYER_DEATH"
+    local isPlayerHurt = kind == "PLAYER_HIT" or kind == "PLAYER_DEATH"
+    if kind == "DODGE" then
+      combatContactEmitter.Color = ColorSequence.new(Color3.fromRGB(155, 220, 255))
+    elseif isPlayerHurt then
+      combatContactEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 115, 95))
+    else
+      combatContactEmitter.Color = ColorSequence.new(Color3.fromRGB(255, 212, 130))
+    end
+    combatContactEmitter:Emit(isDeath and 12 or (kind == "DODGE" and 4 or 7))
+    gui:SetAttribute("CombatVisualLastConfirmedKind", kind)
+    return
+  end
   if eventName ~= "MULTIPLAYER_SYNC" or typeof(snapshot) ~= "table" then return end
   participantCount = math.max(1, math.floor(tonumber(snapshot.ParticipantCount) or 1))
   gui:SetAttribute("ParticipantCount", participantCount)

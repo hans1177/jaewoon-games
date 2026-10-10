@@ -1,4 +1,4 @@
-// UnityWebFloorGame.cs
+// 파일명: UnityWebFloorGame.cs
 // 임포트 · 3D 마력숲 게임 소스
 using System;
 using System.Collections.Generic;
@@ -368,6 +368,11 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private readonly Dictionary<string, int> materials = new Dictionary<string, int>();
     private Camera mainCamera;
     private Transform player;
+    // 그래픽 · 원래 전투 판정/이동과 분리된 Unity 관절 파츠 모션과 VFX
+    private Animation playerCombatAnimation;
+    private TrailRenderer playerWeaponTrail;
+    private ParticleSystem combatContactParticles;
+    private float weaponTrailEndTime;
     private GameObject worldRoot;
     private ScreenMode screenMode = ScreenMode.Title;
     private Panel panel = Panel.None;
@@ -487,6 +492,22 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         CreatePart(character.transform, PrimitiveType.Cube, "Bag", new Vector3(0,1.25f,-.36f), new Vector3(.64f,.68f,.22f), new Color(.36f,.24f,.15f), false);
         CreatePart(character.transform, PrimitiveType.Capsule, "LeftArm", new Vector3(-.55f,1.32f,0), new Vector3(.24f,.48f,.24f), new Color(.30f,.53f,.38f), false);
         CreatePart(character.transform, PrimitiveType.Capsule, "RightArm", new Vector3(.55f,1.32f,0), new Vector3(.24f,.48f,.24f), new Color(.30f,.53f,.38f), false);
+        playerCombatAnimation=AuthorCombatClips(character,"RightArm");
+        // 무기 궤적은 실제 플레이어 손 파츠를 따라가며 기존 공격 쿨다운·히트박스를 건드리지 않는다.
+        playerWeaponTrail=character.transform.Find("RightArm").gameObject.AddComponent<TrailRenderer>();
+        playerWeaponTrail.time=.16f;
+        playerWeaponTrail.minVertexDistance=.025f;
+        playerWeaponTrail.startWidth=.20f;
+        playerWeaponTrail.endWidth=0f;
+        playerWeaponTrail.emitting=false;
+        Shader trailShader=Shader.Find("Sprites/Default");
+        if(trailShader!=null)
+        {
+            Material trailMaterial=new Material(trailShader);
+            trailMaterial.color=new Color(.77f,.90f,1f,.85f);
+            playerWeaponTrail.material=trailMaterial;
+        }
+        BuildCombatContactVfx();
         FollowCamera(true);
     }
 
@@ -506,6 +527,90 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     {
         Renderer rr = obj.GetComponent<Renderer>();
         if (rr != null) rr.material.color = color;
+    }
+
+    // 그래픽 · 기존 Collider를 움직이지 않는 실제 Unity AnimationClip(레거시) 원본.
+    // 운영용 리그/모션 에셋을 대체하지 않으며, Studio·WebGL 모바일 검증 전에는 PASS가 아니다.
+    private static Animation AuthorCombatClips(GameObject actor, string visualPart)
+    {
+        Transform part=actor.transform.Find(visualPart);
+        if(part==null)return null;
+        float x=part.localPosition.x, y=part.localPosition.y, z=part.localPosition.z;
+        Animation animation=actor.AddComponent<Animation>();
+        animation.playAutomatically=false;
+        AnimationClip attack=new AnimationClip{legacy=true,wrapMode=WrapMode.Once};
+        // 타격 판정은 기존 Attack/UpdateMonsters의 호출 즉시 발생한다. 첫 자세부터 실제 접촉에 대응한다.
+        attack.SetCurve(visualPart,typeof(Transform),"localPosition.z",new AnimationCurve(
+            new Keyframe(0f,z+.36f),new Keyframe(.07f,z+.16f),new Keyframe(.20f,z)));
+        animation.AddClip(attack,"attack");
+        AnimationClip hurt=new AnimationClip{legacy=true,wrapMode=WrapMode.Once};
+        hurt.SetCurve(visualPart,typeof(Transform),"localPosition.z",new AnimationCurve(
+            new Keyframe(0f,z-.16f),new Keyframe(.10f,z-.09f),new Keyframe(.20f,z)));
+        animation.AddClip(hurt,"hurt");
+        AnimationClip death=new AnimationClip{legacy=true,wrapMode=WrapMode.Once};
+        death.SetCurve(visualPart,typeof(Transform),"localPosition.y",new AnimationCurve(
+            new Keyframe(0f,y),new Keyframe(.12f,y-.16f),new Keyframe(.32f,y-.40f)));
+        animation.AddClip(death,"death");
+        // 게임에 회피 판정 이벤트가 없으므로 제작만 해두고 실제 회피로 재생하지 않는다.
+        AnimationClip dodge=new AnimationClip{legacy=true,wrapMode=WrapMode.Once};
+        dodge.SetCurve(visualPart,typeof(Transform),"localPosition.x",new AnimationCurve(
+            new Keyframe(0f,x),new Keyframe(.10f,x+.18f),new Keyframe(.24f,x)));
+        animation.AddClip(dodge,"dodge");
+        return animation;
+    }
+
+    // 그래픽 · 하나의 월드 좌표 파티클 시스템을 재사용해 모바일 발행량을 제한한다.
+    private void BuildCombatContactVfx()
+    {
+        GameObject effect=new GameObject("ConfirmedCombatContactFx");
+        effect.transform.SetParent(worldRoot.transform);
+        combatContactParticles=effect.AddComponent<ParticleSystem>();
+        var main=combatContactParticles.main;
+        main.loop=false;
+        main.playOnAwake=false;
+        main.startLifetime=.22f;
+        main.startSpeed=2.5f;
+        main.startSize=.15f;
+        main.maxParticles=48;
+        main.simulationSpace=ParticleSystemSimulationSpace.World;
+        var emission=combatContactParticles.emission;
+        emission.rateOverTime=0f;
+        var shape=combatContactParticles.shape;
+        shape.shapeType=ParticleSystemShapeType.Sphere;
+        shape.radius=.08f;
+        combatContactParticles.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
+
+    // 그래픽 · 실제 HP 감소가 확인된 접촉에서만 출력한다. 빗나감에는 피격 연출이 없다.
+    private void EmitConfirmedContact(Transform actor, bool fatal)
+    {
+        if(combatContactParticles==null || actor==null)return;
+        combatContactParticles.transform.position=actor.position+Vector3.up*.95f;
+        var emit=new ParticleSystem.EmitParams();
+        emit.startColor=fatal?new Color(1f,.48f,.18f):new Color(1f,.86f,.43f);
+        emit.startSize=fatal?.25f:.15f;
+        combatContactParticles.Emit(emit,fatal?10:5);
+    }
+
+    // 그래픽 · 사망한 원본은 기존 프레임에 제거한다. 충돌 없는 잔상만 0.35초 재생한다.
+    private void PlayCombatDeathVisual(GameObject actor)
+    {
+        if(actor==null || worldRoot==null)return;
+        GameObject visual=Instantiate(actor,actor.transform.position,actor.transform.rotation,worldRoot.transform);
+        visual.name=actor.name+"_DeathVisual";
+        foreach(Collider collider in visual.GetComponentsInChildren<Collider>())
+        {
+            collider.enabled=false;
+            Destroy(collider);
+        }
+        foreach(TrailRenderer trail in visual.GetComponentsInChildren<TrailRenderer>())
+        {
+            trail.emitting=false;
+            trail.Clear();
+        }
+        Animation animation=visual.GetComponent<Animation>();
+        if(animation!=null && animation.GetClip("death")!=null)animation.Play("death");
+        Destroy(visual,.35f);
     }
 
     private void FollowCamera(bool instant)
@@ -532,6 +637,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         materials["stone"] = 0;
         materials["fiber"] = 0;
         equippedWeapon = "";
+        weaponTrailEndTime=0f;
+        if(playerWeaponTrail!=null){playerWeaponTrail.emitting=false;playerWeaponTrail.Clear();}
+        if(playerCombatAnimation!=null)playerCombatAnimation.Stop();
         if (creative)
         {
             LoadCreative();
@@ -659,6 +767,10 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 new Vector3(0f,scale*1.82f,0f),new Vector3(scale*.43f,scale*.15f,scale*.43f),
                 new Color(.89f,.67f,.22f),false);
         }
+        // 실제 신체 부위가 있는 몬스터만 비충돌 파츠 애니메이션을 바인딩한다.
+        string actionPart=humanoid?"Arm_1":(fourLeg||insect)?"Leg_1_0":
+            flying?"Wing_1":(serpent||fish)?"Tail":spirit?"Core":plant?"SporeCrown":null;
+        if(actionPart!=null)AuthorCombatClips(root,actionPart);
         monster.obj=root;
         monsters.Add(monster);
         return monster;
@@ -768,10 +880,15 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             else if(distanceToTarget<=reach && Time.time>=m.nextAttack)
             {
                 m.nextAttack=Time.time+(m.ally?2f:1f);
+                Animation attackerMotion=m.obj.GetComponent<Animation>();
+                if(attackerMotion!=null)attackerMotion.Play("attack");
                 if(opponent!=null)HurtMonster(opponent,m.spec.damage);
                 else if(m.spec.damage>0f)
                 {
                     currentHp=Mathf.Max(0f,currentHp-m.spec.damage);
+                    EmitConfirmedContact(player,currentHp<=0f);
+                    if(currentHp<=0f)PlayCombatDeathVisual(player.gameObject);
+                    else if(playerCombatAnimation!=null)playerCombatAnimation.Play("hurt");
                     if(currentHp<=0f){player.position=Vector3.zero;currentHp=100f;info="쓰러져 시작 위치로 돌아왔어.";}
                 }
             }
@@ -782,7 +899,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void HurtMonster(Monster target,float damage)
     {
         if(target==null||target.hp<=0f)return;
+        float previousHp=target.hp;
         target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
+        if(target.hp<previousHp && target.obj!=null)
+        {
+            EmitConfirmedContact(target.obj.transform,target.hp<=0f);
+            if(target.hp<=0f)PlayCombatDeathVisual(target.obj);
+            else
+            {
+                Animation reaction=target.obj.GetComponent<Animation>();
+                if(reaction!=null)reaction.Play("hurt");
+            }
+        }
         if(target.hp<=0f)
         {
             if(!target.ally)
@@ -840,6 +968,13 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             id=="sunstone-greatsword"?1.2f:id=="sunstone-dagger"? .35f:
             id=="sunstone-scorpion-blade"? .85f:.65f;
         attackCooldown=Time.time+cooldown;
+        if(playerCombatAnimation!=null)playerCombatAnimation.Play("attack");
+        if(playerWeaponTrail!=null && weapon!=null && !sand && !orb)
+        {
+            playerWeaponTrail.Clear();
+            playerWeaponTrail.emitting=true;
+            weaponTrailEndTime=Time.time+.18f;
+        }
         float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:
             id=="sunstone-dagger"?2.0f:mummy?3.5f:2.8f;
         Monster target=null;
@@ -891,6 +1026,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void Update()
     {
         if(screenMode!=ScreenMode.Playing)return;
+        if(playerWeaponTrail!=null && playerWeaponTrail.emitting && Time.time>=weaponTrailEndTime)
+            playerWeaponTrail.emitting=false;
         float dt=Mathf.Min(Time.deltaTime,.05f);
         if(panel==Panel.None)
         {

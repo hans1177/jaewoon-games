@@ -591,6 +591,32 @@ test('skill grammar supports composable phases without gameplay timing authority
   assert.equal(skill.gameplayTimingAuthority,false);
 });
 
+test('mixed samurai wuxia fantasy action remains visual-only and measurable',()=>{
+  const motion=buildSkillMotionSequence({combatTraditions:['SAMURAI','WUXIA','FANTASY'],weaponFamily:'KATANA',terrainMaterial:'STONE',effectMaterial:'LIGHTNING'});
+  assert.equal(motion.valid,true);
+  assert.deepEqual(motion.creativeChoreography.traditions,['SAMURAI','WUXIA','FANTASY']);
+  assert.equal(motion.creativeChoreography.styleLayers[0].direction.prepare,'STILLNESS_AND_SHEATH_THUMB');
+  assert.equal(motion.creativeChoreography.styleLayers[1].direction.release,'SLEEVE_TRAIL_AND_FOOT_CONTACT_DUST');
+  assert.equal(motion.creativeChoreography.styleLayers[2].direction.impact,'ELEMENTAL_CONTACT_BURST_AND_SURFACE_RESPONSE');
+  assert.equal(motion.creativeChoreography.vfxTriggers.contact,'CONFIRMED_GAMEPLAY_HIT_ONLY');
+  assert.equal(motion.creativeChoreography.vfxTriggers.miss,'NO_CONTACT_BURST');
+  assert.ok(motion.creativeChoreography.smoothness.measuredQa.includes('FOOT_PLANT_DRIFT'));
+  assert.equal(motion.creativeChoreography.smoothness.betterThanReferenceQualityNotYetVerified,true);
+  assert.equal(motion.creativeChoreography.runtimeVerified,false);
+  assert.equal(motion.gameplayTimingAuthority,false);
+  for(const key of ['DAMAGE','HITBOX','ATTACK_SPEED','COOLDOWN','COMBO_WINDOW','CONTACT_EVENT','ROOT_MOVEMENT','SAVE','MULTIPLAYER_SERVER_AUTHORITY'])assert.ok(motion.creativeChoreography.preserve.includes(key));
+  const duel=createDuelCombatAuthoringRecipe({weaponFamily:'KATANA',role:'PARRY_OR_COUNTER',combatTraditions:['WUXIA','SAMURAI']});
+  assert.deepEqual(duel.actionPresentation.traditions,['WUXIA','SAMURAI']);
+  assert.equal(duel.phases,DUEL_COMBAT_AUTHORING_PHASES.PARRY_OR_COUNTER);
+  assert.equal(duel.gameplayAuthority,false);
+  const plan=createMotionDirectorPlan({platform:'UNITY',context:{combatTraditions:['WUXIA','FANTASY'],terrainMaterial:'SNOW'},skill:{effectMaterial:'ICE'}});
+  assert.deepEqual(plan.skillSequence.creativeChoreography.traditions,['WUXIA','FANTASY']);
+  assert.equal(plan.skillSequence.creativeChoreography.terrainMaterial,'SNOW');
+  assert.equal(plan.skillSequence.creativeChoreography.effectMaterial,'ICE');
+  assert.equal(plan.continuity.runtimeVerified,false);
+  assert.equal(buildSkillMotionSequence({combatTraditions:['CUSTOM']}).creativeChoreography.styleLayers[0].direction.impact,'CONFIRMED_CONTACT_ONLY_VFX');
+});
+
 test('reaction matcher uses direction strength airborne and wall context',()=>{
   const wall=createReactionMatch({impactDirection:'left',impactStrength:'heavy',wallProximity:'near'});
   assert.equal(wall.output,'WALL_HIT');
@@ -912,6 +938,16 @@ test('asset planner auto-detects requested duel weapon and martial style',async(
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedMartialStyle,null);
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.requestedCombatRole,'LIGHT_COMBO');
   assert.equal(katana.companyGraphicsLibrary.duelCombatMotion.authoringPreview.weaponMechanics.stance,'SIDE_ON_TWO_HAND');
+  const fusion=buildVibeAssetProductionPlan({
+    task:{gameId:'motion-auto-test',goal:'사무라이 무협 판타지 검술 스킬 모션 융합',combatTraditions:['SAMURAI','WUXIA','FANTASY']},
+    target:'roblox',repoRoot:path.resolve(here,'..')
+  });
+  const preview=fusion.companyGraphicsLibrary.duelCombatMotion;
+  assert.equal(preview.requested,true);
+  assert.deepEqual([...preview.requestedCombatTraditions],['SAMURAI','WUXIA','FANTASY']);
+  assert.deepEqual([...preview.authoringPreview.actionPresentation.traditions],['SAMURAI','WUXIA','FANTASY']);
+  assert.equal(preview.authoringPreview.actionPresentation.runtimeVerified,false);
+  assert.equal(preview.authoringPreview.gameplayAuthority,false);
 });
 
 test('transition director scores smooth transitions and hard-fails event desync',()=>{

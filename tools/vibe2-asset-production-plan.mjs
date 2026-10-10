@@ -718,7 +718,13 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   });
   const resolvedCreatureRole=explicitCreatureRole&&creatureRoleMotionClips[normalizedRole]?normalizedRole:null;
   const requiredCreatureMotionClips=resolvedCreatureRole?freezeList(creatureRoleMotionClips[resolvedCreatureRole]):freezeList([]);
-  const animationNames=(inv.animations||[]).map(row=>clean(row?.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
+  // 모션 · 이름만 ATTACK/HIT/DEATH인 클립을 실재 관절 모션으로 취급하지 않는다.
+  // 해당 클립 자체에 유효한 리그 관절 채널과 두 개 이상 시간 샘플이 있어야 역할 커버리지에 포함한다.
+  const articulatedRoleAnimations=(inv.animations||[]).filter(row=>row?.valid===true
+    &&Number(row.animatedJointCount)>0
+    &&Array.isArray(row.channels)
+    &&row.channels.some(channel=>channel.valid===true&&channel.jointTarget===true&&Number(channel.inputCount)>=2));
+  const animationNames=articulatedRoleAnimations.map(row=>clean(row.name).toUpperCase().replace(/[^A-Z0-9]+/g,'_')).filter(Boolean);
   const clipAliases=clip=>{
     const key=clean(clip).toUpperCase();
     const map={
@@ -736,7 +742,11 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     };
     return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
   };
-  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)));
+  // 공격과 필살기/특수기는 다른 역할이다. 특수기 이름만으로 기본 공격을 충족시키지 않는다.
+  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some(name=>{
+    if(clip==='ATTACK'&&/(?:^|_)(?:SPECIAL|SKILL|ABILITY|ULTIMATE|FINISHER)(?:_|$)/.test(name))return false;
+    return name===alias||name.includes(alias);
+  }));
   const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!animationMatchesClip(clip));
   const missingCreatureRoleMotionClips=requiredCreatureMotionClips.filter(clip=>!animationMatchesClip(clip));
   const socketMatchers={
@@ -770,6 +780,13 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     roleMotionContractRequired:explicitCharacterRole||explicitCreatureRole,roleMotionRole:resolvedNpcRole||resolvedCreatureRole||null,requiredRoleMotionClips,missingRoleMotionClips:freezeList(missingRoleMotionClips),
     creatureRoleMotionRequired:explicitCreatureRole,requiredCreatureMotionClips,missingCreatureRoleMotionClips:freezeList(missingCreatureRoleMotionClips),
     attachmentSocketBasisRequired:explicitCharacterRole,attachmentSocketCoverage:freeze(attachmentSocketCoverage),missingAttachmentSocketBasis:freezeList(missingAttachmentSocketBasis),
+    roleAnimationEvidence:freeze({
+      requiredArticulatedPerRole:true,
+      minimumJointKeyframeTimes:2,
+      eligibleClipNames:freezeList(articulatedRoleAnimations.map(row=>row.name)),
+      rejectedClipNames:freezeList((inv.animations||[]).filter(row=>!articulatedRoleAnimations.includes(row)).map(row=>row.name)),
+      nativeRigAndPlatformRuntimeStillUnverified:true
+    }),
     platformNativeBindingStillRequired:true,runtimeVerificationStillRequired:true,
     primitivePartAssemblyPrototypeOnly:true
   });
@@ -2394,7 +2411,9 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       authoringScopeMode:'EXPLICIT_TASK_REQUEST_PLUS_DECLARED_RECIPES',
       preferredExecutor:'BLENDER_PYTHON',
       executionRequired:uniqueDccTypes.length>0,
-      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':uncoveredDccTypes.length===0&&executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':executionRecipes.length>0?'PARTIAL_AUTHORING_RECIPE_COVERAGE':availableExistingRecipes.length>0?'EXISTING_AUTHORING_RECIPE_AVAILABLE':'AUTHORING_RECIPE_REQUIRED',
+      // 외부 자산이 .py 파일을 참조한다는 이유만으로 해당 역할용 안전한 DCC 제작 레시피가 있다고 인정하지 않는다.
+      // 실제 정규화된 레시피가 요청 자산군을 덮을 때만 실행 준비 상태를 반환한다.
+      executionStatus:uniqueDccTypes.length===0?'NOT_REQUIRED':uncoveredDccTypes.length===0&&executionRecipes.length>0?'READY_FOR_EXISTING_AUTHORING_EXECUTOR':executionRecipes.length>0?'PARTIAL_AUTHORING_RECIPE_COVERAGE':'AUTHORING_RECIPE_REQUIRED',
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
@@ -2496,11 +2515,22 @@ function verifiedCompanyManifestAssets(registry={}){
     .filter(asset=>asset.id);
 }
 
-function mergeManifestWithCompanyLibrary(manifest={},registry={}){
-  // 외부 매니페스트는 연구 및 내부 라이브러리 수급 단계에만 사용한다.
-  // 게임 후보는 회사 내부 등록자산에서만 구성한다.
+function mergeManifestWithCompanyLibrary(manifest={},registry={},sameGameSourceAssets=[],repoRoot=process.cwd()){
+  // 외부 임의 매니페스트는 연구·수급 단계에만 사용한다.
+  // 회사 등록 자산과 실제 기존 게임 소스에서 검색한 자산 식별자만 게임 후보로 유지한다.
   const byId=new Map();
   for(const asset of verifiedCompanyManifestAssets(registry))byId.set(asset.id,asset);
+  for(const asset of sameGameSourceAssets){
+    const id=clean(asset?.id),reference=clean(asset?.path).replaceAll('\\','/');
+    if(!id||byId.has(id)||asset?.sameGameExistingRoblox!==true
+      ||asset?.runtimeVerificationState!=='SOURCE_BOUND_UNVERIFIED'
+      ||!/^\d{6,}$/.test(clean(asset?.robloxAssetId))
+      ||!/^(?:roblox-games)\/[^/]+\/.+\.(?:lua|luau|json)$/i.test(reference)
+      ||reference.split('/').includes('..')||clean(asset?.source)!==reference
+      ||!fs.existsSync(path.join(repoRoot,reference)))continue;
+    // 선택 후보일 뿐 운영용 에셋·권한·게임 실행 PASS로 승격하지 않는다.
+    byId.set(id,asset);
+  }
   return {...manifest,assets:[...byId.values()]};
 }
 
@@ -2715,6 +2745,14 @@ function internalAssetPlatformApplicationMode(asset={},target=''){
   const targets=unique([...(asset?.targetPlatforms||[]),...(asset?.platforms||[])].map(value=>clean(value).toUpperCase()));
   const variants=Object.keys(asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}).map(value=>clean(value).toUpperCase());
   if(platform===resolved||targets.includes(resolved)||variants.includes(resolved))return'USE_AS_IS';
+  // 플랫폼이 명시되지 않은 공용 3D 모델은 스타일 변경만으로 타 플랫폼 네이티브 자산이 되지 않는다.
+  const family=clean(asset?.family||asset?.category).toUpperCase();
+  const spatialSource=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
+    ...(Array.isArray(asset?.nativeArtifacts)?asset.nativeArtifacts:[]),
+    ...(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[])];
+  if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)
+    &&spatialSource.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file)))
+    &&['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
   if(/^SHARED_/.test(platform)||platform==='SHARED'||targets.length===0&&variants.length===0)return'STYLE_ADAPT';
   if(['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
   return'NOT_SUPPORTED';
@@ -3285,7 +3323,11 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type,conceptContext.task||{});
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
-  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  // 먼저 현재 게임에 이미 연결된 준비 자산을 살리고, 같은 비용 단계에서 호환성을 비교한다.
+  // 실제 품질 통과 전까지는 최종 에셋 선정 또는 런타임 검증으로 취급하지 않는다.
+  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>
+    Number(b.productionVerified===true)-Number(a.productionVerified===true)
+    ||a.bindingCost-b.bindingCost||b.compatibilityScore-a.compatibilityScore||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
@@ -3692,10 +3734,10 @@ export function buildVibeAssetProductionPlan({
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
-  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
+  const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry,sameGameRobloxAssets,repoRoot);
   const presetInput=presetCatalog||readJson(path.join(repoRoot,'assets','prototype-asset-presets.json'),{version:0,presets:[]});
   const characterCustomizationRequested=Boolean(task.characterCustomization||task.npcCustomization)||/(?:CHARACTER|NPC|AVATAR|CUSTOMI[ZS]|캐릭터|케릭터|커마|커스터마이징|NPC|주민|시민|동료)/i.test(request);
-  const duelCombatRequested=/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수)/i.test(request);
+  const duelCombatRequested=Boolean(task.combatTraditions?.length)||/(?:duel|dueling|결투|대전|격투|맨손|무기.?전투|combat|fight|fighter|카타나|katana|검술|쌍검|대검|창술|boxing|복싱|kickboxing|킥복싱|muay|무에타이|karate|가라테|taekwondo|태권도|mma|레슬링|wrestling|judo|유도|jiu.?jitsu|주짓수|사무라이|samurai|발도|iaido|무협|murim|wuxia|경공|장풍|닌자|ninja|판타지.*(?:모션|전투|스킬)|fantasy.*(?:motion|combat|skill))/i.test(request);
   const survivalWildlifeRequested=/(?:gravewood|그레이브우드|생존|survival|야생동물|동물|wildlife|animal|곰|bear|멧돼지|boar|사슴|deer|elk|엘크|moose|무스|bison|들소|wolf|늑대|fox|여우|rabbit|토끼|raccoon|너구리|squirrel|다람쥐|beaver|비버|badger|오소리|goat|염소|turkey|칠면조|crow|까마귀)/i.test(request);
   const requestedWildlifeSpecies=/멧돼지|boar/i.test(request)?'BOAR'
     :/사슴|deer/i.test(request)?'DEER'
@@ -3746,6 +3788,15 @@ export function buildVibeAssetProductionPlan({
     :/주짓수|jiu.?jitsu/i.test(request)?'JIU_JITSU_GRAPPLING'
     :/mma/i.test(request)?'MMA_HYBRID'
     :requestedWeaponFamily==='UNARMED'?'MMA_HYBRID':null;
+  // 메인: 유파는 기존 그래픽 제작 경로에서 선택하며 게임 로직을 수정하지 않는다.
+  const requestedCombatTraditions=freezeList(unique([
+    ...(Array.isArray(task.combatTraditions)?task.combatTraditions:task.combatTraditions?[task.combatTraditions]:[]),
+    ...(/사무라이|samurai|발도|iaido/i.test(request)?['SAMURAI']:[]),
+    ...(/무협|murim|wuxia|경공|장풍/i.test(request)?['WUXIA']:[]),
+    ...(/판타지|fantasy|마력|마법|spellblade/i.test(request)?['FANTASY']:[]),
+    ...(/닌자|ninja|shinobi/i.test(request)?['NINJA']:[]),
+    ...(/기사|knight|paladin/i.test(request)?['KNIGHT']:[])
+  ].map(value=>clean(value).toUpperCase()).filter(Boolean)));
   const requestedCombatRole=/피니셔|finisher/i.test(request)?'FINISHER'
     :/패링|parry|카운터|counter/i.test(request)?'PARRY_OR_COUNTER'
     :/회피|dodge|구르기|roll/i.test(request)?'DODGE'
@@ -4732,10 +4783,15 @@ export function buildVibeAssetProductionPlan({
         requestedWeaponFamily,
         requestedMartialStyle,
         requestedCombatRole,
+        requestedCombatTraditions,
         authoringPreview:duelCombatRequested?freeze(createDuelCombatAuthoringRecipe({
           weaponFamily:requestedWeaponFamily||'UNARMED',
           martialStyle:requestedMartialStyle||'MMA_HYBRID',
           role:requestedCombatRole,
+          combatTraditions:requestedCombatTraditions,
+          terrainMaterial:task.terrainMaterial||'UNSPECIFIED',
+          effectMaterial:task.effectMaterial||'PHYSICAL',
+          artisticIntent:task.artisticIntent||'',
           platform:resolvedTarget==='roblox'?'ROBLOX':'UNITY'
         })):null,
         target:clean(companyRegistry?.duelCombatMotion?.target)||null,

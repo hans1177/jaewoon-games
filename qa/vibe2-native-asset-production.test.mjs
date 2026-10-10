@@ -929,7 +929,7 @@ test('detail and measured motion repair reach the production work order and use 
 
 test('navigation sketch preserves actual route topology and expands functional detail layers deterministically',()=>{
   const sketch={nodes:[{id:'entry',role:'spawn'},{id:'market',role:'landmark'},{id:'exit',role:'transition'}],edges:[{from:'entry',to:'market'},{from:'market',to:'exit',oneWay:true}],districts:[{id:'market-block',anchorNodeId:'market',function:'MARKET'}]};
-  const assets=[{id:'shop',family:'BUILDING',sourceHash:'shop-v1',mapDetailRoles:['STRUCTURE'],districtFunctions:['MARKET']}];
+  const assets=[{id:'shop',family:'BUILDING',path:'assets/test/shop.glb',sourceHash:'shop-v1',mapDetailRoles:['STRUCTURE'],districtFunctions:['MARKET']}];
   const a=createVibeMapDetailReconstruction({sketch,assets,seed:'same',styleFamily:'DARK_FANTASY'});
   assert.equal(a.status,'DETAIL_AUTHORING_PLAN');assert.equal(a.topology.edges[1].oneWay,true);
   assert.equal(a.regions[0].layers.length,6);assert.equal(a.regions[0].layers[1].assetId,'shop');
@@ -938,6 +938,46 @@ test('navigation sketch preserves actual route topology and expands functional d
   const bad=createVibeMapDetailReconstruction({sketch:{...sketch,edges:[{from:'entry',to:'market'}]}});
   assert.equal(bad.status,'MAP_INTERPRETATION_REQUIRED');assert.deepEqual(bad.regions,[]);
   const empty=createVibeMapDetailReconstruction();assert.equal(empty.topology,null);
+});
+
+test('3D world planning preserves original routes and rejects flat or unsafe world assets',()=>{
+  const sketch={
+    nodes:[{id:'entry',role:'spawn',elevationMeters:0},{id:'bridge',role:'landmark',elevationMeters:3},{id:'gate',role:'transition',elevationMeters:3}],
+    edges:[{from:'entry',to:'bridge'},{from:'bridge',to:'gate',oneWay:true}],
+    verticalLinks:[{from:'entry',to:'bridge'}],
+    districts:[{id:'bridge-zone',anchorNodeId:'bridge',function:'DUNGEON',landmark:'inverted-castle'}]
+  };
+  const asset={id:'stone-bridge',family:'BUILDING',path:'assets/bridge.glb',sourceHash:'a',mapDetailRoles:['STRUCTURE'],districtFunctions:['DUNGEON']};
+  const plan=createVibeMapDetailReconstruction({sketch,assets:[asset],seed:'demo'});
+  assert.equal(plan.status,'DETAIL_AUTHORING_PLAN');
+  assert.equal(plan.topology.edges[1].oneWay,true);
+  assert.equal(plan.regions[0].layers.length,6);
+  assert.equal(plan.regions[0].layers[1].assetId,'stone-bridge');
+  assert.equal(plan.regions[0].spatialComposition.worldLayers.length,3);
+  assert.equal(plan.regions[0].spatialComposition.landmarkIdentity,'inverted-castle');
+  assert.equal(plan.routeGeometry.length,sketch.edges.length);
+  assert.equal(plan.routeGeometry.every(row=>row.extraRouteOrShortcutAdded===false&&row.runtimeVerified===false),true);
+  assert.ok(plan.productionChain.author.includes('CURVED_ROUTE_MODULES_MATCHING_EXISTING_TOPOLOGY'));
+  assert.equal(plan.worldDepthEvidence.runtimeVerified,false);
+  assert.equal(plan.sourceMutationPerformed,false);
+  assert.deepEqual(plan,createVibeMapDetailReconstruction({sketch,assets:[asset],seed:'demo'}));
+  const flat=createVibeMapDetailReconstruction({sketch,assets:[{...asset,path:'assets/bridge.png'}]});
+  assert.equal(flat.regions[0].layers[1].assetId,null);
+  const blocked=createVibeMapDetailReconstruction({sketch,assets:[{...asset,quarantined:true}]});
+  assert.equal(blocked.regions[0].layers[1].assetId,null);
+  // 비정상 객체형 자산 목록은 3D 경로 증거로 승인하지 않고 예외 없이 건너뛴다.
+  const invalidSourceLists=createVibeMapDetailReconstruction({sketch,assets:[{
+    ...asset,path:'',nativeArtifacts:{unity:'assets/bridge.glb'},
+    sourceFiles:{mesh:'assets/bridge.glb'},fileRoles:{models:{primary:'assets/bridge.glb'}}
+  }]});
+  assert.equal(invalidSourceLists.status,'DETAIL_AUTHORING_PLAN');
+  assert.equal(invalidSourceLists.regions[0].layers[1].assetId,null);
+  const arraySource=createVibeMapDetailReconstruction({sketch,assets:[{...asset,path:'',sourceFiles:['assets/bridge.glb']}]});
+  assert.equal(arraySource.regions[0].layers[1].assetId,'stone-bridge');
+  const invalid=createVibeMapDetailReconstruction({sketch:{...sketch,verticalLinks:[{from:'entry',to:'gate'}]}});
+  assert.equal(invalid.status,'MAP_INTERPRETATION_REQUIRED');
+  assert.equal(invalid.routeGeometry.length,0);
+  assert.ok(invalid.issues.some(row=>row.startsWith('VERTICAL_LINK_REQUIRES_EXISTING_EDGE_AND_MEASURED_HEIGHT:')));
 });
 
 test('source GLB inventory uses real binary structure and leaves absent morphs or rigging for authoring',()=>{
@@ -985,10 +1025,13 @@ function zeroSkinWeightsInGlb(sourceFile,targetFile){
   fs.writeFileSync(targetFile,bytes);
 }
 
-function rewriteAnimationNamesInGlb(sourceFile,targetFile,nameForIndex){
+function rewriteAnimationNamesInGlb(sourceFile,targetFile,nameForIndex,mutateAnimation=null){
   const bytes=Buffer.from(fs.readFileSync(sourceFile));
   const jsonLength=bytes.readUInt32LE(12),document=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
-  for(const [index,animation] of (document.animations||[]).entries())animation.name=nameForIndex(index);
+  for(const [index,animation] of (document.animations||[]).entries()){
+    animation.name=nameForIndex(index);
+    if(mutateAnimation)mutateAnimation(animation,index,document);
+  }
   const raw=Buffer.from(JSON.stringify(document),'utf8');
   const paddedLength=Math.ceil(raw.length/4)*4,json=Buffer.alloc(paddedLength,0x20);raw.copy(json);
   const remainder=bytes.subarray(20+jsonLength);
@@ -1098,6 +1141,52 @@ test('generic ATTACK clip cannot satisfy boss SPECIAL_ATTACK role coverage',()=>
     assert.equal(result.pass,false);
     assert.ok(result.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
     assert.ok(result.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+
+test('role motion QA rejects a named attack when only unrelated clips animate actual skeleton joints',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-fake-attack-role-'));
+  try{
+    const sourcePath='assets/roblox/world-ghosts/native/spider/spider.glb';
+    const baseline=evaluateCrossPlatform3dMasterGlb({family:'CREATURE',role:'BOSS',source:{path:sourcePath}});
+    assert.equal(baseline.pass,true);
+    const nonJointNode=baseline.inspection.inventory.nodes.find(row=>row.joint===false)?.index;
+    assert.ok(Number.isInteger(nonJointNode),'source must have a scene node outside animated skeleton joints');
+    const target=path.join(root,'fake-role.glb');
+    rewriteAnimationNamesInGlb(sourcePath,target,index=>index===0?'attack':'unassigned_'+index,(animation,index)=>{
+      if(index!==0)return;
+      for(const channel of animation.channels||[]){
+        if(['rotation','translation','scale'].includes(channel.target?.path))
+          channel.target.node=nonJointNode;
+      }
+    });
+    const checked=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'fake-role.glb'}});
+    assert.equal(checked.inspection.status,'INSPECTED_RECONSTRUCTION_INPUT',
+      'all samplers are still structurally valid; this tests role-level joint motion only');
+    assert.equal(checked.inspection.inventory.animations[0].valid,true);
+    assert.equal(checked.inspection.inventory.animations[0].jointChannelCount,0);
+    assert.ok(checked.inspection.inventory.jointAnimationChannelCount>0,
+      'other clips still have valid articulated animation');
+    assert.equal(checked.pass,false);
+    assert.ok(checked.missingCreatureRoleMotionClips.includes('ATTACK'));
+    assert.ok(checked.roleAnimationEvidence.rejectedClipNames.includes('attack'));
+    assert.equal(checked.roleAnimationEvidence.nativeRigAndPlatformRuntimeStillUnverified,true);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('boss special attack clips cannot masquerade as ordinary ATTACK animation coverage',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'boss-attack-alias-'));
+  try{
+    const file=path.join(root,'only-special.glb');
+    rewriteAnimationNamesInGlb('assets/roblox/world-ghosts/native/spider/spider.glb',file,()=> 'special_attack');
+    const inspected=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'only-special.glb'}});
+    assert.equal(inspected.inspection.status,'INSPECTED_RECONSTRUCTION_INPUT');
+    assert.equal(inspected.pass,false);
+    assert.ok(!inspected.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
+    assert.ok(inspected.missingCreatureRoleMotionClips.includes('ATTACK'));
+    assert.ok(inspected.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -1388,9 +1477,13 @@ test('customization and detailed style instructions reach the existing asset wor
 test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));
   try{
+    // 기존 자산 검증 계약: 등록 상태뿐 아니라 실제 소스 파일도 있어야 재사용 후보가 된다.
+    const ownedPath='assets/roblox/owned-motion.luau';
+    fs.mkdirSync(path.join(root,'assets','roblox'),{recursive:true});
+    fs.writeFileSync(path.join(root,ownedPath),'-- 원본 클립 저작 참조, 엔진 런타임 검증은 별도\nreturn {}\n');
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[{
       id:'owned-motion',category:'MOTION',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-      license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
+      license:'company-owned',platforms:['roblox'],path:ownedPath,states:['idle','attack'],rigType:'R15'
     }]}));
     const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[
       {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
@@ -1400,24 +1493,29 @@ test('motion planning reuses company clips per state and does not invent coverag
       {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],states:['skill']}
     ]}});
     const motion=plan.decisions.find(row=>row.type==='animation');
+    // 외부/출처 미검증 manifest만으로 실제 게임에 사용할 모션으로 승격되지 않아야 한다.
+    assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion','external-motion']);
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,['external-motion']);
-    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['hit','skill','death']);
-    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,['unknown-clips']);
+    const attack=motion.motionReusePlan.stateBindings.find(row=>row.state==='attack');
+    const move=motion.motionReusePlan.stateBindings.find(row=>row.state==='move');
+    assert.deepEqual([...attack.candidateIds],['owned-motion']);
+    assert.deepEqual([...move.candidateIds],[]);
+    assert.deepEqual([...motion.motionReusePlan.unresolvedStates],['move','hit','skill','death']);
+    assert.deepEqual([...motion.motionReusePlan.coverageUnknownCandidateIds],[]);
     assert.equal(motion.motionReusePlan.runtimeVerified,false);
     assert.ok(motion.motionReusePlan.stateBindings.every(row=>row.runtimeVerified===false));
     assert.equal(motion.companyCandidates[0].rigType,'R15');
-    assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.qualitySelection.selectedAssetId,null);
-    assert.equal(motion.qualitySelection.selectionState,'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON');
-    assert.equal(motion.postDownloadComparison.required,true);
-    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion','unknown-clips']);
-    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,['external-motion']);
-    assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
-    assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
+    assert.equal(motion.qualitySelection.selectionState,'TARGET_GAME_REVIEW_REQUIRED');
+    assert.equal(motion.postDownloadComparison.required,false);
+    assert.deepEqual([...motion.postDownloadComparison.internalBaselineCandidateIds],['owned-motion']);
+    assert.deepEqual([...motion.postDownloadComparison.pendingDownloadCandidateIds],[]);
+    assert.deepEqual([...motion.qualitySelection.compareCandidateIds],['owned-motion']);
+    for(const forbidden of ['external-motion','unknown-clips','reference-motion','wrong-platform','blocked-license']){
+      assert.ok(!motion.qualitySelection.compareCandidateIds.includes(forbidden),forbidden);
+    }
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/attack=owned-motion\|external-motion/);
+    assert.match(guidance,/attack=owned-motion/);
     assert.match(guidance,/Asset ID를 지어내지/);
     assert.match(guidance,/MULTIPLAYER_SYNC/);
     assert.match(guidance,/기존 공격 판정/);
@@ -1907,9 +2005,13 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     assert.match(guidance,/REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET/);
     assert.match(guidance,/6933438443/);
 
+    // 환경 모델 후보는 선언된 코드 경로가 아니라 실제 저장소에 존재하는 3D 메시 원본을 제공해야 한다.
+    const natureSource='assets/roblox/midnight-manor/generated/manor-lobby.glb';
+    fs.mkdirSync(path.join(root,'assets','roblox','midnight-manor','generated'),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),natureSource),path.join(root,natureSource));
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
-      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'roblox-games/shared/nature.luau',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:natureSource,types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
     },null,2));
     const withCompany=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
@@ -3144,7 +3246,7 @@ test('runtime visual defects flow from asset planning into the source worker pro
 
 
 
-test('usable same-game asset is applied before new authoring and weak regions derive later',()=>{
+test('verified company and same-game reusable assets are compared before new authoring and weak regions derive later',()=>{
   const root=tempRoot();
   try{
     const master='assets/roblox/world-ghosts/native/spider/spider.glb';
@@ -3176,8 +3278,14 @@ test('usable same-game asset is applied before new authoring and weak regions de
     const enemy=plan.decisions.find(row=>row.type==='enemy');
     assert.ok(enemy);
     assert.equal(enemy.applyFirst.enabled,true);
-    assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
-    assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
+    // 검증된 회사 자산이 미검증 동일게임 원본보다 우선하지만, 기존 원본도 재사용 후보로 보존한다.
+    assert.equal(enemy.applyFirst.candidates[0].id,'company-wolf');
+    assert.equal(enemy.applyFirst.candidates[0].mode,'IMPORT_NATIVE_READY_ASSET');
+    const existingCandidate=enemy.applyFirst.candidates.find(row=>row.id==='existing-wolf');
+    assert.ok(existingCandidate);
+    assert.equal(existingCandidate.mode,'PATCH_EXISTING_GAME_BINDING');
+    assert.equal(existingCandidate.productionVerified,false);
+    assert.equal(enemy.qualitySelection.selectedAssetId,null);
     assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
     assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
     assert.equal(enemy.applyFirst.qualityRescue.donorRecompositionAllowed,true);
@@ -3303,7 +3411,7 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
     assert.equal(row.qualityDNA.evidence.verificationStatusIsNotVisualQuality,true);
     assert.equal(row.qualityDNA.rescue.fullReauthorOnlyAfterTargetedRepairFails,true);
     assert.equal(plan.qualityDNA.commonRules.strongAxesLockedDuringRepair,true);
-    assert.equal(plan.qualityDNA.donorAssemblyBeforeFullReauthor,true);
+    assert.equal(plan.qualityDNA.commonRules.donorAssemblyBeforeFullReauthor,true);
     assert.ok(plan.qualityDNA.contracts.some(item=>item.type==='character'&&item.qualityDNA.profile==='HERO_CHARACTER'));
     assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
     assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
@@ -3703,4 +3811,121 @@ test('GLB scene geometry identity survives shared mesh reuse and changes on UV o
     const changed=writeInspectionTriangle(root,(d,b)=>{d.nodes.push({mesh:0,translation:[3,0,0]});d.scenes[0].nodes.push(2);b.writeFloatLE(.25,72);});
     assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('Unity 3D 마력숲은 기존 공격/피해 판정에서만 관절 모션과 타격 VFX를 실행하고 원본 규칙을 보존한다',()=>{
+  const root=path.resolve(import.meta.dirname,'..');
+  const source=fs.readFileSync(path.join(root,'unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+  const method=(first,last)=>{
+    const a=source.indexOf(first);
+    assert.ok(a>=0,first+' missing');
+    const b=source.indexOf(last,a+first.length);
+    assert.ok(b>a,last+' missing');
+    return source.slice(a,b);
+  };
+  const author=method('private static Animation AuthorCombatClips(','private void BuildCombatContactVfx()');
+  const hit=method('private void HurtMonster(','private void UpdateHomingSpells(');
+  const monster=method('private void UpdateMonsters(','private void HurtMonster(');
+  const attack=method('private void Attack()','private void Update()');
+  const death=method('private void PlayCombatDeathVisual(','private void FollowCamera(');
+  const contact=method('private void EmitConfirmedContact(','private void PlayCombatDeathVisual(');
+  assert.match(author,/new AnimationClip\{legacy=true,wrapMode=WrapMode.Once\}/);
+  assert.match(author,/animation\.AddClip\(attack,"attack"\)/);
+  assert.match(author,/animation\.AddClip\(hurt,"hurt"\)/);
+  assert.match(author,/animation\.AddClip\(death,"death"\)/);
+  assert.match(author,/animation\.AddClip\(dodge,"dodge"\)/);
+  assert.match(author,/SetCurve\(visualPart,typeof\(Transform\),"localPosition\./);
+  assert.doesNotMatch(author,/HumanoidRootPart|root\.transform\.position|AddComponent<Collider>|Physics\.|currentHp|attackCooldown|damage=/);
+  assert.match(source,/playerCombatAnimation=AuthorCombatClips\(character,"RightArm"\)/);
+  assert.match(source,/if\(actionPart!=null\)AuthorCombatClips\(root,actionPart\)/);
+  assert.match(source,/playerWeaponTrail=character\.transform\.Find\("RightArm"\)\.gameObject\.AddComponent<TrailRenderer>\(\)/);
+  assert.match(attack,/if\(playerCombatAnimation!=null\)playerCombatAnimation\.Play\("attack"\)/);
+  assert.match(attack,/if\(playerWeaponTrail!=null && weapon!=null && !sand && !orb\)/);
+  assert.ok(attack.indexOf('playerCombatAnimation.Play("attack")')<attack.indexOf('if(target==null)'),'miss swing exists, but no fake contact');
+  assert.match(attack,/if\(target==null\)\{info="공격 범위에 몬스터가 없어\.";return;\}/);
+  assert.match(attack,/HurtMonster\(target,damage\)/);
+  assert.match(source,/HurtMonster\(target,spell\.damage\)/);
+  assert.match(hit,/float previousHp=target\.hp;\s*target\.hp=Mathf\.Max\(0f,target\.hp-Mathf\.Max\(0f,damage\)\)/);
+  assert.match(hit,/if\(target\.hp<previousHp && target\.obj!=null\)/);
+  assert.ok(hit.indexOf('target.hp=Mathf.Max')<hit.indexOf('EmitConfirmedContact('),'VFX must follow actual authoritative HP decrease');
+  assert.match(hit,/if\(target\.hp<=0f\)PlayCombatDeathVisual\(target\.obj\)/);
+  assert.match(monster,/m\.nextAttack=Time\.time\+\(m\.ally\?2f:1f\)/);
+  assert.match(monster,/if\(opponent!=null\)HurtMonster\(opponent,m\.spec\.damage\)/);
+  assert.match(monster,/currentHp=Mathf\.Max\(0f,currentHp-m\.spec\.damage\)/);
+  assert.match(death,/collider\.enabled=false/);
+  assert.match(death,/Destroy\(collider\)/);
+  assert.match(death,/Destroy\(visual,\.35f\)/);
+  assert.match(contact,/combatContactParticles\.Emit\(emit,fatal\?10:5\)/);
+  assert.match(source,/main\.maxParticles=48/);
+  assert.doesNotMatch(source,/\.Play\("dodge"\)/,'no gameplay dodge contract; fake visual evasion is forbidden');
+  for(const invariant of [
+    'private const string SavePrefix = "fantasy_survival_webfloor_";',
+    'private const string CreativeSaveKey = SavePrefix + "creative_v1";',
+    'float cooldown=sand?1.1f:mummy?1.5f:orb? .9f:',
+    'id=="sunstone-dagger"? .35f:',
+    'int damage=weapon!=null?Mathf.Max(5,weapon.power):5;',
+    'if(m.hp<=0f||m.ally||m.obj==null)continue;',
+    'float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:',
+    'if(currentHp<=0f){player.position=Vector3.zero;currentHp=100f;',
+  ]) assert.ok(source.includes(invariant),'gameplay/save invariant changed: '+invariant);
+  const roblox=fs.readFileSync(path.join(root,'assets/roblox/common-motion-v1/RobloxCommonMotion.luau'),'utf8');
+  assert.match(roblox,/PersistentUploadRequiredForProduction", true/);
+  assert.match(roblox,/RuntimeVerificationState", "PENDING_STUDIO"/);
+  // 향후 실제 Unity .anim/.fbx 클립의 추가를 방해하지 않는다. 정적 테스트는 네이티브 런타임 PASS가 아니다.
+  assert.ok(fs.existsSync(path.join(root,'unity-games/fantasy-survival/Assets/Animations')));
+});
+
+
+test('Roblox village-dungeons emits combat VFX only for server-authorized hits, dodge and death',()=>{
+  const root=path.resolve(import.meta.dirname,'..');
+  const server=fs.readFileSync(path.join(root,'roblox-games/village-dungeons/server/Game.server.luau'),'utf8');
+  const client=fs.readFileSync(path.join(root,'roblox-games/village-dungeons/client/Game.client.luau'),'utf8');
+  const section=(source,first,last)=>{
+    const a=source.indexOf(first);
+    const b=source.indexOf(last,a+first.length);
+    assert(a>=0&&b>a,first+' to '+last+' missing');
+    return source.slice(a,b);
+  };
+  const damage=section(server,'local function damageMonster(','local function runEnemyAI(');
+  const enemyAI=section(server,'local function runEnemyAI(','local function spawnMonster(');
+  const consumer=section(client,'-- 선택된 내부 자산 family를 기존 마을/던전 네이티브 표현에 직접 소비한다.','local title = Instance.new("TextLabel")');
+  const remoteConsumer=section(client,'remote.OnClientEvent:Connect(function(eventName, snapshot)','if #Config.Actions > 0 then');
+  assert.match(damage,/local nextHealth = math.max\(0, health - math.max\(1, math.floor\(amount\)\)\)/);
+  assert.match(damage,/enemy:SetAttribute\("Health", nextHealth\)/);
+  assert.match(damage,/enemy:SetAttribute\("HitReactionAt", os.clock\(\)\)/);
+  assert.match(damage,/remote:FireClient\(player, "COMBAT_PRESENTATION",/);
+  assert.ok(damage.indexOf('enemy:SetAttribute("Health", nextHealth)')<damage.indexOf('remote:FireClient(player, "COMBAT_PRESENTATION"'));
+  assert.match(damage,/Kind = nextHealth > 0 and "ENEMY_HIT" or "ENEMY_DEATH"/);
+  assert.match(damage,/Position = enemy.PrimaryPart.Position/);
+  assert.match(enemyAI,/if os.clock\(\) <= dodgeUntil then/);
+  assert.match(enemyAI,/enemy:SetAttribute\("AttackState", "DODGED"\)/);
+  assert.match(enemyAI,/Kind = "DODGE", Position = rootPart.Position/);
+  assert.match(enemyAI,/local health = math.max\(0, previousHealth - damage\)/);
+  assert.match(enemyAI,/setNumber\(player, "Health", health\)/);
+  assert.match(enemyAI,/if health < previousHealth then/);
+  assert.match(enemyAI,/Kind = health > 0 and "PLAYER_HIT" or "PLAYER_DEATH"/);
+  assert.match(server,/player:SetAttribute\("DodgeWindowUntil", os.clock\(\) \+ 0.8\)/);
+  assert.match(server,/local baseDamage = 10 \+ level \+ equipmentPower/);
+  assert.match(server,/damageMonster\(player, enemy, damage\)/);
+  assert.match(server,/task.wait\(1.2\)/);
+  assert.match(server,/GetDataStore\("village-dungeons-development-v1"\)/);
+  assert.match(consumer,/local combatContactAttachment = nil/);
+  assert.match(consumer,/local combatContactEmitter = nil/);
+  assert.match(consumer,/local function bindStudioCombatVisual\(character\)/);
+  assert.match(consumer,/player.CharacterAdded:Connect\(bindStudioCombatVisual\)/);
+  assert.match(consumer,/emitter\.LockedToPart = false/);
+  assert.match(consumer,/StudioVfxAtom/);
+  assert.doesNotMatch(consumer,/player:GetAttributeChangedSignal\("LastApprovedScope"\)/,
+    'button/action status is not confirmed target damage');
+  assert.match(remoteConsumer,/if eventName == "COMBAT_PRESENTATION" then/);
+  assert.match(remoteConsumer,/typeof\(snapshot.Position\) ~= "Vector3"/);
+  assert.match(remoteConsumer,/combatContactAttachment\.WorldPosition = snapshot.Position/);
+  assert.match(remoteConsumer,/combatContactEmitter:Emit\(isDeath and 12 or \(kind == "DODGE" and 4 or 7\)\)/);
+  assert.match(remoteConsumer,/CombatVisualLastConfirmedKind/);
+  assert.match(remoteConsumer,/if eventName ~= "MULTIPLAYER_SYNC"/);
+  assert.match(remoteConsumer,/participantCount = math.max\(1, math.floor\(tonumber\(snapshot.ParticipantCount\) or 1\)\)/);
+  assert.doesNotMatch(remoteConsumer,/remote:FireServer\(/,'no new client damage or dodge authority');
+  assert.equal((server.match(/Instance\.new\("RemoteEvent"\)/g)||[]).length,2,
+    'reuse the original action and foundation RemoteEvents; do not create a new combat remote');
 });
