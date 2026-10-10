@@ -350,7 +350,18 @@ const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVe
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
-if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible||checkpointThreePlatformPolicyMigrationEligible)){
+// 홈페이지 노출 규칙만 바뀐 2026-10-09(558)→10-10(560)의 정확한 정책 지문을 허용한다.
+// 새 정책에서 기존 설계 조각을 다시 검증한다. 작성자·입력 지문이 다르면 재사용하지 않는다.
+const homepageOnlyDesignCheckpointEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
+  &&policyDigest==='e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef'
+  &&clean(designCheckpoint?.policyDigest)==='91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f'
+  &&readJson(CANONICAL_POLICY_PATH,{})?.version===560
+  &&readJson(CANONICAL_POLICY_PATH,{})?.finalDevelopmentLock?.sequenceLock?.status==='LOCKED'
+  &&clean(designCheckpoint?.gameId)===gameId&&clean(designCheckpoint?.date)===date&&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
+  &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,policyDigest:designCheckpoint.policyDigest,engineDigest:designCheckpoint.engineDigest})).digest('hex')
+  &&designCheckpoint?.phases&&designCheckpoint?.tasks&&designCheckpoint?.modelHealth;
+if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible||checkpointThreePlatformPolicyMigrationEligible||homepageOnlyDesignCheckpointEligible)){
   const previousContractVersion=Number(designCheckpoint.contractVersion||0);
   const previousEngineDigest=clean(designCheckpoint.engineDigest);
   designCheckpoint={
