@@ -670,25 +670,40 @@
       "name": "Resource Dynamics",
       "purpose": "Establish the core mechanism for resource acquisition, risk assessment, and shelter selection in a cooperative survival context.",
       "playerChoice": "Player selects a resource to collect, evaluates environmental risk, and decides on shelter strategy based on group readiness and available resources."
+    },
+    "local_authoring_parts::3fafb812eef6dc12f98275281cf8be1012d49767b30d088eda63ac21c13eded8:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "resource_discovery",
+        "environmental_risk_evaluation"
+      ],
+      "stateOutputs": [
+        "shelter_selection",
+        "group_coordination"
+      ],
+      "name": "Cooperative Playstyle Dynamics",
+      "purpose": "Enables shared decision-making and interdependent goal achievement through group coordination.",
+      "playerChoice": "Decide which members should focus on survival tasks based on resource availability and environmental risk assessment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1837566,
-      "lastMs": 69779,
+      "totalMs": 1903904,
+      "lastMs": 66338,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:56:59.781Z"
+      "updatedAt": "2026-10-10T00:58:06.121Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-10T00:56:59.781Z",
+  "updatedAt": "2026-10-10T00:58:06.121Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2527,7 +2542,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:56:59.781Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:58:06.121Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
