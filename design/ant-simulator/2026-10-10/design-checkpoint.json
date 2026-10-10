@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 대상/공간을 선택하고, 그 선택이 월드 상태와 목표에 영향을 줌. 업그레이드, 팍스, 무기, 스킬 등 전략적 선택을 실행하여 보상을 얻고, 이를 바탕으로 다음 루프 시작. 상호작용 결과로 월드 상태가 변하면서, 이는 게임의 진입 절차에 영향을 미친다.",
       "coreFun": "플레이어는 대상/공간을 선택하고, 그 선택이 월드 상태와 목표에 영향을 주며, 이는 게임의 진입 절차에 영향을 미친다. 업그레이드, 팍스, 무기, 스키일 등을 선택하여 보상을 얻고, 이를 바탕으로 다음 루프 시작. 상호작용 결과로 월드 상태가 변하며, 이는 게임의 진입 절차에 영향을 미친다."
+    },
+    "local_authoring_parts::849156eb8bae7d9961b9b11d664ff571267ddd7d68ffbffb96df8e35caafb0cd:coreLoop": {
+      "coreLoop": [
+        "플레이어가 대상을 선택하여 월드 상태와 목표에 영향을 주며, 이 선택은 보상 또는 위험 발생",
+        "업그레이드, 팍스, 무기, 스킬 등 전략적 선택을 실행하여 새로운 월드 상태 및 보상 생성",
+        "선택 결과로 월드 상태 변환 후 다음 루프 시작"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 161065,
-      "lastMs": 161065,
+      "totalMs": 188708,
+      "lastMs": 27643,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:13:33.440Z"
+      "updatedAt": "2026-10-10T09:14:01.085Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:10:52.331Z",
-  "updatedAt": "2026-10-10T09:13:33.440Z",
+  "updatedAt": "2026-10-10T09:14:01.092Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1840,8 +1847,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:13:33.440Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:14:01.085Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
