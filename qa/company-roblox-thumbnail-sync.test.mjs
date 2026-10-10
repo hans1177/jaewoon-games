@@ -1,13 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {
   resolveRobloxThumbnailTarget,
   validateCanonicalThumbnail,
   uploadRobloxHomepageThumbnail,
-  syncRobloxExperienceDetailMedia
+  syncRobloxExperienceDetailMedia,
+  syncRobloxHomepageThumbnail
 } from '../tools/company-roblox-thumbnail-sync.mjs';
 
 const ids=['cozy-island','daechung-rpg','horror-escape-room','village-dungeons'];
@@ -66,6 +68,30 @@ test('unverified, shared or mismatched Roblox server target never receives anoth
     {verified:false},{dedicated:false},{shared:true},
     {gameId:'daechung-rpg'},{universeId:'0'},{placeId:''}
   ])assert.throws(()=>evaluate(patch),/ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING/);
+});
+
+test('unchanged verified homepage thumbnail operation is reused without another render or network request',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-thumb-reuse-'));
+  const source='assets/roblox-thumbnails/cozy-island.svg';
+  const sha=crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+  const queuePath=path.join(dir,'queue.json');
+  const prior={version:1,gameId:'cozy-island',universeId:'10767445741',
+    placeId:'116850096561713',sourcePath:source,sourceSha256:sha,
+    uploadStatus:'Finished',uploaded:true,verified:true,
+    uploadedAt:'2026-10-10T00:00:00Z'};
+  fs.writeFileSync(queuePath,JSON.stringify({items:[{
+    gameId:'cozy-island',robloxPublicationTarget:{
+      gameId:'cozy-island',universeId:prior.universeId,placeId:prior.placeId,
+      verified:true,dedicated:true,shared:false
+    },robloxThumbnailEvidence:prior
+  }]}));
+  const evidence=await syncRobloxHomepageThumbnail({
+    root:'.',catalogPath:'game-catalog.json',queuePath,gameId:'cozy-island',
+    apiKey:'',fetchImpl:async()=>{throw new Error('duplicate upload forbidden');}
+  });
+  assert.equal(evidence.reused,true);
+  assert.equal(evidence.sourceSha256,sha);
+  fs.rmSync(dir,{recursive:true,force:true});
 });
 
 test('Open Cloud thumbnail upload uses files multipart and verifies Finished operation',async()=>{
@@ -143,13 +169,27 @@ test('moderation pending never uploads duplicate Roblox detail images',async()=>
   fs.rmSync(dir,{recursive:true,force:true});
 });
 
+test('unbound existing Roblox thumbnail is not a verified match for our canonical artwork',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-unbound-'));
+  const png=path.join(dir,'cozy-island.png');
+  fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0]));
+  const evidence=await syncRobloxExperienceDetailMedia({
+    universeId:'10767445741',pngPath:png,
+    fetchImpl:async()=>Response.json({data:[{assetTypeId:1,assetType:'Image',approved:true,imageId:123}]})
+  });
+  assert.equal(evidence.imageStatus,'EXISTING_UNBOUND_GAME_DETAIL_IMAGE');
+  assert.equal(evidence.verifiedDetailImage,false);
+  assert.equal(evidence.approvedImageCount,1);
+  fs.rmSync(dir,{recursive:true,force:true});
+});
+
 test('existing Roblox native media is preserved without duplicate re-upload',async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-existing-'));
   const png=path.join(dir,'cozy-island.png');
   fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0]));
   let count=0;
   const report=await syncRobloxExperienceDetailMedia({
-    universeId:'10767445741',pngPath:png,fetchImpl:async()=>{
+    universeId:'10767445741',pngPath:png,previousMedia:{detailImageId:'123'},fetchImpl:async()=>{
       count++;
       return Response.json({data:[
         {assetTypeId:1,assetType:'Image',approved:true,imageId:123},
