@@ -574,6 +574,34 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           if(!fs.existsSync(file))throw new Error('NATIVE_DCC_EVIDENCE_MISSING:'+evidenceJson);
           evidence=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
         }
+        // 이미지 기반 메쉬의 픽셀 입력·라이선스·실제 추론·다각도 렌더를 독립 검증한다.
+        // Blender가 만든 메타데이터만으로 생성 성공이나 게임 런타임 PASS를 선언하지 않는다.
+        const imageArgs=Array.isArray(recipe?.args)?recipe.args:[];
+        const imageFlag=imageArgs.indexOf('--source-image');
+        if(recipe?.imageToMesh===true||imageFlag>=0){
+          if(imageFlag<0||!imageArgs[imageFlag+1])throw new Error('IMAGE_TO_MESH_INPUT_ARGUMENT_REQUIRED');
+          const imagePath=dccRepoPath(imageArgs[imageFlag+1]);
+          if(!imagePath.startsWith('assets/')||!(/\.(?:png|jpe?g|webp)$/i.test(imagePath)))
+            throw new Error('IMAGE_TO_MESH_INPUT_SCOPE_FORBIDDEN:'+imagePath);
+          const imageFile=path.resolve(cwd,imagePath);
+          if(!fs.existsSync(imageFile)||!fs.statSync(imageFile).isFile())throw new Error('IMAGE_TO_MESH_INPUT_MISSING:'+imagePath);
+          const input=sha256File(imageFile),provenance=evidence?.imageToMesh;
+          if(!provenance||provenance.engine!=='VAST-AI-Research/TripoSR'||provenance.engineLicense!=='MIT'
+            ||provenance.inputPath!==imagePath||provenance.inputSha256!==input
+            ||provenance.generatedGeometry!==true||provenance.originalImageImmutable!==true
+            ||provenance.runtimeVerified!==false||provenance.rigged!==false
+            ||!/^[a-f0-9]{64}$/.test(clean(provenance.modelWeightSha256))
+            ||!['project-original','cc0','cc-by'].includes(clean(provenance.sourceLicense).toLowerCase())
+            ||clean(evidence?.license).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()
+            ||(clean(provenance.sourceLicense).toLowerCase()==='cc-by'&&!clean(provenance.sourceCredit))
+            ||(recipe?.sourceLicense&&clean(recipe.sourceLicense).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()))
+            throw new Error('IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID:'+clean(recipe?.id));
+          const angles=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
+          if(!Array.isArray(evidence?.multiViewPreview)
+            ||angles.some(name=>!evidence.multiViewPreview.includes(name)
+              ||!generated.some(row=>row.path===posix(path.join(path.dirname(evidenceJson),name)))))
+            throw new Error('IMAGE_TO_MESH_MULTIVIEW_RENDER_REQUIRED:'+clean(recipe?.id));
+        }
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
         const declaredMasterGlb=recipe?.masterGlbOutput?dccRepoPath(recipe.masterGlbOutput):null;
