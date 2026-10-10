@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::2208473c4ce7e2969b59feba234a94898e8edc37ffe41509a433fc17e4d694a6:identity": {
       "identity": "Shardbound Odyssey - 게임 정체성 및 인과적 상태 연결 시스템입니다. 이 플레이어가 시작하는 레벨에서 명확한 목표, 제한된 움직임, 장애물 또는 볼륨 있는 풍경 constraint를 갖습니다. 선택 후 즉각적인 결과와 피드백을 통해 핵심 행동을 이해하고, 성장 가능성이 실제적으로 달라지는 경험을 제공합니다. 게임의 세계와 규칙은 인과적 상태 변화에 의해 지속적으로 재구성됩니다."
+    },
+    "local_authoring_parts::bd107884cb8aea46179c0c479c4a79682cb9718340f2e35f76de7c93d6ee7a0f:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "Shardbound Odyssey - 게임 정체성 및 인과적 상태 연결 시스템입니다.",
+      "a": {
+        "system": "게임 시스템 + 해석 소재",
+        "material": "역사, 철학, 예술",
+        "materialDomain": "PRIMARY",
+        "stateChange": "역사적 사건 → 플레이어 선택 → 세계 상태 변화"
+      },
+      "b": {
+        "system": "다른 시스템 + 해석 소재",
+        "material": "과학, 무협, 종교",
+        "materialDomain": "SECONDARY",
+        "stateChange": "과학적 이론 → 새로운 전략 → 세계 관계 재구성"
+      },
+      "abCausality": "양방향 실제 상태 교환: 역사적 단서 → 과학적 발견 → 무협적 선택 → 세계의 진화로 인해 인과적으로 연결됨으로써 플레이어가 실질적인 성장 가능성을 경험하게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 640903,
-      "lastMs": 40788,
+      "totalMs": 718407,
+      "lastMs": 77504,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:21:28.774Z"
+      "updatedAt": "2026-10-10T10:22:46.280Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:10:47.845Z",
-  "updatedAt": "2026-10-10T10:21:28.774Z",
+  "updatedAt": "2026-10-10T10:22:46.280Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1636,7 +1652,7 @@
     "52690f0f103c810e967108933276d82801582a8bf229dc8838f0f1d1b7840d47": true,
     "2208473c4ce7e2969b59feba234a94898e8edc37ffe41509a433fc17e4d694a6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:21:28.774Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:22:46.280Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
