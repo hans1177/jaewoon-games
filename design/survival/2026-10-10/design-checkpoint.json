@@ -119,25 +119,40 @@
       "name": "Essential Survival State Transition",
       "purpose": "Establishes the core causal chain of survival, resource selection, and event occurrence leading to strategy shift.",
       "playerChoice": "Event occurrence triggers strategy shift, which is validated through gameplay mechanics and narrative progression."
+    },
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": {
+      "id": "a_essential_survival_state_transition",
+      "grammarRole": "A",
+      "stateInputs": [
+        "event_occurrence",
+        "strategy_shift"
+      ],
+      "stateOutputs": [
+        "survival_status_change",
+        "resource_selection"
+      ],
+      "name": "Essential Survival State Transition",
+      "purpose": "Represents the causal chain of survival state changes, player actions, and event occurrences that drive gameplay progression.",
+      "playerChoice": "Event occurrence → Strategy shift → Game identity change → Reward risk change"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 100,
-      "successes": 100,
+      "calls": 103,
+      "successes": 103,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1069537,
-      "lastMs": 7715,
+      "totalMs": 1091389,
+      "lastMs": 5971,
       "lastError": null,
-      "updatedAt": "2026-10-10T05:46:06.015Z"
+      "updatedAt": "2026-10-10T05:46:27.873Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:28:15.947Z",
-  "updatedAt": "2026-10-10T05:46:06.016Z",
+  "updatedAt": "2026-10-10T05:46:27.873Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1898,11 +1913,11 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 97
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 99
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T05:46:06.015Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T05:46:27.873Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
