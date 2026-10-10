@@ -256,6 +256,7 @@ jobs:
             (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
           const activeStates=new Set(['queued','pending','in_progress','requested']);
+          const eligibleGameIds=rows.map(item=>String(item.gameId||'')).filter(id=>/^[a-z0-9][a-z0-9-]{1,80}$/.test(id));
           const activeIds=(file,prefix,exactHead='')=>{
             let payload={workflow_runs:[]};
             try{payload=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
@@ -266,7 +267,21 @@ jobs:
               const title=String(run.display_title||'');
               if(!title.startsWith(prefix))continue;
               const id=title.slice(prefix.length).trim();
-              if(/^[a-z0-9][a-z0-9-]{1,80}$/.test(id)&&id!=='batch')ids.add(id);
+              if(/^[a-z0-9][a-z0-9-]{1,80}$/.test(id)&&id!=='batch'&&eligibleGameIds.includes(id)){
+                ids.add(id);
+                continue;
+              }
+              // A push-triggered Unity Web build names the game inside the commit title,
+              // not immediately after the workflow prefix. Recover only one exact slug.
+              // Never match "survival" inside "fantasy-survival" or "survival2".
+              if(prefix==='Unity Web Floor '&&run.event==='push'){
+                const matching=eligibleGameIds.filter(gameId=>
+                  new RegExp('(^|[^a-z0-9-])'+gameId+'($|[^a-z0-9-])','i').test(title));
+                if(matching.length===1){
+                  ids.add(matching[0]);
+                  console.log('UNITY_WEB_FLOOR_ACTIVE_PUSH_DETECTED='+matching[0]+':'+run.id);
+                }
+              }
             }
             return ids;
           };
