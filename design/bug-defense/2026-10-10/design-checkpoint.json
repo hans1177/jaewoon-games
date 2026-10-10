@@ -799,25 +799,40 @@
     },
     "local_authoring_parts::b2b511c9a1295127d34bb5e057c311549d6115224712f189d28ede825892f2c7:resourceFlow": {
       "resourceFlow": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지"
+    },
+    "local_authoring_parts::b2b511c9a1295127d34bb5e057c311549d6115224712f189d28ede825892f2c7:balanceRules": {
+      "balanceRules": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지"
+    },
+    "local_authoring_parts::f0ca1fd4b3f18632b30e92acd44c0f423c5d08050af499ac5e7fd63ca4bba444:progressionEconomyBalance": {
+      "progressionLoop": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 결정 → 위험/보상 발생 → 다음 선택 기반 전략 결정의 순차적 흐름을 설계하여 경제적 가치와 방어력 간의 균형 유지",
+      "resourceFlow": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지",
+      "balanceRules": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지"
+    },
+    "local_authoring_parts::620519e6d06c9f0dea539a4875f27e01f3363b57b8bdab8e937516c75531a6f5:progressionEconomyBalance": {
+      "progressionEconomyBalance": {
+        "progressionLoop": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 결정 → 위험/보상 발생 → 다음 선택 기반 전략 결정의 순차적 흐름을 설계하여 경제적 가치와 방어력 간의 균형 유지",
+        "resourceFlow": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지",
+        "balanceRules": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 38,
-      "successes": 38,
+      "calls": 39,
+      "successes": 39,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1151408,
-      "lastMs": 38585,
+      "totalMs": 1189866,
+      "lastMs": 38458,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:57:57.401Z"
+      "updatedAt": "2026-10-10T10:58:35.860Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:57:57.401Z",
+  "updatedAt": "2026-10-10T10:58:35.862Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2507,7 +2522,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:57:57.401Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:58:35.862Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
