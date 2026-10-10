@@ -228,10 +228,10 @@ test('Daechung Unity Web canonical actors use imported 3D OBJ not active SpriteR
     assert.ok(fs.existsSync(file),'missing original Unity-importable 3D OBJ: '+model);
     assert.ok(fs.statSync(file).size>300,'empty or placeholder source mesh: '+model);
     // 원본 3D 모델을 단순 문자열/평면/가짜 면 데이터로 바꾸면 정적 검사부터 차단한다.
-    const lines=fs.readFileSync(file,'utf8').split(/\\r?\\n/);
-    const vertices=lines.filter(line=>/^v\\s+/.test(line))
-      .map(line=>line.trim().split(/\\s+/).slice(1,4).map(Number));
-    const faces=lines.filter(line=>/^f\\s+/.test(line));
+    const lines=fs.readFileSync(file,'utf8').split(/\r?\n/);
+    const vertices=lines.filter(line=>/^v\s+/.test(line))
+      .map(line=>line.trim().split(/\s+/).slice(1,4).map(Number));
+    const faces=lines.filter(line=>/^f\s+/.test(line));
     assert.ok(vertices.length>8&&faces.length>8,'missing native mesh geometry: '+model);
     assert.ok(vertices.every(vertex=>vertex.length===3&&vertex.every(Number.isFinite)),
       'invalid 3D source vertices: '+model);
@@ -241,7 +241,7 @@ test('Daechung Unity Web canonical actors use imported 3D OBJ not active SpriteR
     });
     assert.ok(bounds.every(value=>value>0.02),'flat or degenerate 3D source: '+model);
     for(const face of faces){
-      const indices=face.trim().split(/\\s+/).slice(1).map(value=>Number(value.split('/')[0]));
+      const indices=face.trim().split(/\s+/).slice(1).map(value=>Number(value.split('/')[0]));
       assert.ok(indices.length>=3&&indices.every(index=>Number.isInteger(index)
         &&index>=1&&index<=vertices.length),'invalid 3D faces: '+model);
     }
@@ -256,9 +256,9 @@ test('Daechung Unity Web canonical actors use imported 3D OBJ not active SpriteR
   assert.match(visual,/SPATIAL_DEPTH game=daechung-rpg/);
   assert.match(visual,/NativeMeshReady/);
   // 원격 픽셀 시트가 로드되더라도 네이티브 3D 임포트 실패가 PASS로 뒤집히면 안 된다.
-  assert.doesNotMatch(visual,/^\\s*_ready\\s*=\\s*true;\\s*$/m);
-  assert.match(visual,/if \\(!_enemy\\.NativeMeshReady\\)/);
-  assert.match(visual,/if \\(!_ready \\|\\| !_player\\.NativeMeshReady \\|\\| !_enemy\\.NativeMeshReady/);
+  assert.doesNotMatch(visual,/^\s*_ready\s*=\s*true;\s*$/m);
+  assert.match(visual,/if \(!_enemy\.NativeMeshReady\)/);
+  assert.match(visual,/if \(!_ready \|\| !_player\.NativeMeshReady \|\| !_enemy\.NativeMeshReady/);
   assert.match(visual,/REPAIR_REQUIRED · NATIVE 3D MODEL/);
 });
 
