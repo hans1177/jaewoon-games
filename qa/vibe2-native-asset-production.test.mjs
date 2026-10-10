@@ -3396,7 +3396,7 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
     assert.equal(row.qualityDNA.evidence.verificationStatusIsNotVisualQuality,true);
     assert.equal(row.qualityDNA.rescue.fullReauthorOnlyAfterTargetedRepairFails,true);
     assert.equal(plan.qualityDNA.commonRules.strongAxesLockedDuringRepair,true);
-    assert.equal(plan.qualityDNA.donorAssemblyBeforeFullReauthor,true);
+    assert.equal(plan.qualityDNA.commonRules.donorAssemblyBeforeFullReauthor,true);
     assert.ok(plan.qualityDNA.contracts.some(item=>item.type==='character'&&item.qualityDNA.profile==='HERO_CHARACTER'));
     assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
     assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
