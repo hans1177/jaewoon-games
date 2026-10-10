@@ -4459,6 +4459,157 @@ function RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
   return root,parts
 end
 
+
+-- 게임 메뉴와 화면 구성: 기존 게임 창을 끼워 넣는 표시 컨테이너. 게임 상태/화면 코드는 그대로 유지한다.
+function RobloxCommonUI.CreateGameWindowLayout(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"GAME_WINDOW_LAYOUT","GAME_WINDOW")
+  local top=RobloxCommonUI.CreateTopBar({name="GameWindowTop",title=options.title or "게임",size=UDim2.new(1,0,0,54),theme=theme})
+  top.Parent=body
+  local back=RobloxCommonUI.CreatePrimaryButton({name="Back",text="뒤로",size=UDim2.fromOffset(84,48),minWidth=80,theme=theme,textSize=13})
+  back.AnchorPoint=Vector2.new(1,0);back.Position=UDim2.new(1,-4,0,3);back.Parent=top
+  local nav=Instance.new("ScrollingFrame")
+  nav.Name="MenuNavigation";nav.BackgroundColor3=theme.PanelRaised;nav.BorderSizePixel=0
+  nav.ScrollBarThickness=3;nav.Active=true;nav.AutomaticCanvasSize=Enum.AutomaticSize.X;nav.Parent=body
+  corner(nav,theme.Corner)
+  local layout=commonList(nav,true,6)
+  local screen=Instance.new("Frame")
+  screen.Name="GameScreenMount";screen.BackgroundTransparency=1;screen.ClipsDescendants=true;screen.Parent=body
+  local title=commonText(screen,"EmptyScreen","게임에서 연결한 화면이 없어.",
+    UDim2.fromOffset(12,12),UDim2.new(1,-24,0,52),theme.MutedText,14,false)
+  local menuButtons,rows,stack={}, {}, {}
+  local selectedId=""
+  local function refreshLayout()
+    local compact=body.AbsoluteSize.X<700
+    top.Size=UDim2.new(1,0,0,54)
+    if compact then
+      nav.Position=UDim2.new(0,0,1,-76);nav.Size=UDim2.new(1,0,0,74)
+      nav.ScrollingDirection=Enum.ScrollingDirection.X
+      nav.AutomaticCanvasSize=Enum.AutomaticSize.X
+      layout.FillDirection=Enum.FillDirection.Horizontal
+      screen.Position=UDim2.fromOffset(0,60);screen.Size=UDim2.new(1,0,1,-142)
+      for _,button in ipairs(menuButtons)do button.Size=UDim2.fromOffset(116,52)end
+    else
+      nav.Position=UDim2.fromOffset(0,60);nav.Size=UDim2.new(0,204,1,-60)
+      nav.ScrollingDirection=Enum.ScrollingDirection.Y
+      nav.AutomaticCanvasSize=Enum.AutomaticSize.Y
+      layout.FillDirection=Enum.FillDirection.Vertical
+      screen.Position=UDim2.fromOffset(214,60);screen.Size=UDim2.new(1,-214,1,-60)
+      for _,button in ipairs(menuButtons)do button.Size=UDim2.new(1,-8,0,52)end
+    end
+    root:SetAttribute("CompactTouchLayout",compact)
+    root:SetAttribute("SafeAreaBottomPixels",tonumber(options.safeBottom)or 0)
+  end
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    rows=type(state.menus)=="table"and state.menus or {}
+    if state.selectedId~=nil then selectedId=tostring(state.selectedId)end
+    for i,row in ipairs(rows)do
+      if not menuButtons[i]then
+        local index=i
+        local button=RobloxCommonUI.CreateTabButton({name="Menu"..i,text="",size=UDim2.fromOffset(116,52),theme=theme})
+        button.LayoutOrder=i;button.Parent=nav;menuButtons[i]=button
+        button.Activated:Connect(function()
+          local current=rows[index]
+          if type(current)~="table"or current.enabled==false then return end
+          local nextId=tostring(current.id or "")
+          if nextId==""or nextId==selectedId then return end
+          if selectedId~=""then table.insert(stack,selectedId)end
+          selectedId=nextId
+          root:SetAttribute("MenuBackDepth",#stack)
+          sync({menus=rows,selectedId=nextId})
+          if type(options.onSelect)=="function"then options.onSelect(nextId,current)end
+        end)
+      end
+      local button=menuButtons[i]
+      local id=type(row)=="table"and tostring(row.id or "")or ""
+      local enabled=type(row)=="table"and row.enabled~=false and id~=""
+      button.Text=type(row)=="table"and tostring(row.title or row.label or id)or ""
+      button.Visible=type(row)=="table"
+      button.Selectable=enabled;button.Active=enabled
+      button.BackgroundColor3=id~=""and id==selectedId and theme.Primary or theme.PanelRaised
+      button:SetAttribute("BoundMenuId",id)
+      button:SetAttribute("GameReportedEnabled",enabled)
+    end
+    for i=#rows+1,#menuButtons do menuButtons[i].Visible=false end
+    back.Visible=#stack>0
+    top:FindFirstChild("Title").Text=tostring(state.title or options.title or "게임")
+    root:SetAttribute("SelectedMenuId",selectedId)
+    root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
+    refreshLayout()
+  end
+  back.Activated:Connect(function()
+    if #stack==0 then return end
+    local previous=table.remove(stack)
+    selectedId=previous
+    sync({menus=rows,selectedId=previous})
+    if type(options.onSelect)=="function"then options.onSelect(previous,{fromBack=true})end
+  end)
+  local function setScreen(ui)
+    for _,child in ipairs(screen:GetChildren())do
+      if child~=title and child:IsA("GuiObject")then child.Parent=nil end
+    end
+    if typeof(ui)=="Instance"and ui:IsA("GuiObject")then
+      ui.Parent=screen;ui.Position=UDim2.fromOffset(0,0);ui.Size=UDim2.fromScale(1,1)
+      title.Visible=false
+    else
+      title.Visible=true
+    end
+  end
+  body:GetPropertyChangedSignal("AbsoluteSize"):Connect(refreshLayout)
+  sync({menus=options.menus or {},selectedId=options.selectedId or "",title=options.title})
+  root:SetAttribute("OwnsNavigationAuthority",false)
+  root:SetAttribute("OwnsGameplayAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  root:SetAttribute("OwnsRemoteAuthority",false)
+  return root,{navigation=nav,screen=screen,Sync=sync,SetScreen=setScreen,Back=back}
+end
+
+-- 상태창: 게임이 승인한 플레이어 속성만 출력. 전투·레벨·저장 값을 계산하거나 수정하지 않는다.
+function RobloxCommonUI.CreateStatusOverview(options)
+  options=options or {}
+  local theme=cloneTheme(options.theme)
+  local root,body=surfaceShell(options,"STATUS_OVERVIEW","STATUS_OVERVIEW")
+  local heading=commonText(body,"PlayerStatus","",UDim2.fromOffset(4,0),UDim2.new(1,-8,0,42),theme.Text,18,true)
+  local list=Instance.new("ScrollingFrame")
+  list.Name="GameStats";list.Position=UDim2.fromOffset(0,48);list.Size=UDim2.new(1,0,1,-48)
+  list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
+  list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
+  list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body
+  commonList(list,false,5)
+  local labels={}
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    heading.Text=tostring(state.name or state.title or "상태")
+    local rows=type(state.stats)=="table"and state.stats or {}
+    for i,row in ipairs(rows)do
+      if not labels[i]then
+        local entry=Instance.new("Frame")
+        entry.Name="Stat"..i;entry.Size=UDim2.new(1,-8,0,52)
+        entry.BackgroundColor3=theme.PanelRaised;entry.BorderSizePixel=0;entry.Parent=list
+        entry.LayoutOrder=i;corner(entry,8)
+        local label=commonText(entry,"Label","",UDim2.fromOffset(12,0),UDim2.new(0.57,-12,1,0),theme.MutedText,13,false)
+        local value=commonText(entry,"Value","",UDim2.new(0.57,0,0,0),UDim2.new(0.43,-12,1,0),theme.Text,15,true)
+        value.TextXAlignment=Enum.TextXAlignment.Right
+        labels[i]={entry=entry,label=label,value=value}
+      end
+      local item=labels[i]
+      item.entry.Visible=true
+      item.label.Text=tostring(row.label or row.id or "")
+      item.value.Text=tostring(row.valueText or row.value or "")
+      item.entry:SetAttribute("BoundStatId",tostring(row.id or ""))
+    end
+    for i=#rows+1,#labels do labels[i].entry.Visible=false end
+    root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
+  end
+  sync(options.state or {})
+  root:SetAttribute("OwnsStatsAuthority",false)
+  root:SetAttribute("OwnsCombatAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  return root,{Sync=sync,stats=list}
+end
+
 function RobloxCommonUI.Create(atomId, options)
   local id = string.upper(tostring(atomId or ""))
   if id == "FRAME_PANEL" then
