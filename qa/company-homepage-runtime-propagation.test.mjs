@@ -1,3 +1,4 @@
+// 파일명: qa/company-homepage-runtime-propagation.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -264,52 +265,56 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
 
-test('homepage exposes Unity Web as the required pre-native development test surface without release authority',()=>{
+test('homepage exposes only verified native 3D Unity WebGL as a development link, without granting release authority',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
+  const listing=policy.serverHomepageIntegration.managerContract.developmentProgressDisplay;
   assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
   assert.equal(policy.serverHomepageIntegration.showWebPlay,true);
   assert.equal(policy.serverHomepageIntegration.ownerWebUpload.changedGameIdsOnly,false);
   assert.equal(policy.serverHomepageIntegration.ownerWebUpload.reconcileExistingCatalogGamesEveryStatusSync,true);
-  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.cardVisibilityRequiresRunnableTarget,false);
-  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.titleOnlyCardExposureForbidden,false);
+  assert.equal(listing.cardVisibilityRequiresRunnableTarget,false);
+  assert.equal(listing.titleOnlyCardExposureForbidden,false);
   assert.equal(snap.unityWebEnabled,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
-  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
-  assert.equal(web.requiredForDevelopmentAdmission,true);
+  assert.equal(web.requiredForDevelopmentAdmission,false);
   assert.equal(web.releaseStage,false);
+  assert.equal(policy.ownerUnityWeb3dOnly20261009.finalGameplayDimension,'3D');
+  assert.equal(policy.ownerUnityWeb3dOnly20261009.noShadowPipelineOr2dFallbackAsFinal,true);
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageTestLinkIsNotDeploymentOrRelease,true);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkQaPassRequired,false);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageLinkEvidenceFilesRequired,false);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  assert.match(renderer,/bindAvailableUnityWebSurfaces\(catalog\)/);
-  assert.match(renderer,/projectPath===`unity-games\/\$\{id\}`/);
-  assert.match(renderer,/for\(const href of \[/);
-  assert.match(renderer,/`\/web-games\/\$\{id\}\/unity\/`/);
-  assert.match(renderer,/`\/web-games\/\$\{id\}\/`/);
-  assert.match(renderer,/const expected=`web-games\/\$\{id\}`/);
-  assert.match(renderer,/return raw===expected\?`\/\$\{expected\}\/`:'';/);
-  assert.match(renderer,/probeFetch\(`\$\{href\}index\.html\?ts=/);
-  assert.match(renderer,/bundleGroupsFromUnityIndex/);
-  assert.match(renderer,/renderCatalog\(catalog\);/);
-  assert.match(renderer,/setTimeout\(\(\)=>controller\.abort\(\),2500\)/);
-  assert.match(renderer,/Unity Web Player\|unity-container\|createUnityInstance\|\\\.loader\\\.js/);
+  const required=[
+    'async function bindAvailableUnityWebSurfaces(catalog)',
+    'projectPath===`unity-games/${id}`',
+    'for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`])',
+    'probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`)',
+    'manifest.homepageVerified!==true',
+    "manifest.requiredDimension!=='3D'",
+    'manifest.canonicalSourceRoot!==`unity-games/${id}`',
+    'build.upperPlatformGateCandidate!==true',
+    'readiness.criteria?.graphics?.native3dVerified!==true',
+    "e.spatialGameplay.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'",
+    'Number(e.spatialGameplay.observedTriangles)>0',
+    'e.saveRestore?.pass===true',
+    'e.mobile?.realGameTouchHandlerObserved===true',
+    'qa.every(qaPassed)',
+    'unityWebAvailable:false',
+    'const direct=links.unityWeb||links.roblox||links.unity||',
+    "button(links.unityWeb,'Unity Web · 개발중','Unity Web · 빌드없음'",
+    'function playableWebHref(row)',
+    'function hasRunnableHomepageTarget(game)',
+    'renderCatalog(catalog);'
+  ];
+  for(const marker of required)assert.ok(renderer.includes(marker),'missing Unity Web development and safety contract: '+marker);
+  assert.match(renderer,/createUnityInstance\\s\\*\\\\s\\\(/);
   assert.match(renderer,/method:'HEAD'/);
-  assert.match(renderer,/\['loader','data','framework','wasm'\]/);
-  assert.match(renderer,/unityWebAvailable:true/);
-  assert.match(renderer,/Unity Web · 개발중/);
-  assert.match(renderer,/function playableWebHref\(row\)/);
-  assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.doesNotMatch(renderer,/\.filter\(hasRunnableHomepageTarget\)/);
-  assert.match(renderer,/웹 플레이/);
-  assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
-  assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
-  assert.match(renderer,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
+  assert.doesNotMatch(renderer,/\\.filter\\(hasRunnableHomepageTarget\\)/);
   assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
 });
+
 
 test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
