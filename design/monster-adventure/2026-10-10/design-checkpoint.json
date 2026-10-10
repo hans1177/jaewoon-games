@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 진입 순간에 단순한 터치나 스wipe로 게임을 시작하며, 이 선택은 그들의 역할과 행동을 명확하게 정의합니다. 선택 이후에는 실질적 성장 및 위험의 즉각적인 피드백을 받게 되며, 이를 바탕으로 다음 전략을 결정해야 합니다.",
       "coreFun": "{identity}은 진입 순간의 단순 터치 또는 스wipe 입력을 통해 플레이어가 실제 선택과 보상/위험의 즉각적인 피드백을 경험하게 됩니다. 이 상태변화는 게임 내 콘텐츠 관리 시스템과 직접 연결되어 있으며, 이는 주요 장르에 따른 실제 인과 변화와 보조 장르의 선택에 따라 플레이어 선택의 의미가 달라집니다."
+    },
+    "local_authoring_parts::eb267d4a29872a9a2946b49db984307e4245343e0db8805a0801f85b19806791:coreLoop": {
+      "coreLoop": [
+        "진입 순간의 단순 터치 또는 스wipe 입력 → 선택 상태 변환 → 실질적 성장 및 위험의 즉각적인 피드백 제공",
+        "실제 선택과 보상/위험의 즉각적인 피드백 제공 → 다음 전략 결정",
+        "보상/위험/다음 선택의 재정의가 일어남"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 587926,
-      "lastMs": 105553,
+      "totalMs": 685868,
+      "lastMs": 97942,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:56:41.391Z"
+      "updatedAt": "2026-10-10T01:58:19.336Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:46:53.444Z",
-  "updatedAt": "2026-10-10T01:56:41.393Z",
+  "updatedAt": "2026-10-10T01:58:19.336Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1772,7 +1779,7 @@
   "localAuthoringSplits": {
     "fb84bb79fb127518c960f57cd25e31558ab466a1c51f2061e7a86fed2d0916ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:56:41.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:58:19.336Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
