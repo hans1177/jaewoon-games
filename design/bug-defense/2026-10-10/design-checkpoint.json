@@ -894,25 +894,35 @@
       "retryFlow": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
       "riskPressure": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
       "recoveryRules": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
+    },
+    "local_authoring_parts::c29e78d0a8b0274091df4957a5387f8352deaa6ffaf33f96e1e02d4594ac8a7f:failureRetryRisk": {
+      "failureStates": [
+        "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+        "Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements.",
+        "Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
+      ],
+      "retryFlow": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
+      "riskPressure": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
+      "recoveryRules": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 55,
-      "successes": 55,
+      "calls": 56,
+      "successes": 56,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1727776,
-      "lastMs": 108566,
+      "totalMs": 1760367,
+      "lastMs": 32591,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:51:44.816Z"
+      "updatedAt": "2026-10-10T09:52:17.415Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:51:44.822Z",
+  "updatedAt": "2026-10-10T09:52:17.423Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2623,7 +2633,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::dc86a2543022b72c06bfce4b7216f60ec55b11169175c107b1f05af6ac2db1eb:signatureSystems:0:4f53cda18c2baa0c": 1,
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 3
+    "designer_draft_slices::systems-progression": 4
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2726,8 +2736,8 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:51:44.817Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:52:17.417Z",
+  "failedPhase": "designer_draft",
   "failedTask": "systems-progression",
   "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
