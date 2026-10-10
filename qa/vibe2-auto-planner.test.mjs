@@ -1635,6 +1635,10 @@ test('existing Web game presentation automatically selects optional UX and built
     fs.mkdirSync(dir,{recursive:true});
     const existing='<html><body><button onclick="openInventory()">장비</button><script>function openInventory(){inventoryPanel.hidden=false;} const craftRecipes=[];</script></body></html>';
     fs.writeFileSync(file,existing);
+    const assets=path.join(root,'assets');fs.mkdirSync(assets,{recursive:true});
+    for(const name of ['inventory-equipment.js','crafting-recipes.js','vibe-private-engine.js']){
+      fs.writeFileSync(path.join(assets,name),'export const library = true;');
+    }
     const project={gameId,engine:'web',genre:'SURVIVAL',releaseState:'development-confirmed',projectPath:'web-games/'+gameId};
     const task=findWebPresentationQualityTask(project,root,{tasks:[]});
     assert.ok(task);
@@ -1658,6 +1662,8 @@ test('existing Unity WebGL and Unity app match the same existing C# interface so
     const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
     policy.assetProductionParallelContract={enabled:true};fs.writeFileSync(policyPath,JSON.stringify(policy));
     fs.writeFileSync(path.join(root,'unity-games/demo/Assets/Scripts/UIController.cs'),'using UnityEngine.UI; public class UIController { void OpenInventory(){ inventoryPanel.SetActive(true); } }');
+    const assets=path.join(root,'assets');fs.mkdirSync(assets,{recursive:true});
+    fs.writeFileSync(path.join(assets,'inventory-equipment.js'),'export const library = true;');
     const project={gameId:'demo',name:'Unity Demo',engine:'unity',genre:'RPG',target:'unity',releaseState:'development-confirmed',projectPath:'unity-games/demo'};
     const web=findPresentationQualityTask({...project,firstStageUnityWeb:true},root,{tasks:[]});
     const app=findPresentationQualityTask({...project,firstStageUnityWeb:false},root,{tasks:[]});
@@ -1668,6 +1674,9 @@ test('existing Unity WebGL and Unity app match the same existing C# interface so
     assert.equal(a.platformBinding,'UNITY_APP_SAME_CANONICAL_UNITY_PROJECT_WITH_WEBGL');
     assert.deepEqual(w.externalAlgorithms.map(row=>row.id),a.externalAlgorithms.map(row=>row.id));
     assert.deepEqual(w.internalToolMatches.map(row=>row.id),a.internalToolMatches.map(row=>row.id));
+    assert.deepEqual(w.internalLibraryMatches.map(row=>row.id),a.internalLibraryMatches.map(row=>row.id));
+    assert.ok(w.internalLibraryMatches.some(row=>row.library==='assets/inventory-equipment.js'));
+    assert.ok(w.internalLibraryMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
     assert.ok(w.sourceFiles.includes('unity-games/demo/Assets/Scripts/UIController.cs'));
     assert.ok(w.internalToolMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
     assert.equal(w.designMutation,false);assert.equal(w.noShadowUiPipeline,true);
