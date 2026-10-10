@@ -223,7 +223,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0003",
@@ -273,7 +273,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0004",
@@ -353,7 +353,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0006",
@@ -423,22 +423,43 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0008",
       "slug": "egg-heist",
       "name": "알 도둑 대작전",
-      "sourcePath": "web-games/egg-heist",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "profileStatus": "HOLD_REDIRECT_ONLY",
-      "mode": "HOLD",
-      "targetEngine": "design-only",
+      "sourcePath": "roblox-games/egg-heist",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "ROBLOX_UNITY",
       "protectedValues": [],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": false
+      "targetPlatformReady": false,
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/egg-heist",
+        "UNITY": "unity-games/egg-heist"
+      },
+      "designBaselineSource": "design/egg-heist/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/egg-heist/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/egg-heist/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0009",
@@ -477,12 +498,12 @@
       "id": "P0101",
       "slug": "chess-battle",
       "name": "체스 배틀",
-      "sourcePath": "web-games/chess-battle",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "sourcePath": "roblox-games/chess-battle",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "ROBLOX_UNITY",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -491,7 +512,28 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": false
+      "targetPlatformReady": false,
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/chess-battle",
+        "UNITY": "unity-games/chess-battle"
+      },
+      "designBaselineSource": "design/chess-battle/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/chess-battle/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/chess-battle/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0102",
@@ -532,7 +574,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "P0103",
@@ -573,7 +615,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-DESIGN-HORROR-ESCAPE-ROOM",
@@ -611,7 +653,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-CORE-CLASH-4V4-20260917",
@@ -649,7 +691,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-ROLEPLAY-LIFE-AVAT-BROOKHAVEN-RP-20260917",
@@ -687,7 +729,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SIMULATOR-TYCOON-I-ADOPT-ME-20260917",
@@ -725,7 +767,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-DICE-BATTLE-BOARD-20260917",
@@ -763,7 +805,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-GEM-SURVIVOR-20260917",
@@ -801,7 +843,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-ZOMBIE-SURVIVAL-20260917",
@@ -839,7 +881,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SURVIVAL-HORROR-ES-DOORS-20260917",
@@ -877,7 +919,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-KINGSHOT-AD-20260917",
@@ -915,7 +957,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-REALISTIC-BUILDER-20260917",
@@ -953,7 +995,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-TOWER-CHOICE-RPG-20260917",
@@ -991,7 +1033,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-PARTY-RPG-20260917",
@@ -1029,7 +1071,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-STORY-RPG-ADVENTUR-BLOX-FRUITS-20260917",
@@ -1067,7 +1109,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-DEFENSE-20260917",
@@ -1105,7 +1147,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-EXORCIST-OFFICE-20260917",
@@ -1143,7 +1185,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-STAR-FRONTIER-20260917",
@@ -1181,7 +1223,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SIMPLE-RPG-20260917",
@@ -1219,7 +1261,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
@@ -1257,7 +1299,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-HUMAN-GO-TEMP-20260917",
@@ -1295,7 +1337,45 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T11:22:33.580Z"
+      "updatedAt": "2026-10-10T11:32:10.554Z"
+    },
+    {
+      "id": "SEED-OWNER-DESIGN-COZY-ISLAND",
+      "slug": "cozy-island",
+      "name": "포근섬: 작은 왕국 키우기",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
+      },
+      "sourcePath": "roblox-games/cozy-island",
+      "designBaselineSource": "design/cozy-island/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:32:10.554Z"
     }
   ],
   "productionClassState": {
@@ -1501,5 +1581,5 @@
       }
     ]
   },
-  "updatedAt": "2026-10-10T11:22:33.580Z"
+  "updatedAt": "2026-10-10T11:32:10.554Z"
 }
