@@ -104,25 +104,40 @@
         "Defensive adaptation → resource allocation → economic constraint",
         "Defensive adaptation changes to match new enemy types; resource allocation shifts based on battlefield constraints; economic constraint becomes a permanent state"
       ]
+    },
+    "local_authoring_parts::532bbc5813d539744d5bb42e3166cb13616b72376a31532408dc942a05977714:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemy wave composition",
+        "defensive placement"
+      ],
+      "stateOutputs": [
+        "resource allocation decision",
+        "economic constraint state"
+      ],
+      "name": "Adaptive Defense - Economic Constraint Chain",
+      "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints in a single-player defense strategy game",
+      "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions, with adaptive defense strategies to maintain strategic flexibility while managing limited resources for long-term survival and progression in the game world"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 333294,
-      "lastMs": 50275,
+      "totalMs": 367713,
+      "lastMs": 34419,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:49:18.387Z"
+      "updatedAt": "2026-10-10T02:49:52.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:43:45.072Z",
-  "updatedAt": "2026-10-10T02:49:18.387Z",
+  "updatedAt": "2026-10-10T02:49:52.808Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1828,7 +1843,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:49:18.387Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:49:52.808Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
