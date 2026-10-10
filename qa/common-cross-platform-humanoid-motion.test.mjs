@@ -279,7 +279,7 @@ test('portable shared actor action masters have real animated joints',()=>{
   assert.equal(entry.nativeRuntimeVerified,false,role);
   assert.equal(entry.productionVerified,false,role);
   assert.equal(entry.masterGlbStaticQaPass,false,role);
-  assert.equal(createHash('sha1').update('blob '+bytes.length+'\\0').update(bytes).digest('hex'),entry.masterGlbGitBlobSha,role);
+  assert.equal(createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex'),entry.masterGlbGitBlobSha,role);
   newClips+=8;
  }
  assert.equal(newClips,104);
