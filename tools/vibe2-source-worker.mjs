@@ -674,6 +674,23 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
             const videoProof=evidence?.videoExport;
             const videoPath=posix(path.join(path.dirname(evidenceJson),'preview-motion.mp4'));
             const videoFile=path.resolve(cwd,videoPath);
+            const shotPlan=evidence?.videoExport?.shotPlan;
+            const quality=clean(evidence?.videoExport?.cinematicQuality);
+            const resolution=quality==='high'?640:quality==='preview'?320:0;
+            if(!['studio','dramatic'].includes(clean(evidence?.videoExport?.cinematicStyle))
+              ||!Array.isArray(evidence?.videoExport?.resolution)
+              ||evidence.videoExport.resolution.length!==2
+              ||evidence.videoExport.resolution.some(n=>n!==resolution)
+              ||!Array.isArray(shotPlan)||shotPlan.length!==3
+              ||shotPlan.some((row,index)=>row?.name!==['ESTABLISHING','ACTION_REVEAL','SIGNATURE_CLOSEUP'][index]
+                ||row.frameStart!==index*8||row.frameEnd!==index*8+7
+                ||row.focalLengthMm!==[38,56,76][index]))
+              throw new Error('NATIVE_OPEN_SOURCE_CINEMATIC_SHOT_EVIDENCE_INVALID:'+clean(recipe?.id));
+            const styleFlag=(recipe?.args||[]).indexOf('--cinematic-style');
+            const qualityFlag=(recipe?.args||[]).indexOf('--cinematic-quality');
+            if(styleFlag>=0&&clean(recipe.args[styleFlag+1])!==evidence.videoExport.cinematicStyle
+              ||qualityFlag>=0&&clean(recipe.args[qualityFlag+1])!==quality)
+              throw new Error('NATIVE_OPEN_SOURCE_CINEMATIC_REQUEST_MISMATCH:'+clean(recipe?.id));
             const glbClips=glbInspection?.inventory?.animations||[];
             if(!glbClips.length||!(evidence?.motionClips||[]).length
               ||!videoProof||videoProof.path!=='preview-motion.mp4'
