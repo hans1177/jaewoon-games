@@ -14,6 +14,22 @@ test('canonical design runtime dedupes execution without cancelling active work'
   assert.doesNotMatch(designRuntime,/group: company-seed-design-runtime-\$\{\{/);
 });
 
+test('V5 authored identity core is promoted during detailed design, without a new pipeline',()=>{
+  assert.match(designRuntime,/group: company-seed-design-runtime\s+cancel-in-progress: false\s+queue: max/);
+  assert.match(designRuntime,/cp\.designerSeed\?\.contentDigest/);
+  assert.match(designRuntime,/GH_TOKEN: \$\{\{ github\.token \}\}/);
+  const persist=designRuntime.indexOf('DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES');
+  const verify=designRuntime.indexOf('s.authorRole==="GAME_DESIGNER_AI"');
+  const dispatch=designRuntime.indexOf('gh workflow run company-design-promotion-sync.yml');
+  assert.ok(persist>=0&&verify>persist&&dispatch>verify);
+  assert.match(designRuntime,/s\.contentDigest===digest/);
+  assert.match(designRuntime,/s\.fingerprint===cp\.fingerprint/);
+  assert.match(designRuntime,/cp\.designerSeed\?\.contentDigest===digest/);
+  assert.match(designRuntime,/promotion_dispatch_marker/);
+  assert.doesNotMatch(designRuntime,/gh workflow run company-development-roblox-runtime\.yml/);
+  assert.doesNotMatch(designRuntime,/gh workflow run company-development-unity-runtime\.yml/);
+});
+
 test('partial design-runtime failure still evaluates each persisted minimum-design-ready game',()=>{
   assert.match(designRuntime,/fail-fast:\s*false/);
   assert.match(promotion,/workflow_run:[\s\S]*types:\s*\[completed\]/);

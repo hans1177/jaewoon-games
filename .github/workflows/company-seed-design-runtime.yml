@@ -32,8 +32,8 @@ permissions:
 concurrency:
   # 기존 실행의 게임별 체크포인트는 보존하고, 오래된 대기 설계 대신 최신 main 설계만 다음 순서로 유지한다.
   group: company-seed-design-runtime
-  queue: single
   cancel-in-progress: false
+  queue: max # 기존 정식 설계 대기 작업을 후속 main 변경이 취소하지 않게 보호
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -626,15 +626,17 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
           COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           checkpoint_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-checkpoint.json"
           progress_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-progress.json"
           worktree="/tmp/design-checkpoint-${{ matrix.target.game_id }}"
+          promotion_dispatch_marker="/tmp/design-minimum-promotion-${{ matrix.target.game_id }}-${{ matrix.target.date }}"
           last_checkpoint_sync_key=''
           checkpoint_sync_key() {
-            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,p.percent??'',cp.lastSuccessfulModelCallAt||'',Object.values(cp.modelHealth||{}).reduce((sum,row)=>sum+Number(row?.calls||0),0),cp.lastError||''].join('|'))" "$checkpoint_path" "$progress_path"
+            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,cp.designerSeed?.contentDigest||'',p.percent??'',cp.lastSuccessfulModelCallAt||'',Object.values(cp.modelHealth||{}).reduce((sum,row)=>sum+Number(row?.calls||0),0),cp.lastError||''].join('|'))" "$checkpoint_path" "$progress_path"
           }
           persist_design_checkpoint() {
             if [ ! -f "$checkpoint_path" ]; then
@@ -684,6 +686,29 @@ jobs:
             echo "DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES|$sync_key"
             echo 'DESIGN_PROGRESS_RUNTIME_PERSIST=YES'
             echo 'PUBLIC_MAIN_WRITE=NO'
+            # 모델이 작성한 기본설계의 증거가 company-runtime에 저장되자마자 기존 승격기를 실행한다.
+            # 전체 정밀 설계가 진행 중이어도 기본설계 유효성을 별도 결정론적 게이트에서 판정한다.
+            if [ -f "$seed_path" ]; then
+              local authored_digest
+              authored_digest="$(node -e '
+                const fs=require("fs"),crypto=require("crypto");
+                const s=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+                const cp=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
+                const digest=crypto.createHash("sha256").update(JSON.stringify(s.content||{})).digest("hex");
+                if(s.authorRole==="GAME_DESIGNER_AI"&&s.sourceStage==="identity-core"&&s.status==="AUTHORED_CANDIDATE"
+                  &&s.contentDigest===digest&&s.engineDigest===cp.engineDigest&&s.fingerprint===cp.fingerprint
+                  &&cp.designerSeed?.contentDigest===digest&&cp.designerSeed?.authorModel===s.authorModel)
+                  process.stdout.write(digest);
+              ' "$seed_path" "$checkpoint_path")"
+              if [ -n "$authored_digest" ] && { [ ! -f "$promotion_dispatch_marker" ] || [ "$(cat "$promotion_dispatch_marker")" != "$authored_digest" ]; }; then
+                printf '%s' "$authored_digest" > "$promotion_dispatch_marker"
+                if gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+                  echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=YES|$authored_digest"
+                else
+                  echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=ERROR|fallback=EXISTING_WORKFLOW_COMPLETION"
+                fi
+              fi
+            fi
           }
           pipeline_pid=0
           sync_pid=0
