@@ -1,3 +1,4 @@
+# 파일명: .github/workflows/homepage-manager.yml
 name: Homepage Manager
 
 on:
@@ -146,6 +147,10 @@ jobs:
             /homepage-platform-exposure.json
             /web-games/*/index.html
             /roblox-games/*/default.project.json
+            /roblox-games/*/server/Game.server.luau
+            /roblox-games/*/client/Game.client.luau
+            /unity-games/*/ProjectSettings/ProjectVersion.txt
+            /unity-games/*/Assets/Scripts/**
 
       - name: Run impact-scoped homepage QA
         shell: bash
