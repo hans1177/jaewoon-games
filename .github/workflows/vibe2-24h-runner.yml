@@ -351,7 +351,11 @@ jobs:
                 node --test qa/vibe2-learning-motor.test.mjs
                 node --test qa/vibe2-auto-planner.test.mjs
                 node --test qa/company-build-up-experience-quality.test.mjs
-                node --test qa/vibe2-native-asset-production.test.mjs
+                # 원본 자산 품질 관련 검증은 계획 단계에서 직접 실행한다.
+                # 전체 124개 native asset 통합 회귀는 독립 Vibe2 Core QA 및 출시 검증에서 그대로 실행한다.
+                # 계획 단계의 범위 축소는 전체 회귀 PASS를 의미하지 않는다.
+                echo 'VIBE2_24H_NATIVE_ASSET_PREFLIGHT=SCOPED_SOURCE_INTEGRITY_FULL_QA_REMAINS_IN_CORE'
+                node --test --test-name-pattern='^(?:asset registry change detection|registry sync change detection|OBJ static validation|source GLB inventory|master GLB rejects|master GLB evidence|native actor binding|licensed FBX motion|all source GLBs|GLB production inspection|GLB world bounds|GLB scene geometry identity|native authoring reviews)' qa/vibe2-native-asset-production.test.mjs
                 node --test qa/vibe2-source-worker.test.mjs
                 node --test qa/vibe2-capability-distillation.test.mjs
                 node --test qa/vibe2-incremental-qa.test.mjs
