@@ -50,7 +50,7 @@ export function classifyRobloxGenre({category='',identity='',coreLoop=[],designT
   const text=clean([category,identity,...(Array.isArray(coreLoop)?coreLoop:[]),designText].join(' ')).toLowerCase();
   let genre='Utility & other',subgenre='';
 
-  if(has(text,/(obby|platformer|platform|오비|플랫포머)/)){
+  if(has(text,/(obby|platformer|오비|플랫포머)/)){
     genre='Obby & platformer';
     subgenre=has(text,/(tower|타워)/)?'Tower Obby':has(text,/(runner|러너|자동 이동)/)?'Runner':'Classic Obby';
   }else if(has(text,/(shooter|fps|gun|shoot|총기|슈터|사격)/)){
