@@ -3,216 +3,18 @@
   "gameId": "fifty-days",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-FIFTY-DAYS-20260917",
-  "fingerprint": "7a29c29811b678da4536b7b1b394aed583064a13c7ceb325a3f8282e646bfa71",
+  "fingerprint": "14acdbba909dc352c4eecb1a844afafa4a064d3c6e960d9487ba2086461e2b8a",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::c4107309a9bf97b8c26cf00113c480033ad8faf2b362b2f346bea89dc000a0ec:identity,creativeGrammar": {
-      "identity": "50일 - 실시간 생존 액션 루프",
-      "creativeGrammar": {
-        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
-        "a": {
-          "system": "REALTIME",
-          "material": "HORDE_PRESSURE",
-          "materialDomain": "UPGRADE_SELECTION",
-          "stateChange": "STATE_CHANGE_123456789"
-        },
-        "b": {
-          "system": "MOBILE",
-          "material": "TOUCH_READABILITY",
-          "materialDomain": "RUN_RESULT",
-          "stateChange": "STATE_CHANGE_ABCDEFGH"
-        },
-        "abCausality": "ACTION_SEQUENCE_123456789 -> STATE_CHANGE_ABCDEFGH -> RUN_RESULT_123456789",
-        "abEvolution": {
-          "aChangesB": "ACTION_SEQUENCE_123456789 -> ACTION_SEQUENCE_987654321",
-          "bChangesA": "RUN_RESULT_123456789 -> RUN_RESULT_987654321",
-          "lateGameChange": "RUN_RESULT_123456789 -> RUN_RESULT_987654321"
-        },
-        "materialFusion": {
-          "contrast": "ACTION_SURVIVAL_ROGUELITE",
-          "causalBridge": "REALTIME_HORDE_PRESSURE -> MOBILE_TOUCH_READABILITY",
-          "removalConsequence": "ACTION_SEQUENCE_123456789 -> RUN_RESULT_123456789"
-        },
-        "storyCausalChain": {
-          "cause": "ACTION_SEQUENCE_123456789",
-          "characterConflict": "MOBILE_TOUCH_READABILITY",
-          "playerChoice": "RUN_RESULT_123456789",
-          "worldChange": "RUN_RESULT_987654321",
-          "nextEvent": "ACTION_SEQUENCE_987654321"
-        },
-        "cThemes": [
-          {
-            "name": "ACTION",
-            "kind": "MATERIAL",
-            "gameplayEffect": "ACTION_SEQUENCE_123456789"
-          },
-          {
-            "name": "SURVIVAL",
-            "kind": "MATERIAL",
-            "gameplayEffect": "RUN_RESULT_123456789"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "ACTION_SEQUENCE_123456789"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "MOBILE_TOUCH_READABILITY",
-            "gameplayEffect": "RUN_RESULT_123456789"
-          }
-        ],
-        "cGenreInterlock": "ACTION_SURVIVAL_ROGUELITE -> MOBILE_TOUCH_READABILITY",
-        "cWorldAndGameplayEffect": "ACTION_SEQUENCE_123456789 -> RUN_RESULT_123456789",
-        "delveDiscoveries": [
-          {
-            "clue": "ACTION_SEQUENCE_123456789",
-            "discovery": "RUN_RESULT_123456789",
-            "newChoice": "ACTION_SEQUENCE_987654321"
-          },
-          {
-            "clue": "RUN_RESULT_123456789",
-            "discovery": "RUN_RESULT_987654321",
-            "newChoice": "RUN_RESULT_987654321"
-          },
-          {
-            "clue": "RUN_RESULT_123456789",
-            "discovery": "RUN_RESULT_987654321",
-            "newChoice": "ACTION_SEQUENCE_987654321"
-          },
-          {
-            "clue": "ACTION_SEQUENCE_123456789",
-            "discovery": "ACTION_SEQUENCE_987654321",
-            "newChoice": "RUN_RESULT_987654321"
-          }
-        ],
-        "delveGrowthRule": "ACTION_SEQUENCE_123456789 -> RUN_RESULT_123456789",
-        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE"
-      }
-    },
-    "local_authoring_parts::c4107309a9bf97b8c26cf00113c480033ad8faf2b362b2f346bea89dc000a0ec:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 실시간 생존 액션 루프에서 단순한 공격을 하며, 그 결과로 업그레이드 선택과 장비 변경을 통해 새로운 전략을 개발해야 한다.",
-      "coreFun": "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321"
-    },
-    "local_authoring_parts::94dc29f83cec67ba2c1898ec2f3fd1aa41ac53802817f231a065fb92866e6841:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "50일 - 실시간 생존 액션 루프",
-      "creativeGrammar": {
-        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
-        "a": {
-          "system": "REALTIME",
-          "material": "HORDE_PRESSURE",
-          "materialDomain": "UPGRADE_SELECTION",
-          "stateChange": "STATE_CHANGE_123456789"
-        },
-        "b": {
-          "system": "MOBILE",
-          "material": "TOUCH_READABILITY",
-          "materialDomain": "RUN_RESULT",
-          "stateChange": "STATE_CHANGE_ABCDEFGH"
-        },
-        "abCausality": "ACTION_SEQUENCE_123456789 -> STATE_CHANGE_ABCDEFGH -> RUN_RESULT_123456789",
-        "abEvolution": {
-          "aChangesB": "ACTION_SEQUENCE_123456789 -> ACTION_SEQUENCE_987654321",
-          "bChangesA": "RUN_RESULT_123456789 -> RUN_RESULT_987654321",
-          "lateGameChange": "RUN_RESULT_123456789 -> RUN_RESULT_987654321"
-        },
-        "materialFusion": {
-          "contrast": "ACTION_SURVIVAL_ROGUELITE",
-          "causalBridge": "REALTIME_HORDE_PRESSURE -> MOBILE_TOUCH_READABILITY",
-          "removalConsequence": "ACTION_SEQUENCE_123456789 -> RUN_RESULT_123456789"
-        },
-        "storyCausalChain": {
-          "cause": "ACTION_SEQUENCE_123456789",
-          "characterConflict": "MOBILE_TOUCH_READABILITY",
-          "playerChoice": "RUN_RESULT_123456789",
-          "worldChange": "RUN_RESULT_987654321",
-          "nextEvent": "ACTION_SEQUENCE_987654321"
-        },
-        "cThemes": [
-          {
-            "name": "ACTION",
-            "kind": "MATERIAL",
-            "gameplayEffect": "ACTION_SEQUENCE_123456789"
-          },
-          {
-            "name": "SURVIVAL",
-            "kind": "MATERIAL",
-            "gameplayEffect": "RUN_RESULT_123456789"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "ACTION_SEQUENCE_123456789"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "MOBILE_TOUCH_READABILITY",
-            "gameplayEffect": "RUN_RESULT_123456789"
-          }
-        ],
-        "cGenreInterlock": "ACTION_SURVIVAL_ROGUELITE -> MOBILE_TOUCH_READABILITY",
-        "cWorldAndGameplayEffect": "ACTION_SEQUENCE_123456789 -> RUN_RESULT_123456789",
-        "delveDiscoveries": [
-          {
-            "clue": "ACTION_SEQUENCE_123456789",
-            "discovery": "RUN_RESULT_123456789",
-            "newChoice": "ACTION_SEQUENCE_987654321"
-          },
-          {
-            "clue": "RUN_RESULT_123456789",
-            "discovery": "RUN_RESULT_987654321",
-            "newChoice": "RUN_RESULT_987654321"
-          },
-          {
-            "clue": "RUN_RESULT_123456789",
-            "discovery": "RUN_RESULT_987654321",
-            "newChoice": "ACTION_SEQUENCE_987654321"
-          },
-          {
-            "clue": "ACTION_SEQUENCE_123456789",
-            "discovery": "ACTION_SEQUENCE_987654321",
-            "newChoice": "RUN_RESULT_987654321"
-          }
-        ],
-        "delveGrowthRule": "ACTION_SEQUENCE_123456789 -> RUN_RESULT_123456789",
-        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE"
-      },
-      "playerFantasy": "플레이어는 실시간 생존 액션 루프에서 단순한 공격을 하며, 그 결과로 업그레이드 선택과 장비 변경을 통해 새로운 전략을 개발해야 한다.",
-      "coreFun": "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321"
-    },
-    "local_authoring_parts::c4a91b9d74043d3a8a081263800287168398b04ec8de26918507816e51cf3e4b:coreLoop": {
-      "coreLoop": [
-        "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321",
-        "INPUT: RUN_RESULT_123456789 -> STATE_CHANGE_ABCDEFGH -> RUN_RESULT_987654321",
-        "INPUT: ACTION_SEQUENCE_123456789 -> STATE_CHANGE_123456789 -> RUN_RESULT_123456789 OUTPUT: RUN_RESULT_987654321"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 724963,
-      "lastMs": 78496,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:39:25.425Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T09:27:20.403Z",
-  "updatedAt": "2026-10-10T10:12:27.399Z",
+  "createdAt": "2026-10-10T10:51:03.501Z",
+  "updatedAt": "2026-10-10T10:51:03.516Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1932,16 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "c4107309a9bf97b8c26cf00113c480033ad8faf2b362b2f346bea89dc000a0ec": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:39:25.425Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
