@@ -1,0 +1,2678 @@
+{
+  "version": 2,
+  "gameId": "bug-defense",
+  "date": "2026-10-11",
+  "source": "tools/vibe2-design-intelligence.mjs",
+  "brief": {
+    "version": 1,
+    "loop": [
+      "STABILIZE",
+      "UNDERSTAND",
+      "OBSERVE",
+      "DIAGNOSE",
+      "PRIORITIZE",
+      "BLUEPRINT",
+      "PROPOSE",
+      "COMPARE",
+      "REVISE",
+      "VALIDATE",
+      "LEARN",
+      "REPLAN",
+      "EXPAND"
+    ],
+    "gameId": "bug-defense",
+    "ownerIntent": {
+      "literal": "2026-10-10 사용자 요청: 현행 중앙정책과 동일한 Game Designer AI 신규 설계를 기존 canonical 설계 주기에서 실행한다. 사용자 요구와 원본 설계는 입력·검증 기준이며, 기존 초안을 단순 복사하거나 요청 전달자가 게임 설계를 대신 작성하지 않는다. 기존 Game Designer AI가 같은 공통 원본으로 identity-core 및 설계 시드를 체크포인트 내에서 직접 작성한 뒤, 전략적으로 구별되는 PLAN_A/PLAN_B와 상세 설계·장면 및 상태 연결·게임 진행·복구 가능성·입력·전투·보상·모바일 조작·필요한 장르별 A/B/c/@ 구조와 구체적 검증 계획을 저작하고 결정론적 최종 엄격 설계 평가를 받는다. 플레이어 판타지, 게임 정체성, 핵심 루프 의미, 사용자 확정 규칙, 기존 구현의 정확한 수치·밸런스·저장 키·저장 데이터·멀티플레이 의도를 보존하되, 새로운 차별화와 대안은 기존 구현에 자동 덮어쓰지 않는 검증 가능한 제안으로 허용한다. 모든 Unity Web 신규·기존 게임은 unity-games/<gameId>/ 원본 C# 기반 진짜 3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작만 최종 목표로 삼고 2D·2.5D·HTML 대체물을 최종 통과시킬 수 없다. Roblox 독립 진행과 Unity Android·UEFN 보류를 유지한다. 사용자가 승인한 F0~F9 순서와 세이브 구조는 변경하지 않으며 엄격 검증 80점 이상이고 하드 실패 0인 경우에만 설계 PASS를 표시한다. 실제 Unity WebGL 산출물·브라우저·모바일 실행 검증 없이 개발·배포 PASS를 주장하지 않는다.",
+      "eventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:bug-defense",
+      "semanticTextDeduplicationForbidden": true,
+      "repeatedIdenticalRequestCreatesNewRevision": true
+    },
+    "identityAnchors": [
+      "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
+      "wave defense readability,meaningful placement choices,enemy-type counterplay",
+      "Read the incoming insect wave and its threat pattern.",
+      "Place or adjust defenders and spend limited resources on the highest-value counter.",
+      "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
+      "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+      "SINGLE"
+    ],
+    "baseConceptIsReferenceNotPrison": true,
+    "creativeDeviationAllowed": true,
+    "genreTransitionChallengeAllowed": true,
+    "stabilityFirst": true,
+    "causalDefectOwnership": {
+      "classes": [
+        "IMPLEMENTATION_RUNTIME_DEFECT",
+        "DESIGN_DEFECT",
+        "MIXED_DEFECT",
+        "UNRESOLVED_CAUSE"
+      ],
+      "sameSymptomDualIndependentMutationForbidden": true,
+      "unresolvedCauseAction": "TRACE_BEFORE_MUTATION"
+    },
+    "blueprint": {
+      "minimumPlans": 2,
+      "labels": [
+        "PLAN_A",
+        "PLAN_B"
+      ],
+      "materialChangeRequiresPlanComparison": true,
+      "selectedPlanRequiresRationale": true,
+      "radicalChallengeReversibleUntilValidated": true
+    },
+    "antiMonotony": {
+      "colorOrStatOnlyDifferentiationInsufficient": true,
+      "mapRegionsNeedDifferentGameplayRoles": true,
+      "enemiesNeedDifferentBehaviorOrCounterplayRoles": true,
+      "repeatedTemplateCloningCreatesVarietyDebt": true
+    },
+    "narrativeDialogue": {
+      "whenApplicable": true,
+      "characterVoiceProfileRequired": true,
+      "grammarRegisterVocabularyRhythmRelationshipEmotionKnowledgeSubtextRequired": true,
+      "foreshadowingPayoffTrackingRequired": true,
+      "twistNeedsPriorEvidence": true
+    },
+    "referenceHomage": {
+      "publicDomainClassicsMayInformMotifStructureThemeAndArchetype": true,
+      "protectedModernWorksAbstractTechniqueOnly": true,
+      "directProtectedExpressionCopyForbidden": true,
+      "multiReferenceGeneralizationPreferred": true
+    },
+    "convenienceEvolution": {
+      "study": [
+        "PLAYER_FRICTION",
+        "INFORMATION_HIERARCHY",
+        "CONTEXTUAL_ACTIONS",
+        "REUSABLE_SETUP",
+        "BATCH_PREVIEW_AND_COMMIT",
+        "INTERRUPTION_AND_RETURN"
+      ],
+      "referenceRequires": [
+        "SOURCE_URL",
+        "OBSERVED_DATE",
+        "OBSERVED_FEATURE",
+        "ABSTRACT_PRINCIPLE",
+        "GENRE_AND_SYSTEM_FIT",
+        "ADAPT_OR_REJECT_REASON"
+      ],
+      "baselineAndCandidate": [
+        "TASK_COMPLETION",
+        "INPUT_AND_MENU_TRANSITIONS",
+        "CONTEXT_LOSS",
+        "ERROR_RECOVERY",
+        "STATE_AND_COST_REGRESSION"
+      ],
+      "documentedFeatureIsRuntimeProof": false,
+      "staticRouteLengthIsMeasuredPlayerEffort": false,
+      "learningAuthority": "EXISTING_VERIFIED_EXPERIENCE_AND_FRESH_EXACT_BUILD_QA"
+    },
+    "depthAndRewardEvolution": {
+      "layers": [
+        "APPROVED_MAIN_A_B_C_CORE_FUN",
+        "SHORT_SESSION_SMALL_JOYS",
+        "OPTIONAL_DEEP_LONG_TERM_PLAY"
+      ],
+      "rewardContract": [
+        "VISIBLE_CONDITIONS",
+        "SAVED_PROGRESS",
+        "EXPLICIT_GUARANTEED_MILESTONES",
+        "DUPLICATE_PURPOSE",
+        "INTERRUPTION_AND_RESUME",
+        "EXACTLY_ONCE_REWARD_CLAIM"
+      ],
+      "systemicDepth": [
+        "EASY_ENTRY",
+        "SYSTEM_INTERDEPENDENCE",
+        "CONTEXTUAL_TRADEOFFS",
+        "COMBINATORIAL_NEW_USES",
+        "MULTIPLE_VIABLE_SOLUTIONS",
+        "MASTERY_CHANGES_CHOICES",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "academicSubjectMatterRequired": false,
+      "featureCountAndGrindingAreNotDepth": true,
+      "chain": [
+        "DISCOVERABLE_CLUE",
+        "EXPERIMENT_OR_MASTERY_CHOICE",
+        "COST_AND_COUNTERPLAY",
+        "NEW_PLAY_OPTION",
+        "NEXT_OPEN_QUESTION"
+      ],
+      "payoffAxes": [
+        "NEW_ACTION",
+        "NEW_ROUTE",
+        "BUILD_COMBINATION",
+        "WORLD_RELATIONSHIP",
+        "OPTIONAL_MASTERY"
+      ],
+      "numberOrRewardCountAloneInsufficient": true,
+      "preserveGenreSaveAndBalance": true,
+      "compareBeforeAfterPlayerChoices": true,
+      "failedHypothesesMustInformNextIteration": true
+    },
+    "priorFeedback": {
+      "source": "PRIOR_STRICT_DESIGN_REVIEW",
+      "bypassAllowed": false,
+      "verdict": "PASS",
+      "totalScore": 94.6,
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "improvementTargets": [
+        {
+          "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+          "current": 9.6,
+          "maxScore": 12,
+          "gap": 2.4000000000000004
+        },
+        {
+          "dimension": "CONTENT_EXPANSION_PLAN",
+          "current": 8,
+          "maxScore": 10,
+          "gap": 2
+        },
+        {
+          "dimension": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "current": 4,
+          "maxScore": 5,
+          "gap": 1
+        }
+      ],
+      "recordedAt": "2026-09-19T03:41:26.737Z"
+    },
+    "factPackAvailable": true,
+    "authorityExpanded": false
+  },
+  "assetLibraryContext": {
+    "source": "company-asset-library.json",
+    "status": "AVAILABLE",
+    "version": 129,
+    "sha256": "2cd7d4cd7b256d67c8990d7bddfea104db596a80ecb777814e7796c4d1d5b81f",
+    "inventoryCount": 745,
+    "candidateSummaryOnly": true,
+    "auditScoreIsNotRuntimeQuality": true,
+    "productionVerificationGranted": false,
+    "platforms": {
+      "WEB": {
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [],
+          "BUILDING": [
+            "GABLE_SURVIVAL_ROOF",
+            "RECTANGULAR_SURVIVAL_FOUNDATION",
+            "SINGLE_SURVIVAL_DOOR",
+            "SOLID_TIMBER_WALL"
+          ],
+          "CHARACTER": [
+            "BACK_CAPE_MODULE",
+            "HUMANOID",
+            "LIGHT_SHOULDER_MODULE",
+            "SURVIVAL_TORSO_CLOTH_MODULE"
+          ],
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
+          ],
+          "ENVIRONMENT": [
+            "CORE_WORLD_PACK",
+            "DIRT_TRAVEL_PATH",
+            "MEDIUM_RESOURCE_ROCK",
+            "ROUND_RESOURCE_TREE_CANOPY",
+            "THICK_RESOURCE_TREE_TRUNK"
+          ],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "HUMANOID",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "PROP": [
+            "LORE_ATTENDANCE_BOOK",
+            "LORE_CAROUSEL_PHOTO",
+            "LORE_CLOWN_LOST_ITEM",
+            "LORE_COLLECTIBLE",
+            "LORE_DISCHARGE_RECORD",
+            "LORE_GYM_WHISTLE",
+            "LORE_LOCKER_GRAFFITI",
+            "LORE_LUNCH_MENU",
+            "LORE_MORGUE_TAG",
+            "LORE_SURGERY_NOTE",
+            "LORE_TORN_TICKET",
+            "RESOURCE_CHEST",
+            "RESOURCE_CRATE",
+            "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "CROSS_GUARD_MODULE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MODULAR_COMBAT_PARTS_PACK"
+          ]
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-place-ground",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "place"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-build-action-bar",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "place",
+                "material"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "UNITY": {
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [],
+          "BUILDING": [
+            "GABLE_SURVIVAL_ROOF",
+            "RECTANGULAR_SURVIVAL_FOUNDATION",
+            "SINGLE_SURVIVAL_DOOR",
+            "SOLID_TIMBER_WALL"
+          ],
+          "CHARACTER": [
+            "BACK_CAPE_MODULE",
+            "HUMANOID",
+            "LIGHT_SHOULDER_MODULE",
+            "SURVIVAL_TORSO_CLOTH_MODULE"
+          ],
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
+          ],
+          "ENVIRONMENT": [
+            "CORE_WORLD_PACK",
+            "DIRT_TRAVEL_PATH",
+            "MEDIUM_RESOURCE_ROCK",
+            "ROUND_RESOURCE_TREE_CANOPY",
+            "THICK_RESOURCE_TREE_TRUNK"
+          ],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "HUMANOID",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "PROP": [
+            "LORE_ATTENDANCE_BOOK",
+            "LORE_CAROUSEL_PHOTO",
+            "LORE_CLOWN_LOST_ITEM",
+            "LORE_COLLECTIBLE",
+            "LORE_DISCHARGE_RECORD",
+            "LORE_GYM_WHISTLE",
+            "LORE_LOCKER_GRAFFITI",
+            "LORE_LUNCH_MENU",
+            "LORE_MORGUE_TAG",
+            "LORE_SURGERY_NOTE",
+            "LORE_TORN_TICKET",
+            "RESOURCE_CHEST",
+            "RESOURCE_CRATE",
+            "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "CROSS_GUARD_MODULE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MODULAR_COMBAT_PARTS_PACK"
+          ]
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-place-ground",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "place"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-build-action-bar",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "place",
+                "material"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      },
+      "ROBLOX": {
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
+        "requiredFamilies": [
+          "AUDIO",
+          "BUILDING",
+          "CHARACTER",
+          "CREATURE",
+          "ENVIRONMENT",
+          "MOTION",
+          "PROP",
+          "SKILL",
+          "UI",
+          "VFX",
+          "WEAPON"
+        ],
+        "availableRoles": {
+          "AUDIO": [],
+          "BUILDING": [
+            "GABLE_SURVIVAL_ROOF",
+            "RECTANGULAR_SURVIVAL_FOUNDATION",
+            "SINGLE_SURVIVAL_DOOR",
+            "SOLID_TIMBER_WALL"
+          ],
+          "CHARACTER": [
+            "BACK_CAPE_MODULE",
+            "HUMANOID",
+            "LIGHT_SHOULDER_MODULE",
+            "SURVIVAL_TORSO_CLOTH_MODULE"
+          ],
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
+          ],
+          "ENVIRONMENT": [
+            "CORE_WORLD_PACK",
+            "DIRT_TRAVEL_PATH",
+            "MEDIUM_RESOURCE_ROCK",
+            "ROUND_RESOURCE_TREE_CANOPY",
+            "THICK_RESOURCE_TREE_TRUNK"
+          ],
+          "MOTION": [
+            "BED_LIE_DOWN",
+            "BLEND_NEUTRAL",
+            "BLOCK_HOLD",
+            "BLOCK_RAISE",
+            "CARRY_IDLE",
+            "CAST_BURST",
+            "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
+            "CLIMB_LOOP",
+            "COOK_LOOP",
+            "COUNTER_READY",
+            "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
+            "CROUCH_IDLE",
+            "DEATH_FRONT",
+            "DODGE_LEFT",
+            "DODGE_RIGHT",
+            "DOWNED_IDLE",
+            "EMOTE_WAVE",
+            "EQUIP_DRAW",
+            "FARM_TEND",
+            "FATIGUED_IDLE",
+            "FISH_CAST",
+            "GATHER_SWING",
+            "GUARD_BREAK",
+            "HEAVY_ATTACK_1",
+            "HIT_BACK",
+            "HIT_FRONT",
+            "HUMANOID",
+            "IDLE_RELAXED",
+            "INJURED_WALK",
+            "INTERACT_USE",
+            "JOG",
+            "JUMP_START",
+            "LADDER_ENTER",
+            "LADDER_EXIT",
+            "LAND",
+            "LEAN_WALL_IDLE",
+            "LIGHT_ATTACK_1",
+            "MOTION_PACK",
+            "NPC_WORK_LOOP",
+            "OPEN_CONTAINER",
+            "OPEN_DOOR",
+            "PARRY_PERFECT",
+            "PICKUP_GROUND",
+            "PLACE_GROUND",
+            "PULL_OBJECT",
+            "PUSH_OBJECT",
+            "RANGED_DRAW_SHOT",
+            "REVIVE_HELP",
+            "ROLL_FORWARD",
+            "RUN",
+            "SIT_DOWN",
+            "SLOPE_ASCEND",
+            "SLOPE_DESCEND",
+            "SPRINT",
+            "STAND_UP",
+            "START",
+            "STOP",
+            "SWIM_FORWARD",
+            "TALK_GESTURE",
+            "TURN_90",
+            "UNEQUIP_STOW",
+            "USE_CONSUMABLE",
+            "WALK"
+          ],
+          "PROP": [
+            "LORE_ATTENDANCE_BOOK",
+            "LORE_CAROUSEL_PHOTO",
+            "LORE_CLOWN_LOST_ITEM",
+            "LORE_COLLECTIBLE",
+            "LORE_DISCHARGE_RECORD",
+            "LORE_GYM_WHISTLE",
+            "LORE_LOCKER_GRAFFITI",
+            "LORE_LUNCH_MENU",
+            "LORE_MORGUE_TAG",
+            "LORE_SURGERY_NOTE",
+            "LORE_TORN_TICKET",
+            "RESOURCE_CHEST",
+            "RESOURCE_CRATE",
+            "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
+          ],
+          "VFX": [
+            "ATTACK_TELEGRAPH_PRESENTATION",
+            "BLOCK_CONTACT",
+            "BOSS",
+            "BUFF",
+            "BURST_FEEDBACK",
+            "COUNTER_WINDOW_PRESENTATION",
+            "CRAFT",
+            "CRITICAL",
+            "DEBUFF",
+            "DESTRUCTION",
+            "DISMANTLE",
+            "DODGE",
+            "ENVIRONMENT",
+            "FAST_MOTION_TRAIL",
+            "GUARD_BREAK_WARNING",
+            "HEAL",
+            "IMPACT_CONFIRMATION",
+            "INTERACTION",
+            "LOOT_COMMON",
+            "LOOT_LEGENDARY",
+            "LOOT_RARE",
+            "MOBILE_DENSITY",
+            "PERFECT_PARRY_CONFIRMATION",
+            "QUEST_UPDATE",
+            "STATUS",
+            "UPGRADE",
+            "VFX_PACK",
+            "WEATHER"
+          ],
+          "WEAPON": [
+            "CROSS_GUARD_MODULE",
+            "LONG_BLADE_MODULE",
+            "LONG_GRIP_MODULE",
+            "MODULAR_COMBAT_PARTS_PACK"
+          ]
+        },
+        "candidates": [
+          {
+            "family": "AUDIO",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "BUILDING",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "CREATURE",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "ENVIRONMENT",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "MOTION",
+            "action": "USE",
+            "assetId": "roblox-common-motion-place-ground",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "place"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "PROP",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "roblox-common-ui-build-action-bar",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "place",
+                "material"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "WEAPON",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          }
+        ]
+      }
+    },
+    "assetFacts": {
+      "roblox-common-motion-place-ground": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "place"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "PLACE_GROUND",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-ui-build-action-bar": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "place",
+            "material"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "BUILD_ACTION_BAR",
+        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      }
+    }
+  },
+  "report": {
+    "version": 2,
+    "required": true,
+    "pipeline": [
+      "STABILITY_TRIAGE",
+      "DEFECT_OWNERSHIP",
+      "DESIGNER",
+      "DESIGN_BLUEPRINT",
+      "DESIGN_INTEGRITY",
+      "CONTENT_DIVERSITY",
+      "REFERENCE_HOMAGE",
+      "NARRATIVE_DIALOGUE",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "stages": [
+      {
+        "name": "STABILITY_TRIAGE",
+        "status": "CLEAR_FOR_DESIGN_EVALUATION",
+        "findings": [],
+        "highestSeverity": "NONE",
+        "repeatedMinorBugCluster": false,
+        "creativeExpansionMayProceed": true,
+        "priorityRule": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION"
+      },
+      {
+        "name": "DEFECT_OWNERSHIP",
+        "status": "CLASSIFIED",
+        "owner": "NONE",
+        "route": "NO_DEFECT_SIGNAL",
+        "designRevisionAllowed": true,
+        "sameSymptomDualIndependentMutationForbidden": true,
+        "preserveApprovedDesignForRuntimeDefect": false,
+        "unresolvedCauseMustNotInventDesignFailure": false
+      },
+      {
+        "name": "DESIGNER",
+        "status": "PASS",
+        "goal": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
+        "designChange": true,
+        "rationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+        "alternatives": [
+          "역사적 세력 균형의 조건을 우선 학습하는 정방향 탐색 계획",
+          "왕조의 정통성과 민심의 반작용부터 읽는 역방향 탐색 계획"
+        ],
+        "issues": []
+      },
+      {
+        "name": "DESIGN_BLUEPRINT",
+        "status": "READY",
+        "materialDesignChange": true,
+        "alternatives": [
+          {
+            "label": "PLAN_A",
+            "concept": "역사적 세력 균형의 조건을 우선 학습하는 정방향 탐색 계획",
+            "playerFantasy": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.의 결과를 축적해 다음 결정을 통제한다.",
+            "genreDirection": "중심 전략 진행 속에서 보조 추리가 숨겨진 단서를 제공한다.",
+            "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+            "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+            "landmarksTraversal": "역사적 세력 균형의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+            "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+            "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+            "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+            "questStoryEventFlow": "역사적 세력 균형의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+            "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+          },
+          {
+            "label": "PLAN_B",
+            "concept": "왕조의 정통성과 민심의 반작용부터 읽는 역방향 탐색 계획",
+            "playerFantasy": "정보 부족을 감수하고 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.를 먼저 실험한다.",
+            "genreDirection": "보조 추리 판단이 앞서 중심 전략 목표의 순서를 뒤집는다.",
+            "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+            "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+            "landmarksTraversal": "왕조의 정통성과 민심의 반작용과 발견 단서를 시각적으로 구분한다.",
+            "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+            "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+            "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+            "questStoryEventFlow": "왕조의 정통성과 민심의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+            "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+          },
+          {
+            "label": "PLAN_A",
+            "concept": "역사적 세력 균형의 조건을 우선 학습하는 정방향 탐색 계획",
+            "playerFantasy": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.의 결과를 축적해 다음 결정을 통제한다.",
+            "genreDirection": "중심 전략 진행 속에서 보조 추리가 숨겨진 단서를 제공한다.",
+            "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+            "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+            "landmarksTraversal": "역사적 세력 균형의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+            "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+            "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+            "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+            "questStoryEventFlow": "역사적 세력 균형의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+            "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+          },
+          {
+            "label": "PLAN_B",
+            "concept": "왕조의 정통성과 민심의 반작용부터 읽는 역방향 탐색 계획",
+            "playerFantasy": "정보 부족을 감수하고 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.를 먼저 실험한다.",
+            "genreDirection": "보조 추리 판단이 앞서 중심 전략 목표의 순서를 뒤집는다.",
+            "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+            "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+            "landmarksTraversal": "왕조의 정통성과 민심의 반작용과 발견 단서를 시각적으로 구분한다.",
+            "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+            "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+            "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+            "questStoryEventFlow": "왕조의 정통성과 민심의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+            "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+            "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+            "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+            "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+          }
+        ],
+        "selectedPlan": "PLAN_A",
+        "selectedRationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+        "requiredAlternativeFields": [
+          "concept",
+          "playerFantasy",
+          "coreLoopShift",
+          "mapTopologyRegionRoles",
+          "landmarksTraversal",
+          "enemyEcosystemCounterplay",
+          "bossSignatureMoments",
+          "progressionEconomy",
+          "questStoryEventFlow",
+          "failureRetryRecovery",
+          "platformAdaptation",
+          "implementationScope",
+          "validationPlan"
+        ],
+        "eachAlternativeMustCoverRequiredAxes": true,
+        "genreChallengeAllowed": true,
+        "baseConceptIsReferenceNotPrison": true,
+        "identityAnchors": [
+          "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
+          "wave defense readability,meaningful placement choices,enemy-type counterplay",
+          "Read the incoming insect wave and its threat pattern.",
+          "Place or adjust defenders and spend limited resources on the highest-value counter.",
+          "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
+          "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+          "SINGLE"
+        ],
+        "issues": []
+      },
+      {
+        "name": "DESIGN_INTEGRITY",
+        "status": "CHECKED",
+        "results": [
+          {
+            "key": "movementAndControlReachable",
+            "label": "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "spawnToFirstActionReachable",
+            "label": "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "progressionReachable",
+            "label": "PROGRESSION_GRAPH_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "questPrerequisitesSatisfiable",
+            "label": "QUEST_PREREQUISITE_SATISFIABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "sessionEndReachable",
+            "label": "WIN_FAIL_SESSION_END_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "failureRecoveryReachable",
+            "label": "FAILURE_RETRY_RECOVERY_PATH",
+            "value": "PASS"
+          },
+          {
+            "key": "mapObjectivesReachable",
+            "label": "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "economyFeasible",
+            "label": "RESOURCE_AND_REQUIRED_COST_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "counterplayFeasible",
+            "label": "ENEMY_COUNTERPLAY_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "bossPhaseTransitionsReachable",
+            "label": "BOSS_PHASE_TRANSITION_REACHABILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "multiplayerLifecycleFeasible",
+            "label": "MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "saveCompatible",
+            "label": "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+            "value": "PASS"
+          },
+          {
+            "key": "narrativeCausalityConsistent",
+            "label": "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY",
+            "value": "PASS"
+          }
+        ],
+        "failed": [],
+        "designScoreCannotOverrideUnplayableState": true,
+        "issues": []
+      },
+      {
+        "name": "CONTENT_DIVERSITY",
+        "status": "CHECKED",
+        "regionCount": 2,
+        "enemyOrChallengeCount": 2,
+        "objectiveCount": 2,
+        "pairwiseMinimumDifferentiators": 2,
+        "colorOrStatOnlyDifferentiationInsufficient": true,
+        "issues": []
+      },
+      {
+        "name": "REFERENCE_HOMAGE",
+        "status": "CHECKED",
+        "inspirations": [
+          {
+            "titleOrTradition": "POLITICAL_HISTORY_DIPLOMACY",
+            "rightsBasis": "ABSTRACT_TECHNIQUE",
+            "borrowedTechnique": "한 세력의 완전한 승리가 오히려 더 큰 불균형과 반발을 만든다.",
+            "transformation": "적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+          },
+          {
+            "titleOrTradition": "EAST_ASIAN_POLITICAL_HISTORY",
+            "rightsBasis": "ABSTRACT_TECHNIQUE",
+            "borrowedTechnique": "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.",
+            "transformation": "영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+          }
+        ],
+        "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.",
+        "publicDomainMotifStructureThemeArchetypeAllowed": true,
+        "protectedModernExpressionCopyForbidden": true,
+        "abstractTechniqueReferenceAllowed": true,
+        "issues": []
+      },
+      {
+        "name": "NARRATIVE_DIALOGUE",
+        "required": true,
+        "status": "READY",
+        "worldRules": [
+          "역사적 세력 균형에 의해 바뀐 인물·지역의 상태는 왕조의 정통성과 민심의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다."
+        ],
+        "characterGoals": [
+          "역사적 세력 균형의 원칙을 지키는 인물과 왕조의 정통성과 민심의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+        ],
+        "plotBeats": [
+          "역사적 세력 균형의 원칙을 지키는 인물과 왕조의 정통성과 민심의 책임을 지려는 인물이 목표를 놓고 충돌한다. 역사적 세력 균형에 의해 바뀐 인물·지역의 상태는 왕조의 정통성과 민심의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.",
+          "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다. 또는 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 중 무엇을 우선할지 판단한다.",
+          "역사적 세력 균형의 흔적이 남은 지역은 왕조의 정통성과 민심의 선택에 따라 새로운 출입·보상 조건을 갖는다. 서사시의 맹세와 계약와 비극과 희극의 운명 반전가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+        ],
+        "questStates": [
+          "이전 선택 조건을 확인한다.",
+          "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+        ],
+        "foreshadowing": [
+          "역사적 세력 균형의 작은 변화가 왕조의 정통성과 민심의 큰 반작용을 예고한다."
+        ],
+        "payoffs": [
+          "왕조의 정통성과 민심의 결과가 다시 역사적 세력 균형의 앞선 의미를 바꾼다."
+        ],
+        "intentionalUnresolvedForeshadowing": [],
+        "twists": [
+          "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+        ],
+        "dialogueRules": [
+          "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+        ],
+        "characterVoiceProfiles": [
+          {
+            "character": "역사적 세력 균형의 이해관계자",
+            "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+            "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+            "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+            "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+            "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+            "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+          },
+          {
+            "character": "왕조의 정통성과 민심의 이해관계자",
+            "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+            "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+            "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+            "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+            "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+            "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+          }
+        ],
+        "sceneBeats": [
+          {
+            "scene": "첫 진입",
+            "purpose": "세계의 조건을 알아차리게 한다.",
+            "characterGoals": "무엇을 지킬지 정한다.",
+            "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+            "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+            "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+            "stateChange": "A의 상태가 B의 조건을 바꾼다."
+          },
+          {
+            "scene": "귀환과 해결",
+            "purpose": "이전 선택의 결과를 확인한다.",
+            "characterGoals": "손실과 관계를 재조정한다.",
+            "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+            "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+            "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+            "stateChange": "세계 접근과 위험 상태가 갱신된다."
+          }
+        ],
+        "issues": [],
+        "principles": [
+          "GRAMMAR_AND_LANGUAGE_QUALITY_MUST_MATCH_CHARACTER_AND_SCENE",
+          "FORMALITY_VOCABULARY_RHYTHM_RELATIONSHIP_AND_EMOTION_DEFINE_CHARACTER_VOICE",
+          "ALL_CHARACTERS_SAME_VOICE_FORBIDDEN",
+          "CHARACTER_MAY_NOT_KNOW_UNLEARNED_INFORMATION",
+          "DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_SUBTEXT_AND_SCENE_OBJECTIVE",
+          "WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT",
+          "QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE",
+          "FORESHADOWING_REQUIRES_PAYOFF_OR_INTENTIONAL_UNRESOLVED_STATE",
+          "TWIST_REQUIRES_PRIOR_EVIDENCE_AND_CHARACTER_KNOWLEDGE_SUPPORT",
+          "DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CONSTRAINT_ENGINE",
+        "status": "PASS",
+        "constraints": [],
+        "blockers": [],
+        "warnings": [
+          "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CRITIC",
+        "status": "PASS",
+        "issues": [],
+        "questions": [
+          "플레이어가 이 시스템을 무시하거나 악용할 수 있는가?",
+          "반복 플레이에서 지배전략 하나로 고착되는가?",
+          "보상과 위험의 변화가 실제 선택을 만드는가?",
+          "기존 세이브/규칙/아트북 의도와 충돌하지 않는가?"
+        ]
+      },
+      {
+        "name": "CAUSALITY_GRAPH",
+        "status": "UNVERIFIED",
+        "nodes": [],
+        "edges": [],
+        "issues": [
+          "CAUSALITY_INPUT_REQUIRED"
+        ],
+        "invented": false
+      },
+      {
+        "name": "PLAYER_MODEL",
+        "status": "MODEL_READY",
+        "archetypes": [
+          {
+            "id": "novice",
+            "label": "초보",
+            "focus": "이해 가능성, 생존, 첫 성공까지의 마찰"
+          },
+          {
+            "id": "optimizer",
+            "label": "최적화형",
+            "focus": "최강 선택 고착, 우회/악용 가능성, 지배전략"
+          },
+          {
+            "id": "farmer",
+            "label": "파밍형",
+            "focus": "반복 보상, 경제 폭주, 무한 루프"
+          },
+          {
+            "id": "aggressive",
+            "label": "공격형",
+            "focus": "공격 편향의 보상과 과도한 위험"
+          },
+          {
+            "id": "safe",
+            "label": "안전형",
+            "focus": "회피/회복/대기 전략의 과도한 효율"
+          }
+        ],
+        "observations": [],
+        "evidenceRequired": true,
+        "predictedFactsInvented": false
+      },
+      {
+        "name": "COMBAT_ECONOMY_SIMULATOR",
+        "status": "UNVERIFIED",
+        "combat": {
+          "verified": false,
+          "reason": "COMBAT_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "economy": {
+          "verified": false,
+          "reason": "ECONOMY_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "inventedInputs": false,
+        "issues": [
+          "UNVERIFIED_SIMULATION_INPUT"
+        ]
+      },
+      {
+        "name": "IMPLEMENTATION",
+        "status": "READY",
+        "allowed": true,
+        "blockers": [],
+        "sourceMutationAuthorized": true,
+        "protectedGameplayMutationAutomatic": false
+      },
+      {
+        "name": "AUTO_PLAYER",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 입력 기반 플레이/진행/재시작/막힘 여부 증거"
+      },
+      {
+        "name": "TELEMETRY",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 플레이 수치 또는 엔진 QA 런 증거"
+      },
+      {
+        "name": "DESIGN_REVIEW",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "decision": null,
+        "evidence": null,
+        "assumptionFailed": false
+      },
+      {
+        "name": "EXPERIENCE_MEMORY",
+        "status": "WAITING_VERIFIED_REVIEW",
+        "ready": false,
+        "qaVerified": false,
+        "authorityExpanded": false,
+        "directMemoryWrite": false,
+        "promotionTool": "tools/vibe2-experience-control.mjs"
+      }
+    ],
+    "stability": {
+      "name": "STABILITY_TRIAGE",
+      "status": "CLEAR_FOR_DESIGN_EVALUATION",
+      "findings": [],
+      "highestSeverity": "NONE",
+      "repeatedMinorBugCluster": false,
+      "creativeExpansionMayProceed": true,
+      "priorityRule": "STABILITY_AND_PROGRESS_BEFORE_CREATIVE_EXPANSION"
+    },
+    "defectOwnership": {
+      "name": "DEFECT_OWNERSHIP",
+      "status": "CLASSIFIED",
+      "owner": "NONE",
+      "route": "NO_DEFECT_SIGNAL",
+      "designRevisionAllowed": true,
+      "sameSymptomDualIndependentMutationForbidden": true,
+      "preserveApprovedDesignForRuntimeDefect": false,
+      "unresolvedCauseMustNotInventDesignFailure": false
+    },
+    "blueprint": {
+      "name": "DESIGN_BLUEPRINT",
+      "status": "READY",
+      "materialDesignChange": true,
+      "alternatives": [
+        {
+          "label": "PLAN_A",
+          "concept": "역사적 세력 균형의 조건을 우선 학습하는 정방향 탐색 계획",
+          "playerFantasy": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.의 결과를 축적해 다음 결정을 통제한다.",
+          "genreDirection": "중심 전략 진행 속에서 보조 추리가 숨겨진 단서를 제공한다.",
+          "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+          "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+          "landmarksTraversal": "역사적 세력 균형의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+          "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+          "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+          "questStoryEventFlow": "역사적 세력 균형의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+          "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "왕조의 정통성과 민심의 반작용부터 읽는 역방향 탐색 계획",
+          "playerFantasy": "정보 부족을 감수하고 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.를 먼저 실험한다.",
+          "genreDirection": "보조 추리 판단이 앞서 중심 전략 목표의 순서를 뒤집는다.",
+          "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+          "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+          "landmarksTraversal": "왕조의 정통성과 민심의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+          "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+          "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+          "questStoryEventFlow": "왕조의 정통성과 민심의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+          "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+        },
+        {
+          "label": "PLAN_A",
+          "concept": "역사적 세력 균형의 조건을 우선 학습하는 정방향 탐색 계획",
+          "playerFantasy": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.의 결과를 축적해 다음 결정을 통제한다.",
+          "genreDirection": "중심 전략 진행 속에서 보조 추리가 숨겨진 단서를 제공한다.",
+          "coreLoopShift": "A의 선택→B의 반응→안전한 재방문→다음 사건",
+          "mapTopologyRegionRoles": "첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.",
+          "landmarksTraversal": "역사적 세력 균형의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.",
+          "enemyEcosystemCounterplay": "기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.",
+          "bossSignatureMoments": "학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.",
+          "progressionEconomy": "낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.",
+          "questStoryEventFlow": "역사적 세력 균형의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.",
+          "failureRetryRecovery": "안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_A 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다."
+        },
+        {
+          "label": "PLAN_B",
+          "concept": "왕조의 정통성과 민심의 반작용부터 읽는 역방향 탐색 계획",
+          "playerFantasy": "정보 부족을 감수하고 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.를 먼저 실험한다.",
+          "genreDirection": "보조 추리 판단이 앞서 중심 전략 목표의 순서를 뒤집는다.",
+          "coreLoopShift": "B 대응→A 조건 재평가→발견 역이용→다음 사건",
+          "mapTopologyRegionRoles": "되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.",
+          "landmarksTraversal": "왕조의 정통성과 민심의 반작용과 발견 단서를 시각적으로 구분한다.",
+          "enemyEcosystemCounterplay": "후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.",
+          "bossSignatureMoments": "누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.",
+          "progressionEconomy": "더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.",
+          "questStoryEventFlow": "왕조의 정통성과 민심의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.",
+          "failureRetryRecovery": "불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.",
+          "platformAdaptation": "모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.",
+          "implementationScope": "기존 인과 규칙과 VIBE_B 책임 함수에서 입력·상태 전달만 직접 구현한다.",
+          "validationPlan": "B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다."
+        }
+      ],
+      "selectedPlan": "PLAN_A",
+      "selectedRationale": "첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.",
+      "requiredAlternativeFields": [
+        "concept",
+        "playerFantasy",
+        "coreLoopShift",
+        "mapTopologyRegionRoles",
+        "landmarksTraversal",
+        "enemyEcosystemCounterplay",
+        "bossSignatureMoments",
+        "progressionEconomy",
+        "questStoryEventFlow",
+        "failureRetryRecovery",
+        "platformAdaptation",
+        "implementationScope",
+        "validationPlan"
+      ],
+      "eachAlternativeMustCoverRequiredAxes": true,
+      "genreChallengeAllowed": true,
+      "baseConceptIsReferenceNotPrison": true,
+      "identityAnchors": [
+        "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
+        "wave defense readability,meaningful placement choices,enemy-type counterplay",
+        "Read the incoming insect wave and its threat pattern.",
+        "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
+        "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+        "SINGLE"
+      ],
+      "issues": []
+    },
+    "integrity": {
+      "name": "DESIGN_INTEGRITY",
+      "status": "CHECKED",
+      "results": [
+        {
+          "key": "movementAndControlReachable",
+          "label": "PLAYER_MOVEMENT_AND_CONTROL_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "spawnToFirstActionReachable",
+          "label": "SPAWN_TO_FIRST_ACTION_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "progressionReachable",
+          "label": "PROGRESSION_GRAPH_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "questPrerequisitesSatisfiable",
+          "label": "QUEST_PREREQUISITE_SATISFIABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "sessionEndReachable",
+          "label": "WIN_FAIL_SESSION_END_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "failureRecoveryReachable",
+          "label": "FAILURE_RETRY_RECOVERY_PATH",
+          "value": "PASS"
+        },
+        {
+          "key": "mapObjectivesReachable",
+          "label": "MAP_ROUTE_AND_OBJECTIVE_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "economyFeasible",
+          "label": "RESOURCE_AND_REQUIRED_COST_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "counterplayFeasible",
+          "label": "ENEMY_COUNTERPLAY_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "bossPhaseTransitionsReachable",
+          "label": "BOSS_PHASE_TRANSITION_REACHABILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "multiplayerLifecycleFeasible",
+          "label": "MULTIPLAYER_JOIN_LEAVE_REJOIN_SYNC_FEASIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "saveCompatible",
+          "label": "SAVE_MEANING_AND_MIGRATION_COMPATIBILITY",
+          "value": "PASS"
+        },
+        {
+          "key": "narrativeCausalityConsistent",
+          "label": "NARRATIVE_CHARACTER_KNOWLEDGE_CAUSALITY_AND_PAYOFF_CONSISTENCY",
+          "value": "PASS"
+        }
+      ],
+      "failed": [],
+      "designScoreCannotOverrideUnplayableState": true,
+      "issues": []
+    },
+    "diversity": {
+      "name": "CONTENT_DIVERSITY",
+      "status": "CHECKED",
+      "regionCount": 2,
+      "enemyOrChallengeCount": 2,
+      "objectiveCount": 2,
+      "pairwiseMinimumDifferentiators": 2,
+      "colorOrStatOnlyDifferentiationInsufficient": true,
+      "issues": []
+    },
+    "referenceHomage": {
+      "name": "REFERENCE_HOMAGE",
+      "status": "CHECKED",
+      "inspirations": [
+        {
+          "titleOrTradition": "POLITICAL_HISTORY_DIPLOMACY",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "한 세력의 완전한 승리가 오히려 더 큰 불균형과 반발을 만든다.",
+          "transformation": "적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        },
+        {
+          "titleOrTradition": "EAST_ASIAN_POLITICAL_HISTORY",
+          "rightsBasis": "ABSTRACT_TECHNIQUE",
+          "borrowedTechnique": "통치 권한은 힘만이 아니라 인정·질서·민심에 의해 유지된다.",
+          "transformation": "영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.의 구조만 독자적 인물·세계·상호작용으로 재해석한다."
+        }
+      ],
+      "originalityRule": "공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.",
+      "publicDomainMotifStructureThemeArchetypeAllowed": true,
+      "protectedModernExpressionCopyForbidden": true,
+      "abstractTechniqueReferenceAllowed": true,
+      "issues": []
+    },
+    "narrative": {
+      "name": "NARRATIVE_DIALOGUE",
+      "required": true,
+      "status": "READY",
+      "worldRules": [
+        "역사적 세력 균형에 의해 바뀐 인물·지역의 상태는 왕조의 정통성과 민심의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다."
+      ],
+      "characterGoals": [
+        "역사적 세력 균형의 원칙을 지키는 인물과 왕조의 정통성과 민심의 책임을 지려는 인물이 목표를 놓고 충돌한다."
+      ],
+      "plotBeats": [
+        "역사적 세력 균형의 원칙을 지키는 인물과 왕조의 정통성과 민심의 책임을 지려는 인물이 목표를 놓고 충돌한다. 역사적 세력 균형에 의해 바뀐 인물·지역의 상태는 왕조의 정통성과 민심의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.",
+        "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다. 또는 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 중 무엇을 우선할지 판단한다.",
+        "역사적 세력 균형의 흔적이 남은 지역은 왕조의 정통성과 민심의 선택에 따라 새로운 출입·보상 조건을 갖는다. 서사시의 맹세와 계약와 비극과 희극의 운명 반전가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다."
+      ],
+      "questStates": [
+        "이전 선택 조건을 확인한다.",
+        "상대의 반작용이 나타나면 다음 선택을 바꾼다."
+      ],
+      "foreshadowing": [
+        "역사적 세력 균형의 작은 변화가 왕조의 정통성과 민심의 큰 반작용을 예고한다."
+      ],
+      "payoffs": [
+        "왕조의 정통성과 민심의 결과가 다시 역사적 세력 균형의 앞선 의미를 바꾼다."
+      ],
+      "intentionalUnresolvedForeshadowing": [],
+      "twists": [
+        "A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다."
+      ],
+      "dialogueRules": [
+        "현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다."
+      ],
+      "characterVoiceProfiles": [
+        {
+          "character": "역사적 세력 균형의 이해관계자",
+          "grammarRegister": "경험을 중심으로 짧게 이야기한다.",
+          "vocabularyRhythm": "경고와 선택 비용을 구체적으로 말한다.",
+          "relationshipShift": "플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.",
+          "emotionalRange": "불안에서 신뢰 또는 반발로 변한다.",
+          "knowledgeBoundary": "첫 시스템의 현재 변화만 안다.",
+          "subtextBehavior": "숨기고 싶은 위험을 발언 순서로 드러낸다."
+        },
+        {
+          "character": "왕조의 정통성과 민심의 이해관계자",
+          "grammarRegister": "규칙과 반작용을 비교해 설명한다.",
+          "vocabularyRhythm": "사건 이전과 이후를 비교하며 말한다.",
+          "relationshipShift": "선택 결과에 따라 요구와 제안이 달라진다.",
+          "emotionalRange": "의심과 설득, 체념 또는 수용을 보인다.",
+          "knowledgeBoundary": "자신이 관찰한 후속 결과만 안다.",
+          "subtextBehavior": "정보 부족을 역이용해 다른 협상을 제시한다."
+        }
+      ],
+      "sceneBeats": [
+        {
+          "scene": "첫 진입",
+          "purpose": "세계의 조건을 알아차리게 한다.",
+          "characterGoals": "무엇을 지킬지 정한다.",
+          "conflict": "인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.",
+          "informationAsymmetry": "두 소재가 서로 다른 원인을 알고 있다.",
+          "reversal": "첫 선택이 예기치 않은 다른 문제를 일으킨다.",
+          "stateChange": "A의 상태가 B의 조건을 바꾼다."
+        },
+        {
+          "scene": "귀환과 해결",
+          "purpose": "이전 선택의 결과를 확인한다.",
+          "characterGoals": "손실과 관계를 재조정한다.",
+          "conflict": "서로의 비용을 누가 부담할지 충돌한다.",
+          "informationAsymmetry": "후속 사건의 단서가 플레이어에게만 보인다.",
+          "reversal": "B의 결과로 A의 옛 선택을 새롭게 해석한다.",
+          "stateChange": "세계 접근과 위험 상태가 갱신된다."
+        }
+      ],
+      "issues": [],
+      "principles": [
+        "GRAMMAR_AND_LANGUAGE_QUALITY_MUST_MATCH_CHARACTER_AND_SCENE",
+        "FORMALITY_VOCABULARY_RHYTHM_RELATIONSHIP_AND_EMOTION_DEFINE_CHARACTER_VOICE",
+        "ALL_CHARACTERS_SAME_VOICE_FORBIDDEN",
+        "CHARACTER_MAY_NOT_KNOW_UNLEARNED_INFORMATION",
+        "DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_SUBTEXT_AND_SCENE_OBJECTIVE",
+        "WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT",
+        "QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE",
+        "FORESHADOWING_REQUIRES_PAYOFF_OR_INTENTIONAL_UNRESOLVED_STATE",
+        "TWIST_REQUIRES_PRIOR_EVIDENCE_AND_CHARACTER_KNOWLEDGE_SUPPORT",
+        "DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION"
+      ],
+      "authorityExpanded": false
+    },
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "advisory": [
+      "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED",
+      "CAUSALITY_INPUT_REQUIRED",
+      "UNVERIFIED_SIMULATION_INPUT"
+    ],
+    "guidance": "[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n안정성 우선: CLEAR_FOR_DESIGN_EVALUATION; 원인 소유권=NONE; route=NO_DEFECT_SIGNAL. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다.\n설계 밑그림: Plan A/B 이상 비교=READY; 선택안=PLAN_A. 기본 컨셉은 기준점이며 검증 가능한 창의적 장르/구조 도전은 허용한다.\n설계 도달성 검사: CHECKED; 콘텐츠 다양성: CHECKED.\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 게이트: 명시적 구조 문제 없음.\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n서사 계약: READY. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+    "planTarget": "UNITY",
+    "priorExperienceCount": 8,
+    "authorityExpanded": false
+  }
+}
