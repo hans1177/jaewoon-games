@@ -2,504 +2,41 @@
   "contractVersion": 4,
   "gameId": "line-defense",
   "date": "2026-10-10",
-  "seedId": "OWNER-ALL-DESIGN-RESET-LINE-DEFENSE-20260917",
-  "fingerprint": "0f620a73b62b727869f5bde7f2da317201c984e5c341346a16b0d81e96dd45ae",
+  "seedId": "OWNER-DESIGN-LINE-DEFENSE",
+  "fingerprint": "7537c4375451b7ed4ca9cfce981be0c724205753475a76a5f7dee1cdcad4181b",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::75017f2f848c86f623410fc1658b51dc673d5b5dbe6302fb95da7291fc02f028:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "골목 군단 대전",
-      "creativeGrammar": {
-        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "a": {
-          "system": "defense",
-          "material": "enemy type, wave composition, terrain, resource distribution",
-          "materialDomain": "battlefield layout",
-          "stateChange": "defensive strategy adaptation"
-        },
-        "b": {
-          "system": "economy",
-          "material": "resource gain from defeated enemies, upgrade cost, placement budget",
-          "materialDomain": "economic management",
-          "stateChange": "resource allocation decision"
-        },
-        "abCausality": "Defensive strategy adapts to enemy types; economic decisions are based on resource gains and upgrade costs; battlefield layouts influence defensive positioning.",
-        "abEvolution": {
-          "aChangesB": "Increase defense priority when resources are scarce",
-          "bChangesA": "Adjust resource spending when upgrades become unaffordable",
-          "lateGameChange": "Shift focus from resource management to strategic position control"
-        },
-        "materialFusion": {
-          "contrast": "Enemy type adaptability vs. economic resource efficiency",
-          "causalBridge": "Resource gains trigger defensive strategy changes; economic constraints force tactical adjustments",
-          "removalConsequence": "Loss of resource access leads to increased defensive pressure"
-        },
-        "storyCausalChain": {
-          "cause": "Player's initial defensive setup",
-          "characterConflict": "Economic constraint forces tactical change",
-          "playerChoice": "Adaptation to enemy type",
-          "worldChange": "Increased defensive pressure due to resource scarcity",
-          "nextEvent": "New defensive strategy implementation"
-        },
-        "cThemes": [
-          {
-            "name": "adaptive defense",
-            "kind": "MATERIAL",
-            "gameplayEffect": "defensive strategy adaptation"
-          },
-          {
-            "name": "resource economics",
-            "kind": "MATERIAL",
-            "gameplayEffect": "economic decision making"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "battlefield layout design",
-            "gameplayEffect": "influence on defensive positioning"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "economy management system",
-            "gameplayEffect": "affects resource allocation decisions"
-          }
-        ],
-        "cGenreInterlock": "Defensive strategy adapts to battlefield layouts; economic decisions are influenced by resource availability and upgrade costs.",
-        "cWorldAndGameplayEffect": "Battlefield layout influences defensive strategy; economic decisions affect resource allocation and upgrade priorities.",
-        "delveDiscoveries": [
-          {
-            "clue": "Resource gain triggers defensive strategy changes",
-            "discovery": "Player learns to adapt defenses based on resource gains",
-            "newChoice": "Increase defensive priority when resources are scarce"
-          },
-          {
-            "clue": "Economic constraints force tactical change",
-            "discovery": "Player adjusts resource spending due to upgrade costs",
-            "newChoice": "Adjust resource budget when upgrades become unaffordable"
-          },
-          {
-            "clue": "Shift focus from resource management to strategic position control",
-            "discovery": "Player prioritizes positional control over resource efficiency in late game",
-            "newChoice": "Focus on strategic position control instead of resource management"
-          },
-          {
-            "clue": "Loss of resource access leads to increased defensive pressure",
-            "discovery": "Player must now manage limited resources more strategically",
-            "newChoice": "Manage limited resources with new defensive strategies"
-          }
-        ],
-        "delveGrowthRule": "Resource gains trigger defensive strategy adaptation; economic constraints force tactical adjustments; loss of resource access increases defensive pressure.",
-        "finalGameIdentity": "Defensive strategy adapts to battlefield layouts; economic decisions influence resource allocation and upgrade priorities; player learns to prioritize positional control over resource efficiency."
-      },
-      "playerFantasy": "A mobile tower-defense game where players learn to adapt their defense strategies based on enemy types, wave compositions, and terrain. The game emphasizes the balance between defensive positioning and resource management, with each decision affecting future gameplay choices and the overall difficulty curve. Players must constantly adjust their defenses while managing limited resources, leading to a dynamic and evolving battle experience.",
-      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route. Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases. Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices. Preserve or migrate before swap. Single."
-    },
-    "local_authoring_parts::268a3cba0ae9dfb8d4544130d721316a0a45c6e703291f1a7039721a1776e1db:coreLoop": {
-      "coreLoop": [
-        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
-      ]
-    },
-    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "defensiveStrategyAdaptation",
-        "resourceAllocationDecision"
-      ],
-      "stateOutputs": [
-        "newDefensiveStrategyImplementation",
-        "adjustedResourceBudget"
-      ],
-      "name": "Battlefield Layout and Economic Management System",
-      "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
-      "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
-    },
-    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "defensiveStrategyAdaptation",
-        "resourceAllocationDecision"
-      ],
-      "stateOutputs": [
-        "newDefensiveStrategyImplementation",
-        "adjustedResourceBudget"
-      ],
-      "name": "Battlefield Layout and Economic Management System",
-      "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
-      "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
-    },
-    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:2": {
-      "id": "signatureSystems[2]",
-      "grammarRole": "B",
-      "stateInputs": [
-        "defensiveStrategyAdaptation",
-        "resourceAllocationDecision"
-      ],
-      "stateOutputs": [
-        "newDefensiveStrategyImplementation",
-        "adjustedResourceBudget"
-      ],
-      "name": "Battlefield Layout and Economic Management System",
-      "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
-      "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
-    },
-    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:3": {
-      "id": "signatureSystems[3]",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "defensiveStrategyAdaptation",
-        "resourceAllocationDecision"
-      ],
-      "stateOutputs": [
-        "newDefensiveStrategyImplementation",
-        "adjustedResourceBudget"
-      ],
-      "name": "Enemy Type Adaptability and Resource Efficiency System",
-      "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
-      "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
-    },
-    "local_authoring_parts::268a3cba0ae9dfb8d4544130d721316a0a45c6e703291f1a7039721a1776e1db:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
-          "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
-          "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
-          "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
-        },
-        {
-          "id": "signatureSystems[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Enemy Type Adaptability and Resource Efficiency System",
-          "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
-          "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
-        }
-      ]
-    },
-    "local_authoring_parts::e3121708a566b68713e67b0578d91bb4b0ddef8f0f273d8a633a6c9374b584d7:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
-      ],
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
-          "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
-          "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
-          "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
-        },
-        {
-          "id": "signatureSystems[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Enemy Type Adaptability and Resource Efficiency System",
-          "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
-          "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
-        }
-      ]
-    },
-    "local_authoring_parts::e3121708a566b68713e67b0578d91bb4b0ddef8f0f273d8a633a6c9374b584d7:multiplayerMode": {
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::75017f2f848c86f623410fc1658b51dc673d5b5dbe6302fb95da7291fc02f028:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
-      ],
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
-          "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
-          "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Battlefield Layout and Economic Management System",
-          "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
-          "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
-        },
-        {
-          "id": "signatureSystems[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "defensiveStrategyAdaptation",
-            "resourceAllocationDecision"
-          ],
-          "stateOutputs": [
-            "newDefensiveStrategyImplementation",
-            "adjustedResourceBudget"
-          ],
-          "name": "Enemy Type Adaptability and Resource Efficiency System",
-          "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
-          "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::ea36fa6fb8771bf0e3f6fbd7f8fa092124d30fca3f26f80dacec5ca51a2f97b4:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "threatened route",
-        "enemy type",
-        "wave composition",
-        "terrain",
-        "resource distribution"
-      ],
-      "stateOutputs": [
-        "defensive strategy adaptation",
-        "resource allocation decision"
-      ],
-      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "purpose": "Adapt defensive strategies based on enemy types, wave compositions, terrain, and resource distributions to manage increasing pressure and secure objectives.",
-      "playerChoice": "Adjust defense priorities when resources are scarce; modify resource spending when upgrades become unaffordable; shift focus from resource management to strategic position control in late game."
-    },
-    "local_authoring_parts::ea36fa6fb8771bf0e3f6fbd7f8fa092124d30fca3f26f80dacec5ca51a2f97b4:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "threatened route",
-        "enemy type",
-        "wave composition",
-        "terrain",
-        "resource distribution"
-      ],
-      "stateOutputs": [
-        "defensive strategy adaptation",
-        "resource allocation decision"
-      ],
-      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "purpose": "To adapt defensive strategies based on enemy types, wave compositions, terrain, and resource distributions.",
-      "playerChoice": "Adapt defense to enemy types and adjust placements based on battlefield conditions."
-    },
-    "local_authoring_parts::ea36fa6fb8771bf0e3f6fbd7f8fa092124d30fca3f26f80dacec5ca51a2f97b4:signatureSystems:2": {
-      "id": "signatureSystems[2]",
-      "grammarRole": "B",
-      "stateInputs": [
-        "threatened route",
-        "enemy type",
-        "wave composition",
-        "terrain",
-        "resource distribution"
-      ],
-      "stateOutputs": [
-        "defensive strategy adaptation",
-        "resource allocation decision"
-      ],
-      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "purpose": "Adapt defensive strategy based on enemy types, wave compositions, terrain, and resource distributions.",
-      "playerChoice": "Adapt to enemy type, adjust placement based on terrain and resource availability, and manage budget for upgrades and new placements before pressure increases."
-    },
-    "local_authoring_parts::ea36fa6fb8771bf0e3f6fbd7f8fa092124d30fca3f26f80dacec5ca51a2f97b4:signatureSystems:3": {
-      "id": "signatureSystems[3]",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "threatened route",
-        "enemy type",
-        "wave composition",
-        "terrain",
-        "resource distribution"
-      ],
-      "stateOutputs": [
-        "defensive strategy adaptation",
-        "resource allocation decision"
-      ],
-      "name": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-      "purpose": "Player learns to adapt defense strategies based on enemy types, wave compositions, and terrain.",
-      "playerChoice": "Adaptation to enemy type, resource management, and positional control in late game."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1001475,
-      "lastMs": 68665,
-      "lastError": null,
-      "updatedAt": "2026-10-10T02:55:17.830Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:38:36.139Z",
-  "updatedAt": "2026-10-10T02:55:17.836Z",
+  "createdAt": "2026-10-10T05:24:42.248Z",
+  "updatedAt": "2026-10-10T05:24:42.263Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
           "CREATURE",
-          "ENVIRONMENT",
           "MOTION",
-          "PROP",
-          "SKILL",
-          "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD_MODULE",
@@ -516,13 +53,6 @@
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
             "STARTER_HERO_WATER"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -551,6 +81,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -587,256 +118,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
-          ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -888,28 +169,6 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
@@ -921,33 +180,7 @@
             }
           },
           {
-            "family": "ENVIRONMENT",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-place-ground",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "place"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "PROP",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -955,48 +188,17 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "next",
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-boss-warning-pulse",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1013,34 +215,17 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
           "CREATURE",
-          "ENVIRONMENT",
           "MOTION",
-          "PROP",
-          "SKILL",
-          "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD_MODULE",
@@ -1057,13 +242,6 @@
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
             "STARTER_HERO_WATER"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1092,6 +270,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1128,256 +307,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
-          ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -1429,28 +358,6 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
@@ -1462,33 +369,7 @@
             }
           },
           {
-            "family": "ENVIRONMENT",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-place-ground",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "place"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "PROP",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1496,48 +377,17 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "next",
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-boss-warning-pulse",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1554,34 +404,17 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
           "CREATURE",
-          "ENVIRONMENT",
           "MOTION",
-          "PROP",
-          "SKILL",
-          "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD_MODULE",
@@ -1598,13 +431,6 @@
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
             "STARTER_HERO_WATER"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1633,6 +459,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1669,256 +496,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
-          ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -1970,28 +547,6 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
@@ -2003,33 +558,7 @@
             }
           },
           {
-            "family": "ENVIRONMENT",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "MOTION",
-            "action": "USE",
-            "assetId": "roblox-common-motion-place-ground",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "place"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "PROP",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -2037,48 +566,17 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "USE",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "next",
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "USE",
-            "assetId": "roblox-common-vfx-boss-warning-pulse",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -2095,211 +593,6 @@
         ]
       }
     },
-    "assetFacts": {
-      "roblox-common-motion-place-ground": {
-        "family": "MOTION",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "place"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "PLACE_GROUND",
-        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-ui-wave-forecast-ribbon": {
-        "family": "UI",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "next",
-            "boss"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "WAVE_FORECAST_RIBBON",
-        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 956.4,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-vfx-boss-warning-pulse": {
-        "family": "VFX",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "boss"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "BOSS",
-        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 913.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      }
-    }
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-        "kind": "HARD_GATE",
-        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "aToB": false,
-          "bToA": false,
-          "unconnected": [
-            "A",
-            "B",
-            "DELVE"
-          ],
-          "ruleIds": [
-            "signatureSystems[0]",
-            "signatureSystems[1]",
-            "signatureSystems[2]",
-            "signatureSystems[3]"
-          ]
-        },
-        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "골목 군단 대전",
-      "creativeGrammar": {
-        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "a": {
-          "system": "defense",
-          "material": "enemy type, wave composition, terrain, resource distribution",
-          "materialDomain": "battlefield layout",
-          "stateChange": "defensive strategy adaptation"
-        },
-        "b": {
-          "system": "economy",
-          "material": "resource gain from defeated enemies, upgrade cost, placement budget",
-          "materialDomain": "economic management",
-          "stateChange": "resource allocation decision"
-        },
-        "abCausality": "Defensive strategy adapts to enemy types; economic decisions are based on resource gains and upgrade costs; battlefield layouts influence defensive positioning.",
-        "abEvolution": {
-          "aChangesB": "Increase defense priority when resources are scarce",
-          "bChangesA": "Adjust resource spending when upgrades become unaffordable",
-          "lateGameChange": "Shift focus from resource management to strategic position control"
-        },
-        "materialFusion": {
-          "contrast": "Enemy type adaptability vs. economic resource efficiency",
-          "causalBridge": "Resource gains trigger defensive strategy changes; economic constraints force tactical adjustments",
-          "removalConsequence": "Loss of resource access leads to increased defensive pressure"
-        },
-        "storyCausalChain": {
-          "cause": "Player's initial defensive setup",
-          "characterConflict": "Economic constraint forces tactical change",
-          "playerChoice": "Adaptation to enemy type",
-          "worldChange": "Increased defensive pressure due to resource scarcity",
-          "nextEvent": "New defensive strategy implementation"
-        },
-        "cThemes": [
-          {
-            "name": "adaptive defense",
-            "kind": "MATERIAL",
-            "gameplayEffect": "defensive strategy adaptation"
-          },
-          {
-            "name": "resource economics",
-            "kind": "MATERIAL",
-            "gameplayEffect": "economic decision making"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "battlefield layout design",
-            "gameplayEffect": "influence on defensive positioning"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "economy management system",
-            "gameplayEffect": "affects resource allocation decisions"
-          }
-        ],
-        "cGenreInterlock": "Defensive strategy adapts to battlefield layouts; economic decisions are influenced by resource availability and upgrade costs.",
-        "cWorldAndGameplayEffect": "Battlefield layout influences defensive strategy; economic decisions affect resource allocation and upgrade priorities.",
-        "delveDiscoveries": [
-          {
-            "clue": "Resource gain triggers defensive strategy changes",
-            "discovery": "Player learns to adapt defenses based on resource gains",
-            "newChoice": "Increase defensive priority when resources are scarce"
-          },
-          {
-            "clue": "Economic constraints force tactical change",
-            "discovery": "Player adjusts resource spending due to upgrade costs",
-            "newChoice": "Adjust resource budget when upgrades become unaffordable"
-          },
-          {
-            "clue": "Shift focus from resource management to strategic position control",
-            "discovery": "Player prioritizes positional control over resource efficiency in late game",
-            "newChoice": "Focus on strategic position control instead of resource management"
-          },
-          {
-            "clue": "Loss of resource access leads to increased defensive pressure",
-            "discovery": "Player must now manage limited resources more strategically",
-            "newChoice": "Manage limited resources with new defensive strategies"
-          }
-        ],
-        "delveGrowthRule": "Resource gains trigger defensive strategy adaptation; economic constraints force tactical adjustments; loss of resource access increases defensive pressure.",
-        "finalGameIdentity": "Defensive strategy adapts to battlefield layouts; economic decisions influence resource allocation and upgrade priorities; player learns to prioritize positional control over resource efficiency."
-      },
-      "playerFantasy": "A mobile tower-defense game where players learn to adapt their defense strategies based on enemy types, wave compositions, and terrain. The game emphasizes the balance between defensive positioning and resource management, with each decision affecting future gameplay choices and the overall difficulty curve. Players must constantly adjust their defenses while managing limited resources, leading to a dynamic and evolving battle experience.",
-      "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route. Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases. Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices. Preserve or migrate before swap. Single.",
-      "coreLoop": [
-        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
-        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
-        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:55:17.831Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+    "assetFacts": {}
+  }
 }
