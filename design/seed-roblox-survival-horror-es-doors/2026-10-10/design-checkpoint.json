@@ -108,25 +108,456 @@
       ],
       "cGenreInterlock": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns;",
       "cWorldAndGameplayEffect": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems."
+    },
+    "local_authoring_parts::2e5695f93d7d6a992deae2e42c4bfb0bf9975589b0d0065c78dfbf515da60756:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "discovery": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+          "newChoice": "Deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective."
+        },
+        {
+          "clue": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+          "discovery": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems.",
+          "newChoice": "New patterns of conflict are introduced, changing the way players interact with the environment."
+        },
+        {
+          "clue": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+          "discovery": "Players must navigate a dangerous world with limited resources and time.",
+          "newChoice": "Dynamic combat and strategic movement are required to survive in this evolving environment."
+        },
+        {
+          "clue": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns",
+          "discovery": "The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+          "newChoice": "Players engage in complex strategy and tactical play as they confront ever-changing environments."
+        }
+      ],
+      "delveGrowthRule": "Players grow through repeated cycles of discovery, survival, and adaptation, gradually mastering the mechanics of the game and developing deeper understanding of its rules and objectives.",
+      "finalGameIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+    },
+    "local_authoring_parts::e1e9547bdf21c264f1e510b5ae061525e50a97d611e1349113636024a089d0ca:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "Shadows",
+          "kind": "MATERIAL",
+          "gameplayEffect": "Introduces the world of darkness, mystery, and hidden dangers."
+        },
+        {
+          "name": "Choices",
+          "kind": "MATERIAL",
+          "gameplayEffect": "Encourages player agency and decision-making in a survival context."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "Survival",
+          "gameplayEffect": "Players must navigate a dangerous world with limited resources and time."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "Action",
+          "gameplayEffect": "Players engage in dynamic combat and strategic movement to survive."
+        }
+      ],
+      "cGenreInterlock": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns;",
+      "cWorldAndGameplayEffect": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+      "delveDiscoveries": [
+        {
+          "clue": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "discovery": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+          "newChoice": "Deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective."
+        },
+        {
+          "clue": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+          "discovery": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems.",
+          "newChoice": "New patterns of conflict are introduced, changing the way players interact with the environment."
+        },
+        {
+          "clue": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+          "discovery": "Players must navigate a dangerous world with limited resources and time.",
+          "newChoice": "Dynamic combat and strategic movement are required to survive in this evolving environment."
+        },
+        {
+          "clue": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns",
+          "discovery": "The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+          "newChoice": "Players engage in complex strategy and tactical play as they confront ever-changing environments."
+        }
+      ],
+      "delveGrowthRule": "Players grow through repeated cycles of discovery, survival, and adaptation, gradually mastering the mechanics of the game and developing deeper understanding of its rules and objectives.",
+      "finalGameIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+    },
+    "local_authoring_parts::843df7bbae33501df2b5b861ef85489c295e2e17ceebe5e03bfbe07004a5bca6:creativeGrammar": {
+      "mainIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+      "a": {
+        "system": "Survival",
+        "material": "Shadows",
+        "materialDomain": "World",
+        "stateChange": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+      },
+      "b": {
+        "system": "Action",
+        "material": "Choices",
+        "materialDomain": "Gameplay",
+        "stateChange": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      },
+      "abCausality": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns; Goals → Rewards/Unlocking; Moves → New Boards/Obstacles",
+      "abEvolution": {
+        "aChangesB": "Choices → Survivals; Actions → Shadows; Matches → New Patterns",
+        "bChangesA": "Survivals → Choices; Shadows → Actions; New Patterns → Obstacles",
+        "lateGameChange": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Boards"
+      },
+      "materialFusion": {
+        "contrast": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+        "causalBridge": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "removalConsequence": "Goals → Rewards/Unlocking; Moves → New Boards/Obstacles; Obstacles → New Patterns"
+      },
+      "storyCausalChain": {
+        "cause": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "characterConflict": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+        "playerChoice": "The player makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+        "worldChange": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+        "nextEvent": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems."
+      },
+      "cThemes": [
+        {
+          "name": "Shadows",
+          "kind": "MATERIAL",
+          "gameplayEffect": "Introduces the world of darkness, mystery, and hidden dangers."
+        },
+        {
+          "name": "Choices",
+          "kind": "MATERIAL",
+          "gameplayEffect": "Encourages player agency and decision-making in a survival context."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "Survival",
+          "gameplayEffect": "Players must navigate a dangerous world with limited resources and time."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "Action",
+          "gameplayEffect": "Players engage in dynamic combat and strategic movement to survive."
+        }
+      ],
+      "cGenreInterlock": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns;",
+      "cWorldAndGameplayEffect": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+      "delveDiscoveries": [
+        {
+          "clue": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "discovery": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+          "newChoice": "Deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective."
+        },
+        {
+          "clue": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+          "discovery": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems.",
+          "newChoice": "New patterns of conflict are introduced, changing the way players interact with the environment."
+        },
+        {
+          "clue": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+          "discovery": "Players must navigate a dangerous world with limited resources and time.",
+          "newChoice": "Dynamic combat and strategic movement are required to survive in this evolving environment."
+        },
+        {
+          "clue": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns",
+          "discovery": "The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+          "newChoice": "Players engage in complex strategy and tactical play as they confront ever-changing environments."
+        }
+      ],
+      "delveGrowthRule": "Players grow through repeated cycles of discovery, survival, and adaptation, gradually mastering the mechanics of the game and developing deeper understanding of its rules and objectives.",
+      "finalGameIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+    },
+    "local_authoring_parts::9c1d3d842ea276c56dab0e9fff7ee474737810c31522461393eba1345eaf5bb2:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+        "a": {
+          "system": "Survival",
+          "material": "Shadows",
+          "materialDomain": "World",
+          "stateChange": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        "b": {
+          "system": "Action",
+          "material": "Choices",
+          "materialDomain": "Gameplay",
+          "stateChange": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        "abCausality": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns; Goals → Rewards/Unlocking; Moves → New Boards/Obstacles",
+        "abEvolution": {
+          "aChangesB": "Choices → Survivals; Actions → Shadows; Matches → New Patterns",
+          "bChangesA": "Survivals → Choices; Shadows → Actions; New Patterns → Obstacles",
+          "lateGameChange": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Boards"
+        },
+        "materialFusion": {
+          "contrast": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+          "causalBridge": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "removalConsequence": "Goals → Rewards/Unlocking; Moves → New Boards/Obstacles; Obstacles → New Patterns"
+        },
+        "storyCausalChain": {
+          "cause": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "characterConflict": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+          "playerChoice": "The player makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+          "worldChange": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+          "nextEvent": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems."
+        },
+        "cThemes": [
+          {
+            "name": "Shadows",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Introduces the world of darkness, mystery, and hidden dangers."
+          },
+          {
+            "name": "Choices",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Encourages player agency and decision-making in a survival context."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival",
+            "gameplayEffect": "Players must navigate a dangerous world with limited resources and time."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Action",
+            "gameplayEffect": "Players engage in dynamic combat and strategic movement to survive."
+          }
+        ],
+        "cGenreInterlock": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns;",
+        "cWorldAndGameplayEffect": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+            "discovery": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+            "newChoice": "Deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective."
+          },
+          {
+            "clue": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+            "discovery": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems.",
+            "newChoice": "New patterns of conflict are introduced, changing the way players interact with the environment."
+          },
+          {
+            "clue": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+            "discovery": "Players must navigate a dangerous world with limited resources and time.",
+            "newChoice": "Dynamic combat and strategic movement are required to survive in this evolving environment."
+          },
+          {
+            "clue": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns",
+            "discovery": "The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+            "newChoice": "Players engage in complex strategy and tactical play as they confront ever-changing environments."
+          }
+        ],
+        "delveGrowthRule": "Players grow through repeated cycles of discovery, survival, and adaptation, gradually mastering the mechanics of the game and developing deeper understanding of its rules and objectives.",
+        "finalGameIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+      }
+    },
+    "local_authoring_parts::dbf66706c7e4f36533b725fe9d6e472e9cbce910498a1b0159dd08322c0fe7aa:identity,creativeGrammar": {
+      "identity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+      "creativeGrammar": {
+        "mainIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+        "a": {
+          "system": "Survival",
+          "material": "Shadows",
+          "materialDomain": "World",
+          "stateChange": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        "b": {
+          "system": "Action",
+          "material": "Choices",
+          "materialDomain": "Gameplay",
+          "stateChange": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        "abCausality": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns; Goals → Rewards/Unlocking; Moves → New Boards/Obstacles",
+        "abEvolution": {
+          "aChangesB": "Choices → Survivals; Actions → Shadows; Matches → New Patterns",
+          "bChangesA": "Survivals → Choices; Shadows → Actions; New Patterns → Obstacles",
+          "lateGameChange": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Boards"
+        },
+        "materialFusion": {
+          "contrast": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+          "causalBridge": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "removalConsequence": "Goals → Rewards/Unlocking; Moves → New Boards/Obstacles; Obstacles → New Patterns"
+        },
+        "storyCausalChain": {
+          "cause": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "characterConflict": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+          "playerChoice": "The player makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+          "worldChange": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+          "nextEvent": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems."
+        },
+        "cThemes": [
+          {
+            "name": "Shadows",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Introduces the world of darkness, mystery, and hidden dangers."
+          },
+          {
+            "name": "Choices",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Encourages player agency and decision-making in a survival context."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival",
+            "gameplayEffect": "Players must navigate a dangerous world with limited resources and time."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Action",
+            "gameplayEffect": "Players engage in dynamic combat and strategic movement to survive."
+          }
+        ],
+        "cGenreInterlock": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns;",
+        "cWorldAndGameplayEffect": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+            "discovery": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+            "newChoice": "Deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective."
+          },
+          {
+            "clue": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+            "discovery": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems.",
+            "newChoice": "New patterns of conflict are introduced, changing the way players interact with the environment."
+          },
+          {
+            "clue": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+            "discovery": "Players must navigate a dangerous world with limited resources and time.",
+            "newChoice": "Dynamic combat and strategic movement are required to survive in this evolving environment."
+          },
+          {
+            "clue": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns",
+            "discovery": "The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+            "newChoice": "Players engage in complex strategy and tactical play as they confront ever-changing environments."
+          }
+        ],
+        "delveGrowthRule": "Players grow through repeated cycles of discovery, survival, and adaptation, gradually mastering the mechanics of the game and developing deeper understanding of its rules and objectives.",
+        "finalGameIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+      }
+    },
+    "local_authoring_parts::dbf66706c7e4f36533b725fe9d6e472e9cbce910498a1b0159dd08322c0fe7aa:playerFantasy,coreFun": {
+      "playerFantasy": "The player is tasked with navigating a world filled with shadows, where every decision carries weight and every move shapes the fate of their journey. They must balance survival against uncertainty, using strategic choices to uncover hidden truths and overcome relentless challenges.",
+      "coreFun": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems."
+    },
+    "local_authoring_parts::b2ccc943b487fda20fd82c9bd67babb6ff4942c855581bf540a2bcb07a964030:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+      "creativeGrammar": {
+        "mainIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+        "a": {
+          "system": "Survival",
+          "material": "Shadows",
+          "materialDomain": "World",
+          "stateChange": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        },
+        "b": {
+          "system": "Action",
+          "material": "Choices",
+          "materialDomain": "Gameplay",
+          "stateChange": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        },
+        "abCausality": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns; Goals → Rewards/Unlocking; Moves → New Boards/Obstacles",
+        "abEvolution": {
+          "aChangesB": "Choices → Survivals; Actions → Shadows; Matches → New Patterns",
+          "bChangesA": "Survivals → Choices; Shadows → Actions; New Patterns → Obstacles",
+          "lateGameChange": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Boards"
+        },
+        "materialFusion": {
+          "contrast": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+          "causalBridge": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "removalConsequence": "Goals → Rewards/Unlocking; Moves → New Boards/Obstacles; Obstacles → New Patterns"
+        },
+        "storyCausalChain": {
+          "cause": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "characterConflict": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+          "playerChoice": "The player makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+          "worldChange": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+          "nextEvent": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems."
+        },
+        "cThemes": [
+          {
+            "name": "Shadows",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Introduces the world of darkness, mystery, and hidden dangers."
+          },
+          {
+            "name": "Choices",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Encourages player agency and decision-making in a survival context."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival",
+            "gameplayEffect": "Players must navigate a dangerous world with limited resources and time."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Action",
+            "gameplayEffect": "Players engage in dynamic combat and strategic movement to survive."
+          }
+        ],
+        "cGenreInterlock": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns;",
+        "cWorldAndGameplayEffect": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+        "delveDiscoveries": [
+          {
+            "clue": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+            "discovery": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+            "newChoice": "Deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective."
+          },
+          {
+            "clue": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+            "discovery": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems.",
+            "newChoice": "New patterns of conflict are introduced, changing the way players interact with the environment."
+          },
+          {
+            "clue": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+            "discovery": "Players must navigate a dangerous world with limited resources and time.",
+            "newChoice": "Dynamic combat and strategic movement are required to survive in this evolving environment."
+          },
+          {
+            "clue": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns",
+            "discovery": "The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems.",
+            "newChoice": "Players engage in complex strategy and tactical play as they confront ever-changing environments."
+          }
+        ],
+        "delveGrowthRule": "Players grow through repeated cycles of discovery, survival, and adaptation, gradually mastering the mechanics of the game and developing deeper understanding of its rules and objectives.",
+        "finalGameIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+      },
+      "playerFantasy": "The player is tasked with navigating a world filled with shadows, where every decision carries weight and every move shapes the fate of their journey. They must balance survival against uncertainty, using strategic choices to uncover hidden truths and overcome relentless challenges.",
+      "coreFun": "Players start levels with clear goals, limited moves, obstacles, or puzzles. Clearing goals earns rewards or unlocks new stages. The game introduces new patterns of conflict, altering decision structures and opening up new routes or systems."
+    },
+    "local_authoring_parts::4496da577d11eb38978c4c51d2016b57d8d06373987354294d7813c942d24708:coreLoop": {
+      "coreLoop": [
+        "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+        "Clears the level goal to earn rewards or unlock the next stage, then faces a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 865118,
-      "lastMs": 92312,
+      "totalMs": 1180167,
+      "lastMs": 55539,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:24:24.759Z"
+      "updatedAt": "2026-10-10T07:29:39.821Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:09:59.454Z",
-  "updatedAt": "2026-10-10T07:24:24.759Z",
+  "updatedAt": "2026-10-10T07:29:39.821Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1726,7 +2157,7 @@
     "dbf66706c7e4f36533b725fe9d6e472e9cbce910498a1b0159dd08322c0fe7aa": true,
     "9c1d3d842ea276c56dab0e9fff7ee474737810c31522461393eba1345eaf5bb2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:24:24.759Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:29:39.821Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
