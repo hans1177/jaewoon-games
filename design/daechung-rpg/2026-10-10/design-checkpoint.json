@@ -117,25 +117,38 @@
       "name": "아레나",
       "purpose": "전투, 보상, 저장에 대한 실제 선택 및 규칙 변주",
       "playerChoice": "AI 파티 초대/제외, 보스 처치 → 해금 → 조합 확장"
+    },
+    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:1:df760a8d58d408f5": {
+      "id": "a_arena",
+      "grammarRole": "A",
+      "stateInputs": [
+        "보스 공략 및 파티 동료 해금"
+      ],
+      "stateOutputs": [
+        "마을에서 퀘스트와 장비 준비"
+      ],
+      "name": "아레나",
+      "purpose": "게임 진행 방향 재설계 및 플레이어 선택에 대한 인과적 연결",
+      "playerChoice": "보스 공략 및 파티 동료 해금 상태 변화로 AI 파티 구성 방식 재설계 및 레벨 성장 메커니즘 변경의 새로운 플레이 약속 형성"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 396294,
-      "lastMs": 39798,
+      "totalMs": 436580,
+      "lastMs": 40286,
       "lastError": null,
-      "updatedAt": "2026-10-10T04:49:34.699Z"
+      "updatedAt": "2026-10-10T04:50:14.986Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:42:58.038Z",
-  "updatedAt": "2026-10-10T04:49:34.700Z",
+  "updatedAt": "2026-10-10T04:50:14.986Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1159,8 +1172,8 @@
     "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:1:df760a8d58d408f5": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T04:49:34.699Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T04:50:14.986Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
