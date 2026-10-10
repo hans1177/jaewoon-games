@@ -440,25 +440,117 @@
         "delveGrowthRule": "플레이어의 선택은 실질적으로 세계 상태를 변화시켜 다음 사건을 결정합니다. 이는 게임의 진보와 규칙 조합에 직접적인 영향을 줍니다.",
         "finalGameIdentity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다."
       }
+    },
+    "local_authoring_parts::bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 단순한 입력(예: 한 손가락 터치 또는 스ワイ프)으로 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다. 플레이어는 행동을 통해 관계를 형성하고, 이를 바탕으로 새로운 선택과 경로를 개척합니다.",
+      "coreFun": "입력 → 상태변화 → 보상/위험/다음 선택의 연결을 포함하는 실제 게임 플레이 단계 최소 3개. 주제/소재 선택에 따른 새로운 플레이 스타일 생성 및 실질적 세계 상태 변화가 발생해야 합니다."
+    },
+    "local_authoring_parts::65b0a3750b34b2b99ab6c544c533ccdc9b691c7b99a06e4fa2b001e949fab369:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
+        "a": {
+          "system": "게임 시스템",
+          "material": "해당 축 창작 소재",
+          "materialDomain": "게임 메인 장르",
+          "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
+        },
+        "b": {
+          "system": "다른 시스템",
+          "material": "해당 축 창작 소재",
+          "materialDomain": "게임 보조 장르",
+          "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
+        },
+        "abCausality": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 주제/소재가 서로 다른 경우 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다.",
+        "abEvolution": {
+          "aChangesB": "A→B 상태 교환, B→A 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+          "bChangesA": "B→A 상태 교환, A→B 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+        },
+        "materialFusion": {
+          "contrast": "C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+          "causalBridge": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+          "removalConsequence": "C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
+        },
+        "storyCausalChain": {
+          "cause": "원인, 인물 갈등, 플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+          "characterConflict": "인물 갈등, 플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+          "playerChoice": "플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+          "worldChange": "실질 세계 상태 변화, 다음 사건, 새로운 규칙 조합",
+          "nextEvent": "새로운 규칙 조합, 다음 사건, 새로운 게임 규칙"
+        },
+        "cThemes": [
+          {
+            "name": "행동",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 실제 행동을 통해 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다."
+          },
+          {
+            "name": "관계",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어와 다른 인물 갈등 및 관계 형성에 기반하여 플레이어의 선택에 영향을 미칩니다."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생활 탐험",
+            "gameplayEffect": "단순한 입력과 명확한 목표를 바탕으로 플레이어가 세계를 탐험하는 기본적인 게임 유형"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "문화적 발견",
+            "gameplayEffect": "플레이어가 다양한 문화, 예술, 역사 등 측면에서 새로운 것을 발견하고 성장시키는 추가적인 게임 유형"
+          }
+        ],
+        "cGenreInterlock": "플레이어의 행동은 주제와 소재에 따라 상호작용하며, 보조 장르 제거 시 새로운 플레이 스타일이 생성됩니다.",
+        "cWorldAndGameplayEffect": "플레이어의 선택은 실질적으로 세계 상태를 변화시켜 다음 사건을 결정합니다. 이는 게임의 진보와 규칙 조합에 직접적인 영향을 줍니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "사람들의 행동과 관계",
+            "discovery": "플레이어가 실제 행동을 통해 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다.",
+            "newChoice": "주제/소재 선택에 따라 새로운 플레이 스타일을 생성"
+          },
+          {
+            "clue": "문화적 발견 및 성장",
+            "discovery": "플레이어가 다양한 문화, 예술, 역사 등 측면에서 새로운 것을 발견하고 성장시키는 추가적인 게임 유형",
+            "newChoice": "보조 장르 제거 시 새로운 플레이 스타일이 생성"
+          },
+          {
+            "clue": "행동의 실질적 영향",
+            "discovery": "플레이어가 실제 행동을 통해 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다.",
+            "newChoice": "주제/소재 선택에 따라 새로운 플레이 스타일을 생성"
+          },
+          {
+            "clue": "관계 형성 및 갈등",
+            "discovery": "플레이어와 다른 인물 갈등 및 관계 형성에 기반하여 플레이어의 선택에 영향을 미칩니다.",
+            "newChoice": "보조 장르 제거 시 새로운 플레이 스타일이 생성"
+          }
+        ],
+        "delveGrowthRule": "플레이어의 선택은 실질적으로 세계 상태를 변화시켜 다음 사건을 결정합니다. 이는 게임의 진보와 규칙 조합에 직접적인 영향을 줍니다.",
+        "finalGameIdentity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다."
+      },
+      "playerFantasy": "플레이어는 단순한 입력(예: 한 손가락 터치 또는 스ワイ프)으로 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다. 플레이어는 행동을 통해 관계를 형성하고, 이를 바탕으로 새로운 선택과 경로를 개척합니다.",
+      "coreFun": "입력 → 상태변화 → 보상/위험/다음 선택의 연결을 포함하는 실제 게임 플레이 단계 최소 3개. 주제/소재 선택에 따른 새로운 플레이 스타일 생성 및 실질적 세계 상태 변화가 발생해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 8,
+      "successes": 6,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1021663,
-      "lastMs": 92001,
+      "totalMs": 1088368,
+      "lastMs": 66705,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:50:18.065Z"
+      "updatedAt": "2026-10-10T08:51:24.776Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:33:16.266Z",
-  "updatedAt": "2026-10-10T08:50:18.070Z",
+  "updatedAt": "2026-10-10T08:51:24.777Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1984,7 +2076,7 @@
     "bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753": true,
     "f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:50:18.070Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:51:24.777Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
