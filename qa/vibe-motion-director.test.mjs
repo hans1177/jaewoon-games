@@ -77,6 +77,7 @@ import {
   auditRobloxCharacterMotionEvidence,
   createMotionDirectorPlan,
   COMMON_CAREER_MOTION_HIERARCHY,
+  COMMON_CAREER_VISUAL_MASTERS,
   COMMON_GENRE_MOTION_CONTEXTS,
   resolveCommonMotionGenre,
   COMMON_SKILL_MOTION_GRAMMAR,
@@ -573,6 +574,35 @@ test('shared classes form an inherited motion hierarchy rather than a genre-lock
   assert.equal(horror.platform,'WEB');
 });
 
+
+test('fifty-one career hierarchies inherit valid source 3D skinned masters without automatic native promotion',()=>{
+  const registered=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
+  const keys=new Set(registered.assets.map(row=>row.id));
+  assert.ok(Object.keys(COMMON_CAREER_VISUAL_MASTERS).length>=35);
+  for(const careerId of Object.keys(COMMON_CAREER_MOTION_HIERARCHY)){
+    const loadout=createCommonCareerMotionLoadout({careerId,genre:'RPG',platform:'UNITY'});
+    const master=loadout.master;
+    assert.ok(keys.has(master.assetId),careerId+': missing registered 3D master');
+    assert.ok(master.path.startsWith('assets/shared/humanoid-')&&master.path.endsWith('.glb'),careerId);
+    assert.equal(master.rig,'SHARED_HUMANOID_SKINNED_19',careerId);
+    assert.equal(master.runtimeVerified,false,careerId);
+    assert.equal(master.productionVerified,false,careerId);
+    assert.equal(master.gameSpecificRigAndStyleAdaptationRequired,true,careerId);
+    assert.equal(loadout.gameplayAuthority,false,careerId);
+  }
+  const samurai=createCommonCareerMotionLoadout({careerId:'SAMURAI'});
+  const kensei=createCommonCareerMotionLoadout({careerId:'KENSEI'});
+  const ronin=createCommonCareerMotionLoadout({careerId:'RONIN'});
+  assert.equal(samurai.master.assetId,'shared-humanoid-samurai');
+  assert.equal(kensei.master.assetId,samurai.master.assetId);
+  assert.equal(ronin.master.assetId,samurai.master.assetId);
+  assert.equal(samurai.master.sourceRoleActionClip,'SAMURAI_IAI_DRAW');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ARCHER'}).master.assetId,'shared-humanoid-archer');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ELEMENTALIST'}).master.assetId,'shared-humanoid-mage');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'ASSASSIN'}).master.assetId,'shared-humanoid-rogue');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'DRAGOON'}).master.assetId,'shared-humanoid-lancer');
+  assert.equal(createCommonCareerMotionLoadout({careerId:'BLACKSMITH'}).master.assetId,'shared-humanoid-blacksmith');
+});
 
 test('multiple native genre labels reuse the same class and creature motion rather than creating a shadow system',()=>{
   assert.equal(resolveCommonMotionGenre('RPG'),'ACTION_RPG');
