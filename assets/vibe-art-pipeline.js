@@ -595,7 +595,12 @@ export function createVibeGraphicsProduction({
   // [NATIVE CINEMATIC] Keep the Blender render inside the canonical graphics root.
   const dcc=assetPlanBound?assetProductionPlan?.nativeAuthoringExecution?.dcc||{}:{};
   const videoRecipes=(dcc.executionRecipes||[]).filter(row=>row?.cinematic===true);
-  const dccProof=(dcc.executionEvidence?.recipes||[]).filter(row=>row?.cinematicVideo?.verifiedBy==='FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH');
+  const dccProof=(dcc.executionEvidence?.recipes||[]).filter(row=>row?.cinematicVideo?.verifiedBy==='FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH'
+    &&videoRecipes.some(recipe=>recipe.id===row.id
+      &&recipe.cinematicOutput===row.cinematicVideo.path
+      &&recipe.shotlistOutput===row.cinematicVideo.shotlistPath
+      &&/^[0-9a-f]{64}$/i.test(String(row.cinematicVideo.sha256||''))
+      &&/^[0-9a-f]{64}$/i.test(String(row.cinematicVideo.shotlistSha256||''))));
   const cinematicRendering=Object.freeze({
     supported:true,requested:videoRecipes.length>0,engine:'BLENDER_PYTHON',
     encoder:'BLENDER_FFMPEG_H264',source:'assets/native-authoring/build-game-visual.py',
