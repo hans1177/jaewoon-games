@@ -342,7 +342,7 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.doesNotMatch(design,/localDesignerCallTimeoutMs/);
   assert.doesNotMatch(design,/geminiUnavailableModels/);
   assert.doesNotMatch(design,/function quarantineGeminiModel/);
-  assert.match(design,/localAuthoringSplits/);
+  assert.match(design,/designCheckpoint\.slicePartialResults/);
   assert.match(design,/DESIGN_AI_REVIEW_LANES=NONE/);
   assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'VIBE_NATIVE_FUNCTION'\}/);
   const checkpointInitialization=design.indexOf('let designCheckpoint=readJson(checkpointPath,null);');
@@ -376,7 +376,7 @@ test('DESIGN_ONLY uses one designer plus deterministic department evidence witho
   assert.match(design,/meetingRequired:false/);
   assert.match(design,/rebuttalRounds:0/);
   assert.match(design,/marketMetricAloneUsedForDiscard:false/);
-  assert.match(design,/vibe2Used:false/);
+  assert.match(design,/vibe2Used:true/);
   assert.doesNotMatch(design,/cross_department_meeting|lead_rebuttals|department_representatives/);
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
