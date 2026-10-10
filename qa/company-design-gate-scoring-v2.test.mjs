@@ -7,6 +7,7 @@ import {computeVibeSeedProposal} from '../tools/company-game-seed-bootstrap.mjs'
 import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
 import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 import {classifyRobloxGenre} from '../tools/roblox-genre-profile.mjs';
+import {buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
@@ -472,7 +473,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         playableRequirements:designPlayabilityRequirements(seed),
         designAssetFamilies:[],designAssetLibrary:null,
         seedFlowSystemBlueprint:{},factPack:{},fs,
-        computeVibeSeedProposal,repairDesignRequiredFields,
+        computeVibeSeedProposal,repairDesignRequiredFields,buildConceptSystemBlueprint,
         clean:value=>String(value??'').trim()
       }
     );
