@@ -194,25 +194,42 @@
         "게임 규칙 변경 시 세계 상태 변화 인식 → 새로운 선택 및 게임 진행 방향 재설정",
         "중후반 두 시스템 간 관계 변화 및 피드백 제공"
       ]
+    },
+    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road_to_survival",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "player_starts_with_base_build",
+        "player_decides_upgrade_path",
+        "player_sets_up_for_challenging_wave"
+      ],
+      "stateOutputs": [
+        "player_has_refined_build",
+        "player_gains_expertise",
+        "player_is_prepared_for_boss"
+      ],
+      "name": "Road to Survival",
+      "purpose": "Player's initial build and progression choices determine the survival path, with upgrades and strategies shaping the gameplay experience.",
+      "playerChoice": "Choose between base build or expert strategy, influencing wave difficulty and resource management."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 916900,
-      "lastMs": 10779,
+      "totalMs": 955901,
+      "lastMs": 39001,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:50:55.545Z"
+      "updatedAt": "2026-10-10T10:51:34.547Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:35:38.613Z",
-  "updatedAt": "2026-10-10T10:50:55.545Z",
+  "updatedAt": "2026-10-10T10:51:34.547Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1950,8 +1967,8 @@
   "localAuthoringSplits": {
     "d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:50:55.545Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T10:51:34.547Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
