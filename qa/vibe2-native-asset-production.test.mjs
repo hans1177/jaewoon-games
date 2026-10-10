@@ -3281,10 +3281,10 @@ test('verified company and same-game reusable assets are compared before new aut
     // 검증된 회사 자산이 미검증 동일게임 원본보다 우선하지만, 기존 원본도 재사용 후보로 보존한다.
     assert.equal(enemy.applyFirst.candidates[0].id,'company-wolf');
     assert.equal(enemy.applyFirst.candidates[0].mode,'IMPORT_NATIVE_READY_ASSET');
-    const sameGame=enemy.applyFirst.candidates.find(row=>row.id==='existing-wolf');
-    assert.ok(sameGame);
-    assert.equal(sameGame.mode,'PATCH_EXISTING_GAME_BINDING');
-    assert.equal(sameGame.productionVerified,false);
+    const existingCandidate=enemy.applyFirst.candidates.find(row=>row.id==='existing-wolf');
+    assert.ok(existingCandidate);
+    assert.equal(existingCandidate.mode,'PATCH_EXISTING_GAME_BINDING');
+    assert.equal(existingCandidate.productionVerified,false);
     assert.equal(enemy.qualitySelection.selectedAssetId,null);
     assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
     assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
