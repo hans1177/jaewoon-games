@@ -584,6 +584,23 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
       &&Number.isSafeInteger(proof.gameplayActors3d)&&proof.gameplayActors3d>=1
       &&proof.spriteGameplayActors===0);
   if(!native3dEvidencePass)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
+  if(data.nativeSystemAuditRequired!==true||data.precisionQaRequired!==true)
+    return{pass:false,reason:'READINESS_NATIVE_SYSTEM_CODE_AND_PRECISION_QA_NOT_YET_VERIFIED',data,currentTree};
+  {
+    const audit=data.nativeSystemAudit||{};
+    if(data.nativeSystemAuditSourceTreeSha256!==currentTree
+      ||data.criteria?.nativeSystems?.pass!==true||audit.pass!==true
+      ||audit.gameId!==gameId||audit.platform!=='UNITY_WEB'
+      ||audit.staticCoverageComplete!==true||audit.runtimeValid!==true
+      ||audit.status!=='SOURCE_SYSTEM_AND_RUNTIME_BEHAVIOR_VERIFIED'
+      ||!Array.isArray(audit.roles)||audit.roles.length===0
+      ||audit.roles.some(role=>role.staticComplete!==true||role.runtimeComplete!==true
+        ||!Array.isArray(role.reachableOutputWriters)
+        ||role.reachableOutputWriters.some(out=>out.runtimeObserved!==true||!out.writers?.length))
+      ||!Array.isArray(audit.edges)||audit.edges.some(edge=>edge.sourceConnectivityCandidate!==true)
+      ||!Number.isInteger(audit.inputEntrypointCount)||audit.inputEntrypointCount<1)
+      return{pass:false,reason:'READINESS_REAL_NATIVE_GAME_SYSTEM_IMPLEMENTATION_REQUIRED',data,currentTree};
+  }
   if(data.precisionQaRequired===true){
     const precision=data.precisionQa||{};
     if(data.criteria?.precisionQa?.pass!==true||precision.pass!==true
