@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 105,
-  "lastSuccessfulModelCallAt": "2026-10-10T00:55:52.288Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "content-rules",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
+  "cachedTaskCount": 106,
+  "lastSuccessfulModelCallAt": "2026-10-10T01:10:34.454Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/ant-simulator/2026-10-10/design-seed.json",
     "contentDigest": "872503c1fc5713dead8acdaa798b4c665fc1e7c90dbcfa94a60b79e452e4e299",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 94,
-      "successes": 88,
+      "calls": 95,
+      "successes": 89,
       "failures": 6,
       "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 4366370,
-      "lastMs": 300100,
+      "totalMs": 4648322,
+      "lastMs": 281952,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:05:52.499Z"
+      "updatedAt": "2026-10-10T01:10:34.454Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T01:05:52.502Z"
+  "updatedAt": "2026-10-10T01:10:34.456Z"
 }
