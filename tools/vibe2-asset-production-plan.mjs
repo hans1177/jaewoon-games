@@ -2286,6 +2286,8 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const preview=clean(recipe?.preview).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const editableSource=clean(recipe?.editableSource||script).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const module=clean(recipe?.module).toLowerCase()||'auto';
+  const cinematicStyle=clean(recipe?.cinematicStyle||'studio').toLowerCase();
+  const cinematicQuality=clean(recipe?.cinematicQuality||'preview').toLowerCase();
   const sourceModel=clean(recipe?.sourceModel).replaceAll('\\','/')||null;
   const meshModel=clean(recipe?.meshModel).toLowerCase()||'auto';
   const targetName=clean(target).toLowerCase();
@@ -2301,12 +2303,17 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     &&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))
     &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel))
     &&(!/\.fbx$/i.test(sourceModel||'')||['animation','video'].includes(module))
-    &&['auto','triposr','trellis2'].includes(meshModel);
+    &&['auto','triposr','trellis2'].includes(meshModel)
+    &&(!['animation','video'].includes(module)
+      ||(['studio','dramatic'].includes(cinematicStyle)&&['preview','high'].includes(cinematicQuality)));
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,
     types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
-    module,sourceModel,meshModel,sourceSanitized:recipe?.sourceSanitized===true,
+    module,sourceModel,meshModel,
+    cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
+    cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,
+    sourceSanitized:recipe?.sourceSanitized===true,
     imageToMesh:recipe?.imageToMesh===true,sourceImage:clean(recipe?.sourceImage)||null,
     sourceLicense:clean(recipe?.sourceLicense)||null,sourceCredit:clean(recipe?.sourceCredit)||null,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
