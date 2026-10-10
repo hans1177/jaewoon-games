@@ -30,6 +30,7 @@ PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
 PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical','animation','video'], default='auto')
 PARSER.add_argument('--source-model', default='')
+PARSER.add_argument('--source-provider', choices=['repository','meshy','deepmotion'], default='repository')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
 PARSER.add_argument('--motion-kind', choices=['sway','turntable','bounce'], default='sway')
 PARSER.add_argument('--mesh-model', choices=['auto','trellis2','triposr'], default='auto')
@@ -123,6 +124,8 @@ if ARGS.module == 'mesh-ai' and not ARGS.source_image:
     raise RuntimeError('IMAGE_TO_MESH_LOCAL_IMAGE_REQUIRED')
 if ARGS.source_image and ARGS.source_model:
     raise RuntimeError('SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE')
+if ARGS.source_provider!='repository' and not ARGS.source_model:
+    raise RuntimeError('EXTERNAL_PROVIDER_LICENSE_VERIFIED_LOCAL_MODEL_REQUIRED')
 
 def finish(obj, mat, bevel=.06):
     obj.data.materials.append(mat)
@@ -597,6 +600,10 @@ def import_source_surface():
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_REQUIRED')
     if src.suffix.lower()=='.fbx' and ARGS.module not in ('animation','video'):
         raise RuntimeError('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE')
+    if ARGS.source_provider=='meshy' and src.suffix.lower()!='.glb':
+        raise RuntimeError('MESHY_LICENSE_VERIFIED_LOCAL_GLB_REQUIRED')
+    if ARGS.source_provider=='deepmotion' and src.suffix.lower()!='.fbx':
+        raise RuntimeError('DEEPMOTION_LICENSE_VERIFIED_LOCAL_FBX_REQUIRED')
     if src.stat().st_size<=0 or src.stat().st_size>64*1024*1024:
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_SIZE_INVALID')
     if rights not in ('project-original','cc0','cc-by'):
@@ -668,13 +675,14 @@ def import_source_surface():
         'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
         'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
         'sourceFormat':src.suffix.lower(),'externalMocapCandidate':src.suffix.lower()=='.fbx',
+        'providerClaim':ARGS.source_provider,'providerIdentityVerified':False,'externalProviderApiCalled':False,
         'sanitizedAsserted':ARGS.source_sanitized=='yes','sourceFileImmutable':True
     }
     kind=ARGS.module if ARGS.module!='auto' else 'design'
     MODULE_PROVENANCE={
         'kind':kind,'source':OPEN_SOURCE_MODULES[kind],
         'method':'LICENSE_VERIFIED_EXTERNAL_SURFACE_IMPORT',
-        'sourcePlatform':'LICENSE_VERIFIED_EXTERNAL_MOCAP_FBX' if src.suffix.lower()=='.fbx' else '3D_SLICER_OR_FREECAD_USER_EXPORTED_SURFACE',
+        'sourcePlatform':'LICENSE_VERIFIED_EXTERNAL_MOCAP_FBX' if src.suffix.lower()=='.fbx' else 'LICENSE_VERIFIED_IMPORTED_MESH_GLB' if ARGS.source_provider=='meshy' else '3D_SLICER_OR_FREECAD_USER_EXPORTED_SURFACE',
         'generatedGeometry':False,'deidentifiedAssertionOnly':kind=='medical',
         'clinicalUseApproved':False,'clinicalDiagnosisAllowed':False,'runtimeVerified':False
     }
