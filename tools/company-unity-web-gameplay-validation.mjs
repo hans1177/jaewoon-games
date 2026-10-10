@@ -307,7 +307,7 @@ try{
   const liveCapture=await page.screenshot({fullPage:false});
   const liveCaptureSha256=crypto.createHash('sha256').update(liveCapture).digest('hex');
   // 승인된 Unity 3D 월드는 웹페이지 전체가 아니라 실제 게임 canvas의 픽셀도 따로 캡처한다.
-  const sceneCapture=approvedEnvironment.required===true?await canvas.screenshot({scale:'css'}):null;
+  const sceneCapture=await canvas.screenshot({scale:'css'});
   const sceneCaptureSha256=sceneCapture?crypto.createHash('sha256').update(sceneCapture).digest('hex'):null;
   if(screenshot&&sceneCapture){
     const sceneScreenshot=screenshot.replace(/\.png$/i,'-scene.png');
@@ -467,7 +467,7 @@ try{
     &&Number.isSafeInteger(worldRenderProof.triangles)&&worldRenderProof.triangles>0
     &&Number.isSafeInteger(worldRenderProof.materials)&&worldRenderProof.materials>0
     &&worldRenderProof.litMaterials===worldRenderProof.materials);
-  const sceneScreenVerified=approvedEnvironment.required!==true||Boolean(scenePixels
+  const sceneScreenVerified=Boolean(scenePixels
     &&scenePixels.pixelCount>=400&&scenePixels.magentaRatio<.12
     &&scenePixels.dominantColorRatio<.98&&scenePixels.distinctColorBuckets>=8);
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
@@ -553,9 +553,9 @@ try{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
       screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
       renderedScene:{
-        required:approvedEnvironment.required===true,
-        source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_NATIVE_LIT_MESH_INSPECTION',
-        pass:approvedEnvironment.required===true?renderSurfaceVerified&&sceneScreenVerified:null,
+        required:true,
+        source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_OPTIONAL_NATIVE_LIT_MESH_INSPECTION',
+        pass:renderSurfaceVerified&&sceneScreenVerified,
         bootCaptureSha256:bootSceneCaptureSha256,
         sceneCaptureSha256,sceneCapturePersisted:Boolean(screenshot&&sceneCapture),
         pixels:scenePixels,nativeRenderMarker:worldRenderMarker||null,

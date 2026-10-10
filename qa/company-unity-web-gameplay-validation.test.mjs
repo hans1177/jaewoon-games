@@ -172,7 +172,7 @@ test('Unity Web visual QA reads actual gameplay pixels and detects missing shade
 
 test('Unity Web scene screenshots retain boot and gameplay canvas pixels independently of the HTML viewport',()=>{
   const boot=source.indexOf("const bootSceneCapture=await canvas.screenshot({scale:'css'})");
-  const gameplay=source.indexOf("const sceneCapture=approvedEnvironment.required===true?await canvas.screenshot({scale:'css'})");
+  const gameplay=source.indexOf("const sceneCapture=await canvas.screenshot({scale:'css'})");
   const coreFun=source.indexOf('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
   const screenshots=source.indexOf("const liveCapture=await page.screenshot({fullPage:false})");
   assert.ok(boot>0&&boot<coreFun&&gameplay>coreFun&&gameplay>screenshots);
@@ -182,7 +182,7 @@ test('Unity Web scene screenshots retain boot and gameplay canvas pixels indepen
   assert.match(source,/createImageBitmap\(new Blob\(\[bytes\],\{type:'image\/png'\}\)\)/);
   assert.match(source,/sceneCapture\.toString\('base64'\)/);
   assert.match(source,/source:'REAL_UNITY_CANVAS_SCREENSHOT'/);
-  assert.match(source,/source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_NATIVE_LIT_MESH_INSPECTION'/);
+  assert.match(source,/source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_OPTIONAL_NATIVE_LIT_MESH_INSPECTION'/);
   assert.match(source,/bootCaptureSha256:bootSceneCaptureSha256/);
   assert.match(source,/sceneCaptureSha256,sceneCapturePersisted:Boolean\(screenshot&&sceneCapture\)/);
   assert.match(source,/comparedWithLastApprovedGoldenScene:false/,'do not claim an unperformed visual golden comparison');
@@ -192,7 +192,7 @@ test('Unity Web scene screenshots retain boot and gameplay canvas pixels indepen
 
 test('canonical Unity Web build refuses approval without three real canvas screenshots and their hashes',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
-  assert.match(workflow,/const renderScreenPass=checks\.every\(e=>e\.approvedEnvironment\?\.required!==true\|\|\(/);
+  assert.match(workflow,/const renderScreenPass=checks\.every\(e=>e\.visualQa\?\.renderedScene\?\.required===true/);
   assert.match(workflow,/renderedScene\.sceneCapturePersisted===true/);
   assert.match(workflow,/renderedScene\.pixels\?\.source==='REAL_UNITY_CANVAS_SCREENSHOT'/);
   assert.match(workflow,/renderedScene\.nativeRenderProof\?\.litMaterials===e\.visualQa\.renderedScene\.nativeRenderProof\?\.materials/);
@@ -232,8 +232,10 @@ test('Unity Web approved world screenshot gate rejects unlit, incomplete normals
     ['low color diversity',{...image,distinctColorBuckets:2}],
     ['insufficient pixels',{...image,pixelCount:2}],
   ])assert.equal(evaluate([marker],gameId,env,pixels).screen,false,label);
-  assert.deepEqual(evaluate([],'sample-game',{required:false},null),{surface:true,screen:true},
-    'unapproved world keeps existing QA unchanged');
+  assert.deepEqual(evaluate([],'sample-game',{required:false},null),{surface:true,screen:false},
+    'unapproved worlds still require actual gameplay screenshot pixels');
+  assert.deepEqual(evaluate([],'sample-game',{required:false},image),{surface:true,screen:true},
+    'unapproved worlds require screen pixels but not the approved-world PBR marker');
 });
 
 test('Unity Web renderer cost evidence is measured only from real Unity markers, never made-up counters',()=>{
