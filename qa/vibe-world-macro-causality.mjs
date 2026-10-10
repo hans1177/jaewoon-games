@@ -406,13 +406,14 @@ const reusable3d=[
   {id:'library-house-timber',family:'BUILDING',path:'assets/models/timber-house.glb',sourceHash:'timber-hash',license:'CC0',mapDetailRoles:['STRUCTURE'],tags:['RESIDENTIAL']},
   {id:'library-forest-tree',family:'ENVIRONMENT',path:'assets/models/tree.glb',sourceHash:'tree-hash',license:'CC0',tags:['BUSH','BROADLEAF']},
   {id:'library-stone-prop',family:'PROP',path:'assets/models/stone.obj',sourceHash:'rock-hash',license:'CC0',tags:['ROCK']},
+  {id:'library-surface-material',family:'MATERIAL',path:'assets/textures/stone.ktx2',sourceHash:'mat-hash',license:'CC0',tags:['STONE','GRANITE','TIMBER','MOSS']},
   {id:'flat-illustration',family:'BUILDING',path:'assets/images/house.webp',sourceHash:'flat-hash',license:'CC0'},
   {id:'restricted-building',family:'BUILDING',path:'assets/models/restricted.glb',sourceHash:'unsafe-hash',license:'CC-BY-NC'}
 ];
 const sharedWorld=createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',styleFamily:'DARK_FANTASY',libraryAssets:reusable3d});
 assert.equal(sharedWorld.status,'STATIC_LAYOUT_PROPOSED');
-assert.equal(sharedWorld.sharedLibraryBinding.sourceCandidateCount,4,'only rights-cleared native geometry is eligible');
-assert.deepEqual(sharedWorld.sharedLibraryBinding.eligibleFamilies,{BUILDING:2,ENVIRONMENT:1,PROP:1});
+assert.equal(sharedWorld.sharedLibraryBinding.sourceCandidateCount,5,'only rights-cleared native geometry and material inputs are eligible');
+assert.deepEqual(sharedWorld.sharedLibraryBinding.eligibleFamilies,{BUILDING:2,ENVIRONMENT:1,PROP:1,MATERIAL:1});
 assert.equal(sharedWorld.sharedLibraryBinding.originalAssetsCopied,false);
 assert.equal(sharedWorld.sharedLibraryBinding.actualRuntimeBindingsVerified,false);
 assert.ok(sharedWorld.sharedLibraryBinding.selectedAssetIds.includes('library-forest-tree'));
@@ -427,6 +428,60 @@ for(let i=0;i<natureTiles.length;i++)for(let j=i+1;j<natureTiles.length;j++){
 }
 assert.equal(sharedWorld.placementDiversity.algorithm,'SEEDED_HASH_PRIORITY_SPATIAL_REJECTION_BLUE_NOISE_APPROXIMATION');
 assert.deepEqual(sharedWorld,createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',styleFamily:'DARK_FANTASY',libraryAssets:[...reusable3d].reverse()}),'registry order must not change stable world bindings');
+
+// 지형 모델: 유역·토양·Voronoi 지질 경계와 재질 분포가 실제 3D 소스 입력에 연결된다.
+assert.equal(sharedWorld.geologyAndMaterials.algorithm,'SEEDED_VORONOI_FBM_CATCHMENT_RUNOFF');
+assert.equal(Object.values(sharedWorld.geologyAndMaterials.materialDistribution).reduce((sum,count)=>sum+count,0),24*24);
+assert.ok(sharedWorld.geologyAndMaterials.geologyRegionCount>1);
+assert.equal(sharedWorld.geologyAndMaterials.actualMaterialRuntimeVerified,false);
+assert.ok(sharedWorld.geologyAndMaterials.surfaceMaterialGroups.every(row=>row.sourceBinding?.family==='MATERIAL'&&row.worldTerrainMaterialApplied===false));
+assert.ok(sharedWorld.terrain.every(tile=>
+  tile.surface.materialModel==='SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY'
+  &&Number.isFinite(tile.catchment.runoffUnits)&&tile.catchment.runoffUnits>=0
+  &&tile.surface.soilDepth>=0&&tile.surface.soilDepth<=1
+  &&tile.surface.substrateStability>=0&&tile.surface.substrateStability<=1
+  &&tile.surface.nativeMaterialApplied===false
+  &&tile.catchment.terrainEroded===false));
+assert.ok(sharedWorld.terrain.some(tile=>tile.catchment.runoffUnits>2));
+assert.equal(sharedWorld.sharedLibraryBinding.selectedAssetIds.includes('library-surface-material'),true);
+assert.ok(sharedWorld.buildings.every(b=>b.construction.materialBindings.wall.family==='MATERIAL'));
+
+// 생물학: 식생/서식지 분포 자동 조정은 시각적 목표이며 저장·채집·실제 생물 스폰과 분리된다.
+assert.equal(sharedWorld.ecologyBalance.algorithm,'CARRYING_CAPACITY_HABITAT_SUITABILITY_LOGISTIC_VISUAL_TARGET');
+assert.equal(sharedWorld.ecologyBalance.resourceAndCreatureSpawnAuthority,false);
+assert.equal(sharedWorld.ecologyBalance.originalGameplaySpeciesAndPopulationPreserved,true);
+assert.equal(sharedWorld.ecologyBalance.feedbackAccepted,false);
+assert.equal(Object.values(sharedWorld.ecologyBalance.habitatDistribution).reduce((sum,count)=>sum+count,0),24*24);
+assert.ok(sharedWorld.ecologyBalance.habitats.every(h=>h.actualCreatureSpawnCount===0&&h.actualHarvestableResourceCount===0));
+assert.equal(sharedWorld.ecologyBalance.habitats.reduce((sum,h)=>sum+h.visualPlantCount,0),sharedWorld.vegetation.length);
+const winterWorld=createVibeProceduralWorldLayout({...seedWorld,season:'WINTER',gameId:'forest-rpg',target:'ROBLOX',libraryAssets:reusable3d});
+assert.deepEqual(winterWorld.vegetation.map(row=>row.stableObjectId),sharedWorld.vegetation.map(row=>row.stableObjectId),
+  'changing season must not add/delete source-bound save object identities');
+assert.ok(winterWorld.vegetation.every(row=>row.seasonalAppearance?.season==='WINTER'));
+const untrustedFeedback=createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',
+  libraryAssets:reusable3d,ecosystemFeedback:{gameId:'forest-rpg',visualDensityDeltaByHabitat:{CANOPY_FOREST:100}}});
+assert.equal(untrustedFeedback.ecologyBalance.feedbackAccepted,false);
+assert.deepEqual(untrustedFeedback.vegetation.map(row=>row.stableObjectId),sharedWorld.vegetation.map(row=>row.stableObjectId));
+const verifiedFeedback=createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',
+  libraryAssets:reusable3d,ecosystemFeedback:{verifiedAgainstRuntime:true,gameId:'forest-rpg',sourceRevision:'v1',
+    visualDensityDeltaByHabitat:{CANOPY_FOREST:100}}});
+assert.equal(verifiedFeedback.ecologyBalance.feedbackAccepted,true);
+assert.ok(verifiedFeedback.ecologyBalance.habitats.every(row=>Math.abs(row.visualDensityFeedback)<=.2));
+assert.equal(verifiedFeedback.gameplayRuleMutation,false);
+assert.equal(verifiedFeedback.saveMeaningMutation,false);
+assert.equal(createVibeProceduralWorldLayout({...seedWorld,season:'MONSOON'}).status,'INVALID_GENERATION_INPUT');
+
+// 도시/건축: 보행망 연결, 대지 조닝, 홍수/지반 위험, 다층 건물 구조 제안만 한다.
+assert.equal(sharedWorld.urbanPlanning.algorithm,'ROAD_GRAPH_BFS_WEIGHTED_LAND_USE_STORMWATER_AND_LOT_STRUCTURAL_GRAMMAR');
+assert.equal(sharedWorld.urbanPlanning.noNewPhysicalRoadsOrGameplayBuildingsCreated,true);
+assert.equal(sharedWorld.urbanPlanning.actualNativeUrbanWorldVerified,false);
+assert.equal(sharedWorld.urbanPlanning.districts.reduce((sum,row)=>sum+row.buildingCount,0),sharedWorld.buildings.length);
+assert.ok(sharedWorld.buildings.every(b=>b.planning.pedestrianStepsToHub!==null));
+assert.ok(sharedWorld.buildings.every(b=>b.planning.landUseScore>=0&&b.planning.landUseScore<=1));
+assert.ok(sharedWorld.buildings.every(b=>b.construction.structure3d.storeys>=1&&
+  b.construction.structure3d.floorHeightMeters>0));
+assert.ok(sharedWorld.urbanPlanning.civicSpaceProposals.every(row=>
+  row.status==='VISUAL_PROPOSAL_NOT_INSTALLED'&&row.blocksRoad===false));
 
 const mappedSketch={
   nodes:[{id:'ENTRY',role:'spawn'},{id:'HUB',role:'landmark'},{id:'EXIT',role:'transition'}],
