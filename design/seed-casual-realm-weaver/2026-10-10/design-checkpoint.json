@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 디지털 시스템의 투입과 역사적 사건의 재해석을 통해, 세계의 구조를 변화시키고, 이는 새로운 역할과 상태 변화로 인해, 세계의 관문을 재정의하게 된다. 이는 플레이어의 선택과 보상 체계도 함께 변화시켜, 게임은 계속해서 발전한다.",
       "coreFun": "디지털 시스템의 투입과 역사적 사건의 재해석이 서로 영향을 주며, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다. 플레이어가 디지털 공간에 직접 참여하여, 세계의 구조를 변형하고, 이는 새로운 역할과 상태 변화로 인해, 세계의 관문을 재정의하게 된다. 이는 플레이어의 선택과 보상 체계도 함께 변화시켜, 게임은 계속해서 발전한다."
+    },
+    "local_authoring_parts::e1ae675fdb8da2fa79a61ebf14b2e5ea50f6c29aa63b5ddcbcea4d9566501d5b:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "디지털 시스템 투입과 역사적 사건 재해석 사이에서 새로운 진입 절차 및 보상 체계가 생성됨",
+        "플레이어의 선택에 따라 세계의 관문과 플레이어의 선택이 재정의되고, 이는 게임의 정체성 형성이 이루어짐"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 238251,
-      "lastMs": 238251,
+      "totalMs": 275128,
+      "lastMs": 36877,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:47:57.685Z"
+      "updatedAt": "2026-10-10T01:48:34.563Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:43:59.422Z",
-  "updatedAt": "2026-10-10T01:47:57.685Z",
+  "updatedAt": "2026-10-10T01:48:34.563Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1592,7 +1599,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:47:57.685Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:48:34.563Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
