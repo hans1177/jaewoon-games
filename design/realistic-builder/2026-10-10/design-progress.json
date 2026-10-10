@@ -2,31 +2,30 @@
   "version": 2,
   "gameId": "realistic-builder",
   "date": "2026-10-10",
-  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
-  "cachedTaskCount": 13,
-  "lastSuccessfulModelCallAt": "2026-10-10T10:16:43.613Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')",
-  "designerSeed": null,
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 7,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 1436005,
-      "lastMs": 63256,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:16:43.613Z"
-    }
+  "engineDigest": "0764aae8ff08370ba78e035644b427ff29805e71ab79c6bb19aa747d50e36643",
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "deterministic_department_evidence"
+  ],
+  "completedPhaseCount": 3,
+  "cachedTaskCount": 11,
+  "lastSuccessfulModelCallAt": null,
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "designerSeed": {
+    "file": "design/realistic-builder/2026-10-10/design-seed.json",
+    "contentDigest": "fb012e09b4ed68af30177ba825c67c1c07228366ba2e27a4d738b217bf7785c0",
+    "authorModel": "vibe-native:causal-design-v1",
+    "status": "AUTHORED_CANDIDATE"
   },
+  "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-10T10:16:43.626Z"
+  "updatedAt": "2026-10-10T10:55:00.117Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
