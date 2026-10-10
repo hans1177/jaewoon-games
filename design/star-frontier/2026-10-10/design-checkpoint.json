@@ -194,25 +194,38 @@
         " 상태변화: 전략적 선택 → 세계 상태 변화",
         " 보상: 위험/보상 생성, 다음 선택"
       ]
+    },
+    "local_authoring_parts::74417b76ecd5b5db99494e6d1e66ba11568f3ef763f98822647c4dda446cd9b4:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential_loop",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력: 플레이어의 전략적 선택 또는 실질적 행동"
+      ],
+      "stateOutputs": [
+        "세계 상태 변화"
+      ],
+      "name": "전략적 루프",
+      "purpose": "플레이어의 전략적 선택 또는 실질적 행동에 따른 세계 상태 변화와 위험/보상 생성을 반복적으로 연결하는 핵심 루프",
+      "playerChoice": "전략적 선택 또는 실질적 행동을 입력하여 세계 상태 변화 및 위험/보상을 생성함으로써 다음 선택을 결정함으로써 게임 진행을 이어감"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 836592,
-      "lastMs": 77161,
+      "totalMs": 909979,
+      "lastMs": 73387,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:27:30.035Z"
+      "updatedAt": "2026-10-10T05:28:43.424Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:13:33.331Z",
-  "updatedAt": "2026-10-10T05:27:30.036Z",
+  "updatedAt": "2026-10-10T05:28:43.425Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1716,8 +1729,8 @@
   "localAuthoringSplits": {
     "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:27:30.035Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T05:28:43.424Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
