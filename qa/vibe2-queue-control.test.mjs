@@ -278,7 +278,7 @@ test('worker preflight requires exact live Vibe reservation identity',()=>{
   const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[{
     id:'sync-task',gameId:'sync-game',target:'web',department:'development',type:'implementation',
     goal:'sync',status:'queued',sourceRoot:'web-games/sync-game',responsibleFiles:['index.html']
-  }]}),{maxConcurrentTasks:20,lane:'game-primary',reservation});
+  }]}),{policy:{},maxConcurrentTasks:20,lane:'game-primary',reservation});
   const pass=verifyVibeWorkerSynchronization(reserved.queue,{
     taskId:'sync-task',reservationId:'sync:1',reservationRunId:'sync-run',reservationRunAttempt:2,reservedAt:'2026-09-20T14:18:00Z'
   });
@@ -440,7 +440,7 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   const controlFile=path.join(dir,'control.json');
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
     {id:'game',gameId:'g',target:'web',department:'development',type:'implementation',goal:'game',status:'verified',sourceRoot:'web-games/g',responsibleFiles:['index.html']},
-    ...Array.from({length:4},(_,i)=>({id:`learn-${i}`,gameId:`learn-${i}`,target:'web',department:'development',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}))
+    ...Array.from({length:4},(_,i)=>({id:`learn-${i}`,gameId:`learn-${i}`,target:'roblox',department:'development',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}))
   ]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
   const result=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,lane:'learning-idle',max:'4',min:'1'});
@@ -452,19 +452,19 @@ test('learning-idle lane reservation uses its own cap instead of game adaptive c
   assert.equal(result.tasks.some(task=>task.id==='game'),false);
 });
 
-test('game-primary keeps adaptive telemetry but canonical reservation is fixed at 64',()=>{
+test('game-primary keeps adaptive telemetry but canonical reservation is fixed at 128',()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-game-primary-summary-'));
   const queueFile=path.join(dir,'queue.json');
   const controlFile=path.join(dir,'control.json');
   const batchFile=path.join(dir,'batch.json');
   const running=Array.from({length:7},(_,i)=>({
     id:`running-${i}`,gameId:`running-${i}`,target:'unity',department:'development',type:'implementation',
-    goal:'running',status:'running',sourceRoot:`unity-games/running-${i}`,responsibleFiles:['index.html'],
+    goal:'running',status:'running',sourceRoot:`unity-games/running-${i}`,responsibleFiles:['index.html'],evidence:['unity-web-first-stage'],
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
   const queued=Array.from({length:90},(_,i)=>({
     id:`queued-${i}`,gameId:`queued-${i}`,target:'unity',department:'development',type:'implementation',
-    goal:'queued',status:'queued',sourceRoot:`unity-games/queued-${i}`,responsibleFiles:['index.html']
+    goal:'queued',status:'queued',sourceRoot:`unity-games/queued-${i}`,responsibleFiles:['index.html'],evidence:['unity-web-first-stage']
   }));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
@@ -472,10 +472,10 @@ test('game-primary keeps adaptive telemetry but canonical reservation is fixed a
   const summary=runQueueCommand({command:'summary',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20'});
   assert.equal(summary.summary.persistentMaxConcurrentTasks,256);
   assert.equal(summary.adaptiveMaxConcurrentTasks,20);
-  assert.equal(summary.reservationMaxConcurrentTasks,64);
-  assert.equal(summary.summary.requestedMaxConcurrentTasks,64);
-  assert.equal(summary.summary.effectiveMaxConcurrentTasks,64);
-  assert.equal(summary.summary.freeSlots,57);
+  assert.equal(summary.reservationMaxConcurrentTasks,128);
+  assert.equal(summary.summary.requestedMaxConcurrentTasks,128);
+  assert.equal(summary.summary.effectiveMaxConcurrentTasks,128);
+  assert.equal(summary.summary.freeSlots,121);
 
   const reserved=runQueueCommand({
     command:'reserve-batch',queue:queueFile,control:controlFile,lane:'game-primary',max:'256',min:'20',
@@ -486,11 +486,11 @@ test('game-primary keeps adaptive telemetry but canonical reservation is fixed a
   assert.equal(reserved.reservationMaxConcurrentTasks,64);
   assert.equal(batch.scheduler.persistentMaxConcurrentTasks,256);
   assert.equal(batch.scheduler.adaptiveMaxConcurrentTasks,20);
-  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,64);
-  assert.equal(batch.scheduler.freeSlotsBeforeReservation,57);
-  assert.equal(reserved.tasks.length,57);
-  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,64);
-  assert.equal(reserved.summary.freeSlots,0);
+  assert.equal(batch.scheduler.effectiveMaxConcurrentTasks,128);
+  assert.equal(batch.scheduler.freeSlotsBeforeReservation,121);
+  assert.equal(reserved.tasks.length,90);
+  assert.equal(reserved.summary.effectiveMaxConcurrentTasks,128);
+  assert.equal(reserved.summary.freeSlots,31);
 });
 
 test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
@@ -634,14 +634,14 @@ test('owner directive preempts release and development work', () => {
   queue=add(queue,'dev','dev','unity',{releaseState:'development-confirmed'});
   queue=add(queue,'release','release','web',{releaseState:'release-confirmed'});
   queue=add(queue,'owner','owner','unity',{ownerDirective:true});
-  assert.equal(reserveNextVibeTask(queue).task.id,'owner');
+  assert.equal(reserveNextVibeTask(queue,{policy:{}}).task.id,'owner');
 });
 
 test('release-confirmed preempts development-confirmed', () => {
   let queue=createVibeContinuousQueue();
   queue=add(queue,'dev','dev','unity',{priority:'critical',releaseState:'development-confirmed'});
   queue=add(queue,'release','release','web',{priority:'normal',releaseState:'release-confirmed'});
-  assert.equal(reserveNextVibeTask(queue).task.id,'release');
+  assert.equal(reserveNextVibeTask(queue,{policy:{}}).task.id,'release');
 });
 
 test('development implementation preempts nonblocking system supervision research', () => {
@@ -681,7 +681,7 @@ test('game-primary reserve lane excludes recovery control and learning tasks fro
     {id:'game-a',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'implement a',sourceRoot:'web-games/game-a',responsibleFiles:['index.html'],status:'queued'},
     {id:'game-b',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'implement b',sourceRoot:'web-games/game-b',responsibleFiles:['index.html'],status:'queued'}
   ]});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:2});
   assert.deepEqual(new Set(reserved.tasks.map(task=>task.id)),new Set(['game-a','game-b']));
   assert.equal(reserved.selection.lane,'game-primary');
   assert.deepEqual(new Set(reserved.selection.laneDeferred.map(task=>task.id)),new Set(['control-fast','learning-idle']));
@@ -723,7 +723,7 @@ test('running nondevelopment lane work does not consume game-primary worker capa
     {id:'game-a',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'implement a',sourceRoot:'web-games/game-a',responsibleFiles:['index.html'],status:'queued'},
     {id:'game-b',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'implement b',sourceRoot:'web-games/game-b',responsibleFiles:['index.html'],status:'queued'}
   ]});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:2});
   assert.equal(reserved.selection.capacityRunning.length,0);
   assert.equal(reserved.tasks.length,2);
 });
@@ -733,7 +733,7 @@ test('independent source roots fan out in one reservation batch', () => {
   queue=add(queue,'u1','u1','unity',{releaseState:'release-confirmed'});
   queue=add(queue,'w1','w1','web',{releaseState:'development-confirmed'});
   queue=add(queue,'w2','w2','web',{releaseState:'development-confirmed'});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.equal(reserved.tasks.length,3);
   assert.deepEqual(new Set(reserved.tasks.map(t=>t.id)),new Set(['u1','w1','w2']));
   assert.equal(reserved.selection.workStealingUsed,false);
@@ -743,7 +743,7 @@ test('reservation identity is persisted on reserved tasks and worker matrix', ()
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'reserved','reserved','web',{priority:'critical',estimatedRisk:'high'});
   const reservation={id:'35340000000:1',runId:'35340000000',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'};
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4,reservation});
   assert.equal(reserved.tasks[0].reservationId,reservation.id);
   assert.equal(reserved.tasks[0].reservationRunId,reservation.runId);
   assert.equal(reserved.tasks[0].reservationRunAttempt,1);
@@ -762,7 +762,7 @@ test('reservation batch and worker matrix preserve scheduler priority order inst
     evidence:['existing-holistic-backfill:v1'],
     studioQualityEvolution:{version:1,cycle:1,phase:'BUILD_UP',focusPillar:'USABILITY',existingHolisticBackfillRequired:true}
   });
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary'});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:3,lane:'game-primary'});
   const selectedOrder=reserved.selection.selected.map(task=>task.id);
   assert.deepEqual(selectedOrder,['newer-holistic','middle-generic','older-generic']);
   assert.deepEqual(reserved.tasks.map(task=>task.id),selectedOrder);
@@ -773,7 +773,7 @@ test('same source root may fan out when responsibility files are concrete and di
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
   queue=add(queue,'a','same','web',{responsibleFiles:['a.js']});
   queue=add(queue,'b','same','web',{responsibleFiles:['b.js']});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:20});
   assert.equal(reserved.tasks.length,2);
 });
 
@@ -782,7 +782,7 @@ test('same source root never creates a game-wide lock; only overlapping responsi
   queue=add(queue,'a','same','web',{responsibleFiles:['shared.js']});
   queue=add(queue,'b','same','web',{responsibleFiles:['shared.js']});
   queue=add(queue,'c','same','web');
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:20});
   assert.equal(reserved.tasks.length,2);
   assert.ok(reserved.tasks.some(row=>row.id==='c'));
   assert.ok(reserved.selection.deferredConflicts.some(row=>row.reason==='responsible-file-conflict'));
@@ -793,7 +793,7 @@ test('DAG dependency starts only after predecessor PASS', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'base','a','web');
   queue=add(queue,'after','b','web',{dependencies:['base']});
-  let reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  let reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.deepEqual(reserved.tasks.map(t=>t.id),['base']);
   let done=settleVibeTask(reserved.queue,{taskId:'base',outcome:'PASS',evidence:['pass']});
   const next=selectVibeQueueBatch(done.queue,{maxConcurrentTasks:4});
@@ -872,7 +872,7 @@ test('worker artifact release ignores artifacts from a different reservation run
 
 test('stale slot-release callback never overwrites a real awaiting-QA blocker', () => {
   let queue=add(createVibeContinuousQueue(),'task','task','web');
-  queue=reserveNextVibeTask(queue).queue;
+  queue=reserveNextVibeTask(queue,{policy:{}}).queue;
   queue=markVibeTaskAwaiting(queue,{taskId:'task',blocker:'candidate-awaiting-qa-and-deployment'});
   const released=releaseVibeTaskExecutionSlot(queue,{taskId:'task'});
   assert.equal(released.released,false);
@@ -893,14 +893,14 @@ test('queue-local waiting QA pressure does not globally collapse unrelated lanes
 test('critical high-risk task creates three variants even if legacy opt-in flag is absent', () => {
   let queue=createVibeContinuousQueue({tasks:[],maxConcurrentTasks:4});
   queue=add(queue,'critical-risk','critical-risk','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:false});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.equal(reserved.matrix[0].speculativeVariants,3);
 });
 
 test('high-risk opt-in task creates three speculative worker variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.equal(reserved.matrix[0].speculativeVariants,3);
 });
 
@@ -914,7 +914,7 @@ test('high-risk Roblox task stays single-candidate so native repair reaches QA w
 test('primary task coverage consumes the worker budget before speculative variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   for(let i=0;i<4;i++) queue=add(queue,`primary-first-${i}`,`primary-first-${i%2}`,'web',{responsibleFiles:[`part-${i}.js`],priority:'critical',estimatedRisk:'high',speculativeEligible:true});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.equal(reserved.tasks.length,4);
   assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[1,1,1,1]);
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
@@ -933,7 +933,7 @@ test('spare speculative slot prefers short repair over long full web rebuild wit
       packageLongWorkProtected:true,responsibleFiles:['index.html']
     }
   ]});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:3});
   assert.equal(reserved.tasks.length,2);
   assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[1,2]);
   assert.deepEqual(reserved.matrix.map(row=>row.speculativePriority),[2,0]);
@@ -944,7 +944,7 @@ test('spare adaptive worker slots are shared across high-risk tasks before a thi
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risk-a','risk-a','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
   queue=add(queue,'risk-b','risk-b','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4});
   assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[2,2]);
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
 });
@@ -953,7 +953,7 @@ test('runner pressure suppresses only optional speculative variants while preser
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'pressure-a','pressure-a','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
   queue=add(queue,'pressure-b','pressure-b','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
-  const reserved=reserveVibeTaskBatch(queue,{
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},
     maxConcurrentTasks:4,
     speculativeExpansionAllowed:false,
     speculativeExpansionReason:'ADAPTIVE_RUNNER_PRESSURE'
@@ -1056,7 +1056,7 @@ test('neural worker sample is evaluated as one immutable atomic transaction', ()
 test('fan-in persists neural shadow calibration without granting learning or routing authority', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
   queue=add(queue,'neural-feedback','neural-feedback','web',{estimatedRisk:'high',speculativeEligible:true});
-  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2}).queue;
+  queue=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:2}).queue;
   const merged=applyVibeFanInResults(queue,[{
     taskId:'neural-feedback',
     variant:'primary',
@@ -1123,7 +1123,7 @@ test('fan-in persists neural shadow calibration without granting learning or rou
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});
-  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4}).queue;
+  queue=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4}).queue;
   const merged=applyVibeFanInResults(queue,[
     {taskId:'risky',variant:'primary',outcome:'FAIL',durationMs:900,evidence:['primary-fail']},
     {taskId:'risky',variant:'speculative',outcome:'PASS',durationMs:700,evidence:['spec-pass'],blocker:'candidate-awaiting-qa-and-deployment'}
@@ -1137,7 +1137,7 @@ test('fan-in accepts first passing speculative variant and keeps task awaiting f
 test('fan-in preserves verified per-variant coding failure provenance without blaming unclassified infrastructure failure', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'strategy-risk','strategy-risk','web',{estimatedRisk:'high',speculativeEligible:true});
-  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4}).queue;
+  queue=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4}).queue;
   const fp='web|MOBILE_PLACEMENT_INPUT_MISSING';
   const merged=applyVibeFanInResults(queue,[
     {taskId:'strategy-risk',variant:'primary',outcome:'FAIL',durationMs:900,evidence:['actions-run:negative-run'],candidateFailure:{class:'EDIT_MATCH'},codingMethod:{strategy:'RESPONSIBILITY_FIRST',failureFingerprint:fp,implementationPass:false,incrementalQaPass:false,performanceSanityPass:false}},
@@ -1160,7 +1160,7 @@ test('fan-in preserves verified per-variant coding failure provenance without bl
 test('semantic diff budget failures become contextual negative coding-strategy evidence',()=>{
   let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
   queue=add(queue,'semantic-risk','semantic-risk','web',{estimatedRisk:'high',speculativeEligible:true});
-  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2}).queue;
+  queue=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:2}).queue;
   const fp='web|PLACEMENT_BROKEN';
   const merged=applyVibeFanInResults(queue,[
     {taskId:'semantic-risk',variant:'primary',outcome:'FAIL',durationMs:500,evidence:['actions-run:semantic-negative'],candidateFailure:{class:'SEMANTIC_DIFF_BUDGET'},codingMethod:{strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',failureFingerprint:fp,implementationPass:false,incrementalQaPass:false,performanceSanityPass:false}},
@@ -1197,7 +1197,7 @@ test('fan-in safely reconciles queued task only when reservation identity matche
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
   const reservation={id:'run-1:1',runId:'run-1',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'};
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4,reservation});
   const reset=createVibeContinuousQueue({
     maxConcurrentTasks:4,
     tasks:reserved.queue.tasks.map(task=>task.id==='race'?{...task,status:'queued',blocker:null}:task)
@@ -1216,7 +1216,7 @@ test('fan-in safely reconciles queued task only when reservation identity matche
 test('fan-in skips stale reservation result without mutating requeued task', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation:{id:'new-run:1',runId:'new-run',runAttempt:1,reservedAt:'2026-09-18T12:01:00Z'}});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:4,reservation:{id:'new-run:1',runId:'new-run',runAttempt:1,reservedAt:'2026-09-18T12:01:00Z'}});
   const reset=createVibeContinuousQueue({
     maxConcurrentTasks:4,
     tasks:reserved.queue.tasks.map(task=>task.id==='race'?{...task,status:'queued'}:task)
@@ -1235,7 +1235,7 @@ test('fan-in skips stale reservation result without mutating requeued task', () 
 
 test('retryable failure clears reservation identity before the next reservation', () => {
   let queue=add(createVibeContinuousQueue(),'retry-reservation','retry-reservation','web',{maxRetries:2});
-  const reserved=reserveNextVibeTask(queue,{reservation:{id:'run-a:1',runId:'run-a',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'}});
+  const reserved=reserveNextVibeTask(queue,{policy:{},reservation:{id:'run-a:1',runId:'run-a',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'}});
   assert.equal(reserved.task.reservationId,'run-a:1');
   const failed=settleVibeTask(reserved.queue,{taskId:'retry-reservation',outcome:'FAIL',blocker:'source-candidate-generation-failed'});
   const task=failed.queue.tasks[0];
@@ -1459,7 +1459,7 @@ test('protected or paid autonomous work remains ineligible', () => {
 test('twenty independent tasks can fill all 20 slots', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
   for(let i=0;i<20;i++) queue=add(queue,`t-${i}`,`g-${i%2}`,'web',{responsibleFiles:[`f-${i}.js`]});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:20});
   assert.equal(reserved.tasks.length,20);
   assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
 });
@@ -1645,7 +1645,7 @@ test('atomic neuron variants micro-fan-in one task and release capacity without 
     {id:'atomic-b',gameId:'b',target:'web',department:'development',type:'implementation',goal:'repair b',status:'queued',sourceRoot:'web-games/b',responsibleFiles:['index.html']}
   ]});
   const reservation={id:'atomic-run:1',runId:'atomic-run',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3,lane:'game-primary',reservation});
+  const reserved=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:3,lane:'game-primary',reservation});
   const matrixA=reserved.matrix.find(row=>row.taskId==='atomic-a');
   assert.equal(matrixA.speculativeVariants,2);
   queue=reserved.queue;
@@ -1673,7 +1673,7 @@ test('atomic neuron completion is idempotent for duplicate variant callbacks',()
   const reservation={id:'atomic-idem:1',runId:'atomic-idem',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
   const queue=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'idem',gameId:'idem',target:'web',department:'development',type:'implementation',goal:'idem',status:'queued',sourceRoot:'web-games/idem',responsibleFiles:['index.html']}
-  ]}),{maxConcurrentTasks:1,lane:'game-primary',reservation}).queue;
+  ]}),{policy:{},maxConcurrentTasks:1,lane:'game-primary',reservation}).queue;
   const row={taskId:'idem',variant:'primary',outcome:'PASS',reservationId:'atomic-idem:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
   const first=recordVibeNeuronResult(queue,row,{expectedVariants:2});
   const duplicate=recordVibeNeuronResult(first.queue,row,{expectedVariants:2});
@@ -1707,7 +1707,7 @@ test('completed atomic neuron ignores late duplicate callbacks after micro fan-i
   const reservation={id:'atomic-done:1',runId:'atomic-done',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
   const queue=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'done',gameId:'done',target:'web',department:'development',type:'implementation',goal:'done',status:'queued',sourceRoot:'web-games/done',responsibleFiles:['index.html']}
-  ]}),{maxConcurrentTasks:1,lane:'game-primary',reservation}).queue;
+  ]}),{policy:{},maxConcurrentTasks:1,lane:'game-primary',reservation}).queue;
   const row={taskId:'done',variant:'primary',outcome:'PASS',reservationId:'atomic-done:1',metrics:{requestedMax:20,effectiveMax:20,workerStartedAt:1,workerFinishedAt:2}};
   const completed=recordVibeNeuronResult(queue,row,{expectedVariants:1});
   assert.equal(completed.ready,true);
@@ -1723,7 +1723,7 @@ test('cohort fan-in clears atomic transition state only for accepted reservation
   const reservation={id:'transition:1',runId:'transition',runAttempt:1,reservedAt:'2026-09-20T10:00:00Z'};
   const reserved=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[
     {id:'transition-task',gameId:'transition',target:'web',department:'development',type:'implementation',goal:'transition',status:'queued',sourceRoot:'web-games/transition',responsibleFiles:['index.html'],estimatedRisk:'high',speculativeEligible:true}
-  ]}),{maxConcurrentTasks:3,lane:'game-primary',reservation});
+  ]}),{policy:{},maxConcurrentTasks:3,lane:'game-primary',reservation});
   let queue=createVibeContinuousQueue({
     maxConcurrentTasks:reserved.queue.maxConcurrentTasks,
     tasks:reserved.queue.tasks.map(task=>task.id==='transition-task'?{
@@ -2261,7 +2261,7 @@ test('game-primary reserves Unity and Web floors alongside Roblox development',(
       sourceRoot:'roblox-games/roblox-game',goal:'roblox implementation',status:'queued'
     }
   ]});
-  const batch=reserveVibeTaskBatch(queue,{maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'roblox-first:1',runId:'roblox-first',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
+  const batch=reserveVibeTaskBatch(queue,{policy:{},maxConcurrentTasks:256,lane:'game-primary',reservation:{id:'roblox-first:1',runId:'roblox-first',runAttempt:1,reservedAt:'2026-09-29T00:00:00Z'}});
   assert.deepEqual(batch.tasks.map(task=>task.id).sort(),['roblox-game','unity-game','web-game']);
   assert.equal(batch.selection.robloxFirstMode,true);
   assert.deepEqual(batch.selection.robloxFirstDeferred,[]);
@@ -2343,9 +2343,9 @@ test('production retains one learning worker without allowing direct dispatch to
       {id:'game',gameId:'g',target:'roblox',department:'development',type:'implementation',goal:'repair',...state},
       ...Array.from({length:4},(_,i)=>({id:`practice-${i}`,gameId:`p-${i}`,target:'web',department:'learning',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}))
     ]});
-    const first=reserveVibeTaskBatch(queue,{lane:'learning-idle',maxConcurrentTasks:4});
+    const first=reserveVibeTaskBatch(queue,{policy:{},lane:'learning-idle',maxConcurrentTasks:4});
     assert.equal(first.tasks.length,1);
-    const next=reserveVibeTaskBatch(first.queue,{lane:'learning-idle',maxConcurrentTasks:4});
+    const next=reserveVibeTaskBatch(first.queue,{policy:{},lane:'learning-idle',maxConcurrentTasks:4});
     assert.equal(next.tasks.length,0);
   }
 });
@@ -2518,4 +2518,22 @@ test('active owner Unity Web and Roblox reserve real game work without held plat
   assert.equal(distinct.tasks.length,2,'independent C# systems can run in parallel but exact file conflicts cannot');
   assert.equal(new Set(distinct.tasks.flatMap(row=>row.responsibleFiles)).size,2);
   assert.equal(distinct.queue.tasks.filter(row=>row.status==='queued').length,1);
+});
+
+test('owner active scope permits Unity Web Vibe source and Roblox while holding legacy Web and Unity Android',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(policy.ownerActiveDevelopmentScope20261009.status,'ACTIVE');
+  const make=(gameId,target,evidence=[])=>({
+    id:gameId,gameId,target,goal:'verified source development',type:'implementation',
+    department:'development',status:'queued',sourceRoot:`${target}-games/${gameId}`,
+    responsibleFiles:[`${gameId}.js`],evidence
+  });
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:8,tasks:[
+    make('legacy-web','web'),make('held-android','unity'),
+    make('native-web','unity',['unity-web-first-stage']),make('native-roblox','roblox')
+  ]});
+  const result=reserveVibeTaskBatch(queue,{maxConcurrentTasks:8,policy});
+  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-web','native-roblox']));
+  assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,true);
+  assert.equal(result.queue.tasks.find(item=>item.id==='held-android').ownerDevelopmentHold,true);
 });
