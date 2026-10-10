@@ -153,21 +153,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 266,
-      "successes": 266,
+      "calls": 273,
+      "successes": 273,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2519460,
-      "lastMs": 7904,
+      "totalMs": 2577513,
+      "lastMs": 8224,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:10:16.337Z"
+      "updatedAt": "2026-10-10T06:11:14.404Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:28:15.947Z",
-  "updatedAt": "2026-10-10T06:10:16.339Z",
+  "updatedAt": "2026-10-10T06:11:14.405Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,10 +1933,10 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 99,
-    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": 162
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": 169
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:10:16.337Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:11:14.404Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:DELVE",
   "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
