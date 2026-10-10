@@ -555,7 +555,38 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
   const explicit=explicitArchitecture(baseline);
   if(explicit){
     const base={...explicit,version:Math.max(3,Number(explicit.version||1)),source:'SEED_OR_DESIGN_GAME_FLOW_ARCHITECTURE'};
-    const systemBlueprint=base.systemBlueprint||buildConceptSystemBlueprint({genre,baseline,architecture:base});
+    const detected=buildConceptSystemBlueprint({genre,baseline,architecture:base});
+    const authored=base.systemBlueprint&&typeof base.systemBlueprint==='object'?base.systemBlueprint:null;
+    // 기존 설계에서 명시한 시스템은 보존하고, 새 엔진 도구 역할만 현재 설계 의미에 맞춰 병합한다.
+    let systemBlueprint=detected;
+    if(authored){
+      const normalizeRow=(row,priority)=>typeof row==='string'?systemDescriptor(row,priority):row;
+      const authoredRequired=(authored.requiredSystems||[]).map(row=>normalizeRow(row,'REQUIRED'));
+      const authoredOptional=(authored.expansionSystems||[]).map(row=>normalizeRow(row,'EXPANSION'));
+      const required=[...authoredRequired],seenRequired=new Set(required.map(row=>row.id));
+      for(const row of detected.requiredSystems)if(!seenRequired.has(row.id)){
+        required.push(row);seenRequired.add(row.id);
+      }
+      const optional=[],seenOptional=new Set();
+      for(const row of [...authoredOptional,...detected.expansionSystems]){
+        if(row?.id&&!seenRequired.has(row.id)&&!seenOptional.has(row.id)){
+          optional.push(row);seenOptional.add(row.id);
+        }
+      }
+      const phases={};
+      for(const phase of ['EARLY','MID','LATE']){
+        phases[phase]=Object.freeze(uniq([...(authored.phasePlan?.[phase]||[]),...(detected.phasePlan?.[phase]||[])]));
+      }
+      systemBlueprint={
+        ...detected,...authored,
+        requiredSystems:Object.freeze(required),
+        expansionSystems:Object.freeze(optional),
+        phasePlan:Object.freeze(phases),
+        interconnectionChains:Object.freeze(uniq([...(authored.interconnectionChains||[]),...(detected.interconnectionChains||[])])),
+        libraryReusePolicy:Object.freeze({...detected.libraryReusePolicy,...authored.libraryReusePolicy,
+          wrapperOrShadowSystemForbidden:true,existingGameplayAuthorityWins:true})
+      };
+    }
     const enriched={...base,systemBlueprint};
     const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
     const previousRequirements=Array.isArray(base.assetFlow?.requirements)?base.assetFlow.requirements:[];
