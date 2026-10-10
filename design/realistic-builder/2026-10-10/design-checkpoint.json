@@ -95,25 +95,117 @@
         "delveGrowthRule": "Players develop adaptive decision-making skills through iterative resource allocation and threat response adjustments.",
         "finalGameIdentity": "A dynamic survival experience where players must adapt their strategies through iterative resource allocation, threat assessment, and strategic evolution."
       }
+    },
+    "local_authoring_parts::fbbc4ec1faa130ed8d2494f9e2eb45b567606b281c49f0cde8d4ddd65d8c05e5:playerFantasy,coreFun": {
+      "playerFantasy": "현실 건축가에서는 플레이어가 실제 게임 내에서 수행하는 행동과 선택에 대한 판타지를 제공하며, 이는 관찰자가 아니라 실제로 플레이어가 하는 일을 명확하게 정의해야 한다.",
+      "coreFun": "플레이어는 매 단계에서 적절한 자원 배분, 위험 평가 및 전략적 선택을 통해 동일한 게임 세계를 다양한 방식으로 재구성할 수 있는 능력을 숙련하고, 이러한 선택들이 다음 단계로 이어지는 반복 가능한 핵심 루프를 형성해 나간다."
+    },
+    "local_authoring_parts::a1e04475c75fa1933ff11cb68c9e147a6a510de55335dd49746c46c7a444592b:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "현실 건축가",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival",
+          "material": "Enemy Pressure and Resource Management",
+          "materialDomain": "Action & Strategy",
+          "stateChange": "Positioning, Resource Allocation, Threat Assessment"
+        },
+        "b": {
+          "system": "Build Progression",
+          "material": "Upgrades and Skill Selection",
+          "materialDomain": "Strategy & Development",
+          "stateChange": "Upgrade Combination, Skill Synergy, Build Optimization"
+        },
+        "abCausality": "Positioning → Resource Use → Threat Response → Build Evolution",
+        "abEvolution": {
+          "aChangesB": "Resource allocation changes based on threat assessment",
+          "bChangesA": "Build optimization alters resource usage patterns",
+          "lateGameChange": "Build evolution introduces adaptive strategy layers"
+        },
+        "materialFusion": {
+          "contrast": "Enemy Pressure vs. Resource Scarcity",
+          "causalBridge": "Threat Assessment drives both resource use and build progression",
+          "removalConsequence": "Adaptive strategies emerge from dynamic resource constraints"
+        },
+        "storyCausalChain": {
+          "cause": "Threat Assessment in the opening phase",
+          "characterConflict": "Player's Adaptive Decision-Making",
+          "playerChoice": "Optimize Resource Usage or Expand Defensive Positioning",
+          "worldChange": "Dynamic Resource Constraints Alter Strategic Priorities",
+          "nextEvent": "Build Evolution Introduces Adaptive Strategy Layers"
+        },
+        "cThemes": [
+          {
+            "name": "Survival",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Resource Management"
+          },
+          {
+            "name": "Adaptation",
+            "kind": "GENRE",
+            "gameplayEffect": "Strategic Flexibility"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Action & Strategy",
+            "gameplayEffect": "Real-Time Combat & Resource Allocation"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Adaptive Playstyle",
+            "gameplayEffect": "Strategy Layer Addition"
+          }
+        ],
+        "cGenreInterlock": "Adaptive playstyles introduce new strategic layers, altering resource allocation and threat response patterns.",
+        "cWorldAndGameplayEffect": "Dynamic resource constraints force players to adapt their strategies, leading to evolving gameplay mechanics and deeper engagement with the game world.",
+        "delveDiscoveries": [
+          {
+            "clue": "Threat Assessment in Opening Phase",
+            "discovery": "Players learn to optimize resource usage or expand defensive positioning based on enemy pressure",
+            "newChoice": "Optimize resources or build defensively"
+          },
+          {
+            "clue": "Build Evolution Introduces Adaptive Strategies",
+            "discovery": "New strategy layers emerge from dynamic resource constraints",
+            "newChoice": "Adaptively allocate resources or reconfigure defense"
+          },
+          {
+            "clue": "Player's Adaptive Decision-Making",
+            "discovery": "Strategic flexibility is driven by real-time combat and resource management",
+            "newChoice": "Choose between optimizing resources or expanding defenses"
+          },
+          {
+            "clue": "World Constraints Alter Strategic Priorities",
+            "discovery": "Resource scarcity forces players to adjust their strategies",
+            "newChoice": "Prioritize resource optimization over defensive expansion"
+          }
+        ],
+        "delveGrowthRule": "Players develop adaptive decision-making skills through iterative resource allocation and threat response adjustments.",
+        "finalGameIdentity": "A dynamic survival experience where players must adapt their strategies through iterative resource allocation, threat assessment, and strategic evolution."
+      },
+      "playerFantasy": "현실 건축가에서는 플레이어가 실제 게임 내에서 수행하는 행동과 선택에 대한 판타지를 제공하며, 이는 관찰자가 아니라 실제로 플레이어가 하는 일을 명확하게 정의해야 한다.",
+      "coreFun": "플레이어는 매 단계에서 적절한 자원 배분, 위험 평가 및 전략적 선택을 통해 동일한 게임 세계를 다양한 방식으로 재구성할 수 있는 능력을 숙련하고, 이러한 선택들이 다음 단계로 이어지는 반복 가능한 핵심 루프를 형성해 나간다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 414958,
-      "lastMs": 114892,
+      "totalMs": 462897,
+      "lastMs": 47939,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:17:33.334Z"
+      "updatedAt": "2026-10-10T02:18:21.275Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:10:38.349Z",
-  "updatedAt": "2026-10-10T02:17:33.334Z",
+  "updatedAt": "2026-10-10T02:18:21.276Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1979,7 +2071,7 @@
   "localAuthoringSplits": {
     "fbbc4ec1faa130ed8d2494f9e2eb45b567606b281c49f0cde8d4ddd65d8c05e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:17:33.334Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:18:21.276Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
