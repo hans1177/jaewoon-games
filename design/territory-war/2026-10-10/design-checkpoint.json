@@ -3,261 +3,31 @@
   "gameId": "territory-war",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
-  "fingerprint": "6a0cafa8157ac0f8ed2c41670c45487c89db85bdc97d06dd46d3fc314478f9f8",
+  "fingerprint": "c18461dfd955da406b15f57156e005a937a63e9a4ca87be4d5d865f82d917430",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a:identity,creativeGrammar": {
-      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
-        "a": {
-          "system": "지역 관리",
-          "material": "지역 경계 힘, 자원 배분 방식, 전선 변화 대응 전략",
-          "materialDomain": "전략적 자원 배분",
-          "stateChange": "지역 경계 강도 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행"
-        },
-        "b": {
-          "system": "군사 전술",
-          "material": "전선 변화 전략, 자원 분배 계획, 군대 구성",
-          "materialDomain": "전략적 군사 구조",
-          "stateChange": "전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화"
-        },
-        "abCausality": "주요 지역과 군사 전술의 상태 교환, 자원 배분 방식과 전략적 군사 구조의 상호작용 변화",
-        "abEvolution": {
-          "aChangesB": "주요 지역 전략을 바탕으로 군사 전술 재설계, 자원 배분 방식에 따른 군대 구성 조정",
-          "bChangesA": "전선 변화 전략을 기반으로 자원 배분 방식 개선, 군사 전술에 따라 군대 구성 재구성",
-          "lateGameChange": "주요 지역 전략 및 군사 전술의 상호 작용 변화, 자원 배분 방식과 군사 구조의 복합적 관계 형성"
-        },
-        "materialFusion": {
-          "contrast": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
-          "causalBridge": "지역 경계 힘 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행; 전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화",
-          "removalConsequence": "지역 경계 힘 감소 시 자원 배분 방식 반복, 군사 전술 강도 하락 시 자원 분배 계획 무효화"
-        },
-        "storyCausalChain": {
-          "cause": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
-          "characterConflict": "군사 전술 제안자와 지리학자 갈등, 자원 배분 계획에 대한 논쟁",
-          "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립",
-          "worldChange": "지역 경계 힘 재설정, 자원 배분 방식 개선, 전선 변화 전략 실행",
-          "nextEvent": "전선 변화 대응 전략 실행, 자원 배분 계획 확정, 주요 지역 전략 구체화"
-        },
-        "cThemes": [
-          {
-            "name": "지역 경계 힘",
-            "kind": "GENRE",
-            "gameplayEffect": "전선 변화 대응 전략 실행, 자원 배분 방식 변경"
-          },
-          {
-            "name": "군사 전술",
-            "kind": "GENRE",
-            "gameplayEffect": "자원 배분 계획 수정, 군대 구성 최종화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "지역 관리 시스템",
-            "gameplayEffect": "지역 경계 강도 증가, 자원 배분 방식 변경"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "군사 전술 시스템",
-            "gameplayEffect": "전선 변화 전략 적용, 자원 분배 계획 수정"
-          }
-        ],
-        "cGenreInterlock": "지역 관리 시스템과 군사 전술 시스템의 상호 작용이 전선 변화 대응 전략에 영향을 미치며, 굳은 보조 장르 제거 시 플레이어 선택에 새로운 가능성이 생긴다.",
-        "cWorldAndGameplayEffect": "지역 경계 힘과 군사 전술의 상태 교환으로 전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조의 복합적 관계 형성",
-        "delveDiscoveries": [
-          {
-            "clue": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
-            "discovery": "주요 지역 전략 결정, 자원 분배 계획 확정, 전선 변화 전략 실행",
-            "newChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
-          },
-          {
-            "clue": "군사 전술 강도 하락, 자원 배분 방식 무효화",
-            "discovery": "전선 변화 전략 실행, 자원 분배 계획 수정, 군대 구성 최종화",
-            "newChoice": "전선 변화 전략 적용, 자원 분배 계획 재설계, 군사 전술 재구성"
-          },
-          {
-            "clue": "지역 경계 힘 증가, 자원 배분 방식 변경",
-            "discovery": "전선 변화 대응 전략 실행, 자원 분배 계획 확정",
-            "newChoice": "전선 변화 대응 전략 결정, 자원 분배 계획 구체화, 주요 지역 전략 수립"
-          },
-          {
-            "clue": "군사 전술 제안자와 지리학자의 갈등",
-            "discovery": "자원 분배 계획 수정, 군대 구성 최종화",
-            "newChoice": "자원 분배 계획 재설계, 군사 전술 재구성, 주요 지역 전략 결정"
-          }
-        ],
-        "delveGrowthRule": "주요 지역 전략 선택 -> 자원 분배 계획 결정 -> 전선 변화 전략 실행; 전선 변화 전략 수립 -> 자원 분배 계획 수정 -> 군대 구성 최终化; 주요 지역 전략 결정 -> 자원 분배 계획 구체화 -> 전선 변화 대응 전략 실행",
-        "finalGameIdentity": "지역 경계 힘과 군사 전술의 상호 작용을 바탕으로 한 새 정체성, 자원 배분 방식과 군사 구조의 복합적 관계를 반영한 게임 전체"
-      }
-    },
-    "local_authoring_parts::039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a:playerFantasy,coreFun": {
-      "playerFantasy": "주요 지역 전략 선택 시, 지역 경계 힘과 군사 전술의 상호작용을 통해 자원 배분 방식을 결정하며, 전선 변화 대응 전략에 따라 실제 세계 상태가 변하게 된다.",
-      "coreFun": "{\"required\": true, \"infection\": false, \"phases\": [\"OPENING\", \"DEVELOPMENT\", \"RESOLUTION\"], \"lockedNumbers\": {}, \"abilityFacts\": [], \"humanRoster\": [], \"monsterRoster\": []}"
-    },
-    "local_authoring_parts::8c1faff4313e9e755c4c0f6ebfdecdb1cf265f3b029f676f38d792adfacbe3ba:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
-        "a": {
-          "system": "지역 관리",
-          "material": "지역 경계 힘, 자원 배분 방식, 전선 변화 대응 전략",
-          "materialDomain": "전략적 자원 배분",
-          "stateChange": "지역 경계 강도 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행"
-        },
-        "b": {
-          "system": "군사 전술",
-          "material": "전선 변화 전략, 자원 분배 계획, 군대 구성",
-          "materialDomain": "전략적 군사 구조",
-          "stateChange": "전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화"
-        },
-        "abCausality": "주요 지역과 군사 전술의 상태 교환, 자원 배분 방식과 전략적 군사 구조의 상호작용 변화",
-        "abEvolution": {
-          "aChangesB": "주요 지역 전략을 바탕으로 군사 전술 재설계, 자원 배분 방식에 따른 군대 구성 조정",
-          "bChangesA": "전선 변화 전략을 기반으로 자원 배분 방식 개선, 군사 전술에 따라 군대 구성 재구성",
-          "lateGameChange": "주요 지역 전략 및 군사 전술의 상호 작용 변화, 자원 배분 방식과 군사 구조의 복합적 관계 형성"
-        },
-        "materialFusion": {
-          "contrast": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
-          "causalBridge": "지역 경계 힘 증가 -> 자원 배분 방식 변경 -> 전선 변화 대응 전략 실행; 전선 변화 전략 적용 -> 자원 분배 계획 수정 -> 군대 구성 최종화",
-          "removalConsequence": "지역 경계 힘 감소 시 자원 배분 방식 반복, 군사 전술 강도 하락 시 자원 분배 계획 무효화"
-        },
-        "storyCausalChain": {
-          "cause": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
-          "characterConflict": "군사 전술 제안자와 지리학자 갈등, 자원 배분 계획에 대한 논쟁",
-          "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립",
-          "worldChange": "지역 경계 힘 재설정, 자원 배분 방식 개선, 전선 변화 전략 실행",
-          "nextEvent": "전선 변화 대응 전략 실행, 자원 배분 계획 확정, 주요 지역 전략 구체화"
-        },
-        "cThemes": [
-          {
-            "name": "지역 경계 힘",
-            "kind": "GENRE",
-            "gameplayEffect": "전선 변화 대응 전략 실행, 자원 배분 방식 변경"
-          },
-          {
-            "name": "군사 전술",
-            "kind": "GENRE",
-            "gameplayEffect": "자원 배분 계획 수정, 군대 구성 최종화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "지역 관리 시스템",
-            "gameplayEffect": "지역 경계 강도 증가, 자원 배분 방식 변경"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "군사 전술 시스템",
-            "gameplayEffect": "전선 변화 전략 적용, 자원 분배 계획 수정"
-          }
-        ],
-        "cGenreInterlock": "지역 관리 시스템과 군사 전술 시스템의 상호 작용이 전선 변화 대응 전략에 영향을 미치며, 굳은 보조 장르 제거 시 플레이어 선택에 새로운 가능성이 생긴다.",
-        "cWorldAndGameplayEffect": "지역 경계 힘과 군사 전술의 상태 교환으로 전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조의 복합적 관계 형성",
-        "delveDiscoveries": [
-          {
-            "clue": "지역 경계 힘 변화, 자원 배분 방식 변동, 전선 변화 전략 수립",
-            "discovery": "주요 지역 전략 결정, 자원 분배 계획 확정, 전선 변화 전략 실행",
-            "newChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
-          },
-          {
-            "clue": "군사 전술 강도 하락, 자원 배분 방식 무효화",
-            "discovery": "전선 변화 전략 실행, 자원 분배 계획 수정, 군대 구성 최종화",
-            "newChoice": "전선 변화 전략 적용, 자원 분배 계획 재설계, 군사 전술 재구성"
-          },
-          {
-            "clue": "지역 경계 힘 증가, 자원 배분 방식 변경",
-            "discovery": "전선 변화 대응 전략 실행, 자원 분배 계획 확정",
-            "newChoice": "전선 변화 대응 전략 결정, 자원 분배 계획 구체화, 주요 지역 전략 수립"
-          },
-          {
-            "clue": "군사 전술 제안자와 지리학자의 갈등",
-            "discovery": "자원 분배 계획 수정, 군대 구성 최종화",
-            "newChoice": "자원 분배 계획 재설계, 군사 전술 재구성, 주요 지역 전략 결정"
-          }
-        ],
-        "delveGrowthRule": "주요 지역 전략 선택 -> 자원 분배 계획 결정 -> 전선 변화 전략 실행; 전선 변화 전략 수립 -> 자원 분배 계획 수정 -> 군대 구성 최终化; 주요 지역 전략 결정 -> 자원 분배 계획 구체화 -> 전선 변화 대응 전략 실행",
-        "finalGameIdentity": "지역 경계 힘과 군사 전술의 상호 작용을 바탕으로 한 새 정체성, 자원 배분 방식과 군사 구조의 복합적 관계를 반영한 게임 전체"
-      },
-      "playerFantasy": "주요 지역 전략 선택 시, 지역 경계 힘과 군사 전술의 상호작용을 통해 자원 배분 방식을 결정하며, 전선 변화 대응 전략에 따라 실제 세계 상태가 변하게 된다.",
-      "coreFun": "{\"required\": true, \"infection\": false, \"phases\": [\"OPENING\", \"DEVELOPMENT\", \"RESOLUTION\"], \"lockedNumbers\": {}, \"abilityFacts\": [], \"humanRoster\": [], \"monsterRoster\": []}"
-    },
-    "local_authoring_parts::39560bacd5e6896c23b849b59bcf3e2000de519877f4d00af41764edd0dc1de9:coreLoop": {
-      "coreLoop": [
-        "입력: 주요 지역 전략 선택, 자원 분배 계획 결정",
-        " 상태변화: 지역 경계 힘 증가, 자원 배분 방식 변경",
-        " 보상/ 위험: 전선 변화 대응 전략 실행, 자원 분배 계획 확정"
-      ]
-    },
-    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_unity_web_validation_surface",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "identity-core: 영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
-        "coreFun: 입력: 주요 지역 전략 선택, 자원 분배 계획 결정",
-        "signatureSystems: MAIN/A/B와 DELVE(@) 기존 원본 규칙 입출력"
-      ],
-      "stateOutputs": [
-        "identity-core: 지역 경계 힘 강도 증가, 자원 배분 방식 변경",
-        "coreLoop: 전선 변화 대응 전략 실행, 자원 분배 계획 확정",
-        "signatureSystems: 주요 지역 전략 및 군사 전술의 상태 교환"
-      ],
-      "name": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
-      "purpose": "전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조 관계 형성",
-      "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
-    },
-    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": {
-      "id": "a_unity_web_validation_surface",
-      "grammarRole": "A",
-      "stateInputs": [
-        "identity-core: 영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
-        "coreLoop: 전선 변화 대응 전략 실행, 자원 분배 계획 확정"
-      ],
-      "stateOutputs": [
-        "identity-core: 지역 경계 힘 강도 증가, 자원 배분 방식 변경",
-        "coreFun: 입력: 주요 지역 전략 선택, 자원 분배 계획 결정"
-      ],
-      "name": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
-      "purpose": "주요 지역 전략 선택과 자원 분배 계획 결정에 기반한 상태 교환",
-      "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 대응 전략 수립의 순차적 실천을 통해 실제 세계 상태를 변하게 된다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 50,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2527963,
-      "lastMs": 33533,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:58:41.487Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:16:33.400Z",
-  "updatedAt": "2026-10-10T06:58:41.488Z",
+  "createdAt": "2026-10-10T09:04:51.933Z",
+  "updatedAt": "2026-10-10T09:04:51.980Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -266,6 +36,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -293,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -316,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -388,6 +162,29 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -695,13 +492,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-place-ground",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "place"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -716,23 +517,7 @@
             }
           },
           {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-npc-service-menu",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "trade",
-                "info"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "VFX",
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -740,6 +525,37 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -756,8 +572,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -766,6 +582,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -793,6 +610,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -816,10 +634,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -888,6 +708,29 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1195,13 +1038,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-place-ground",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "place"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1216,23 +1063,7 @@
             }
           },
           {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-npc-service-menu",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "trade",
-                "info"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "VFX",
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1240,6 +1071,37 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1256,8 +1118,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1266,6 +1128,7 @@
           "ENVIRONMENT",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -1293,6 +1156,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1316,10 +1180,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1388,6 +1254,29 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1695,13 +1584,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-place-ground",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "place"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1716,23 +1609,7 @@
             }
           },
           {
-            "family": "UI",
-            "action": "USE",
-            "assetId": "roblox-common-ui-npc-service-menu",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "trade",
-                "info"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "VFX",
+            "family": "SKILL",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1740,6 +1617,37 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "VFX",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1757,18 +1665,39 @@
       }
     },
     "assetFacts": {
-      "roblox-common-ui-npc-service-menu": {
-        "family": "UI",
+      "roblox-common-motion-place-ground": {
+        "family": "MOTION",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "trade",
-            "info"
+            "place"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "NPC_SERVICE_MENU",
+        "role": "PLACE_GROUND",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-ui-wave-forecast-ribbon": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "next",
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "WAVE_FORECAST_RIBBON",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1778,40 +1707,28 @@
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
+      },
+      "roblox-common-vfx-boss-warning-pulse": {
+        "family": "VFX",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "BOSS",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:2:5fdfb975370f3aea": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_unity_web_validation_surface",
-          "a_unity_web_validation_surface"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_unity_web_validation_surface",
-          "a_unity_web_validation_surface"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": 21,
-    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:2:5fdfb975370f3aea": 24
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:58:41.487Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
