@@ -1386,25 +1386,34 @@
       "rangeUnit": "블록",
       "resource": "에너지",
       "cost": 45
+    },
+    "local_authoring_parts::a7e3008f14c75c45e758ba9f01c336ae1c20edda4e8355bbb14bcca4d307c034:cooldownSeconds,telegraph,avoidance,effect,stateInputs": {
+      "cooldownSeconds": 7,
+      "telegraph": "정전 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 정화 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 76,
-      "successes": 73,
+      "calls": 77,
+      "successes": 74,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2376344,
-      "lastMs": 8092,
+      "totalMs": 2391334,
+      "lastMs": 14990,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:13:57.720Z"
+      "updatedAt": "2026-10-10T10:14:12.712Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:13:57.721Z",
+  "updatedAt": "2026-10-10T10:14:12.712Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2739,7 +2748,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:13:57.721Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:14:12.712Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
