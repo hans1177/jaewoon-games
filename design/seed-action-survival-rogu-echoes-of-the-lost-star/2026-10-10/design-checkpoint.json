@@ -3,259 +3,31 @@
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "date": "2026-10-10",
   "seedId": "OWNER-DESIGN-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR",
-  "fingerprint": "6deb28f63c79018caddeb89eefa0124fd496b944334f7a6ba4742681a0a95723",
+  "fingerprint": "da9aeb915521c59283d8355f55c07eae3be151eaa5e81d4da017cb7b91204acc",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::021873febc37db4a387af98f3b1ccb1d5406c9442df1f6490cd8927b721be859:identity,creativeGrammar": {
-      "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "메아리 공명 시스템 - 실시간 전투와 빌드 강화",
-        "a": {
-          "system": "메아리 선택",
-          "material": "파편 수집 및 빌드 구성",
-          "materialDomain": "전략적 위치 선점 + 즉각적 빌드 변화",
-          "stateChange": "플레이어가 파편을 사용하여 무기/스킬/능력치를 강화"
-        },
-        "b": {
-          "system": "엔트로피 미터",
-          "material": "위험 지역 진입 및 보상 결정",
-          "materialDomain": "실시간 난이도 조절 + 전략적 선택",
-          "stateChange": "플레이어가 엔트로피 수준에 따른 위험/보상을 선택"
-        },
-        "abCausality": "{\"a\": \"파편 수집 → 빌드 강화\", \"b\": \"위험 지역 진입 → 보상 결정\"}, {\"b\": \"보상 결정 → 빌드 강화\", \"a\": \"파편 수집 → 빌드 강화\"} }, \"cGenres\": [{\"primary\": \"액션 생존 게임\", \"secondary\": \"전략적 빌드 관리\"}, {\"primary\": \"전술적 실시간 전투\", \"secondary\": \"데이터 기반 빌드 최적화\"}], \"finalGameIdentity\": \"메아리 공명 시스템 - 실시간 전투와 빌드 강화의 역동적인 성장 경로\"}",
-        "abEvolution": {
-          "aChangesB": "파편 수집 -> 빌드 강화, 파편 수집 -> 빌드 강화",
-          "bChangesA": "위험 지역 진입 -> 보상 결정, 위험 지역 진입 -> 보상 결정",
-          "lateGameChange": "플레이어가 자신의 빌드를 반복적으로 조정하여 메타 성장 재화로 변환"
-        },
-        "materialFusion": {
-          "contrast": "네온 컬러 + 우주 공간감을 강조한 하이 콘트라스트 비주얼 스타일",
-          "causalBridge": "메아리 파편 → 빌드 구성 → 전략적 선택 → 메타 성장 재화",
-          "removalConsequence": "플레이어는 자신만의 빌드를 반복적으로 조정하여 새로운 전략적 우위를 점할 수 있다"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 적의 공격을 피하며 최적 위치 선점",
-          "characterConflict": "메아리 파편의 가치와 사용법에 대한 갈등",
-          "playerChoice": "파편 수집 및 빌드 구성 선택, 위험 지역 진입 및 보상 결정",
-          "worldChange": "플레이어의 빌드 변화로 인해 실시간 전투 흐름이 바뀌고, 이는 다음 런의 전략적 우위를 좌우한다",
-          "nextEvent": "플레이어가 자신의 빌드를 반복적으로 조정하여 메타 성장 재화로 변환"
-        },
-        "cThemes": [
-          {
-            "name": "전술적 빌드 관리",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실시간 전투에서 빌드 강화 후 전략적 우위 확보"
-          },
-          {
-            "name": "데이터 기반 빌드 최적화",
-            "kind": "MATERIAL",
-            "gameplayEffect": "빌드 강화 시 데이터 기반 최적화 적용으로 새로운 전략적 선택 가능"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "액션 생존 게임",
-            "gameplayEffect": "실시간 전투 + 빌드 강화의 역동적인 성장 경로"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "전략적 빌드 관리",
-            "gameplayEffect": "데이터 기반 빌드 최적화 및 전략적 선택 가능성"
-          }
-        ],
-        "cGenreInterlock": "메아리 파편 → 빌드 구성 → 전략적 선택 → 메타 성장 재화 변화, 이는 보조 장르(전략적 빌드 관리)의 인과 변화를 반영한다",
-        "cWorldAndGameplayEffect": "{\"primary\": \"실시간 전투와 빌드 강화의 역동적인 성장 경로\", \"secondary\": \"데이터 기반 빌드 최적화 및 전략적 선택 가능성\"}",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어가 적을 쓸어버리는 즉각적인 쾌감",
-            "discovery": "파편 수집 및 빌드 구성 선택",
-            "newChoice": "파편 수집 -> 빌드 강화, 위험 지역 진입 -> 보상 결정"
-          },
-          {
-            "clue": "위험 지역에서의 보상 결정",
-            "discovery": "보상 결정 및 빌드 강화",
-            "newChoice": "빌드 강화 -> 데이터 기반 최적화, 파편 수집 -> 빌드 강화"
-          },
-          {
-            "clue": "플레이어의 빌드 조정이 다음 런에 영향을 미침",
-            "discovery": "빌드 조정 및 메타 성장 재화 변환",
-            "newChoice": "빌드 조정 -> 메타 성장 재화 변환, 파편 수집 -> 빌드 강화"
-          },
-          {
-            "clue": "메아리 공명 시스템은 플레이어의 선택에 따라 실시간으로 변화한다",
-            "discovery": "실시간 전투와 빌드 강화의 역동적인 성장 경로",
-            "newChoice": "실시간 전투 흐름 변경 -> 빌드 강화, 빌드 강화 -> 메타 성장 재화 변환"
-          }
-        ],
-        "delveGrowthRule": "{\"a\": \"파편 수집 → 빌드 강화\", \"b\": \"위험 지역 진입 → 보상 결정\"}, {\"b\": \"보상 결정 → 빌드 강화\", \"a\": \"파편 수집 → 빌드 강화\"} }, {\"a\": \"빌드 조정 → 메타 성장 재화 변환\", \"b\": \"데이터 기반 최적화 적용\"}",
-        "finalGameIdentity": "메아리 공명 시스템 - 실시간 전투와 빌드 강화의 역동적인 성장 경로"
-      }
-    },
-    "local_authoring_parts::021873febc37db4a387af98f3b1ccb1d5406c9442df1f6490cd8927b721be859:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선점과 즉각적인 빌드 구성에 매 순간 선택이 있는 전략적 생존 게임입니다. 적의 공격을 피하면서 최적의 위치를 선점하고, 획득한 파편을 사용하여 실시간으로 무기/스킬/능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다. 이 과정에서 플레이어는 자신만의 전투 스타일을 진화시키며, 최종적으로 런의 결과를 메타 성장 재화로 변환할 수 있습니다.",
-      "coreFun": "플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다. 수집된 파편은 즉시 빌드 변화를 반영하고, 이를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다."
-    },
-    "local_authoring_parts::ee6a6df46af3a20414bf6d67865bd7444ee40d0cd898d801816218a3aca0dec3:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
-      "creativeGrammar": {
-        "mainIdentity": "메아리 공명 시스템 - 실시간 전투와 빌드 강화",
-        "a": {
-          "system": "메아리 선택",
-          "material": "파편 수집 및 빌드 구성",
-          "materialDomain": "전략적 위치 선점 + 즉각적 빌드 변화",
-          "stateChange": "플레이어가 파편을 사용하여 무기/스킬/능력치를 강화"
-        },
-        "b": {
-          "system": "엔트로피 미터",
-          "material": "위험 지역 진입 및 보상 결정",
-          "materialDomain": "실시간 난이도 조절 + 전략적 선택",
-          "stateChange": "플레이어가 엔트로피 수준에 따른 위험/보상을 선택"
-        },
-        "abCausality": "{\"a\": \"파편 수집 → 빌드 강화\", \"b\": \"위험 지역 진입 → 보상 결정\"}, {\"b\": \"보상 결정 → 빌드 강화\", \"a\": \"파편 수집 → 빌드 강화\"} }, \"cGenres\": [{\"primary\": \"액션 생존 게임\", \"secondary\": \"전략적 빌드 관리\"}, {\"primary\": \"전술적 실시간 전투\", \"secondary\": \"데이터 기반 빌드 최적화\"}], \"finalGameIdentity\": \"메아리 공명 시스템 - 실시간 전투와 빌드 강화의 역동적인 성장 경로\"}",
-        "abEvolution": {
-          "aChangesB": "파편 수집 -> 빌드 강화, 파편 수집 -> 빌드 강화",
-          "bChangesA": "위험 지역 진입 -> 보상 결정, 위험 지역 진입 -> 보상 결정",
-          "lateGameChange": "플레이어가 자신의 빌드를 반복적으로 조정하여 메타 성장 재화로 변환"
-        },
-        "materialFusion": {
-          "contrast": "네온 컬러 + 우주 공간감을 강조한 하이 콘트라스트 비주얼 스타일",
-          "causalBridge": "메아리 파편 → 빌드 구성 → 전략적 선택 → 메타 성장 재화",
-          "removalConsequence": "플레이어는 자신만의 빌드를 반복적으로 조정하여 새로운 전략적 우위를 점할 수 있다"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 적의 공격을 피하며 최적 위치 선점",
-          "characterConflict": "메아리 파편의 가치와 사용법에 대한 갈등",
-          "playerChoice": "파편 수집 및 빌드 구성 선택, 위험 지역 진입 및 보상 결정",
-          "worldChange": "플레이어의 빌드 변화로 인해 실시간 전투 흐름이 바뀌고, 이는 다음 런의 전략적 우위를 좌우한다",
-          "nextEvent": "플레이어가 자신의 빌드를 반복적으로 조정하여 메타 성장 재화로 변환"
-        },
-        "cThemes": [
-          {
-            "name": "전술적 빌드 관리",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실시간 전투에서 빌드 강화 후 전략적 우위 확보"
-          },
-          {
-            "name": "데이터 기반 빌드 최적화",
-            "kind": "MATERIAL",
-            "gameplayEffect": "빌드 강화 시 데이터 기반 최적화 적용으로 새로운 전략적 선택 가능"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "액션 생존 게임",
-            "gameplayEffect": "실시간 전투 + 빌드 강화의 역동적인 성장 경로"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "전략적 빌드 관리",
-            "gameplayEffect": "데이터 기반 빌드 최적화 및 전략적 선택 가능성"
-          }
-        ],
-        "cGenreInterlock": "메아리 파편 → 빌드 구성 → 전략적 선택 → 메타 성장 재화 변화, 이는 보조 장르(전략적 빌드 관리)의 인과 변화를 반영한다",
-        "cWorldAndGameplayEffect": "{\"primary\": \"실시간 전투와 빌드 강화의 역동적인 성장 경로\", \"secondary\": \"데이터 기반 빌드 최적화 및 전략적 선택 가능성\"}",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어가 적을 쓸어버리는 즉각적인 쾌감",
-            "discovery": "파편 수집 및 빌드 구성 선택",
-            "newChoice": "파편 수집 -> 빌드 강화, 위험 지역 진입 -> 보상 결정"
-          },
-          {
-            "clue": "위험 지역에서의 보상 결정",
-            "discovery": "보상 결정 및 빌드 강화",
-            "newChoice": "빌드 강화 -> 데이터 기반 최적화, 파편 수집 -> 빌드 강화"
-          },
-          {
-            "clue": "플레이어의 빌드 조정이 다음 런에 영향을 미침",
-            "discovery": "빌드 조정 및 메타 성장 재화 변환",
-            "newChoice": "빌드 조정 -> 메타 성장 재화 변환, 파편 수집 -> 빌드 강화"
-          },
-          {
-            "clue": "메아리 공명 시스템은 플레이어의 선택에 따라 실시간으로 변화한다",
-            "discovery": "실시간 전투와 빌드 강화의 역동적인 성장 경로",
-            "newChoice": "실시간 전투 흐름 변경 -> 빌드 강화, 빌드 강화 -> 메타 성장 재화 변환"
-          }
-        ],
-        "delveGrowthRule": "{\"a\": \"파편 수집 → 빌드 강화\", \"b\": \"위험 지역 진입 → 보상 결정\"}, {\"b\": \"보상 결정 → 빌드 강화\", \"a\": \"파편 수집 → 빌드 강화\"} }, {\"a\": \"빌드 조정 → 메타 성장 재화 변환\", \"b\": \"데이터 기반 최적화 적용\"}",
-        "finalGameIdentity": "메아리 공명 시스템 - 실시간 전투와 빌드 강화의 역동적인 성장 경로"
-      },
-      "playerFantasy": "플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선점과 즉각적인 빌드 구성에 매 순간 선택이 있는 전략적 생존 게임입니다. 적의 공격을 피하면서 최적의 위치를 선점하고, 획득한 파편을 사용하여 실시간으로 무기/스킬/능력치를 강화하는 '메아리 선택' 메뉴를 통해 빌드를 구성합니다. 이 과정에서 플레이어는 자신만의 전투 스타일을 진화시키며, 최종적으로 런의 결과를 메타 성장 재화로 변환할 수 있습니다.",
-      "coreFun": "플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다. 수집된 파편은 즉시 빌드 변화를 반영하고, 이를 바탕으로 더욱 강력해진 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환합니다."
-    },
-    "local_authoring_parts::52a32fa4ddbb022da9a8be12f9a21e221e7b97db8d4f752a0f4228bc377faed6:coreLoop": {
-      "coreLoop": [
-        "INPUT/SELECT → 상태변화 → 보상/위험/다음 선택",
-        "플레이어가 파편을 사용하여 무기/스킬/능력치를 강화",
-        "강화된 빌드로 적과 보스 웨이브에 도전하며, 최종적으로 런의 결과를 메타 성장 재화로 변환"
-      ]
-    },
-    "local_authoring_parts::aa805dd71d53561242c27f640d3f1253493a993535937376493a5af1e14d3d64:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_rocky_mechanics",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "파편 수집",
-        "위험 지역 진입"
-      ],
-      "stateOutputs": [
-        "빌드 강화",
-        "메타 성장 재화 변환"
-      ],
-      "name": "Rocky Mechanics - Real-Time Combat and Build Evolution",
-      "purpose": "플레이어가 실시간 전투에서 파편을 수집하여 빌드를 강화하며, 이를 바탕으로 적과 보스 웨이브에 도전하는 역동적인 성장 경로를 구축합니다.",
-      "playerChoice": "파편 수집 및 빌드 구성 선택, 위험 지역 진입 및 보상 결정 포함됨으로, 빌드 강화 및 메타 성장 재화 변환이 발생합니다."
-    },
-    "local_authoring_parts::aa805dd71d53561242c27f640d3f1253493a993535937376493a5af1e14d3d64:signatureSystems:1:eea30739ce72a156": {
-      "id": "a_rocky_mechanics",
-      "grammarRole": "A",
-      "stateInputs": [
-        "빌드 강화",
-        "메타 성장 재화 변환"
-      ],
-      "stateOutputs": [
-        "파편 수집",
-        "위험 지역 진입"
-      ],
-      "name": "Rocky Mechanics - Real-Time Combat and Build Evolution",
-      "purpose": "Real-Time Combat and Build Evolution",
-      "playerChoice": "빌드 강화 및 메타 성장 재화 변환 선택"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 69,
-      "successes": 68,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2560366,
-      "lastMs": 16153,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:41:10.173Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:58:29.666Z",
-  "updatedAt": "2026-10-10T07:41:10.174Z",
+  "createdAt": "2026-10-10T08:47:30.002Z",
+  "updatedAt": "2026-10-10T08:47:30.016Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
@@ -275,6 +47,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -291,10 +64,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -674,8 +449,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
@@ -695,6 +470,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -711,10 +487,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1094,8 +872,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
@@ -1115,6 +893,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1131,10 +910,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1558,38 +1339,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::aa805dd71d53561242c27f640d3f1253493a993535937376493a5af1e14d3d64:signatureSystems:2:abcd2514b6220fe8": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_rocky_mechanics",
-          "a_rocky_mechanics"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_rocky_mechanics",
-          "a_rocky_mechanics"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::aa805dd71d53561242c27f640d3f1253493a993535937376493a5af1e14d3d64:signatureSystems:0:4f53cda18c2baa0c": 2,
-    "local_authoring_parts::aa805dd71d53561242c27f640d3f1253493a993535937376493a5af1e14d3d64:signatureSystems:2:abcd2514b6220fe8": 61
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "021873febc37db4a387af98f3b1ccb1d5406c9442df1f6490cd8927b721be859": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:41:10.173Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
