@@ -231,25 +231,40 @@
       "name": "AI 파티 토글 상태 교환",
       "purpose": "파티 관리 및 상태 변주",
       "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
+    },
+    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "AI 파티 토글 클릭",
+        "플레이어 1명 + 해금한 보스 동료 최대 3명"
+      ],
+      "stateOutputs": [
+        "동료 리더 레벨 자동 동기화",
+        "별도 장비 없음"
+      ],
+      "name": "AI 파티 토글 상태 교환",
+      "purpose": "파티 관리 및 상태 교환",
+      "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 926568,
-      "lastMs": 234556,
+      "totalMs": 1164434,
+      "lastMs": 237866,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:24:04.399Z"
+      "updatedAt": "2026-10-10T02:28:02.267Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:08:37.800Z",
-  "updatedAt": "2026-10-10T02:24:04.401Z",
+  "updatedAt": "2026-10-10T02:28:02.267Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2013,8 +2028,8 @@
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:24:04.399Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-10T02:28:02.267Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
