@@ -1176,6 +1176,20 @@ test('role motion QA rejects a named attack when only unrelated clips animate ac
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('boss special attack clips cannot masquerade as ordinary ATTACK animation coverage',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'boss-attack-alias-'));
+  try{
+    const file=path.join(root,'only-special.glb');
+    rewriteAnimationNamesInGlb('assets/roblox/world-ghosts/native/spider/spider.glb',file,()=> 'special_attack');
+    const inspected=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',role:'BOSS',source:{path:'only-special.glb'}});
+    assert.equal(inspected.inspection.status,'INSPECTED_RECONSTRUCTION_INPUT');
+    assert.equal(inspected.pass,false);
+    assert.ok(!inspected.missingCreatureRoleMotionClips.includes('SPECIAL_ATTACK'));
+    assert.ok(inspected.missingCreatureRoleMotionClips.includes('ATTACK'));
+    assert.ok(inspected.blockers.includes('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('actor DCC recipe without GLB cannot satisfy the 3D master contract',()=>{
   const plan=buildVibeAssetProductionPlan({
     target:'roblox',
