@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 폭발하는 전술적 선택을 경험하게 됩니다. 매턴마다 새로운 색상과 장애물이 등장하며, 이전에 없었던 방식으로 플레이어가 선택할 수 있는 독창적인 게임 진행을 만듭니다.",
       "coreFun": "플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다. 이 선택은 단순한 수치 증가보다는, 새로운 색상 주파수와 복합 장애물 패턴의 깊이를 더합니다."
+    },
+    "local_authoring_parts::f1715427367591cca481d2de9f2de3803557432ca719aba04d412500c8bd5b10:coreLoop": {
+      "coreLoop": [
+        "플레이어는 제한된 튜닝 횟수 내에서 색상 노드를 전환하여 연쇄 동기화 경로를 확보하며, 이 선택은 새로운 색상 주파수와 복합 장애물 패턴의 깊이를 더합니다.",
+        "연쇄 기폭 장치를 사용해 형성된 체인을 활성화하여 폭발 효과를 유도하면서, 플레이어가 선택하는 대안적 방식을 통해 게임 진행을 다양화합니다.",
+        "게임 스테이지를 클리어하며 튜너 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 상위 구역으로 진입하여 퍼즐의 깊이를 증대시킵니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 236316,
-      "lastMs": 236316,
+      "totalMs": 297116,
+      "lastMs": 60800,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:57:08.295Z"
+      "updatedAt": "2026-10-10T08:58:09.097Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:11.961Z",
-  "updatedAt": "2026-10-10T08:57:08.295Z",
+  "updatedAt": "2026-10-10T08:58:09.097Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1391,7 +1398,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:57:08.295Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:58:09.097Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
