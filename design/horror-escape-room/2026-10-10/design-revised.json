@@ -1,0 +1,222 @@
+{
+  "version": 5,
+  "gameId": "horror-escape-room",
+  "date": "2026-10-10",
+  "gameSeedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+  "gameplaySketchVersion": 1,
+  "gameSeedSource": "design/horror-escape-room/2026-10-10/design-seed.json",
+  "designerModel": "ollama:qwen3:1.7b",
+  "designerContentDigest": "67404bace92616a697d278e8e7b327bbb54967f2722fd0d6df2431606ffc088c",
+  "productionClass": "DESIGN_ONLY",
+  "authorRole": "VIBE2_MINIMUM_DESIGN_PREPARATION",
+  "status": "MINIMUM_DEVELOPMENT_DESIGN_CANDIDATE",
+  "sourceAuthority": "OWNER_GAME_SEED_AND_EXISTING_GAME_IMPLEMENTATION",
+  "minimumDesignReady": true,
+  "strictDesignReviewed": false,
+  "strictDesignPass": false,
+  "independentQaPass": false,
+  "runtimePass": false,
+  "releasePass": false,
+  "designEvolutionNext": "GAME_DESIGNER_AI_STRICT_REVIEW_PARALLEL",
+  "content": {
+    "identity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+    "coreFun": "감염 공격 → 정화 공격 순차적으로 진행하며, 감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다.",
+    "coreLoop": [
+      "인간4/몬스터4 배정 및 빈자리 AI 충원",
+      "감염 공격 → 정화 공격 순차적으로 진행",
+      "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다"
+    ],
+    "signatureSystems": [
+      {
+        "id": "main_road",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "학교"
+        ],
+        "stateOutputs": [
+          "폐놀이공원"
+        ],
+        "name": "로드",
+        "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "a_main_road",
+        "grammarRole": "A",
+        "stateInputs": [
+          "폐놀이공원"
+        ],
+        "stateOutputs": [
+          "학교"
+        ],
+        "name": "감염 전환 시스템",
+        "purpose": "게임 내 인물/몬스터의 감염 상태 관리 및 전환 로직 구현",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "b_road",
+        "grammarRole": "B",
+        "stateInputs": [
+          "학교"
+        ],
+        "stateOutputs": [
+          "폐놀이공원"
+        ],
+        "name": "로드 전환 시스템",
+        "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "delve_road",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "폐놀이공원"
+        ],
+        "stateOutputs": [
+          "학교"
+        ],
+        "name": "감염 상태",
+        "purpose": "인물 또는 몬스터가 감염 상태를 나타내는 상태 변수",
+        "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+      }
+    ],
+    "creativeGrammar": {
+      "mainIdentity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+      "a": {
+        "system": "감염 전환 시스템",
+        "material": "명시적 서버 권한 감염 공격",
+        "materialDomain": "게임 내 인물/몬스터의 감염 상태 관리",
+        "stateChange": "인간 감염 후 몬스터로 전환, 고유 감염 스킬 획득"
+      },
+      "b": {
+        "system": "정화 시스템",
+        "material": "정화 공격",
+        "materialDomain": "감염된 인물/몬스터의 생명력 제거",
+        "stateChange": "몬스터를 라운드에서 제거, 인간을 회복"
+      },
+      "abCausality": "감염 상태 변화는 정화 상태 변화와 양방향 교환이다. 감염은 정화에 의해 해결되며, 정화는 감염에 의해 재발할 수 있다.",
+      "abEvolution": {
+        "aChangesB": "감염이 발생하면 정화가 실행된다. 감염은 정화로 해결되고, 정화는 감염으로 다시 시작될 수 있다.",
+        "bChangesA": "정화가 실행되면 감염이 재발한다. 정화는 감염으로부터 회복되며, 감염은 정화로부터 재생 될 수 있다.",
+        "lateGameChange": "감염과 정화 사이의 상호작용은 계속 유지되어야 하며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다."
+      },
+      "materialFusion": {
+        "contrast": "명시적 서버 권한 감염 공격 vs. 정화 공격",
+        "causalBridge": "감염은 정화로 해결됨, 정화는 감염으로 재생됨",
+        "removalConsequence": "감염된 인물/몬스터는 몬스터로 전환, 정화된 인물/몬스터는 인간으로 되돌아옴"
+      },
+      "storyCausalChain": {
+        "cause": "인간4/몬스터4 배정 및 빈자리 AI 충원",
+        "characterConflict": "감염 공격과 정화 공격 간의 대립 싸움",
+        "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택",
+        "worldChange": "감염된 인간이 몬스터로 전환, 정화된 인간이 인간으로 되돌아옴",
+        "nextEvent": "다음 플레이어 선택 및 새로운 감염 상태 생성"
+      },
+      "cThemes": [
+        {
+          "name": "감염",
+          "kind": "MATERIAL",
+          "gameplayEffect": "인간-몬스터 4대4 감염 추격전"
+        },
+        {
+          "name": "정화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "감염된 인물/몬스터의 생명력 제거"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "감염 시스템",
+          "gameplayEffect": "명시적 서버 권한 감염 공격 및 정화"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "정화 시스템",
+          "gameplayEffect": "감염된 인물/몬스터의 생명력 제거"
+        }
+      ],
+      "cGenreInterlock": "감염과 정화는 서로 다른 게임 내 시스템이며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다.",
+      "cWorldAndGameplayEffect": "감염은 정화로 해결됨, 정화는 감염으로 재생됨. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다.",
+      "delveDiscoveries": [
+        {
+          "clue": "인간4/몬스터4 배정",
+          "discovery": "AI 충원을 통해 빈자리가 채워진다",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "감염 공격과 정화 공격",
+          "discovery": "감염은 정화로 해결되고, 정화는 감염으로 재생된다",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "감염된 인간이 몬스터로 전환",
+          "discovery": "고유 감염 스킬 획득",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "정화된 인간이 인간으로 되돌아옴",
+          "discovery": "정화 공격 실행됨으로 인해 생명력 제거",
+          "newChoice": "정화 공격 실행 및 새로운 감염 상태 생성"
+        }
+      ],
+      "delveGrowthRule": "감염과 정화 사이의 상호작용은 계속 유지되어야 하며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다.",
+      "finalGameIdentity": "감염과 정화 시스템을 통한 인간-몬스터 4대4 감염 추격전"
+    },
+    "playerFantasy": "인간은 감염에 노출되면 즉시 몬스터로 변하고, 정화를 통해 생명력을 회복하는 게임. 감염은 정화로 해결되며, 정화는 감염으로 재생된다.",
+    "progressionDirection": "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다",
+    "failureRetryRisk": {
+      "failureStates": [
+        "핵심 목표 실패 또는 방어·생존·해결 미달: 감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다",
+        "위험·자원 압박으로 계획 변경이나 회복이 필요한 상태: 감염 공격 → 정화 공격 순차적으로 진행"
+      ],
+      "retryFlow": "실패 사유를 표시하고 원본 게임의 복귀·재시도 규칙에 따라 동일 진행을 회복한다.",
+      "riskPressure": "위험과 자원 압박은 실제 선택과 결과에 연결한다.",
+      "recoveryRules": "기존 진행도와 저장 키·경제·전투 규칙을 유지하고, 복구 가능한 상태에서 이어서 진행한다."
+    },
+    "multiplayerMode": "COMPETITIVE",
+    "technicalAssumptions": [
+      "기존 게임 코드와 소유자 GAME_SEED가 권위다. 공격력·체력·웨이브·드랍·보상 수치를 임의로 만들어 변경하지 않는다.",
+      "기존 저장 키와 진행·퀘스트·장비 의미를 보존한다. 구조 변경이 필요할 때만 검증된 마이그레이션을 적용한다.",
+      "최소 설계는 코딩 입력일 뿐 정밀 설계·실기기 실행·멀티·독립 QA 및 출시 PASS 증거가 아니다."
+    ],
+    "playerInput": "실제 입력은 인간4/몬스터4 배정 및 빈자리 AI 충원 및 감염 공격 → 정화 공격 순차적으로 진행을 실행할 수 있어야 하며 모바일 터치 UI를 제공한다.",
+    "winLoseOrSessionEnd": "성공·실패·다음 선택은 감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다의 결과에 연결한다. 원본 목표 세션 30분을 참고하며 게임별 실제 종료 규칙은 원본에 따른다.",
+    "coreNumbersAndBalance": {
+      "authority": "EXISTING_GAME_SOURCE_AND_OWNER_GAME_SEED",
+      "catalogScope": "8명 4대4로 시작해 잡힌 인간이 몬스터로 전환되는 AI 충원형 감염 추격전",
+      "existingBalanceRules": [],
+      "inventedNumericValues": false
+    },
+    "saveMeaning": "EXISTING_GAME_SAVE_SEMANTICS_PRESERVED",
+    "coreContentScope": [],
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox 터치 버튼과 조이스틱, 키보드·게임패드를 원본 행동에 연결한다.",
+        "sessionModel": "Roblox 진입·복귀와 원본 목표 세션 30분을 참고하며 게임별 실제 종료 규칙은 원본에 따른다.",
+        "multiplayerRuntime": "Roblox 서버 권한과 원본 COMPETITIVE 인원·동기화 규칙을 유지한다.",
+        "performanceBudget": "모바일 Roblox에서 로딩·드로우콜·이펙트와 입력 반응을 제한하여 점검한다.",
+        "uiUx": "Roblox 모바일 터치 안전영역과 읽을 수 있는 HUD, 버튼·메뉴를 제공한다.",
+        "saveAndNetwork": "서버 검증 원격 입력과 DataStore 저장으로 EXISTING_GAME_SAVE_SEMANTICS_PRESERVED 정책을 보존한다.",
+        "platformContentAdaptation": "같은 핵심 루프를 Roblox 원본 네이티브 월드와 UI로 구현한다.",
+        "internalReleaseTarget": "Roblox 비공개 플레이 가능 빌드와 실제 기능 확인을 목표로 한다.",
+        "validationEvidence": "실제 Roblox 실행, 입력·저장·원본 규칙·독립 QA·회귀 증거가 별도로 필요하다."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System 터치·드래그·가상 조이스틱과 원본 행동을 연결한다.",
+        "sessionModel": "동일 원본 Unity 프로젝트의 WebGL 실제 브라우저 세션 진입·재시도·저장 복구를 검증한다.",
+        "multiplayerRuntime": "원본 COMPETITIVE 규칙을 Unity 쪽 권한 검증·동기화와 동일하게 적용한다.",
+        "performanceBudget": "Unity WebGL에 실제 3D 메시 월드·캐릭터·깊이·카메라·가림을 유지하고 모바일 브라우저 프레임·메모리를 검증한다.",
+        "uiUx": "화면 크기와 터치 안전영역에 적응하는 Unity 모바일 HUD를 제공한다.",
+        "saveAndNetwork": "버전 있는 저장 구조를 사용하고 EXISTING_GAME_SAVE_SEMANTICS_PRESERVED 의미를 유지한다.",
+        "platformContentAdaptation": "기존 공통 규칙을 Unity 네이티브 3D 씬·메시·프리팹으로 구현하고 같은 프로젝트에서 WebGL 빌드를 생성한다. 2D·2.5D 월드는 최종 금지다.",
+        "internalReleaseTarget": "Unity WebGL 3D 비공개 브라우저 검증만 진행하며 Unity Android는 오너 홀드를 유지한다.",
+        "validationEvidence": "실제 Unity WebGL 3D 메시·카메라·터치·저장·브라우저 플레이와 독립 QA·회귀 증거가 별도로 필요하다."
+      }
+    }
+  },
+  "createdAt": "2026-10-10T09:45:02.263Z",
+  "updatedAt": "2026-10-10T09:45:02.263Z"
+}

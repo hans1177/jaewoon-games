@@ -449,6 +449,44 @@
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
       "targetPlatformReady": true
+    },
+    {
+      "id": "SEED-OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+      "slug": "horror-escape-room",
+      "name": "심야 대탈출",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "sourcePath": "roblox-games/horror-escape-room",
+      "designBaselineSource": "design/horror-escape-room/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T09:45:02.101Z"
     }
   ],
   "productionClassState": {
@@ -653,5 +691,6 @@
         "sourceReady": true
       }
     ]
-  }
+  },
+  "updatedAt": "2026-10-10T09:45:02.101Z"
 }

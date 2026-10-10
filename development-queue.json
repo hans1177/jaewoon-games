@@ -1,7 +1,100 @@
 {
   "version": 1,
-  "items": [],
-  "updatedAt": "2026-10-10T09:24:19.633Z",
+  "items": [
+    {
+      "gameId": "horror-escape-room",
+      "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+      "gameName": "심야 대탈출",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "status": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT",
+      "bidirectionalAutoPair": true,
+      "requestEitherStartsBoth": false,
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/horror-escape-room",
+        "UNITY": "unity-games/horror-escape-room"
+      },
+      "robloxProjectPath": "roblox-games/horror-escape-room",
+      "unityProjectPath": "unity-games/horror-escape-room",
+      "targetSourcePath": "roblox-games/horror-escape-room",
+      "sourcePath": "roblox-games/horror-escape-room",
+      "designBaselineSource": "design/horror-escape-room/2026-10-10/design-revised.json",
+      "designDate": "2026-10-10",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/horror-escape-room/2026-10-10/design-revised.json",
+        "date": "2026-10-10",
+        "releaseChecklist": {
+          "identity": true,
+          "coreLoop": true,
+          "sessionRules": true,
+          "signatureSystems": true,
+          "presentation": false
+        },
+        "commonCoreReady": true,
+        "platformProfiles": {
+          "ROBLOX": true,
+          "UNITY": true,
+          "distinct": true
+        }
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "artbookTiming": "PARALLEL_NATIVE_PRESENTATION_SUPPORT",
+      "ownerPreservationPresentationUpgrade": false,
+      "presentationFirstPass": null,
+      "internalReleaseTarget": {
+        "ROBLOX": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE_OWNER_PLAYABLE",
+        "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
+      },
+      "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "enqueuedAt": "2026-10-10T09:45:02.101Z",
+      "updatedAt": "2026-10-10T09:45:02.101Z",
+      "robloxPublicationTarget": {
+        "version": 3,
+        "gameId": "horror-escape-room",
+        "universeId": "10767445796",
+        "placeId": "98222620265768",
+        "verified": true,
+        "verifiedAt": "2026-10-10T01:14:29.941Z",
+        "lastVerifiedAt": "2026-10-10T01:14:29.941Z",
+        "source": "owner-dedicated-github-bootstrap",
+        "authority": "roblox-canonical-publication-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "PUBLISHED_PRIVATE"
+      },
+      "robloxSharedTargetCurrent": false,
+      "robloxFastMvpSupersededBy": null,
+      "robloxDedicatedTargetRegistryBinding": {
+        "version": 1,
+        "source": "roblox-dedicated-targets.json",
+        "restoredAt": "2026-10-10T09:45:02.101Z"
+      }
+    }
+  ],
+  "updatedAt": "2026-10-10T09:45:02.101Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
