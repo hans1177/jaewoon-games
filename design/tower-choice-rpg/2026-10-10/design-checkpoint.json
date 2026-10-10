@@ -386,25 +386,42 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::cfe28f7735c96be89db551e8c9c2f017c04ee94ad48b47342c18a4b88f6a9b31:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "stateOutputs": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "name": "10층 탑 RPG",
+      "purpose": "게임 정체성 확립 및 핵심 루프 형성",
+      "playerChoice": "Adaptive Risk Management through Resource Allocation (실제 선택: Dynamic Threat Evolution from Base to Boss Tier)로 시작하여, 주기적인 반복 속도, 위험, 보상의 교차로 통해 핵심 루프 형성을 진행합니다. 이 과정에서 플레이어는 전략적 결정을 내리며, 상태 변화와 피드백을 받습니다. 최종적으로는 생존 행동 시스템과 전략적 위치 기반 메커니즘을 통합하여 게임의 전체적인 흐름을 조절하며, 진보하는 난이도와 적응 가능한 대처 로직을 업데이트합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 765296,
-      "lastMs": 57022,
+      "totalMs": 960046,
+      "lastMs": 194750,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:08:52.314Z"
+      "updatedAt": "2026-10-10T03:12:07.074Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:08:52.322Z",
+  "updatedAt": "2026-10-10T03:12:07.074Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2244,10 +2261,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:08:52.317Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:12:07.074Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
