@@ -105,25 +105,38 @@
         "보상/위험: 게임 진행 방향 결정",
         " 다음 선택: 새 문제 제기"
       ]
+    },
+    "local_authoring_parts::75881acb2c1e85b66f2f8800ea922a29051c6f5ddaf1f815816fb317eda5b894:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential_choice",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력: 플레이어 선택"
+      ],
+      "stateOutputs": [
+        "변화: 새로운 세계 상태 생성"
+      ],
+      "name": "기본 게임 주제/정체성",
+      "purpose": "플레이어가 빈 공간에 서서 단순한 퀴즈나 시스템에서 선택하는 대표 행동을 반복하며, 다양한 장르와 관계를 통해 세계를 탐험하고, 진입부터 이탈까지의 전반적인 경험을 제공하는 게임입니다.",
+      "playerChoice": "플레이어의 선택, 상태 교환, 보상/위험 결정을 수행합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 258640,
-      "lastMs": 32255,
+      "totalMs": 297263,
+      "lastMs": 38623,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:08:58.742Z"
+      "updatedAt": "2026-10-10T06:09:37.367Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:04:40.012Z",
-  "updatedAt": "2026-10-10T06:08:58.742Z",
+  "updatedAt": "2026-10-10T06:09:37.367Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1719,7 +1732,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:08:58.742Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:09:37.367Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
