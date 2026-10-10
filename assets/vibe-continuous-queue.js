@@ -641,14 +641,27 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     if(target==='roblox'&&task.releaseState==='development-confirmed')return 2;
     return 1;
   };
-  const platform=(task)=>{const target=clean(task.target).toLowerCase();const evidence=(task.evidence||[]).map(clean);return target==='unity'&&(task.unityWebDevelopment===true||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web'))?'unity-web':target;};
-  // Roblox:Unity:Web 6:2:1은 현재 실행량을 시작점으로 같은 배치 안에서 계속 재계산한다.
-  // 완료된 과거 작업은 다음 배치의 플랫폼 몫을 잠식하지 않는다.
+  // 대형 큐에서도 게임별 플랫폼과 실행 건수를 한 번만 계산한다.
+  const platformCache=new Map();
+  const platform=(task)=>{
+    if(platformCache.has(task))return platformCache.get(task);
+    const target=clean(task.target).toLowerCase();
+    const evidence=task.evidence||[];
+    const resolved=target==='unity'&&(task.unityWebDevelopment===true
+      ||evidence.includes('unity-web-first-stage')
+      ||evidence.includes('studio-quality-platform-lane:unity-web'))?'unity-web':target;
+    platformCache.set(task,resolved);
+    return resolved;
+  };
+  // Roblox:Unity:Web 비율과 Unity Web의 독립 플랫폼 몫을 그대로 유지한다.
   const hasUnityWeb=[...capacityRunning,...candidates.map(row=>row.task)].some(task=>platform(task)==='unity-web');
-   const weights=hasUnityWeb?{roblox:6,'unity-web':6,unity:0,web:1}:{roblox:6,unity:2,web:1};
-  const service=Object.fromEntries(Object.keys(weights).map((name)=>[
-    name,queue.tasks.filter((task)=>platform(task)===name&&task.status==='running'&&taskMatchesExecutionLane(task,laneMode)).length
-  ]));
+  const weights=hasUnityWeb?{roblox:6,'unity-web':6,unity:0,web:1}:{roblox:6,unity:2,web:1};
+  const service=Object.fromEntries(Object.keys(weights).map(name=>[name,0]));
+  for(const task of running){
+    if(!taskMatchesExecutionLane(task,laneMode))continue;
+    const name=platform(task);
+    if(Object.hasOwn(service,name))service[name]++;
+  }
   const platformRows=Object.fromEntries(Object.keys(weights).map((name)=>[
     name,candidates.filter((row)=>platform(row.task)===name)
   ]));
@@ -662,32 +675,61 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     return strictReleaseRank(left)>strictReleaseRank(right);
   };
   const weightedPlatformOrder=(rows,alreadySelected=[])=>{
-    const pending=[...rows];
+    // 기존 우선순위(자산 수요→소유자→출시 상태)와 비율·동점 규칙을 유지하면서
+    // 매 작업마다 전체 후보를 다시 정렬하던 제곱 시간 복잡도를 제거한다.
+    const tierBuckets=new Map();
+    for(const row of rows){
+      const demand=assetDemandRank(row.task);
+      const owner=strictOwnerRank(row.task);
+      const release=strictReleaseRank(row.task);
+      const key=demand+':'+owner+':'+release;
+      let tier=tierBuckets.get(key);
+      if(!tier){
+        tier={demand,owner,release,platforms:new Map()};
+        tierBuckets.set(key,tier);
+      }
+      const name=platform(row.task);
+      if(!tier.platforms.has(name))tier.platforms.set(name,[]);
+      tier.platforms.get(name).push(row);
+    }
     const ordered=[];
     const virtualService={...service};
-    for(const task of alreadySelected){const name=platform(task);if(weights[name])virtualService[name]=(virtualService[name]||0)+1;}
-    while(pending.length){
-      const demandRank=Math.max(...pending.map(row=>assetDemandRank(row.task)));
-      const demandTier=pending.filter(row=>assetDemandRank(row.task)===demandRank);
-      const ownerRank=Math.max(...demandTier.map((row)=>strictOwnerRank(row.task)));
-      const ownerTier=demandTier.filter((row)=>strictOwnerRank(row.task)===ownerRank);
-      const releaseRank=Math.max(...ownerTier.map((row)=>strictReleaseRank(row.task)));
-      const tier=ownerTier.filter((row)=>strictReleaseRank(row.task)===releaseRank);
-      tier.sort((a,b)=>{
-        const pa=platform(a.task),pb=platform(b.task);
-        const sa=weights[pa] ? (virtualService[pa]+1)/weights[pa] : 2;
-        const sb=weights[pb] ? (virtualService[pb]+1)/weights[pb] : 2;
-        return sa-sb || b.score-a.score || a.task.id.localeCompare(b.task.id);
-      });
-      const next=tier[0];
-      ordered.push(next);
-      pending.splice(pending.indexOf(next),1);
-      const selectedPlatform=platform(next.task);
-      if(weights[selectedPlatform])virtualService[selectedPlatform]=(virtualService[selectedPlatform]||0)+1;
+    for(const task of alreadySelected){
+      const name=platform(task);
+      if(weights[name])virtualService[name]=(virtualService[name]||0)+1;
+    }
+    const tiers=[...tierBuckets.values()].sort((a,b)=>
+      b.demand-a.demand||b.owner-a.owner||b.release-a.release);
+    for(const tier of tiers){
+      const groups=[...tier.platforms].map(([name,items])=>({
+        name,
+        rows:items.sort((a,b)=>b.score-a.score||a.task.id.localeCompare(b.task.id)),
+        cursor:0
+      }));
+      let left=groups.reduce((sum,group)=>sum+group.rows.length,0);
+      while(left>0){
+        let winner=null;
+        for(const group of groups){
+          const row=group.rows[group.cursor];
+          if(!row)continue;
+          const share=weights[group.name]?(virtualService[group.name]+1)/weights[group.name]:2;
+          if(!winner||share<winner.share
+            ||(share===winner.share&&(row.score>winner.row.score
+              ||(row.score===winner.row.score&&row.task.id.localeCompare(winner.row.task.id)<0)))){
+            winner={group,row,share};
+          }
+        }
+        if(!winner)break;
+        ordered.push(winner.row);
+        winner.group.cursor++;
+        left--;
+        if(weights[winner.group.name])
+          virtualService[winner.group.name]=(virtualService[winner.group.name]||0)+1;
+      }
     }
     return ordered;
   };
-  const schedulingCandidates=priorityLane?weightedPlatformOrder(candidates):candidates;
+  const schedulingCandidates=priorityLane&&freeSlots>0?weightedPlatformOrder(candidates):candidates;
   const robloxCandidateAvailable=priorityLane&&platformRows.roblox.length>0;
   const robloxFirstDeferred=[];
   const selected = [];
@@ -830,7 +872,9 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
     }
   }
 
-  const remainingCandidates=webTarget?weightedPlatformOrder(schedulingCandidates.filter(row=>!selected.some(task=>task.id===row.task.id)),selected):schedulingCandidates;
+  const remainingCandidates=webTarget&&selected.length<freeSlots
+    ?weightedPlatformOrder(schedulingCandidates.filter(row=>!selected.some(task=>task.id===row.task.id)),selected)
+    :schedulingCandidates;
   for (const row of remainingCandidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;

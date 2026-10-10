@@ -2537,3 +2537,54 @@ test('owner active scope permits Unity Web Vibe source and Roblox while holding 
   assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,true);
   assert.equal(result.queue.tasks.find(item=>item.id==='held-android').ownerDevelopmentHold,true);
 });
+
+
+test('large mixed-platform queue reserves Unity Web without repeated full-candidate priority scans',()=>{
+  const tasks=Array.from({length:900},(_,index)=>{
+    const platform=index%3===0?'unity':index%3===1?'roblox':'web';
+    const gameId='bulk-'+String(index).padStart(4,'0');
+    const unityWeb=platform==='unity';
+    return {
+      id:gameId,gameId,target:platform,department:'development',type:'implementation',
+      goal:'game-specific native source build-up',status:'queued',priority:index===600?'critical':'normal',
+      releaseState:'development-confirmed',sourceRoot:(unityWeb?'unity-games':platform+'-games')+'/'+gameId,
+      responsibleFiles:[(unityWeb?'unity-games':platform+'-games')+'/'+gameId+'/Assets/Scripts/GameCore.cs'],
+      evidence:unityWeb?['unity-web-first-stage']:[],unityWebDevelopment:unityWeb
+    };
+  });
+  const policy={ownerActiveDevelopmentScope20261009:{status:'ACTIVE'}};
+  const first=reserveVibeTaskBatch(createVibeContinuousQueue({maxConcurrentTasks:256,tasks}),{
+    maxConcurrentTasks:128,lane:'game-primary',policy
+  });
+  assert.equal(first.tasks.length,128);
+  assert.ok(first.tasks.some(task=>task.unityWebDevelopment===true));
+  assert.ok(first.tasks.some(task=>task.target==='roblox'));
+  assert.equal(first.tasks.some(task=>task.target==='web'),false,'owner-held legacy Web must not preempt Unity Web');
+  assert.ok(first.tasks.some(task=>task.id==='bulk-0600'),'critical Unity Web candidate must keep priority');
+  const uniqueIds=new Set(first.tasks.map(task=>task.id));
+  assert.equal(uniqueIds.size,first.tasks.length);
+  const source=fs.readFileSync('assets/vibe-continuous-queue.js','utf8');
+  assert.match(source,/const tierBuckets=new Map\(\)/);
+  assert.doesNotMatch(source,/pending\.filter\(row=>assetDemandRank/);
+});
+
+test('Unity Web distinct-game floor and independent same-game file safety survive priority index optimization',()=>{
+  const records=[];
+  for(let i=0;i<36;i++){
+    const id='unity-flow-'+i;
+    records.push({
+      id,gameId:id,target:'unity',department:'development',type:'implementation',
+      goal:'Unity Web native 3D game',releaseState:'development-confirmed',
+      status:'queued',priority:'normal',sourceRoot:'unity-games/'+id,
+      responsibleFiles:['unity-games/'+id+'/Assets/Scripts/GameCore.cs'],
+      evidence:['unity-web-first-stage']
+    });
+  }
+  const result=selectVibeQueueBatch(createVibeContinuousQueue({tasks:records,maxConcurrentTasks:128}),{
+    maxConcurrentTasks:18,lane:'game-primary',webGameFlowTarget:16
+  });
+  assert.equal(result.selected.length,18);
+  assert.equal(result.webGameFlow.activeGameIds.length,16);
+  assert.equal(new Set(result.selected.map(row=>row.gameId)).size,18);
+  assert.equal(result.webGameFlow.shortfall,0);
+});
