@@ -1130,8 +1130,17 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
-  if(autoExpanded){
+  const nativeUnityBootstrap=first.task.evidence.includes('unity-web-first-stage')
+    &&first.task.evidence.includes('source-root-bootstrap-required');
+  if(nativeUnityBootstrap){
+    // Unity Web 원본 코어 부트스트랩은 병렬 자산이 없더라도 유효한 최소 작업이다.
+    assert.equal(first.task.sourceRoot,'unity-games/demo');
+    assert.equal(first.task.unityWebDevelopment,true);
+    assert.deepEqual(first.task.responsibleFiles,[
+      'unity-games/demo/Assets/Scripts/GameCore.cs',
+      'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'
+    ]);
+  }else if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
   }else{
@@ -2027,6 +2036,93 @@ test('Unity native presentation responsibility excludes gameplay core when a vis
   assert.ok(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/GameCore.cs'),false);
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
+});
+
+test('current owner hold keeps daechung RPG Unity Web 3D work eligible while Android remains held',()=>{
+  const root=tempRepo(),gameId='daechung-rpg';
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.ownerActiveDevelopmentScope20261009={
+    status:'ACTIVE',
+    activeTargets:['ROBLOX','UNITY_WEB'],
+    ownerHeldTargets:['UNITY_ANDROID','FORTNITE_UEFN']
+  };
+  policy.unityWebFirstStage={
+    status:'OWNER_DIRECT_LOCKED',
+    scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    enabled:true,
+    validationSurfaceOnly:false
+  };
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const rows=collectProjects({projects:[]},{games:[{
+    id:gameId,name:'5포탈 RPG',productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',unityProjectPath:`unity-games/${gameId}`
+  }]},root,{items:[]});
+  const unityWeb=rows.find(row=>row.gameId===gameId&&row.engine==='unity');
+  assert.ok(unityWeb,'Android hold must not remove the 3D Unity Web work from the project list');
+  assert.equal(unityWeb.firstStageUnityWeb,true);
+  assert.equal(unityWeb.firstStageEngine,'UNITY_WEB');
+  assert.equal(unityWeb.projectPath,`unity-games/${gameId}`);
+  assert.equal(rows.filter(row=>row.gameId===gameId&&row.engine==='unity').length,1);
+  assert.ok(findSafeTasks(unityWeb,root,{tasks:[]}).length>0,'Unity Web 3D development must have a source task');
+});
+
+test('Unity Web 3D source and separate asset responsibilities are scheduled together',()=>{
+  const root=tempRepo(),gameId='unity-web-asset-parallel';
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  policy.unityWebFirstStage={
+    status:'OWNER_DIRECT_LOCKED',
+    scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    validationSurfaceOnly:false,
+    canonicalGameSourceRoot:'unity-games/<gameId>/'
+  };
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
+  const projectDir=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(projectDir,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(projectDir,'Assets','Editor','Build.cs'),
+    'public static class UnityWebBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(projectDir,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(projectDir,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  // 기존 Unity 코어가 있어야 WebGL 수리와 원본 시각 책임을 별도 파일로 구분한다.
+  const scriptsDir=path.join(projectDir,'Assets','Scripts');
+  fs.mkdirSync(scriptsDir,{recursive:true});
+  fs.writeFileSync(path.join(scriptsDir,'GameCore.cs'),'public sealed class GameCore {}\\n');
+  fs.writeFileSync(path.join(scriptsDir,'RuntimeBootstrap.cs'),'public sealed class RuntimeBootstrap {}\\n');
+  // 3D 시각 책임 파일은 존재하지만 코어 수리 대상 파일과 독립적이다.
+  const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
+  fs.mkdirSync(path.dirname(visualFile),{recursive:true});
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private MeshRenderer actor; }\n');
+  const project={
+    gameId,name:'Unity Web Asset Parallel',engine:'unity',target:'unity',
+    releaseState:'development-confirmed',projectPath:`unity-games/${gameId}`,
+    existing:true,firstStageUnityWeb:true
+  };
+  const rows=findSafeTasks(project,root,{tasks:[]});
+  const repair=rows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  const visualPath=`unity-games/${gameId}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
+  const assets=rows.find(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes(visualPath));
+  assert.ok(repair,'existing 3D gameplay repair must continue');
+  assert.ok(assets,'independent native 3D asset work must not wait for all WebGL gates');
+  assert.equal(repair.sourceRoot,assets.sourceRoot);
+  assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false);
+
+  // 이미 있는 표현 파일을 3D 원본 수리가 소유하면 자산 작업은 동일 파일을 병행 수정할 수 없다.
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
+  const conflictRows=findSafeTasks(project,root,{tasks:[]});
+  const conflictRepair=conflictRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  assert.ok(conflictRepair?.responsibleFiles.includes(visualPath));
+  assert.equal(conflictRows.some(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes(visualPath)),false);
 });
 
 test('same-game Unity Web repair and Unity asset task stay parallel when responsible files are disjoint',()=>{
