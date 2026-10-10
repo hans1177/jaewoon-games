@@ -2241,6 +2241,13 @@ function nativeDccFamilyForTypes(types=[]){
 export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
   'mesh-ai':freeze({source:'https://github.com/microsoft/TRELLIS.2',baselineSource:'https://github.com/VAST-AI-Research/TripoSR',license:'MIT',
     engine:'PINNED_OFFLINE_TRELLIS2_4B_OR_TRIPOSR_WITH_BLENDER',requiresLocalModel:true,
+    // [권리 검증] 모형의 MIT 허가는 Nvidia 렌더링 의존성의 상업 허가를 대신하지 않는다.
+    permittedCommercialEngine:'VAST-AI-Research/TripoSR',
+    trellis2CommercialRights:'BLOCKED_NVIDIA_NVDIFFRAST_NVDIFFREC',
+    trellis2DependencyLicenseSources:freezeList([
+      'https://github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt',
+      'https://github.com/NVlabs/nvdiffrec/blob/main/LICENSE.txt'
+    ]),
     types:freezeList(['background','environment','item','weapon','prop'])}),
   human:freeze({source:'https://github.com/makehumancommunity/mpfb2',
     license:'GPL-3.0-or-later',outputLicense:'CC0',engine:'MPFB2_HUMAN_RIG_WITH_BLENDER',
@@ -2338,6 +2345,9 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   if(!['preview','high'].includes(cinematicQuality))throw new Error('VIBE_CINEMATIC_QUALITY_UNSUPPORTED');
   if(!['auto','triposr','trellis2'].includes(meshModel))throw new Error('IMAGE_TO_MESH_MODEL_UNSUPPORTED:'+meshModel);
   if(meshModel!=='auto'&&!imageRequested)throw new Error('IMAGE_TO_MESH_MODEL_REQUIRES_INPUT_IMAGE');
+  // 이 저장소의 제작물은 상업 게임용이다. 권리 미확인 GPU 의존성을 실행 계획에 편입하지 않는다.
+  if(imageRequested&&meshModel==='trellis2')
+    throw new Error('IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED');
   if(module==='auto'&&!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
   if(module!=='auto'&&!VIBE_NATIVE_OPEN_SOURCE_MODULES[module].types.includes(typeName))return null;
   if(imageRequested&&module==='human')throw new Error('HUMAN_MPFB_REQUIRES_MODEL_OR_LOCAL_ADDON');
