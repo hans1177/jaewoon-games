@@ -15,6 +15,7 @@ const gameId=String(args['game-id']||'').trim();
 const source=String(args.source||`web-games/${gameId}`).replaceAll('\\','/').replace(/^\/+|\/+$/g,'');
 const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
+if(screenshot&&!/\.png$/i.test(screenshot))throw new Error('UNITY_WEB_QA_SCREENSHOT_PNG_REQUIRED');
 const port=Number(args.port||4187);
 
 // 메인: 공용 중앙정책과 모든 게임의 실제 Unity 3D 메시 검증을 함께 요구한다.
