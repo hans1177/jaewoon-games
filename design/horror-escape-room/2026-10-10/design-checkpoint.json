@@ -541,25 +541,34 @@
     },
     "local_authoring_parts::579df068c859eb5e5142892c1b3564f45937c24bb193d6b49ff27b1956afebf7:trigger": {
       "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+    },
+    "local_authoring_parts::579df068c859eb5e5142892c1b3564f45937c24bb193d6b49ff27b1956afebf7:stateChange": {
+      "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+    },
+    "local_authoring_parts::4f79a1c0fcbfe21dcc41a30b17b81eeb43b3671fbe6eea0982b521580b20062f:systemInterconnections:2:c16af59e43564073": {
+      "fromSystem": "로드",
+      "toSystem": "로드 전환 시스템",
+      "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+      "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 20,
+      "calls": 21,
+      "successes": 21,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 464806,
-      "lastMs": 8791,
+      "totalMs": 474916,
+      "lastMs": 10110,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:42:06.065Z"
+      "updatedAt": "2026-10-10T09:42:16.176Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:42:06.065Z",
+  "updatedAt": "2026-10-10T09:42:16.177Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1891,7 +1900,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:42:06.065Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:42:16.177Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
