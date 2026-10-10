@@ -437,3 +437,55 @@ test('System-AI workflow disables unchanged-main shortcuts for mutation-required
   assert.match(workflow,/source-mutation-sha:/);
   assert.match(workflow,/env\.SOURCE_MUTATION_REQUIRED != 'true'/);
 });
+
+test('verified external-learning application failure is automatically routed to exact Vibe game-source repair',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const task={id:'native-alpha',gameId:'alpha',status:'queued',target:'roblox',
+    sourceRoot:'roblox-games/alpha',responsibleFiles:['roblox-games/alpha/client/Main.client.luau'],
+    currentStep:'F0_SOURCE_PREFLIGHT',failureSignature:'VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION',
+    evidence:['failure-stage:F0_SOURCE_PREFLIGHT']};
+  const escalated=escalateRecoveryCandidates({gameQueueInput:{tasks:[task]}});
+  assert.equal(escalated.added.length,1);
+  const recovery=escalated.queue.tasks[0];
+  assert.equal(recovery.recoveryOwner,'VIBE2_VIBE3');
+  assert.equal(recovery.failureSignature,'VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION');
+  assert.deepEqual(recovery.responsibleFiles,task.responsibleFiles);
+  assert.ok(recovery.evidence.includes('system-ai-external-application-bottleneck:DETECTED'));
+  const dispatched=dispatchRecovery({recoveryInput:escalated.queue,gameQueueInput:{tasks:[task]}});
+  const repaired=dispatched.gameQueue.tasks[0];
+  assert.equal(repaired.status,'queued');
+  assert.equal(repaired.gameRepairContract.fullRegressionFanInRequired,true);
+  assert.equal(dispatched.systemAi.tasks.length,0);
+  assert.ok(repaired.evidence.some(x=>x.startsWith('recovery-queue:')));
+});
+
+test('external learning failures stay game-local and system-code repair uses the supervised System AI',async()=>{
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const make=(id)=>({id,gameId:id,status:'failed',target:'roblox',sourceRoot:'roblox-games/'+id,
+    responsibleFiles:['roblox-games/'+id+'/client/Main.client.luau'],blocker:'VERIFIED_EXTERNAL_LEARNING_MISSING'});
+  const game=escalateRecoveryCandidates({gameQueueInput:{tasks:[make('alpha'),make('beta')]}});
+  assert.equal(game.queue.tasks.length,2);
+  assert.ok(game.queue.tasks.every(x=>x.blastRadius==='single-task'&&x.recoveryOwner==='VIBE2_VIBE3'));
+  const system=escalateRecoveryCandidates({systemAiQueueInput:{tasks:[{
+    id:'system-binding',status:'failed',retries:2,taskType:'bottleneck-repair',
+    responsibleFiles:['tools/company-development-roblox-bootstrap.mjs'],
+    failureSignature:'VERIFIED_EXTERNAL_LEARNING_NATIVE_SOURCE_STALE',
+    blocker:'system-ai-implementation-failed'
+  }]}});
+  assert.equal(system.queue.tasks.length,1);
+  const rec=system.queue.tasks[0];
+  assert.equal(rec.recoveryOwner,'SYSTEM_AI');
+  const dispatched=dispatchRecovery({recoveryInput:system.queue,systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.systemAi.tasks.length,1);
+  assert.deepEqual(dispatched.systemAi.tasks[0].responsibleFiles,['tools/company-development-roblox-bootstrap.mjs']);
+});
+
+test('unverified optional matching and commercial expression security findings cannot silently enter automatic external-learning repairs',()=>{
+  const result=escalateRecoveryCandidates({gameQueueInput:{tasks:[
+    {id:'optional',status:'queued',target:'unity',responsibleFiles:['unity-games/demo/Assets/Main.cs'],
+      evidence:['existing-game-interface-auto-match:v1']},
+    {id:'security',status:'failed',target:'unity',responsibleFiles:['unity-games/demo/Assets/Main.cs'],
+      failureSignature:'RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED'}
+  ]}});
+  assert.equal(result.queue.tasks.length,0);
+});

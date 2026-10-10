@@ -674,3 +674,35 @@ test('exact first-frame evidence groups unobserved boot separately from proven u
   assert.ok(result.actions.includes('REPAIR_VERIFIED_SPAWN_GROUNDING'));
   assert.ok(result.development.rows.every(x=>x.automaticPassClaim===false));
 });
+
+test('System AI observes exact external-learning application blockers without treating optional algorithm matches as failures',()=>{
+  const snapshot=analyzeSystemAiBottlenecks({
+    gameQueue:{tasks:[
+      {id:'game-native',gameId:'alpha',status:'queued',sourceRoot:'roblox-games/alpha',
+        responsibleFiles:['roblox-games/alpha/client/Main.client.luau'],
+        failureSignature:'VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION',evidence:['failure-stage:F0_SOURCE_PREFLIGHT']},
+      {id:'system-code',gameId:'beta',status:'failed',responsibleFiles:['tools/company-development-roblox-bootstrap.mjs'],
+        blocker:'VERIFIED_EXTERNAL_LEARNING_NATIVE_SOURCE_STALE'},
+      {id:'security',status:'failed',responsibleFiles:['unity-games/gamma/Assets/Main.cs'],
+        failureSignature:'RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED'},
+      {id:'optional-match',status:'queued',evidence:['existing-game-interface-auto-match:v1'],
+        graphicsReplacementContract:{menuDiversity:{existingGameInterfaceSync:{externalAlgorithms:[{id:'PROGRESSIVE_DISCLOSURE'}]}}}},
+      {id:'done',status:'done',failureSignature:'VERIFIED_EXTERNAL_LEARNING_MISSING'}
+    ]},
+    developmentQueue:{items:[{gameId:'alpha',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+      robloxFailureSignature:'VERIFIED_EXTERNAL_LEARNING_PARTIAL_APPLICATION'}]}
+  });
+  const external=snapshot.externalLearningApplications;
+  assert.equal(external.gameTaskFailureCount,3);
+  assert.equal(external.developmentFloorFailureCount,1);
+  assert.equal(external.nativeRepairCount,1);
+  assert.equal(external.systemRepairCount,1);
+  assert.equal(external.securityReviewRequiredCount,1);
+  assert.equal(external.gameTaskFailures.find(x=>x.taskId==='game-native').recoveryOwner,'VIBE2_VIBE3');
+  assert.equal(external.gameTaskFailures.find(x=>x.taskId==='system-code').recoveryOwner,'SYSTEM_AI');
+  assert.equal(external.gameTaskFailures.find(x=>x.taskId==='security').recoveryOwner,'SECURITY_IMMUNE_REVIEW');
+  assert.ok(!external.gameTaskFailures.some(x=>x.taskId==='optional-match'||x.taskId==='done'));
+  assert.ok(snapshot.actions.includes('RECOVER_VERIFIED_EXTERNAL_LEARNING_AT_EXACT_GAME_OR_SYSTEM_STAGE'));
+  assert.ok(snapshot.actions.includes('ROUTE_EXTERNAL_LEARNING_SECURITY_TO_IMMUNE_REVIEW'));
+  assert.equal(external.optionalAlgorithmMatchesAreNotFailures,true);
+});
