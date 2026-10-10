@@ -247,10 +247,10 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
       const spatial=['TERRAIN','STRUCTURE','VEGETATION','FUNCTIONAL_PROPS'].includes(layer);
       const candidates=(Array.isArray(assets)?assets:[]).filter(asset=>{
         const paths=[asset?.path,asset?.masterGlb,asset?.meshArtifact,...(asset?.sourceFiles||[]),...(asset?.nativeArtifacts||[])].map(value=>String(value||''));
-        const native3d=paths.some(value=>/\\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(value));
+        const native3d=paths.some(value=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(value));
         const roles=Array.isArray(asset?.mapDetailRoles)?asset.mapDetailRoles:[];
         const license=String(asset?.license||'').toUpperCase();
-        const restricted=asset?.rightsPass===false||asset?.securityBlocked===true||asset?.quarantined===true||/NON.?COMMERCIAL|\\bNC\\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license);
+        const restricted=asset?.rightsPass===false||asset?.securityBlocked===true||asset?.quarantined===true||/NON.?COMMERCIAL|\bNC\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license);
         return !restricted&&String(asset?.family||asset?.category).toUpperCase()===family
           &&Boolean(asset?.id||asset?.assetId)&&Boolean(asset?.sourceHash||asset?.contentHash||asset?.sha256)
           &&(!asset?.districtFunctions?.length||asset.districtFunctions.includes(district.function))
@@ -258,7 +258,7 @@ export function createVibeMapDetailReconstruction({sketch={},assets=[],styleFami
       }).sort((a,b)=>String(a.id||a.assetId).localeCompare(String(b.id||b.assetId)));
       const scored=candidates.map(asset=>{
         const paths=[asset.path,asset.masterGlb,asset.meshArtifact,...(asset.sourceFiles||[]),...(asset.nativeArtifacts||[])].map(value=>String(value||''));
-        const native3d=paths.some(value=>/\\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(value));
+        const native3d=paths.some(value=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(value));
         const assetId=String(asset.id||asset.assetId),usage=layerAssetUsage.get(family+':'+assetId)||0;
         const exact=Array.isArray(asset.mapDetailRoles)&&asset.mapDetailRoles.includes(layer);
         const sameGame=Array.isArray(asset.consumerGameIds)&&asset.consumerGameIds.includes(gameId);
@@ -342,9 +342,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const files=[asset?.path,asset?.masterGlb,asset?.meshArtifact,...(asset?.sourceFiles||[]),...(asset?.nativeArtifacts||[])];
     const license=String(asset?.license||'').toUpperCase();
     return Boolean(asset?.id||asset?.assetId)&&Boolean(asset?.sourceHash||asset?.contentHash||asset?.sha256)
-      &&files.some(file=>/\\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(file||'')))
+      &&files.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(file||'')))
       &&asset?.rightsPass!==false&&asset?.quarantined!==true&&asset?.securityBlocked!==true
-      &&!/NON.?COMMERCIAL|\\bNC\\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license)
+      &&!/NON.?COMMERCIAL|\bNC\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license)
       &&(asset?.rightsPass===true||/^(?:CC0|CC-BY|MIT|APACHE|PUBLIC_DOMAIN|OWNED)/.test(license))
       &&['BUILDING','ENVIRONMENT','PROP'].includes(String(asset?.family||asset?.category).toUpperCase());
   }).sort((a,b)=>String(a.id||a.assetId).localeCompare(String(b.id||b.assetId)));
@@ -507,7 +507,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     if(vegetation.length>=maxVegetation)break;
     let tooClose=false;
     for(let dz=-1;dz<=1&&!tooClose;dz++)for(let dx=-1;dx<=1;dx++){
-      if(placedNatureCells.has(at(tile.x+dx,tile.z+dz))){tooClose=true;break;}
+      if(within(tile.x+dx,tile.z+dz)&&placedNatureCells.has(at(tile.x+dx,tile.z+dz))){tooClose=true;break;}
     }
     if(tooClose)continue;
     const kind=tile.biome==='RIDGE'?'ROCK':/DRY|ARID|DESERT/.test(climateHint+' '+biomeHint)?'SCRUB':/COLD|SNOW|ALPINE|MOUNTAIN/.test(climateHint+' '+biomeHint)?'PINE':tile.biome==='FOREST'?'BROADLEAF':'BUSH';
