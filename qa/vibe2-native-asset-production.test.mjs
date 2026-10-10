@@ -1473,6 +1473,57 @@ function tempRoot(opts={}){
   return root;
 }
 
+test('common career motion authoring resolves one existing registered source per game genre, without fake verified clips',()=>{
+  const root=tempRoot();
+  try{
+    const company=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    const registered=company.assets.find(row=>row.id==='shared-humanoid-motion-v1');
+    assert.ok(registered?.availableCareerMotionRecipes?.length>=14,'common career recipes registered in the canonical library');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:company.version,assets:[registered],externalSources:[]
+    }));
+    const base={
+      target:'unity',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    };
+    const task={gameId:'common-career-demo',genre:'ACTION_RPG',goal:'사무라이 검술 공용 모션 제작',
+      commonCareerId:'SAMURAI',commonMotionClip:'common_samurai_iai_draw_hq'};
+    const plan=buildVibeAssetProductionPlan({...base,task});
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,task.commonMotionClip);
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedCareer,'SAMURAI');
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.oneObjectOneClipWorkUnit,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.unverifiedUntilNativeRuntime,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.length,1);
+    const selected=plan.nativeAuthoringExecution.dcc.executionRecipes[0];
+    assert.equal(selected.script,'assets/shared/humanoid-motion-v1/author-motion.py');
+    assert.ok(selected.args.includes(task.commonMotionClip));
+    assert.equal(selected.runMode,'VERIFY_ONLY');
+    assert.equal(selected.companyPromotionAllowed,false);
+    const combat=plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(combat.career.id,'SAMURAI');
+    assert.equal(combat.career.productionVerified,false);
+    assert.equal(combat.newPipelineCreated,false);
+    const sim=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'common-farm-demo',genre:'TYCOON',goal:'공용 농장 작업 모션',
+      commonCareerId:'FARMER',commonMotionClip:'common_farmer_harvest_hq'
+    }});
+    assert.equal(sim.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_farmer_harvest_hq');
+    assert.equal(sim.nativeAuthoringExecution.dcc.executionRecipes.length,1);
+    assert.equal(sim.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career.genre,'TYCOON');
+    const inherited=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'common-kensei-demo',genre:'ACTION_RPG',goal:'검성 계층 상속된 공용 모션',
+      commonCareerId:'KENSEI'
+    }});
+    assert.equal(inherited.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_samurai_iai_draw_hq');
+    assert.throws(()=>buildVibeAssetProductionPlan({...base,task:{
+      gameId:'wrong-career-demo',genre:'ACTION_RPG',goal:'없는 직업 클립 요청',
+      commonCareerId:'SAMURAI',commonMotionClip:'common_wizard_unknown_hq'
+    }}),/COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED/);
+    const normal=buildVibeAssetProductionPlan({...base,task:{gameId:'normal-game',genre:'SURVIVAL',goal:'기존 동작 유지'}});
+    assert.equal(normal.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('verified commercial black-box distillation is mandatory input for internal asset evolution',()=>{
   const verifiedLearning={
     exactKnowledgeIds:['PLAYBOOK_REUSE:external-black-box-commercial-ui','PLAYBOOK_REUSE:external-black-box-commercial-motion'],
