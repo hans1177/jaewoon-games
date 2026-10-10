@@ -69,9 +69,14 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     const verifiedLearning=JSON.parse(fs.readFileSync('unity-games/test-survival/Assets/verified-external-learning.json','utf8'));
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+    const linker=fs.readFileSync('unity-games/test-survival/Assets/link.xml','utf8');
+
     // GitHub bootstrap PR must pass git diff --cached --check on generated C#.
     assert.doesNotMatch(runtime,/[ \t]+(?=\r?$)/m);
     assert.doesNotMatch(build,/[ \t]+(?=\r?$)/m);
+    assert.match(linker,/<assembly fullname="UnityEngine\.CoreModule" preserve="all"/);
+    assert.match(linker,/<assembly fullname="UnityEngine\.ContentLoadModule">/);
+    assert.match(linker,/<type fullname="Unity\.Loading\.ContentLoadingSystem" preserve="all"\s*\/>/);
     const unityModules=JSON.parse(fs.readFileSync('unity-games/test-survival/Packages/manifest.json','utf8')).dependencies;
     assert.equal(unityModules['com.unity.modules.imgui'],'1.0.0');
     assert.equal(unityModules['com.unity.modules.physics'],'1.0.0');
@@ -623,4 +628,11 @@ test('Unity Web bootstrap skips redundant source generation for already-promoted
   assert.ok(workflow.includes('git diff --name-only "$staged_game_tree" "$pr_game_tree"'));
   assert.ok(workflow.includes('--match-head-commit'));
   assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+});
+
+test('existing monster-adventure Unity Web linker retains the native ContentLoad crash repair contract',()=>{
+  const linker=fs.readFileSync(new URL('../unity-games/monster-adventure/Assets/link.xml',import.meta.url),'utf8');
+  assert.match(linker,/<assembly fullname="UnityEngine\.CoreModule" preserve="all"/);
+  assert.match(linker,/<assembly fullname="UnityEngine\.ContentLoadModule">/);
+  assert.match(linker,/<type fullname="Unity\.Loading\.ContentLoadingSystem" preserve="all"\s*\/>/);
 });
