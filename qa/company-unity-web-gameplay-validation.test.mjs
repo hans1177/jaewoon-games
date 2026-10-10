@@ -177,6 +177,7 @@ test('Unity Web scene screenshots retain boot and gameplay canvas pixels indepen
   const screenshots=source.indexOf("const liveCapture=await page.screenshot({fullPage:false})");
   assert.ok(boot>0&&boot<coreFun&&gameplay>coreFun&&gameplay>screenshots);
   assert.match(source,/fs\.writeFileSync\(bootScenePath,bootSceneCapture\)/);
+  assert.match(source,/UNITY_WEB_QA_SCREENSHOT_PNG_REQUIRED/);
   assert.match(source,/fs\.writeFileSync\(sceneScreenshot,sceneCapture\)/);
   assert.match(source,/createImageBitmap\(new Blob\(\[bytes\],\{type:'image\/png'\}\)\)/);
   assert.match(source,/sceneCapture\.toString\('base64'\)/);
