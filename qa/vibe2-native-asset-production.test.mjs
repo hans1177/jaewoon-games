@@ -1493,24 +1493,29 @@ test('motion planning reuses company clips per state and does not invent coverag
       {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],states:['skill']}
     ]}});
     const motion=plan.decisions.find(row=>row.type==='animation');
+    // 외부/출처 미검증 manifest만으로 실제 게임에 사용할 모션으로 승격되지 않아야 한다.
+    assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion','external-motion']);
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,['external-motion']);
-    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['hit','skill','death']);
-    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,['unknown-clips']);
+    const attack=motion.motionReusePlan.stateBindings.find(row=>row.state==='attack');
+    const move=motion.motionReusePlan.stateBindings.find(row=>row.state==='move');
+    assert.deepEqual([...attack.candidateIds],['owned-motion']);
+    assert.deepEqual([...move.candidateIds],[]);
+    assert.deepEqual([...motion.motionReusePlan.unresolvedStates],['move','hit','skill','death']);
+    assert.deepEqual([...motion.motionReusePlan.coverageUnknownCandidateIds],[]);
     assert.equal(motion.motionReusePlan.runtimeVerified,false);
     assert.ok(motion.motionReusePlan.stateBindings.every(row=>row.runtimeVerified===false));
     assert.equal(motion.companyCandidates[0].rigType,'R15');
-    assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.qualitySelection.selectedAssetId,null);
-    assert.equal(motion.qualitySelection.selectionState,'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON');
-    assert.equal(motion.postDownloadComparison.required,true);
-    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion','unknown-clips']);
-    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,['external-motion']);
-    assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
-    assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
+    assert.equal(motion.qualitySelection.selectionState,'TARGET_GAME_REVIEW_REQUIRED');
+    assert.equal(motion.postDownloadComparison.required,false);
+    assert.deepEqual([...motion.postDownloadComparison.internalBaselineCandidateIds],['owned-motion']);
+    assert.deepEqual([...motion.postDownloadComparison.pendingDownloadCandidateIds],[]);
+    assert.deepEqual([...motion.qualitySelection.compareCandidateIds],['owned-motion']);
+    for(const forbidden of ['external-motion','unknown-clips','reference-motion','wrong-platform','blocked-license']){
+      assert.ok(!motion.qualitySelection.compareCandidateIds.includes(forbidden),forbidden);
+    }
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/attack=owned-motion\|external-motion/);
+    assert.match(guidance,/attack=owned-motion/);
     assert.match(guidance,/Asset ID를 지어내지/);
     assert.match(guidance,/MULTIPLAYER_SYNC/);
     assert.match(guidance,/기존 공격 판정/);
