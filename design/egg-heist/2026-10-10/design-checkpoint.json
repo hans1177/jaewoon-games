@@ -3,243 +3,31 @@
   "gameId": "egg-heist",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
-  "fingerprint": "db44bead5a930f6bb57291c0c4728fbb78e89713aa82e5ac43f6652d80673186",
+  "fingerprint": "d4f63753b9a87431bc65c5ed5dfc570ad2e84b3938c85283a2b60a9258dcbbc9",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::0495bc45718498a76a19a71f410e9e41cf5ea2d223be43d40291da5a334eb75f:identity,creativeGrammar": {
-      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "알 도둑 대작전 - 수집, 모험",
-        "a": {
-          "system": "경비 생태",
-          "material": "잠입 및 탈출 전략",
-          "materialDomain": "코미디적 압박과 위험 관리",
-          "stateChange": "플레이어의 행동 패턴 변경 및 새로운 선택 기회 생성"
-        },
-        "b": {
-          "system": "운송 시스템",
-          "material": "물품 이동",
-          "materialDomain": "실제 세계의 물리적 제약",
-          "stateChange": "물체 위치 및 속도 변화에 따른 플레이어의 결정"
-        },
-        "abCausality": "플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건",
-        "abEvolution": {
-          "aChangesB": "상황 변화 -> 새로운 선택 기회 제공, B->A: 상태 교환",
-          "bChangesA": "신규 선택 -> 상태 변화 -> 결과 발생, A->B: 상태 교환",
-          "lateGameChange": "중후반 두 시스템 간의 인과적 연결 강화, 보조 장르와 메인 장르 간의 선택 다양성 증대"
-        },
-        "materialFusion": {
-          "contrast": "주요 주제 vs. 보조 주제, 메인 장르 vs. 보조 장르",
-          "causalBridge": "플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건",
-          "removalConsequence": "보조 장르 제거 시 플레이어의 행동 패턴 변경, 메인 장르와 보조 장르 간의 선택 유연성 증가"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 잠입 전략 및 탈출 선택이 실제 세계에 영향을 미치는 단서",
-          "characterConflict": "코미디적 압박과 위험 관리의 갈등 구조",
-          "playerChoice": "플레이어의 판단 결정 과정에서 실질적인 세계 상태 변화를 일으키는 선택",
-          "worldChange": "플레이어의 선택으로 인해 발생하는 새로운 세계 규칙 및 상태 변화",
-          "nextEvent": "플레이어의 선택 이후 발생하는 새로운 사건 및 대응"
-        },
-        "cThemes": [
-          {
-            "name": "잠입",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 행동 패턴 재설계 및 새로운 선택 기회 제공"
-          },
-          {
-            "name": "탈출",
-            "kind": "MATERIAL",
-            "gameplayEffect": "상황 변화 및 결과 발생, 플레이어의 선택으로 인한 세계 상태 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "경비 생태",
-            "gameplayEffect": "플레이어의 행동 패턴 변경 및 새로운 선택 기회 생성"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "운송 시스템",
-            "gameplayEffect": "물체 위치 및 속도 변화에 따른 플레이어의 결정"
-          }
-        ],
-        "cGenreInterlock": "플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건",
-        "cWorldAndGameplayEffect": "플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어의 잠입 전략과 탈출 선택이 실제 세계에 영향을 미치는 단서",
-            "discovery": "코미디적 압박과 위험 관리의 갈등 구조",
-            "newChoice": "플레이어의 판단 결정 과정에서 실질적인 세계 상태 변화를 일으키는 선택"
-          },
-          {
-            "clue": "플레이어의 선택 이후 발생하는 새로운 사건 및 대응",
-            "discovery": "실제 세계의 물리적 제약과 이동 규칙",
-            "newChoice": "신규 선택 -> 상태 변화 -> 결과 발생, A->B: 상태 교환"
-          },
-          {
-            "clue": "중후반 두 시스템 간의 인과적 연결 강화, 보조 장르와 메인 장르 간의 선택 유연성 증대",
-            "discovery": "플레이어의 선택으로 인한 새로운 세계 규칙 및 상태 변화",
-            "newChoice": "보조 장르와 메인 장르 간의 선택 다양성 증대"
-          },
-          {
-            "clue": "플레이어의 선택으로 인한 새로운 세계 상태 변화",
-            "discovery": "상황 변화 및 결과 발생, 플레이어의 선택으로 인한 세계 상태 변화",
-            "newChoice": "A->B: 상태 교환, B->A: 상태 교환"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건",
-        "finalGameIdentity": "플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건"
-      }
-    },
-    "local_authoring_parts::0495bc45718498a76a19a71f410e9e41cf5ea2d223be43d40291da5a334eb75f:playerFantasy,coreFun": {
-      "playerFantasy": "알 도둑 대작전에서는 플레이어가 잠입 전략을 세우고 탈출 선택을 하며, 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조를 경험하게 됩니다. 이 과정에서 새로운 선택 기회가 제공되며, 게임 내부의 상태 변화와 결과 발생을 통해 플레이어는 자신의 행동 패턴을 재설계할 수 있습니다.",
-      "coreFun": "{\n \"mainIdentity\": \"알 도둑 대작전 - 수집, 모험\",\n \"a\": {\n \"system\": \"경비 생태\",\n \"material\": \"잠입 및 탈출 전략\",\n \"materialDomain\": \"코미디적 압박과 위험 관리\",\n \"stateChange\": \"플레이어의 행동 패턴 변경 및 새로운 선택 기회 생성\"\n },\n \"b\": {\n \"system\": \"운송 시스템\",\n \"material\": \"물품 이동\",\n \"materialDomain\": \"실제 세계의 물리적 제약\",\n \"stateChange\": \"물체 위치 및 속도 변화에 따른 플레이어의 결정\"\n },\n \"abCausality\": \"플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건\",\n \"abEvolution\": {\n \"aChangesB\": \"상황 변화 -> 새로운 선택 기회 제공, B->A: 상태 교환\",\n \"bChangesA\": \"신규 선택 -> 상태 변화 -> 결과 발생, A->B: 상태 교환\",\n \"lateGameChange\": \"중후반 두 시스템 간의 인과적 연결 강화, 보조 장르와 메인 장르 간의 선택 다양성 증대\"\n },\n \"materialFusion\": {\n \"contrast\": \"주요 주제 vs. 보조 주제, 메인 장르 vs. 보조 장르\",\n \"causalBridge\": \"플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건\",\n \"removalConsequence\": \"보조 장르 제거 시 플레이어의 행동 패턴 변경, 메인 장르와 보조 장르 간의 선택 유연성 증가\"\n },\n \"storyCausalChain\": {\n \"cause\": \"플레이어의 잠입 전략 및 탈출 선택이 실제 세계에 영향"
-    },
-    "local_authoring_parts::40786fe76dd0e85337ce9ad59e8cbaa0e5f804949370c57aba346954374822b8:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "알 도둑 대작전 - 수집, 모험",
-        "a": {
-          "system": "경비 생태",
-          "material": "잠입 및 탈출 전략",
-          "materialDomain": "코미디적 압박과 위험 관리",
-          "stateChange": "플레이어의 행동 패턴 변경 및 새로운 선택 기회 생성"
-        },
-        "b": {
-          "system": "운송 시스템",
-          "material": "물품 이동",
-          "materialDomain": "실제 세계의 물리적 제약",
-          "stateChange": "물체 위치 및 속도 변화에 따른 플레이어의 결정"
-        },
-        "abCausality": "플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건",
-        "abEvolution": {
-          "aChangesB": "상황 변화 -> 새로운 선택 기회 제공, B->A: 상태 교환",
-          "bChangesA": "신규 선택 -> 상태 변화 -> 결과 발생, A->B: 상태 교환",
-          "lateGameChange": "중후반 두 시스템 간의 인과적 연결 강화, 보조 장르와 메인 장르 간의 선택 다양성 증대"
-        },
-        "materialFusion": {
-          "contrast": "주요 주제 vs. 보조 주제, 메인 장르 vs. 보조 장르",
-          "causalBridge": "플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건",
-          "removalConsequence": "보조 장르 제거 시 플레이어의 행동 패턴 변경, 메인 장르와 보조 장르 간의 선택 유연성 증가"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 잠입 전략 및 탈출 선택이 실제 세계에 영향을 미치는 단서",
-          "characterConflict": "코미디적 압박과 위험 관리의 갈등 구조",
-          "playerChoice": "플레이어의 판단 결정 과정에서 실질적인 세계 상태 변화를 일으키는 선택",
-          "worldChange": "플레이어의 선택으로 인해 발생하는 새로운 세계 규칙 및 상태 변화",
-          "nextEvent": "플레이어의 선택 이후 발생하는 새로운 사건 및 대응"
-        },
-        "cThemes": [
-          {
-            "name": "잠입",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 행동 패턴 재설계 및 새로운 선택 기회 제공"
-          },
-          {
-            "name": "탈출",
-            "kind": "MATERIAL",
-            "gameplayEffect": "상황 변화 및 결과 발생, 플레이어의 선택으로 인한 세계 상태 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "경비 생태",
-            "gameplayEffect": "플레이어의 행동 패턴 변경 및 새로운 선택 기회 생성"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "운송 시스템",
-            "gameplayEffect": "물체 위치 및 속도 변화에 따른 플레이어의 결정"
-          }
-        ],
-        "cGenreInterlock": "플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건",
-        "cWorldAndGameplayEffect": "플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어의 잠입 전략과 탈출 선택이 실제 세계에 영향을 미치는 단서",
-            "discovery": "코미디적 압박과 위험 관리의 갈등 구조",
-            "newChoice": "플레이어의 판단 결정 과정에서 실질적인 세계 상태 변화를 일으키는 선택"
-          },
-          {
-            "clue": "플레이어의 선택 이후 발생하는 새로운 사건 및 대응",
-            "discovery": "실제 세계의 물리적 제약과 이동 규칙",
-            "newChoice": "신규 선택 -> 상태 변화 -> 결과 발생, A->B: 상태 교환"
-          },
-          {
-            "clue": "중후반 두 시스템 간의 인과적 연결 강화, 보조 장르와 메인 장르 간의 선택 유연성 증대",
-            "discovery": "플레이어의 선택으로 인한 새로운 세계 규칙 및 상태 변화",
-            "newChoice": "보조 장르와 메인 장르 간의 선택 다양성 증대"
-          },
-          {
-            "clue": "플레이어의 선택으로 인한 새로운 세계 상태 변화",
-            "discovery": "상황 변화 및 결과 발생, 플레이어의 선택으로 인한 세계 상태 변화",
-            "newChoice": "A->B: 상태 교환, B->A: 상태 교환"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건",
-        "finalGameIdentity": "플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건"
-      },
-      "playerFantasy": "알 도둑 대작전에서는 플레이어가 잠입 전략을 세우고 탈출 선택을 하며, 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조를 경험하게 됩니다. 이 과정에서 새로운 선택 기회가 제공되며, 게임 내부의 상태 변화와 결과 발생을 통해 플레이어는 자신의 행동 패턴을 재설계할 수 있습니다.",
-      "coreFun": "{\n \"mainIdentity\": \"알 도둑 대작전 - 수집, 모험\",\n \"a\": {\n \"system\": \"경비 생태\",\n \"material\": \"잠입 및 탈출 전략\",\n \"materialDomain\": \"코미디적 압박과 위험 관리\",\n \"stateChange\": \"플레이어의 행동 패턴 변경 및 새로운 선택 기회 생성\"\n },\n \"b\": {\n \"system\": \"운송 시스템\",\n \"material\": \"물품 이동\",\n \"materialDomain\": \"실제 세계의 물리적 제약\",\n \"stateChange\": \"물체 위치 및 속도 변화에 따른 플레이어의 결정\"\n },\n \"abCausality\": \"플레이어의 판단 -> 상황 변화 -> 실질적 결과 -> 다음 사건\",\n \"abEvolution\": {\n \"aChangesB\": \"상황 변화 -> 새로운 선택 기회 제공, B->A: 상태 교환\",\n \"bChangesA\": \"신규 선택 -> 상태 변화 -> 결과 발생, A->B: 상태 교환\",\n \"lateGameChange\": \"중후반 두 시스템 간의 인과적 연결 강화, 보조 장르와 메인 장르 간의 선택 다양성 증대\"\n },\n \"materialFusion\": {\n \"contrast\": \"주요 주제 vs. 보조 주제, 메인 장르 vs. 보조 장르\",\n \"causalBridge\": \"플레이어의 선택 -> 상황 변화 -> 결과 -> 다음 사건\",\n \"removalConsequence\": \"보조 장르 제거 시 플레이어의 행동 패턴 변경, 메인 장르와 보조 장르 간의 선택 유연성 증가\"\n },\n \"storyCausalChain\": {\n \"cause\": \"플레이어의 잠입 전략 및 탈출 선택이 실제 세계에 영향"
-    },
-    "local_authoring_parts::9b85ac3f0c63d10c94b1e5ddbdfec24bdf94d2854d837a8dd950bb1ed40c5f24:coreLoop": {
-      "coreLoop": [
-        "입력: 플레이어의 잠입 전략 및 탈출 선택",
-        " 상태변화: 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조 생성",
-        "보상: 새로운 선택 기회 제공, 상황 변화, 실질적 결과 발생, 다음 사건 발생"
-      ]
-    },
-    "local_authoring_parts::63f11bfa5b721fc161288130abc205b46a4e40990eba209c4b2f8087e927c5a9:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "입력: 플레이어의 잠입 전략 및 탈출 선택",
-        " 상태변화: 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조 생성"
-      ],
-      "stateOutputs": [
-        "보상: 새로운 선택 기회 제공, 상황 변화, 실질적 결과 발생, 다음 사건 발생"
-      ],
-      "name": "알 도둑 대작전 - 수집, 모험",
-      "purpose": "플레이어가 잠입 전략을 세우고 탈출 선택을 하며, 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조를 경험하게 됩니다.",
-      "playerChoice": "플레이어의 판단 결정 과程에서 실질적인 세계 상태 변화를 일으키는 선택"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 64,
-      "successes": 63,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2595673,
-      "lastMs": 30752,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:46:52.751Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T07:03:36.925Z",
-  "updatedAt": "2026-10-10T07:46:52.753Z",
+  "createdAt": "2026-10-10T08:42:12.264Z",
+  "updatedAt": "2026-10-10T08:42:12.279Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -280,10 +68,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -712,8 +502,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -754,10 +544,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1186,8 +978,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1228,10 +1020,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1704,35 +1498,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::63f11bfa5b721fc161288130abc205b46a4e40990eba209c4b2f8087e927c5a9:signatureSystems:1:d8f1f0a06da10d1e": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::63f11bfa5b721fc161288130abc205b46a4e40990eba209c4b2f8087e927c5a9:signatureSystems:1:d8f1f0a06da10d1e": 59
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "0495bc45718498a76a19a71f410e9e41cf5ea2d223be43d40291da5a334eb75f": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:46:52.751Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
