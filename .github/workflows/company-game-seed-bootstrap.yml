@@ -194,15 +194,29 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-game-seed';git config user.email 'game-seed@users.noreply.github.com'
           if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then echo 'persisted=false' >> "$GITHUB_OUTPUT";exit 0;fi
-          git add game-seed-state.json;git commit -m 'runtime: update seed material pool and composed seeds';generated="$(git rev-parse HEAD)";pushed=0
+          # 메인 작업트리(특히 Unity LFS 자산)를 브랜치 전환하지 않고 런타임 트리만 갱신한다.
+          generated_blob="$(git hash-object -w game-seed-state.json)"
+          intake_blob="$(git hash-object /tmp/company-runtime-seed-state-before.json)"
+          pushed=0
           for attempt in 1 2 3 4; do
-            git fetch origin "$COMPANY_RUNTIME_BRANCH" main
-            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then git checkout -B game-seed-persist "origin/$COMPANY_RUNTIME_BRANCH"; else git checkout -B game-seed-persist origin/main; fi
-            git checkout "$generated" -- game-seed-state.json;git add game-seed-state.json
-            if git diff --cached --quiet; then pushed=1;break;fi
-            git commit -m 'runtime: update seed material pool and composed seeds'
-            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi
-            git reset --hard "$generated";sleep $((attempt*2))
+            git fetch origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH" --depth=2 --no-tags --quiet
+            runtime_parent="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
+            current_blob="$(git rev-parse "$runtime_parent:game-seed-state.json")"
+            if [ "$current_blob" != "$intake_blob" ]; then
+              # 다른 작업자가 수정한 최신 시드·진행·저장을 오래된 원본으로 덮어쓰지 않는다.
+              echo 'GAME_SEED_RUNTIME_BASE_CHANGED=RETRY_WITH_FRESH_INTAKE' >&2
+              exit 1
+            fi
+            runtime_index="$RUNNER_TEMP/game-seed-runtime-index-$attempt"
+            rm -f "$runtime_index"
+            GIT_INDEX_FILE="$runtime_index" git read-tree "$runtime_parent^{tree}"
+            GIT_INDEX_FILE="$runtime_index" git update-index --add --cacheinfo 100644 "$generated_blob" game-seed-state.json
+            runtime_tree="$(GIT_INDEX_FILE="$runtime_index" git write-tree)"
+            if [ "$runtime_tree" = "$(git rev-parse "$runtime_parent^{tree}")" ]; then pushed=1;break;fi
+            runtime_commit="$(printf '%s\n' 'runtime: update seed material pool and composed seeds' | git commit-tree "$runtime_tree" -p "$runtime_parent")"
+            if git push origin "$runtime_commit:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi
+            echo 'GAME_SEED_RUNTIME_REF_CONFLICT=RETRY_LATEST_RUNTIME'
+            sleep $((attempt*2))
           done
           test "$pushed" = 1
           echo 'persisted=true' >> "$GITHUB_OUTPUT"
