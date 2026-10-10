@@ -2,634 +2,57 @@
   "contractVersion": 4,
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-10-10",
-  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
-  "fingerprint": "dabe344c66223ce97653371f570295815c9d541b4487e012c3697945d563f2bd",
+  "seedId": "OWNER-DESIGN-SEED-PUZZLE-CHROMATIC-CASCADE",
+  "fingerprint": "9e8aba611ceb5664fe3340c031e090f09f449d7f4adc86320cccf88483d2b4d8",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::8d3efe3f4e7e759cf951d8037d3abad6594efcd6c9382f386fbbae4ccd757788:identity": {
-      "identity": "색채의 연쇄 - 진보형 플레이어 역할 및 시스템 연결 게임 정체성\n\n게임은 '색채의 연쇄'라는 주제로 기획되며, 플레이어가 단순히 퍼즐을 해결하는 것을 넘어, 색채의 순서나 패턴을 이해하고 그에 따라 선택을 하여 세계를 변환하는 과정에서 재미를 느끼게 된다.\n\n플레이어는 매 스테이지에서 명확한 목표와 제한된 이동 범위, 장애물 또는 복잡한 퍼즐 문제를 해결해야 한다. 이러한 선택은 즉각적인 결과와 피드백을 통해 진행된다.\n\n게임은 단순한 퍼즐 해결보다는, 플레이어가 자신의 선택이 어떻게 세계를 변화시키고 어떤 영향을 미치는지를 체험하게 만든 반복 가능한 핵심 루프를 설계했다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백으로 구성되어 있다.\n\n주요 요소:\n- **MAIN**: 색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성\n- **A**: 색상의 조합 및 상호작용을 이용하여 새로운 상태를 생성하는 시스템 소재\n- **B**: 다른 방식으로 색상을 사용하거나, 기존의 시스템과 협력하여 새로운 경로를 열기 위한 소재\n- **C**: 색상의 주제나 예술적 표현 등 다양한 주제에 대한 창작 소재\n- **@**: 발견·숙련 과정에서 발생하는 4개 이상의 초기 사례와 무한 발전 규칙\n\n플레이어 역할: 색채의 연쇄를 통해 자신이 선택한 것이 어떻게 세계를 바꾸고 어떤 결과를 초래하는지 경험하고, 이를 통해 자신의 플레이스타일을 형성한다.\n\n게임은 단순한 퍼즐 해결보다는, 플레이어가 선택이 어떻게 세계를 변환하는지를 체험하게 하는 반복 가능한 핵심 루프를 설계했다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백으로 구성되어 있다.\n\n주요 요소:\n- **MAIN**: 색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성\n- **A**: 색상의 조합 및 상호작용을 이용하여 새로운 상태를 생성하는 시스템 소재\n- **B**: 다른 방식으로 색상을 사용하거나, 기존의 시스템과 협력하여 새로운 경로를 열기 위한 소재\n- "
-    },
-    "local_authoring_parts::7cbb714c7db02ed07f1aad9f613ddf6d9aea8bb4fb4d9d86074e263f473f98d2:mainIdentity,a,b,abCausality": {
-      "mainIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-      "a": {
-        "system": "색상 조합 및 상호작용 시스템",
-        "material": "색상의 주제나 예술적 표현",
-        "materialDomain": "예술·문화",
-        "stateChange": "색상의 조합을 통해 새로운 상태 생성"
-      },
-      "b": {
-        "system": "기존 시스템 협력 및 새로운 경로 열기 시스템",
-        "material": "다른 방식으로 색상을 사용하거나, 기존 시스템과 협력하여 새로운 경로를 열기 위한 소재",
-        "materialDomain": "기술·과학",
-        "stateChange": "색상의 선택에 따라 새로운 경로가 열리고, 세계가 변환됨"
-      },
-      "abCausality": "양방향 실제 상태 교환: A→B, B→A, C의 두 창작 소재 및 주·보조 장르 효과가 각각 실제로 일어나며, 플레이어의 선택이 세계를 변화시킴으로 인해 다음 사건이 발생함으로써 반복 가능한 핵심 루프가 형성됨"
-    },
-    "local_authoring_parts::7cbb714c7db02ed07f1aad9f613ddf6d9aea8bb4fb4d9d86074e263f473f98d2:abEvolution,materialFusion,storyCausalChain": {
-      "abEvolution": {
-        "aChangesB": "A→B: 색상 조합 및 상호작용 시스템 → 새로운 상태 생성",
-        "bChangesA": "B→A: 기존 시스템 협력 및 새로운 경로 열기 시스템 → 새로운 경로 생성",
-        "lateGameChange": "플레이어 선택에 따라 세계가 변환됨, 반복 가능한 핵심 루프 형성"
-      },
-      "materialFusion": {
-        "contrast": "색채의 주제나 예술적 표현 vs. 기술·과학 영역",
-        "causalBridge": "색상 조합 → 새로운 상태 생성, 기존 시스템 ↔ 새 경로 열기",
-        "removalConsequence": "C의 두 창작 소재 및 주·보조 장르 효과가 실제 일어남으로 인해 플레이어 역할이 변화함"
-      },
-      "storyCausalChain": {
-        "cause": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴",
-        "characterConflict": "선택과 결과 간의 관계와 그에 따른 플레이어의 책임",
-        "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음",
-        "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
-        "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
-      }
-    },
-    "local_authoring_parts::775e51d5348f6ae0ccaaa8007ea18b6ed042189eaf0596929dbc98407a612294:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
-      "mainIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-      "a": {
-        "system": "색상 조합 및 상호작용 시스템",
-        "material": "색상의 주제나 예술적 표현",
-        "materialDomain": "예술·문화",
-        "stateChange": "색상의 조합을 통해 새로운 상태 생성"
-      },
-      "b": {
-        "system": "기존 시스템 협력 및 새로운 경로 열기 시스템",
-        "material": "다른 방식으로 색상을 사용하거나, 기존 시스템과 협력하여 새로운 경로를 열기 위한 소재",
-        "materialDomain": "기술·과학",
-        "stateChange": "색상의 선택에 따라 새로운 경로가 열리고, 세계가 변환됨"
-      },
-      "abCausality": "양방향 실제 상태 교환: A→B, B→A, C의 두 창작 소재 및 주·보조 장르 효과가 각각 실제로 일어나며, 플레이어의 선택이 세계를 변화시킴으로 인해 다음 사건이 발생함으로써 반복 가능한 핵심 루프가 형성됨",
-      "abEvolution": {
-        "aChangesB": "A→B: 색상 조합 및 상호작용 시스템 → 새로운 상태 생성",
-        "bChangesA": "B→A: 기존 시스템 협력 및 새로운 경로 열기 시스템 → 새로운 경로 생성",
-        "lateGameChange": "플레이어 선택에 따라 세계가 변환됨, 반복 가능한 핵심 루프 형성"
-      },
-      "materialFusion": {
-        "contrast": "색채의 주제나 예술적 표현 vs. 기술·과학 영역",
-        "causalBridge": "색상 조합 → 새로운 상태 생성, 기존 시스템 ↔ 새 경로 열기",
-        "removalConsequence": "C의 두 창작 소재 및 주·보조 장르 효과가 실제 일어남으로 인해 플레이어 역할이 변화함"
-      },
-      "storyCausalChain": {
-        "cause": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴",
-        "characterConflict": "선택과 결과 간의 관계와 그에 따른 플레이어의 책임",
-        "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음",
-        "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
-        "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
-      }
-    },
-    "local_authoring_parts::545c1142455d5e466c91463d7dbfb77d2e48ba7d6b74570e7ec653743d43d826:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
-      "cThemes": [
-        {
-          "name": "색채",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
-        },
-        {
-          "name": "연쇄",
-          "kind": "GENRE",
-          "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "예술·문화",
-          "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "기술·과학",
-          "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
-        }
-      ],
-      "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-      "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다."
-    },
-    "local_authoring_parts::545c1142455d5e466c91463d7dbfb77d2e48ba7d6b74570e7ec653743d43d826:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "delveDiscoveries": [
-        {
-          "clue": "색채의 주제나 예술적 표현",
-          "discovery": "플레이어가 색상을 이해하고 선택하여 세계를 변환함",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "기존 시스템 협력 및 새로운 경로 열기",
-          "discovery": "새로운 경로가 생성되고, 세계가 변환됨",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "기술·과학 영역의 창작 소재",
-          "discovery": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "예술·문화 주제의 창작 소재",
-          "discovery": "색상의 주제나 예술적 표현을 통해 세계를 변화시킴",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        }
-      ],
-      "delveGrowthRule": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-      "finalGameIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 반복 가능한 핵심 루프"
-    },
-    "local_authoring_parts::775e51d5348f6ae0ccaaa8007ea18b6ed042189eaf0596929dbc98407a612294:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "cThemes": [
-        {
-          "name": "색채",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
-        },
-        {
-          "name": "연쇄",
-          "kind": "GENRE",
-          "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "예술·문화",
-          "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "기술·과학",
-          "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
-        }
-      ],
-      "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-      "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다.",
-      "delveDiscoveries": [
-        {
-          "clue": "색채의 주제나 예술적 표현",
-          "discovery": "플레이어가 색상을 이해하고 선택하여 세계를 변환함",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "기존 시스템 협력 및 새로운 경로 열기",
-          "discovery": "새로운 경로가 생성되고, 세계가 변환됨",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "기술·과학 영역의 창작 소재",
-          "discovery": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "예술·문화 주제의 창작 소재",
-          "discovery": "색상의 주제나 예술적 표현을 통해 세계를 변화시킴",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        }
-      ],
-      "delveGrowthRule": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-      "finalGameIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 반복 가능한 핵심 루프"
-    },
-    "local_authoring_parts::cfc85d4b24184172dd7492e879c5282358d295cbb01269192ac83c7a3d6397ba:creativeGrammar": {
-      "mainIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-      "a": {
-        "system": "색상 조합 및 상호작용 시스템",
-        "material": "색상의 주제나 예술적 표현",
-        "materialDomain": "예술·문화",
-        "stateChange": "색상의 조합을 통해 새로운 상태 생성"
-      },
-      "b": {
-        "system": "기존 시스템 협력 및 새로운 경로 열기 시스템",
-        "material": "다른 방식으로 색상을 사용하거나, 기존 시스템과 협력하여 새로운 경로를 열기 위한 소재",
-        "materialDomain": "기술·과학",
-        "stateChange": "색상의 선택에 따라 새로운 경로가 열리고, 세계가 변환됨"
-      },
-      "abCausality": "양방향 실제 상태 교환: A→B, B→A, C의 두 창작 소재 및 주·보조 장르 효과가 각각 실제로 일어나며, 플레이어의 선택이 세계를 변화시킴으로 인해 다음 사건이 발생함으로써 반복 가능한 핵심 루프가 형성됨",
-      "abEvolution": {
-        "aChangesB": "A→B: 색상 조합 및 상호작용 시스템 → 새로운 상태 생성",
-        "bChangesA": "B→A: 기존 시스템 협력 및 새로운 경로 열기 시스템 → 새로운 경로 생성",
-        "lateGameChange": "플레이어 선택에 따라 세계가 변환됨, 반복 가능한 핵심 루프 형성"
-      },
-      "materialFusion": {
-        "contrast": "색채의 주제나 예술적 표현 vs. 기술·과학 영역",
-        "causalBridge": "색상 조합 → 새로운 상태 생성, 기존 시스템 ↔ 새 경로 열기",
-        "removalConsequence": "C의 두 창작 소재 및 주·보조 장르 효과가 실제 일어남으로 인해 플레이어 역할이 변화함"
-      },
-      "storyCausalChain": {
-        "cause": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴",
-        "characterConflict": "선택과 결과 간의 관계와 그에 따른 플레이어의 책임",
-        "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음",
-        "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
-        "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
-      },
-      "cThemes": [
-        {
-          "name": "색채",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
-        },
-        {
-          "name": "연쇄",
-          "kind": "GENRE",
-          "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "예술·문화",
-          "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "기술·과학",
-          "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
-        }
-      ],
-      "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-      "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다.",
-      "delveDiscoveries": [
-        {
-          "clue": "색채의 주제나 예술적 표현",
-          "discovery": "플레이어가 색상을 이해하고 선택하여 세계를 변환함",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "기존 시스템 협력 및 새로운 경로 열기",
-          "discovery": "새로운 경로가 생성되고, 세계가 변환됨",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "기술·과학 영역의 창작 소재",
-          "discovery": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        },
-        {
-          "clue": "예술·문화 주제의 창작 소재",
-          "discovery": "색상의 주제나 예술적 표현을 통해 세계를 변화시킴",
-          "newChoice": "색상 조합 또는 기존 시스템 활용"
-        }
-      ],
-      "delveGrowthRule": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-      "finalGameIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 반복 가능한 핵심 루프"
-    },
-    "local_authoring_parts::8d3efe3f4e7e759cf951d8037d3abad6594efcd6c9382f386fbbae4ccd757788:creativeGrammar": {
-      "creativeGrammar": {
-        "mainIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-        "a": {
-          "system": "색상 조합 및 상호작용 시스템",
-          "material": "색상의 주제나 예술적 표현",
-          "materialDomain": "예술·문화",
-          "stateChange": "색상의 조합을 통해 새로운 상태 생성"
-        },
-        "b": {
-          "system": "기존 시스템 협력 및 새로운 경로 열기 시스템",
-          "material": "다른 방식으로 색상을 사용하거나, 기존 시스템과 협력하여 새로운 경로를 열기 위한 소재",
-          "materialDomain": "기술·과학",
-          "stateChange": "색상의 선택에 따라 새로운 경로가 열리고, 세계가 변환됨"
-        },
-        "abCausality": "양방향 실제 상태 교환: A→B, B→A, C의 두 창작 소재 및 주·보조 장르 효과가 각각 실제로 일어나며, 플레이어의 선택이 세계를 변화시킴으로 인해 다음 사건이 발생함으로써 반복 가능한 핵심 루프가 형성됨",
-        "abEvolution": {
-          "aChangesB": "A→B: 색상 조합 및 상호작용 시스템 → 새로운 상태 생성",
-          "bChangesA": "B→A: 기존 시스템 협력 및 새로운 경로 열기 시스템 → 새로운 경로 생성",
-          "lateGameChange": "플레이어 선택에 따라 세계가 변환됨, 반복 가능한 핵심 루프 형성"
-        },
-        "materialFusion": {
-          "contrast": "색채의 주제나 예술적 표현 vs. 기술·과학 영역",
-          "causalBridge": "색상 조합 → 새로운 상태 생성, 기존 시스템 ↔ 새 경로 열기",
-          "removalConsequence": "C의 두 창작 소재 및 주·보조 장르 효과가 실제 일어남으로 인해 플레이어 역할이 변화함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴",
-          "characterConflict": "선택과 결과 간의 관계와 그에 따른 플레이어의 책임",
-          "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음",
-          "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
-          "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
-        },
-        "cThemes": [
-          {
-            "name": "색채",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
-          },
-          {
-            "name": "연쇄",
-            "kind": "GENRE",
-            "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "예술·문화",
-            "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "기술·과학",
-            "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
-          }
-        ],
-        "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-        "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "색채의 주제나 예술적 표현",
-            "discovery": "플레이어가 색상을 이해하고 선택하여 세계를 변환함",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "기존 시스템 협력 및 새로운 경로 열기",
-            "discovery": "새로운 경로가 생성되고, 세계가 변환됨",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "기술·과학 영역의 창작 소재",
-            "discovery": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "예술·문화 주제의 창작 소재",
-            "discovery": "색상의 주제나 예술적 표현을 통해 세계를 변화시킴",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          }
-        ],
-        "delveGrowthRule": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-        "finalGameIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 반복 가능한 핵심 루프"
-      }
-    },
-    "local_authoring_parts::3a0e80912fd0079786f4a4edc5ce858faa07e32782956ac54e2ad7d3bf84c691:identity,creativeGrammar": {
-      "identity": "색채의 연쇄 - 진보형 플레이어 역할 및 시스템 연결 게임 정체성\n\n게임은 '색채의 연쇄'라는 주제로 기획되며, 플레이어가 단순히 퍼즐을 해결하는 것을 넘어, 색채의 순서나 패턴을 이해하고 그에 따라 선택을 하여 세계를 변환하는 과정에서 재미를 느끼게 된다.\n\n플레이어는 매 스테이지에서 명확한 목표와 제한된 이동 범위, 장애물 또는 복잡한 퍼즐 문제를 해결해야 한다. 이러한 선택은 즉각적인 결과와 피드백을 통해 진행된다.\n\n게임은 단순한 퍼즐 해결보다는, 플레이어가 자신의 선택이 어떻게 세계를 변화시키고 어떤 영향을 미치는지를 체험하게 만든 반복 가능한 핵심 루프를 설계했다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백으로 구성되어 있다.\n\n주요 요소:\n- **MAIN**: 색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성\n- **A**: 색상의 조합 및 상호작용을 이용하여 새로운 상태를 생성하는 시스템 소재\n- **B**: 다른 방식으로 색상을 사용하거나, 기존의 시스템과 협력하여 새로운 경로를 열기 위한 소재\n- **C**: 색상의 주제나 예술적 표현 등 다양한 주제에 대한 창작 소재\n- **@**: 발견·숙련 과정에서 발생하는 4개 이상의 초기 사례와 무한 발전 규칙\n\n플레이어 역할: 색채의 연쇄를 통해 자신이 선택한 것이 어떻게 세계를 바꾸고 어떤 결과를 초래하는지 경험하고, 이를 통해 자신의 플레이스타일을 형성한다.\n\n게임은 단순한 퍼즐 해결보다는, 플레이어가 선택이 어떻게 세계를 변환하는지를 체험하게 하는 반복 가능한 핵심 루프를 설계했다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백으로 구성되어 있다.\n\n주요 요소:\n- **MAIN**: 색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성\n- **A**: 색상의 조합 및 상호작용을 이용하여 새로운 상태를 생성하는 시스템 소재\n- **B**: 다른 방식으로 색상을 사용하거나, 기존의 시스템과 협력하여 새로운 경로를 열기 위한 소재\n- ",
-      "creativeGrammar": {
-        "mainIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-        "a": {
-          "system": "색상 조합 및 상호작용 시스템",
-          "material": "색상의 주제나 예술적 표현",
-          "materialDomain": "예술·문화",
-          "stateChange": "색상의 조합을 통해 새로운 상태 생성"
-        },
-        "b": {
-          "system": "기존 시스템 협력 및 새로운 경로 열기 시스템",
-          "material": "다른 방식으로 색상을 사용하거나, 기존 시스템과 협력하여 새로운 경로를 열기 위한 소재",
-          "materialDomain": "기술·과학",
-          "stateChange": "색상의 선택에 따라 새로운 경로가 열리고, 세계가 변환됨"
-        },
-        "abCausality": "양방향 실제 상태 교환: A→B, B→A, C의 두 창작 소재 및 주·보조 장르 효과가 각각 실제로 일어나며, 플레이어의 선택이 세계를 변화시킴으로 인해 다음 사건이 발생함으로써 반복 가능한 핵심 루프가 형성됨",
-        "abEvolution": {
-          "aChangesB": "A→B: 색상 조합 및 상호작용 시스템 → 새로운 상태 생성",
-          "bChangesA": "B→A: 기존 시스템 협력 및 새로운 경로 열기 시스템 → 새로운 경로 생성",
-          "lateGameChange": "플레이어 선택에 따라 세계가 변환됨, 반복 가능한 핵심 루프 형성"
-        },
-        "materialFusion": {
-          "contrast": "색채의 주제나 예술적 표현 vs. 기술·과학 영역",
-          "causalBridge": "색상 조합 → 새로운 상태 생성, 기존 시스템 ↔ 새 경로 열기",
-          "removalConsequence": "C의 두 창작 소재 및 주·보조 장르 효과가 실제 일어남으로 인해 플레이어 역할이 변화함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴",
-          "characterConflict": "선택과 결과 간의 관계와 그에 따른 플레이어의 책임",
-          "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음",
-          "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
-          "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
-        },
-        "cThemes": [
-          {
-            "name": "색채",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
-          },
-          {
-            "name": "연쇄",
-            "kind": "GENRE",
-            "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "예술·문화",
-            "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "기술·과학",
-            "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
-          }
-        ],
-        "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-        "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "색채의 주제나 예술적 표현",
-            "discovery": "플레이어가 색상을 이해하고 선택하여 세계를 변환함",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "기존 시스템 협력 및 새로운 경로 열기",
-            "discovery": "새로운 경로가 생성되고, 세계가 변환됨",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "기술·과학 영역의 창작 소재",
-            "discovery": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "예술·문화 주제의 창작 소재",
-            "discovery": "색상의 주제나 예술적 표현을 통해 세계를 변화시킴",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          }
-        ],
-        "delveGrowthRule": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-        "finalGameIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 반복 가능한 핵심 루프"
-      }
-    },
-    "local_authoring_parts::3a0e80912fd0079786f4a4edc5ce858faa07e32782956ac54e2ad7d3bf84c691:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-      "coreFun": "{\"system\":\"색상 조합 및 상호작용 시스템\",\"material\":\"색상의 주제나 예술적 표현\",\"materialDomain\":\"예술·문화\",\"stateChange\":\"색상의 조합을 통해 새로운 상태 생성\"}"
-    },
-    "local_authoring_parts::5cf4c3669c9e06399bddbd6fc64279bcb3fa7daf9e64921b6f3260591e9c7d68:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "색채의 연쇄 - 진보형 플레이어 역할 및 시스템 연결 게임 정체성\n\n게임은 '색채의 연쇄'라는 주제로 기획되며, 플레이어가 단순히 퍼즐을 해결하는 것을 넘어, 색채의 순서나 패턴을 이해하고 그에 따라 선택을 하여 세계를 변환하는 과정에서 재미를 느끼게 된다.\n\n플레이어는 매 스테이지에서 명확한 목표와 제한된 이동 범위, 장애물 또는 복잡한 퍼즐 문제를 해결해야 한다. 이러한 선택은 즉각적인 결과와 피드백을 통해 진행된다.\n\n게임은 단순한 퍼즐 해결보다는, 플레이어가 자신의 선택이 어떻게 세계를 변화시키고 어떤 영향을 미치는지를 체험하게 만든 반복 가능한 핵심 루프를 설계했다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백으로 구성되어 있다.\n\n주요 요소:\n- **MAIN**: 색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성\n- **A**: 색상의 조합 및 상호작용을 이용하여 새로운 상태를 생성하는 시스템 소재\n- **B**: 다른 방식으로 색상을 사용하거나, 기존의 시스템과 협력하여 새로운 경로를 열기 위한 소재\n- **C**: 색상의 주제나 예술적 표현 등 다양한 주제에 대한 창작 소재\n- **@**: 발견·숙련 과정에서 발생하는 4개 이상의 초기 사례와 무한 발전 규칙\n\n플레이어 역할: 색채의 연쇄를 통해 자신이 선택한 것이 어떻게 세계를 바꾸고 어떤 결과를 초래하는지 경험하고, 이를 통해 자신의 플레이스타일을 형성한다.\n\n게임은 단순한 퍼즐 해결보다는, 플레이어가 선택이 어떻게 세계를 변환하는지를 체험하게 하는 반복 가능한 핵심 루프를 설계했다. 이 루프는 모바일에서도 즉시 이해되는 입력과 피드백으로 구성되어 있다.\n\n주요 요소:\n- **MAIN**: 색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성\n- **A**: 색상의 조합 및 상호작용을 이용하여 새로운 상태를 생성하는 시스템 소재\n- **B**: 다른 방식으로 색상을 사용하거나, 기존의 시스템과 협력하여 새로운 경로를 열기 위한 소재\n- ",
-      "creativeGrammar": {
-        "mainIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-        "a": {
-          "system": "색상 조합 및 상호작용 시스템",
-          "material": "색상의 주제나 예술적 표현",
-          "materialDomain": "예술·문화",
-          "stateChange": "색상의 조합을 통해 새로운 상태 생성"
-        },
-        "b": {
-          "system": "기존 시스템 협력 및 새로운 경로 열기 시스템",
-          "material": "다른 방식으로 색상을 사용하거나, 기존 시스템과 협력하여 새로운 경로를 열기 위한 소재",
-          "materialDomain": "기술·과학",
-          "stateChange": "색상의 선택에 따라 새로운 경로가 열리고, 세계가 변환됨"
-        },
-        "abCausality": "양방향 실제 상태 교환: A→B, B→A, C의 두 창작 소재 및 주·보조 장르 효과가 각각 실제로 일어나며, 플레이어의 선택이 세계를 변화시킴으로 인해 다음 사건이 발생함으로써 반복 가능한 핵심 루프가 형성됨",
-        "abEvolution": {
-          "aChangesB": "A→B: 색상 조합 및 상호작용 시스템 → 새로운 상태 생성",
-          "bChangesA": "B→A: 기존 시스템 협력 및 새로운 경로 열기 시스템 → 새로운 경로 생성",
-          "lateGameChange": "플레이어 선택에 따라 세계가 변환됨, 반복 가능한 핵심 루프 형성"
-        },
-        "materialFusion": {
-          "contrast": "색채의 주제나 예술적 표현 vs. 기술·과학 영역",
-          "causalBridge": "색상 조합 → 새로운 상태 생성, 기존 시스템 ↔ 새 경로 열기",
-          "removalConsequence": "C의 두 창작 소재 및 주·보조 장르 효과가 실제 일어남으로 인해 플레이어 역할이 변화함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴",
-          "characterConflict": "선택과 결과 간의 관계와 그에 따른 플레이어의 책임",
-          "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음",
-          "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
-          "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
-        },
-        "cThemes": [
-          {
-            "name": "색채",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
-          },
-          {
-            "name": "연쇄",
-            "kind": "GENRE",
-            "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "예술·문화",
-            "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "기술·과학",
-            "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
-          }
-        ],
-        "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-        "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다.",
-        "delveDiscoveries": [
-          {
-            "clue": "색채의 주제나 예술적 표현",
-            "discovery": "플레이어가 색상을 이해하고 선택하여 세계를 변환함",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "기존 시스템 협력 및 새로운 경로 열기",
-            "discovery": "새로운 경로가 생성되고, 세계가 변환됨",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "기술·과학 영역의 창작 소재",
-            "discovery": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          },
-          {
-            "clue": "예술·문화 주제의 창작 소재",
-            "discovery": "색상의 주제나 예술적 표현을 통해 세계를 변화시킴",
-            "newChoice": "색상 조합 또는 기존 시스템 활용"
-          }
-        ],
-        "delveGrowthRule": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-        "finalGameIdentity": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 반복 가능한 핵심 루프"
-      },
-      "playerFantasy": "플레이어는 자신의 선택이 어떻게 세계를 변화시키고 어떤 결과를 초래하는지를 체험하게 되며, 이 과정에서 자신만의 플레이스타일과 게임 정체성을 형성한다.",
-      "coreFun": "{\"system\":\"색상 조합 및 상호작용 시스템\",\"material\":\"색상의 주제나 예술적 표현\",\"materialDomain\":\"예술·문화\",\"stateChange\":\"색상의 조합을 통해 새로운 상태 생성\"}"
-    },
-    "local_authoring_parts::d295b2105f7b82c28e0147edb1dc245504a842eeae5ec9648b21bbad52d829e4:coreLoop": {
-      "coreLoop": [
-        "입력: 색상을 이해하고 선택",
-        "선택: 색상 조합 또는 기존 시스템 활용",
-        " 상태변화: 세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지"
-      ]
-    },
-    "local_authoring_parts::039890826d1496926551de787f4021df17024c800eab1fecf1a0220375b72322:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "입력: 색상을 이해하고 선택"
-      ],
-      "stateOutputs": [
-        "선택: 색상 조합 또는 기존 시스템 활용",
-        " 상태변화: 세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지"
-      ],
-      "name": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-      "purpose": "플레이어가 단순히 퍼즐을 해결하는 것을 넘어, 색채의 순서나 패턴을 이해하고 그에 따라 선택을 하여 세계를 변환하는 과정에서 재미를 느끼게 된다.",
-      "playerChoice": "색상 조합 또는 기존 시스템 활용으로 새로운 경로를 열음 및 세계를 변화시킴으로 인해 다음 스테이지로 이동함과 동시에 반복 가능한 핸드폰 카드식 루프 형성됨"
-    },
-    "local_authoring_parts::039890826d1496926551de787f4021df17024c800eab1fecf1a0220375b72322:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "입력: 색상을 이해하고 선택"
-      ],
-      "stateOutputs": [
-        "선택: 색상 조합 또는 기존 시스템 활용",
-        " 상태변화: 세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지"
-      ],
-      "name": "색채의 연쇄 - 색상의 순서와 패턴을 이해하며 세계를 변화시키는 게임 정체성",
-      "purpose": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
-      "playerChoice": "색상 조합 또는 기존 시스템 활용을 통해 새로운 경로를 열음"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 1640332,
-      "lastMs": 76841,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:12:42.367Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:45:21.790Z",
-  "updatedAt": "2026-10-10T03:12:42.377Z",
+  "createdAt": "2026-10-10T07:26:34.639Z",
+  "updatedAt": "2026-10-10T07:26:34.652Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
-          "ENVIRONMENT",
+          "CREATURE",
           "MOTION",
-          "PROP",
-          "SKILL",
           "UI",
-          "VFX",
-          "WEAPON"
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -658,6 +81,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -694,45 +118,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -974,12 +359,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -995,29 +374,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1030,52 +387,28 @@
           {
             "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-start",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "start"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
             }
           },
           {
-            "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "use",
-                "lock",
-                "move"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1083,17 +416,6 @@
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1106,39 +428,33 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
-          "ENVIRONMENT",
+          "CREATURE",
           "MOTION",
-          "PROP",
-          "SKILL",
           "UI",
-          "VFX",
-          "WEAPON"
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1167,6 +483,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1203,45 +520,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1483,12 +761,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1504,29 +776,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1539,52 +789,28 @@
           {
             "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-start",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "start"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
             }
           },
           {
-            "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "use",
-                "lock",
-                "move"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1592,17 +818,6 @@
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1615,39 +830,33 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
-          "ENVIRONMENT",
+          "CREATURE",
           "MOTION",
-          "PROP",
-          "SKILL",
           "UI",
-          "VFX",
-          "WEAPON"
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1676,6 +885,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1712,45 +922,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1992,12 +1163,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -2013,29 +1178,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -2048,52 +1191,28 @@
           {
             "family": "MOTION",
             "action": "USE",
-            "assetId": "roblox-common-motion-start",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "start"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
             }
           },
           {
-            "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "use",
-                "lock",
-                "move"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -2101,17 +1220,6 @@
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -2125,17 +1233,17 @@
       }
     },
     "assetFacts": {
-      "roblox-common-motion-start": {
+      "roblox-common-motion-run": {
         "family": "MOTION",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "start"
+            "run"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "START",
+        "role": "RUN",
         "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -2146,19 +1254,17 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-item-context-menu": {
+      "roblox-common-ui-character-detail-screen": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "use",
-            "lock",
-            "move"
+            "progress"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "ITEM_CONTEXT_MENU",
+        "role": "CHARACTER_DETAIL_SCREEN",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -2170,30 +1276,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::039890826d1496926551de787f4021df17024c800eab1fecf1a0220375b72322:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::039890826d1496926551de787f4021df17024c800eab1fecf1a0220375b72322:signatureSystems:2": 2
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "3a0e80912fd0079786f4a4edc5ce858faa07e32782956ac54e2ad7d3bf84c691": true,
-    "8d3efe3f4e7e759cf951d8037d3abad6594efcd6c9382f386fbbae4ccd757788": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:12:42.367Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  }
 }
