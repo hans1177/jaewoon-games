@@ -145802,7 +145802,987 @@
       "learningCandidate": true,
       "createdAt": "2026-10-09T18:59:51.440Z",
       "updatedAt": "2026-10-09T18:59:51.440Z"
+    },
+    {
+      "id": "marketing-crystal-defense-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "crystal-defense",
+      "goal": "Create the current non-financial growth/marketing execution package for 수정 디펜스 (crystal-defense). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/crystal-defense/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/crystal-defense/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/crystal-defense/latest.json --game-id=crystal-defense"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-insect-survival-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "insect-survival",
+      "goal": "Create the current non-financial growth/marketing execution package for 곤충 생존기 (insect-survival). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/insect-survival/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/insect-survival/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/insect-survival/latest.json --game-id=insect-survival"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-chess-battle-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "chess-battle",
+      "goal": "Create the current non-financial growth/marketing execution package for 체스 배틀 (chess-battle). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/chess-battle/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/chess-battle/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/chess-battle/latest.json --game-id=chess-battle"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-core-clash-4v4-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "core-clash-4v4",
+      "goal": "Create the current non-financial growth/marketing execution package for 코어 전장 4대4 (core-clash-4v4). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/core-clash-4v4/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/core-clash-4v4/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/core-clash-4v4/latest.json --game-id=core-clash-4v4"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-egg-heist-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "egg-heist",
+      "goal": "Create the current non-financial growth/marketing execution package for 알 도둑 대작전 (egg-heist). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/egg-heist/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/egg-heist/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/egg-heist/latest.json --game-id=egg-heist"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-human-go-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "human-go",
+      "goal": "Create the current non-financial growth/marketing execution package for 휴먼 GO (human-go). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/human-go/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/human-go/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/human-go/latest.json --game-id=human-go"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-human-go-temp-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "human-go-temp",
+      "goal": "Create the current non-financial growth/marketing execution package for 휴먼 GO! (human-go-temp). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/human-go-temp/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/human-go-temp/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/human-go-temp/latest.json --game-id=human-go-temp"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-island-village-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "island-village",
+      "goal": "Create the current non-financial growth/marketing execution package for 무인도 마을 (island-village). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/island-village/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/island-village/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/island-village/latest.json --game-id=island-village"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-party-rpg-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "party-rpg",
+      "goal": "Create the current non-financial growth/marketing execution package for 파티 RPG (party-rpg). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/party-rpg/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/party-rpg/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/party-rpg/latest.json --game-id=party-rpg"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-survival2-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "survival2",
+      "goal": "Create the current non-financial growth/marketing execution package for 숲의 생존자들 (survival2). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/survival2/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/survival2/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/survival2/latest.json --game-id=survival2"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-defense-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "defense",
+      "goal": "Create the current non-financial growth/marketing execution package for 숲길 디펜스 (defense). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/defense/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/defense/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/defense/latest.json --game-id=defense"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-dice-battle-board-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "dice-battle-board",
+      "goal": "Create the current non-financial growth/marketing execution package for 주사위 전투 보드 (dice-battle-board). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/dice-battle-board/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/dice-battle-board/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/dice-battle-board/latest.json --game-id=dice-battle-board"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-exorcist-office-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "exorcist-office",
+      "goal": "Create the current non-financial growth/marketing execution package for 퇴마 사무소 (exorcist-office). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/exorcist-office/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/exorcist-office/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/exorcist-office/latest.json --game-id=exorcist-office"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-fifty-days-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "fifty-days",
+      "goal": "Create the current non-financial growth/marketing execution package for 50일 (fifty-days). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/fifty-days/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/fifty-days/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/fifty-days/latest.json --game-id=fifty-days"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-gem-survivor-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "gem-survivor",
+      "goal": "Create the current non-financial growth/marketing execution package for 보석 생존전 (gem-survivor). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/gem-survivor/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/gem-survivor/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/gem-survivor/latest.json --game-id=gem-survivor"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-kingshot-ad-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "kingshot-ad",
+      "goal": "Create the current non-financial growth/marketing execution package for 킹샷 광고풍 (kingshot-ad). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/kingshot-ad/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/kingshot-ad/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/kingshot-ad/latest.json --game-id=kingshot-ad"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-realistic-builder-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "realistic-builder",
+      "goal": "Create the current non-financial growth/marketing execution package for 현실 건축가 (realistic-builder). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/realistic-builder/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/realistic-builder/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/realistic-builder/latest.json --game-id=realistic-builder"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-simple-rpg-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "simple-rpg",
+      "goal": "Create the current non-financial growth/marketing execution package for 작은 모험 RPG (simple-rpg). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/simple-rpg/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/simple-rpg/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/simple-rpg/latest.json --game-id=simple-rpg"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-tower-choice-rpg-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "tower-choice-rpg",
+      "goal": "Create the current non-financial growth/marketing execution package for 10층 탑 RPG (tower-choice-rpg). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/tower-choice-rpg/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/tower-choice-rpg/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/tower-choice-rpg/latest.json --game-id=tower-choice-rpg"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
+    },
+    {
+      "id": "marketing-zombie-survival-pre-release-v1",
+      "status": "queued",
+      "priority": "normal",
+      "department": "planning-growth-marketing",
+      "taskType": "marketing",
+      "gameId": "zombie-survival",
+      "goal": "Create the current non-financial growth/marketing execution package for 좀비 생존기 (zombie-survival). Lifecycle phase: PRE_RELEASE. Primary surface: STORE_POSITIONING_AND_LAUNCH_PREP. Use only current game facts and evidence. Separate observed facts from hypotheses. Produce usable title/short-description/store-message options, icon/thumbnail creative direction, screenshot/trailer shot list, organic discovery actions, creator/community outreach angles, own-portfolio cross-promotion hooks, activation/retention hypotheses, metrics and stop conditions. Do not invent released features, player counts, retention, revenue or popularity. Do not change game balance, economy or gameplay source. No paid spend, purchase, financial transaction, account login, social posting, or external irreversible action. Return the package in the assigned marketing JSON file. This is an execution artifact, not a policy document.",
+      "responsibleFiles": [
+        "company-learning/marketing/zombie-survival/latest.json"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "game-catalog.json",
+        "web-games/zombie-survival/index.html"
+      ],
+      "focusPatterns": {},
+      "acceptanceCriteria": [
+        "artifact contains FACTS, HYPOTHESES, CREATIVE, ORGANIC_DISTRIBUTION, CROSS_PROMOTION, METRICS, STOP_CONDITIONS",
+        "all claims about current game capability are grounded in supplied repository context",
+        "no paid financial execution or owner approval gate is introduced",
+        "package includes Primary AI + Vibe joint decision fields initially set to PENDING",
+        "result becomes a Vibe learning candidate after verification"
+      ],
+      "verificationCommands": [
+        "node tools/company-growth-marketing-qa.mjs --file=company-learning/marketing/zombie-survival/latest.json --game-id=zombie-survival"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 3,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "department:planning-growth-marketing",
+        "phase:PRE_RELEASE",
+        "surface:STORE_POSITIONING_AND_LAUNCH_PREP",
+        "financial-execution:UNAVAILABLE",
+        "decision-authority:PRIMARY_AI_AND_VIBE_JOINT",
+        "learning-route:existing-vibe-learning-motor"
+      ],
+      "supervisorReviewRequired": true,
+      "jointDecisionRequired": true,
+      "createdAt": "2026-10-10T15:42:04.174Z",
+      "updatedAt": "2026-10-10T15:42:04.174Z"
     }
   ],
-  "updatedAt": "2026-10-10T09:01:28.090Z"
+  "updatedAt": "2026-10-10T15:42:04.174Z"
 }
