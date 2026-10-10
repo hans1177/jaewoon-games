@@ -9,12 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad:identity,creativeGrammar": {
+      "identity": "퇴마 사무소 - 진입 시점, 선택, 결과, 위험/보상, 성장",
+      "creativeGrammar": {
+        "mainIdentity": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "a": {
+          "system": "게임 시스템 + 축 창작 소재",
+          "material": "플레이어가 실제로 하는 행동 및 선택의 재현",
+          "materialDomain": "모바일 입력 및 피드백",
+          "stateChange": "시작 상태 -> 선택 -> 상태 변화 -> 보상"
+        },
+        "b": {
+          "system": "다른 시스템 + 축 창작 소재",
+          "material": "다른 게임 시스템 또는 장르의 인과적 연결",
+          "materialDomain": "다양한 플레이 스타일 및 경로",
+          "stateChange": "선택 이후 새로운 상태 변화와 보상이 발생"
+        },
+        "abCausality": "A→B, B→A 양방향 실제 상태 교환, C는 두 주제/소재를 통해 인물·예술 등으로 인해 세계 변화",
+        "abEvolution": {
+          "aChangesB": "A→B, B→A, 중후반 두 시스템 관계 변화",
+          "bChangesA": "B→A, A→B, 중후반 두 시스템 관계 변화",
+          "lateGameChange": "중후반 두 시스템의 상호작용과 보조 장르 제거 시 바뀌는 플레이"
+        },
+        "materialFusion": {
+          "contrast": "A/B 소재가 어떻게 낯설고도 인과적으로 연결되는지",
+          "causalBridge": "원인 → 인물 갈등 → 플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건",
+          "removalConsequence": "하나를 빼면 사라지는 플레이 조합을 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고, abEvolution에서 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 입력/선택 -> 상태변화 -> 보상·위험 -> 다음 선택",
+          "characterConflict": "인물 갈등 및 플레이어 선택의 연관성",
+          "playerChoice": "플레이어 선택의 구체적인 표현 및 결과",
+          "worldChange": "실제 세계 상태 변화와 그에 따른 다음 사건",
+          "nextEvent": "플레이어 선택이 유도하는 새로운 사건"
+        },
+        "cThemes": [
+          {
+            "name": "진입 시점",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어 진입 시 행동 및 선택의 재현"
+          },
+          {
+            "name": "선택",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어 선택의 인과적 연결과 세계 변화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "모바일 입력 및 피드백",
+            "gameplayEffect": "플레이어 선택의 실질적 영향과 세계 변화"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "다양한 플레이 스타일 및 경로",
+            "gameplayEffect": "플레이어 선택의 인과적 변화와 세계 변화"
+          }
+        ],
+        "cGenreInterlock": "A/B 상태 교환, C의 두 창작 소재 및 주·보조 장르가 실제 선택 및 세계 변화를 일으키며, 보조 장르 제거 시 바뀌는 플레이를 명시한다.",
+        "cWorldAndGameplayEffect": "C의 두 주제/소재가 인물·예술 등으로 인해 세계 변화를 일으킴",
+        "delveDiscoveries": [
+          {
+            "clue": "진입 시점, 선택, 결과, 위험/보상, 성장",
+            "discovery": "플레이어 진입 시 행동 및 선택의 재현",
+            "newChoice": "플레이어 선택의 인과적 연결과 세계 변화"
+          },
+          {
+            "clue": "선택, 결과, 위험/보상, 성장",
+            "discovery": "플레이어 선택의 인과적 연결과 세계 변화",
+            "newChoice": "플레이어 선택이 유도하는 새로운 사건"
+          },
+          {
+            "clue": "결국, 보상, 다음 선택",
+            "discovery": "플레이어 선택이 유도하는 새로운 사건",
+            "newChoice": "중후반 두 시스템의 상호 작용과 보조 장르 제거 시 바뀌는 플레이"
+          },
+          {
+            "clue": "성장, 다음 선택, 중후반 두 시스템 관계 변화",
+            "discovery": "중후반 두 시스템의 상호작용과 보조 장르 제거 시 바뀌는 플레이",
+            "newChoice": "다양한 플레이 스타일 및 경로"
+          }
+        ],
+        "delveGrowthRule": "A→B, B→A 양방향 실제 상태 교환, C는 두 주제/소재를 통해 인물·예술 등으로 인해 세계 변화",
+        "finalGameIdentity": "진입 시점, 선택, 결과, 위험/보상, 성장"
+      }
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 1,
+      "jsonFailures": 0,
+      "totalMs": 480452,
+      "lastMs": 180351,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T05:38:57.130Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:30:56.655Z",
-  "updatedAt": "2026-10-10T05:30:56.670Z",
+  "updatedAt": "2026-10-10T05:38:57.131Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1492,5 +1591,16 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "localAuthoringSplits": {
+    "1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad": true
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T05:38:57.130Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
