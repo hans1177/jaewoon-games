@@ -128,6 +128,21 @@ test('Roblox game detail image uses exact game ID and CSRF, never pretends a web
   fs.rmSync(dir,{recursive:true,force:true});
 });
 
+test('moderation pending never uploads duplicate Roblox detail images',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-pending-'));
+  const png=path.join(dir,'cozy-island.png');
+  fs.writeFileSync(png,Buffer.from([137,80,78,71,13,10,26,10,0,0]));
+  let fetches=0;
+  const result=await syncRobloxExperienceDetailMedia({
+    universeId:'10767445741',pngPath:png,skipDuplicateUpload:true,
+    fetchImpl:async()=>{fetches++;return Response.json({data:[]});}
+  });
+  assert.equal(fetches,1);
+  assert.equal(result.imageStatus,'AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD');
+  assert.equal(result.verifiedDetailImage,false);
+  fs.rmSync(dir,{recursive:true,force:true});
+});
+
 test('existing Roblox native media is preserved without duplicate re-upload',async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-detail-existing-'));
   const png=path.join(dir,'cozy-island.png');
