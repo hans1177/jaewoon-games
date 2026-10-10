@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 생존 기록에서 자원을 채집하며, 동시에 위험에 노출되어 있는 상태를 경험해야 한다. 선택의 결과로 다음 전략적 결정을 내리며, 이 과정에서 새로운 경로와 정보가 유도된다.",
       "coreFun": "생존 기록과 채집/제작 선택을 통해 플레이어는 자원 수집, 이동, 전투, 위험 관리를 수행한다. 게임 규칙 변경 시 세계 상태 변화를 인식하고, 이를 바탕으로 새로운 선택을 하여 게임 진행 방향을 재설정한다."
+    },
+    "local_authoring_parts::ea9f57f9e6a6876d61155146df65614fd14f7e4a2e895205f46ae312dd84f240:coreLoop": {
+      "coreLoop": [
+        "입력(플레이어 선택) → 상태변화(자원 수집, 이동, 전투, 위험 관리) → 보상/위험/다음선택",
+        "게임 규칙 변경 시 세계 상태 변화 인식 → 새로운 선택 및 게임 진행 방향 재설정",
+        "중후반 두 시스템 간 관계 변화 및 피드백 제공"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 712928,
-      "lastMs": 239080,
+      "totalMs": 807737,
+      "lastMs": 94809,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:47:31.563Z"
+      "updatedAt": "2026-10-10T10:49:06.375Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:35:38.613Z",
-  "updatedAt": "2026-10-10T10:47:31.564Z",
+  "updatedAt": "2026-10-10T10:49:06.375Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,7 +1940,7 @@
   "localAuthoringSplits": {
     "d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:47:31.564Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:49:06.375Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
