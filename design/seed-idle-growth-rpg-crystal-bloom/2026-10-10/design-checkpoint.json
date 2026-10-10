@@ -1138,25 +1138,42 @@
         "EVENT"
       ],
       "fromSystem": "A_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS, A_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS, A_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAX"
+    },
+    "local_authoring_parts::0e6c60331afb81486bc81b21fda3a540b07b39e54a4ac7b7df686de7602244f4:toSystem,trigger,stateChange": {
+      "toSystem": "MAIN_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS",
+      "trigger": "ACTION_TRIGGER_24_CHAR_MINIMUM_30_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_24_CHARS",
+      "stateChange": "STATE_CHANGE_24_CHAR_MINIMUM_30_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_24_CHARS"
+    },
+    "local_authoring_parts::db5312c2483c840daf9190b60e275d74f848f725310d288ec8627c21b4d0ef0a:systemInterconnections:3": {
+      "fromId": "A",
+      "toId": "MAIN",
+      "stateKeys": [
+        "GAME_WORLD",
+        "EVENT"
+      ],
+      "fromSystem": "A_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS, A_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS, A_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAX",
+      "toSystem": "MAIN_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS",
+      "trigger": "ACTION_TRIGGER_24_CHAR_MINIMUM_30_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_24_CHARS",
+      "stateChange": "STATE_CHANGE_24_CHAR_MINIMUM_30_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_24_CHARS"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 73,
-      "successes": 72,
+      "calls": 74,
+      "successes": 73,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 4938450,
-      "lastMs": 34682,
+      "totalMs": 4972691,
+      "lastMs": 34241,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:58:44.415Z"
+      "updatedAt": "2026-10-10T00:59:18.658Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-10T00:58:44.415Z",
+  "updatedAt": "2026-10-10T00:59:18.659Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2949,7 +2966,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:58:44.415Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:59:18.659Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
