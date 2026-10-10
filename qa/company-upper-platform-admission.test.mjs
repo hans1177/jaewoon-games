@@ -216,6 +216,29 @@ test('Daechung four design systems each own real C# input-to-state code; disconn
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+// 3D 검증은 출력 문구가 아닌 Unity MeshFilter 및 실제 OBJ 임포트만 대상으로 한다.
+// 이 정적 회귀 테스트 통과만으로 실제 WebGL 장면 검증을 통과 처리하지 않는다.
+test('Daechung Unity Web canonical actors use imported 3D OBJ not active SpriteRenderer gameplay',()=>{
+  const root=path.resolve(new URL('../',import.meta.url).pathname);
+  const models=['torso_cloth','head_canine','shoulder_light','boar',
+    'flamefox','leafturtle','hornbull','rockgator','stormeagle'];
+  const directory=path.join(root,'unity-games/daechung-rpg/Assets/Art/Resources/DaechungModels');
+  for(const model of models){
+    const file=path.join(directory,model+'.obj');
+    assert.ok(fs.existsSync(file),'missing original Unity-importable 3D OBJ: '+model);
+    assert.ok(fs.statSync(file).size>300,'empty or placeholder source mesh: '+model);
+  }
+  const visual=fs.readFileSync(path.join(root,
+    'unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs'),'utf8');
+  assert.doesNotMatch(visual,/AddComponent<SpriteRenderer>\s*\(/);
+  assert.match(visual,/Resources\.Load<GameObject>\("DaechungModels\/" \+ modelId\)/);
+  assert.match(visual,/GetComponentsInChildren<MeshFilter>/);
+  assert.match(visual,/worldMeshes3d >= 2 && worldDepthCm >= 50/);
+  assert.match(visual,/spriteGameplayActors == 0/);
+  assert.match(visual,/SPATIAL_DEPTH game=daechung-rpg/);
+  assert.match(visual,/NativeMeshReady/);
+});
+
 test('Unity Web full precision gate refuses fake state transitions and requires a distinct replay after reload',()=>{
   const id='precision-systems',hash='c'.repeat(64);
   const proof=(scenario)=>({
