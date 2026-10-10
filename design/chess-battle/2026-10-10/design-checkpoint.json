@@ -966,25 +966,40 @@
       "name": "체스 기반 전략적 판타지 게임",
       "purpose": "플레이어는 빠르게 정보를 읽고 전략적으로 선택하여 승패를 결정하는 경기로 구성된다.",
       "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다."
+    },
+    "local_authoring_parts::6c23b63e93fcf406e52b4b43fbc72da2bce277fbb327938a010db42d512dae19:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "{\"key\": \"ACTION\", \"value\": \"AI 전략 도입\"}",
+        "{\"key\": \"ROLE\", \"value\": \"전략적 선택 창작 소재\"}"
+      ],
+      "stateOutputs": [
+        "{\"key\": \"ACTION\", \"value\": \"전략적 연결 확대\"}",
+        "{\"key\": \"ROLE\", \"value\": \"MAIN\"}"
+      ],
+      "name": "체스 기반 전략적 판타지 게임 - A 시스템",
+      "purpose": "다른 시스템(예: AI, 블록체인)과 전략적 선택의 인과적 연관성 강화 및 전략적 연결 확대",
+      "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 25,
+      "calls": 28,
+      "successes": 26,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2980576,
-      "lastMs": 76569,
+      "totalMs": 3057791,
+      "lastMs": 77215,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:04:10.973Z"
+      "updatedAt": "2026-10-10T01:05:28.190Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-10T01:04:10.973Z",
+  "updatedAt": "2026-10-10T01:05:28.190Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2758,7 +2773,7 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:04:10.973Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:05:28.190Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
