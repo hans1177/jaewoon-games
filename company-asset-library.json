@@ -73052,7 +73052,7 @@
       "consumerGameIds": [],
       "originalAssetStable": true,
       "oneObjectOneClipWorkUnit": true,
-      "motionSourceDefinitions": 31,
+      "motionSourceDefinitions": 45,
       "bakedNewSharedMotionClips": 0,
       "productionVerified": false,
       "verifiedCompanyReusable": false,
@@ -73070,7 +73070,659 @@
         "shaValidationRequired": true
       },
       "improvementNeed": "COMMON_IDLE_WALK_RUN_AND_ACTION_HQ_CHARACTER_MOTION_FIRST",
-      "qaPromotionAuthority": "EXISTING_NATIVE_3D_RUNTIME_AND_MOBILE_QA_ONLY"
+      "qaPromotionAuthority": "EXISTING_NATIVE_3D_RUNTIME_AND_MOBILE_QA_ONLY",
+      "availableCareerMotionRecipes": [
+        {
+          "id": "shared-career-common_samurai_iai_draw_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "SAMURAI",
+          "clipId": "common_samurai_iai_draw_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_samurai_iai_draw_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_samurai_parry_counter_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "SAMURAI",
+          "clipId": "common_samurai_parry_counter_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_samurai_parry_counter_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_knight_shield_bash_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "KNIGHT",
+          "clipId": "common_knight_shield_bash_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_knight_shield_bash_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_monk_palm_combo_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "MONK",
+          "clipId": "common_monk_palm_combo_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_monk_palm_combo_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_archer_draw_release_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "ARCHER",
+          "clipId": "common_archer_draw_release_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_archer_draw_release_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_mage_area_cast_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "MAGE",
+          "clipId": "common_mage_area_cast_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_mage_area_cast_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_assassin_backstep_cut_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "ASSASSIN",
+          "clipId": "common_assassin_backstep_cut_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_assassin_backstep_cut_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_lancer_thrust_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "LANCER",
+          "clipId": "common_lancer_thrust_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_lancer_thrust_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_healer_wave_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "CLERIC",
+          "clipId": "common_healer_wave_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_healer_wave_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_summoner_ritual_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "SUMMONER",
+          "clipId": "common_summoner_ritual_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_summoner_ritual_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_blacksmith_hammer_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "BLACKSMITH",
+          "clipId": "common_blacksmith_hammer_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_blacksmith_hammer_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_bard_performance_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "BARD",
+          "clipId": "common_bard_performance_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_bard_performance_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_mechanist_gadget_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "MECHANIST",
+          "clipId": "common_mechanist_gadget_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_mechanist_gadget_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_farmer_harvest_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "FARMER",
+          "clipId": "common_farmer_harvest_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_farmer_harvest_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        }
+      ],
+      "careerSourceMotionDefinitions": 14,
+      "motionLibraryConsumers": [
+        "ACTION_RPG",
+        "MMORPG",
+        "ROGUELIKE",
+        "FIGHTING",
+        "SURVIVAL",
+        "SIMULATION",
+        "TYCOON",
+        "STRATEGY",
+        "TACTICAL_RPG",
+        "HORROR",
+        "SOCIAL"
+      ],
+      "crossGenreCareerSource": "assets/vibe-motion-director.js#COMMON_CAREER_MOTION_HIERARCHY",
+      "crossGenreSkillSource": "assets/vibe-motion-director.js#COMMON_SKILL_MOTION_GRAMMAR",
+      "crossGenreMonsterSource": "assets/vibe-motion-director.js#COMMON_MONSTER_SPECIES_JOINT_POSES",
+      "sharedMonsterSpeciesPreparedCount": 20,
+      "sharedCareerHierarchyPreparedCount": 51,
+      "preparedSemanticCannotClaimRuntimeVerification": true
     },
     {
       "platform": "SHARED_MASTER",
