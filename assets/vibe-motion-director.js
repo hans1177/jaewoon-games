@@ -1192,10 +1192,10 @@ export const COMMON_MONSTER_SPECIES_JOINT_POSES=Object.freeze({
   SHARK:monsterJointPose('TAIL','FINS',[-.25,.33,-.07],[.40,-.51,.14],1.20,.22),
   GOLEM:monsterJointPose('SHOULDERS','FEET',[-.41,.03,.05],[.73,-.09,-.05],.46,1.47),
   SLIME:monsterJointPose('LOBES','CORE',[-.50,.08,.14],[.76,-.10,-.12],1.32,.36),
-  GHOST:monsterJointPose('VEIL','BODY_MIST',[-.37,.16,.19],[.61,-.27,-.11],1.42,.04),
+  GHOST:monsterJointPose('VEIL','BODY_MIST',[-.37,.16,.19],[.61,-.27,-.11],1.42,.24),
   CENTAUR:monsterJointPose('HUMAN_SPINE','FOUR_LEGS',[-.26,.28,-.07],[.46,-.32,.12],.88,1.03),
   TENTACLE_BEAST:monsterJointPose('TENTACLES','ANCHORS',[-.46,.37,.21],[.67,-.42,-.15],1.35,.42),
-  SWARM:monsterJointPose('FORMATION_VOLUME','MEMBERS',[-.19,.43,-.12],[.36,-.55,.26],1.54,.07),
+  SWARM:monsterJointPose('FORMATION_VOLUME','MEMBERS',[-.19,.43,-.12],[.36,-.55,.26],1.54,.24),
   DEMON_LORD:monsterJointPose('SPINE','FEET',[-.40,.24,.13],[.72,-.36,-.18],.90,1.45)
 });
 const COMMON_MONSTER_ATTACK_MOTIFS=Object.freeze({
