@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 매일 선택을 내리며 30일 동안 좀비 아포칼립스 생존 게임에서 살아남아야 한다. 선택은 전략, 장비, 스킬, 퀘스트 등 다양한 요소로 구성된다.",
       "coreFun": "{\"identity\": \"좀비 생존기\", \"creativeGrammar\": {\"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\", \"a\": {\"system\": \"Survival Run\", \"material\": \"Upgrades, Perks, Weapons, Skills\", \"materialDomain\": \"Build Composition\", \"stateChange\": \"Upgrade Build -> Survive Harder Waves/Boss -> Next Progression Choice\"}, \"b\": {\"system\": \"Reward System\", \"material\": \"Run Rewards/Experience\", \"materialDomain\": \"Progression Fuel\", \"stateChange\": \"Collect Reward -> Choose Upgrade -> New Build -> Next Progression Choice\"}, \"abCausality\": \"Build Composition → Reward System → Survival Strategy\"}, \"abEvolution\": {\"aChangesB\": \"Add New Weapon/Perk -> Change Build -> New Strategy -> Next Progression Choice\", \"bChangesA\": \"Add New Reward -> Modify Build -> New Strategy -> Next Progression Choice\", \"lateGameChange\": \"Combine Multiple Builds -> "
+    },
+    "local_authoring_parts::efb8c7bd300c1a7f414387d7e6b2ee93d514dd50386c0772b9ffd37a0353214c:coreLoop": {
+      "coreLoop": [
+        "Input/Choice → State Change → Reward/Risk/Next Choice",
+        "Build Composition → Progression Fuel → Survival Strategy",
+        "Enemy Pressure vs. Player Mastery → New Strategy → Final Outcome"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 550643,
-      "lastMs": 87554,
+      "totalMs": 598351,
+      "lastMs": 47708,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:58:56.787Z"
+      "updatedAt": "2026-10-10T02:59:44.498Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:49:45.936Z",
-  "updatedAt": "2026-10-10T02:58:56.788Z",
+  "updatedAt": "2026-10-10T02:59:44.498Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1925,7 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:58:56.788Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:59:44.498Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
