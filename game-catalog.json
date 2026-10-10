@@ -1,6 +1,6 @@
 {
   "version": 32,
-  "updatedAt": "2026-10-10T10:51:37.532Z",
+  "updatedAt": "2026-10-10T11:00:27.688Z",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -261,7 +261,7 @@
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
       "catalogOrder": 2,
-      "updatedAt": "2026-10-10T10:51:37.532Z",
+      "updatedAt": "2026-10-10T11:00:27.688Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -4281,7 +4281,7 @@
         "슈팅"
       ],
       "image": "",
-      "webPath": "/web-games/core-clash-4v4/",
+      "webPath": null,
       "hasWebArchive": true,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -4480,7 +4480,7 @@
         "UNITY": "unity-games/core-clash-4v4"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "egg-heist",
@@ -4799,7 +4799,7 @@
       },
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "human-go-temp",
@@ -5012,7 +5012,7 @@
         "마을"
       ],
       "image": "assets/page-bg-v3.webp",
-      "webPath": "/web-games/island-village/",
+      "webPath": null,
       "hasWebArchive": false,
       "featured": false,
       "homepageWebPlayable": false,
@@ -5172,7 +5172,7 @@
         "ROBLOX": "roblox-games/island-village",
         "UNITY": "unity-games/island-village"
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "party-rpg",
@@ -5386,7 +5386,7 @@
         "생활"
       ],
       "image": "",
-      "webPath": "/web-games/seed-roblox-roleplay-life-avat-brookhaven-rp/",
+      "webPath": null,
       "hasWebArchive": false,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -5542,7 +5542,7 @@
         "UNITY": "unity-games/seed-roblox-roleplay-life-avat-brookhaven-rp"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -5555,7 +5555,7 @@
         "수집"
       ],
       "image": "",
-      "webPath": "/web-games/seed-roblox-simulator-tycoon-i-adopt-me/",
+      "webPath": null,
       "hasWebArchive": false,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -5711,7 +5711,7 @@
         "UNITY": "unity-games/seed-roblox-simulator-tycoon-i-adopt-me"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -5889,16 +5889,16 @@
       "homepageTestCandidate": false,
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
-      "homepageCategory": "design-only",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE",
       "ownerWebSourceRevision": "bc17fa47dab0d6651cb0f16ccc04a6a3aca949b5598d8026cb9e1c1ca13013a1",
       "ownerWebEntryFile": "web-games/seed-roblox-survival-horror-es-doors/index.html",
       "webDevelopmentResetRequired": false,
-      "productionTarget": "design-only",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "ROBLOX",
@@ -6027,7 +6027,18 @@
           }
         }
       },
-      "catalogOrder": 29
+      "catalogOrder": 29,
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-roblox-survival-horror-es-doors",
+        "UNITY": "unity-games/seed-roblox-survival-horror-es-doors"
+      },
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "survival2",
@@ -6038,7 +6049,7 @@
         "동료"
       ],
       "image": "assets/page-bg-v3.webp",
-      "webPath": "/web-games/survival2/",
+      "webPath": null,
       "hasWebArchive": false,
       "featured": false,
       "homepageWebPlayable": false,
@@ -6195,7 +6206,7 @@
         "ROBLOX": "roblox-games/survival2",
         "UNITY": "unity-games/survival2"
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "territory-war",
@@ -6815,7 +6826,7 @@
         "경영"
       ],
       "image": "",
-      "webPath": "/web-games/dice-battle-board/",
+      "webPath": null,
       "hasWebArchive": true,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -7014,7 +7025,7 @@
         "UNITY": "unity-games/dice-battle-board"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "exorcist-office",
@@ -7425,7 +7436,7 @@
         "수집"
       ],
       "image": "",
-      "webPath": "/web-games/gem-survivor/",
+      "webPath": null,
       "hasWebArchive": true,
       "homepageWebPlayable": false,
       "homepageOfficialCard": false,
@@ -7624,7 +7635,7 @@
         "UNITY": "unity-games/gem-survivor"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "kingshot-ad",
@@ -7644,16 +7655,16 @@
       "homepageTestCandidate": false,
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
-      "homepageCategory": "design-only",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "c3beeb2244e43792a8940058d4b08c9c95ddb32a1bbf36a54f700c9788cfbb68",
       "ownerWebEntryFile": "web-games/kingshot-ad/index.html",
       "webDevelopmentResetRequired": false,
-      "productionTarget": "design-only",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -7825,7 +7836,18 @@
         "kind": "MARKETING_ARTWORK",
         "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
         "typography": "heavy medieval archer sign slab with pointed terminals"
-      }
+      },
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/kingshot-ad",
+        "UNITY": "unity-games/kingshot-ad"
+      },
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "monster-adventure",
@@ -8055,16 +8077,16 @@
       "homepageTestCandidate": false,
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
-      "homepageCategory": "design-only",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "e9747e820ad91a92512b404f941d90eee3cf3cd3b65961a87d4a768b51b66f97",
       "ownerWebEntryFile": "web-games/realistic-builder/index.html",
       "webDevelopmentResetRequired": false,
-      "productionTarget": "design-only",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -8236,7 +8258,18 @@
         "kind": "MARKETING_ARTWORK",
         "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
         "typography": "architect blueprint monospaced squared technical lettering"
-      }
+      },
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/realistic-builder",
+        "UNITY": "unity-games/realistic-builder"
+      },
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "simple-rpg",
@@ -8813,16 +8846,16 @@
       "homepageTestCandidate": false,
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
-      "homepageCategory": "design-only",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "6d6a186b5a506fffa682f06dd9c123b2810d8057d75170607677568b251ce439",
       "ownerWebEntryFile": "web-games/tower-choice-rpg/index.html",
       "webDevelopmentResetRequired": false,
-      "productionTarget": "design-only",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -8994,7 +9027,18 @@
         "kind": "MARKETING_ARTWORK",
         "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
         "typography": "vertical stone inscription serif, narrow tall letters"
-      }
+      },
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/tower-choice-rpg",
+        "UNITY": "unity-games/tower-choice-rpg"
+      },
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "zombie-survival",
@@ -9011,16 +9055,16 @@
       "hasWebArchive": true,
       "featured": false,
       "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_DIRECT_GAME_BUILD_2026-09-20",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_NEW_GAME_DESIGN_PIPELINE",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -9198,7 +9242,19 @@
         "kind": "MARKETING_ARTWORK",
         "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
         "typography": "rough condensed survival stencil with horizontal chipped ink"
-      }
+      },
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/zombie-survival",
+        "UNITY": "unity-games/zombie-survival"
+      },
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     }
   ],
   "runtimeAuthority": "company-runtime",

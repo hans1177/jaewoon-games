@@ -312,7 +312,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "P0006",
@@ -382,7 +382,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "P0008",
@@ -491,7 +491,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "P0103",
@@ -549,7 +549,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-CORE-CLASH-4V4-20260917",
@@ -587,7 +587,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-ROLEPLAY-LIFE-AVAT-BROOKHAVEN-RP-20260917",
@@ -625,7 +625,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SIMULATOR-TYCOON-I-ADOPT-ME-20260917",
@@ -663,7 +663,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-DICE-BATTLE-BOARD-20260917",
@@ -701,7 +701,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-GEM-SURVIVOR-20260917",
@@ -739,7 +739,197 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:51:37.532Z"
+      "updatedAt": "2026-10-10T11:00:27.688Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-ZOMBIE-SURVIVAL-20260917",
+      "slug": "zombie-survival",
+      "name": "좀비 생존기",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/zombie-survival",
+        "UNITY": "unity-games/zombie-survival"
+      },
+      "sourcePath": "unity-games/zombie-survival",
+      "designBaselineSource": "design/zombie-survival/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/zombie-survival/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/zombie-survival/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:00:27.688Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SURVIVAL-HORROR-ES-DOORS-20260917",
+      "slug": "seed-roblox-survival-horror-es-doors",
+      "name": "Last Lantern",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-roblox-survival-horror-es-doors",
+        "UNITY": "unity-games/seed-roblox-survival-horror-es-doors"
+      },
+      "sourcePath": "roblox-games/seed-roblox-survival-horror-es-doors",
+      "designBaselineSource": "design/seed-roblox-survival-horror-es-doors/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:00:27.688Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-KINGSHOT-AD-20260917",
+      "slug": "kingshot-ad",
+      "name": "킹샷 광고풍",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/kingshot-ad",
+        "UNITY": "unity-games/kingshot-ad"
+      },
+      "sourcePath": "unity-games/kingshot-ad",
+      "designBaselineSource": "design/kingshot-ad/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/kingshot-ad/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/kingshot-ad/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:00:27.688Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-REALISTIC-BUILDER-20260917",
+      "slug": "realistic-builder",
+      "name": "현실 건축가",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/realistic-builder",
+        "UNITY": "unity-games/realistic-builder"
+      },
+      "sourcePath": "unity-games/realistic-builder",
+      "designBaselineSource": "design/realistic-builder/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/realistic-builder/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/realistic-builder/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:00:27.688Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-TOWER-CHOICE-RPG-20260917",
+      "slug": "tower-choice-rpg",
+      "name": "10층 탑 RPG",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/tower-choice-rpg",
+        "UNITY": "unity-games/tower-choice-rpg"
+      },
+      "sourcePath": "unity-games/tower-choice-rpg",
+      "designBaselineSource": "design/tower-choice-rpg/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/tower-choice-rpg/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/tower-choice-rpg/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T11:00:27.688Z"
     }
   ],
   "productionClassState": {
@@ -945,5 +1135,5 @@
       }
     ]
   },
-  "updatedAt": "2026-10-10T10:51:37.532Z"
+  "updatedAt": "2026-10-10T11:00:27.688Z"
 }
