@@ -806,25 +806,28 @@
     },
     "local_authoring_parts::2572d6ab4ab9958d5cbb14fb18626197375f4f4c5781592f60ae3b20cc739477:milestone": {
       "milestone": "게임 내부에서 적의 웨이브 형태 및 위험도를 실시간으로 관찰하여 방어 전략을 최적화하는 과정에서는, 사용자가 적의 행동 패턴을 파악하고 효과적인 방어 위치와 자원 배분을 결정하는 데 중점을 두며, 이는 게임 진행 단계에서 지속적으로 진전되는 시스템적 변화로 이어집니다."
+    },
+    "local_authoring_parts::2572d6ab4ab9958d5cbb14fb18626197375f4f4c5781592f60ae3b20cc739477:newGameplay": {
+      "newGameplay": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 47,
-      "successes": 47,
+      "calls": 48,
+      "successes": 48,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1350249,
-      "lastMs": 41366,
+      "totalMs": 1388057,
+      "lastMs": 37808,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:23:33.972Z"
+      "updatedAt": "2026-10-10T09:24:11.781Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:23:33.972Z",
+  "updatedAt": "2026-10-10T09:24:11.781Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2517,7 +2520,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:23:33.972Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:24:11.781Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
