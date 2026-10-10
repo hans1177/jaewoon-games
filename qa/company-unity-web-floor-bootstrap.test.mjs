@@ -377,6 +377,19 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/renderer\.shadowCastingMode=UnityEngine\.Rendering\.ShadowCastingMode\.Off/);
     assert.match(runtime,/var fragmentMaterial=WorldMaterial/);
     assert.match(runtime,/renderer\.sharedMaterial=fragmentMaterial/);
+    // 실행 중 원본 Unity MeshRenderer에서 삼각형·법선·PBR 재질을 실측한 후 화면 픽셀과 대조한다.
+    assert.match(runtime,/GetComponentsInChildren<MeshRenderer>\(true\)/);
+    assert.match(runtime,/visual\.GetTopology\(part\)==MeshTopology\.Triangles/);
+    assert.match(runtime,/visual\.normals\.Length==visual\.vertexCount/);
+    assert.match(runtime,/surfaceMaterial\.shader\.isSupported/);
+    assert.match(runtime,/surfaceMaterial\.shader\.name=="Standard"/);
+    assert.match(runtime,/surfaceMaterial\.shader\.name=="Universal Render Pipeline\/Lit"/);
+    assert.match(runtime,/litMaterialCount==materialCount/);
+    assert.match(runtime,/UNITY_WEB_WORLD=RENDER_SURFACE game=/);
+    assert.match(runtime,/source=UNITY_RUNTIME_LIT_MESH/);
+    assert.match(runtime,/WORLD_RENDER_SURFACE_INVALID/);
+    assert.match(runtime,/renderSurfacePass\?"PASS":"REPAIR_REQUIRED"/);
+
     assert.match(runtime,/WorldMaterial\(shades\[k\],metallicProfiles\[k\],smoothnessProfiles\[k\]\)/);
     assert.match(runtime,/WorldMaterial\(new Color\(\.35f,\.33f,\.29f\),\.01f,\.18f\)/);
     assert.match(runtime,/float\[\] metallicProfiles=\{\.02f/);
