@@ -22,6 +22,34 @@ const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const authoredHandoffSource=design.slice(design.indexOf('function authoredStateHandoffContract('),design.indexOf('const DESIGN_BASE='));
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+// 메인: 문법 작성 대기와 최종 설계 검증을 혼동해 설계 엔진을 멈추지 않도록 회귀 검사.
+test('canonical un-authored V5 @ intake does not block the designer but still rejects unrelated schema errors',()=>{
+  const sketch={version:5,novelGameGrammar:{delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[]}}};
+  const input={GAMEPLAY_SKETCH:sketch,novelGrammarBackfill:{source:'CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009',authoringPending:true}};
+  const blocked=validateGameSeed({...input,novelGrammarBackfill:{...input.novelGrammarBackfill,authoringPending:false}});
+  const pending=validateGameSeed(input);
+  const missing='GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements';
+  assert.ok(blocked.errors.includes(missing),'fully authored sketch must still contain 4 @ elements');
+  assert.ok(!pending.errors.includes(missing),'canonical intake has not authored those discoveries yet');
+  assert.deepEqual(pending.errors,blocked.errors.filter(error=>error!==missing),'all other seed checks stay enforced');
+  const untrusted=validateGameSeed({...input,novelGrammarBackfill:{source:'UNVERIFIED_INPUT',authoringPending:true}});
+  assert.ok(untrusted.errors.includes(missing),'only canonical pending designer input qualifies');
+});
+
+test('V5 role generation revalidates authored reciprocal handoffs and invalidates stale per-role cache',()=>{
+  assert.match(design,/const previousRule=grammarRole\?rows\.at\(-1\):null/);
+  assert.match(design,/inputKeysFromPreviousOutputs:previousRule\.stateOutputs/);
+  assert.match(design,/outputKeysToPreviousInputs:previousRule\.stateInputs/);
+  assert.match(design,/REQUIRED_ORIGINAL_STATE_HANDOFF=/);
+  assert.match(design,/DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING/);
+  assert.match(design,/DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING/);
+  assert.match(design,/JSON\.stringify\(previousItems\)\)\.digest\('hex'\)/);
+  assert.match(design,/for\(let roleAttempt=0;;roleAttempt\+\+\)/);
+  const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  assert.match(scorer,/DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE/);
+  assert.match(scorer,/DESIGN_RULE_GRAPH_DISCONNECTED/);
+});
+
 test('V5 designer instructions require creative C without inventing a legacy c mechanical axis',()=>{
   const draftStart=design.indexOf('async function generateDesignerDraft(){');
   const draftEnd=design.indexOf('function scoreCurrentDesign(',draftStart);
