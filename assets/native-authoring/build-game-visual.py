@@ -459,6 +459,43 @@ def design_asset():
 
 # 메인: FreeCAD 또는 3D Slicer의 비민감 메시 산출물을 원본 보존 방식으로 가져온다.
 # 영상·의료진단·환자 메타데이터는 읽거나 생성하지 않는다.
+# 메인: 기존 Blender 메쉬 제작 책임에서 게임 오브젝트를 유형별로 자동 조립한다.
+def object_asset():
+    global MODULE_PROVENANCE
+    kind=ARGS.object_kind
+    if kind=='rock':rock_asset()
+    elif kind=='crate':crate_asset()
+    elif kind=='weapon':weapon_asset()
+    elif kind=='machine':design_asset()
+    elif kind=='tree':
+        cylinder('TreeTrunk',(0,0,.93),.26,1.86,BASE,24)
+        for level,side in enumerate((-1,1,0)):
+            cone(f'TreeFoliage_{level}',(side*.34,0,1.82+level*.30),
+                 .85-.11*level,.04,1.34,MID,24)
+    elif kind=='table':
+        box('TableTop',(0,0,1.07),(1.50,.86,.12),MID,bevel=.045)
+        for x in (-.58,.58):
+            for y in (-.32,.32):box(f'TableLeg_{x}_{y}',(x,y,.52),(.12,.12,.52),BASE)
+    elif kind=='chair':
+        box('ChairSeat',(0,0,.64),(.68,.66,.12),MID)
+        box('ChairBack',(0,.31,1.12),(.68,.10,.55),BASE)
+        for x in (-.28,.28):
+            for y in (-.28,.28):box(f'ChairLeg_{x}_{y}',(x,y,.28),(.09,.09,.28),DARK)
+    elif kind=='door':
+        box('DoorFrame',(0,0,1.04),(.83,.18,1.04),DARK)
+        box('DoorPanel',(0,-.13,1.04),(.67,.10,.89),BASE,bevel=.03)
+        cylinder('DoorKnob',(.49,-.26,1.00),.065,.12,METAL,16,rot=(math.pi/2,0,0))
+    elif kind=='lamp':
+        cylinder('LampBase',(0,0,.10),.40,.20,BASE)
+        cylinder('LampStem',(0,0,.98),.08,1.63,METAL)
+        cone('LampShade',(0,0,1.89),.55,.16,.54,ACCENT)
+        cylinder('LampLight',(0,0,1.71),.20,.08,GLOW)
+    else:design_asset()
+    MODULE_PROVENANCE={'kind':'object','source':OPEN_SOURCE_MODULES['object'],
+        'method':'BLENDER_NATIVE_AUTHORED_'+kind.upper(),'generatedGeometry':True,
+        'runtimeVerified':False}
+
+
 def import_source_surface():
     global MODULE_PROVENANCE, SOURCE_PROVENANCE
     src=Path(ARGS.source_model).resolve()
@@ -483,12 +520,28 @@ def import_source_surface():
         if hasattr(bpy.ops.wm,'obj_import'): bpy.ops.wm.obj_import(filepath=str(src))
         else: bpy.ops.import_scene.obj(filepath=str(src))
     imported=[obj for obj in bpy.data.objects if obj not in before and obj.type=='MESH']
+    rigs=[obj for obj in bpy.data.objects if obj not in before and obj.type=='ARMATURE']
     faces=sum(sum(max(0,len(poly.vertices)-2) for poly in obj.data.polygons) for obj in imported)
     if not imported or not 4<=faces<=450000:
         raise RuntimeError('OPEN_SOURCE_SURFACE_GEOMETRY_INVALID')
-    for obj in imported:
-        if not obj.data.materials: obj.data.materials.append(MID)
+    for index,obj in enumerate(imported):
+        if ARGS.module=='medical':
+            # 수입한 표면에서 민감해질 수 있는 문자열과 텍스처 정보를 제거한다.
+            obj.name=f'MedicalSurface_{index}'
+            obj.data.name=f'MedicalSurfaceGeometry_{index}'
+            for key in list(obj.keys()): del obj[key]
+            for key in list(obj.data.keys()): del obj.data[key]
+            obj.data.materials.clear()
+            obj.data.materials.append(MID)
+        elif not obj.data.materials:obj.data.materials.append(MID)
         ASSET_OBJECTS.append(obj)
+    if ARGS.module=='human':
+        if not rigs or not any(mod.type=='ARMATURE' for obj in imported for mod in obj.modifiers):
+            raise RuntimeError('HUMAN_IMPORTED_RIG_AND_WEIGHTS_REQUIRED')
+        ASSET_ARMATURES.extend(rigs)
+        for rig in rigs:
+            if not rig.animation_data or not rig.animation_data.nla_tracks:
+                human_motion(rig)
     SOURCE_PROVENANCE={
         'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
         'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
