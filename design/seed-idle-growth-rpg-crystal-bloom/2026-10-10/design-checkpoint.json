@@ -194,25 +194,42 @@
         "INPUT/SELECT → RESOURCE REDISTRIBUTION → NODE ACTIVATION → IMMEDIATE SKILL RECONFIGURATION → ADAPTIVE BATTLE SCENARIO WITH DYNAMIC RESOURCE MANAGEMENT",
         "INPUT/SELECT → ELEMENTAL NODE PRIORITIZATION → RESONANCE CONFLICT BETWEEN PLAYER AND AI → SKILL CHAIN CONFIGURATION FOR OPTIMAL COMBAT STRATEGY → ADAPTED BATTLE SCENARIO WITH EVOLVING RESOURCE MANAGEMENT"
       ]
+    },
+    "local_authoring_parts::86198554dd8b7cc4c537bfb8ac1e087b5db1b435ededcb29e98fe291eae5e9be:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_earth_elemental_resonance",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerElementNodePrioritization",
+        "resourceRedistributionState",
+        "skillChainConfiguration"
+      ],
+      "stateOutputs": [
+        "resonantSkillTrigger",
+        "energyConversionEffect",
+        "multiStageBossChallenge"
+      ],
+      "name": "Earth Elemental Resonance",
+      "purpose": "Player decision on element node prioritization triggers a resonance conflict between the AI and player, leading to skill chain evolution as a bridge between node expansion and resource allocation.",
+      "playerChoice": "Skill Chain Configuration for Optimal Combat Strategy (Dynamic Resource Allocation & Adaptive Skill Chain Evolution). The player chooses which elemental node to prioritize, triggering a resonance conflict with the AI, which then evolves into a dynamic resource management system that adapts through skill chain reconfiguration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 505973,
-      "lastMs": 57058,
+      "totalMs": 548199,
+      "lastMs": 42226,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T04:50:42.844Z"
+      "updatedAt": "2026-10-10T04:51:25.072Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:42:16.847Z",
-  "updatedAt": "2026-10-10T04:50:42.844Z",
+  "updatedAt": "2026-10-10T04:51:25.072Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -905,7 +922,7 @@
   "localAuthoringSplits": {
     "c1b976b2903c206cf2e5dc3c83ed5f94df4bdd372d0f60a01887059eca0b756b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T04:50:42.844Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:51:25.072Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
