@@ -2,275 +2,56 @@
   "contractVersion": 4,
   "gameId": "amusement-tycoon",
   "date": "2026-10-10",
-  "seedId": "OWNER-ALL-DESIGN-RESET-AMUSEMENT-TYCOON-20260917",
-  "fingerprint": "d6e78709ed39447ccaa4b4da7133d1f427ba387794b4f44c9cc4d82dd5fd6108",
+  "seedId": "OWNER-DESIGN-AMUSEMENT-TYCOON",
+  "fingerprint": "429fe5a4b028e70eff663d287803dde60ed3977225f64995d11a12a8953fb247",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683:identity,creativeGrammar": {
-      "identity": "놀이공원 타이쿤 - 진보적 플레이어 역할, 실질적 선택 및 세계 상태 변화",
-      "creativeGrammar": {
-        "mainIdentity": "타이쿤 경영 게임의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "a": {
-          "system": "지역 관리",
-          "material": "길의 확장과 손님 만족도 향상에 대한 새로운 행동 패턴과 위험/보상 시스템을 융합한 창작 소재",
-          "materialDomain": "게임 내 지역별 관리와 전략적 선택",
-          "stateChange": "길의 길이 증가 -> 손님 수 증가 -> 보상(점수) 획득"
-        },
-        "b": {
-          "system": "경영 관리",
-          "material": "자원 배분과 비용 절감을 위한 새로운 선택 구조와 인과적인 결과",
-          "materialDomain": "경제적 자원 분배와 운영 효율성 개선",
-          "stateChange": "자원 사용량 감소 -> 비용 절감 -> 보상(점수) 증가"
-        },
-        "abCausality": "길의 길이 증가는 손님 수 증가로 이어지고, 자원 사용량 감소는 비용 절감으로 연결됨",
-        "abEvolution": {
-          "aChangesB": "길의 길이 증가 -> 손님 수 증가 -> 보상(점수) 획득",
-          "bChangesA": "자원 사용량 감소 -> 비용 절감 -> 보상(점수) 증가",
-          "lateGameChange": "길의 확장은 손님 만족도 향상에 기반한 실질적 선택이며, 경영 관리는 자원 분배 및 비용 절감을 통해 이루어짐"
-        },
-        "materialFusion": {
-          "contrast": "게임 내 지역별 관리와 경영 관리를 통합하여 세계 상태 변화를 유발하고, 주제는 '타이쿤'과 관련된 새로운 인물·예술·역사 등으로 구성됨",
-          "causalBridge": "길의 확장은 손님 수 증가로 이어지고, 자원 사용량 감소는 비용 절감으로 연결됨",
-          "removalConsequence": "지역 관리 시스템 제거 시 게임 내 경영 관리 구조가 변형되고, 주제는 타이쿤 관련 새로운 요소로 재구성됨"
-        },
-        "storyCausalChain": {
-          "cause": "길의 길이 증가 -> 인물 갈등 발생 -> 플레이어 선택 -> 세계 상태 변화 -> 다음 사건",
-          "characterConflict": "길의 확장을 위한 선택으로 인해 인물 갈등이 발생하며, 플레이어는 자원 배분과 비용 절감에 대한 선택을 하며, 세계 상태는 길의 길이 증가 및 손님 수 증가로 이어짐",
-          "playerChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 자원 분배는 효율성을 높이는 선택으로 진행됨",
-          "worldChange": "길의 길이 증가는 손님 만족도 향상에 기반한 실질적 선택이며, 경영 관리는 자원 분배와 비용 절감을 통해 이루어짐",
-          "nextEvent": "자원 사용량 감소와 비용 절감이 완료되면 게임 내 경영 관리 시스템이 다시 활동하게 됨"
-        },
-        "cThemes": [
-          {
-            "name": "타이쿤 지역 관리",
-            "kind": "GENRE",
-            "gameplayEffect": "길의 확장과 손님 만족도 향상에 따른 실제 선택 및 세계 상태 변화"
-          },
-          {
-            "name": "경제적 자원 분배",
-            "kind": "GENRE",
-            "gameplayEffect": "자원 사용량 감소와 비용 절감에 따른 인과적인 결과"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "지역 관리",
-            "gameplayEffect": "길의 확장과 손님 만족도 향상에 대한 실질적 선택"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "경영 관리",
-            "gameplayEffect": "자원 분배와 비용 절감에 대한 인과적인 결과"
-          }
-        ],
-        "cGenreInterlock": "지역 관리 시스템 제거 시 경영 관리 구조가 변형되고, 주제는 타이쿤 관련 새로운 요소로 재구성됨",
-        "cWorldAndGameplayEffect": "길의 길이는 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨",
-        "delveDiscoveries": [
-          {
-            "clue": "길의 확장을 위한 선택으로 인해 인물 갈등 발생",
-            "discovery": "자원 배분 및 비용 절감에 대한 새로운 선택",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          },
-          {
-            "clue": "자원 사용량 감소와 비용 절감에 따른 선택",
-            "discovery": "길의 확장과 손님 만족도 향상에 대한 새로운 선택",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          },
-          {
-            "clue": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨",
-            "discovery": "길의 길이 증가와 손님 수 증가는 실질적 선택이며, 경영 관리 시스템은 자원 분배와 비용 절감을 통해 이루어짐",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          },
-          {
-            "clue": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨",
-            "discovery": "길의 길이 증가와 손님 수 증가는 실질적 선택이며, 경영 관리 시스템은 자원 분배와 비용 절감을 통해 이루어짐",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          }
-        ],
-        "delveGrowthRule": "길의 확장을 위한 선택으로 인해 인물 갈등 발생, 자원 배분 및 비용 절감에 대한 새로운 선택, 길의 길이 증가와 손님 만족도 향상에 따른 실제 선택 및 세계 상태 변화를 반복적으로 이어간다",
-        "finalGameIdentity": "타이쿤 지역 관리와 경영 관리를 통합한 새 정체성, 길의 길이 증가와 손님 만족도 향상에 기반한 실질적 선택, 자원 분배와 비용 절감에 대한 인과적인 결과로 구성된 게임 내 세계 상태 변화"
-      }
-    },
-    "local_authoring_parts::ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683:playerFantasy,coreFun": {
-      "playerFantasy": "타이쿤은 지역 관리와 경영 관리를 통합하여 실제 플레이어 역할로서 길의 확장과 손님 만족도 향상을 통해 세계 상태 변화를 이끌며, 자원 배분과 비용 절감에 대한 선택을 통해 효율적인 운영을 실현합니다.",
-      "coreFun": "{identity}길의 길이 증가 -> 속도 향상 및 보상 획득 -> 손님 수 증가 -> 보상 획득 -> 경영 관리 시스템 활성화 -> 자원 사용량 감소 -> 비용 절감 -> 보상 획득 -> 세계 상태 변화"
-    },
-    "local_authoring_parts::194871be716fea98519e43a9f5fcc8860d1328e41a11040c572259fcb5964ab0:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "놀이공원 타이쿤 - 진보적 플레이어 역할, 실질적 선택 및 세계 상태 변화",
-      "creativeGrammar": {
-        "mainIdentity": "타이쿤 경영 게임의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "a": {
-          "system": "지역 관리",
-          "material": "길의 확장과 손님 만족도 향상에 대한 새로운 행동 패턴과 위험/보상 시스템을 융합한 창작 소재",
-          "materialDomain": "게임 내 지역별 관리와 전략적 선택",
-          "stateChange": "길의 길이 증가 -> 손님 수 증가 -> 보상(점수) 획득"
-        },
-        "b": {
-          "system": "경영 관리",
-          "material": "자원 배분과 비용 절감을 위한 새로운 선택 구조와 인과적인 결과",
-          "materialDomain": "경제적 자원 분배와 운영 효율성 개선",
-          "stateChange": "자원 사용량 감소 -> 비용 절감 -> 보상(점수) 증가"
-        },
-        "abCausality": "길의 길이 증가는 손님 수 증가로 이어지고, 자원 사용량 감소는 비용 절감으로 연결됨",
-        "abEvolution": {
-          "aChangesB": "길의 길이 증가 -> 손님 수 증가 -> 보상(점수) 획득",
-          "bChangesA": "자원 사용량 감소 -> 비용 절감 -> 보상(점수) 증가",
-          "lateGameChange": "길의 확장은 손님 만족도 향상에 기반한 실질적 선택이며, 경영 관리는 자원 분배 및 비용 절감을 통해 이루어짐"
-        },
-        "materialFusion": {
-          "contrast": "게임 내 지역별 관리와 경영 관리를 통합하여 세계 상태 변화를 유발하고, 주제는 '타이쿤'과 관련된 새로운 인물·예술·역사 등으로 구성됨",
-          "causalBridge": "길의 확장은 손님 수 증가로 이어지고, 자원 사용량 감소는 비용 절감으로 연결됨",
-          "removalConsequence": "지역 관리 시스템 제거 시 게임 내 경영 관리 구조가 변형되고, 주제는 타이쿤 관련 새로운 요소로 재구성됨"
-        },
-        "storyCausalChain": {
-          "cause": "길의 길이 증가 -> 인물 갈등 발생 -> 플레이어 선택 -> 세계 상태 변화 -> 다음 사건",
-          "characterConflict": "길의 확장을 위한 선택으로 인해 인물 갈등이 발생하며, 플레이어는 자원 배분과 비용 절감에 대한 선택을 하며, 세계 상태는 길의 길이 증가 및 손님 수 증가로 이어짐",
-          "playerChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 자원 분배는 효율성을 높이는 선택으로 진행됨",
-          "worldChange": "길의 길이 증가는 손님 만족도 향상에 기반한 실질적 선택이며, 경영 관리는 자원 분배와 비용 절감을 통해 이루어짐",
-          "nextEvent": "자원 사용량 감소와 비용 절감이 완료되면 게임 내 경영 관리 시스템이 다시 활동하게 됨"
-        },
-        "cThemes": [
-          {
-            "name": "타이쿤 지역 관리",
-            "kind": "GENRE",
-            "gameplayEffect": "길의 확장과 손님 만족도 향상에 따른 실제 선택 및 세계 상태 변화"
-          },
-          {
-            "name": "경제적 자원 분배",
-            "kind": "GENRE",
-            "gameplayEffect": "자원 사용량 감소와 비용 절감에 따른 인과적인 결과"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "지역 관리",
-            "gameplayEffect": "길의 확장과 손님 만족도 향상에 대한 실질적 선택"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "경영 관리",
-            "gameplayEffect": "자원 분배와 비용 절감에 대한 인과적인 결과"
-          }
-        ],
-        "cGenreInterlock": "지역 관리 시스템 제거 시 경영 관리 구조가 변형되고, 주제는 타이쿤 관련 새로운 요소로 재구성됨",
-        "cWorldAndGameplayEffect": "길의 길이는 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨",
-        "delveDiscoveries": [
-          {
-            "clue": "길의 확장을 위한 선택으로 인해 인물 갈등 발생",
-            "discovery": "자원 배분 및 비용 절감에 대한 새로운 선택",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          },
-          {
-            "clue": "자원 사용량 감소와 비용 절감에 따른 선택",
-            "discovery": "길의 확장과 손님 만족도 향상에 대한 새로운 선택",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          },
-          {
-            "clue": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨",
-            "discovery": "길의 길이 증가와 손님 수 증가는 실질적 선택이며, 경영 관리 시스템은 자원 분배와 비용 절감을 통해 이루어짐",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          },
-          {
-            "clue": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨",
-            "discovery": "길의 길이 증가와 손님 수 증가는 실질적 선택이며, 경영 관리 시스템은 자원 분배와 비용 절감을 통해 이루어짐",
-            "newChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-          }
-        ],
-        "delveGrowthRule": "길의 확장을 위한 선택으로 인해 인물 갈등 발생, 자원 배분 및 비용 절감에 대한 새로운 선택, 길의 길이 증가와 손님 만족도 향상에 따른 실제 선택 및 세계 상태 변화를 반복적으로 이어간다",
-        "finalGameIdentity": "타이쿤 지역 관리와 경영 관리를 통합한 새 정체성, 길의 길이 증가와 손님 만족도 향상에 기반한 실질적 선택, 자원 분배와 비용 절감에 대한 인과적인 결과로 구성된 게임 내 세계 상태 변화"
-      },
-      "playerFantasy": "타이쿤은 지역 관리와 경영 관리를 통합하여 실제 플레이어 역할로서 길의 확장과 손님 만족도 향상을 통해 세계 상태 변화를 이끌며, 자원 배분과 비용 절감에 대한 선택을 통해 효율적인 운영을 실현합니다.",
-      "coreFun": "{identity}길의 길이 증가 -> 속도 향상 및 보상 획득 -> 손님 수 증가 -> 보상 획득 -> 경영 관리 시스템 활성화 -> 자원 사용량 감소 -> 비용 절감 -> 보상 획득 -> 세계 상태 변화"
-    },
-    "local_authoring_parts::2110b759b8ccc624b188dd01f4d8f20e303e13935ef0dfcb5cfaa52541c06870:coreLoop": {
-      "coreLoop": [
-        "입력: 길의 확장 선택 → 상태변화: 길 길이 증가 → 보상: 점수 획득",
-        "입력: 자원 배분 선택 → 상태변화: 자원 사용량 감소 → 보상: 점수 증가",
-        "입력: 속도 향상 선택 → 상태변화: 손님 수 증가 → 보상: 점수 획득"
-      ]
-    },
-    "local_authoring_parts::184ec4de60e527b7f71db78755e1e228e343b5cad8f56e24dcdf500b36c5ed35:signatureSystems:0": {
-      "id": "identity-core",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "길의 확장 선택"
-      ],
-      "stateOutputs": [
-        "길 길이 증가",
-        "손님 수 증가",
-        "보상 획득"
-      ],
-      "name": "길의 확장 선택",
-      "purpose": "실질적 선택 및 세계 상태 변화",
-      "playerChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 1044951,
-      "lastMs": 102752,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:17:28.776Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T03:00:03.792Z",
-  "updatedAt": "2026-10-10T03:17:28.784Z",
+  "createdAt": "2026-10-10T04:51:47.130Z",
+  "updatedAt": "2026-10-10T04:51:47.173Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
-          "ENVIRONMENT",
+          "CREATURE",
           "MOTION",
-          "PROP",
-          "UI",
-          "VFX",
-          "WEAPON"
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -299,6 +80,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -336,233 +118,6 @@
             "USE_CONSUMABLE",
             "WALK"
           ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
-          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -592,12 +147,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -613,29 +162,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -647,21 +174,6 @@
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-run",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "run"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "PROP",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -669,36 +181,10 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-character-detail-screen",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "progress"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -711,38 +197,32 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
-          "ENVIRONMENT",
+          "CREATURE",
           "MOTION",
-          "PROP",
-          "UI",
-          "VFX",
-          "WEAPON"
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -771,6 +251,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -808,233 +289,6 @@
             "USE_CONSUMABLE",
             "WALK"
           ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
-          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -1064,12 +318,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1085,29 +333,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1119,21 +345,6 @@
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-run",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "run"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "PROP",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1141,36 +352,10 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-character-detail-screen",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "progress"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "WEAPON",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1183,38 +368,32 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
-          "ENVIRONMENT",
+          "CREATURE",
           "MOTION",
-          "PROP",
-          "UI",
-          "VFX",
-          "WEAPON"
+          "VFX"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1243,6 +422,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1280,233 +460,6 @@
             "USE_CONSUMABLE",
             "WALK"
           ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
-          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -1536,12 +489,6 @@
             "UPGRADE",
             "VFX_PACK",
             "WEATHER"
-          ],
-          "WEAPON": [
-            "CROSS_GUARD_MODULE",
-            "LONG_BLADE_MODULE",
-            "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
           ]
         },
         "candidates": [
@@ -1557,29 +504,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1591,21 +516,6 @@
           },
           {
             "family": "MOTION",
-            "action": "USE",
-            "assetId": "roblox-common-motion-run",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "run"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
-            "family": "PROP",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1613,21 +523,6 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "USE",
-            "assetId": "roblox-common-ui-character-detail-screen",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [
-                "progress"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
             }
           },
           {
@@ -1640,87 +535,10 @@
               "matchedRoles": [],
               "verifiedRoleMatch": false
             }
-          },
-          {
-            "family": "WEAPON",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
           }
         ]
       }
     },
-    "assetFacts": {
-      "roblox-common-motion-run": {
-        "family": "MOTION",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "run"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "RUN",
-        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-ui-character-detail-screen": {
-        "family": "UI",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "progress"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "CHARACTER_DETAIL_SCREEN",
-        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 956.4,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      }
-    }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::184ec4de60e527b7f71db78755e1e228e343b5cad8f56e24dcdf500b36c5ed35:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "identity-core"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::184ec4de60e527b7f71db78755e1e228e343b5cad8f56e24dcdf500b36c5ed35:signatureSystems:1": 2
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:17:28.776Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+    "assetFacts": {}
+  }
 }
