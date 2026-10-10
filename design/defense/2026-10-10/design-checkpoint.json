@@ -194,25 +194,42 @@
         "Resource Allocation Prioritized by Tactical Needs Before Pressure Increases",
         "Adapt to Dynamic Enemy Behavior and Environmental Conditions"
       ]
+    },
+    "local_authoring_parts::fb4a3b404756e783775195e4819ac24f2c7a9b4698122103eae278e098ea8b06:signatureSystems:0": {
+      "id": "DEFENSE_STRATEGY_SYSTEM",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Enemy Type and Wave Pattern",
+        "Resource Gain from Defeated Enemies",
+        "Player Skill Level"
+      ],
+      "stateOutputs": [
+        "Defensive Strategy Adjustment Based On Enemy Type and Wave Pattern",
+        "Resource Allocation Prioritized by Tactical Needs Before Pressure Increases",
+        "Adapt to Dynamic Enemy Behavior and Environmental Conditions"
+      ],
+      "name": "Tactical Defense System with Dynamic Adaptation Based On Player Mastery and Enemy Behavior",
+      "purpose": "Provide a dynamic, player-driven defensive strategy system that adapts to enemy types, resource availability, and environmental conditions.",
+      "playerChoice": "Adjust Defensive Placement and Resource Allocation in Response to Enemy Behavior and Environmental Changes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 600859,
-      "lastMs": 45293,
+      "totalMs": 673407,
+      "lastMs": 72548,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:15:02.552Z"
+      "updatedAt": "2026-10-10T02:16:15.102Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:05:01.641Z",
-  "updatedAt": "2026-10-10T02:15:02.552Z",
+  "updatedAt": "2026-10-10T02:16:15.102Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1921,7 +1938,7 @@
   "localAuthoringSplits": {
     "de619f8198b3052df60b6bf980bc2d045f52e51aac8a32e9578b1d59c30ded5f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:15:02.552Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:16:15.102Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
