@@ -22,6 +22,11 @@ PARSER.add_argument('--target', choices=['web','roblox','unity'], required=True)
 PARSER.add_argument('--subject', choices=['generic','rock','crate'], default='generic')
 PARSER.add_argument('--style-json', default='{}')
 PARSER.add_argument('--genre', default='')
+# [VIDEO RENDER] Explicit, bounded cinematic proof; never part of the game simulation.
+PARSER.add_argument('--cinematic', action='store_true')
+PARSER.add_argument('--video-fps', type=int, choices=[12, 24], default=12)
+PARSER.add_argument('--video-seconds', type=int, choices=[2, 3], default=2)
+PARSER.add_argument('--video-width', type=int, choices=[640, 960], default=640)
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
 ARGS.output.mkdir(parents=True, exist_ok=True)
@@ -409,6 +414,90 @@ application['optimization']['previewComparison']={'method':'REIMPORTED_GLB_SAME_
 if max_pixel_error>1e-5: raise RuntimeError('LOSSLESS_OPTIMIZATION_CHANGED_RENDER')
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
+# [CINEMATIC] Render a real camera-directed H.264 MP4 from the final, reimported GLB.
+# This runs inside the existing asset authoring recipe, not another production pipeline.
+cinematic_evidence = None
+if ARGS.cinematic:
+    video_file = ARGS.output / 'cinematic.mp4'
+    scene_file = ARGS.output / 'shotlist.json'
+    frame_count = ARGS.video_fps * ARGS.video_seconds
+    width, height = ARGS.video_width, ARGS.video_width * 9 // 16
+    imported_before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    shot_objects = [obj for obj in bpy.data.objects if obj not in imported_before]
+    if not any(obj.type == 'MESH' for obj in shot_objects):
+        raise RuntimeError('CINEMATIC_REIMPORTED_MESH_REQUIRED')
+    try:
+        SCENE.frame_start = 1
+        SCENE.frame_end = frame_count
+        SCENE.render.fps = ARGS.video_fps
+        SCENE.render.resolution_x = width
+        SCENE.render.resolution_y = height
+        SCENE.render.resolution_percentage = 100
+        SCENE.render.image_settings.file_format = 'FFMPEG'
+        SCENE.render.image_settings.color_mode = 'RGB'
+        SCENE.render.ffmpeg.format = 'MPEG4'
+        SCENE.render.ffmpeg.codec = 'H264'
+        SCENE.render.ffmpeg.audio_codec = 'NONE'
+        SCENE.render.filepath = str(video_file)
+        SCENE.render.use_file_extension = True
+        radius = max(BOUNDS_SIZE) * 1.70
+        shot_specs = [
+            (1, 'ESTABLISHING', -1.00, 1.85, 1.15, 43),
+            (max(2, frame_count // 3), 'FORM_REVEAL', -.30, 1.55, 1.08, 50),
+            (max(3, frame_count * 2 // 3), 'MATERIAL_DETAIL', .48, 1.36, 1.22, 59),
+            (frame_count, 'HERO_RESOLVE', 1.12, 1.65, 1.17, 50),
+        ]
+        shotlist = []
+        for frame, intent, azimuth, distance, elevation, lens in shot_specs:
+            cam.location = target + Vector((
+                math.sin(azimuth) * radius * distance,
+                -math.cos(azimuth) * radius * distance,
+                radius * elevation,
+            ))
+            cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()
+            cam.data.lens = lens
+            cam.keyframe_insert(data_path='location', frame=frame)
+            cam.keyframe_insert(data_path='rotation_euler', frame=frame)
+            cam.data.keyframe_insert(data_path='lens', frame=frame)
+            shotlist.append({
+                'frame': frame, 'intent': intent, 'lensMm': lens,
+                'cameraMeters': [float(v) for v in cam.location],
+                'targetMeters': [float(v) for v in target],
+            })
+        SCENE.frame_set(1)
+        bpy.ops.render.render(animation=True)
+        if not video_file.is_file() or video_file.stat().st_size <= 1024:
+            raise RuntimeError('CINEMATIC_MP4_RENDER_MISSING_OR_EMPTY')
+        storyboard = {
+            'version': 1, 'assetId': ARGS.asset_id,
+            'sourceArtifact': 'asset.glb', 'sourceSha256': application['masterSha256'],
+            'videoFile': 'cinematic.mp4', 'codec': 'H264', 'container': 'MP4',
+            'fps': ARGS.video_fps, 'frameCount': frame_count,
+            'durationSeconds': ARGS.video_seconds, 'resolution': {'width': width, 'height': height},
+            'shots': shotlist, 'audioAuthoringOwner': 'audio',
+            'audioTracks': [], 'gameplayMutationAllowed': False,
+            'nativeRuntimeVerified': False,
+        }
+        scene_file.write_text(json.dumps(storyboard, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        cinematic_evidence = {
+            'status': 'BLENDER_VIDEO_RENDERED_NATIVE_RUNTIME_PENDING',
+            'videoFile': 'cinematic.mp4', 'shotlistFile': 'shotlist.json',
+            'videoSha256': hashlib.sha256(video_file.read_bytes()).hexdigest(),
+            'shotlistSha256': hashlib.sha256(scene_file.read_bytes()).hexdigest(),
+            'videoBytes': video_file.stat().st_size,
+            'frameCount': frame_count, 'fps': ARGS.video_fps,
+            'durationSeconds': ARGS.video_seconds,
+            'resolution': {'width': width, 'height': height},
+            'sourceArtifactSha256': application['masterSha256'],
+            'renderer': SCENE.render.engine, 'encoder': 'BLENDER_FFMPEG_H264',
+            'nativeRuntimeVerified': False, 'productionVerified': False,
+        }
+    finally:
+        for obj in shot_objects:
+            bpy.data.objects.remove(obj, do_unlink=True)
+
+
 source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 artifact_hash=hashlib.sha256(glb.read_bytes()).hexdigest()
 preview_hash=hashlib.sha256(preview.read_bytes()).hexdigest()
@@ -438,8 +527,10 @@ evidence={
     'meshObjectCount':len(ASSET_OBJECTS),
     'surfaceDistribution':physical_analysis,
     'optimization':application['optimization'],
-    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json']
+    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json'] + (['cinematic.mp4','shotlist.json'] if ARGS.cinematic else [])
 }
+if cinematic_evidence:
+    evidence['cinematic'] = cinematic_evidence
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('VIBE_NATIVE_GAME_ASSET='+ARGS.asset_id)
 print('VIBE_NATIVE_GAME_ASSET_PROFILE='+ARGS.profile)
