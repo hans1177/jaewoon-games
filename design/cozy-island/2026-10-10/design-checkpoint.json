@@ -187,25 +187,34 @@
       },
       "playerFantasy": "플레이어는 작은 섬에서 직접 나무와 식량을 모으며 주민 자동화와 병사 진군을 통해 왕국을 확장하는 협동 성장 게임에 참여한다. 각 지역에서는 서로 다른 적들과 보상을 가진 5개 거점을 점령하며, 전략적 자원 확보와 강력한 병종/무역을 통한 해전 및 공성 치료를 수행해 최종적으로 대형 섬 또는 왕국을 정복할 수 있다.",
       "coreFun": "나무와 식량은 월드 노드에서 직접 상호작용하여 획득된다. 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화하며, 자원은 병력으로 전환되고 병영 레벨로 전투력을 확장한다. 5개의 서로 다른 거점은 순차적으로 점령되며, 협동 지원을 통해 강력한 기지가 공격받는다. 이 과정에서 플레이어는 자원·주민·병력·점령 상태를 실시간으로 관리하고, 자동전투와 점령 보상이 제공되는 구조이다."
+    },
+    "local_authoring_parts::5ee3dcdb848845da3d29b06600c35545d801ca129b4d72cc1a36eef969d2ca7f:coreLoop": {
+      "coreLoop": [
+        "INPUT: 직접 채집 → STATE: 나무/식량 획득 → OUTPUT: 월드 노드에 도달",
+        "INPUT: 주민 고용 → STATE: 자동화 진행 → OUTPUT: 생산 직업 배치",
+        "INPUT: 병력 전환 → STATE: 전투력 확장 → OUTPUT: 병영 레벨 증가",
+        "INPUT: 거점 선택 → STATE: 점령 상태 변경 → OUTPUT: 자원 확보",
+        "INPUT: 협동 지원 → STATE: 기지 공격 대응 → OUTPUT: 강력한 기지 생성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 619862,
-      "lastMs": 89974,
+      "totalMs": 682329,
+      "lastMs": 62467,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:21:50.285Z"
+      "updatedAt": "2026-10-10T09:22:52.755Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:11:30.090Z",
-  "updatedAt": "2026-10-10T09:21:50.287Z",
+  "updatedAt": "2026-10-10T09:22:52.755Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1268,7 +1277,7 @@
   "localAuthoringSplits": {
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:21:50.287Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:22:52.755Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
