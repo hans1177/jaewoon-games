@@ -418,9 +418,9 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   const index=fs.readFileSync('index.html','utf8');
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
-  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID&&hasRunnableHomepageTarget\(item\)\)\|\|rows\[0\]/);
-  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.roblox\|\|links\.unity\?'게임 입장':links\.unityWeb\?'Unity Web 플레이':'웹 플레이'/);
+  assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
+  assert.match(runtime,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.unityWeb\?'Unity Web 플레이':links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이':'게임 보기'/);
   assert.match(index,/package=com\.openai\.chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
@@ -480,8 +480,8 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(display.playableWebCompanionSource,'ACTUAL_CANONICAL_WEB_ENTRY');
   assert.equal(display.playableWebCompanionRequiresPlayableAndArchive,true);
   assert.equal(display.playableWebCompanionRequiresExistingCanonicalIndex,true);
-  assert.equal(display.cardVisibilityRequiresRunnableTarget,true);
-  assert.equal(display.titleOnlyCardExposureForbidden,true);
+  assert.equal(display.cardVisibilityRequiresRunnableTarget,false);
+  assert.equal(display.titleOnlyCardExposureForbidden,false);
   assert.equal(display.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
   assert.equal(display.mainCatalogMayNotOverrideFresherCompanyRuntime,true);
   assert.equal(display.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
@@ -498,8 +498,8 @@ test('Unity Web homepage links require a deployable manifest or verified Unity i
   assert.equal(directiveDisplay.playableWebCompanionButtonEnabled,true);
   assert.equal(directiveDisplay.playableWebCompanionButtonLabel,'웹 플레이');
   assert.equal(directiveDisplay.playableWebCompanionSource,'ACTUAL_CANONICAL_WEB_ENTRY');
-  assert.equal(directiveDisplay.cardVisibilityRequiresRunnableTarget,true);
-  assert.equal(directiveDisplay.titleOnlyCardExposureForbidden,true);
+  assert.equal(directiveDisplay.cardVisibilityRequiresRunnableTarget,false);
+  assert.equal(directiveDisplay.titleOnlyCardExposureForbidden,false);
   assert.equal(directiveDisplay.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
   assert.equal(directiveDisplay.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
   assert.equal(directiveDisplay.rawRuntimeCatalogDirectCopyForbidden,true);

@@ -1,5 +1,5 @@
 {
-  "version": 186,
+  "version": 187,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -494,7 +494,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-09T07:45:00.000Z",
+  "updatedAt": "2026-10-10",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -3547,5 +3547,16 @@
     "staticPassIsRuntimePass": false,
     "documentedReferenceIsVerifiedExperience": false,
     "staticMenuRouteIsMeasuredUserBenefit": false
+  },
+  "homepageDeploymentVisibilityEvidence": {
+    "source": "company-learning/platform-release-roadmap.json#serverHomepageIntegration.homepageListingContract",
+    "requiredMarkers": [
+      "HOMEPAGE_CATALOG=",
+      "HOMEPAGE_DEVELOPMENT_VISIBILITY=ALL_DEPLOYED_GAMES",
+      "HOMEPAGE_DEPLOYED_GAME_CARDS="
+    ],
+    "runtimeAuthority": "company-runtime",
+    "allDeployedCardCountRecorded": true,
+    "playAndReleaseTruthSeparate": true
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": 558,
+  "version": 559,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6203,7 +6203,7 @@
       "developmentGameNextCycleRequiresPublicationDispatch": false,
       "privateValidationArtifactForF0ToF9Allowed": true,
       "validationArtifactMayReplaceCanonicalServer": false,
-      "homepageClassificationAndPublicationMustUseSameGate": true,
+      "homepageClassificationAndPublicationMustUseSameGate": false,
       "ownerDirectCanonicalPublishExceptionRef": "company-learning/platform-release-roadmap.json#roblox.deploymentControl.ownerDirectCanonicalPublishException",
       "codeAndContentExpansionRequiredAcrossPlatforms": [
         "WEB",
@@ -6211,7 +6211,8 @@
         "UNITY"
       ],
       "simpleMotionOrCounterOnlyPrototypeIsNotCompleteGame": true,
-      "webDeploymentBeforeNextBuildUpAuthority": "changeRecord.playableWebMandatoryDeployment20261002"
+      "webDeploymentBeforeNextBuildUpAuthority": "changeRecord.playableWebMandatoryDeployment20261002",
+      "homepageCardListingIndependentFromNativeCanonicalPublishGate": true
     },
     "existingRobloxSourceIntake": {
       "authority": "OWNER_DIRECTIVE_2026-09-30",
@@ -6262,7 +6263,7 @@
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "renderer": "assets/homepage-enhancements.js",
     "catalog": "game-catalog.json",
-    "objective": "SHOW_PLAYABLE_WEB_GAMES_AND_VERIFIED_ROBLOX_DEPLOYMENT_HISTORY_WITHOUT_FALSE_RELEASE_PROMOTION",
+    "objective": "SHOW_ALL_DEPLOYED_REGISTERED_GAME_CARDS_WITHOUT_FALSE_PLAY_OR_RELEASE_CLAIMS",
     "webGames": {
       "includeWhen": [
         "lifecycle-active-or-rebuild",
@@ -6291,7 +6292,7 @@
     },
     "releaseShelfUnchanged": true,
     "top30ShelfUnchanged": true,
-    "developmentShelfUnchanged": true,
+    "developmentShelfUnchanged": false,
     "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true,
     "departmentPortfolioControl": {
       "enabled": true,
@@ -6543,7 +6544,7 @@
       }
     }
   },
-  "updatedAt": "2026-10-09",
+  "updatedAt": "2026-10-10",
   "priorityTiers": [
     {
       "tier": 1,
@@ -6656,7 +6657,7 @@
         },
         {
           "id": "IN_DEVELOPMENT",
-          "source": "ACTIVE_GAMES_WITH_AT_LEAST_ONE_RUNNABLE_TARGET",
+          "source": "ALL_CANONICAL_DEPLOYED_ACTIVE_GAMES_WITHOUT_CONFIRMED_PLATFORM_RELEASE",
           "label": "개발 중"
         }
       ],
@@ -6755,8 +6756,10 @@
           "로비 체험",
           "본게임 가능"
         ],
-        "cardVisibilityRequiresRunnableTarget": true,
-        "titleOnlyCardExposureForbidden": true
+        "cardVisibilityRequiresRunnableTarget": false,
+        "titleOnlyCardExposureForbidden": false,
+        "deployedGameCardAlwaysVisible": true,
+        "unverifiedPlayButtonDisabled": true
       },
       "recentUpdates": {
         "enabled": true,
@@ -6778,7 +6781,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 10,
+    "version": 11,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6972,11 +6975,14 @@
         "actualGameFileSourceMetadataPreserved": true,
         "canonicalNormalizationRequiredBeforeHomepagePublication": true,
         "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
-        "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
-        "cardVisibilityRequiresRunnableTarget": true,
-        "titleOnlyCardExposureForbidden": true,
+        "playableWebCompanionMissingEntryState": "SHOW_DEPLOYED_GAME_CARD_DISABLE_UNVERIFIED_PLAY_LINK",
+        "cardVisibilityRequiresRunnableTarget": false,
+        "titleOnlyCardExposureForbidden": false,
         "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true,
-        "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess"
+        "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess",
+        "allDeployedGameCardsRequired": true,
+        "cardVisibilityIndependentOfWebRuntimeQa": true,
+        "playButtonRequiresVerifiedRunnableTarget": true
       },
       "autoClassification": {
         "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -7121,7 +7127,32 @@
       "nativePrimitiveQualityMayNotHideRunnableTarget": true,
       "sourceOnlyOrMissingBuildCannotClaimRunnable": true,
       "staleSharedRobloxTargetStillSuppressed": true,
-      "releaseTruthAndLockedF0F9SequenceUnchanged": true
+      "releaseTruthAndLockedF0F9SequenceUnchanged": true,
+      "cardVisibilityRequiresRunnableTarget": false,
+      "deployedGameCardVisibilityIndependentOfRelease": true,
+      "unverifiedBuildDisablesPlayLinkNotCard": true
+    },
+    "homepageListingContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-10",
+      "status": "OWNER_DIRECT_LOCKED",
+      "mode": "ALWAYS_SHOW_DEPLOYED_GAMES_IN_DEVELOPMENT_AND_RELEASE",
+      "allDeployedGamesVisible": true,
+      "showDevelopmentAndReleasedGames": true,
+      "gameCardVisibilityIndependentOfReleaseClassification": true,
+      "gameCardVisibilityIndependentOfUnityWebRuntimeQa": true,
+      "gameCardVisibilityIndependentOfPlayableTarget": true,
+      "canonicalRegisteredWebPathCountsForListing": true,
+      "nativeVerifiedRunnableTargetCountsForListing": true,
+      "simpleClickOnlyNonGamePrototypesRemainExcluded": true,
+      "unverifiedOrMissingGameBuildDisablesPlayButtonOnly": true,
+      "noFalseNative3dRuntimeOrReleasePass": true,
+      "companyRuntimeCatalogReconciliationRequired": true,
+      "existingHomepageManagerDirectorPublicationRequired": true,
+      "newPipelineForbidden": true,
+      "canonicalF0F9LockedSequenceUnchanged": true,
+      "externalPublicReleaseHardGateUnchanged": true,
+      "preserveGameSourcesAndSaveData": true
     }
   },
   "longHorizonVision": {
@@ -8513,12 +8544,13 @@
     "homepageRunnableOnlyExposure20261002": {
       "id": "HOMEPAGE_RUNNABLE_ONLY_EXPOSURE_2026-10-02",
       "authority": "OWNER_DIRECTIVE_2026-10-02",
-      "summary": "Existing homepage game cards are visible only when at least one runnable target exists; canonical web-games/<gameId>/index.html is reconciled on every status sync and enables Web play.",
+      "summary": "SUPERSEDED: Game card listing no longer requires runnable or released status; real play links remain verified only.",
       "centralPolicyFirst": true,
       "newPipelineCreated": false,
       "existingStatusSyncReused": true,
-      "titleOnlyCardExposureForbidden": true,
-      "actualCanonicalWebEntryEnablesHomepagePlay": true
+      "titleOnlyCardExposureForbidden": false,
+      "actualCanonicalWebEntryEnablesHomepagePlay": false,
+      "supersededBy": "changeRecord.ownerHomepageEveryDeploymentVisibility20261010"
     },
     "developmentValidationMinimization20261002": {
       "authority": "OWNER_DIRECTIVE_2026-10-02",
@@ -8863,6 +8895,18 @@
       "baseVersion": 557,
       "policyVersion": 558,
       "updatedMain3dLibraryRulesPreserved": true
+    },
+    "ownerHomepageEveryDeploymentVisibility20261010": {
+      "id": "OWNER_HOMEPAGE_EVERY_DEPLOYMENT_VISIBILITY_2026-10-10",
+      "authority": "OWNER_DIRECTIVE_2026-10-10",
+      "status": "OWNER_DIRECT_LOCKED",
+      "requirement": "EVERY_DEPLOYED_GAME_MUST_APPEAR_ON_HOMEPAGE_WHETHER_DEVELOPMENT_OR_RELEASED",
+      "supersedes": "changeRecord.homepageRunnableOnlyExposure20261002",
+      "noPlayableQaRequiredForCard": true,
+      "verifiedRuntimeRequiredToActivatePlay": true,
+      "preserveF0F9Lock": true,
+      "existingHomepageManagerDirectorOnly": true,
+      "requiresLiveSiteAndRuntimeVerification": true
     }
   },
   "vibeExecutionLaneContract": {

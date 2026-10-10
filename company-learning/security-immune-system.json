@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -473,7 +473,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-10-08T02:14:34.456Z",
+  "updatedAt": "2026-10-10",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1375,5 +1375,14 @@
     "saveBalanceSpawnCountAndServerAuthorityPreserved": true,
     "noRuntimeAuthorityFromModelClaims": true,
     "noNewExecutionPipeline": true
+  },
+  "homepageDeploymentVisibilitySecurity": {
+    "source": "company-learning/platform-release-roadmap.json#serverHomepageIntegration.homepageListingContract",
+    "deployedDevelopmentAndReleasedCardsAlwaysVisible": true,
+    "unverifiedPlayLinksBlocked": true,
+    "nonGameClickOnlyPrototypeWithdrawalPreserved": true,
+    "falseRuntimeQaOrReleaseForbidden": true,
+    "lockedF0F9SequenceUnchanged": true,
+    "fixedPwaAndChatProtected": true
   }
 }

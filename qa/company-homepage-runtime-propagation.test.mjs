@@ -57,13 +57,13 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
     identity:{gameId:id,name:id},
     lifecycle:{state:'ACTIVE'},
     production:{class:cls},
-    sources:{web:{playable:false,archive:false},unity:{projectPath:'unity-games/'+id}}
+    sources:{web:{path:'web-games/'+id,playable:false,archive:false},unity:{projectPath:'unity-games/'+id}}
   }});
   const dev=base('dev-without-release','DEVELOPMENT_CONFIRMED');
   const design=base('design-without-release','DESIGN_ONLY');
   const released=base('released-without-build','RELEASE_CONFIRMED');
   const list=api.developmentRows({games:[dev,design,released]},{});
-  assert.deepEqual(Array.from(list,game=>game.id),[],'unbuilt games have no homepage card');
+  assert.deepEqual(Array.from(list,game=>game.id),['dev-without-release','design-without-release','released-without-build'],'canonical registered games remain displayed even while unverified');
   assert.equal(api.hasRunnableHomepageTarget(dev),false,'source-only must not be treated as runnable');
   assert.equal(api.internalReleaseRows({games:[dev]},{}).length,0,'development must not be falsely promoted');
   const card=api.buildCard(dev);
@@ -96,7 +96,7 @@ test('runnable native tests remain accessible before release and survive web-onl
   assert.equal(links.roblox,'https://www.roblox.com/games/123456789');
   assert.equal(links.unity,'https://example.com/access-test.apk');
   assert.equal(links.web,'');
-  assert.equal(api.hasRunnableHomepageTarget(game),false,'Roblox-only execution cannot produce a Unity WebGL homepage card');
+  assert.equal(api.hasRunnableHomepageTarget(game),true,'verified native game execution stays accessible without Unity WebGL');
   assert.equal(api.hasInternalRelease(game),false);
 });
 
@@ -111,6 +111,23 @@ test('source-only or failed builds and stale shared targets cannot become execut
   assert.equal(snap.games.flatMap(g=>g.platforms).some(p=>p.executionAvailable===true),false);
   assert.equal(policy.serverHomepageIntegration.runnablePlatformAccess.releaseClassificationRequiredForLaunch,false);
   assert.deepEqual(policy.catalogNormalization.ownerWebAutoIngest.webExposureQuality.homepageWithdrawalPlatforms,['WEB']);
+});
+
+
+test('실제 카탈로그 배포 게임 카드는 41개 이상이며, 실행 판정과 분리된다',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows})',{document:{readyState:'loading',addEventListener(){}}});
+  api.setExposure(exposure);
+  const available=api.internalReleaseRows(catalog,{});
+  const present=new Set(available.map(row=>row.id));
+  for(const row of api.developmentRows(catalog,{}))present.add(row.id);
+  const prototypes=catalog.games.filter(row=>row.id.startsWith('seed-roblox-'));
+  assert.equal(prototypes.length,4);
+  assert.equal(present.size,catalog.games.length-prototypes.length,'개발 중/출시 구분이 카드 누락 원인이면 안 된다');
+  assert.ok(present.size>=41);
+  for(const row of prototypes)assert.equal(present.has(row.id),false,'버튼형 시제품은 정식 게임 카드가 아니다');
 });
 
 test('runtime catalog fills only missing active development games',()=>{
@@ -255,8 +272,8 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.equal(policy.serverHomepageIntegration.showWebPlay,true);
   assert.equal(policy.serverHomepageIntegration.ownerWebUpload.changedGameIdsOnly,false);
   assert.equal(policy.serverHomepageIntegration.ownerWebUpload.reconcileExistingCatalogGamesEveryStatusSync,true);
-  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.cardVisibilityRequiresRunnableTarget,true);
-  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.titleOnlyCardExposureForbidden,true);
+  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.cardVisibilityRequiresRunnableTarget,false);
+  assert.equal(policy.serverHomepageIntegration.managerContract.developmentProgressDisplay.titleOnlyCardExposureForbidden,false);
   assert.equal(snap.unityWebEnabled,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,true);
@@ -286,7 +303,7 @@ test('homepage exposes Unity Web as the required pre-native development test sur
   assert.match(renderer,/Unity Web · 개발중/);
   assert.match(renderer,/function playableWebHref\(row\)/);
   assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
-  assert.match(renderer,/\.filter\(game=>productionClassOf\(game\)==='DEVELOPMENT_CONFIRMED'\|\|hasRunnableHomepageTarget\(game\)\)/);
+  assert.doesNotMatch(renderer,/\.filter\(hasRunnableHomepageTarget\)/);
   assert.match(renderer,/웹 플레이/);
   assert.match(renderer,/links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|''/);
   assert.match(renderer,/return links\.roblox\|\|links\.unity\|\|links\.unityWeb\|\|links\.web\|\|'';/);
