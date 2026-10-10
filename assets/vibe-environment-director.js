@@ -519,11 +519,32 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const temperature=clamp01(annualTemperature+(seasonKey==='WINTER'?-0.2:seasonKey==='SUMMER'?.12:0));
     const humidity=clamp01(tile.moisture+(waterDistance!==null?.24*Math.exp(-waterDistance/3):0)-(aridRegion?.2:0));
     const slope=tile.slopeDegrees,rocky=tile.biome==='RIDGE'||slope>22;
-    const habitat=tile.biome==='WATER'?'AQUATIC'
+    const waterIndex=waterComponentByCell[id],body=waterIndex>=0?waterComponents[waterIndex]:null;
+    const shoreline=coastDistance[id]===32767?null:coastDistance[id];
+    // Whittaker 기후-강수 원리를 이용해 육상과 해양의 생태 영역을 구분한다. 실측 기후로 주장하지 않는다.
+    const annualRainIndex=clamp01(humidity*.8+(waterDistance!==null?.06:0));
+    const isMarine=body?.kind==='OCEAN',isFresh=body?.kind==='LAKE';
+    const depthEstimate=body?+(Math.max(.5,(shoreline||0)*1.65+Math.max(0,.42-tile.elevation)*10)).toFixed(2):null;
+    const waterEnvironment=isMarine
+      ?annualTemperature>.64&&depthEstimate<8?'CORAL_REEF':annualTemperature<.52&&depthEstimate<12?'KELP_FOREST':
+        depthEstimate>=26?'DEEP_OCEAN':'OPEN_OCEAN'
+      :isFresh?'FRESHWATER_LAKE':null;
+    const earthBiome=body?waterEnvironment
+      :rocky&&annualTemperature<.35?'ALPINE'
+      :annualTemperature<.18?'TUNDRA':annualTemperature<.35?(annualRainIndex>.38?'BOREAL_FOREST':'COLD_STEPPE')
+      :annualTemperature>.69?(annualRainIndex>.72?'TROPICAL_RAINFOREST':annualRainIndex>.38?'SAVANNA':'HOT_DESERT')
+      :annualRainIndex<.25?'TEMPERATE_DESERT':annualRainIndex>.72?'TEMPERATE_RAINFOREST':
+        annualRainIndex>.42?'TEMPERATE_FOREST':'TEMPERATE_GRASSLAND';
+    const shoreBiome=!body&&shoreline!==null&&shoreline<=2
+      ?annualTemperature>.64&&annualRainIndex>.65?'MANGROVE':annualRainIndex>.67?'FRESHWATER_WETLAND':'COASTAL_MARGIN'
+      :null;
+    const habitat=body?waterEnvironment
+      :shoreBiome==='MANGROVE'?'MANGROVE':shoreBiome==='FRESHWATER_WETLAND'?'WETLAND'
       :rocky?'ROCKY_RIDGE':aridRegion||humidity<.27?'DRY_SCRUB'
       :temperature<.3?'COLD_UPLAND':waterDistance!==null&&waterDistance<=2?'RIPARIAN'
       :tile.biome==='FOREST'?'CANOPY_FOREST':'GRASSLAND';
-    const primary=tile.biome==='WATER'?'RIVER_SEDIMENT'
+    const primary=body?(isMarine?'COASTAL_SAND_SEABED':'FRESHWATER_SEDIMENT')
+      :shoreBiome==='MANGROVE'?'PEAT_AND_SILT':shoreBiome==='FRESHWATER_WETLAND'?'WET_SILT'
       :rocky?stratum:temperature<.19&&tile.elevation>.5?'SNOW_COVER'
       :aridRegion?'SAND_AND_GRAVEL':habitat==='RIPARIAN'?'FLOODPLAIN_SILT'
       :tile.biome==='FOREST'?'MOSS_LOAM':'GRASS_SOIL';
@@ -536,6 +557,14 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const carryingCapacity=tile.biome==='WATER'?0:+(clamp01(
       (.18+humidity*.72)*(1-Math.min(.85,slope/65))*(habitat==='ROCKY_RIDGE'?.35:1)*
       (annualTemperature<.18?.55:1))).toFixed(3);
+    tile.aquatic=body?Object.freeze({bodyId:body.id,kind:body.kind,visualZone:waterEnvironment,estimatedDepthMeters:depthEstimate,
+      salinityPpt:body.salinityPpt,tidalInfluence:isMarine&&shoreline!==null&&shoreline<=2,
+      openWater:depthEstimate>=12,sourceNative3dWaterMeshRequired:true,realHydrologyMeasured:false,
+      swimmingAndFishingAuthority:false,actualNativeWaterVerified:false}):null;
+    tile.earthBiome=Object.freeze({name:shoreBiome||earthBiome,climateClass:earthBiome,coastalTransition:shoreBiome||null,
+      wetnessIndex:+annualRainIndex.toFixed(3),meanTemperatureProxy:+annualTemperature.toFixed(3),
+      abioticDrivers:Object.freeze(['TEMPERATURE','PRECIPITATION','ALTITUDE','SOIL','FRESHWATER','SALINITY']),
+      ecologicalSuccessionIsVisualPlanningOnly:true,worldGameplayAuthority:false});
     tile.surface=Object.freeze({primary,secondary,secondaryBlend:blend,geologyId,stratum,waterDistanceCells:waterDistance,
       temperature: +temperature.toFixed(3),annualTemperature:+annualTemperature.toFixed(3),humidity:+humidity.toFixed(3),soilDepth,substrateStability,season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
       nativeShaderAnd3dTerrainBindingRequired:true,nativeMaterialApplied:false});
@@ -545,6 +574,8 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     habitatCounts.set(habitat,(habitatCounts.get(habitat)||0)+1);
     geologyRegions.set(geologyId,(geologyRegions.get(geologyId)||0)+1);
   }
+  const earthBiomeCounts=new Map();
+  for(const tile of terrain)earthBiomeCounts.set(tile.earthBiome.name,(earthBiomeCounts.get(tile.earthBiome.name)||0)+1);
   const terrainMaterialGroups=[...materialCounts].sort(([a],[b])=>a.localeCompare(b)).map(([kind,count])=>Object.freeze({
     kind,count,sourceBinding:pickSource('MATERIAL',kind,0,0),worldTerrainMaterialApplied:false
   }));
@@ -835,6 +866,15 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
     size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
+    oceansAndLakes:Object.freeze({algorithm:'FLOOD_FILL_WATER_BODY_SALINITY_COASTAL_BIOME_CLASSIFICATION',
+      requestedWaterMode:waterKey,waterBodies:Object.freeze(waterComponents),
+      oceanCount:waterComponents.filter(row=>row.kind==='OCEAN').length,lakeCount:waterComponents.filter(row=>row.kind==='LAKE').length,
+      coastlineCells:terrain.filter(tile=>tile.aquatic?.tidalInfluence).length,
+      nativeWaterAndMarineCreatureRuntimeQaRequired:true,actualOceanLakeRenderingVerified:false,
+      authoredSwimmingFishingMechanicsPreserved:true,waterWorldGameRulesChanged:false}),
+    earthBiomes:Object.freeze({algorithm:'WHITTAKER_INSPIRED_CLIMATE_MOISTURE_WITH_AQUATIC_SUCCESSION',
+      categories:Object.freeze(Object.fromEntries([...earthBiomeCounts].sort(([a],[b])=>a.localeCompare(b)))),
+      climaticClassificationIsApproximate:true,gameplaySpeciesAndSpawnUnaffected:true,actualEcologicalSimulationVerified:false}),
     geologyAndMaterials:Object.freeze({algorithm:'SEEDED_VORONOI_FBM_CATCHMENT_RUNOFF',
       geologyRegionCount:geologyRegions.size,materialDistribution:Object.freeze(Object.fromEntries([...materialCounts].sort(([a],[b])=>a.localeCompare(b)))),
       surfaceMaterialGroups:Object.freeze(terrainMaterialGroups),nativeMaterialAndTerrainQaRequired:true,actualMaterialRuntimeVerified:false}),
