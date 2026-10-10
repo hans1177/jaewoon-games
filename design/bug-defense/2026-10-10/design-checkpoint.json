@@ -888,25 +888,159 @@
     },
     "local_authoring_parts::cc471e5fdf5f59fb381aa388982be214c9cefee5715087501fa8bda7e98b044a:riskPressure": {
       "riskPressure": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
+    },
+    "local_authoring_parts::cc471e5fdf5f59fb381aa388982be214c9cefee5715087501fa8bda7e98b044a:recoveryRules": {
+      "recoveryRules": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
+    },
+    "local_authoring_parts::544a959b81986e0b322828b4507b42f78077752d2a7da948ea559d4d0ce8af10:failureRetryRisk": {
+      "failureStates": [
+        "방어선 재배치 후 자원 배분 상태 변환",
+        "곤충 웨이브 패턴 읽기 실패 시 방어선 위치 선택 오류",
+        "자원 소비 증가로 인해 위험 발생"
+      ],
+      "retryFlow": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 증가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
+      "riskPressure": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
+      "recoveryRules": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
+    },
+    "local_authoring_parts::620519e6d06c9f0dea539a4875f27e01f3363b57b8bdab8e937516c75531a6f5:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "방어선 재배치 후 자원 배분 상태 변환",
+          "곤충 웨이브 패턴 읽기 실패 시 방어선 위치 선택 오류",
+          "자원 소비 증가로 인해 위험 발생"
+        ],
+        "retryFlow": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 증가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
+        "riskPressure": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
+        "recoveryRules": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
+      }
+    },
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromId": "main_roadmap",
+          "toId": "a_main_roadmap",
+          "stateKeys": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "fromSystem": "Main Roadmap",
+          "toSystem": "After Play Flow",
+          "trigger": "defender_placement_adjustment → resource_allocation_state_change → next_defense_decision_making",
+          "stateChange": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다."
+        },
+        {
+          "fromId": "a_main_roadmap",
+          "toId": "main_roadmap",
+          "stateKeys": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "fromSystem": "Main Roadmap",
+          "toSystem": "After Play Flow",
+          "trigger": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다.",
+          "stateChange": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다."
+        },
+        {
+          "fromId": "a_main_roadmap",
+          "toId": "b_defense_adaptation",
+          "stateKeys": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "fromSystem": "After Play Flow",
+          "toSystem": "Defense Adaptation",
+          "trigger": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다.",
+          "stateChange": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다."
+        },
+        {
+          "fromId": "b_defense_adaptation",
+          "toId": "a_main_roadmap",
+          "stateKeys": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "fromSystem": "Defense Adaptation",
+          "toSystem": "After Play Flow",
+          "trigger": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다.",
+          "stateChange": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다."
+        },
+        {
+          "fromId": "main_roadmap",
+          "toId": "delve_roadmap",
+          "stateKeys": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "fromSystem": "Main Roadmap",
+          "toSystem": "Defense Adaptation",
+          "trigger": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다.",
+          "stateChange": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다."
+        },
+        {
+          "fromId": "delve_roadmap",
+          "toId": "main_roadmap",
+          "stateKeys": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "fromSystem": "Defense Adaptation",
+          "toSystem": "Main Roadmap",
+          "trigger": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다.",
+          "stateChange": "defender_placement_adjustment 이벤트가 발생했으며, 이로 인해 자원 배분 상태가 변환됩니다. 이 상태 변화는 방어선 재배치 및 경제적 가치에 맞춘 자원 소비 증가를 의미합니다."
+        }
+      ],
+      "progressionDirection": "선형적",
+      "progressionEconomyBalance": {
+        "progressionLoop": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 결정 → 위험/보상 발생 → 다음 선택 기반 전략 결정의 순차적 흐름을 설계하여 경제적 가치와 방어력 간의 균형 유지",
+        "resourceFlow": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지",
+        "balanceRules": "기존 MAIN/A/B/C/@의 방어선 재배치 및 자원 배분 상태 변화를 기반으로, 곤충 웨이브 패턴 읽기를 통해 방어선 위치를 선택하고, 이로 인해 자원 배분 결정을 내리며, 위험/보상을 발생시키고 다음 선택 기반 전략 결정을 수행함으로써 경제적 가치와 방어력 간의 균형 유지"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+          "newGameplay": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 다음과 같이 진행됩니다: 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다.",
+          "systemImpact": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다."
+        },
+        {
+          "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+          "newGameplay": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 다음과 같이 진행됩니다: 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다.",
+          "systemImpact": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다."
+        },
+        {
+          "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+          "newGameplay": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정",
+          "systemImpact": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "방어선 재배치 후 자원 배분 상태 변환",
+          "곤충 웨이브 패턴 읽기 실패 시 방어선 위치 선택 오류",
+          "자원 소비 증가로 인해 위험 발생"
+        ],
+        "retryFlow": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 증가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
+        "riskPressure": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
+        "recoveryRules": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 51,
-      "successes": 51,
+      "calls": 52,
+      "successes": 52,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1602551,
-      "lastMs": 33899,
+      "totalMs": 1636717,
+      "lastMs": 34166,
       "lastError": null,
-      "updatedAt": "2026-10-10T11:05:28.586Z"
+      "updatedAt": "2026-10-10T11:06:02.753Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T11:05:28.586Z",
+  "updatedAt": "2026-10-10T11:06:02.759Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2591,12 +2725,13 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "54f7853363eea993d8d153e85cb53757d3caa5dd71603318b23962c24bdf3a1c"
   },
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T11:05:28.586Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:06:02.756Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
