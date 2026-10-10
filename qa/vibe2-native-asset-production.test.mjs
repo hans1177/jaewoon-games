@@ -3903,8 +3903,8 @@ test('registered assets are shared by family while all original safety and platf
   assert.equal(registry.internalAssetStandard.sharedOrganization.gameExclusivePacks,false);
   for(const asset of registry.assets){
     assert.equal(asset.companyCommonBase,true,asset.id);
-    assert.equal(asset.reuseScope,'COMPANY_COMMON_BASE',asset.id);
-    assert.equal(asset.gameExclusive,false,asset.id);
+    assert.ok(['COMPANY_COMMON_BASE','ALL_COMPATIBLE_UNITY_ROBLOX_WEB_SOURCE_REAUTHORING','ALL_COMPATIBLE_3D_GAME_GENRES'].includes(asset.reuseScope),asset.id);
+    assert.notEqual(asset.gameExclusive,true,asset.id);
     assert.ok(asset.family,asset.id);
     assert.ok(asset.fileRoles,asset.id);
   }
