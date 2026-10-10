@@ -3,595 +3,36 @@
   "gameId": "amusement-tycoon",
   "date": "2026-10-10",
   "seedId": "OWNER-DESIGN-AMUSEMENT-TYCOON",
-  "fingerprint": "429fe5a4b028e70eff663d287803dde60ed3977225f64995d11a12a8953fb247",
+  "fingerprint": "7a487645816f81fdcb13c18b1dd2d0b504be785ec5428a894f387794445ddb00",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::84609ec7ac3e10188953f8ff55f3ec5171c4378339e7bbf7bebf5238ba38b14e:identity": {
-      "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다."
-    },
-    "local_authoring_parts::e74d6db9638f13f1e1ad6e76d3f5cbe5de9ff42a76486bbf102bf295c7f65c6e:mainIdentity,a,b,abCausality": {
-      "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
-      "a": {
-        "system": "동선 최적화 시스템",
-        "material": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-        "materialDomain": "경관 및 인프라",
-        "stateChange": "손님의 이동 경로와 행복도 아이콘에 즉각적인 변화를 주며 공원 전체의 수용 능력을 높인다."
-      },
-      "b": {
-        "system": "감정 기반 만족도 엔진",
-        "material": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다.",
-        "materialDomain": "문화 및 서비스",
-        "stateChange": "손님의 감정 상태가 긍정적이 되면 공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "abCausality": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 동선 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다. 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다."
-    },
-    "local_authoring_parts::e74d6db9638f13f1e1ad6e76d3f5cbe5de9ff42a76486bbf102bf295c7f65c6e:abEvolution,materialFusion,storyCausalChain": {
-      "abEvolution": {
-        "aChangesB": "동선 최적화 시스템 → 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다.",
-        "bChangesA": "감정 기반 만족도 엔진 → 동선 최적화 시스템: 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "lateGameChange": "전체적인 흐름과 수익성을 극대화하는 방식으로, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 조절하고 최적화하는 과정에서, 공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "materialFusion": {
-        "contrast": "3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작",
-        "causalBridge": "플레이어의 선택은 놀이기구의 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-        "removalConsequence": "보조 장르 제거 시, 플레이어의 선택이 원래의 인과 변화를 유지하면서 새로운 상황을 생성한다."
-      },
-      "storyCausalChain": {
-        "cause": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율합니다.",
-        "characterConflict": "손님의 이동 경로와 만족도 아이콘에 대한 불만족 또는 병목 현상은 게임의 주요 갈등 요소가 됩니다.",
-        "playerChoice": "플레이어는 길의 너비, 놀이기구 입구 위치, 휴식 공간 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-        "worldChange": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "nextEvent": "공원의 평판과 수익에 즉각적인 영향을 미친다."
-      }
-    },
-    "local_authoring_parts::d73c2bbddaece333f36b16a506981cc4856b1ecdad7131d1d50a2f20e4773b0e:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
-      "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
-      "a": {
-        "system": "동선 최적화 시스템",
-        "material": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-        "materialDomain": "경관 및 인프라",
-        "stateChange": "손님의 이동 경로와 행복도 아이콘에 즉각적인 변화를 주며 공원 전체의 수용 능력을 높인다."
-      },
-      "b": {
-        "system": "감정 기반 만족도 엔진",
-        "material": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다.",
-        "materialDomain": "문화 및 서비스",
-        "stateChange": "손님의 감정 상태가 긍정적이 되면 공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "abCausality": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 동선 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다. 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-      "abEvolution": {
-        "aChangesB": "동선 최적화 시스템 → 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다.",
-        "bChangesA": "감정 기반 만족도 엔진 → 동선 최적화 시스템: 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "lateGameChange": "전체적인 흐름과 수익성을 극대화하는 방식으로, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 조절하고 최적화하는 과정에서, 공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "materialFusion": {
-        "contrast": "3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작",
-        "causalBridge": "플레이어의 선택은 놀이기구의 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-        "removalConsequence": "보조 장르 제거 시, 플레이어의 선택이 원래의 인과 변화를 유지하면서 새로운 상황을 생성한다."
-      },
-      "storyCausalChain": {
-        "cause": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율합니다.",
-        "characterConflict": "손님의 이동 경로와 만족도 아이콘에 대한 불만족 또는 병목 현상은 게임의 주요 갈등 요소가 됩니다.",
-        "playerChoice": "플레이어는 길의 너비, 놀이기구 입구 위치, 휴식 공간 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-        "worldChange": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "nextEvent": "공원의 평판과 수익에 즉각적인 영향을 미친다."
-      }
-    },
-    "local_authoring_parts::284363983b080b60a0b69ea08bfbb95dfb5971f3026786ba5bf6b6ba587a36e9:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
-      "cThemes": [
-        {
-          "name": "시간의 흐름",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정"
-        },
-        {
-          "name": "감정의 빛",
-          "kind": "MATERIAL",
-          "gameplayEffect": "손님의 감정 상태가 긍정적으로 변환되며 공원의 평판과 수익에 즉각적인 영향을 미친다"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "3D 전략 경영 게임",
-          "gameplayEffect": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "감정 기반 서비스 시스템",
-          "gameplayEffect": "손님의 감정 상태 변화는 플레이어의 선택에 따라 실질적 인과 변화를 줄 수 있다"
-        }
-      ],
-      "cGenreInterlock": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-      "cWorldAndGameplayEffect": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다."
-    },
-    "local_authoring_parts::284363983b080b60a0b69ea08bfbb95dfb5971f3026786ba5bf6b6ba587a36e9:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "delveDiscoveries": [
-        {
-          "clue": "시간의 흐름과 감정의 빛",
-          "discovery": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정에서, 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-          "newChoice": "길의 너비 조절 및 서비스 요소 개입"
-        },
-        {
-          "clue": "동선 최적화 ↔ 감정 유도",
-          "discovery": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "newChoice": "놀이기구 배치 변경 및 서비스 요소 추가"
-        },
-        {
-          "clue": "3D 공간 · 메시 · 캐릭터 · 몬스터 · 에셋 · 터치 조작",
-          "discovery": "플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-          "newChoice": "서비스 요소 추가 및 놀이기구 배치 조정"
-        },
-        {
-          "clue": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-          "discovery": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 과정에서, 시간의 흐름과 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-          "newChoice": "동선 설계 최적화 및 서비스 요소 개입"
-        }
-      ],
-      "delveGrowthRule": "{\"rule\": \"플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하며, 이 선택은 공원의 평판과 수익에 즉각적인 변화를 가져오도록 설계됨.\"}",
-      "finalGameIdentity": "{\"identity\": \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-    },
-    "local_authoring_parts::d73c2bbddaece333f36b16a506981cc4856b1ecdad7131d1d50a2f20e4773b0e:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
-      "cThemes": [
-        {
-          "name": "시간의 흐름",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정"
-        },
-        {
-          "name": "감정의 빛",
-          "kind": "MATERIAL",
-          "gameplayEffect": "손님의 감정 상태가 긍정적으로 변환되며 공원의 평판과 수익에 즉각적인 영향을 미친다"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "3D 전략 경영 게임",
-          "gameplayEffect": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "감정 기반 서비스 시스템",
-          "gameplayEffect": "손님의 감정 상태 변화는 플레이어의 선택에 따라 실질적 인과 변화를 줄 수 있다"
-        }
-      ],
-      "cGenreInterlock": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-      "cWorldAndGameplayEffect": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-      "delveDiscoveries": [
-        {
-          "clue": "시간의 흐름과 감정의 빛",
-          "discovery": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정에서, 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-          "newChoice": "길의 너비 조절 및 서비스 요소 개입"
-        },
-        {
-          "clue": "동선 최적화 ↔ 감정 유도",
-          "discovery": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "newChoice": "놀이기구 배치 변경 및 서비스 요소 추가"
-        },
-        {
-          "clue": "3D 공간 · 메시 · 캐릭터 · 몬스터 · 에셋 · 터치 조작",
-          "discovery": "플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-          "newChoice": "서비스 요소 추가 및 놀이기구 배치 조정"
-        },
-        {
-          "clue": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-          "discovery": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 과정에서, 시간의 흐름과 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-          "newChoice": "동선 설계 최적화 및 서비스 요소 개입"
-        }
-      ],
-      "delveGrowthRule": "{\"rule\": \"플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하며, 이 선택은 공원의 평판과 수익에 즉각적인 변화를 가져오도록 설계됨.\"}",
-      "finalGameIdentity": "{\"identity\": \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-    },
-    "local_authoring_parts::c5438d3d7e88376241e090b829bb7bfa2912aede92f5e370aecb53efaa2fb8e3:creativeGrammar": {
-      "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
-      "a": {
-        "system": "동선 최적화 시스템",
-        "material": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-        "materialDomain": "경관 및 인프라",
-        "stateChange": "손님의 이동 경로와 행복도 아이콘에 즉각적인 변화를 주며 공원 전체의 수용 능력을 높인다."
-      },
-      "b": {
-        "system": "감정 기반 만족도 엔진",
-        "material": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다.",
-        "materialDomain": "문화 및 서비스",
-        "stateChange": "손님의 감정 상태가 긍정적이 되면 공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "abCausality": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 동선 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다. 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-      "abEvolution": {
-        "aChangesB": "동선 최적화 시스템 → 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다.",
-        "bChangesA": "감정 기반 만족도 엔진 → 동선 최적화 시스템: 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "lateGameChange": "전체적인 흐름과 수익성을 극대화하는 방식으로, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 조절하고 최적화하는 과정에서, 공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "materialFusion": {
-        "contrast": "3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작",
-        "causalBridge": "플레이어의 선택은 놀이기구의 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-        "removalConsequence": "보조 장르 제거 시, 플레이어의 선택이 원래의 인과 변화를 유지하면서 새로운 상황을 생성한다."
-      },
-      "storyCausalChain": {
-        "cause": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율합니다.",
-        "characterConflict": "손님의 이동 경로와 만족도 아이콘에 대한 불만족 또는 병목 현상은 게임의 주요 갈등 요소가 됩니다.",
-        "playerChoice": "플레이어는 길의 너비, 놀이기구 입구 위치, 휴식 공간 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-        "worldChange": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "nextEvent": "공원의 평판과 수익에 즉각적인 영향을 미친다."
-      },
-      "cThemes": [
-        {
-          "name": "시간의 흐름",
-          "kind": "MATERIAL",
-          "gameplayEffect": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정"
-        },
-        {
-          "name": "감정의 빛",
-          "kind": "MATERIAL",
-          "gameplayEffect": "손님의 감정 상태가 긍정적으로 변환되며 공원의 평판과 수익에 즉각적인 영향을 미친다"
-        }
-      ],
-      "cGenres": [
-        {
-          "role": "PRIMARY",
-          "name": "3D 전략 경영 게임",
-          "gameplayEffect": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행"
-        },
-        {
-          "role": "SECONDARY",
-          "name": "감정 기반 서비스 시스템",
-          "gameplayEffect": "손님의 감정 상태 변화는 플레이어의 선택에 따라 실질적 인과 변화를 줄 수 있다"
-        }
-      ],
-      "cGenreInterlock": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-      "cWorldAndGameplayEffect": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-      "delveDiscoveries": [
-        {
-          "clue": "시간의 흐름과 감정의 빛",
-          "discovery": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정에서, 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-          "newChoice": "길의 너비 조절 및 서비스 요소 개입"
-        },
-        {
-          "clue": "동선 최적화 ↔ 감정 유도",
-          "discovery": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "newChoice": "놀이기구 배치 변경 및 서비스 요소 추가"
-        },
-        {
-          "clue": "3D 공간 · 메시 · 캐릭터 · 몬스터 · 에셋 · 터치 조작",
-          "discovery": "플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-          "newChoice": "서비스 요소 추가 및 놀이기구 배치 조정"
-        },
-        {
-          "clue": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-          "discovery": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 과정에서, 시간의 흐름과 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-          "newChoice": "동선 설계 최적화 및 서비스 요소 개입"
-        }
-      ],
-      "delveGrowthRule": "{\"rule\": \"플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하며, 이 선택은 공원의 평판과 수익에 즉각적인 변화를 가져오도록 설계됨.\"}",
-      "finalGameIdentity": "{\"identity\": \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-    },
-    "local_authoring_parts::84609ec7ac3e10188953f8ff55f3ec5171c4378339e7bbf7bebf5238ba38b14e:creativeGrammar": {
-      "creativeGrammar": {
-        "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
-        "a": {
-          "system": "동선 최적화 시스템",
-          "material": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-          "materialDomain": "경관 및 인프라",
-          "stateChange": "손님의 이동 경로와 행복도 아이콘에 즉각적인 변화를 주며 공원 전체의 수용 능력을 높인다."
-        },
-        "b": {
-          "system": "감정 기반 만족도 엔진",
-          "material": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다.",
-          "materialDomain": "문화 및 서비스",
-          "stateChange": "손님의 감정 상태가 긍정적이 되면 공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "abCausality": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 동선 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다. 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "abEvolution": {
-          "aChangesB": "동선 최적화 시스템 → 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다.",
-          "bChangesA": "감정 기반 만족도 엔진 → 동선 최적화 시스템: 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "lateGameChange": "전체적인 흐름과 수익성을 극대화하는 방식으로, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 조절하고 최적화하는 과정에서, 공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "materialFusion": {
-          "contrast": "3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작",
-          "causalBridge": "플레이어의 선택은 놀이기구의 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-          "removalConsequence": "보조 장르 제거 시, 플레이어의 선택이 원래의 인과 변화를 유지하면서 새로운 상황을 생성한다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율합니다.",
-          "characterConflict": "손님의 이동 경로와 만족도 아이콘에 대한 불만족 또는 병목 현상은 게임의 주요 갈등 요소가 됩니다.",
-          "playerChoice": "플레이어는 길의 너비, 놀이기구 입구 위치, 휴식 공간 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-          "worldChange": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "nextEvent": "공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "cThemes": [
-          {
-            "name": "시간의 흐름",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정"
-          },
-          {
-            "name": "감정의 빛",
-            "kind": "MATERIAL",
-            "gameplayEffect": "손님의 감정 상태가 긍정적으로 변환되며 공원의 평판과 수익에 즉각적인 영향을 미친다"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "3D 전략 경영 게임",
-            "gameplayEffect": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "감정 기반 서비스 시스템",
-            "gameplayEffect": "손님의 감정 상태 변화는 플레이어의 선택에 따라 실질적 인과 변화를 줄 수 있다"
-          }
-        ],
-        "cGenreInterlock": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-        "cWorldAndGameplayEffect": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "delveDiscoveries": [
-          {
-            "clue": "시간의 흐름과 감정의 빛",
-            "discovery": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정에서, 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-            "newChoice": "길의 너비 조절 및 서비스 요소 개입"
-          },
-          {
-            "clue": "동선 최적화 ↔ 감정 유도",
-            "discovery": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-            "newChoice": "놀이기구 배치 변경 및 서비스 요소 추가"
-          },
-          {
-            "clue": "3D 공간 · 메시 · 캐릭터 · 몬스터 · 에셋 · 터치 조작",
-            "discovery": "플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-            "newChoice": "서비스 요소 추가 및 놀이기구 배치 조정"
-          },
-          {
-            "clue": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-            "discovery": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 과정에서, 시간의 흐름과 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-            "newChoice": "동선 설계 최적화 및 서비스 요소 개입"
-          }
-        ],
-        "delveGrowthRule": "{\"rule\": \"플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하며, 이 선택은 공원의 평판과 수익에 즉각적인 변화를 가져오도록 설계됨.\"}",
-        "finalGameIdentity": "{\"identity\": \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-      }
-    },
-    "local_authoring_parts::666a286c564e62e4cf5efa9d27231f766a580b5962d645ccf083cbb88d52f0e3:identity,creativeGrammar": {
-      "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
-      "creativeGrammar": {
-        "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
-        "a": {
-          "system": "동선 최적화 시스템",
-          "material": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-          "materialDomain": "경관 및 인프라",
-          "stateChange": "손님의 이동 경로와 행복도 아이콘에 즉각적인 변화를 주며 공원 전체의 수용 능력을 높인다."
-        },
-        "b": {
-          "system": "감정 기반 만족도 엔진",
-          "material": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다.",
-          "materialDomain": "문화 및 서비스",
-          "stateChange": "손님의 감정 상태가 긍정적이 되면 공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "abCausality": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 동선 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다. 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "abEvolution": {
-          "aChangesB": "동선 최적화 시스템 → 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다.",
-          "bChangesA": "감정 기반 만족도 엔진 → 동선 최적화 시스템: 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "lateGameChange": "전체적인 흐름과 수익성을 극대화하는 방식으로, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 조절하고 최적화하는 과정에서, 공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "materialFusion": {
-          "contrast": "3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작",
-          "causalBridge": "플레이어의 선택은 놀이기구의 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-          "removalConsequence": "보조 장르 제거 시, 플레이어의 선택이 원래의 인과 변화를 유지하면서 새로운 상황을 생성한다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율합니다.",
-          "characterConflict": "손님의 이동 경로와 만족도 아이콘에 대한 불만족 또는 병목 현상은 게임의 주요 갈등 요소가 됩니다.",
-          "playerChoice": "플레이어는 길의 너비, 놀이기구 입구 위치, 휴식 공간 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-          "worldChange": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "nextEvent": "공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "cThemes": [
-          {
-            "name": "시간의 흐름",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정"
-          },
-          {
-            "name": "감정의 빛",
-            "kind": "MATERIAL",
-            "gameplayEffect": "손님의 감정 상태가 긍정적으로 변환되며 공원의 평판과 수익에 즉각적인 영향을 미친다"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "3D 전략 경영 게임",
-            "gameplayEffect": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "감정 기반 서비스 시스템",
-            "gameplayEffect": "손님의 감정 상태 변화는 플레이어의 선택에 따라 실질적 인과 변화를 줄 수 있다"
-          }
-        ],
-        "cGenreInterlock": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-        "cWorldAndGameplayEffect": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "delveDiscoveries": [
-          {
-            "clue": "시간의 흐름과 감정의 빛",
-            "discovery": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정에서, 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-            "newChoice": "길의 너비 조절 및 서비스 요소 개입"
-          },
-          {
-            "clue": "동선 최적화 ↔ 감정 유도",
-            "discovery": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-            "newChoice": "놀이기구 배치 변경 및 서비스 요소 추가"
-          },
-          {
-            "clue": "3D 공간 · 메시 · 캐릭터 · 몬스터 · 에셋 · 터치 조작",
-            "discovery": "플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-            "newChoice": "서비스 요소 추가 및 놀이기구 배치 조정"
-          },
-          {
-            "clue": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-            "discovery": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 과정에서, 시간의 흐름과 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-            "newChoice": "동선 설계 최적화 및 서비스 요소 개입"
-          }
-        ],
-        "delveGrowthRule": "{\"rule\": \"플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하며, 이 선택은 공원의 평판과 수익에 즉각적인 변화를 가져오도록 설계됨.\"}",
-        "finalGameIdentity": "{\"identity\": \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-      }
-    },
-    "local_authoring_parts::666a286c564e62e4cf5efa9d27231f766a580b5962d645ccf083cbb88d52f0e3:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임에서, 그 선택이 공원의 평판과 수익에 즉각적인 영향을 미친다는 절대적 원칙 아래, 매 순간 최적의 결정을 내야 한다.",
-      "coreFun": "{\"rule\": \"플레이어는 놀이기구의 위치 조정 및 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로, 손님의 이동 효율성과 만족도가 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-    },
-    "local_authoring_parts::b8e661a8055d2f81fdc4d718056737a56594c8c55f9c69132832d90357e3dbb3:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
-      "creativeGrammar": {
-        "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
-        "a": {
-          "system": "동선 최적화 시스템",
-          "material": "플레이어는 길의 너비, 놀이기구 입구의 위치, 휴식 공간의 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-          "materialDomain": "경관 및 인프라",
-          "stateChange": "손님의 이동 경로와 행복도 아이콘에 즉각적인 변화를 주며 공원 전체의 수용 능력을 높인다."
-        },
-        "b": {
-          "system": "감정 기반 만족도 엔진",
-          "material": "플레이어는 놀이기구의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정을 통해 손님의 감정 상태를 긍정적으로 유도하는 선택을 합니다.",
-          "materialDomain": "문화 및 서비스",
-          "stateChange": "손님의 감정 상태가 긍정적이 되면 공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "abCausality": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 동선 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다. 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "abEvolution": {
-          "aChangesB": "동선 최적화 시스템 → 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 배치와 서비스 요소에 실질적 인과 변화를 줄 수 있다.",
-          "bChangesA": "감정 기반 만족도 엔진 → 동선 최적화 시스템: 손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "lateGameChange": "전체적인 흐름과 수익성을 극대화하는 방식으로, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 조절하고 최적화하는 과정에서, 공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "materialFusion": {
-          "contrast": "3D 공간·메시·캐릭터·몬스터·에셋 및 터치 조작",
-          "causalBridge": "플레이어의 선택은 놀이기구의 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-          "removalConsequence": "보조 장르 제거 시, 플레이어의 선택이 원래의 인과 변화를 유지하면서 새로운 상황을 생성한다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율합니다.",
-          "characterConflict": "손님의 이동 경로와 만족도 아이콘에 대한 불만족 또는 병목 현상은 게임의 주요 갈등 요소가 됩니다.",
-          "playerChoice": "플레이어는 길의 너비, 놀이기구 입구 위치, 휴식 공간 배치를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다.",
-          "worldChange": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-          "nextEvent": "공원의 평판과 수익에 즉각적인 영향을 미친다."
-        },
-        "cThemes": [
-          {
-            "name": "시간의 흐름",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정"
-          },
-          {
-            "name": "감정의 빛",
-            "kind": "MATERIAL",
-            "gameplayEffect": "손님의 감정 상태가 긍정적으로 변환되며 공원의 평판과 수익에 즉각적인 영향을 미친다"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "3D 전략 경영 게임",
-            "gameplayEffect": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "감정 기반 서비스 시스템",
-            "gameplayEffect": "손님의 감정 상태 변화는 플레이어의 선택에 따라 실질적 인과 변화를 줄 수 있다"
-          }
-        ],
-        "cGenreInterlock": "동선 최적화 시스템 ↔ 감정 기반 만족도 엔진: 플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-        "cWorldAndGameplayEffect": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-        "delveDiscoveries": [
-          {
-            "clue": "시간의 흐름과 감정의 빛",
-            "discovery": "플레이어가 시간의 흐름을 조절하여 손님의 감정 상태를 최적화하는 과정에서, 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-            "newChoice": "길의 너비 조절 및 서비스 요소 개입"
-          },
-          {
-            "clue": "동선 최적화 ↔ 감정 유도",
-            "discovery": "손님의 이동 효율성과 만족도는 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.",
-            "newChoice": "놀이기구 배치 변경 및 서비스 요소 추가"
-          },
-          {
-            "clue": "3D 공간 · 메시 · 캐릭터 · 몬스터 · 에셋 · 터치 조작",
-            "discovery": "플레이어의 선택은 놀이기구 위치 조정과 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로 연결된다.",
-            "newChoice": "서비스 요소 추가 및 놀이기구 배치 조정"
-          },
-          {
-            "clue": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-            "discovery": "플레이어가 놀이기구 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 과정에서, 시간의 흐름과 감정의 빛이 공원의 평판과 수익에 즉각적인 영향을 미친다.",
-            "newChoice": "동선 설계 최적화 및 서비스 요소 개입"
-          }
-        ],
-        "delveGrowthRule": "{\"rule\": \"플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하며, 이 선택은 공원의 평판과 수익에 즉각적인 변화를 가져오도록 설계됨.\"}",
-        "finalGameIdentity": "{\"identity\": \"놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-      },
-      "playerFantasy": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임에서, 그 선택이 공원의 평판과 수익에 즉각적인 영향을 미친다는 절대적 원칙 아래, 매 순간 최적의 결정을 내야 한다.",
-      "coreFun": "{\"rule\": \"플레이어는 놀이기구의 위치 조정 및 서비스 요소 개입을 통한 동선 최적화와 감정 상태 유도로, 손님의 이동 효율성과 만족도가 게임의 핵심 지표로 작용하며, 이를 바탕으로 전략적 재투자와 성장 계획이 이루어 진다.\"}"
-    },
-    "local_authoring_parts::e5a61765d51b5e46f425d2df1723569853f64bbbfc25f0b91a3489ede5b249a4:coreLoop": {
-      "coreLoop": [
-        "입력/선택 → 상태변화 → 보상·위험·다음 선택",
-        "플레이어의 놀이기구 배치와 동선 설계 결정 → 손님 감정 상태 최적화 → 공원 평판 및 수익 즉각적인 변화",
-        "매 순간 최적의 선택을 내야 하며, 이 선택은 전략적 재투자와 성장 계획에 영향을 미친다"
-      ]
-    },
-    "local_authoring_parts::4fe76c38b37596afadca2a7d666004178406b3a50e109845fd15f04eb67e58d9:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_joy",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "길의 너비",
-        "놀이기구 입구 위치",
-        "휴식 공간 배치"
-      ],
-      "stateOutputs": [
-        "손님 감정 상태",
-        "공원 평판",
-        "수익"
-      ],
-      "name": "시간의 흐름 · 감정의 빛 · 3D 전략 경영 게임",
-      "purpose": "플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 방식으로 진행",
-      "playerChoice": "길의 너비 조절 및 서비스 요소 개입"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 21,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 2548464,
-      "lastMs": 50160,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:34:15.737Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T04:51:47.130Z",
-  "updatedAt": "2026-10-10T05:34:15.738Z",
+  "createdAt": "2026-10-10T09:29:37.961Z",
+  "updatedAt": "2026-10-10T09:29:37.971Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
           "MOTION",
+          "UI",
           "VFX"
         ],
         "availableRoles": {
@@ -605,6 +46,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -621,10 +63,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -677,6 +121,217 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -734,13 +389,32 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -757,12 +431,13 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
           "MOTION",
+          "UI",
           "VFX"
         ],
         "availableRoles": {
@@ -776,6 +451,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -792,10 +468,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -848,6 +526,217 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -905,13 +794,32 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "UI",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -928,12 +836,13 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
           "MOTION",
+          "UI",
           "VFX"
         ],
         "availableRoles": {
@@ -947,6 +856,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -963,10 +873,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1019,6 +931,217 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
+          ],
+          "UI": [
+            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
+            "ACCESSIBILITY_REDUCED_FLASH_MODE",
+            "AI_COMPANION_AUTONOMY_PANEL",
+            "AI_COMPANION_STATUS_CARD",
+            "AI_DIALOGUE_HELPER",
+            "ANIMAL_HOUSING_PANEL",
+            "ATTACK_TELEGRAPH_INDICATOR",
+            "BED_INTERACTION_PROMPT",
+            "BED_RESPAWN_PANEL",
+            "BLUEPRINT_PANEL",
+            "BOARDING_PROGRESS",
+            "BOSS_PHASE_STRIP",
+            "BUILD_ACTION_BAR",
+            "BUILD_CATALOG_PANEL",
+            "BUILD_PIECE_CARD",
+            "BUILD_TIER_BADGE",
+            "BUYBACK_PANEL",
+            "BUY_SELL_PANEL",
+            "CARGO_PANEL",
+            "CHARACTER_DETAIL_SCREEN",
+            "CHARACTER_SHEET",
+            "CODEX_SCREEN",
+            "COLLECTION_PROGRESS",
+            "COMMON_READABLE_PANEL",
+            "COMPANION_COMBAT_STANCE_PANEL",
+            "COMPANION_COMMAND_WHEEL",
+            "COMPANION_EQUIPMENT_SUMMARY",
+            "COMPANION_FORMATION_PANEL",
+            "COMPANION_GIFT_PANEL",
+            "COMPANION_HELP_REQUEST",
+            "COMPANION_INVENTORY_HANDOFF",
+            "COMPANION_ORDER_QUEUE",
+            "COMPANION_RELATIONSHIP_DETAIL",
+            "COMPANION_REVIVE_RESCUE_PANEL",
+            "COMPANION_ROLE_PANEL",
+            "COMPANION_TARGET_PING_CARD",
+            "CONFIRM_DIALOG",
+            "CONTAINER_INTERACTION_PROMPT",
+            "CONTEXT_TOOLTIP",
+            "COUNTER_READY_INDICATOR",
+            "CRAFTING_FULL_SCREEN",
+            "CRAFTING_RECIPE",
+            "CRAFTING_TREE",
+            "CRAFT_QUEUE_OVERVIEW",
+            "CROP_GROWTH_TIMELINE",
+            "CURRENCY_READOUT",
+            "DEMOLISH_PREVIEW_PANEL",
+            "DESTINATION_CARD",
+            "DIALOGUE_CHOICE",
+            "DIALOGUE_HISTORY",
+            "DIALOGUE_SURFACE",
+            "DIALOGUE_TEXT_INPUT",
+            "DIALOGUE_TYPING_STATE",
+            "DISEMBARK_PROMPT",
+            "DISMANTLE_PANEL",
+            "DURABILITY_WEAR_PREVIEW",
+            "EMPTY_STATE",
+            "EQUIPMENT_COMPARE_PANEL",
+            "EQUIPMENT_FULL_SCREEN",
+            "EQUIPMENT_SLOT",
+            "EQUIP_CONFLICT_PREVIEW",
+            "FAILURE_RECOVERY_CHECKPOINT",
+            "FAILURE_STATE",
+            "FARM_PLOT_PANEL",
+            "FILTER_BAR",
+            "FUEL_ENERGY_METER",
+            "FURNITURE_CATALOG",
+            "GENERIC_PROGRESS_READOUT",
+            "GRID_SNAP_CONTROL",
+            "GUARD_BREAK_WARNING",
+            "GUARD_METER",
+            "HARVEST_INTERACTION_PROMPT",
+            "HEALTH_STATUS_READOUT",
+            "HOTBAR",
+            "HOUSING_ROOM_FUNCTION_HEATMAP",
+            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
+            "ICON_ACTION",
+            "INPUT_HINT",
+            "INTERACTION_PROGRESS",
+            "INTERACTION_STATE_CARD",
+            "INTRO",
+            "INVENTORY_CAPACITY_FORECAST",
+            "INVENTORY_CAPACITY_METER",
+            "INVENTORY_CONTAINER_PANEL",
+            "INVENTORY_FULL_SCREEN",
+            "INVENTORY_GRID",
+            "INVENTORY_OVERWEIGHT_RESOLUTION",
+            "INVENTORY_SLOT",
+            "INVENTORY_SMART_SORT_PREVIEW",
+            "INVENTORY_WEIGHT_METER",
+            "ITEM_COMPARE_PANEL",
+            "ITEM_CONTEXT_MENU",
+            "ITEM_DETAIL_PANEL",
+            "ITEM_SOURCE_USAGE_PANEL",
+            "ITEM_STATE_BADGES",
+            "LIGHT_CONTROL_PROMPT",
+            "LOADING_RETRY_WITH_CAUSE",
+            "LOADING_SCREEN",
+            "LOADING_STATE",
+            "LOADOUT_PRESET_PANEL",
+            "LOCKED_STATE",
+            "LOOT_FEED",
+            "LOOT_FILTER_PRESET",
+            "LOOT_WINDOW",
+            "LORE_RELATION_GRAPH",
+            "MAIN_MENU",
+            "MAP_FULL_SCREEN",
+            "MATERIAL_PALETTE_PANEL",
+            "MATERIAL_SHORTAGE_ROUTE",
+            "MATERIAL_TRACKER",
+            "MENU_CONTEXT_QUICK_ACTION_SHEET",
+            "MENU_LAST_LOCATION_RESUME",
+            "MENU_SYSTEM_SWITCHER_DRAWER",
+            "MINIMAP",
+            "MOBILE_TOUCH_ACTION",
+            "MODAL_DIALOG",
+            "MOUNT_COMMAND_WHEEL",
+            "MOUNT_EQUIPMENT_PANEL",
+            "MOUNT_INTERACTION_PROMPT",
+            "MOUNT_INVENTORY_PANEL",
+            "MOUNT_RECALL_PANEL",
+            "MOUNT_SPEED_STATE",
+            "MOUNT_STAMINA_METER",
+            "MOUNT_STATUS_HUD",
+            "MOUNT_WHISTLE_STATE",
+            "MULTI_SELECT_BAR",
+            "NAVIGATION_BREADCRUMB_BACKSTACK",
+            "NOTIFICATION_TOAST",
+            "NPC_CAMP_ACTIVITY_PANEL",
+            "NPC_CONTEXT_REACTION",
+            "NPC_INTERACTION_MENU",
+            "NPC_INTERACTION_PROMPT",
+            "NPC_MEMORY_SUMMARY",
+            "NPC_QUEST_HANDOFF",
+            "NPC_RECRUIT_DISMISS_PANEL",
+            "NPC_RELATIONSHIP_READOUT",
+            "NPC_RELATIONSHIP_TIMELINE",
+            "NPC_RUMOR_KNOWLEDGE_PANEL",
+            "NPC_SCHEDULE_AVAILABILITY",
+            "NPC_SERVICE_MENU",
+            "NPC_TOPIC_BROWSER",
+            "OBJECT_TRANSFORM_PANEL",
+            "ONE_HAND_BOTTOM_NAV",
+            "OWNERSHIP_PERMISSION_PANEL",
+            "PARRY_TIMING_INDICATOR",
+            "PARTY_MEMBER_STATUS",
+            "PARTY_ROLE_OVERVIEW",
+            "PARTY_TACTICS_PANEL",
+            "PASSENGER_LIST",
+            "PAUSE_MENU",
+            "PLACEMENT_GHOST_STATE",
+            "PLACEMENT_VALIDITY_BANNER",
+            "POPUP_PANEL",
+            "PRESENTATION",
+            "PRIMARY_TOUCH_ACTION",
+            "PROCESSING_MACHINE_PANEL",
+            "QUEST_DEPENDENCY_CHAIN",
+            "QUEST_LOG",
+            "QUEST_SUMMARY",
+            "QUEST_TRACKER",
+            "QUICK_SLOT_BAR",
+            "RADIAL_MENU",
+            "READ_INSPECT_PANEL",
+            "RECENT_ITEMS_PANEL",
+            "RECIPE_DETAIL_PANEL",
+            "RECIPE_PREREQUISITE_CHAIN",
+            "REPAIR_BUILDING_PANEL",
+            "REPAIR_PANEL",
+            "RIDE_SEAT_SELECTOR",
+            "ROOM_SCORE_PANEL",
+            "ROUTE_RISK_PREVIEW",
+            "SEARCH_FIELD",
+            "SEAT_INTERACTION_PROMPT",
+            "SEAT_SWITCH_PANEL",
+            "SETTINGS_PANEL",
+            "SETTLEMENT_OVERVIEW",
+            "SET_BONUS_PANEL",
+            "SET_PROGRESS_TRACKER",
+            "SHOP_FULL_SCREEN",
+            "SHOP_ITEM",
+            "SHOP_PRICE_DELTA_COMPARE",
+            "SIDE_NAVIGATION",
+            "SLOT_INVENTORY",
+            "SNAP_INDICATOR",
+            "SOCKET_ENCHANT_PANEL",
+            "SOCKET_ROUTE_PREVIEW",
+            "SORT_CONTROL",
+            "STABILITY_METER",
+            "STACK_SPLIT_DIALOG",
+            "STASH_SCREEN",
+            "STASH_TRANSFER_QUEUE",
+            "STATUS_EFFECT",
+            "STATUS_EFFECT_TIMELINE",
+            "TAB_NAVIGATION",
+            "TERRAIN_ACCESS_WARNING",
+            "THREAT_EDGE_INDICATOR",
+            "TOP_BAR",
+            "TRAVEL_PROGRESS_HUD",
+            "TRAVEL_ROUTE_PANEL",
+            "UI_PACK",
+            "UNDO_REDO_BAR",
+            "UPGRADE_PANEL",
+            "UPKEEP_DECAY_PANEL",
+            "VEHICLE_CONTROL_HINTS",
+            "VEHICLE_DAMAGE_STATUS",
+            "VENDOR_STOCK_STATE",
+            "WAVE_FORECAST_RIBBON",
+            "WORLD_PROP_ACTION_WHEEL",
+            "WORLD_PROP_INTERACTION_PROMPT"
           ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
@@ -1076,13 +1199,32 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "UI",
+            "action": "USE",
+            "assetId": "roblox-common-ui-character-detail-screen",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [
+                "progress"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1099,37 +1241,49 @@
         ]
       }
     },
-    "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::4fe76c38b37596afadca2a7d666004178406b3a50e109845fd15f04eb67e58d9:signatureSystems:1:39d9faf692def096": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_joy"
-        ]
+    "assetFacts": {
+      "roblox-common-motion-run": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "run"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "RUN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_joy"
-        ]
+      "roblox-common-ui-character-detail-screen": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "CHARACTER_DETAIL_SCREEN",
+        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::4fe76c38b37596afadca2a7d666004178406b3a50e109845fd15f04eb67e58d9:signatureSystems:1:39d9faf692def096": 13
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "666a286c564e62e4cf5efa9d27231f766a580b5962d645ccf083cbb88d52f0e3": true,
-    "84609ec7ac3e10188953f8ff55f3ec5171c4378339e7bbf7bebf5238ba38b14e": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:34:15.737Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+    }
+  }
 }
