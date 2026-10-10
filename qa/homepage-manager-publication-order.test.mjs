@@ -443,12 +443,12 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
 
-test('Unity Web homepage links require a deployable manifest or verified Unity index bundle, not QA gate PASS',()=>{
+test('Unity Web homepage links reject incomplete bundles and require native 3D QA evidence',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
   assert.match(block,/index\.html\?ts=/);
   assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
-  assert.match(block,/bundleComplete===true/);
+  assert.match(block,/manifest\.bundleComplete!==true/);
   assert.match(block,/manifest\.requiredDimension!=='3D'/);
   assert.match(block,/manifest\.canonicalSourceRoot!==`unity-games\/\$\{id\}`/);
   assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),5000\)/);
