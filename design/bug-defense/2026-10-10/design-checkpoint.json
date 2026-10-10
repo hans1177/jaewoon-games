@@ -848,25 +848,52 @@
     },
     "local_authoring_parts::c7c82f106e1ec790708644869c3a2c82f1170a2842d3bb99528eda9eba3e1595:newGameplay": {
       "newGameplay": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정"
+    },
+    "local_authoring_parts::c7c82f106e1ec790708644869c3a2c82f1170a2842d3bb99528eda9eba3e1595:systemImpact": {
+      "systemImpact": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정"
+    },
+    "local_authoring_parts::5e113517af116a1c3c60ebecce5a5984b1401ee8cd84efa89ce71f4b6fe667a9:contentExpansionPlan:2:4e770f3f353959fa": {
+      "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+      "newGameplay": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정",
+      "systemImpact": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정"
+    },
+    "local_authoring_parts::620519e6d06c9f0dea539a4875f27e01f3363b57b8bdab8e937516c75531a6f5:contentExpansionPlan": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+          "newGameplay": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 다음과 같이 진행됩니다: 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다.",
+          "systemImpact": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다."
+        },
+        {
+          "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+          "newGameplay": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 다음과 같이 진행됩니다: 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다.",
+          "systemImpact": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안은 곤충 웨이브 패턴을 읽고 방어선 위치를 선택하며, 이로 인해 자원 배분 상태가 변환되고, 위험/보상을 발생시키며 다음 선택 기반 전략 결정이 이루어집니다."
+        },
+        {
+          "milestone": "방어선 재배치 및 경제적 가치에 맞춘 자원 배분 전략 제안",
+          "newGameplay": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정",
+          "systemImpact": "곤충 웨이브 패턴 읽기 → 방어선 재배치 선택 → 자원 배분 상태 변환 → 위험/보상을 발생시키며, 다음 선택 기반 전략 결정"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 47,
-      "successes": 47,
+      "calls": 48,
+      "successes": 48,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1467082,
-      "lastMs": 32721,
+      "totalMs": 1500812,
+      "lastMs": 33730,
       "lastError": null,
-      "updatedAt": "2026-10-10T11:03:13.107Z"
+      "updatedAt": "2026-10-10T11:03:46.839Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T11:03:13.107Z",
+  "updatedAt": "2026-10-10T11:03:46.842Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2556,7 +2583,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T11:03:13.107Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:03:46.842Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
