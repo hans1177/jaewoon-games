@@ -124,21 +124,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 223,
-      "successes": 223,
+      "calls": 224,
+      "successes": 224,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2093541,
-      "lastMs": 8445,
+      "totalMs": 2100558,
+      "lastMs": 7017,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:46:15.349Z"
+      "updatedAt": "2026-10-10T07:46:22.368Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:11:21.030Z",
-  "updatedAt": "2026-10-10T07:46:15.350Z",
+  "updatedAt": "2026-10-10T07:46:22.369Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1734,6 +1734,13 @@
   "sliceRepairFeedback": {
     "local_authoring_parts::c5ab5a385f06e526ec1d68db49049b19c91fa32ace413a99807a4f3f6d242fab:signatureSystems:1:5c8bb01a64b2f897": [
       {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_boards_player_choice"
+        ]
+      },
+      {
         "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
         "grammarRole": "A",
         "previousRuleIds": [
@@ -1750,11 +1757,11 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::c5ab5a385f06e526ec1d68db49049b19c91fa32ace413a99807a4f3f6d242fab:signatureSystems:1:5c8bb01a64b2f897": 220
+    "local_authoring_parts::c5ab5a385f06e526ec1d68db49049b19c91fa32ace413a99807a4f3f6d242fab:signatureSystems:1:5c8bb01a64b2f897": 221
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:46:15.349Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:46:22.368Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
