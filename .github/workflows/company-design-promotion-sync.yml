@@ -145,13 +145,13 @@ jobs:
             rm -f "$runtime_index"
             GIT_INDEX_FILE="$runtime_index" git read-tree "$runtime_parent^{tree}"
             GIT_INDEX_FILE="$runtime_index" git add -A -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json homepage-platform-exposure.json
-            GIT_INDEX_FILE="$runtime_index" git diff --cached --check
-            if GIT_INDEX_FILE="$runtime_index" git diff --cached --quiet; then
+            GIT_INDEX_FILE="$runtime_index" git diff --cached --check "$runtime_parent"
+            runtime_tree="$(GIT_INDEX_FILE="$runtime_index" git write-tree)"
+            if [ "$runtime_tree" = "$(git rev-parse "$runtime_parent^{tree}")" ]; then
               echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
               persisted=1
               break
             fi
-            runtime_tree="$(GIT_INDEX_FILE="$runtime_index" git write-tree)"
             runtime_commit="$(printf '%s\n' 'runtime: reconcile confirmed seeds into development queue [skip ci]' | git commit-tree "$runtime_tree" -p "$runtime_parent")"
             if git push origin "$runtime_commit:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
               echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
