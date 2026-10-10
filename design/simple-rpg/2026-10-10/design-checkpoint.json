@@ -569,25 +569,32 @@
       },
       "playerFantasy": "플레이어는 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이 과정에서 플레이어는 다양한 선택을 하여 게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출합니다.",
       "coreFun": "{\n \"mainIdentity\": \"실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정\",\n \"a\": {\n \"system\": \"INPUT_AND_MENU_TRANSITIONS\",\n \"material\": \"CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION\",\n \"stateChange\": \"REAL_INPUT_TO_STATUS_CHANGE_WITH_REWARD_CLAIM_VARIANT_1\",\n \"abCausality\": \"INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2\",\n \"abEvolution\": {\n \"aChangesB\": \"INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3\",\n \"bChangesA\": \"INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_4\"\n },\n \"materialFusion\": {\n \"contrast\": \"INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_5\",\n \"causalBridge\": \"REW"
+    },
+    "local_authoring_parts::baf937c4e733dc162c2b021ca3cac643d08b7198ca1a9db906abedc6b4ed0c79:coreLoop": {
+      "coreLoop": [
+        "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+        "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+        "플레이어는 다양한 선택을 하여 게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출합니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 8,
+      "calls": 12,
+      "successes": 9,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1831809,
-      "lastMs": 113597,
+      "totalMs": 1900512,
+      "lastMs": 68703,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:25:49.417Z"
+      "updatedAt": "2026-10-10T09:26:58.123Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:55:17.328Z",
-  "updatedAt": "2026-10-10T09:25:49.418Z",
+  "updatedAt": "2026-10-10T09:26:58.136Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2194,8 +2201,8 @@
     "c8d65e0a5eb2704ae8f21a787e8148082a1cc0078ac8bc0a0082c35f9e5f8ff4": true,
     "eddab799b6349ae5422648a35f7d82e32263bb8074affa02d00053dcf4bfede3": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:25:49.418Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:26:58.123Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
