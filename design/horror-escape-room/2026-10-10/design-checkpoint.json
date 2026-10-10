@@ -97,25 +97,32 @@
       },
       "playerFantasy": "인간은 감염에 노출되면 즉시 몬스터로 변하고, 정화를 통해 생명력을 회복하는 게임. 감염은 정화로 해결되며, 정화는 감염으로 재생된다.",
       "coreFun": "감염 공격 → 정화 공격 순차적으로 진행하며, 감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다."
+    },
+    "local_authoring_parts::6c32459df165893d8698f150dfeceb442ba0f47f703e1cc00aa612e9d4166169:coreLoop": {
+      "coreLoop": [
+        "인간4/몬스터4 배정 및 빈자리 AI 충원",
+        "감염 공격 → 정화 공격 순차적으로 진행",
+        "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 170827,
-      "lastMs": 170827,
+      "totalMs": 198217,
+      "lastMs": 27390,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:37:12.040Z"
+      "updatedAt": "2026-10-10T09:37:39.432Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:37:12.040Z",
+  "updatedAt": "2026-10-10T09:37:39.432Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1445,7 +1452,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:37:12.040Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:37:39.432Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
