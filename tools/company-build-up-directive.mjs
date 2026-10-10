@@ -992,6 +992,138 @@ export function buildDesignToPlatformCodingTrace({
     ...bindings.filter(row=>row.designStatus!=='AUTHORED').map(row=>'DESIGN_ROLE_NOT_AUTHORED:'+row.role),
     ...bindings.filter(row=>row.codingStatus==='SOURCE_OWNER_MISSING').map(row=>'GAME_CODE_OWNER_MISSING:'+row.role)
   ];
+  // 메인: Unity Web에만 적용하는 외부 공학 알고리즘 원리(의존성 위상 정렬 + 가중 탐욕 집합 덮개).
+  // 설계 역할과 실제 C# 책임 경로 후보를 정렬하며, 이 정적 결과는 구현/런타임 PASS가 아니다.
+  const unityWebDevelopmentAlgorithm=selected==='UNITY_WEB'?(()=>{
+    const designRoleId=new Map(designRoles.filter(row=>clean(row?.id)).map(row=>[clean(row.id),clean(row.grammarRole)]));
+    const activeRoles=bindings.map(row=>row.role);
+    const roleForId=id=>{const role=designRoleId.get(clean(id));return role==='DELVE'?'@':role||null;};
+    const dependencyEdges=connections.map(edge=>({
+      fromId:clean(edge?.fromId),toId:clean(edge?.toId),
+      fromRole:roleForId(edge?.fromId),toRole:roleForId(edge?.toId),
+      stateKeys:uniq(edge?.stateKeys||[])
+    })).filter(row=>row.fromRole&&row.toRole&&row.fromRole!==row.toRole);
+    const orderWeight=role=>{
+      const row=bindings.find(item=>item.role===role);
+      if(!row)return 0;
+      if(row.designStatus!=='AUTHORED')return 120;
+      if(row.codingStatus==='SOURCE_OWNER_MISSING')return 110;
+      if(row.nativeStateMapping?.state==='SOURCE_STATE_KEYS_NOT_MAPPED')return 95;
+      return 55;
+    };
+    // 위상 정렬(Kahn): 생산/소비 선행 규칙을 먼저 구현한다. 순환 설계는 억지로 선형 PASS시키지 않는다.
+    const incoming=new Map(activeRoles.map(role=>[role,0]));
+    const outgoing=new Map(activeRoles.map(role=>[role,new Set()]));
+    for(const edge of dependencyEdges){
+      if(!outgoing.get(edge.fromRole).has(edge.toRole)){
+        outgoing.get(edge.fromRole).add(edge.toRole);
+        incoming.set(edge.toRole,incoming.get(edge.toRole)+1);
+      }
+    }
+    const ready=[...activeRoles].filter(role=>incoming.get(role)===0);
+    const sorted=[];
+    while(ready.length){
+      ready.sort((a,b)=>orderWeight(b)-orderWeight(a)||a.localeCompare(b));
+      const role=ready.shift();
+      sorted.push(role);
+      for(const next of outgoing.get(role)){
+        incoming.set(next,incoming.get(next)-1);
+        if(incoming.get(next)===0)ready.push(next);
+      }
+    }
+    const cycleRoles=activeRoles.filter(role=>!sorted.includes(role));
+    const steps=[...sorted,...cycleRoles];
+    // 소스 책임 후보를 단일 파일 또는 정확한 의존 파일 집합으로 묶는다.
+    // 일치하지 않는 파일명/설계 이름을 실제 구현의 증거로 승격하지 않는다.
+    const requirements=new Map();
+    for(const row of bindings)requirements.set('ROLE:'+row.role,{
+      id:'ROLE:'+row.role,kind:'DESIGN_ROLE',role:row.role,
+      weight:orderWeight(row.role),sourceOwnerCandidates:row.suggestedExistingOwnerFiles,
+      missingInputs:row.nativeStateMapping?.missingInputKeys||[],
+      missingWrites:row.nativeStateMapping?.missingWrittenOutputKeys||[],
+      expectedNativeBehavior:'PLAYER_INPUT_TO_STATE_CHANGE_TO_FEEDBACK_AND_RETRY'
+    });
+    for(const edge of dependencyEdges){
+      const id='EDGE:'+edge.fromId+'->'+edge.toId;
+      const mismatch=edgeStateMismatches.some(row=>row.fromId===edge.fromId&&row.toId===edge.toId);
+      requirements.set(id,{id,kind:'DESIGN_DEPENDENCY',role:edge.fromRole+'->'+edge.toRole,
+        weight:mismatch?110:75,stateKeys:edge.stateKeys,
+        expectedNativeBehavior:'PRODUCER_WRITE_TO_CONSUMER_READ_TO_PLAYER_CONSEQUENCE'});
+    }
+    const ownerSets=new Map();
+    const offer=(files,covered)=>{
+      const roots=uniq(files).filter(file=>file.startsWith(roots.UNITY_WEB+'/')).sort();
+      if(!roots.length)return;
+      const key=roots.join('|');
+      const set=ownerSets.get(key)||new Set();
+      for(const ref of covered)if(requirements.has(ref))set.add(ref);
+      ownerSets.set(key,set);
+    };
+    for(const row of bindings){
+      for(const file of row.suggestedExistingOwnerFiles)offer([file],['ROLE:'+row.role]);
+    }
+    for(const edge of dependencyEdges){
+      const from=bindings.find(row=>row.role===edge.fromRole);
+      const to=bindings.find(row=>row.role===edge.toRole);
+      const fromOwner=from?.suggestedExistingOwnerFiles?.[0];
+      const toOwner=to?.suggestedExistingOwnerFiles?.[0];
+      offer([fromOwner,toOwner].filter(Boolean),['EDGE:'+edge.fromId+'->'+edge.toId]);
+    }
+    // 가중 탐욕 집합 덮개: 이번 반복에서 빠진 설계 계약을 가장 많이 해소할 파일 묶음부터 선택한다.
+    // 전체 볼륨 상한을 뜻하지 않으며 한 번에 동일한 파일을 중복 수정하지 않는다.
+    const unselected=new Set(requirements.keys());
+    const scoredOwners=[...ownerSets.entries()].map(([key,covered])=>({
+      files:key.split('|'),covered:[...covered]
+    }));
+    const selectedPackages=[];
+    while(unselected.size){
+      const next=scoredOwners.map(row=>{
+        const coverage=row.covered.filter(ref=>unselected.has(ref));
+        const score=coverage.reduce((sum,ref)=>sum+requirements.get(ref).weight,0)/(row.files.length||1);
+        return {...row,coverage,score};
+      }).filter(row=>row.score>0).sort((a,b)=>b.score-a.score
+        ||a.files.length-b.files.length||a.files.join('|').localeCompare(b.files.join('|')))[0];
+      if(!next)break;
+      const ids=next.coverage.slice().sort((a,b)=>
+        requirements.get(b).weight-requirements.get(a).weight||a.localeCompare(b));
+      selectedPackages.push(Object.freeze({
+        sequence:selectedPackages.length+1,
+        responsibleFiles:Object.freeze([...next.files]),
+        designRequirementIds:Object.freeze(ids),
+        priorityWeight:ids.reduce((sum,ref)=>sum+requirements.get(ref).weight,0),
+        method:'DIRECT_EDIT_EXISTING_CSHARP_OR_UNITY_ASSET_OWNER',
+        acceptance:'REAL_NATIVE_SOURCE_DIFF_THEN_EXACT_WEBGL_MOBILE_BROWSER_PLAY_AND_STATE_REGRESSION',
+        sourceEvidenceOnly:true,runtimeVerified:false
+      }));
+      for(const id of ids)unselected.delete(id);
+    }
+    return Object.freeze({
+      version:1,platform:'UNITY_WEB',sourceRoot:roots.UNITY_WEB,
+      algorithms:Object.freeze(['DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER',
+        'WEIGHTED_GREEDY_SET_COVER_FOR_RESPONSIBLE_SOURCE_FILES',
+        'PREVIOUS_VERIFIED_RUNTIME_DIFFERENTIAL_GROWTH']),
+      roleImplementationOrder:Object.freeze(steps),
+      cyclicRoleDependencies:Object.freeze(cycleRoles),
+      dependencyEdges:Object.freeze(dependencyEdges),
+      designRequirements:Object.freeze([...requirements.values()]),
+      developmentPackages:Object.freeze(selectedPackages),
+      unresolvedRequirements:Object.freeze([...unselected]),
+      sequence:Object.freeze([
+        'LOAD_LATEST_VERIFIED_DESIGN_AND_CURRENT_CANONICAL_UNITY_SOURCE',
+        'TRACE_DESIGN_STATE_INPUT_OUTPUT_AND_DEPENDENCY_GRAPH',
+        'RANK_UNRESOLVED_PLAYER_VALUE_GAPS_WITH_WEIGHTED_COVERAGE',
+        'DIRECTLY_EDIT_EXISTING_RESPONSIBLE_UNITY_SCRIPTS_SCENES_PREFABS_AND_ASSET_BINDINGS',
+        'RUN_EXISTING_FOCUSED_SOURCE_AND_PRESERVATION_QA',
+        'FOLLOW_LOCKED_F0_THROUGH_F9_CANONICAL_WEBGL_VALIDATION',
+        'REPLAY_REAL_WEBGL_MOBILE_TOUCH_STATE_REWARD_3D_SAVE_AND_INDEPENDENT_REGRESSION',
+        'DIFF_AGAINST_PREVIOUS_MAIN_VERIFIED_UNITY_WEB_GROWTH_EVIDENCE',
+        'REPAIR_FIRST_FAILED_CAUSAL_RESPONSIBILITY_OR_CONTINUE_NEXT_BUILD_UP'
+      ]),
+      designItemsNeverCountAsImplementation:true,sourceCandidatesNeverCountAsRuntimePass:true,
+      unlimitedGenerations:true,existingF0F9SequencePreserved:true,
+      existingSaveBalanceEconomyNetworkAuthorityPreserved:true
+    });
+  })():null;
   return Object.freeze({
     version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
     gameId:id,requestedPlatform:declared,activePlatform:selected,
@@ -1000,6 +1132,7 @@ export function buildDesignToPlatformCodingTrace({
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
     platformCodingPlans:Object.freeze(platforms),
     roleBindings:Object.freeze(bindings),
+    ...(unityWebDevelopmentAlgorithm?{unityWebDevelopmentAlgorithm}:{}),
     edgeStateMismatches:Object.freeze(edgeStateMismatches),
     nativeStateMappingSummary:Object.freeze({
       authoredRoles:bindings.filter(row=>row.designStatus==='AUTHORED').length,
@@ -1809,6 +1942,7 @@ export function directivePrompt(d={}){
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
+    ...(d.designToPlatformCodingTrace?.unityWebDevelopmentAlgorithm?[`UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS: ${JSON.stringify(d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm)}`]:[]),
     'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/C/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
     ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
