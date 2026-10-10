@@ -355,6 +355,22 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
+    // Unity Built-in/URP 물리 기반 반사 모델, 표면별 반사 프로파일과 라이팅 법선을 검증한다.
+    assert.match(runtime,/Shader\.Find\("Standard"\)/);
+    assert.match(runtime,/Shader\.Find\("Universal Render Pipeline\/Lit"\)/);
+    assert.doesNotMatch(runtime,/Shader\.Find\("Unlit\/Color"\)/);
+    assert.match(runtime,/WORLD_LIT_SHADER_UNAVAILABLE/);
+    assert.match(runtime,/material\.SetFloat\("_Metallic",/);
+    assert.match(runtime,/material\.SetFloat\("_Smoothness",/);
+    assert.match(runtime,/material\.SetFloat\("_Glossiness",/);
+    assert.match(runtime,/mesh\.RecalculateNormals\(\)/);
+    assert.match(runtime,/roads\.RecalculateNormals\(\)/);
+    assert.match(runtime,/renderer\.receiveShadows=true/);
+    assert.match(runtime,/renderer\.shadowCastingMode=UnityEngine\.Rendering\.ShadowCastingMode\.Off/);
+    assert.match(runtime,/var fragmentMaterial=WorldMaterial/);
+    assert.match(runtime,/renderer\.sharedMaterial=fragmentMaterial/);
+    assert.match(runtime,/WorldMaterial\(shades\[k\],metallicProfiles\[k\],smoothnessProfiles\[k\]\)/);
+
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
     assert.match(runtime,/var models=new List<CombineInstance>\[9\]/);
     assert.match(runtime,/Mathf.Clamp\(lot.material,0,3\)/);
