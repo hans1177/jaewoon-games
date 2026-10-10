@@ -507,25 +507,38 @@
       "name": "잃어버린 별의 메아리 - 플레이어가 무한히 파고드는 진입점에서, 단순한 전투보다는 숨겨진 세계로 이어지는 생존 로그라이트",
       "purpose": "플레이어 선택 → 상태 변화 → 새로운 전략/경로/성장 가능성이 생성됨",
       "playerChoice": "Players choose between different build compositions that prioritize either resource efficiency or strategic flexibility."
+    },
+    "local_authoring_parts::ba19d836cc1a43359f256e3efdc195cccfd4399281927429752f01c6d595fa46:signatureSystems:1": {
+      "id": "signature-systems-1",
+      "grammarRole": "A",
+      "stateInputs": [
+        "BUILD_COMBINATION"
+      ],
+      "stateOutputs": [
+        "NEW_ACTION"
+      ],
+      "name": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "purpose": "Player choice of build composition",
+      "playerChoice": "Shift in threat type triggers new gameplay mechanics"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 17,
-      "successes": 16,
+      "calls": 18,
+      "successes": 17,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1749698,
-      "lastMs": 15894,
+      "totalMs": 1814996,
+      "lastMs": 65298,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T22:51:26.342Z"
+      "updatedAt": "2026-10-10T00:54:43.686Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:31:08.396Z",
-  "updatedAt": "2026-10-10T00:53:38.292Z",
+  "updatedAt": "2026-10-10T00:54:43.686Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2388,10 +2401,10 @@
   "localAuthoringSplits": {
     "e345f359541a39740e80d67aa4204bf2db7499db618b0234f6ef2cfbd0a9b738": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T22:51:26.342Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED,DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:54:43.686Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
