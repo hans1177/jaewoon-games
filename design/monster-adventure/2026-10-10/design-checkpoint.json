@@ -539,40 +539,25 @@
         "상태변화: 플레이어는 전투 중에 철학적인 선택을 하게 됩니다.",
         "보상/위험: 전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비"
       ]
-    },
-    "local_authoring_parts::cb719fd037fb993eb774de0ef0aa3e7741deaa0910e963f982d12fc36d04b98e:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_rocky_montage",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"type\": \"ACTION\", \"value\": \"포획\"}",
-        "{\"type\": \"ACTION\", \"value\": \"육성\"}"
-      ],
-      "stateOutputs": [
-        "{\"type\": \"STATE\", \"key\": \"몬스터 속성\", \"value\": \"철강\"}",
-        "{\"type\": \"STATE\", \"key\": \"몬스터 스킬\", \"value\": \"폭풍\"}"
-      ],
-      "name": "로크 라이트 몬테그레이",
-      "purpose": "타운하우스 역사를 통한 전투 철학을 적용하여 플레이어가 팀 구성에 맞춘 몬스터의 진화와 포획을 선택하며, 이 과정에서 세계 상태가 변화하는 인과적 관계를 형성합니다.",
-      "playerChoice": "플레이어는 적의 속성을 파악하고 자신의 몬스터 팀 중 가장 유리한 속성을 가진 몬스터를 교체하거나 특정 스킬을 사용하여 전투의 흐름을 유리하게 바꿀 수 있습니다. 또한, 몬스터가 특정 레벨에 도달했을 때 제공되는 여러 진화 경로 중 자신의 전투 스타일이나 팀 구성에 필요한 특성을 가진 형태로 진화시킬지 선택해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1064266,
-      "lastMs": 43535,
+      "totalMs": 1072123,
+      "lastMs": 7857,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:36:25.467Z"
+      "updatedAt": "2026-10-10T10:36:33.326Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:40.867Z",
-  "updatedAt": "2026-10-10T10:36:25.467Z",
+  "updatedAt": "2026-10-10T10:36:33.326Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2094,15 +2079,25 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::cb719fd037fb993eb774de0ef0aa3e7741deaa0910e963f982d12fc36d04b98e:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::cb719fd037fb993eb774de0ef0aa3e7741deaa0910e963f982d12fc36d04b98e:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "82830b2ba94e226a987ad9ed48e97be91250974bf7c5b21dc2e26af03f5071e0": true,
     "e7c304687e1453a0506ab056c588b7cfe21ec5d66e2921866ec31f77f7097ef5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:36:25.467Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:36:33.326Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
