@@ -95,25 +95,117 @@
         "delveGrowthRule": "게임은 무한하게 발전하며, 새로운 선택이 가능하며, 게임은 계속해서 발전됨",
         "finalGameIdentity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임."
       }
+    },
+    "local_authoring_parts::0a53a934a86e53ce355f6748dee43ab4f73474241bd159cf099bafc03f1ac337:playerFantasy,coreFun": {
+      "playerFantasy": "작은 섬에서 시작한 노동 활동은 플레이어가 실제 움직이며 성장하는 왕국의 기반으로, 주민 자동화와 병사 진군을 통해 다양한 거점 공격 전략을 적용하며, 무한하게 발전하는 게임 경험을 제공합니다.",
+      "coreFun": "작은 섬에서 직접 나무와 식량을 모으고, 주민 고용 및 벌목/농업 자동화로 생산성을 높여, 병사 진군과 군대 강화를 통해 여러 거점을 점령하며, 협동 지원을 통한 거점 공격 전략을 적용하여, 무한히 발전하는 왕국 확장 게임 경험을 제공합니다."
+    },
+    "local_authoring_parts::51cf97a9d6ac8a1b3ae10e77b88d3145c741ec57afd6dd92e5e21f904debe8ad:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.",
+      "creativeGrammar": {
+        "mainIdentity": "COOP_기본게임주제_협동왕국성장",
+        "a": {
+          "system": "직접채집",
+          "material": "나무·식량",
+          "materialDomain": "지형",
+          "stateChange": "모두 채집 후 자동화 시작, 주민 고용 및 벌목/농업 자동화 진행 중"
+        },
+        "b": {
+          "system": "주민자동화",
+          "material": "주민",
+          "materialDomain": "사회",
+          "stateChange": "고용 후 생산 직업 배치, 반복 노동 자동화"
+        },
+        "abCausality": "A→B: 직접채집 → 주민자동화; B→A: 주민자동화 → 직접채집",
+        "abEvolution": {
+          "aChangesB": "직접채집 시스템이 주민자동화로 교환됨, 보상은 지역별 특수자원과 병력 강화로 제공",
+          "bChangesA": "주민자동화 시스템이 직접채집으로 교환됨, 보상은 지역 기지를 점령하는 데 활용됨",
+          "lateGameChange": "전반적으로 협동 지원을 통해 다양한 거점 공략 전략 적용"
+        },
+        "materialFusion": {
+          "contrast": "나무·식량의 직접채집 vs. 주민 자동화의 사회적 관계",
+          "causalBridge": "직접채집 → 주민 고용 → 병영 강화 → 5개 거점 선택 → 자동전투 및 점령 보상 → 협동 지원 확장",
+          "removalConsequence": "주민 자동화 시스템이 직접채집으로 재설정되며, 보상은 지역 기지와 특수자원에 따라 달라짐"
+        },
+        "storyCausalChain": {
+          "cause": "작은 섬에서 시작한 노동 활동 → 주민 고용 및 자동화 발전 → 병사 진군 및 군대 강화 → 5개 거점을 순차적으로 점령 → 자동전투 및 점령 보상 획득 → 협동 지원으로 강력한 거점 공격",
+          "characterConflict": "노동과 자동화의 갈등 → 병사 진군과 군대의 반발 → 거점 점령 과제의 대응",
+          "playerChoice": "노동을 통해 성장, 자동화를 통한 생산, 병사를 통한 전략적 진입, 거점 공략을 통해 왕국 확장",
+          "worldChange": "작은 섬 → 주민 자동화된 왕국 → 다양한 거점 공략 중인 강력한 왕국 변화",
+          "nextEvent": "협동 지원으로 여러 거점 공략 전략 적용"
+        },
+        "cThemes": [
+          {
+            "name": "나무·식량",
+            "kind": "MATERIAL",
+            "gameplayEffect": "직접 채집 후 자동화 시작, 주민 고용 및 벌목/농업 자동화 진행"
+          },
+          {
+            "name": "주민",
+            "kind": "GENRE",
+            "gameplayEffect": "고용 후 생산 직업 배치, 반복 노동 자동화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "COOP_기본게임주제_협동왕국성장",
+            "gameplayEffect": "협동 지원을 통한 거점 공격 전략 적용"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "직접채집",
+            "gameplayEffect": "주민자동화 시스템과의 상태 교환, 보상은 지역 기지와 특수자원에 따라 달라짐"
+          }
+        ],
+        "cGenreInterlock": "A→B: 직접채집 → 주민자동화; B→A: 주민자동화 → 직접채집; C: 나무·식량 vs. 주민, 협동 지원 vs. 병영 강화",
+        "cWorldAndGameplayEffect": "나무·식량의 직접채집이 주민 자동화로 재설정되며, 보상은 지역 기지와 특수자원으로 제공됨",
+        "delveDiscoveries": [
+          {
+            "clue": "작은 섬에서 시작된 노동 활동",
+            "discovery": "노동을 통해 성장, 자동화를 통한 생산, 병사 진군 및 군대 강화, 5개 거점을 순차적으로 점령, 자동전투 및 점령 보상을 획득, 협동 지원으로 강력한 거점 공격 전략 적용",
+            "newChoice": "협동 지원을 통한 다양한 거점 공략 전략"
+          },
+          {
+            "clue": "주민 고용과 자동화 발전",
+            "discovery": "노동과 자동화의 갈등, 병사 진군과 군대의 반발, 거점 점령 과제의 대응",
+            "newChoice": "노동을 통해 성장, 자동화를 통한 생산, 병사를 통한 전략적 진입, 거점 공략을 통해 왕국 확장"
+          },
+          {
+            "clue": "협동 지원의 중요성",
+            "discovery": "전반적인 협동 지원을 통해 다양한 거점 공략 전략 적용",
+            "newChoice": "협동 지원을 통한 여러 거점 공략 전략"
+          },
+          {
+            "clue": "게임의 지속 가능성",
+            "discovery": "무한 발전 규칙 적용, 새로운 선택이 가능하며, 게임은 계속해서 발전됨",
+            "newChoice": "게임은 무한히 발전하고, 새로운 선택이 가능하며, 게임은 계속해서 발전됨"
+          }
+        ],
+        "delveGrowthRule": "게임은 무한하게 발전하며, 새로운 선택이 가능하며, 게임은 계속해서 발전됨",
+        "finalGameIdentity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임."
+      },
+      "playerFantasy": "작은 섬에서 시작한 노동 활동은 플레이어가 실제 움직이며 성장하는 왕국의 기반으로, 주민 자동화와 병사 진군을 통해 다양한 거점 공격 전략을 적용하며, 무한하게 발전하는 게임 경험을 제공합니다.",
+      "coreFun": "작은 섬에서 직접 나무와 식량을 모으고, 주민 고용 및 벌목/농업 자동화로 생산성을 높여, 병사 진군과 군대 강화를 통해 여러 거점을 점령하며, 협동 지원을 통한 거점 공격 전략을 적용하여, 무한히 발전하는 왕국 확장 게임 경험을 제공합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 475008,
-      "lastMs": 174907,
+      "totalMs": 546422,
+      "lastMs": 71414,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:16:11.884Z"
+      "updatedAt": "2026-10-10T00:17:23.299Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T00:08:16.856Z",
-  "updatedAt": "2026-10-10T00:16:11.884Z",
+  "updatedAt": "2026-10-10T00:17:23.300Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1526,7 +1618,7 @@
   "localAuthoringSplits": {
     "0a53a934a86e53ce355f6748dee43ab4f73474241bd159cf099bafc03f1ac337": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:16:11.884Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:17:23.300Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
