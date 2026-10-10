@@ -167,6 +167,20 @@ test('runtime catalog fills only missing active development games',()=>{
   assert.equal(catalog.games.some(x=>x.id==='retired-game'),false);
 });
 
+test('the development queue recreates missing homepage cards without pretending to have a build',()=>{
+  const catalog={games:[]};
+  const queue={items:[
+    {gameId:'queued-game',gameName:'새 게임',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',currentStep:'SOURCE_UPDATE'},
+    {gameId:'removed-game',productionClass:'DEVELOPMENT_CONFIRMED',status:'RETIRED'}
+  ]};
+  const added=mergeRuntimeCatalogMissingGames({catalog,runtimeCatalog:{games:[]},developmentQueue:queue});
+  assert.deepEqual(added,['queued-game']);
+  assert.equal(catalog.games.length,1);
+  assert.equal(catalog.games[0].name,'새 게임');
+  assert.equal(catalog.games[0].homepageWebPlayable,false);
+  assert.equal(catalog.games[0].productionClass,'DEVELOPMENT_CONFIRMED');
+});
+
 test('runtime catalog merge is a no-op without valid arrays',()=>{
   assert.deepEqual(mergeRuntimeCatalogMissingGames({catalog:{},runtimeCatalog:{},developmentQueue:{}}),[]);
 });

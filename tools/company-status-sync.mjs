@@ -452,7 +452,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
 }
 
 export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},developmentQueue={}}={}){
-  if(!Array.isArray(catalog.games)||!Array.isArray(runtimeCatalog.games))return[];
+  if(!Array.isArray(catalog.games))return[];
   const liveQueueIds=new Set((Array.isArray(developmentQueue.items)?developmentQueue.items:[])
     .filter(item=>{
       const cls=clean(item?.productionClass).toUpperCase();
@@ -463,10 +463,28 @@ export function mergeRuntimeCatalogMissingGames({catalog={},runtimeCatalog={},de
     .filter(Boolean));
   const ids=new Set(catalog.games.map(game=>clean(game?.id||game?.gameId)).filter(Boolean));
   const added=[];
-  for(const game of runtimeCatalog.games){
+  for(const game of Array.isArray(runtimeCatalog.games)?runtimeCatalog.games:[]){
     const id=clean(game?.id||game?.gameId);
     if(!id||ids.has(id)||!liveQueueIds.has(id))continue;
     catalog.games.push(JSON.parse(JSON.stringify(game)));
+    ids.add(id);
+    added.push(id);
+  }
+  // 개발 대기열에만 새 게임이 등록돼도 홈페이지의 개발 카드가 누락되지 않도록 한다.
+  for(const item of Array.isArray(developmentQueue.items)?developmentQueue.items:[]){
+    const id=clean(item?.gameId);
+    if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id)||!liveQueueIds.has(id)||ids.has(id))continue;
+    const productionClass=clean(item.productionClass).toUpperCase();
+    const name=clean(item.gameName||item.name||item.title)||id;
+    catalog.games.push({
+      id,name,productionClass,lifecycleState:'ACTIVE',
+      productionTarget:'ROBLOX_UNITY',
+      homepageCategory:'development-confirmed',
+      homepageStage:'개발 중 · 플랫폼 빌드 확인 중',
+      homepageRecentWork:clean(item.homepageRecentWork||item.currentStep||item.canonicalState)||'개발 대기열 동기화',
+      homepageWebPlayable:false,
+      productionClassSource:'COMPANY_RUNTIME_DEVELOPMENT_QUEUE'
+    });
     ids.add(id);
     added.push(id);
   }

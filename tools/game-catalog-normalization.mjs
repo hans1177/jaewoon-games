@@ -518,7 +518,124 @@ export function validatedHomepageMedia(id,entry,{filesystem=fs,root='.'}={}){
     if(current&&Array.isArray(v.dependencies)&&v.dependencies.length>0&&v.dependencies.every(dep=>{
       if(!/^(web-games|assets)\/[a-zA-Z0-9_./-]+$/.test(dep.path||'')||dep.path.split('/').includes('..'))return false;
       try{return crypto.createHash('sha256').update(filesystem.readFileSync(root+'/'+dep.path)).digest('hex')===dep.sha256;}catch{return false;}
-    }))result.video=v;
+    })){
+      result.video=v;
+      // 실제 플레이 영상에서 추출한 동일 버전·동일 플랫폼의 16:9 화면만 노출한다.
+      const screenshots=Array.isArray(entry.screenshots)?entry.screenshots:[];
+      if(screenshots.length>=1&&screenshots.length<=3&&screenshots.every((frame,index)=>
+        frame?.gameId===id&&frame.platform===v.platform
+        &&frame.artifactIdentity===v.artifactIdentity&&frame.sourceRevision===v.sourceRevision
+        &&frame.source==='ACTUAL_GAMEPLAY_VIDEO_FRAME'
+        &&frame.width===1920&&frame.height===1080
+        &&Number.isFinite(frame.second)&&frame.second>=0&&frame.second<=v.seconds
+        &&frame.src==='assets/homepage-media/'+id+'-'+(index+1)+'.jpg'
+        &&validFile(frame,new RegExp('^assets/homepage-media/'+id+'-[1-3]\\.jpg
+
+export function normalizeCatalog(catalog={}){
+  if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
+  const policy=normalizationPolicy();
+  catalog.webExposurePolicy=policy.ownerWebAutoIngest?.webExposureQuality||{};
+  const ids=new Set();
+  let covers={};
+  try{covers=JSON.parse(fs.readFileSync('assets/homepage-covers/manifest.json','utf8')).games||{};}catch{}
+  for(const game of catalog.games){
+    for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)delete game[field];
+    applyHomepageAutoClassification(game);
+    const id=clean(game.id||game.gameId);
+    if(!id)throw new Error('catalog game id missing');
+    if(ids.has(id))throw new Error('duplicate catalog game id: '+id);
+    ids.add(id);
+    const media=validatedHomepageMedia(id,covers[id]);
+    if(media)game.homepageMedia=media;
+    else delete game.homepageMedia;
+    game.productionClass=normalizedProductionClass(game.productionClass);
+    const legacyHistorical=clean(game.homepageCategory).toLowerCase()==='historical-deployed';
+    game.homepageCategory=homepageCategoryForProductionClass(game.productionClass)||'design-only';
+    if(legacyHistorical&&!clean(game.homepageDisplayMode))game.homepageDisplayMode='ROBLOX_HISTORICAL_DEPLOYMENT';
+    game.canonical=canonicalizeGameRecord(game);
+  }
+  catalog.games.sort((a,b)=>compareCatalogGames(a,b,policy));
+  catalog.games.forEach((game,index)=>{
+    const order=index+1;
+    game.catalogOrder=order;
+    game.canonical=canonicalizeGameRecord({...game,catalogOrder:order});
+    game.canonical.catalogOrder=order;
+  });
+  catalog.catalogSchemaVersion=2;
+  catalog.normalization={
+    version:2,
+    sourceOfTruth:policy?.sourceOfTruth||ROADMAP_PATH,
+    canonicalRecordPath:'games[].canonical',
+    legacyFlatFields:'COMPATIBILITY_MIRROR',
+    canonicalFirst:true,
+    homepageReadsCanonicalFirst:true,
+    companyStatusSyncRegeneratesCanonical:true,
+    duplicateGameIdsForbidden:true,
+    publicationIdentityMustStayBoundToGameId:true,
+    ordering:policy?.ordering?.mode||'CANONICAL_STABLE',
+    orderField:policy?.ordering?.outputField||'catalogOrder',
+    orderContiguous:true,
+    automaticFeatureExpansionFreezeForbidden:true
+  };
+  catalog.runtimeCounts={
+    ...(catalog.runtimeCounts||{}),
+    canonicalGames:catalog.games.length,
+    normalizedGames:catalog.games.filter(game=>game.canonical?.schemaVersion===CATALOG_CANONICAL_SCHEMA_VERSION).length
+  };
+  return catalog;
+}
+
+export function validateNormalizedCatalog(catalog={}){
+  const policy=normalizationPolicy();
+  const errors=[];
+  if(catalog.catalogSchemaVersion!==2)errors.push('CATALOG_SCHEMA_VERSION');
+  if(catalog.normalization?.canonicalRecordPath!=='games[].canonical')errors.push('NORMALIZATION_POLICY');
+  if(catalog.normalization?.ordering!==(policy?.ordering?.mode||'CANONICAL_STABLE'))errors.push('ORDERING_POLICY');
+  if(catalog.normalization?.orderField!==(policy?.ordering?.outputField||'catalogOrder'))errors.push('ORDER_FIELD_POLICY');
+  const ids=new Set(),robloxPlaces=new Map(),robloxUniverses=new Map();
+  const expected=[...(Array.isArray(catalog.games)?catalog.games:[])].sort((a,b)=>compareCatalogGames(a,b,policy)).map(game=>clean(game.id));
+  for(let index=0;index<(Array.isArray(catalog.games)?catalog.games:[]).length;index+=1){
+    const game=catalog.games[index];
+    const id=clean(game.id),canonical=game.canonical;
+    for(const field of LEGACY_DEVELOPMENT_FREEZE_FIELDS)if(Object.hasOwn(game,field))errors.push('LEGACY_DEVELOPMENT_FREEZE_FORBIDDEN:'+id+':'+field);
+    if(!id||!canonical||canonical.schemaVersion!==CATALOG_CANONICAL_SCHEMA_VERSION){errors.push('CANONICAL_MISSING:'+id);continue;}
+    if(canonical.identity?.gameId!==id)errors.push('IDENTITY_MISMATCH:'+id);
+    if(ids.has(id))errors.push('DUPLICATE_GAME_ID:'+id);ids.add(id);
+    const cls=normalizedProductionClass(game.productionClass);
+    if(canonical.production?.class!==cls)errors.push('PRODUCTION_MIRROR_MISMATCH:'+id);
+    if(game.homepageCategory!==(homepageCategoryForProductionClass(cls)||'design-only'))errors.push('HOMEPAGE_CATEGORY_MISMATCH:'+id);
+    if(canonical.homepage?.category!==game.homepageCategory)errors.push('CANONICAL_HOMEPAGE_CATEGORY_MISMATCH:'+id);
+    if(Number(game.catalogOrder)!==index+1||Number(canonical.catalogOrder)!==index+1)errors.push('CATALOG_ORDER_NOT_CONTIGUOUS:'+id);
+    if(expected[index]!==id)errors.push('CATALOG_SORT_MISMATCH:'+id);
+    const pub=canonical.publication?.roblox||{};
+    if(pub.verified&&pub.placeId){
+      const old=robloxPlaces.get(pub.placeId);if(old&&old!==id)errors.push('DUPLICATE_ROBLOX_PLACE:'+pub.placeId);else robloxPlaces.set(pub.placeId,id);
+    }
+    if(pub.verified&&pub.universeId){
+      const old=robloxUniverses.get(pub.universeId);if(old&&old!==id)errors.push('DUPLICATE_ROBLOX_UNIVERSE:'+pub.universeId);else robloxUniverses.set(pub.universeId,id);
+    }
+  }
+  return {pass:errors.length===0,errors,gameCount:Array.isArray(catalog.games)?catalog.games.length:0};
+}
+
+function main(){
+  const file=process.argv.find(x=>x.startsWith('--file='))?.slice(7)||'game-catalog.json';
+  const check=process.argv.includes('--check');
+  const catalog=JSON.parse(fs.readFileSync(file,'utf8'));
+  if(!check)normalizeCatalog(catalog);
+  const validation=validateNormalizedCatalog(catalog);
+  if(!validation.pass)throw new Error(validation.errors.join(','));
+  if(!check)fs.writeFileSync(file,JSON.stringify(catalog,null,2)+'\n');
+  console.log('GAME_CATALOG_NORMALIZATION=PASS');
+  console.log('GAME_CATALOG_NORMALIZED='+validation.gameCount);
+  console.log('GAME_CATALOG_ORDER=CANONICAL_STABLE');
+}
+if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
+  try{main();}catch(error){console.error(error.stack||error.message);process.exitCode=1;}
+}
+),1500000)
+      ))result.screenshots=screenshots;
+    }
   }
   return result;
 }
