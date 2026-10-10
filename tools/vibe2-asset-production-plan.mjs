@@ -3310,7 +3310,9 @@ function decisionFor(selector={},target='',binding={},manifest={},conceptContext
   const reuseCandidates=freezeList([...companyCandidates,...sameGameCandidates,...repositoryCandidates]);
   const directAuthoring=directAuthoringFor(target,type,conceptContext.task||{});
   const candidateRows=freezeList([...reuseCandidates,...externalCandidates].map(asset=>assetApplyFirstCandidate(asset,target,binding)));
-  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
+  // 먼저 현재 게임에 이미 연결된 준비 자산을 살리고, 같은 비용 단계에서 호환성을 비교한다.
+  // 실제 품질 통과 전까지는 최종 에셋 선정 또는 런타임 검증으로 취급하지 않는다.
+  const applyFirstCandidates=freezeList(candidateRows.filter(row=>row.ready).sort((a,b)=>a.bindingCost-b.bindingCost||b.compatibilityScore-a.compatibilityScore||a.id.localeCompare(b.id)));
   const donorCandidates=freezeList(candidateRows.filter(row=>row.sourceHash&&row.donorCapabilities.length).sort((a,b)=>b.compatibilityScore-a.compatibilityScore||a.bindingCost-b.bindingCost||a.id.localeCompare(b.id)));
   const conceptFit=createConceptFitContract({task:conceptContext.task||{},requestedConcept:conceptContext.requestedConcept||{},binding});
   const postDownloadComparison=createPostDownloadInternalComparison({matched,target,binding,conceptFit});
