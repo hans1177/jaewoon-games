@@ -9,6 +9,9 @@ import {createHash} from 'node:crypto';
 import os from 'node:os';
 import {fileURLToPath} from 'node:url';
 
+import {COMMON_SKILL_MOTION_GRAMMAR,COMMON_CAREER_MOTION_HIERARCHY,createCommonCareerMotionLoadout,
+ createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
+
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const dir=path.join(root,'assets','shared','humanoid-motion-v1');
 const catalog=JSON.parse(fs.readFileSync(path.join(dir,'catalog.json'),'utf8'));
@@ -294,4 +297,85 @@ test('portable shared actor action masters have real animated joints',()=>{
   newClips+=8;
  }
  assert.equal(newClips,104);
+});
+
+
+test('shared skinned skill grammar covers all inherited careers across gameplay genres',()=>{
+ const library=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+ const roleKinds=Object.keys(COMMON_SKILL_MOTION_GRAMMAR);
+ const record=library.assets.find(x=>x.id==='shared-humanoid-skill-actions');
+ const file=path.join(root,'assets/shared/humanoid-skill-actions.glb');
+ const binary=fs.readFileSync(file),doc=glbJson(binary);
+ const expectedNames=roleKinds.map(kind=>'SKILL_'+kind);
+ assert.equal(expectedNames.length,20);
+ assert.deepEqual(doc.animations.slice(-20).map(a=>a.name),expectedNames);
+ assert.deepEqual(doc.skins[0].joints.map(i=>doc.nodes[i].name),
+   glbJson(fs.readFileSync(path.join(root,'assets/shared/humanoid-traveler.glb'))).skins[0].joints.map(i=>doc.nodes[i].name));
+ assert.equal(record.animationClipCount,35);
+ assert.equal(record.masterGlbStaticQaPass,false);
+ assert.equal(record.productionVerified,false);
+ assert.equal(record.nativeRuntimeVerified,false);
+ assert.equal(record.masterGlbGitBlobSha,createHash('sha1').update('blob '+binary.length+String.fromCharCode(0)).update(binary).digest('hex'));
+ for(const careerId of Object.keys(COMMON_CAREER_MOTION_HIERARCHY))for(const genre of ['ACTION_RPG','SURVIVAL','TYCOON','HORROR','SOCIAL']){
+  const profile=createCommonCareerMotionLoadout({careerId,genre,platform:'SHARED'});
+  assert.equal(profile.skillSource.assetId,record.id);
+  assert.equal(profile.skillBindings.length,profile.skills.length);
+  assert.ok(profile.skillBindings.every(binding=>expectedNames.includes(binding.sourceClip)&&!binding.runtimeVerified),careerId);
+  assert.equal(profile.gameplayAuthority,false,careerId);
+ }
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'shared-skill-bake-'));
+ try{
+  const out=spawnSync(process.execPath,[path.join(root,'assets/native-authoring/build-shared-humanoid.mjs'),dir,'--roles=traveler','--skill-motions'],{encoding:'utf8',timeout:90000});
+  assert.equal(out.status,0,out.stderr);
+  assert.ok(fs.readFileSync(path.join(dir,'humanoid-skill-actions.glb')).equals(binary));
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('every elite and boss species clip has physical joint channels and correct source lineage',()=>{
+ const library=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+ let tierClips=0;
+ for(const id of ['wolf','spider','beetle','golem','serpent'])for(const tier of ['ELITE','BOSS']){
+  const suffix=tier.toLowerCase(),assetId='shared-creature-'+id+'-'+suffix+'-actions';
+  const pathName='assets/shared/creature-'+id+'-'+suffix+'-actions.glb';
+  const bytes=fs.readFileSync(path.join(root,pathName)),model=glbJson(bytes);
+  const base=glbJson(fs.readFileSync(path.join(root,'assets/shared/creature-'+id+'-actions.glb')));
+  const record=library.assets.find(x=>x.id===assetId);
+  assert.ok(record,assetId);
+  assert.deepEqual(model.skins,base.skins,assetId);
+  assert.deepEqual(model.meshes,base.meshes,assetId);
+  assert.deepEqual(model.animations.slice(0,base.animations.length).map(a=>a.name),base.animations.map(a=>a.name),assetId);
+  const clips=model.animations.slice(base.animations.length),expected=tier==='ELITE'?4:5;
+  assert.equal(clips.length,expected,assetId);
+  assert.deepEqual(clips.map(a=>a.name),record.authoredVariantNames,assetId);
+  const joints=new Set(model.skins[0].joints),newHashes=new Set();
+  const binBase=20+bytes.readUInt32LE(12)+8;
+  for(const clip of clips){
+   const tracks=clip.channels.filter(ch=>ch.target?.path==='rotation'&&joints.has(ch.target?.node));
+   assert.ok(tracks.length>=12,clip.name);
+   const motionData=tracks.map(ch=>{
+    const a=model.accessors[clip.samplers[ch.sampler].output],view=model.bufferViews[a.bufferView];
+    assert.equal(a.type,'VEC4');assert.ok(a.count>=13);
+    return bytes.subarray(binBase+view.byteOffset,binBase+view.byteOffset+view.byteLength);
+   });
+   newHashes.add(createHash('sha256').update(Buffer.concat(motionData)).digest('hex'));
+  }
+  assert.equal(newHashes.size,expected,assetId);
+  const profile=createCommonMonsterActionLoadout({speciesId:id.toUpperCase(),tier,genre:'SURVIVAL',platform:'UNITY'});
+  assert.equal(profile.actionSource.assetId,assetId);
+  assert.deepEqual(profile.tierMotionBindings.map(b=>b.sourceClip),clips.map(c=>c.name));
+  assert.equal(profile.gameplayAuthority,false);
+  assert.equal(profile.runtimeVerified,false);
+  assert.equal(record.nativeRuntimeVerified,false);
+  assert.equal(record.productionVerified,false);
+  assert.equal(record.masterGlbGitBlobSha,createHash('sha1').update('blob '+bytes.length+String.fromCharCode(0)).update(bytes).digest('hex'));
+  tierClips+=expected;
+ }
+ assert.equal(tierClips,45);
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),'shared-creature-tier-bake-'));
+ try{
+  const run=spawnSync(process.execPath,[path.join(root,'assets/native-authoring/build-shared-creature.mjs'),temp,'--species=wolf','--tier=BOSS'],{encoding:'utf8',timeout:90000});
+  assert.equal(run.status,0,run.stderr);
+  assert.ok(fs.readFileSync(path.join(temp,'creature-wolf-boss-actions.glb')).equals(
+    fs.readFileSync(path.join(root,'assets/shared/creature-wolf-boss-actions.glb'))));
+ }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
