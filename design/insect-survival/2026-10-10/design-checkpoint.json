@@ -649,25 +649,38 @@
       "name": "small-world survival pressure",
       "purpose": "evaluate environmental risks and make adaptive strategies",
       "playerChoice": "select between resource gathering or combat based on new threats"
+    },
+    "local_authoring_parts::8797402dacdf9443e89b02a7a71049e0310e7f399d65598100fc20b7ae588a30:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "identifying food sources and assessing risks"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "Player's initial experience with ecological interaction and risk assessment",
+      "playerChoice": "selecting between resource gathering or combat based on environmental context and threat evaluation"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1034494,
-      "lastMs": 27306,
+      "totalMs": 1100494,
+      "lastMs": 66000,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:11:19.031Z"
+      "updatedAt": "2026-10-10T00:12:25.034Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-10T00:11:19.033Z",
+  "updatedAt": "2026-10-10T00:12:25.040Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2369,21 +2382,10 @@
           "signatureSystems"
         ]
       }
-    ],
-    "local_authoring_parts::8797402dacdf9443e89b02a7a71049e0310e7f399d65598100fc20b7ae588a30:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "MAIN",
-          "A",
-          "B"
-        ]
-      }
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 5,
+    "designer_draft_slices::identity-core": 6,
     "local_authoring_parts::8797402dacdf9443e89b02a7a71049e0310e7f399d65598100fc20b7ae588a30:signatureSystems:3": 1
   },
   "slicePartialResults": {
@@ -2482,10 +2484,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:11:19.031Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:12:25.035Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
