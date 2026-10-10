@@ -668,6 +668,86 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const group=natureGroups.get(kind)||{module:'NATURE:'+kind,count:0,transforms:[]};
     group.transforms.push({...placement.position,scale:size});group.count++;natureGroups.set(kind,group);
   }
+  // 생태학: 로지스틱 부양량·생태 틈새·계절 적응을 시각적 자산 수요로만 모델링한다.
+  const observedCoverByHabitat=new Map(),habitatCapacityByType=new Map();
+  for(const tile of terrain){
+    const type=tile.ecology.habitat;
+    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,waterCells:0};
+    data.cells++;data.capacity+=tile.ecology.carryingCapacity;
+    if(tile.surface.waterDistanceCells!==null&&tile.surface.waterDistanceCells<=2)data.waterCells++;
+    habitatCapacityByType.set(type,data);
+  }
+  for(const plant of vegetation){
+    observedCoverByHabitat.set(plant.habitat,(observedCoverByHabitat.get(plant.habitat)||0)+1);
+    const tile=terrain[at(plant.x,plant.z)];
+    tile.ecology=Object.freeze({...tile.ecology,visualCover:1});
+    const leafBehavior=plant.kind==='PINE'||plant.kind==='ROCK'?'EVERGREEN_OR_NONLIVING'
+      :seasonKey==='WINTER'?'DORMANT':seasonKey==='AUTUMN'?'SEASONAL_COLOR_CHANGE':'ACTIVE_GROWTH';
+    plant.seasonalAppearance=Object.freeze({season:seasonKey,leafBehavior,geometryChangeRequiresNativeAuthoring:true,
+      productionSeasonAffectsGameDrops:false});
+  }
+  const habitatBalance=[...habitatCapacityByType].sort(([a],[b])=>a.localeCompare(b)).map(([habitat,row])=>{
+    const current=observedCoverByHabitat.get(habitat)||0,usableCapacity=row.capacity;
+    const desired=Math.min(row.cells,usableCapacity*.32),growthRate=.24;
+    // 공간 점유 제한을 고려한 로지스틱 균형(다음 화면 제작 목표, 실게임 생물 개체수 아님).
+    const nextVisualCover=usableCapacity>0?Math.max(0,Math.min(row.cells,
+      current+growthRate*current*(1-current/Math.max(1,desired)))):0;
+    const cue=habitat==='AQUATIC'?'RIPPLE_AND_WETLAND_AMBIENCE'
+      :habitat==='CANOPY_FOREST'?'CANOPY_SHADE_AND_BIRDCALL'
+      :habitat==='RIPARIAN'?'RIVERBANK_REEDS_AND_INSECT_AMBIENCE'
+      :habitat==='DRY_SCRUB'?'WIND_SCRUB_AND_DRY_SOIL'
+      :habitat==='ROCKY_RIDGE'?'CLIFF_SHADOW_AND_ROCK_DEBRIS'
+      :habitat==='COLD_UPLAND'?'SPARSE_CONIFER_AND_WIND':'GRASS_WIND_AND_SOIL_LIFE';
+    return Object.freeze({habitat,cellCount:row.cells,visualPlantCount:current,
+      carryingCapacitySum:+usableCapacity.toFixed(3),averageHabitatCapacity:+(usableCapacity/Math.max(1,row.cells)).toFixed(3),
+      idealVisualCover:+desired.toFixed(3),nextVisualCover:+nextVisualCover.toFixed(3),
+      validatedVisualDensityFeedbackApplied:feedbackAccepted,visualDensityFeedback:visualDensityDelta(habitat),
+      ambientCue:cue,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
+      decomposerGuild:'SOIL_AND_FALLEN_MATTER_CUE_ONLY',actualCreatureSpawnCount:0,
+      actualHarvestableResourceCount:0,actualNativeVisualsVerified:false});
+  });
+  // 도시공학: 통행 가능한 도로 이웃만 활용하는 광장/공공시설 후보. 길·저장 영역을 점유하지 않는다.
+  const civicCandidates=[...roadSet].filter(id=>(roadDegree.get(id)||0)>=2&&pedestrianDistance[id]>=0)
+    .map(id=>({id,importance:(roadDegree.get(id)||0)*4+(arterial.has(id)?3:0)-pedestrianDistance[id]*.08}))
+    .sort((a,b)=>b.importance-a.importance||a.id-b.id);
+  const civicSpaces=[],reservedPublic=new Set();
+  for(const road of civicCandidates){
+    if(civicSpaces.length>=(mobile?4:10))break;
+    const rx=road.id%w,rz=Math.floor(road.id/w);
+    for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const x=rx+dx,z=rz+dz;
+      if(!within(x,z))continue;
+      const id=at(x,z),tile=terrain[id];
+      if(occupied.has(id)||waterway.has(id)||reservedPublic.has(id)||sightCells.has(id)||
+        tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees||tile.surface?.waterDistanceCells===0)continue;
+      if(tile.ecology?.habitat==='ROCKY_RIDGE'||tile.surface?.substrateStability<.35)continue;
+      reservedPublic.add(id);
+      civicSpaces.push(Object.freeze({id:objectNamespace+':CIVIC:'+x+':'+z,worldPosition:worldPosition(x,z,tile.elevation*8),
+        proposalType:streetCategory(road.id)==='ARTERIAL'?'NEIGHBORHOOD_SQUARE':'POCKET_GREEN',
+        adjacentRoadCell:{x:rx,z:rz},roadClass:streetCategory(road.id),
+        sourceBinding:pickSource('PROP','CIVIC',x,z),status:'VISUAL_PROPOSAL_NOT_INSTALLED',
+        blocksRoad:false,requiresActualNative3dAndPedestrianQa:true}));
+      break;
+    }
+  }
+  const cityDistricts=new Map();
+  for(const building of buildings){
+    const districtId=building.planning.districtId;
+    const row=cityDistricts.get(districtId)||{districtId,landUse:building.zone,buildingCount:0,
+      sumWalk:0,connectedCount:0,highFloodRiskCount:0};
+    row.buildingCount++;
+    if(building.planning.pedestrianStepsToHub!==null){
+      row.connectedCount++;row.sumWalk+=building.planning.pedestrianStepsToHub;
+    }
+    if(building.planning.floodBufferCells!==null&&building.planning.floodBufferCells<=1)row.highFloodRiskCount++;
+    cityDistricts.set(districtId,row);
+  }
+  const urbanDistricts=[...cityDistricts.values()].sort((a,b)=>a.districtId.localeCompare(b.districtId))
+    .map(row=>Object.freeze({districtId:row.districtId,landUse:row.landUse,buildingCount:row.buildingCount,
+      connectedBuildingCount:row.connectedCount,
+      meanWalkingStepsToHub:row.connectedCount?+(row.sumWalk/row.connectedCount).toFixed(2):null,
+      floodBufferReviewCount:row.highFloodRiskCount,planningOnly:true}));
+
   let sightline={from:hub,to:landmark,fovDegrees,cameraForward,withinFov:false,visible:false,terrainObstructed:false,buildingObstructed:false};
   if(hub&&landmark){
     const ax=landmark.x-hub.x,az=landmark.z-hub.z,length=Math.hypot(ax,az);
@@ -687,9 +767,22 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
     size:{width:w,height:h,cellSize},terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
+    geologyAndMaterials:Object.freeze({algorithm:'SEEDED_VORONOI_FBM_CATCHMENT_RUNOFF',
+      geologyRegionCount:geologyRegions.size,materialDistribution:Object.freeze(Object.fromEntries([...materialCounts].sort(([a],[b])=>a.localeCompare(b)))),
+      surfaceMaterialGroups:Object.freeze(terrainMaterialGroups),nativeMaterialAndTerrainQaRequired:true,actualMaterialRuntimeVerified:false}),
+    ecologyBalance:Object.freeze({algorithm:'CARRYING_CAPACITY_HABITAT_SUITABILITY_LOGISTIC_VISUAL_TARGET',
+      season:seasonKey,seasonalThermal,habitatDistribution:Object.freeze(Object.fromEntries([...habitatCounts].sort(([a],[b])=>a.localeCompare(b)))),
+      habitats:Object.freeze(habitatBalance),feedbackAccepted,resourceAndCreatureSpawnAuthority:false,
+      originalGameplaySpeciesAndPopulationPreserved:true,realBiologySimulationClaimed:false,nativeVisualsVerified:false}),
+    urbanPlanning:Object.freeze({algorithm:'ROAD_GRAPH_BFS_WEIGHTED_LAND_USE_STORMWATER_AND_LOT_STRUCTURAL_GRAMMAR',
+      roadCellCount:roadSet.size,roadIntersections:[...roadDegree.values()].filter(degree=>degree>=3).length,
+      arterialRoadCells:arterial.size,walkableHubRoadCells:pedestrianDistance.filter(value=>value>=0).length,
+      districts:Object.freeze(urbanDistricts),civicSpaceProposals:Object.freeze(civicSpaces),
+      noNewPhysicalRoadsOrGameplayBuildingsCreated:true,actualCivilEngineeringVerified:false,
+      actualNativeUrbanWorldVerified:false}),
     sharedLibraryBinding:Object.freeze({gameId:String(gameId),target:String(target).toUpperCase(),sourceCandidateCount:pool.length,
       eligibleFamilies:Object.freeze(Object.fromEntries([...poolByFamily].map(([family,rows])=>[family,rows.length]))),
-      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation].map(row=>row.sourceBinding?.assetId).filter(Boolean))].sort()),
+      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation,...terrainMaterialGroups,...civicSpaces].flatMap(row=>[row.sourceBinding?.assetId,row.surfaceMaterialBinding?.assetId,...Object.values(row.construction?.materialBindings||{}).map(binding=>binding?.assetId)]).filter(Boolean))].sort()),
       originalAssetsCopied:false,actualRuntimeBindingsVerified:false,missingNativeAssetRequiresExistingAuthoring:true}),
     placementDiversity:Object.freeze({algorithm:'SEEDED_HASH_PRIORITY_SPATIAL_REJECTION_BLUE_NOISE_APPROXIMATION',minimumVegetationSeparationCells:2,
       candidatesEvaluated:natureCandidates.length,selectedVegetation:vegetation.length,stableGameObjectIds:true,
