@@ -584,18 +584,35 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           if(!imagePath.startsWith('assets/')||!(/\.(?:png|jpe?g|webp)$/i.test(imagePath)))
             throw new Error('IMAGE_TO_MESH_INPUT_SCOPE_FORBIDDEN:'+imagePath);
           const imageFile=path.resolve(cwd,imagePath);
-          if(!fs.existsSync(imageFile)||!fs.statSync(imageFile).isFile())throw new Error('IMAGE_TO_MESH_INPUT_MISSING:'+imagePath);
+          if(!fs.existsSync(imageFile)||!fs.statSync(imageFile).isFile())
+            throw new Error('IMAGE_TO_MESH_INPUT_MISSING:'+imagePath);
           const input=sha256File(imageFile),provenance=evidence?.imageToMesh;
-          if(!provenance||provenance.engine!=='VAST-AI-Research/TripoSR'||provenance.engineLicense!=='MIT'
+          const modelEngines=new Map([
+            ['VAST-AI-Research/TripoSR','stabilityai/TripoSR'],
+            ['microsoft/TRELLIS.2','microsoft/TRELLIS.2-4B']
+          ]);
+          if(!provenance||!modelEngines.has(provenance.engine)
+            ||provenance.model!==modelEngines.get(provenance.engine)
+            ||provenance.engineLicense!=='MIT'||provenance.offlineInference!==true
             ||provenance.inputPath!==imagePath||provenance.inputSha256!==input
             ||provenance.generatedGeometry!==true||provenance.originalImageImmutable!==true
             ||provenance.runtimeVerified!==false||provenance.rigged!==false
+            ||!['HIGH_FIDELITY','BASELINE'].includes(provenance.modelTier)
+            ||(provenance.engine==='microsoft/TRELLIS.2')!==(provenance.modelTier==='HIGH_FIDELITY')
             ||!/^[a-f0-9]{64}$/.test(clean(provenance.modelWeightSha256))
+            ||!/^[a-f0-9]{64}$/.test(clean(provenance.engineSourceSha256))
             ||!['project-original','cc0','cc-by'].includes(clean(provenance.sourceLicense).toLowerCase())
             ||clean(evidence?.license).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()
             ||(clean(provenance.sourceLicense).toLowerCase()==='cc-by'&&!clean(provenance.sourceCredit))
             ||(recipe?.sourceLicense&&clean(recipe.sourceLicense).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()))
             throw new Error('IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID:'+clean(recipe?.id));
+          const explicitlyRequested=imageArgs.indexOf('--mesh-model');
+          if(explicitlyRequested>=0){
+            const expected=clean(imageArgs[explicitlyRequested+1]).toLowerCase();
+            if((expected==='trellis2'&&provenance.engine!=='microsoft/TRELLIS.2')
+              ||(expected==='triposr'&&provenance.engine!=='VAST-AI-Research/TripoSR'))
+              throw new Error('IMAGE_TO_MESH_SELECTED_ENGINE_MISMATCH:'+clean(recipe?.id));
+          }
           const angles=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
           if(!Array.isArray(evidence?.multiViewPreview)
             ||angles.some(name=>!evidence.multiViewPreview.includes(name)
