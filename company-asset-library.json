@@ -1,5 +1,5 @@
 {
-  "version": 125,
+  "version": 126,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-10T12:38:00+09:00",
@@ -74520,6 +74520,506 @@
       },
       "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
       "genreReusable": true
+    },
+    {
+      "id": "shared-creature-wolf",
+      "title": "공용 3D wolf 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "WOLF",
+      "bodyPlan": "QUADRUPED_CANINE",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_PREPARED_SOURCE",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-wolf.glb",
+      "path": "/assets/shared/creature-wolf.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-wolf.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-wolf.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "49ac5a1716b2797dad5156038c9aaf9ab938c90d",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-wolf.glb"
+        ]
+      },
+      "authoringRecipes": [
+        {
+          "id": "author-shared-creature-wolf",
+          "family": "CREATURE",
+          "assetId": "shared-creature-wolf",
+          "executor": "NODE_JS",
+          "script": "assets/native-authoring/build-shared-creature.mjs",
+          "args": [
+            "assets/shared",
+            "--species=wolf"
+          ],
+          "outputs": [
+            "assets/shared/creature-wolf.glb"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true,
+          "sourceLicense": "project-original",
+          "oneCreatureOneArtifact": true
+        }
+      ],
+      "rigProfile": "SHARED_CREATURE_WOLF_SKINNED",
+      "jointCount": 17,
+      "vertices": 1052,
+      "triangleCount": 1592,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "WOLF_PACK_HOWL"
+      ],
+      "signatureClip": "WOLF_PACK_HOWL",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true
+    },
+    {
+      "id": "shared-creature-spider",
+      "title": "공용 3D spider 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "SPIDER",
+      "bodyPlan": "ARACHNID",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_PREPARED_SOURCE",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-spider.glb",
+      "path": "/assets/shared/creature-spider.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-spider.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-spider.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "cfac29ca06292a5eaab1e02afa4948e202c86928",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-spider.glb"
+        ]
+      },
+      "authoringRecipes": [
+        {
+          "id": "author-shared-creature-spider",
+          "family": "CREATURE",
+          "assetId": "shared-creature-spider",
+          "executor": "NODE_JS",
+          "script": "assets/native-authoring/build-shared-creature.mjs",
+          "args": [
+            "assets/shared",
+            "--species=spider"
+          ],
+          "outputs": [
+            "assets/shared/creature-spider.glb"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true,
+          "sourceLicense": "project-original",
+          "oneCreatureOneArtifact": true
+        }
+      ],
+      "rigProfile": "SHARED_CREATURE_SPIDER_SKINNED",
+      "jointCount": 29,
+      "vertices": 1789,
+      "triangleCount": 2692,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "SPIDER_WEB_THREAT"
+      ],
+      "signatureClip": "SPIDER_WEB_THREAT",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true
+    },
+    {
+      "id": "shared-creature-beetle",
+      "title": "공용 3D beetle 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "BEETLE",
+      "bodyPlan": "HEXAPOD_INSECT",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_PREPARED_SOURCE",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-beetle.glb",
+      "path": "/assets/shared/creature-beetle.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-beetle.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-beetle.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "4b806c0a1fec28135e8ba81bebbefbf6f0ed267b",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-beetle.glb"
+        ]
+      },
+      "authoringRecipes": [
+        {
+          "id": "author-shared-creature-beetle",
+          "family": "CREATURE",
+          "assetId": "shared-creature-beetle",
+          "executor": "NODE_JS",
+          "script": "assets/native-authoring/build-shared-creature.mjs",
+          "args": [
+            "assets/shared",
+            "--species=beetle"
+          ],
+          "outputs": [
+            "assets/shared/creature-beetle.glb"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true,
+          "sourceLicense": "project-original",
+          "oneCreatureOneArtifact": true
+        }
+      ],
+      "rigProfile": "SHARED_CREATURE_BEETLE_SKINNED",
+      "jointCount": 23,
+      "vertices": 1503,
+      "triangleCount": 2292,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "BEETLE_HORN_CHARGE"
+      ],
+      "signatureClip": "BEETLE_HORN_CHARGE",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true
+    },
+    {
+      "id": "shared-creature-golem",
+      "title": "공용 3D golem 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "GOLEM",
+      "bodyPlan": "HEAVY_GOLEM_OR_BOSS",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_PREPARED_SOURCE",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-golem.glb",
+      "path": "/assets/shared/creature-golem.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-golem.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-golem.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "2131b365554f438cb8211e04ff2ee29458134aec",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-golem.glb"
+        ]
+      },
+      "authoringRecipes": [
+        {
+          "id": "author-shared-creature-golem",
+          "family": "CREATURE",
+          "assetId": "shared-creature-golem",
+          "executor": "NODE_JS",
+          "script": "assets/native-authoring/build-shared-creature.mjs",
+          "args": [
+            "assets/shared",
+            "--species=golem"
+          ],
+          "outputs": [
+            "assets/shared/creature-golem.glb"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true,
+          "sourceLicense": "project-original",
+          "oneCreatureOneArtifact": true
+        }
+      ],
+      "rigProfile": "SHARED_CREATURE_GOLEM_SKINNED",
+      "jointCount": 15,
+      "vertices": 1249,
+      "triangleCount": 1988,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "GOLEM_CORE_PULSE"
+      ],
+      "signatureClip": "GOLEM_CORE_PULSE",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true
+    },
+    {
+      "id": "shared-creature-serpent",
+      "title": "공용 3D serpent 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "SERPENT",
+      "bodyPlan": "REPTILE_OR_SERPENT",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_PREPARED_SOURCE",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-serpent.glb",
+      "path": "/assets/shared/creature-serpent.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-serpent.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-serpent.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "37bf8846de425ed6e3031bba08f079ead84f1392",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-serpent.glb"
+        ]
+      },
+      "authoringRecipes": [
+        {
+          "id": "author-shared-creature-serpent",
+          "family": "CREATURE",
+          "assetId": "shared-creature-serpent",
+          "executor": "NODE_JS",
+          "script": "assets/native-authoring/build-shared-creature.mjs",
+          "args": [
+            "assets/shared",
+            "--species=serpent"
+          ],
+          "outputs": [
+            "assets/shared/creature-serpent.glb"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "runMode": "VERIFY_ONLY",
+          "masterGlbRequired": true,
+          "sourceLicense": "project-original",
+          "oneCreatureOneArtifact": true
+        }
+      ],
+      "rigProfile": "SHARED_CREATURE_SERPENT_SKINNED",
+      "jointCount": 17,
+      "vertices": 915,
+      "triangleCount": 1328,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "SERPENT_COIL_STRIKE"
+      ],
+      "signatureClip": "SERPENT_COIL_STRIKE",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true
     }
   ],
   "research": [
