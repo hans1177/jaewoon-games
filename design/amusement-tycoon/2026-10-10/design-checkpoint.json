@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 전략 경영 게임에서, 놀이기구의 위치, 휴식 공간의 배치, 그리고 음식 가격 책정 등 다양한 선택들을 직접 제어할 수 있습니다.",
       "coreFun": "{\"mainIdentity\": \"감정 기반 만족도 엔진과 동선 최적화 시스템\", \"a\": {\"system\": \"감정 기반 만족도 엔진\", \"material\": \"손님의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정\", \"materialDomain\": \"예술·철학·역사\"}, \"b\": {\"system\": \"동선 최적화 시스템\", \"material\": \"길의 너비, 놀이기구 입구 위치, 휴식 공간의 배치\", \"materialDomain\": \"지능·과학·기술\"}, \"abCausality\": \"감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환됨\", \"abEvolution\": {\"aChangesB\": \"감정 상태 긍정 유도 → 수익 증가 및 시설 업그레이드\", \"bChangesA\": \"이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임\", \"lateGameChange\": \"공원 전체 수용 능력과 수익성의 양방향 실제 상태 교환\"}, \"materialFusion\": {\"contrast\": \"예술·철학·역사로 구성된 감정 기반 만족도 엔진과 지능·과학·기술로 구성된 동선 최적화 시스템\", \"causalBridge\": \"감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환\", \"removalConsequence\": \"감정 시스템 제거 시 이동 흐름 및 수익 성장 패턴 파괴됨\"}, \"storyCausalChain\": {\"cause\": \"플레이어의 놀이기구 배치와 동선 설계 결정\", \"characterConflict\": \"손님의 만족도와 수익 사이의 갈등 발생\", \"playerChoice\": \"감정 상태 유도, 이동 흐름 최적화 선택\", \"worldChange\": \"공원 수용 능력 및 수익성 증대, 플레"
+    },
+    "local_authoring_parts::5683b6de19bc9f85f5bdc040eb8383f74ca239662bb4e9d154baaeda9488a5e0:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상·위험·다음 선택",
+        "감정 상태 유도 → 수익 증가 및 시설 업그레이드",
+        "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1357328,
-      "lastMs": 220919,
+      "totalMs": 1441714,
+      "lastMs": 84386,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T11:09:04.128Z"
+      "updatedAt": "2026-10-10T11:10:28.518Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:46:26.756Z",
-  "updatedAt": "2026-10-10T11:09:04.130Z",
+  "updatedAt": "2026-10-10T11:10:28.518Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1830,7 +1837,7 @@
     "f69d140ab6fa7ef054cf920b6575ecb855330d79d6d53b065b4cd990254c44f8": true,
     "aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:09:04.130Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:10:28.518Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
