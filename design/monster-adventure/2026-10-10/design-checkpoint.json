@@ -575,25 +575,42 @@
       "name": "몬스터 어드벤처: 진입 즉각",
       "purpose": "플레이어가 즉시 시작할 수 있는 단순한 행동 패턴을 기반으로 게임 정체성을 확립하고, 위험/선택 결과에 따른 새로운 경로 연동을 구현합니다.",
       "playerChoice": "플레이어 선택이 실제 세계 상태 변화에 영향을 미치며, 이는 게임 내에서 발생하는 실제 상황으로부터 시작됩니다."
+    },
+    "local_authoring_parts::e85a81af62550dfa977a011a1b272ae7bb9d6585b353c59446b26c426cfc94d5:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "START_ACTION",
+        "SCORE_FEEDBACK",
+        "DISTANCE_FEEDBACK"
+      ],
+      "stateOutputs": [
+        "PATH_SELECTION",
+        "WORLD_CHANGE",
+        "NEXT_EVENT"
+      ],
+      "name": "몬스터 어드벤처: 진입 즉각 - 발견 및 숙련",
+      "purpose": "플레이어가 선택한 새로운 경로 연동 결과와 다음 사건의 연결을 통해 게임 내에서 발생하는 실제 상황을 정체성에 반영하며, 플레이어의 선택에 따른 세계 상태 변화를 기록함.",
+      "playerChoice": "플레이어가 선택한 새로운 경로 연동 결과가 다음 사건에 영향을 미친다는 인과적 연결을 형성함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2191561,
-      "lastMs": 100862,
+      "totalMs": 2295755,
+      "lastMs": 104194,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:22:09.214Z"
+      "updatedAt": "2026-10-10T00:41:17.632Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:23:41.588Z",
-  "updatedAt": "2026-10-10T00:39:33.431Z",
+  "updatedAt": "2026-10-10T00:41:17.641Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2186,21 +2203,10 @@
           "signatureSystems"
         ]
       }
-    ],
-    "local_authoring_parts::e85a81af62550dfa977a011a1b272ae7bb9d6585b353c59446b26c426cfc94d5:signatureSystems:3": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]",
-          "signatureSystems[2]"
-        ]
-      }
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2,
+    "designer_draft_slices::identity-core": 3,
     "local_authoring_parts::e85a81af62550dfa977a011a1b272ae7bb9d6585b353c59446b26c426cfc94d5:signatureSystems:2": 1,
     "local_authoring_parts::e85a81af62550dfa977a011a1b272ae7bb9d6585b353c59446b26c426cfc94d5:signatureSystems:3": 2
   },
@@ -2303,10 +2309,10 @@
   "localAuthoringSplits": {
     "fb84bb79fb127518c960f57cd25e31558ab466a1c51f2061e7a86fed2d0916ec": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:22:09.214Z",
-  "failedPhase": "designer_draft",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:41:17.634Z",
+  "failedPhase": "designer_draft_slices",
   "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
