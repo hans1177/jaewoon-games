@@ -5089,3 +5089,42 @@ test('current-use internal motion planning accepts dynamically source-bound cons
     assert.ok(tasks[0].evidence.includes('asset-current-consumer:horror-escape-room'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('existing game presentation screens all registered mesh motion material libraries without a UI requirement',()=>{
+  const root=tempRepo();
+  try{
+    const id='native-library-pass',relative='web-games/'+id;
+    const dir=path.join(root,relative);fs.mkdirSync(dir,{recursive:true});
+    const game='<html><canvas id="game"></canvas><script>function BuildMesh(){ const mesh = renderer.geometry; } function BlendAnimation(){ animator.walk(); } function ApplyMaterial(){ material.shader = 1; }</script></html>';
+    fs.writeFileSync(path.join(dir,'index.html'),game);
+    const assets=path.join(root,'assets');fs.mkdirSync(assets,{recursive:true});
+    fs.writeFileSync(path.join(assets,'animation-state.js'),'export const animation = true;');
+    fs.writeFileSync(path.join(assets,'company-steward.js'),'export const hidden = true;');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:129,assets:[
+      {id:'shared-humanoid-motion-v1',category:'MOTION',title:'Humanoid animations',platform:'SHARED_NATIVE_SOURCE',path:'/assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb',license:'project-original',runtimeVerificationState:'PENDING_STUDIO'},
+      {id:'shared-material-v1',category:'MATERIAL',platform:'SHARED_MASTER',path:'/assets/shared/mat.glb',license:'project-original'},
+      {id:'roblox-common-motion-v1',category:'MOTION',platform:'ROBLOX',path:'/assets/roblox/common-motion-v1/RobloxCommonMotion.luau',license:'project-original'},
+      {id:'shared-private-v1',category:'MATERIAL',platform:'SHARED_MASTER',path:'/assets/shared/private.glb',license:'NC'}
+    ]}));
+    const project={gameId:id,engine:'web',genre:'SURVIVAL',releaseState:'development-confirmed',projectPath:relative};
+    const task=findWebPresentationQualityTask(project,root,{tasks:[]});
+    assert.ok(task);
+    const sync=task.graphicsReplacementContract.allLibrarySync;
+    assert.equal(sync.registeredAssetCount,4);
+    assert.ok(sync.candidates.some(row=>row.id==='shared-humanoid-motion-v1'));
+    assert.ok(sync.candidates.some(row=>row.id==='shared-material-v1'));
+    assert.ok(sync.candidates.some(row=>row.library==='assets/animation-state.js'));
+    assert.ok(sync.externalAlgorithms.some(row=>row.id==='MESH_OPTIMIZATION_LOD'));
+    assert.ok(!sync.candidates.some(row=>row.id==='roblox-common-motion-v1'||row.id==='shared-private-v1'||row.library==='assets/company-steward.js'));
+    assert.ok(sync.candidates.every(row=>row.optional&&!row.automaticImport&&!row.runtimeVerified));
+    assert.match(task.goal,/EXISTING_GAME_ALL_LIBRARY_AUTO_MATCH/);
+    assert.equal(fs.readFileSync(path.join(dir,'index.html'),'utf8'),game);
+    const blank='no-library-systems',plain='web-games/'+blank;fs.mkdirSync(path.join(root,plain),{recursive:true});
+    fs.writeFileSync(path.join(root,plain,'index.html'),'<html><body><canvas id="game"></canvas></body></html>');
+    const unrelated=findWebPresentationQualityTask({...project,gameId:blank,projectPath:plain},root,{tasks:[]});
+    assert.ok(unrelated);
+    assert.equal(unrelated.graphicsReplacementContract.allLibrarySync.status,'NO_SOURCE_MATCH');
+    assert.deepEqual(unrelated.graphicsReplacementContract.allLibrarySync.candidates,[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

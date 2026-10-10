@@ -3,6 +3,8 @@
 // 원칙: 제작 계획은 실제 구현·런타임 통과 증거가 아니며 기존 책임 소스만 연결한다.
 // 임포트
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
@@ -194,6 +196,185 @@ export const INTERFACE_INTERNAL_TOOL_MATCHERS=Object.freeze([
   {id:'NPC_INTERACTION',match:/npc|villager|behavior|주민|대화|동료/i,signals:[],library:'assets/common-ai.js',screens:['GAMEPLAY','QUEST_UI']},
   {id:'COMPANION_PARTY',match:/party|companion|squad|파티|동료|분대/i,signals:[],library:'assets/ai-party.js',screens:['GAMEPLAY']}
 ]);
+
+
+// 기존 assets/ 코드와 회사 공식 asset registry만 읽는다. 게임 파일/설계/정책은 변경하지 않는다.
+const GAME_LIBRARY_INVENTORY_CACHE=new Map();
+export function readCurrentGameLibraryInventory({repoRoot=process.cwd()}={}){
+  const root=path.resolve(repoRoot),assetsDir=path.join(root,'assets'),registryPath=path.join(root,'company-asset-library.json');
+  const stamp=file=>{try{const stat=fs.statSync(file);return stat.mtimeMs+':'+stat.size;}catch{return 'MISSING';}};
+  const key=stamp(assetsDir)+'|'+stamp(registryPath);
+  const cached=GAME_LIBRARY_INVENTORY_CACHE.get(root);
+  if(cached?.stamp===key)return cached.inventory;
+  let availableLibraryPaths=[],catalogAssets=[];
+  try{availableLibraryPaths=fs.readdirSync(assetsDir,{withFileTypes:true})
+    .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
+    .map(entry=>'assets/'+entry.name).sort();}catch{}
+  try{
+    const library=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+    catalogAssets=list(library.assets).filter(row=>row&&typeof row==='object').map(row=>({
+      id:row.id,title:row.title,name:row.name,category:row.category,family:row.family,
+      platform:row.platform,status:row.status,path:row.path,sourcePath:row.sourcePath,
+      fileRoles:row.fileRoles,license:row.license,runtimeVerificationState:row.runtimeVerificationState,
+      verifiedCompanyReusable:row.verifiedCompanyReusable,productionVerified:row.productionVerified,
+      internalUseBlockedByMissingAudit:row.internalUseBlockedByMissingAudit,
+      gameExclusive:row.gameExclusive,consumerGameIds:row.consumerGameIds
+    }));
+  }catch{}
+  const inventory=Object.freeze({availableLibraryPaths:Object.freeze(availableLibraryPaths),catalogAssets:Object.freeze(catalogAssets)});
+  GAME_LIBRARY_INVENTORY_CACHE.set(root,{stamp:key,inventory});
+  return inventory;
+}
+
+// 모든 내부 라이브러리(코드·공용 메쉬·모션·머티리얼·VFX·UI 등)는 같은 기존 BUILD_UP 경로에서 선별한다.
+// 외부 알고리즘은 참고 원칙만 제공한다. 외부 패키지 설치·별도 엔진·검증 없는 자동 임포트는 금지한다.
+export const ALL_LIBRARY_EXTERNAL_ALGORITHMS=Object.freeze([
+  {id:'MESH_OPTIMIZATION_LOD',match:/mesh|geometry|model|skinnedmesh|lod|cull|vertex|메쉬|모델|폴리곤/i,sourceUrl:'https://github.com/zeux/meshoptimizer',principle:'Consider indexed geometry, mesh simplification and LOD only when actual mesh and device budgets justify it.'},
+  {id:'PBR_MATERIAL_COMPATIBILITY',match:/material|shader|texture|render|lighting|pbr|재질|셰이더|텍스처|렌더|조명/i,sourceUrl:'https://github.com/KhronosGroup/glTF/blob/main/specification/2.0/Specification.adoc',principle:'Preserve material and texture semantics, style compatibility and platform-supported rendering features.'},
+  {id:'MOTION_STATE_TRANSITIONS',match:/animator|animation|motion|rig|blend|idle|walk|run|모션|애니메이션/i,sourceUrl:'https://docs.unity3d.com/Manual/AnimationStateMachines.html',principle:'Blend existing action states with safe transitions; do not change combat timing, hitboxes or authority.'},
+  {id:'A_STAR_NAVIGATION',match:/pathfind|navigation|navmesh|waypoint|steer|npcpath|길찾기|경로탐색/i,sourceUrl:'https://www.redblobgames.com/pathfinding/a-star/introduction.html',principle:'Choose graph search or navigation only where the current world and movement rules need it.'},
+  {id:'AUDIO_GAIN_TRANSITIONS',match:/audio|sound|music|bgm|sfx|crossfade|audiomixer|오디오|사운드|배경음/i,sourceUrl:'https://developer.mozilla.org/en-US/docs/Web/API/GainNode',principle:'Tie volume and crossfades to existing game audio states, respecting platform audio APIs.'}
+]);
+const ALL_LIBRARY_CATEGORY_MATCHERS=Object.freeze({
+  CHARACTER:/character|avatar|humanoid|player|hero|npc|캐릭터|플레이어|주인공/i,
+  CREATURE:/monster|enemy|creature|beast|boss|wolf|spider|zombie|ghost|몬스터|적|괴물|늑대|거미/i,
+  ENVIRONMENT:/terrain|environment|world|biome|region|forest|island|map|landscape|지형|환경|맵|지역/i,
+  BUILDING:/building|structure|wall|roof|door|construction|foundation|건물|건축|벽|지붕/i,
+  PROP:/prop|decoration|pickup|container|chest|object|소품|장식|상자|오브젝트/i,
+  WEAPON:/weapon|sword|spear|bow|blade|gun|equipment|무기|검|창|활/i,
+  SKILL:/skill|ability|spell|cast|spellbook|스킬|마법|능력/i,
+  UI:/\bui\b|ui(?:controller|root|view|panel|screen|button|manager|overlay|widget)|hud|menu|panel|button|screen|inventory|canvas|dialogue|메뉴|화면|인벤|버튼/i,
+  MOTION:/animator|animation|motion|rig|blend|idle|walk|run|attackanim|모션|애니메이션|리그/i,
+  VFX:/vfx|particle|trail|impact|effect|flash|spark|이펙트|파티클|타격효과/i,
+  MATERIAL:/material|texture|shader|pbr|surface|lighting|재질|텍스처|셰이더|조명/i,
+  AUDIO:/audio|sound|music|bgm|sfx|ambient|오디오|음악|효과음/i
+});
+const ALL_LIBRARY_CODE_ALIASES=Object.freeze({
+  gather:/gather|harvest|collect|mine|채집|수집|광산/i, gathering:/gather|harvest|collect|mine|채집|수집/i,
+  resource:/resource|gather|harvest|자원|채집/i, inventory:/inventory|backpack|itemslot|인벤|아이템/i,
+  equipment:/equip|loadout|armor|weapon|장비|무기/i, craft:/craft|recipe|workbench|제작|조합/i,
+  crafting:/craft|recipe|workbench|제작|조합/i, recipes:/recipe|craft|레시피|제작/i,
+  ai:/behavior|npc|enemy|agent|pathfind|인공지능|행동/i, progression:/progress|level|xp|growth|레벨|성장/i,
+  combat:/combat|attack|battle|damage|전투|공격/i, vitals:/health|hp|hunger|체력|허기/i,
+  save:/save|load|persist|datastore|저장|불러오기/i, versioning:/save|load|migration|version|저장|복구/i,
+  targeting:/target|aim|enemy|타겟|조준/i, projectiles:/projectile|bullet|shoot|투사체|발사/i,
+  motion:/motion|animation|animator|rig|모션|애니메이션/i, animation:/animation|animator|motion|애니메이션|모션/i,
+  graphics:/graphics|render|visual|mesh|그래픽|렌더/i, environment:/environment|terrain|biome|world|지형|환경/i,
+  input:/input|touch|joystick|button|터치|조작|입력/i, audio:/audio|sound|music|bgm|오디오|사운드/i,
+  timers:/timer|countdown|cooldown|타이머/i, scene:/scene|world|region|씬|장면|지역/i,
+  economy:/economy|gold|shop|currency|재화|상점/i, loot:/loot|drop|reward|전리품|보상/i,
+  quest:/quest|mission|journal|퀘스트|의뢰/i, dialogue:/dialogue|npc|talk|대화/i,
+  effects:/effect|vfx|skill|이펙트|효과/i, skill:/skill|ability|cooldown|스킬|능력/i,
+  character:/character|player|hero|캐릭터|플레이어/i, flow:/flow|transition|navigation|전환|화면/i,
+  day:/day|night|weather|낮|밤/i, night:/night|day|weather|밤|낮/i,
+  state:/state|phase|status|상태|단계/i, loop:/loop|tick|update|게임루프/i
+});
+const NON_GAME_LIBRARY_PREFIX=/^assets\/(?:company-|department-|homepage-|artbook-|godot-|asset-library|asset-selector|vibe-company-|vibe-orchestrator|vibe-development-|vibe-continuous-|vibe-local-|vibe-diagnostics|vibe-project|vibe-helper|vibe-change-set)/i;
+const ENGINE_LIBRARY_PREFIX=/^assets\/(?:vibe-|jaewoon-|game-)/i;
+const GENERIC_LIBRARY_NAME_TOKENS=new Set(['assets','asset','lib','library','common','shared','game','games','vibe','jaewoon','core','engine','runtime','system','director','pipeline','rendering','utility','tools','helper','module','default','generic','native','roblox','unity','web','part','parts','skin','skins','base','template','templates','model','models','v1','v2','v3','v4','v5','v6','pack']);
+const GENERIC_ASSET_ID_TOKENS=new Set(['monster','enemy','creature','character','humanoid','animal','npc','survival','adventure','world','environment','scene','actions','animation','animations','gameplay','generic','factory','render','rendering','material','materials','inventory','menu','interface','asset','assets','item','items','gear','pack','collection']);
+const safeLibraryPath=value=>/^assets\/[a-z0-9][a-z0-9/_-]*\.(?:js|luau?|json|glb|gltf|fbx|obj|png|webp|svg|mat|anim|controller)$/i.test(clean(value).replace(/^\//,''))
+  ?clean(value).replace(/^\//,''):null;
+const codeTokenPatterns=name=>name.toLowerCase().split(/[-_.]+/)
+  .filter(token=>token.length>=3&&!GENERIC_LIBRARY_NAME_TOKENS.has(token))
+  .map(token=>ALL_LIBRARY_CODE_ALIASES[token]||new RegExp(token.replace(/[.*+?^$|()[\]{}]/g,'\\// 메뉴 도안: 장르별 실제 행동'),'i'));
+
+// 하나의 업무에서 사용 가능한 모든 등록 라이브러리를 검사하되, 기존 소스 근거 없이는 아무것도 채택하지 않는다.
+export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},files=[],platform='WEB',availableLibraryPaths=[],catalogAssets=[]}={}){
+  const requested=clean(platform).toUpperCase();
+  const target=['UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
+  const ownFiles=new Set(list(files).map(clean));
+  const anchors=list(source?.sourceAnchors).filter(row=>clean(row?.file)&&ownFiles.has(clean(row.file))
+    &&(clean(row?.symbol)||clean(row?.context)));
+  const anchorText=row=>clean(row?.symbol)+' '+clean(row?.context);
+  const matchingFiles=regex=>unique(anchors.filter(row=>regex.test(anchorText(row))).map(row=>row.file));
+  const codePaths=unique(list(availableLibraryPaths).map(safeLibraryPath))
+    .filter(file=>/^assets\/[a-z][a-z0-9-]*\.js$/i.test(file));
+  const allCodeCandidates=codePaths.filter(file=>!NON_GAME_LIBRARY_PREFIX.test(file)).map(library=>{
+    const name=library.slice(7,-3),patterns=codeTokenPatterns(name);
+    const matching=anchors.filter(row=>patterns.some(re=>re.test(anchorText(row))));
+    if(!matching.length)return null;
+    const engineOnly=ENGINE_LIBRARY_PREFIX.test(library);
+    return{
+      id:name.replace(/-/g,'_').toUpperCase(),library,kind:'CODE_LIBRARY',
+      category:engineOnly?'CANONICAL_ENGINE_CAPABILITY':'GAME_RUNTIME_MODULE',
+      sourceFiles:unique(matching.map(row=>row.file)),
+      status:'SOURCE_SIGNAL_MATCH_UNVERIFIED',sourceEvidence:unique(matching.map(row=>row.symbol)).slice(0,4),
+      optional:true,firstParty:true,automaticImport:false,newGameplayAuthority:false,
+      integration:engineOnly?'USE_EXISTING_CANONICAL_ENGINE_HOOK_ONLY'
+        :target==='WEB'?'REUSE_EXISTING_COMPATIBLE_HANDLER':'NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT',
+      licensing:'REPOSITORY_LICENSE_AND_DEPENDENCY_REVIEW_REQUIRED',runtimeVerified:false,productionVerified:false,
+      score:(engineOnly?0:2)+Math.min(4,matching.length)
+    };
+  }).filter(Boolean).sort((a,b)=>b.score-a.score||a.library.localeCompare(b.library));
+  const codeCandidates=[...allCodeCandidates.filter(row=>row.category==='GAME_RUNTIME_MODULE').slice(0,9),
+    ...allCodeCandidates.filter(row=>row.category==='CANONICAL_ENGINE_CAPABILITY').slice(0,4)];
+  const assetRows=list(catalogAssets).filter(row=>row&&typeof row==='object');
+  const licenseOk=row=>/^(?:project-original|cc0|public-domain|mit|cc-by|commercial-no-attribution)$/i.test(clean(row.license));
+  const platformOk=row=>['SHARED_MASTER','SHARED_NATIVE_SOURCE','SHARED_REFERENCE'].includes(clean(row.platform).toUpperCase())
+    ||clean(row.platform).toUpperCase()===target
+    ||(target==='WEB'&&clean(row.platform).toUpperCase()==='WEB_REFERENCE');
+  const categories=new Map(),safeAssets=[];
+  for(const row of assetRows){
+    const category=clean(row.category||row.family).toUpperCase(),regex=ALL_LIBRARY_CATEGORY_MATCHERS[category];
+    categories.set(category,(categories.get(category)||0)+1);
+    if(!regex||!platformOk(row)||!licenseOk(row)||row.internalUseBlockedByMissingAudit===true)continue;
+    if(row.gameExclusive===true&&!list(row.consumerGameIds).includes(gameId))continue;
+    const sourceFiles=matchingFiles(regex);
+    if(!sourceFiles.length)continue;
+    const roles=row.fileRoles&&typeof row.fileRoles==='object'?row.fileRoles:{};
+    const locations=[...list(roles.models),...list(roles.runtimeCode),row.path,row.sourcePath].map(safeLibraryPath).filter(Boolean);
+    const library=locations[0];
+    if(!library)continue;
+    const id=clean(row.id);
+    if(!id)continue;
+    const specificTokens=id.toLowerCase().split(/[-_.]+/).filter(token=>token.length>=4
+      &&!GENERIC_LIBRARY_NAME_TOKENS.has(token)&&!GENERIC_ASSET_ID_TOKENS.has(token)&&!token.startsWith(category.toLowerCase()));
+    const specific=anchors.filter(anchor=>regex.test(anchorText(anchor))&&specificTokens.some(token=>anchorText(anchor).toLowerCase().includes(token)));
+    // 'shared-quest-v1' 같은 특정 기능 팩을 UI라는 이유만으로 전체 게임에 추천하지 않는다.
+    // 순수 공용 카테고리 팩만 추가 기능 요구 없이 카테고리 소스 근거로 후보를 낸다.
+    const pack=/-v\d+$/i.test(id);
+    const generalPack=pack&&(specificTokens.length===0
+      ||(category==='MOTION'&&specificTokens.length===1&&specificTokens[0]==='humanoid'));
+    if(!generalPack&&!specific.length)continue;
+    const referenceOnly=['SHARED_REFERENCE','WEB_REFERENCE'].includes(clean(row.platform).toUpperCase())
+      ||list(roles.references).length>0&&!list(roles.models).length&&!list(roles.runtimeCode).length;
+    safeAssets.push({
+      id,library,kind:'CATALOG_ASSET',category,title:clean(row.title||row.name),platform:clean(row.platform),
+      sourceFiles:specific.length?unique(specific.map(a=>a.file)):sourceFiles,
+      status:'SOURCE_SIGNAL_MATCH_UNVERIFIED',referenceOnly,
+      usage:referenceOnly?'DESIGN_REFERENCE_ONLY':'PLATFORM_NATIVE_ADAPTATION_REQUIRES_QA',
+      license:clean(row.license),licenseCheckRequired:true,
+      runtimeVerificationState:clean(row.runtimeVerificationState||'NOT_OBSERVED'),
+      verifiedCompanyReusable:row.verifiedCompanyReusable===true,productionVerified:row.productionVerified===true,
+      optional:true,firstParty:true,automaticImport:false,newGameplayAuthority:false,runtimeVerified:false,
+      integration:referenceOnly?'REFERENCE_ONLY':target==='WEB'?'REUSE_ONLY_WHEN_COMPATIBLE_WITH_EXISTING_SOURCE':'NATIVE_ASSET_IMPORT_IN_EXISTING_PROJECT_AFTER_LICENSE_AND_RUNTIME_QA',
+      score:(generalPack?4:0)+(specific.length?6:0)+(row.verifiedCompanyReusable===true?1:0)
+    });
+  }
+  const familyCounts=new Map(),assetCandidates=[];
+  safeAssets.sort((a,b)=>b.score-a.score||a.category.localeCompare(b.category)||a.id.localeCompare(b.id));
+  for(const candidate of safeAssets){
+    const used=familyCounts.get(candidate.category)||0;
+    if(used>=3||assetCandidates.length>=18)continue;
+    assetCandidates.push(candidate);familyCounts.set(candidate.category,used+1);
+  }
+  const externalAlgorithms=ALL_LIBRARY_EXTERNAL_ALGORITHMS.map(({match,...row})=>({
+    ...row,sourceFiles:matchingFiles(match),authority:'EXTERNAL_ALGORITHM_REFERENCE_ONLY',
+    optional:true,automaticImport:false,runtimeVerified:false
+  })).filter(row=>row.sourceFiles.length);
+  const candidates=[...codeCandidates,...assetCandidates].map(({score,...row})=>row);
+  return{
+    version:1,status:candidates.length||externalAlgorithms.length?'SOURCE_MATCH_CANDIDATES_NOT_APPLIED':'NO_SOURCE_MATCH',
+    sourceFiles:unique(anchors.map(row=>row.file)),gameId:clean(gameId),platform:requested,
+    genreContext:clean(design.genre)||'UNSPECIFIED',
+    firstPartyLibraryCount:codePaths.length,registeredAssetCount:assetRows.length,
+    registeredCategoryCounts:Object.fromEntries([...categories].sort((a,b)=>a[0].localeCompare(b[0]))),
+    candidates,externalAlgorithms,automaticImport:false,autoInstallExternalPackage:false,
+    autoChangeDesign:false,newGameplayAuthority:false,newPipeline:false,runtimeVerified:false,
+    selectionRule:'SOURCE_EVIDENCE_ONLY_OPTIONAL_ALL_LIBRARY_FAMILIES. Source owners evaluate native compatibility, actual need, license, original game identity, audit and exact-build runtime QA before any binding. Game genre alone cannot force any module, model, motion or material. Never use Web JS as Unity WebGL native game implementation.'
+  };
+}
 
 // 메뉴 도안: 장르별 실제 행동을 화면·버튼·복귀 관계로 연결한다. 게임 상태 변경은 기존 책임 코드가 소유한다.
 export function buildInterfaceBlueprintContract({design={},source={},files=[],mode='',focus='',enabled=false,platform='WEB',availableLibraryPaths=[]}={}){
@@ -475,7 +656,7 @@ export function validateSpatialBlueprint({contract=null,blueprint=null,sourceFil
 }
 
 // 메인: 같은 장르 계획을 플랫폼별 실제 책임 파일에 연결한다.
-export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={},availableLibraryPaths=[]}={}){
+export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={},availableLibraryPaths=[],catalogAssets=[]}={}){
   const requested=clean(platform).toUpperCase();
   const target=['UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
   if(!list(policy.platforms||['ROBLOX']).includes(target)||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
@@ -520,11 +701,10 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
   const interfaceContract=buildInterfaceBlueprintContract({design,source,files,mode,focus,platform:requested,enabled:policy.spatialBlueprint?.enabled===true,availableLibraryPaths});
-  const libraryReuseContract=interfaceContract?{
-    status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
-    candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
-    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false
-  }:null;
+  const libraryReuseContract={
+    ...buildUnifiedLibraryMatchContract({gameId:id,design,source,files,platform:requested,availableLibraryPaths,catalogAssets}),
+    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE'
+  };
   return {
     version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
@@ -592,10 +772,14 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ...(libraryCandidates.length?[
       prefix+'LIBRARY_MATCH='+JSON.stringify({
         firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
-        candidates:libraryCandidates,assetLibrarySelection:plan.libraryReuseContract.assetLibrarySelection,
+        candidates:libraryCandidates,
+        externalAlgorithms:list(plan.libraryReuseContract.externalAlgorithms).filter(row=>list(row.sourceFiles).some(file=>scopedFiles.includes(file))),
+        registeredAssetCount:plan.libraryReuseContract.registeredAssetCount,
+        registeredCategoryCounts:plan.libraryReuseContract.registeredCategoryCounts,
+        assetLibrarySelection:plan.libraryReuseContract.assetLibrarySelection,
         automaticImport:false,runtimeVerified:false
       }),
-      prefix+'LIBRARY_RULE=Consider all currently available first-party game runtime libraries by actual game source evidence. Select only relevant, compatible matches within owned source. Use existing graphics asset registry and license gates. For Unity and Roblox implement platform-native functionality rather than importing Web JS. Never install external packages, force new gameplay, change balance/save/economy, or claim runtime PASS from a match.'
+      prefix+'LIBRARY_RULE=Screen every current first-party library family including gameplay, engine capabilities, shared 3D meshes, characters, motion, UI, VFX, materials and platform-native assets against actual source evidence. External algorithms are optional references, not automatic dependencies. Select only relevant, compatible matches within owned source. Use existing graphics asset registry and license gates. For Unity and Roblox implement platform-native functionality rather than importing Web JS. Never install external packages, force new gameplay, change balance/save/economy, or claim runtime PASS from a match.'
     ]:[]),
     ...(plan.interfaceBlueprintContract?[
       prefix+'INTERFACE='+JSON.stringify(blueprints.interface),

@@ -22,7 +22,7 @@ import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
 import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
-import { buildInterfaceBlueprintContract, INTERFACE_EXTERNAL_ALGORITHMS } from './company-roblox-production-plan.mjs';
+import { buildInterfaceBlueprintContract, INTERFACE_EXTERNAL_ALGORITHMS, buildUnifiedLibraryMatchContract, readCurrentGameLibraryInventory } from './company-roblox-production-plan.mjs';
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
 import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
@@ -1461,12 +1461,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     }).filter(row=>row.context);
   // 현재 UI 책임 소스는 경량 조사한다. 전체 게임 분석은 기존 BUILD_UP 경로만 수행한다.
   // 반복 화면 작업이 같은 게임의 전체 리소스를 중복 스캔하지 않는다.
-  let availableLibraryPaths=[];
-  try{
-    availableLibraryPaths=fs.readdirSync(sourceFile(repoRoot,'assets'),{withFileTypes:true})
-      .filter(row=>row.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(row.name))
-      .map(row=>'assets/'+row.name).sort();
-  }catch{}
+  const {availableLibraryPaths,catalogAssets}=readCurrentGameLibraryInventory({repoRoot});
   const nativeUI=clean(project.engine).toLowerCase()==='unity'?(studioQualityLane(project)==='unity-web'?'UNITY_WEB':'UNITY_APP'):clean(project.engine).toUpperCase();
   const uiContract=uiSources.length?buildInterfaceBlueprintContract({
     design:{identity:project.name||project.gameId,genre:project.genre||project.category||''},
@@ -1498,12 +1493,38 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     applicationRule:'APPLY_ONLY_ON_CONFIRMED_EXISTING_UI_FRICTION_AND_OWNED_HANDLER'
   });
 
+  // 메뉴뿐 아니라 현재 게임의 실제 애니메이션·전투·AI·메쉬·렌더·재질·오디오 책임 소스를 함께 조사한다.
+  // UI 소스만 있는 것으로 전체 자산 적용 근거를 주장하지 않으며, 라이브러리 자동 설치도 하지 않는다.
+  const librarySources=presentationSourcesForProject(project,repoRoot)
+    .filter(file=>gameRoot&&file.startsWith(gameRoot+'/')&&!file.split('/').includes('..')).slice(0,16)
+    .map(file=>{
+      const content=readText(sourceFile(repoRoot,file)).slice(0,64000);
+      const lines=content.split(/\r?\n/).filter(line=>{
+        const v=line.trim();
+        return v&&!/^(?:\/\/|--|#|\/\*|\*)/.test(v)
+          &&/(?:mesh|model|renderer|shader|material|texture|animation|animator|motion|rig|blend|idle|walk|run|combat|attack|weapon|enemy|monster|ai|npc|quest|inventory|craft|audio|sound|bgm|vfx|particle|terrain|world|scene|resource|save|ui|hud|button|screen|menu|panel|camera|lighting|pathfind|navmesh|메쉬|모션|전투|장비|몬스터|재질|렌더|이펙트|오디오|메뉴|화면|자원|저장)/i.test(v);
+      }).slice(0,72);
+      return{file,context:lines.join(' ').slice(0,10000),sourceHash:stableHash(content)};
+    }).filter(row=>row.context);
+  const unifiedMatch=buildUnifiedLibraryMatchContract({
+    gameId:project.gameId,design:{identity:project.name||project.gameId,genre:project.genre||project.category||''},
+    source:{sourceAnchors:librarySources.map(row=>({file:row.file,symbol:row.file.split('/').at(-1),context:row.context}))},
+    files:librarySources.map(row=>row.file),platform:nativeUI,availableLibraryPaths,catalogAssets
+  });
+  const existingGameLibrarySync=Object.freeze({
+    ...unifiedMatch,mode:'OPTIONAL_EXISTING_GAME_ALL_LIBRARY_AUTO_MATCH',
+    sourceFingerprint:stableHash(librarySources.map(row=>row.file+':'+row.sourceHash).join('|')),
+    platformBinding:menuPlatformBindingProfile(project),
+    applicationRule:'ONLY_IF_APPLICABLE_TO_CURRENT_SOURCE_AND_CURRENT_PRESENTATION_PASS; SOURCE_AND_NATIVE_LICENSE_RUNTIME_QA_REQUIRED',
+    designMutation:false,noShadowPipeline:true,allMatchesOptional:true,runtimeVerified:false
+  });
   const platformLane=studioQualityLane(project);
   const platform=buildUpPlatformToken(project,platformLane);
   const activeMenuBindingProfile=menuPlatformBindingProfile(project,platformLane);
   return Object.freeze({
     version:1,
     executionBoundary:'EXISTING_PRESENTATION_OR_BUILD_UP_ONLY',
+    allLibrarySync:existingGameLibrarySync,
     decisionOwner:'VIBE',
     platforms:Object.freeze(['WEB','ROBLOX','UNITY']),
     pausedPlatforms:Object.freeze(['FORTNITE_UEFN']),
@@ -1623,17 +1644,27 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   const existingEvidence=new Set((taskInput.evidence||[]).map(clean));
   const contract=buildAdaptiveGraphicsReplacementContract(project,normalizedPass,repoRoot);
   const sync=contract.menuDiversity.existingGameInterfaceSync;
+  const allLibrary=contract.allLibrarySync;
   const matched=[...new Set([...sync.externalAlgorithms.map(row=>row.id),...sync.internalToolMatches.map(row=>row.id),...sync.internalLibraryMatches.map(row=>row.id)])];
   const marker='[EXISTING_GAME_INTERFACE_AUTO_MATCH]';
   const hint=matched.length?'\n'+marker+'\n현재 게임 소스 '+sync.sourceFiles.join(', ')+'에서 외부 UX 및 내부 라이브러리 후보 '+matched.join(', ')+'를 자동 매칭했다. 실제 불편이 확인되고 현 작업의 기존 UI 핸들러에 적용 가능할 때만 직접 개선하며 관련 없으면 건너뛴다. 설계·저장·경제·전투·권한은 유지하고 Unity WebGL은 Unity C# UI를 공유한다. 후보만으로 적용/검증 완료라 표시하지 않는다.\n[/EXISTING_GAME_INTERFACE_AUTO_MATCH]':'';
+  const libraryMarker='[EXISTING_GAME_ALL_LIBRARY_AUTO_MATCH]';
+  const matchedLibraries=[...new Set([...allLibrary.candidates.map(row=>row.id),...allLibrary.externalAlgorithms.map(row=>row.id)])];
+  const libraryHint=matchedLibraries.length?'\n'+libraryMarker+'\n현재 소스에 일치하는 전 범위 내부 라이브러리/외부 알고리즘 참고 후보: '
+    +matchedLibraries.join(', ')+'. 공식 자산 등록부의 플랫폼·라이선스·실제 소스 역할을 다시 확인해 이번 개선 작업과 맞는 것만 기존 책임 소스에 적용한다. '
+    +'3D 메쉬/모션/렌더/재질/AI/게임코드 등 모든 유형을 같은 방식으로 검사하되 자동 설치나 원본 설계 변경은 하지 않는다. '
+    +'Unity WebGL은 Unity C# 원본을 공유하고 정적 추천으로 런타임 PASS를 주장하지 않는다.\n[/EXISTING_GAME_ALL_LIBRARY_AUTO_MATCH]':'';
+  const refreshedGoal=String(taskInput.goal||'')
+    .replace(/\n?\[EXISTING_GAME_INTERFACE_AUTO_MATCH\][\s\S]*?\[\/EXISTING_GAME_INTERFACE_AUTO_MATCH\]/g,'')
+    .replace(/\n?\[EXISTING_GAME_ALL_LIBRARY_AUTO_MATCH\][\s\S]*?\[\/EXISTING_GAME_ALL_LIBRARY_AUTO_MATCH\]/g,'').trim()+hint+libraryHint;
   if(taskInput.graphicsReplacementContract&&existingEvidence.has('adaptive-graphics-replacement:v1')){
     const old=taskInput.graphicsReplacementContract;
     return{
       ...taskInput,
-      goal:hint&&!String(taskInput.goal||'').includes(marker)?clean(taskInput.goal)+hint:taskInput.goal,
-      graphicsReplacementContract:{...old,menuDiversity:{...old.menuDiversity,existingGameInterfaceSync:sync}},
+      goal:refreshedGoal,
+      graphicsReplacementContract:{...old,allLibrarySync:allLibrary,menuDiversity:{...old.menuDiversity,existingGameInterfaceSync:sync}},
       presentationPass:normalizedPass,
-      evidence:[...new Set([...(taskInput.evidence||[]),'presentation-quality-pipeline:v1','presentation-pass:'+normalizedPass,'existing-game-interface-auto-match:v1'])]
+      evidence:[...new Set([...(taskInput.evidence||[]),'presentation-quality-pipeline:v1','presentation-pass:'+normalizedPass,'existing-game-interface-auto-match:v1','existing-game-all-library-screened:v1'])]
     };
   }
   const guidance=[
@@ -1658,7 +1689,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   ].join('\n');
   return{
     ...taskInput,
-    goal:clean(taskInput.goal)+guidance+hint,
+    goal:clean(taskInput.goal)+guidance+hint+libraryHint,
     presentationPass:normalizedPass,
     graphicsReplacementContract:contract,
     completionCriteria:[...new Set([
