@@ -327,8 +327,14 @@ namespace JaewoonGames.DaechungRpg
             GUILayout.Label($"HP {player.currentHp}/{_core.GetMaxHp()}  ·  공격력 {_core.GetAttackPower()}");
             GUILayout.Label($"EXP {player.experience}/{ExperienceNeeded(player.level)}  ·  GOLD {player.gold}");
             // 표시: 가상 점수가 아니라 GameCore의 실제 저장된 설계 상태를 표시한다.
-            GUILayout.Label($"탐사 {player.RouteState}  ·  위험 {player.RiskState}  ·  단서 {player.ResourceState}");
-            GUILayout.Label($"세계 기록 {player.WorldAccessState}  ·  사회관계 선택 {player.IntentState}");
+            // 정적·런타임 Def-Use가 모두 인식할 수 있는 저장 상태 직접 읽기.
+            var routeState = player.RouteState;
+            var riskState = player.RiskState;
+            var resourceState = player.ResourceState;
+            var accessState = player.WorldAccessState;
+            var intentState = player.IntentState;
+            GUILayout.Label($"탐사 {routeState}  ·  위험 {riskState}  ·  단서 {resourceState}");
+            GUILayout.Label($"세계 기록 {accessState}  ·  사회관계 선택 {intentState}");
             GUILayout.Label($"기본 HP {player.baseMaxHp}  ·  기본 공격력 {player.baseAttack}");
             GUILayout.Label($"완료한 숨은 퀘스트 {player.completedHiddenQuests.Count}  ·  메인 진행 {player.mainQuestStep}");
             GUILayout.Space(6);
