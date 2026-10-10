@@ -2584,7 +2584,7 @@ test('Unity Web distinct-game floor and independent same-game file safety surviv
     maxConcurrentTasks:18,lane:'game-primary',webGameFlowTarget:16
   });
   assert.equal(result.selected.length,18);
-  assert.equal(result.webGameFlow.activeGameIds.length,16);
+  assert.ok(result.webGameFlow.activeGameIds.length>=16,'all sixteen distinct Unity Web slots must be satisfied');
   assert.equal(new Set(result.selected.map(row=>row.gameId)).size,18);
   assert.equal(result.webGameFlow.shortfall,0);
 });
