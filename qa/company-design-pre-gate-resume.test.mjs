@@ -1293,8 +1293,9 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
       assert.ok(role);calls.push(role);
       return JSON.stringify(Object.fromEntries(Object.keys(schema.properties).map(field=>[
         field,field==='grammarRole'?role
-          :field==='stateInputs'?[role.toLowerCase()+'-available']
-          :field==='stateOutputs'?[role.toLowerCase()+'-resolved']
+          :field==='id'?role.toLowerCase()+'_authored_rule'
+          :field==='stateInputs'?[schema.properties.stateInputs.items.enum?.[0]||'main-available']
+          :field==='stateOutputs'?[schema.properties.stateOutputs.items.enum?.[0]||'main-resolved']
           :`designer-generated-${role}`
       ])));
     }
@@ -1306,7 +1307,12 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
     stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
   },additionalProperties:false}}},additionalProperties:false};
   const result=await author('designer','original game rules',schema,{isolateFields:true});
-  assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>`designer-generated-${role}`));
+  assert.deepEqual(Array.from(result.signatureSystems,row=>row.id),['MAIN','A','B','c','DELVE'].map(role=>role.toLowerCase()+'_authored_rule'));
+  for(let index=1;index<result.signatureSystems.length;index++){
+    const previous=result.signatureSystems[index-1],current=result.signatureSystems[index];
+    assert.ok(current.stateInputs.some(key=>previous.stateOutputs.includes(key)));
+    assert.ok(current.stateOutputs.some(key=>previous.stateInputs.includes(key)));
+  }
   assert.equal(new Set(result.signatureSystems.map(row=>row.name)).size,5,
     'Each role must contain its own designer-authored rule content');
   assert.ok(result.signatureSystems.every(row=>row.stateInputs.length>0&&row.stateOutputs.length>0),
