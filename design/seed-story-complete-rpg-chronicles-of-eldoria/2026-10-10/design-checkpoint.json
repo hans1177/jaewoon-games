@@ -80,25 +80,53 @@
         "worldChange": "지형 복구/길 열림으로 맵 상태 변화",
         "nextEvent": "전략적 선택의 결합으로 새로운 공략 경험 형성"
       }
+    },
+    "local_authoring_parts::f5512a3eff417c8494cfebc656770e8e6d39a8c2adfa84639589aa4218677c1a:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "속성 공명",
+          "kind": "MATERIAL",
+          "gameplayEffect": "선택 → 속성 조합 → 전투 결과 및 캐릭터 성장 방향 변화"
+        },
+        {
+          "name": "운명 개척",
+          "kind": "MATERIAL",
+          "gameplayEffect": "선택 → 지형 변화/길 열림 → 맵 접근성 및 전투 난이도 변화"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략 턴제 RPG",
+          "gameplayEffect": "플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "모바일 최적화 전략 전투",
+          "gameplayEffect": "속성 조합은 전투 텀포와 피해량을 결정하고, 유물 에너지는 맵 구조와 전투 난이도를 변동합니다."
+        }
+      ],
+      "cGenreInterlock": "속성 공명 시스템 ↔ 운명 개척 탐험 시스템: 플레이어의 선택은 전투 결과와 맵 상태에 즉각적 영향을 미칩니다.",
+      "cWorldAndGameplayEffect": "맵 복구/길 열림으로 맵 상태 변화 → 전략적 선택 결합 → 게임 정체성 진보와 숙련 계층 형성입니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 905434,
-      "lastMs": 132018,
+      "totalMs": 1041767,
+      "lastMs": 136333,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:43:44.693Z"
+      "updatedAt": "2026-10-10T05:46:01.028Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:28:39.232Z",
-  "updatedAt": "2026-10-10T05:43:44.694Z",
+  "updatedAt": "2026-10-10T05:46:01.028Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -882,7 +910,7 @@
     "d8481ad1f33502f6bb0ee8b0f67494a29c6b07b32b6ea719a89e1f2b5522945d": true,
     "c9f6c622ec553b87f9b96b733e2fd6a1e26ff7e3a2efb2100b5c9c4ef0335ed2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:43:44.694Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:46:01.028Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
