@@ -532,25 +532,33 @@
       },
       "playerFantasy": "플레이어는 신화와 역사를 융합하여 인물 갈등과 세계 변화를 유도하는 단서를 발견하며, 창작 소재로 이루어진 선택에 따라 실질적 인과 변화를 경험한다.",
       "coreFun": "{\"system\":\"게임 시스템 + 창작 소재\",\"material\":\"신화·역사·철학·과학·예술 등 제한 없음\",\"materialDomain\":\"주제/소재 두 개\",\"stateChange\":\"실질적 인과 변화 발생 시점 및 방식\"} "
+    },
+    "local_authoring_parts::0c23e95787631c011a0d3dbbe6470d0d13362da5024c6fe4d70f10ca6dfe2647:coreLoop": {
+      "coreLoop": [
+        "플레이어가 단서로 인해 신화의 기원과 역사적 사건을 선택하여 인물 갈등을 유도하며, 이는 세계 상태에 실질적인 영향을 미친다.",
+        "A/B 시스템의 상태 교환으로 창작 소재가 변형되어 새로운 선택을 실행하면서, 플레이어의 선택과 세계 변화가 재생된다.",
+        "인물 갈등과 플레이어 선택이 실제 세계 상태에 반영되며, 다음 사건의 발전에 기여하는 실질적 인과 변화가 발생한다.",
+        "신화와 역사를 융합한 주제/소재 두 가지 차이를 반영한 새로운 게임 정체성이 형성되면서, 측면 및 구조 등 다양한 요소에 의해 영향을 받는다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1565545,
-      "lastMs": 82358,
+      "totalMs": 1659317,
+      "lastMs": 93772,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T11:08:53.718Z"
+      "updatedAt": "2026-10-10T11:10:27.493Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:42:48.135Z",
-  "updatedAt": "2026-10-10T11:08:53.720Z",
+  "updatedAt": "2026-10-10T11:10:27.505Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2156,8 +2164,8 @@
     "f6c9c38435b2ffc3036e7336aa8253c01ed7863624e18ec211d44a42c6b392b7": true,
     "8bd29d12365b474d313f8a312def98b718b5aed9ecd2eb518ab165c340d28650": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:08:53.720Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T11:10:27.493Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
