@@ -440,25 +440,124 @@
         "delveGrowthRule": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치하며, 주요 행동, 대표 선택, 시그니처 세계 규칙은 기존 coreLoop/signatureSystems와 직접 연결되어 있다.",
         "finalGameIdentity": "실시간 생존 게임의 진입 단계, 플레이어 선택, 상태 변화, 보상, 다음 선택의 인과적 루프로 구성된 게임. 전투 중 적의 압박에 맞서며 자원을 수집하고 퀘스트를 수행하며 시스템 내에서 다양한 선택을 하여 점진적으로 성장합니다."
       }
+    },
+    "local_authoring_parts::d408dd9660d33863b3f453c143d80beeab55ab1c8f1c65a02872b1139ed130a6:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 실시간 생존 게임에서 적의 압박에 맞서 자원을 수집하고 퀘스트를 수행하며, 전투 중 다양한 선택을 통해 점진적으로 성장하는 역할을 맡습니다. 이 과정에서는 주요 행동, 대표 선택, 시그니처 세계 규칙이 기존의 coreLoop/signatureSystems와 직접 연결되어 있습니다.",
+      "coreFun": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치합니다. 주요 행동, 대표 선택, 시그니처 세계 규칙은 기존 coreLoop/signatureSystems와 직접 연결되어 있으며, 이는 실시간 자원 수집, 퀘스트 수행, 시스템 내 선택의 결합으로 구체화됩니다."
+    },
+    "local_authoring_parts::f7d8b853bbce935db58d9ea99b272efe036e47dbdd812738f65d1e19cc641095:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "휴먼 GO! - 진입 단계, 선택, 상태 변화, 보상, 다음 선택의 인과적 루프로 구성된 실시간 생존 게임입니다. 플레이어는 전투 중 적의 압박에 맞서며 자원을 수집하고 퀘스트를 수행하며 시스템 내에서 다양한 선택을 하여 점진적으로 성장합니다. 이 과정에서는 주요 행동, 대표 선택, 시그니처 세계 규칙이 기존의 coreLoop/signatureSystems와 직접 연결되어 있습니다.",
+      "creativeGrammar": {
+        "mainIdentity": "휴먼 GO! - 진입 단계, 선택, 상태 변화, 보상, 다음 선택의 인과적 루프로 구성된 실시간 생존 게임입니다.",
+        "a": {
+          "system": "플레이어",
+          "material": "전투 중 적의 압박에 맞서며 자원을 수집하고 퀘스트를 수행하며 시스템 내에서 다양한 선택을 하여 점진적으로 성장합니다.",
+          "materialDomain": "생존",
+          "stateChange": "주요 행동, 대표 선택, 시그니처 세계 규칙"
+        },
+        "b": {
+          "system": "게임",
+          "material": "기존의 coreLoop/signatureSystems와 직접 연결되어 있는 플레이어 선택 및 상태 변화",
+          "materialDomain": "인과적 구조",
+          "stateChange": "보상, 위험, 다음 선택의 연결이 포함됨"
+        },
+        "abCausality": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치한다.",
+        "abEvolution": {
+          "aChangesB": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치한다.",
+          "bChangesA": "기존의 coreLoop/signatureSystems와 직접 연결되어 있는 플레이어 선택 및 상태 변화 → 보상, 위험, 다음 선택의 연결이 포함됨",
+          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+        },
+        "materialFusion": {
+          "contrast": "게임 시스템 + 해당 축 창작 소재 ↔ 다른 시스템 + 해당 축 창작 소재",
+          "causalBridge": "양방향 실제 상태 교환을 통해 A→B, B→A 양쪽으로 확장",
+          "removalConsequence": "보조 장르 제거 시 바뀌는 플레이를 명시하며, C의 두 창작 소재·메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 및 상태 변화로 인해 발생하는 실시간 생존 게임의 진입 단계",
+          "characterConflict": "주요 행동, 대표 선택, 시그니처 세계 규칙이 기존의 coreLoop/signatureSystems와 직접 연결되어 있는 갈등",
+          "playerChoice": "전투 중 적의 압박에 맞서며 자원을 수집하고 퀘스트를 수행하며 시스템 내에서 다양한 선택을 하여 점진적으로 성장하는 플레이어 역할",
+          "worldChange": "주요 행동, 대표 선택, 시그니처 세계 규칙이 포함된 상태 변화",
+          "nextEvent": "보상, 위험, 다음 선택의 연결이 포함된 사건"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "MATERIAL",
+            "gameplayEffect": "실시간 자원 수집, 퀘스트 수행, 시스템 내 선택"
+          },
+          {
+            "name": "전투",
+            "kind": "MATERIAL",
+            "gameplayEffect": "적 압박 대응, 전략적 선택, 상태 변화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존 및 전투 혼합",
+            "gameplayEffect": "실시간 생존 게임의 진입 단계와 전략적 선택의 결합"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "인과적 구조",
+            "gameplayEffect": "플레이어 선택과 상태 변화에 따른 보상/위험/다음 선택의 연결"
+          }
+        ],
+        "cGenreInterlock": "생존과 전투의 상호작용을 통해 플레이어 선택이 인과적으로 영향을 받는다.",
+        "cWorldAndGameplayEffect": "주요 행동, 대표 선택, 시그니처 세계 규칙은 기존의 coreLoop/signatureSystems와 직접 연결되어 있다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택",
+            "discovery": "기존 원본 규칙과 일치하는 인과적 교환 과정",
+            "newChoice": "보상, 위험, 다음 선택의 연결"
+          },
+          {
+            "clue": "주요 행동, 대표 선택, 시그니처 세계 규칙",
+            "discovery": "기존 coreLoop/signatureSystems와 직접 연결되어 있는 플레이어 역할",
+            "newChoice": "실시간 생존 게임의 진입 단계 및 전략적 선택의 결합"
+          },
+          {
+            "clue": "생존과 전투의 상호작용",
+            "discovery": "플레이어 선택이 인과적으로 영향을 받는 다층 구조",
+            "newChoice": "자원 수집, 퀘스트 수행, 시스템 내 선택의 결합"
+          },
+          {
+            "clue": "인과적 구조와 실시간 생존 게임의 진입 단계",
+            "discovery": "플레이어 선택과 상태 변화에 따른 보상/위험/다음 선택의 연결",
+            "newChoice": "전투 중 적 압박에 맞서며 자원을 수집하고 퀘스트를 수행하는 역할"
+          }
+        ],
+        "delveGrowthRule": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치하며, 주요 행동, 대표 선택, 시그니처 세계 규칙은 기존 coreLoop/signatureSystems와 직접 연결되어 있다.",
+        "finalGameIdentity": "실시간 생존 게임의 진입 단계, 플레이어 선택, 상태 변화, 보상, 다음 선택의 인과적 루프로 구성된 게임. 전투 중 적의 압박에 맞서며 자원을 수집하고 퀘스트를 수행하며 시스템 내에서 다양한 선택을 하여 점진적으로 성장합니다."
+      },
+      "playerFantasy": "플레이어는 실시간 생존 게임에서 적의 압박에 맞서 자원을 수집하고 퀘스트를 수행하며, 전투 중 다양한 선택을 통해 점진적으로 성장하는 역할을 맡습니다. 이 과정에서는 주요 행동, 대표 선택, 시그니처 세계 규칙이 기존의 coreLoop/signatureSystems와 직접 연결되어 있습니다.",
+      "coreFun": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치합니다. 주요 행동, 대표 선택, 시그니처 세계 규칙은 기존 coreLoop/signatureSystems와 직접 연결되어 있으며, 이는 실시간 자원 수집, 퀘스트 수행, 시스템 내 선택의 결합으로 구체화됩니다."
+    },
+    "local_authoring_parts::bb610f5fe42c8ddfd2b03ace2fac215d029398c9a6ac5c0d0a01d077e6138921:coreLoop": {
+      "coreLoop": [
+        "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 인과적 교환 과정은 기존 원본 규칙과 일치",
+        "주요 행동, 대표 선택, 시그니처 세계 규칙은 기존 coreLoop/signatureSystems와 직접 연결되어 있으며, 이는 실시간 자원 수집, 퀘스트 수행, 시스템 내 선택의 결합으로 구체화됨",
+        "생존과 전투의 상호작용을 통해 플레이어 선택이 인과적으로 영향을 받는 다층 구조가 형성됨"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 5,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1133269,
-      "lastMs": 157393,
+      "totalMs": 1375429,
+      "lastMs": 69050,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:43:53.576Z"
+      "updatedAt": "2026-10-10T10:47:55.745Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:25:00.252Z",
-  "updatedAt": "2026-10-10T10:43:53.581Z",
+  "updatedAt": "2026-10-10T10:47:55.756Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2187,8 +2286,8 @@
     "d408dd9660d33863b3f453c143d80beeab55ab1c8f1c65a02872b1139ed130a6": true,
     "b8ba32258e717b0b660293a97f286f41e61fa21e90ca56d698590ee01c000a8b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:43:53.581Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:47:55.746Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
