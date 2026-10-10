@@ -539,40 +539,25 @@
         "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
         "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다."
       ]
-    },
-    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"type\": \"ACTION\", \"value\": \"재건 시설에 투자\"}",
-        "{\"type\": \"ACTION\", \"value\": \"연금소 선택\"}"
-      ],
-      "stateOutputs": [
-        "{\"type\": \"STATES\", \"value\": {\"스탯 버프\": \"+10% 전투력\", \"신규 스킬\": \"마을 복구 효율 +20%\"}}",
-        "{\"type\": \"STATES\", \"value\": {\"인벤토리 제한\": \"3/5\", \"보상\": \"체력 회복 물약 1개\"}}"
-      ],
-      "name": "주요 선택",
-      "purpose": "플레이어의 대표 행동과 그 행동이 바꾸는 관찰 가능한 세계 상태를 정의합니다.",
-      "playerChoice": "즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을지 선택한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 10,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1251593,
-      "lastMs": 52499,
+      "totalMs": 1267714,
+      "lastMs": 16121,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:10:50.172Z"
+      "updatedAt": "2026-10-10T10:11:06.295Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:49:58.534Z",
-  "updatedAt": "2026-10-10T10:10:50.172Z",
+  "updatedAt": "2026-10-10T10:11:06.295Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2257,15 +2242,15 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": 1
+    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": 2
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:10:50.172Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:11:06.295Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
