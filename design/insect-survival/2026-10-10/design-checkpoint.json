@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 작은 세계에서 살아남기 위해 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 그 선택에 따라 다양한 상태 변화와 보상을 경험해야 합니다.",
       "coreFun": "{\"identity\": \"생태적 선택 -> 재료 수집 -> 전략 수립 -> 세계 변화 -> 다음 사건\", \"creativeGrammar\": {\"mainIdentity\": \"small-world survival pressure, resource-driven survival choices, creature ecology as gameplay\", \"a\": {\"system\": \"생존\", \"material\": \"곤충 생태 및 먹이사슬의 선택과 위험\", \"materialDomain\": \"생태학적 선택\", \"stateChange\": \"선택 -> 상태변화 -> 보상/위험/다음 선택\"}, \"b\": {\"system\": \"제작\", \"material\": \"재료 수집 및 전략 수립\", \"materialDomain\": \"제작 기술\", \"stateChange\": \"선택 -> 상태변화 -> 보상/위험/다음 선택\"}, \"abCausality\": \"생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건\", \"abEvolution\": {\"aChangesB\": \"생태적 선택 변경 → 재료 수집 변경 → 전략 수립 변경\", \"bChangesA\": \"재료 수집 변경 → 전략 수립 변경 → 세계 변화 변경\", \"lateGameChange\": \"세계 변화 → 다음 사건 변화에 따른 관계 변화\"}, \"materialFusion\": {\"contrast\": \"생태적 선택 vs. 제작 기술의 상호작용을 통해 인과적으로 연결되는 플레이를 적고, 한쪽만 빼면 사라지는 조건을 만족시킨다.\", \"causalBridge\": \"생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건\", \"removalConsequence\": \"생태적 선택이 없으면 재료 수집 또는 전략 수립이 사라지며, 재료 수집이 없으면 전략 수립이"
+    },
+    "local_authoring_parts::eaf311c7021c90761540bb9b1f0c3165b65172a4da7de4983e5de726434177be:coreLoop": {
+      "coreLoop": [
+        "입력: 생태적 선택, 재료 수집, 전략 수립",
+        " 상태변화: 곤충 생태 및 먹이사슬의 선택과 위험, 재료 수집 및 전략 수립",
+        "보상/위험/다음 선택: 세계 변화, 다음 사건"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 744947,
-      "lastMs": 231792,
+      "totalMs": 807940,
+      "lastMs": 62993,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:54:09.181Z"
+      "updatedAt": "2026-10-10T01:55:12.177Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:41:44.101Z",
-  "updatedAt": "2026-10-10T01:54:09.183Z",
+  "updatedAt": "2026-10-10T01:55:12.177Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1881,7 +1888,7 @@
   "localAuthoringSplits": {
     "60f3a02ce1cf1f216dd146fd01ef0f031195d60eefa49be46d483b2b6be5979c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:54:09.183Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:55:12.177Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
