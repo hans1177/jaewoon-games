@@ -8,13 +8,25 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "cachedTaskCount": 1,
+  "lastSuccessfulModelCallAt": "2026-10-10T09:21:00.206Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "designerSeed": null,
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 242300,
+      "lastMs": 242300,
+      "lastError": null,
+      "updatedAt": "2026-10-10T09:21:00.206Z"
+    }
+  },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T09:16:57.902Z"
+  "updatedAt": "2026-10-10T09:21:00.207Z"
 }
