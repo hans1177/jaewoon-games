@@ -1016,6 +1016,13 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
         assert.ok(algorithm.algorithms.includes('DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER'));
         assert.ok(algorithm.algorithms.includes('WEIGHTED_GREEDY_SET_COVER_FOR_RESPONSIBLE_SOURCE_FILES'));
         assert.ok(algorithm.cyclicRoleDependencies.includes('MAIN'),'a circular authored design must not be accepted as linear');
+        const acyclic=buildDesignToPlatformCodingTrace({
+          gameId,design:{...signedDesign,systemInterconnections:signedDesign.systemInterconnections.slice(0,-1)},
+          platform,repoRoot:root,sourceRoot,sourceObservation:observed,
+          responsibleFiles:expectedFiles,multiplayerRequired:true
+        }).unityWebDevelopmentAlgorithm;
+        assert.deepEqual(acyclic.roleImplementationOrder,['MAIN','A','B','c','@']);
+        assert.deepEqual(acyclic.cyclicRoleDependencies,[]);
         assert.equal(algorithm.designRequirements.filter(row=>row.kind==='CORE_LOOP').length,3);
         assert.ok(algorithm.designRequirements.some(row=>row.id==='NATIVE_3D_VISUAL'));
         assert.ok(algorithm.designRequirements.some(row=>row.id==='MULTIPLAYER_SYNC'));
