@@ -78,6 +78,7 @@ import {
   createMotionDirectorPlan,
   COMMON_CAREER_MOTION_HIERARCHY,
   COMMON_GENRE_MOTION_CONTEXTS,
+  resolveCommonMotionGenre,
   COMMON_SKILL_MOTION_GRAMMAR,
   COMMON_MONSTER_ACTION_SPECIES,
   COMMON_MONSTER_SPECIES_JOINT_POSES,
@@ -570,6 +571,26 @@ test('shared classes form an inherited motion hierarchy rather than a genre-lock
   assert.ok(!horror.roleRequests.some(row=>row.group==='attacks'),'genre projects roles without deleting canonical class motions');
   assert.ok(horror.roleRequests.some(row=>row.group==='skills'));
   assert.equal(horror.platform,'WEB');
+});
+
+
+test('multiple native genre labels reuse the same class and creature motion rather than creating a shadow system',()=>{
+  assert.equal(resolveCommonMotionGenre('RPG'),'ACTION_RPG');
+  assert.equal(resolveCommonMotionGenre('Action RPG'),'ACTION_RPG');
+  assert.equal(resolveCommonMotionGenre('school-tycoon'),'TYCOON');
+  assert.equal(resolveCommonMotionGenre('survival crafting'),'SURVIVAL');
+  assert.equal(resolveCommonMotionGenre('roguelite'),'ROGUELIKE');
+  assert.equal(resolveCommonMotionGenre('tower defense'),'TOWER_DEFENSE');
+  assert.equal(resolveCommonMotionGenre('unknown-game-genre'),null);
+  const a=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'RPG',platform:'UNITY'});
+  const b=createCommonCareerMotionLoadout({careerId:'SAMURAI',genre:'ACTION_RPG',platform:'UNITY'});
+  assert.deepEqual(a.careerPath,b.careerPath);
+  assert.deepEqual(a.groups.attacks,b.groups.attacks);
+  assert.deepEqual(a.skills.map(x=>x.id),b.skills.map(x=>x.id));
+  const wolf=createCommonMonsterActionLoadout({speciesId:'WOLF',genre:'survival crafting',platform:'SHARED'});
+  assert.equal(wolf.genre,'SURVIVAL');
+  assert.equal(wolf.bodyPlan,'QUADRUPED_CANINE');
+  assert.equal(wolf.productionVerified,false);
 });
 
 test('skill motion families expose authored contact, gesture and VFX cues without changing gameplay',()=>{
