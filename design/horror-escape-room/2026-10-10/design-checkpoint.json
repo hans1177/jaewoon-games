@@ -1395,25 +1395,76 @@
       "stateInputs": [
         "학교"
       ]
+    },
+    "local_authoring_parts::a7e3008f14c75c45e758ba9f01c336ae1c20edda4e8355bbb14bcca4d307c034:stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "BLACKOUT",
+      "costKey": "BLACKOUT_COST",
+      "cooldownKey": "BLACKOUT_COOLDOWN"
+    },
+    "local_authoring_parts::61d97742a4fbbba106b51c8269cfb18ef471f264350ebd187bd5636bcdb31f12:cooldownSeconds,telegraph,avoidance,effect,stateInputs,stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "cooldownSeconds": 7,
+      "telegraph": "정전 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 정화 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "BLACKOUT",
+      "costKey": "BLACKOUT_COST",
+      "cooldownKey": "BLACKOUT_COOLDOWN"
+    },
+    "local_authoring_parts::34ee3eaa215f531fb7c61932d65225e8e6fc007da46b0f27c9f49ae84132d656:abilities:5:db18cc0d2f7eb2a8": {
+      "id": "BLACKOUT",
+      "name": "정전",
+      "kind": "INFECTED",
+      "ownerId": "ELECTRICIAN",
+      "ruleId": "BLACKOUT_RU123456789012345678901234567890123456789012345678901234567890123456789",
+      "trigger": "정전 실행",
+      "range": 28,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 45,
+      "cooldownSeconds": 7,
+      "telegraph": "정전 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 정화 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "BLACKOUT",
+      "costKey": "BLACKOUT_COST",
+      "cooldownKey": "BLACKOUT_COOLDOWN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 77,
-      "successes": 74,
+      "calls": 78,
+      "successes": 75,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2391334,
-      "lastMs": 14990,
+      "totalMs": 2401290,
+      "lastMs": 9956,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:14:12.712Z"
+      "updatedAt": "2026-10-10T10:14:22.680Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:14:12.712Z",
+  "updatedAt": "2026-10-10T10:14:22.682Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2748,7 +2799,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:14:12.712Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:14:22.682Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
