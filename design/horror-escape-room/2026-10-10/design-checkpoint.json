@@ -492,25 +492,45 @@
     },
     "local_authoring_parts::a8310e8bc674d7f2338526c9d78257c0433ab96219434d32bdaaa400c3ec123e:toSystem": {
       "toSystem": "감염 전환 시스템"
+    },
+    "local_authoring_parts::a8310e8bc674d7f2338526c9d78257c0433ab96219434d32bdaaa400c3ec123e:trigger": {
+      "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행"
+    },
+    "local_authoring_parts::a8310e8bc674d7f2338526c9d78257c0433ab96219434d32bdaaa400c3ec123e:stateChange": {
+      "stateChange": "감염 공격 실행 후 정화 공격 재발, 인물/몬스터 상태 전환 및 선택 기회 제공"
+    },
+    "local_authoring_parts::4f79a1c0fcbfe21dcc41a30b17b81eeb43b3671fbe6eea0982b521580b20062f:systemInterconnections:0:4f53cda18c2baa0c": {
+      "fromSystem": "로드",
+      "toSystem": "감염 전환 시스템",
+      "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행",
+      "stateChange": "감염 공격 실행 후 정화 공격 재발, 인물/몬스터 상태 전환 및 선택 기회 제공",
+      "fromId": "main_road",
+      "toId": "a_main_road",
+      "stateKeys": [
+        "폐놀이공원"
+      ]
+    },
+    "local_authoring_parts::1ffea2914dca0b47d73d7cba984b8ef79056c830c55372aef96e7e60c2b4d3b2:fromSystem": {
+      "fromSystem": "로드"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 14,
+      "successes": 14,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 391507,
-      "lastMs": 5355,
+      "totalMs": 415691,
+      "lastMs": 9114,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:40:52.751Z"
+      "updatedAt": "2026-10-10T09:41:16.939Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:40:52.751Z",
+  "updatedAt": "2026-10-10T09:41:16.939Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1842,7 +1862,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:40:52.751Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:41:16.939Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
