@@ -565,3 +565,17 @@ test('homepage manager control and publication jobs stay off the game-primary ru
   }
   assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
 });
+
+
+test('homepage sparse fast QA includes real Roblox and Unity source files used by catalog normalization',()=>{
+  const fast=section('  pr-fast-qa:','  manage-and-self-qa:');
+  for(const source of [
+    '/roblox-games/*/default.project.json',
+    '/roblox-games/*/server/Game.server.luau',
+    '/roblox-games/*/client/Game.client.luau',
+    '/unity-games/*/ProjectSettings/ProjectVersion.txt',
+    '/unity-games/*/Assets/Scripts/**'
+  ])assert.ok(fast.includes(source),'missing real native source in PR QA: '+source);
+  assert.match(fast,/sparse-checkout-cone-mode: false/);
+  assert.match(fast,/node qa\/game-catalog-normalization\.test\.mjs/);
+});
