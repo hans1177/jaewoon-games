@@ -618,7 +618,7 @@ test('Unity Web bootstrap skips redundant source generation for already-promoted
   assert.ok(context>=0&&early>context&&generate>early);
   assert.ok(workflow.includes('origin/main:unity-games/$GAME_ID/ProjectSettings/ProjectVersion.txt'));
   assert.ok(workflow.includes("echo 'present=true' >> \"$GITHUB_OUTPUT\""));
-  assert.equal((workflow.match(/if: steps\\.existing\\.outputs\\.present != 'true'/g)||[]).length,4);
+  assert.equal(workflow.split("if: steps.existing.outputs.present != 'true'").length-1,4);
   assert.ok(workflow.includes('if git cat-file -e "origin/main:unity-games/$GAME_ID"'));
   assert.ok(workflow.includes('git diff --name-only "$staged_game_tree" "$pr_game_tree"'));
   assert.ok(workflow.includes('--match-head-commit'));
