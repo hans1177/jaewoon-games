@@ -4885,6 +4885,12 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.ok(task.designToolSync.repositoryPresentLibraries.includes('assets/crafting-recipes.js'));
   assert.match(task.goal,/DESIGN_TOOL_SYNC=/);
   assert.ok(task.assetRequirements.some(row=>row.family==='UI'&&row.subfamily==='GAME_WINDOW_LAYOUT'));
+  const queuedDesignTools=createVibeContinuousQueue({tasks:[task]}).tasks[0].designToolSync;
+  assert.equal(queuedDesignTools.phase,'DESIGN');
+  assert.equal(queuedDesignTools.nativeRuntimeVerified,false);
+  assert.equal(queuedDesignTools.noShadowPipeline,true);
+  assert.ok(queuedDesignTools.requiredUiRoles.includes('STATUS_OVERVIEW'));
+  assert.ok(queuedDesignTools.repositoryPresentLibraries.includes('assets/inventory-equipment.js'));
   assert.equal(task.studioQualityEvolution.flowSystemProfile,'ACTION_SURVIVAL_ROGUELITE');
   assert.ok(task.studioQualityEvolution.flowRequiredSystemCount>=8);
   assert.equal(task.studioQualityEvolution.flowSystemExistingLibraryFirst,true);
