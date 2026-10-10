@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6:identity": {
       "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다."
+    },
+    "local_authoring_parts::2aec183bbc980d1bf20fe59dc6d23f4d164f2f949e26358926337986975001b4:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
+      "a": {
+        "system": "감정 기반 만족도 엔진",
+        "material": "손님의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정",
+        "materialDomain": "예술·철학·역사",
+        "stateChange": "손님의 감정 상태 긍정적으로 유도됨."
+      },
+      "b": {
+        "system": "동선 최적화 시스템",
+        "material": "길의 너비, 놀이기구 입구 위치, 휴식 공간의 배치",
+        "materialDomain": "지능·과학·기술",
+        "stateChange": "손님의 이동 흐름 최적화됨, 공원 전체 수용 능력 증대됨."
+      },
+      "abCausality": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성 변화의 양방향 실제 상태 교환됨."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 649078,
-      "lastMs": 48921,
+      "totalMs": 744256,
+      "lastMs": 95178,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:57:15.860Z"
+      "updatedAt": "2026-10-10T10:58:51.041Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:46:26.756Z",
-  "updatedAt": "2026-10-10T10:57:15.860Z",
+  "updatedAt": "2026-10-10T10:58:51.041Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1310,7 +1326,7 @@
     "f69d140ab6fa7ef054cf920b6575ecb855330d79d6d53b065b4cd990254c44f8": true,
     "aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:57:15.860Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:58:51.041Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
