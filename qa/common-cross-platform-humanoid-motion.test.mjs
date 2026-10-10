@@ -195,7 +195,7 @@ test('six career 3D masters contain distinct skinned geometry and actual joint a
     assert.ok(bytes.length>150000,role);
     assert.equal(doc.skins.length,1,role);
     assert.equal(doc.skins[0].joints.length,19,role);
-    assert.equal(doc.animations.length,16,role);
+    assert.equal(doc.animations.length,19,role);
     assert.ok(doc.meshes[0].name.toLowerCase().includes(role),role);
     assert.ok(doc.meshes[0].primitives.every(p=>p.attributes.POSITION!==undefined
       &&p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),role);
@@ -223,7 +223,7 @@ test('six career 3D masters contain distinct skinned geometry and actual joint a
     assert.equal(registered.masterGlbGitBlobSha,gitBlobHash,role);
     assert.equal(registered.masterGlb,relative,role);
     assert.equal(registered.jointCount,19,role);
-    assert.equal(registered.animationClipCount,16,role);
+    assert.equal(registered.animationClipCount,19,role);
     assert.ok(registered.visualIdentityAxes.length>=4,role);
     assert.equal(registered.productionVerified,false,role);
     assert.equal(registered.verifiedCompanyReusable,false,role);
@@ -258,4 +258,65 @@ test('shared 3D master generator reproduces role models and preserves the origin
         'original master changed '+role);
     }
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('cross-genre career skills, parries and noncombat actions bake distinct skinned joint trajectories',()=>{
+  const variations={
+  "samurai": [
+    "SAMURAI_PARRY_RIPOSTE",
+    "SAMURAI_CRESCENT_CUT",
+    "SAMURAI_SHEATH_READY"
+  ],
+  "archer": [
+    "ARCHER_KNEEL_FOCUS",
+    "ARCHER_MULTI_SHOT",
+    "ARCHER_EVADE_SHOT"
+  ],
+  "mage": [
+    "MAGE_BARRIER_WARD",
+    "MAGE_CHAIN_BOLT",
+    "MAGE_CHANNEL_RITUAL"
+  ],
+  "rogue": [
+    "ROGUE_DUAL_BLADE_CHAIN",
+    "ROGUE_SMOKE_THROW",
+    "ROGUE_BACK_DODGE"
+  ],
+  "lancer": [
+    "LANCER_SPEAR_SWEEP",
+    "LANCER_SHAFT_PARRY",
+    "LANCER_JUMP_THRUST"
+  ],
+  "blacksmith": [
+    "BLACKSMITH_FORGE_REPAIR",
+    "BLACKSMITH_BUILD_RAISE",
+    "BLACKSMITH_HAMMER_GUARD"
+  ]
+};
+  const first={
+    samurai:'SAMURAI_IAI_DRAW',archer:'ARCHER_DRAW_RELEASE',
+    mage:'MAGE_AREA_CAST',rogue:'ROGUE_BACKSTEP_CUT',
+    lancer:'LANCER_SPEAR_THRUST',blacksmith:'BLACKSMITH_FORGE_HAMMER'
+  };
+  for(const [career,additional] of Object.entries(variations)){
+    const bytes=fs.readFileSync(path.join(root,'assets','shared','humanoid-'+career+'.glb'));
+    const doc=glbJson(bytes);
+    assert.equal(doc.animations.length,19,career);
+    const hashes=[];
+    for(const motion of [first[career],...additional]){
+      const clip=doc.animations.find(a=>a.name===motion);
+      assert.ok(clip,career+':'+motion);
+      const hash=createHash('sha256');
+      for(const node of [3,6,9,12]){
+        const channel=clip.channels.find(row=>row.target.node===node&&row.target.path==='rotation');
+        assert.ok(channel,career+':'+motion+' missing skinned joint '+node);
+        const access=doc.accessors[clip.samplers[channel.sampler].output];
+        const view=doc.bufferViews[access.bufferView];
+        const from=20+bytes.readUInt32LE(12)+8+view.byteOffset+(access.byteOffset||0);
+        hash.update(bytes.subarray(from,from+access.count*16));
+      }
+      hashes.push(hash.digest('hex'));
+    }
+    assert.equal(new Set(hashes).size,4,career+' motions must be physically distinct');
+  }
 });

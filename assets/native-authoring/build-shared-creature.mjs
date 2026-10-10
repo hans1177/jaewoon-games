@@ -20,7 +20,8 @@ const norm=v=>{const n=Math.hypot(...v)||1;return v.map(a=>a/n)};
 const pulse=(t,p,w)=>Math.exp(-2*Math.pow((t-p)/w,2));
 const quaternion=(x,y,z)=>{
  const a=Math.cos(x/2),b=Math.sin(x/2),c=Math.cos(y/2),d=Math.sin(y/2),e=Math.cos(z/2),f=Math.sin(z/2);
- return [b*c*e-a*d*f,a*d*e+b*c*f,a*c*f-b*d*e,a*c*e+b*d*f];
+ // Export stable six-decimal joint rotations so Node and asset authoring runtimes produce identical GLB bytes.
+ return [b*c*e-a*d*f,a*d*e+b*c*f,a*c*f-b*d*e,a*c*e+b*d*f].map(v=>Math.round(v*1e6)/1e6);
 };
 export function buildSharedCreature(species='wolf'){
  const id=String(species).toLowerCase(),cfg=SHARED_CREATURE_SPECIES[id];
@@ -61,7 +62,9 @@ export function buildSharedCreature(species='wolf'){
  const groups=colors.map(()=>({p:[],n:[],uv:[],bones:[],weights:[],indices:[]}));
  function vertex(mat,bone,pos,normal,u,v){
    const g=groups[mat],index=g.p.length/3;
-   g.p.push(...pos);g.n.push(...norm(normal));g.uv.push(u,v);
+   // Quantize mesh positions and surface normals before Float32 export to make generated sources reproducible.
+   g.p.push(...pos.map(n=>Math.round(n*1e6)/1e6));
+   g.n.push(...norm(normal).map(n=>Math.round(n*1e6)/1e6));g.uv.push(u,v);
    g.bones.push(bone,0,0,0);g.weights.push(1,0,0,0);
    return index;
  }
@@ -110,8 +113,354 @@ export function buildSharedCreature(species='wolf'){
      else ball(1,k,center,[.23,.25,.24]);
    }else pipe(i%2?1:0,k,center,add(center,[0,0,.31]),Math.max(.04,.29-i*.017),Math.max(.03,.27-i*.018),12);
  }
- const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature];
+ // 계층 모션은 공통 3D 기초 → 체형 고유 동작 → 종족별 기술 → 정예/보스 몸짓 순으로 재사용한다.
+ const familyMotion={"wolf":"WOLF_PACK_CIRCLE","spider":"SPIDER_WEB_SIDESTEP","beetle":"BEETLE_TRIPOD_SHIFT","golem":"GOLEM_WEIGHT_BRACE","serpent":"SERPENT_COIL_SLITHER"};
+ // 종족별 실제 관절 동작: 기초 회피/방어와 두 가지 전용 기술(피격·피해 판정은 게임 소유).
+ const speciesVariants={
+   "wolf": [
+     {
+       "clip": "WOLF_PACK_POUNCE",
+       "duration": 1.02,
+       "torso": [
+         -0.61,
+         0.83,
+         -0.08,
+         0.16
+       ],
+       "head": [
+         -0.73,
+         0.81,
+         0.03,
+         -0.18
+       ],
+       "jaw": [
+         0.25,
+         -0.86
+       ],
+       "tail": [
+         -0.27,
+         0.43
+       ],
+       "limbs": [
+         -0.45,
+         0.74,
+         0.53
+       ],
+       "extra": [
+         -0.22,
+         0.57
+       ]
+     },
+     {
+       "clip": "WOLF_FLANK_BITE",
+       "duration": 0.87,
+       "torso": [
+         -0.2,
+         0.43,
+         -0.57,
+         0.78
+       ],
+       "head": [
+         -0.46,
+         0.62,
+         -0.31,
+         0.53
+       ],
+       "jaw": [
+         0.37,
+         -0.74
+       ],
+       "tail": [
+         0.35,
+         -0.41
+       ],
+       "limbs": [
+         0.24,
+         -0.34,
+         0.26
+       ],
+       "extra": [
+         0.16,
+         -0.31
+       ]
+     }
+   ],
+   "spider": [
+     {
+       "clip": "SPIDER_WEB_CAST",
+       "duration": 1.11,
+       "torso": [
+         -0.33,
+         0.42,
+         0.18,
+         -0.31
+       ],
+       "head": [
+         -0.67,
+         0.45,
+         -0.23,
+         0.37
+       ],
+       "jaw": [
+         -0.38,
+         0.54
+       ],
+       "tail": [
+         0.27,
+         -0.44
+       ],
+       "limbs": [
+         0.41,
+         -0.16,
+         0.38
+       ],
+       "extra": [
+         -0.29,
+         0.36
+       ]
+     },
+     {
+       "clip": "SPIDER_EIGHT_LEG_STAB",
+       "duration": 0.81,
+       "torso": [
+         -0.57,
+         0.69,
+         -0.26,
+         0.19
+       ],
+       "head": [
+         -0.48,
+         0.77,
+         0.33,
+         -0.29
+       ],
+       "jaw": [
+         0.2,
+         -0.69
+       ],
+       "tail": [
+         -0.13,
+         0.36
+       ],
+       "limbs": [
+         -0.74,
+         0.82,
+         0.66
+       ],
+       "extra": [
+         -0.44,
+         0.58
+       ]
+     }
+   ],
+   "beetle": [
+     {
+       "clip": "BEETLE_HORN_DASH",
+       "duration": 0.96,
+       "torso": [
+         -0.45,
+         0.77,
+         -0.12,
+         0.2
+       ],
+       "head": [
+         -0.72,
+         0.87,
+         0.1,
+         -0.18
+       ],
+       "jaw": [
+         -0.68,
+         1.12
+       ],
+       "tail": [
+         -0.18,
+         0.32
+       ],
+       "limbs": [
+         -0.43,
+         0.79,
+         0.41
+       ],
+       "extra": [
+         -0.12,
+         0.37
+       ]
+     },
+     {
+       "clip": "BEETLE_SHELL_GUARD",
+       "duration": 1.1,
+       "torso": [
+         0.34,
+         -0.52,
+         0.11,
+         -0.16
+       ],
+       "head": [
+         0.17,
+         -0.33,
+         -0.2,
+         0.12
+       ],
+       "jaw": [
+         -0.08,
+         0.26
+       ],
+       "tail": [
+         0.46,
+         -0.62
+       ],
+       "limbs": [
+         0.61,
+         -0.39,
+         0.42
+       ],
+       "extra": [
+         0.2,
+         -0.32
+       ]
+     }
+   ],
+   "golem": [
+     {
+       "clip": "GOLEM_FIST_SMASH",
+       "duration": 1.28,
+       "torso": [
+         -0.48,
+         0.96,
+         -0.24,
+         0.29
+       ],
+       "head": [
+         -0.17,
+         0.32,
+         0.05,
+         -0.08
+       ],
+       "jaw": [
+         -0.12,
+         0.58
+       ],
+       "tail": [
+         -0.08,
+         0.36
+       ],
+       "limbs": [
+         -0.24,
+         0.56,
+         0.74
+       ],
+       "extra": [
+         -0.86,
+         1.18
+       ]
+     },
+     {
+       "clip": "GOLEM_GROUND_STOMP",
+       "duration": 1.36,
+       "torso": [
+         0.24,
+         -0.76,
+         0.19,
+         -0.32
+       ],
+       "head": [
+         -0.2,
+         0.49,
+         -0.09,
+         0.2
+       ],
+       "jaw": [
+         0.12,
+         0.25
+       ],
+       "tail": [
+         0.28,
+         -0.46
+       ],
+       "limbs": [
+         0.71,
+         -1.02,
+         0.91
+       ],
+       "extra": [
+         -0.25,
+         0.76
+       ]
+     }
+   ],
+   "serpent": [
+     {
+       "clip": "SERPENT_VENOM_SPIT",
+       "duration": 1.06,
+       "torso": [
+         -0.66,
+         0.78,
+         -0.26,
+         0.33
+       ],
+       "head": [
+         -0.83,
+         0.9,
+         0.33,
+         -0.42
+       ],
+       "jaw": [
+         0.41,
+         -0.93
+       ],
+       "tail": [
+         0.61,
+         -0.72
+       ],
+       "limbs": [
+         0,
+         0,
+         0
+       ],
+       "extra": [
+         0.38,
+         -0.56
+       ]
+     },
+     {
+       "clip": "SERPENT_COIL_LUNGE",
+       "duration": 0.89,
+       "torso": [
+         -0.47,
+         0.88,
+         0.72,
+         -0.56
+       ],
+       "head": [
+         -0.6,
+         0.96,
+         -0.39,
+         0.64
+       ],
+       "jaw": [
+         0.29,
+         -0.78
+       ],
+       "tail": [
+         -0.74,
+         1.07
+       ],
+       "limbs": [
+         0,
+         0,
+         0
+       ],
+       "extra": [
+         -0.65,
+         0.97
+       ]
+     }
+   ]
+ };
+ const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature,'DODGE_EVADE','GUARD_BRACE',...(speciesVariants[id]||[]).map(move=>move.clip),...['STALK_APPROACH','HIT_SIDE','KNOCKDOWN','RECOVER_STAND',familyMotion[id],'ELITE_INTIMIDATE','ELITE_COUNTER_STEP','BOSS_TELEGRAPH','BOSS_PHASE_SHIFT','BOSS_RECOVERY']];
  function pose(clip,t){
+   const special=(speciesVariants[id]||[]).find(move=>move.clip===clip);
    const a=t*Math.PI*2,locomotion=clip==='WALK'||clip==='RUN',fast=clip==='RUN';
    const wind=pulse(t,.26,.18),contact=pulse(t,.57,.17),rebound=pulse(t,.78,.15);
    const charge=pulse(t,.44,.32),impact=pulse(t,.69,.15),idle=Math.sin(a);
@@ -147,6 +496,24 @@ export function buildSharedCreature(species='wolf'){
      angles[jaw]=[-.50*wind+.83*contact,0,0];
      angles[tail]=[.40*wind-.38*contact,.44*wind+.25*contact,0];
    }
+   if(clip==='DODGE_EVADE'){
+     angles[torso]=[.13*wind-.25*contact,-.31*wind+.49*contact,-.24*wind+.22*contact];
+     angles[head]=[-.16*wind+.24*contact,.16*wind-.29*contact,0];
+     angles[tail]=[-.29*wind+.44*contact,.40*wind-.51*contact,0];
+   }else if(clip==='GUARD_BRACE'){
+     angles[torso]=[.34*wind-.42*contact,0,-.11*wind+.10*contact];
+     angles[head]=[.17*wind-.26*contact,0,0];
+     angles[jaw]=[-.18*wind+.23*contact,0,0];
+     angles[tail]=[.12*wind-.19*contact,-.08*wind,0];
+   }else if(special){
+     angles[torso]=[special.torso[0]*wind+special.torso[1]*contact,
+       special.torso[2]*wind+special.torso[3]*contact,.09*wind-.12*contact];
+     angles[head]=[special.head[0]*wind+special.head[1]*contact,
+       special.head[2]*wind+special.head[3]*contact,.10*wind-.07*contact];
+     angles[jaw]=[special.jaw[0]*wind+special.jaw[1]*contact,0,0];
+     angles[tail]=[special.tail[0]*wind+special.tail[1]*contact,
+       -.16*wind+.18*contact,.10*wind-.06*contact];
+   }
    // 실제 다리·팔·척추 관절은 몸통과 서로 다른 시간차를 가진다.
    for(const l of legs){
      const phase=a+Math.PI*(l.p+(l.side<0?0:1));
@@ -170,6 +537,19 @@ export function buildSharedCreature(species='wolf'){
      }else if(clip===cfg.signature){
        angles[l.hip][0]+=l.p%2===0?-.31*wind+.39*contact:.21*wind-.27*contact;
        angles[l.knee][0]+=.33*contact;
+     }else if(clip==='DODGE_EVADE'){
+       angles[l.hip][0]+=(l.side<0?.41:-.37)*contact;
+       angles[l.knee][0]+=.28*contact;
+       angles[l.foot][1]+=l.side*.31*contact;
+     }else if(clip==='GUARD_BRACE'){
+       angles[l.hip][0]+=.32*wind-.41*contact;
+       angles[l.knee][0]+=.37*wind;
+       angles[l.foot][0]-=.18*contact;
+     }else if(special){
+       const alternate=l.p%2===0?1:-.72;
+       angles[l.hip][0]+=alternate*(special.limbs[0]*wind+special.limbs[1]*contact);
+       angles[l.knee][0]+=special.limbs[2]*contact;
+       angles[l.foot][1]+=l.side*.12*contact;
      }
    }
    for(let i=0;i<extras.length;i++){
@@ -180,6 +560,10 @@ export function buildSharedCreature(species='wolf'){
      else if(clip==='SKILL_PREPARE')angles[k][0]+=-.31*charge;
      else if(clip==='SKILL_RELEASE')angles[k][0]+=.52*delay;
      else if(clip===cfg.signature){angles[k][0]+=.51*delay;angles[k][1]+=.35*contact}
+     else if(clip==='DODGE_EVADE'){angles[k][0]+=.30*contact;angles[k][1]-=.34*wind}
+     else if(clip==='GUARD_BRACE'){angles[k][0]-=.29*wind;angles[k][1]+=.26*contact}
+     else if(special){angles[k][0]+=special.extra[0]*wind+special.extra[1]*delay;
+       angles[k][1]+=(i%2===0?.23:-.23)*contact}
    }
    // 종별 특징은 같은 일반 공격 프레임을 색상만 바꿔 공유하지 않는다.
    if(id==='wolf'){
@@ -197,6 +581,69 @@ export function buildSharedCreature(species='wolf'){
    }else if(id==='serpent'){
      if(clip==='ATTACK_B')angles[tail][1]+=.70*contact;
      if(clip==='SKILL_PREPARE')angles[torso][1]+=.29*charge;
+   }
+
+   // 공용 체형 계열/강도 계층의 실제 관절 키프레임. 이동·데미지·타이밍 권한은 유지한다.
+   const smooth=t*t*(3-2*t);
+   if(clip==='STALK_APPROACH'){
+     angles[torso]=[-.16-.04*idle,.13*Math.sin(a/2),.10*Math.sin(a)];
+     angles[head]=[.16+.08*idle,.11*Math.cos(a/2),0];
+     angles[tail]=[-.18+.13*Math.sin(a+.7),.16*Math.sin(a),0];
+     for(const l of legs)angles[l.hip]=[.20*Math.sin(a+l.p*.9+(l.side<0?0:Math.PI)),.07*idle,0];
+   }else if(clip==='HIT_SIDE'){
+     const q=pulse(t,.34,.25);
+     angles[torso]=[-.12*q,.42*q,-.29*q];angles[head]=[.23*q,-.35*q,.19*q];
+     angles[tail]=[-.22*q,.39*q,.18*q];
+     for(const l of legs)angles[l.hip]=[.16*q,.23*l.side*q,-.08*q];
+   }else if(clip==='KNOCKDOWN'||clip==='RECOVER_STAND'){
+     const q=clip==='KNOCKDOWN'?smooth:1-smooth;
+     angles[torso]=[.81*q,.24*q,.38*q];angles[head]=[-.55*q,-.14*q,.14*q];
+     angles[tail]=[.27*q,-.30*q,.24*q];
+     for(const l of legs){angles[l.hip]=[.52*q,.18*q,l.side*.24*q];angles[l.knee]=[-.51*q,0,0]}
+   }else if(clip===familyMotion[id]){
+     const scale=id==='golem'?1.25:id==='spider'?1.14:id==='serpent'?.88:1;
+     angles[torso]=[scale*(-.27*wind+.34*contact),scale*(-.41*wind+.51*contact),.29*contact];
+     angles[head]=[scale*(-.31*wind+.46*contact),.16*wind-.37*contact,-.17*contact];
+     angles[tail]=[.44*wind-.55*contact,scale*(-.36*wind+.69*contact),.22*rebound];
+     for(const l of legs){
+       const stagger=l.p%2===0?1:-1;
+       angles[l.hip]=[stagger*scale*(-.43*wind+.51*contact),l.side*.26*contact,0];
+       angles[l.knee]=[.19*wind+.32*contact,0,0];
+     }
+   }else if(clip==='ELITE_INTIMIDATE'){
+     const q=pulse(t,.47,.39);
+     angles[torso]=[-.49*q,.29*q,.16*q];angles[head]=[-.55*q,-.14*q,.07*q];
+     angles[jaw]=[-.33*q,0,0];angles[tail]=[.36*q,-.49*q,.09*q];
+     for(const l of legs)angles[l.hip]=[l.p%2?.19*q:-.26*q,l.side*.16*q,0];
+   }else if(clip==='ELITE_COUNTER_STEP'){
+     angles[torso]=[-.23*wind+.58*contact,-.44*wind+.53*contact,.31*wind-.25*contact];
+     angles[head]=[.22*wind-.44*contact,.21*wind-.31*contact,0];
+     angles[tail]=[-.18*wind+.35*contact,-.65*wind+.46*contact,0];
+     for(const l of legs)angles[l.hip]=[l.side<0?-.44*wind+.60*contact:.32*wind-.47*contact,0,.18*contact];
+   }else if(clip==='BOSS_TELEGRAPH'){
+     const q=pulse(t,.59,.46);
+     angles[torso]=[-.72*q,.17*q,.19*q];angles[head]=[-.49*q,.27*q,0];
+     angles[jaw]=[-.33*q,0,0];angles[tail]=[.35*q,-.41*q,.14*q];
+     for(const l of legs)angles[l.hip]=[.25*q,.11*l.side*q,0];
+   }else if(clip==='BOSS_PHASE_SHIFT'){
+     const q=pulse(t,.35,.20),r=pulse(t,.74,.18);
+     angles[torso]=[-.44*q+.54*r,.55*q-.68*r,-.37*q+.43*r];
+     angles[head]=[.42*q-.67*r,-.34*q+.40*r,.22*q];
+     angles[jaw]=[.43*q-.50*r,0,0];
+     angles[tail]=[.53*q-.64*r,.66*q-.75*r,0];
+     for(const l of legs)angles[l.hip]=[l.p%2===0?-.37*q+.44*r:.28*q-.39*r,.18*l.side*r,0];
+   }else if(clip==='BOSS_RECOVERY'){
+     const q=(1-smooth)*pulse(t,.09,.72);
+     angles[torso]=[.68*q,-.23*q,.31*q];angles[head]=[-.32*q,.17*q,-.16*q];
+     angles[tail]=[-.44*q,.51*q,-.19*q];angles[jaw]=[-.26*q,0,0];
+     for(const l of legs)angles[l.hip]=[.37*q,-.14*l.side*q,.08*q];
+   }
+   if(clip==='ELITE_INTIMIDATE'||clip==='BOSS_PHASE_SHIFT'||clip==='BOSS_TELEGRAPH'||clip==='BOSS_RECOVERY'||clip===familyMotion[id]){
+     for(let i=0;i<extras.length;i++){
+       const k=extras[i],delay=pulse(t,.43+i*.017,.24);
+       const prev=angles[k]||[0,0,0];
+       angles[k]=[prev[0]+.26*delay*(i%2===0?1:-1),prev[1]+.33*delay,prev[2]+.09*delay];
+     }
    }
    if(clip==='HIT_FRONT'){
      angles[torso]=[-.35*pulse(t,.32,.23),0,.15*pulse(t,.37,.19)];
@@ -245,7 +692,9 @@ export function buildSharedCreature(species='wolf'){
  doc.skins=[{name:'CreatureRig',joints:joints.map((_,i)=>i),skeleton:0,
     inverseBindMatrices:accessor(new Float32Array(inverse),'MAT4',5126)}];
  for(const clip of clips){
-   const frames=25,duration=clip==='IDLE_BREATH'?2:clip==='DEATH'?1.4:clip===cfg.signature?1.3:.9,
+   const selected=(speciesVariants[id]||[]).find(move=>move.clip===clip);
+   const tierDuration={STALK_APPROACH:1.35,HIT_SIDE:.63,KNOCKDOWN:1.12,RECOVER_STAND:1.32,ELITE_INTIMIDATE:1.46,ELITE_COUNTER_STEP:.79,BOSS_TELEGRAPH:1.53,BOSS_PHASE_SHIFT:1.74,BOSS_RECOVERY:1.18};
+   const frames=25,duration=selected?.duration??tierDuration[clip]??(clip===familyMotion[id]?.95:clip==='IDLE_BREATH'?2:clip==='DEATH'?1.4:clip===cfg.signature?1.3:clip==='DODGE_EVADE'?.68:.9),
     time=accessor(Float32Array.from({length:frames},(_,i)=>i/(frames-1)*duration),'SCALAR',5126,undefined,[0],[duration]);
    const animation={name:clip,samplers:[],channels:[]};
    for(let bone=1;bone<joints.length;bone++){

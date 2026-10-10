@@ -1,8 +1,8 @@
 {
-  "version": 126,
+  "version": 129,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-10T12:38:00+09:00",
+  "updatedAt": "2026-10-10",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -73801,7 +73801,8 @@
           "assets/shared/humanoid-traveler.glb"
         ]
       },
-      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함."
+      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함.",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd"
     },
     {
       "platform": "SHARED_MASTER",
@@ -73880,7 +73881,8 @@
           "assets/shared/humanoid-guardian.glb"
         ]
       },
-      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함."
+      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함.",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd"
     },
     {
       "platform": "SHARED_MASTER",
@@ -73983,7 +73985,7 @@
       "jointCount": 19,
       "rigProfile": "SHARED_HUMANOID_SKINNED_19",
       "boneAnimationChannels": true,
-      "animationClipCount": 16,
+      "animationClipCount": 19,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74000,7 +74002,10 @@
         "CAST_SPELL",
         "DEATH_FRONT",
         "GET_UP",
-        "SAMURAI_IAI_DRAW"
+        "SAMURAI_IAI_DRAW",
+        "SAMURAI_PARRY_RIPOSTE",
+        "SAMURAI_CRESCENT_CUT",
+        "SAMURAI_SHEATH_READY"
       ],
       "sourceFiles": [
         "assets/native-authoring/build-shared-humanoid.mjs",
@@ -74037,14 +74042,14 @@
       },
       "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
       "sourceRoleId": "samurai",
-      "masterGlbGitBlobSha": "f76751214cc5e4a8e2609f8ba3bce8e71270f0a2",
-      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "masterGlbGitBlobSha": "cc2ba4466172cb3f323f6b6b54b05ffa9ea3ce93",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd",
       "staticStructuralChecks": {
         "skinPresent": true,
         "jointCount": 19,
         "roleJointAnimationChannels": true,
         "expectedRoleClip": "SAMURAI_IAI_DRAW",
-        "authoredClipCount": 16,
+        "authoredClipCount": 19,
         "distinctMeshGeometry": true,
         "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
       },
@@ -74077,7 +74082,7 @@
       "jointCount": 19,
       "rigProfile": "SHARED_HUMANOID_SKINNED_19",
       "boneAnimationChannels": true,
-      "animationClipCount": 16,
+      "animationClipCount": 19,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74094,7 +74099,10 @@
         "CAST_SPELL",
         "DEATH_FRONT",
         "GET_UP",
-        "ARCHER_DRAW_RELEASE"
+        "ARCHER_DRAW_RELEASE",
+        "ARCHER_KNEEL_FOCUS",
+        "ARCHER_MULTI_SHOT",
+        "ARCHER_EVADE_SHOT"
       ],
       "sourceFiles": [
         "assets/native-authoring/build-shared-humanoid.mjs",
@@ -74131,14 +74139,14 @@
       },
       "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
       "sourceRoleId": "archer",
-      "masterGlbGitBlobSha": "d5515017a0d081ff32c0b207c4da5734597918a2",
-      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "masterGlbGitBlobSha": "8780485f0112361f35a95a472990c06dcc64be3b",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd",
       "staticStructuralChecks": {
         "skinPresent": true,
         "jointCount": 19,
         "roleJointAnimationChannels": true,
         "expectedRoleClip": "ARCHER_DRAW_RELEASE",
-        "authoredClipCount": 16,
+        "authoredClipCount": 19,
         "distinctMeshGeometry": true,
         "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
       },
@@ -74171,7 +74179,7 @@
       "jointCount": 19,
       "rigProfile": "SHARED_HUMANOID_SKINNED_19",
       "boneAnimationChannels": true,
-      "animationClipCount": 16,
+      "animationClipCount": 19,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74188,7 +74196,10 @@
         "CAST_SPELL",
         "DEATH_FRONT",
         "GET_UP",
-        "MAGE_AREA_CAST"
+        "MAGE_AREA_CAST",
+        "MAGE_BARRIER_WARD",
+        "MAGE_CHAIN_BOLT",
+        "MAGE_CHANNEL_RITUAL"
       ],
       "sourceFiles": [
         "assets/native-authoring/build-shared-humanoid.mjs",
@@ -74225,14 +74236,14 @@
       },
       "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
       "sourceRoleId": "mage",
-      "masterGlbGitBlobSha": "6e0279bf641f9acc5b086b811cfdeaee9048fc53",
-      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "masterGlbGitBlobSha": "555d6c6457d1ca9931c9cffa87deb1fd08d01594",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd",
       "staticStructuralChecks": {
         "skinPresent": true,
         "jointCount": 19,
         "roleJointAnimationChannels": true,
         "expectedRoleClip": "MAGE_AREA_CAST",
-        "authoredClipCount": 16,
+        "authoredClipCount": 19,
         "distinctMeshGeometry": true,
         "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
       },
@@ -74265,7 +74276,7 @@
       "jointCount": 19,
       "rigProfile": "SHARED_HUMANOID_SKINNED_19",
       "boneAnimationChannels": true,
-      "animationClipCount": 16,
+      "animationClipCount": 19,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74282,7 +74293,10 @@
         "CAST_SPELL",
         "DEATH_FRONT",
         "GET_UP",
-        "ROGUE_BACKSTEP_CUT"
+        "ROGUE_BACKSTEP_CUT",
+        "ROGUE_DUAL_BLADE_CHAIN",
+        "ROGUE_SMOKE_THROW",
+        "ROGUE_BACK_DODGE"
       ],
       "sourceFiles": [
         "assets/native-authoring/build-shared-humanoid.mjs",
@@ -74319,14 +74333,14 @@
       },
       "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
       "sourceRoleId": "rogue",
-      "masterGlbGitBlobSha": "107eee75671cf908ce094328ab41ee0d4b8478a1",
-      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "masterGlbGitBlobSha": "32918b05474f657364b59a68b6efe3b1650222d0",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd",
       "staticStructuralChecks": {
         "skinPresent": true,
         "jointCount": 19,
         "roleJointAnimationChannels": true,
         "expectedRoleClip": "ROGUE_BACKSTEP_CUT",
-        "authoredClipCount": 16,
+        "authoredClipCount": 19,
         "distinctMeshGeometry": true,
         "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
       },
@@ -74359,7 +74373,7 @@
       "jointCount": 19,
       "rigProfile": "SHARED_HUMANOID_SKINNED_19",
       "boneAnimationChannels": true,
-      "animationClipCount": 16,
+      "animationClipCount": 19,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74376,7 +74390,10 @@
         "CAST_SPELL",
         "DEATH_FRONT",
         "GET_UP",
-        "LANCER_SPEAR_THRUST"
+        "LANCER_SPEAR_THRUST",
+        "LANCER_SPEAR_SWEEP",
+        "LANCER_SHAFT_PARRY",
+        "LANCER_JUMP_THRUST"
       ],
       "sourceFiles": [
         "assets/native-authoring/build-shared-humanoid.mjs",
@@ -74413,14 +74430,14 @@
       },
       "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
       "sourceRoleId": "lancer",
-      "masterGlbGitBlobSha": "7e0549d6be0794cc425febb89b6ebfcac886fff4",
-      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "masterGlbGitBlobSha": "821b0a3adde0bd415dee035f3f0c7860b7ee180c",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd",
       "staticStructuralChecks": {
         "skinPresent": true,
         "jointCount": 19,
         "roleJointAnimationChannels": true,
         "expectedRoleClip": "LANCER_SPEAR_THRUST",
-        "authoredClipCount": 16,
+        "authoredClipCount": 19,
         "distinctMeshGeometry": true,
         "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
       },
@@ -74453,7 +74470,7 @@
       "jointCount": 19,
       "rigProfile": "SHARED_HUMANOID_SKINNED_19",
       "boneAnimationChannels": true,
-      "animationClipCount": 16,
+      "animationClipCount": 19,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74470,7 +74487,10 @@
         "CAST_SPELL",
         "DEATH_FRONT",
         "GET_UP",
-        "BLACKSMITH_FORGE_HAMMER"
+        "BLACKSMITH_FORGE_HAMMER",
+        "BLACKSMITH_FORGE_REPAIR",
+        "BLACKSMITH_BUILD_RAISE",
+        "BLACKSMITH_HAMMER_GUARD"
       ],
       "sourceFiles": [
         "assets/native-authoring/build-shared-humanoid.mjs",
@@ -74507,14 +74527,14 @@
       },
       "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
       "sourceRoleId": "blacksmith",
-      "masterGlbGitBlobSha": "f440d67e598c7396ec3c4fe2e9530f9a7c82a3e1",
-      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "masterGlbGitBlobSha": "4d1227041d1a9ae391097b15f3f50061a8397031",
+      "generatorSourceGitBlobSha": "46f0d41a7707b476ac6fd152107785e7eab9b4fd",
       "staticStructuralChecks": {
         "skinPresent": true,
         "jointCount": 19,
         "roleJointAnimationChannels": true,
         "expectedRoleClip": "BLACKSMITH_FORGE_HAMMER",
-        "authoredClipCount": 16,
+        "authoredClipCount": 19,
         "distinctMeshGeometry": true,
         "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
       },
@@ -74554,9 +74574,10 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "e48b3e0f740977bf53639a05ac3d1071f529a44f",
+        "derivedBinaryGitBlobSha": "dd54e66dc02e62ac7817186ab68a494bf3a992c8",
         "projectOriginal": true,
-        "platformNeutralOriginal": true
+        "platformNeutralOriginal": true,
+        "generatorSourceGitBlobSha": "f9223aaa18727479c65256be8d33fe5bf82ca6cc"
       },
       "fileRoles": {
         "authoring": [
@@ -74571,7 +74592,7 @@
       "vertices": 1052,
       "triangleCount": 1592,
       "boneAnimationChannels": true,
-      "animationClipCount": 11,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74583,7 +74604,21 @@
         "SKILL_RELEASE",
         "HIT_FRONT",
         "DEATH",
-        "WOLF_PACK_HOWL"
+        "WOLF_PACK_HOWL",
+        "DODGE_EVADE",
+        "GUARD_BRACE",
+        "WOLF_PACK_POUNCE",
+        "WOLF_FLANK_BITE",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "WOLF_PACK_CIRCLE",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "WOLF_PACK_HOWL",
       "motionPresentationOnly": true,
@@ -74603,7 +74638,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-spider",
@@ -74638,9 +74679,10 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "0731466b97e2e81b3c8e2bd5dd01a8d88690318b",
+        "derivedBinaryGitBlobSha": "957d4ba742721401ce2841dd002b23a8a9aa282e",
         "projectOriginal": true,
-        "platformNeutralOriginal": true
+        "platformNeutralOriginal": true,
+        "generatorSourceGitBlobSha": "f9223aaa18727479c65256be8d33fe5bf82ca6cc"
       },
       "fileRoles": {
         "authoring": [
@@ -74655,7 +74697,7 @@
       "vertices": 1789,
       "triangleCount": 2692,
       "boneAnimationChannels": true,
-      "animationClipCount": 11,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74667,7 +74709,21 @@
         "SKILL_RELEASE",
         "HIT_FRONT",
         "DEATH",
-        "SPIDER_WEB_THREAT"
+        "SPIDER_WEB_THREAT",
+        "DODGE_EVADE",
+        "GUARD_BRACE",
+        "SPIDER_WEB_CAST",
+        "SPIDER_EIGHT_LEG_STAB",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "SPIDER_WEB_SIDESTEP",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "SPIDER_WEB_THREAT",
       "motionPresentationOnly": true,
@@ -74687,7 +74743,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-beetle",
@@ -74722,9 +74784,10 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "c712f20cf7ce6978910d4793d7530b4b2f2689a0",
+        "derivedBinaryGitBlobSha": "331b5e5bfa8a7afb52ee9ccc41e22871f52da5c8",
         "projectOriginal": true,
-        "platformNeutralOriginal": true
+        "platformNeutralOriginal": true,
+        "generatorSourceGitBlobSha": "f9223aaa18727479c65256be8d33fe5bf82ca6cc"
       },
       "fileRoles": {
         "authoring": [
@@ -74739,7 +74802,7 @@
       "vertices": 1503,
       "triangleCount": 2292,
       "boneAnimationChannels": true,
-      "animationClipCount": 11,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74751,7 +74814,21 @@
         "SKILL_RELEASE",
         "HIT_FRONT",
         "DEATH",
-        "BEETLE_HORN_CHARGE"
+        "BEETLE_HORN_CHARGE",
+        "DODGE_EVADE",
+        "GUARD_BRACE",
+        "BEETLE_HORN_DASH",
+        "BEETLE_SHELL_GUARD",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "BEETLE_TRIPOD_SHIFT",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "BEETLE_HORN_CHARGE",
       "motionPresentationOnly": true,
@@ -74771,7 +74848,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-golem",
@@ -74806,9 +74889,10 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "5da17953f8ae1d44b8f702e95b53328ea79587de",
+        "derivedBinaryGitBlobSha": "c19bd6d99530cb643a5dbd7c16c89862a0e0f8cb",
         "projectOriginal": true,
-        "platformNeutralOriginal": true
+        "platformNeutralOriginal": true,
+        "generatorSourceGitBlobSha": "f9223aaa18727479c65256be8d33fe5bf82ca6cc"
       },
       "fileRoles": {
         "authoring": [
@@ -74823,7 +74907,7 @@
       "vertices": 1249,
       "triangleCount": 1988,
       "boneAnimationChannels": true,
-      "animationClipCount": 11,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74835,7 +74919,21 @@
         "SKILL_RELEASE",
         "HIT_FRONT",
         "DEATH",
-        "GOLEM_CORE_PULSE"
+        "GOLEM_CORE_PULSE",
+        "DODGE_EVADE",
+        "GUARD_BRACE",
+        "GOLEM_FIST_SMASH",
+        "GOLEM_GROUND_STOMP",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "GOLEM_WEIGHT_BRACE",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "GOLEM_CORE_PULSE",
       "motionPresentationOnly": true,
@@ -74855,7 +74953,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-serpent",
@@ -74890,9 +74994,10 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "7151f8ef9aaa1eb3e15d581be9127f234f1d9aea",
+        "derivedBinaryGitBlobSha": "7a2cf0e04bdcfa66901f07cbb8d7ee452e61ab5c",
         "projectOriginal": true,
-        "platformNeutralOriginal": true
+        "platformNeutralOriginal": true,
+        "generatorSourceGitBlobSha": "f9223aaa18727479c65256be8d33fe5bf82ca6cc"
       },
       "fileRoles": {
         "authoring": [
@@ -74907,7 +75012,7 @@
       "vertices": 915,
       "triangleCount": 1328,
       "boneAnimationChannels": true,
-      "animationClipCount": 11,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74919,7 +75024,21 @@
         "SKILL_RELEASE",
         "HIT_FRONT",
         "DEATH",
-        "SERPENT_COIL_STRIKE"
+        "SERPENT_COIL_STRIKE",
+        "DODGE_EVADE",
+        "GUARD_BRACE",
+        "SERPENT_VENOM_SPIT",
+        "SERPENT_COIL_LUNGE",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "SERPENT_COIL_SLITHER",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "SERPENT_COIL_STRIKE",
       "motionPresentationOnly": true,
@@ -74939,7 +75058,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     }
   ],
   "research": [

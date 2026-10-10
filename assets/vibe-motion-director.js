@@ -1051,6 +1051,159 @@ export const COMMON_CAREER_NATIVE_SOURCE_ACTION=Object.freeze({
  lancer:'LANCER_SPEAR_THRUST',blacksmith:'BLACKSMITH_FORGE_HAMMER'
 });
 
+
+ // 공통 장르별 사용은 실제 스킨드 3D 원본에 존재하는 클립에서만 후보를 선택한다.
+ // 명목상의 직업 스킬 목록은 이 클립 등록과 별개이며, 게임 판정과 원생 플랫폼 QA를 대체하지 않는다.
+export const COMMON_CAREER_NATIVE_CLIP_ROLES=Object.freeze({
+  "samurai": {
+    "attacks": [
+      "SAMURAI_IAI_DRAW",
+      "SAMURAI_CRESCENT_CUT"
+    ],
+    "defense": [
+      "SAMURAI_PARRY_RIPOSTE"
+    ],
+    "skills": [
+      "SAMURAI_IAI_DRAW",
+      "SAMURAI_CRESCENT_CUT"
+    ],
+    "interactions": [
+      "SAMURAI_SHEATH_READY"
+    ],
+    "signature": [
+      "SAMURAI_IAI_DRAW"
+    ]
+  },
+  "archer": {
+    "attacks": [
+      "ARCHER_DRAW_RELEASE",
+      "ARCHER_MULTI_SHOT"
+    ],
+    "defense": [
+      "ARCHER_EVADE_SHOT"
+    ],
+    "skills": [
+      "ARCHER_KNEEL_FOCUS",
+      "ARCHER_MULTI_SHOT"
+    ],
+    "interactions": [
+      "ARCHER_KNEEL_FOCUS"
+    ],
+    "signature": [
+      "ARCHER_DRAW_RELEASE"
+    ]
+  },
+  "mage": {
+    "attacks": [
+      "MAGE_AREA_CAST",
+      "MAGE_CHAIN_BOLT"
+    ],
+    "defense": [
+      "MAGE_BARRIER_WARD"
+    ],
+    "skills": [
+      "MAGE_CHAIN_BOLT",
+      "MAGE_CHANNEL_RITUAL",
+      "MAGE_BARRIER_WARD"
+    ],
+    "interactions": [
+      "MAGE_CHANNEL_RITUAL"
+    ],
+    "signature": [
+      "MAGE_AREA_CAST"
+    ]
+  },
+  "rogue": {
+    "attacks": [
+      "ROGUE_BACKSTEP_CUT",
+      "ROGUE_DUAL_BLADE_CHAIN"
+    ],
+    "defense": [
+      "ROGUE_BACK_DODGE"
+    ],
+    "skills": [
+      "ROGUE_SMOKE_THROW",
+      "ROGUE_DUAL_BLADE_CHAIN"
+    ],
+    "interactions": [
+      "ROGUE_SMOKE_THROW"
+    ],
+    "signature": [
+      "ROGUE_BACKSTEP_CUT"
+    ]
+  },
+  "lancer": {
+    "attacks": [
+      "LANCER_SPEAR_THRUST",
+      "LANCER_SPEAR_SWEEP",
+      "LANCER_JUMP_THRUST"
+    ],
+    "defense": [
+      "LANCER_SHAFT_PARRY"
+    ],
+    "skills": [
+      "LANCER_JUMP_THRUST"
+    ],
+    "interactions": [],
+    "signature": [
+      "LANCER_SPEAR_THRUST"
+    ]
+  },
+  "blacksmith": {
+    "attacks": [
+      "BLACKSMITH_FORGE_HAMMER"
+    ],
+    "defense": [
+      "BLACKSMITH_HAMMER_GUARD"
+    ],
+    "skills": [
+      "BLACKSMITH_FORGE_REPAIR",
+      "BLACKSMITH_BUILD_RAISE"
+    ],
+    "interactions": [
+      "BLACKSMITH_FORGE_HAMMER",
+      "BLACKSMITH_FORGE_REPAIR",
+      "BLACKSMITH_BUILD_RAISE"
+    ],
+    "signature": [
+      "BLACKSMITH_FORGE_HAMMER"
+    ]
+  }
+});
+const SHARED_HUMANOID_NATIVE_BASE_CLIPS=Object.freeze({
+  "stance": [
+    "COMBAT_READY"
+  ],
+  "locomotion": [
+    "IDLE_BREATH",
+    "WALK",
+    "RUN",
+    "SPRINT",
+    "JUMP"
+  ],
+  "attacks": [
+    "ATTACK_LIGHT_JAB",
+    "ATTACK_LIGHT_SLASH",
+    "ATTACK_HEAVY"
+  ],
+  "defense": [
+    "GUARD_BLOCK",
+    "DODGE_LEFT",
+    "HIT_FRONT",
+    "GET_UP"
+  ],
+  "skills": [
+    "CAST_SPELL"
+  ],
+  "interactions": [],
+  "signature": []
+});
+const SHARED_HUMANOID_NATIVE_BASE_CLIP_LIST=freezeList([
+ 'IDLE_BREATH','WALK','RUN','SPRINT','COMBAT_READY','ATTACK_LIGHT_JAB',
+ 'ATTACK_LIGHT_SLASH','ATTACK_HEAVY','GUARD_BLOCK','DODGE_LEFT',
+ 'HIT_FRONT','JUMP','CAST_SPELL','DEATH_FRONT','GET_UP'
+]);
+
 export const COMMON_GENRE_MOTION_CONTEXTS=Object.freeze({
   ACTION_RPG:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
   MMORPG:freezeList(['stance','locomotion','attacks','defense','skills','interactions','signature']),
@@ -1163,11 +1316,19 @@ export function createCommonCareerMotionLoadout({
     }));
   }));
   const masterFamily=[...ancestors].reverse().map(name=>COMMON_CAREER_VISUAL_MASTERS[name]).find(Boolean)||'traveler';
+  const physicalRoleClips=COMMON_CAREER_NATIVE_CLIP_ROLES[masterFamily]||{};
+  const physicalRoleClipNames=freezeList(unique(Object.values(physicalRoleClips).flat()));
+  const physicalGenreBindings=Object.freeze(Object.fromEntries(requiredGroups.map(group=>[
+    group,freezeList(unique([...(SHARED_HUMANOID_NATIVE_BASE_CLIPS[group]||[]),...(physicalRoleClips[group]||[])]))
+  ])));
   const master=Object.freeze({
     assetId:'shared-humanoid-'+masterFamily,
     path:'assets/shared/humanoid-'+masterFamily+'.glb',
     rig:'SHARED_HUMANOID_SKINNED_19',
     sourceRoleActionClip:COMMON_CAREER_NATIVE_SOURCE_ACTION[masterFamily]||null,
+    sourceRoleActionClips:physicalRoleClipNames,
+    sourceAnimationClips:freezeList([...SHARED_HUMANOID_NATIVE_BASE_CLIP_LIST,...physicalRoleClipNames]),
+    sourceAnimationCount:SHARED_HUMANOID_NATIVE_BASE_CLIP_LIST.length+physicalRoleClipNames.length,
     sourceHasActualSkinnedMesh:true,
     gameSpecificRigAndStyleAdaptationRequired:true,
     sourceStructureIsNotNativeRuntimeVerification:true,
@@ -1179,6 +1340,7 @@ export function createCommonCareerMotionLoadout({
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
     groups,skills,genreGroups:requiredGroups,roleRequests,
+    sourceGenreClipBindings:physicalGenreBindings,sourceGenreClipsRequireNativeRetarget:true,
     combatSourcePack:WEAPON_COMBAT_MOTION_PACKS[weapon]
       ?createDuelCombatMotionLoadout({weaponFamily:weapon,platform:platformId}):null,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
@@ -1286,6 +1448,151 @@ function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
     rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
+// 생성된 공통 원본의 모션 계층. 미제작 종족에는 가상의 실물 클립을 상속시키지 않는다.
+export const COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS=Object.freeze({
+  "QUADRUPED_CANINE": "WOLF_PACK_CIRCLE",
+  "ARACHNID": "SPIDER_WEB_SIDESTEP",
+  "HEXAPOD_INSECT": "BEETLE_TRIPOD_SHIFT",
+  "HEAVY_GOLEM_OR_BOSS": "GOLEM_WEIGHT_BRACE",
+  "REPTILE_OR_SERPENT": "SERPENT_COIL_SLITHER"
+});
+export const COMMON_MONSTER_RANK_NATIVE_CLIPS=Object.freeze({
+  "NORMAL": {},
+  "ELITE": {
+    "stance": [
+      "ELITE_INTIMIDATE"
+    ],
+    "defense": [
+      "ELITE_COUNTER_STEP"
+    ],
+    "skills": [
+      "ELITE_INTIMIDATE",
+      "ELITE_COUNTER_STEP"
+    ]
+  },
+  "BOSS": {
+    "stance": [
+      "BOSS_TELEGRAPH"
+    ],
+    "attacks": [
+      "BOSS_TELEGRAPH"
+    ],
+    "defense": [
+      "BOSS_RECOVERY"
+    ],
+    "skills": [
+      "BOSS_PHASE_SHIFT"
+    ],
+    "signature": [
+      "BOSS_PHASE_SHIFT"
+    ]
+  }
+});
+export const COMMON_MONSTER_BASE_NATIVE_CLIPS=Object.freeze({
+  "stance": [
+    "IDLE_BREATH"
+  ],
+  "locomotion": [
+    "IDLE_BREATH",
+    "WALK",
+    "RUN",
+    "TURN",
+    "STALK_APPROACH"
+  ],
+  "attacks": [
+    "ATTACK_A",
+    "ATTACK_B"
+  ],
+  "defense": [
+    "DODGE_EVADE",
+    "GUARD_BRACE"
+  ],
+  "skills": [
+    "SKILL_PREPARE",
+    "SKILL_RELEASE"
+  ],
+  "reactions": [
+    "HIT_FRONT",
+    "HIT_SIDE",
+    "KNOCKDOWN",
+    "RECOVER_STAND",
+    "DEATH"
+  ],
+  "signature": [],
+  "interactions": []
+});
+// 이미 굽힌 종별 기술만 공용 후보로 노출한다. 미제작 몬스터는 빈 물리적 후보를 반환한다.
+export const COMMON_MONSTER_NATIVE_CLIP_ROLES=Object.freeze({
+  "WOLF": {
+    "speciesClips": [
+      "WOLF_PACK_POUNCE",
+      "WOLF_FLANK_BITE"
+    ],
+    "attacks": [
+      "WOLF_PACK_POUNCE",
+      "WOLF_FLANK_BITE"
+    ],
+    "defense": [],
+    "skills": [
+      "WOLF_PACK_POUNCE"
+    ]
+  },
+  "SPIDER": {
+    "speciesClips": [
+      "SPIDER_WEB_CAST",
+      "SPIDER_EIGHT_LEG_STAB"
+    ],
+    "attacks": [
+      "SPIDER_EIGHT_LEG_STAB"
+    ],
+    "defense": [],
+    "skills": [
+      "SPIDER_WEB_CAST"
+    ]
+  },
+  "BEETLE": {
+    "speciesClips": [
+      "BEETLE_HORN_DASH",
+      "BEETLE_SHELL_GUARD"
+    ],
+    "attacks": [
+      "BEETLE_HORN_DASH"
+    ],
+    "defense": [
+      "BEETLE_SHELL_GUARD"
+    ],
+    "skills": [
+      "BEETLE_HORN_DASH"
+    ]
+  },
+  "GOLEM": {
+    "speciesClips": [
+      "GOLEM_FIST_SMASH",
+      "GOLEM_GROUND_STOMP"
+    ],
+    "attacks": [
+      "GOLEM_FIST_SMASH",
+      "GOLEM_GROUND_STOMP"
+    ],
+    "defense": [],
+    "skills": [
+      "GOLEM_GROUND_STOMP"
+    ]
+  },
+  "SERPENT": {
+    "speciesClips": [
+      "SERPENT_VENOM_SPIT",
+      "SERPENT_COIL_LUNGE"
+    ],
+    "attacks": [
+      "SERPENT_COIL_LUNGE"
+    ],
+    "defense": [],
+    "skills": [
+      "SERPENT_VENOM_SPIT"
+    ]
+  }
+});
 // 공용 스킨 3D 몬스터 원본. 나머지 종족은 의미 준비 단계로만 유지한다.
 export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
   ['WOLF','QUADRUPED_CANINE',17,'WOLF_PACK_HOWL'],
@@ -1297,11 +1604,29 @@ export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
   id:'shared-creature-'+id.toLowerCase(),
   path:'assets/shared/creature-'+id.toLowerCase()+'.glb',
   bodyPlan,rigProfile:'SHARED_CREATURE_'+id+'_SKINNED',
-  rigJointCount:jointCount,sourceAnimationCount:11,
+  rigJointCount:jointCount,sourceAnimationCount:25,
   sourceAnimationClips:freezeList([
     'IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B',
-    'SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',signatureClip
+    'SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',signatureClip,
+    'DODGE_EVADE','GUARD_BRACE',...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].speciesClips,
+    'STALK_APPROACH','HIT_SIDE','KNOCKDOWN','RECOVER_STAND',COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS[bodyPlan],
+    'ELITE_INTIMIDATE','ELITE_COUNTER_STEP','BOSS_TELEGRAPH','BOSS_PHASE_SHIFT','BOSS_RECOVERY'
   ]),
+  sourceHierarchy:Object.freeze({
+    sharedBase:COMMON_MONSTER_BASE_NATIVE_CLIPS,
+    bodyPlan:Object.freeze({id:bodyPlan,clip:COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS[bodyPlan]}),
+    species:Object.freeze({id,signatureClip,actions:freezeList(COMMON_MONSTER_NATIVE_CLIP_ROLES[id].speciesClips)}),
+    ranks:COMMON_MONSTER_RANK_NATIVE_CLIPS
+  }),
+  sourceClipRoles:Object.freeze({
+    stance:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.stance]),
+    locomotion:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.locomotion,COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS[bodyPlan]]),
+    attacks:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.attacks,...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].attacks]),
+    defense:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.defense,...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].defense]),
+    skills:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.skills,...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].skills]),
+    signature:freezeList([signatureClip]),
+    interactions:freezeList([])
+  }),
   signatureClip,sourceHasActualSkinnedMesh:true,
   crossPlatformMasterSource:true,platformNativeAdaptationRequired:true,
   gameSpecificStyleAndRigRetargetRequired:true,
@@ -1309,13 +1634,16 @@ export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
 })])));
 export function createCommonMonsterActionLoadout({
   speciesId='WOLF',genre='ACTION_RPG',platform='SHARED',bodyPlan='',
-  rigProfile='',styleFamily='STYLIZED_FANTASY'
+  rigProfile='',styleFamily='STYLIZED_FANTASY',rank='NORMAL'
 }={}){
   const id=upper(speciesId),species=COMMON_MONSTER_ACTION_SPECIES[id],platformId=upper(platform);
   if(!species)throw Error('UNKNOWN_COMMON_MONSTER_SPECIES:'+id);
   const requestedGenre=resolveCommonMotionGenre(genre);
   if(!requestedGenre)throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
   if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
+  const rankId=upper(rank);
+  if(!Object.prototype.hasOwnProperty.call(COMMON_MONSTER_RANK_NATIVE_CLIPS,rankId))
+    throw Error('UNSUPPORTED_COMMON_MONSTER_RANK:'+rankId);
   if(bodyPlan&&resolveMonsterBodyPlanMotionDetail(bodyPlan)!==resolveMonsterBodyPlanMotionDetail(species.bodyPlan))
     throw Error('INCOMPATIBLE_COMMON_MONSTER_BODY_PLAN:'+id+':'+upper(bodyPlan));
   if(upper(rigProfile)==='HUMANOID'&&!['HUMANOID_UNDEAD','BOSS_BIPED'].includes(species.bodyPlan))
@@ -1323,6 +1651,12 @@ export function createCommonMonsterActionLoadout({
   const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
   const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
+  const sourceRankRoles=master?COMMON_MONSTER_RANK_NATIVE_CLIPS[rankId]:{};
+  const physicalGenreBindings=Object.freeze(Object.fromEntries(
+    COMMON_GENRE_MOTION_CONTEXTS[requestedGenre].map(group=>[
+      group,freezeList(unique([...(master?.sourceClipRoles?.[group]||[]),...(sourceRankRoles[group]||[])]))
+    ])
+  ));
   if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
   const profile=createCreatureMotionSetProfile({
     id:'common-'+id.toLowerCase(),archetype:id,bodyPlan:species.bodyPlan,
@@ -1377,9 +1711,11 @@ export function createCommonMonsterActionLoadout({
   const coverage=auditMotionCoverage(profile);
   return Object.freeze({
     id,species,profile,genre:requestedGenre,platform:platformId,
+    rank:rankId,sourceHierarchy:master?.sourceHierarchy||null,
     master,masterActuallyExistsInSharedRepository:!!master,
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
     genreGroups:COMMON_GENRE_MOTION_CONTEXTS[requestedGenre],
+    sourceGenreClipBindings:physicalGenreBindings,sourceGenreClipsRequireNativeRetarget:true,
     choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
