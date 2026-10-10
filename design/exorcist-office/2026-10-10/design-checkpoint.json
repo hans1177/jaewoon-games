@@ -187,25 +187,32 @@
       },
       "playerFantasy": "퇴마 사무소는 단순한 라이선스 시뮬레이션에서 시작해 역사, 철학, 예술을 융합한 게임 정체성으로 진화한다. 플레이어는 실질적인 선택과 위험에 직면하며, 과학적 발견과 기술 발전의 흐름을 따라 새로운 경로를 탐색해야 한다.",
       "coreFun": "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계가 필요하다. 입력은 역사적 사건, 선택은 과학적 발견, 상태변화는 기술적 발전, 보상은 새로운 경로 확장, 다음 선택은 플레이어의 선택에 따른 규칙 조합이다."
+    },
+    "local_authoring_parts::8dd1ecda2e7c6d2bae948327dbf0b9bfc6acac5cdb5fd0048e2a8d0648e66ad3:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 역사적 사건 발생",
+        " 상태변화 -> 과학적 발견 실현",
+        "보상/위험 -> 기술적 발전 확장"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 631606,
-      "lastMs": 76677,
+      "totalMs": 689308,
+      "lastMs": 57702,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:29:02.994Z"
+      "updatedAt": "2026-10-10T10:30:00.700Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:31.164Z",
-  "updatedAt": "2026-10-10T10:29:02.995Z",
+  "updatedAt": "2026-10-10T10:30:00.709Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1697,8 +1704,8 @@
   "localAuthoringSplits": {
     "ef00e71b057bb83a672abb490dab81c631c0ab2a9c20450b5768cd5139fd7de0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:29:02.995Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:30:00.700Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
