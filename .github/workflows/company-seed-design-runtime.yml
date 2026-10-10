@@ -32,6 +32,7 @@ permissions:
 concurrency:
   # One canonical runtime: finish the active checkpointed batch; engine changes enter the next batch.
   group: company-seed-design-runtime
+  queue: max
   cancel-in-progress: false
 
 env:
@@ -58,7 +59,44 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
+      - name: Verify current design engine snapshot before runtime writes
+        id: main_snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin '+refs/heads/main:refs/remotes/origin/main'
+          # Only a superseded design-relevant revision skips this batch; unrelated pushes do not discard work.
+          if git diff --quiet "$GITHUB_SHA" "origin/main" -- \
+            '.github/workflows/company-seed-design-runtime.yml' \
+            'company-learning/platform-release-roadmap.json' \
+            'company-directive.json' \
+            'game-catalog.json' \
+            'owner-design-reset-queue.json' \
+            'tools/company-design-cycle.mjs' \
+            'tools/company-game-seed-contract.mjs' \
+            'tools/company-all-games-design-reset.mjs' \
+            'tools/owner-design-reset.mjs' \
+            'tools/vibe2-design-intelligence.mjs' \
+            'tools/company-design-checkpoint-recovery.mjs' \
+            'tools/company-baseline-gate.mjs' \
+            'tools/company-design-seed-normalize.mjs' \
+            'tools/company-design-gate-scoring-v2.mjs' \
+            'tools/company-strict-production-review.mjs' \
+            'tools/company-design-prepromotion-repair.mjs' \
+            'tools/company-shared-context.mjs'; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_ENGINE_SNAPSHOT=CURRENT'
+          else
+            rc=$?
+            if [ "$rc" -ne 1 ]; then
+              echo "DESIGN_ENGINE_SNAPSHOT_CHECK_FAILED=$rc"
+              exit "$rc"
+            fi
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_ENGINE_SNAPSHOT=SUPERSEDED_SKIP_NO_MUTATION'
+          fi
       - name: Load latest company runtime state
+        if: steps.main_snapshot.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -77,6 +115,7 @@ jobs:
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
       - name: Synchronize active owner design reset seeds
+        if: steps.main_snapshot.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -93,6 +132,7 @@ jobs:
           NODE
 
       - name: Auto-enroll and persist active GAME_SEED intake
+        if: steps.main_snapshot.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -130,12 +170,14 @@ jobs:
           echo 'MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
 
       - name: Validate shared worker policy log and architecture context
+        if: steps.main_snapshot.outputs.current == 'true'
         run: |
           node --check tools/company-shared-context.mjs
           node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-plan.json
 
       - name: Resolve central-policy active incomplete GAME_SEED targets
+        if: steps.main_snapshot.outputs.current == 'true'
         id: targets
         shell: bash
         run: |

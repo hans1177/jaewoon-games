@@ -197,6 +197,31 @@ test('no-op reset does not dispatch another competing design runtime',()=>{
   assert.match(workflow,/if: steps\.persist_reset\.outputs\.owner_reset_changed == 'true'/);
 });
 
+test('design queue preserves pending runs and stale engine snapshots cannot modify runtime',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const concurrent=workflow.slice(workflow.indexOf('concurrency:'),workflow.indexOf('\nenv:',workflow.indexOf('concurrency:')));
+  assert.match(concurrent,/group: company-seed-design-runtime/);
+  assert.match(concurrent,/queue: max/);
+  assert.match(concurrent,/cancel-in-progress: false/);
+  const resolver=workflow.slice(workflow.indexOf('  resolve-seed-targets:'),workflow.indexOf('  design-cycle:'));
+  assert.match(resolver,/id: main_snapshot/);
+  assert.match(resolver,/git diff --quiet "\$GITHUB_SHA" "origin\/main"/);
+  assert.match(resolver,/DESIGN_ENGINE_SNAPSHOT=SUPERSEDED_SKIP_NO_MUTATION/);
+  assert.match(resolver,/DESIGN_ENGINE_SNAPSHOT_CHECK_FAILED/);
+  const protectedSteps=[
+    'Load latest company runtime state',
+    'Synchronize active owner design reset seeds',
+    'Auto-enroll and persist active GAME_SEED intake',
+    'Validate shared worker policy log and architecture context',
+    'Resolve central-policy active incomplete GAME_SEED targets'
+  ];
+  for(const name of protectedSteps){
+    assert.ok(resolver.includes("      - name: "+name+"\n        if: steps.main_snapshot.outputs.current == 'true'"),
+      'stale workflow must skip '+name);
+  }
+  assert.match(workflow,/if: needs\.resolve-seed-targets\.outputs\.run == 'true'/);
+});
+
 test('seed design runtime keeps owner reset review parallel with active development',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/const activeResetSeeds=active\.filter/);
