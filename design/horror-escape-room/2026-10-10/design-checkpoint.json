@@ -1472,25 +1472,85 @@
       "rangeUnit": "블록",
       "resource": "에너지",
       "cost": 25
+    },
+    "local_authoring_parts::a8e1c9a22eba4d3593614f44ff865d34c5b3f90093e1bf79b64b78e09fbee987:cooldownSeconds,telegraph,avoidance,effect,stateInputs": {
+      "cooldownSeconds": 7,
+      "telegraph": "충격 가방 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 충격 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ]
+    },
+    "local_authoring_parts::a8e1c9a22eba4d3593614f44ff865d34c5b3f90093e1bf79b64b78e09fbee987:stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "IMPACT_BAG",
+      "costKey": "IMPACT_BAG_COST",
+      "cooldownKey": "IMPACT_BAG_COOLDOWN"
+    },
+    "local_authoring_parts::9a1248fdcb7c22b549feee150012e0033899f2218c7b2504228a65db21fee6b2:cooldownSeconds,telegraph,avoidance,effect,stateInputs,stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "cooldownSeconds": 7,
+      "telegraph": "충격 가방 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 충격 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "IMPACT_BAG",
+      "costKey": "IMPACT_BAG_COST",
+      "cooldownKey": "IMPACT_BAG_COOLDOWN"
+    },
+    "local_authoring_parts::34ee3eaa215f531fb7c61932d65225e8e6fc007da46b0f27c9f49ae84132d656:abilities:6:773cec108325fe10": {
+      "id": "IMPACT_BAG",
+      "name": "충격 가방",
+      "kind": "HUMAN",
+      "ownerId": "COURIER",
+      "ruleId": "IMPACT_BAG_RU1234567890123456789012345678901234567890123456789012345678901234567",
+      "trigger": "충격 가방 실행",
+      "range": 15,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 25,
+      "cooldownSeconds": 7,
+      "telegraph": "충격 가방 실행 시 감염 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 충격 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "IMPACT_BAG",
+      "costKey": "IMPACT_BAG_COST",
+      "cooldownKey": "IMPACT_BAG_COOLDOWN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 80,
-      "successes": 77,
+      "calls": 82,
+      "successes": 79,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2450326,
-      "lastMs": 8641,
+      "totalMs": 2476955,
+      "lastMs": 10849,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:15:11.721Z"
+      "updatedAt": "2026-10-10T10:15:38.353Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:15:11.722Z",
+  "updatedAt": "2026-10-10T10:15:38.355Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2825,7 +2885,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:15:11.722Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:15:38.355Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
