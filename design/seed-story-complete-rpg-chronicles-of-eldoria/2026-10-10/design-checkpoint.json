@@ -209,25 +209,40 @@
       "name": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
       "purpose": "게임 정체성의 대표 행동 및 플레이어가 실제로 수행하는 실제 상태 변화를 구체화",
       "playerChoice": "역사와 예술의 상호작용 증대 - 역사의 전개, 예술의 발전을 통해 세계의 정체성을 형성하기 위한 선택 가능성이 등장합니다만, 이 선택이 직접적인 게임 진행에 영향을 미칩니다만, 그 결과는 플레이어의 판단에 따라 다양하게 나타납니다만, 이 선택은 게임의 진보와 새로운 가능성으로 이어집니다만, 이 선택은 게임의 전체적인 방향과 연결되어 있습니다만, 이 선택은 단순한 기능적 변화보다는 더 깊이 있는 인과적 관계를 보여줍니다만, 이 선택은 게임의 중요한 요소로서 지속적으로 반복됩니다만, 이 선택은 게임의 전체적인 맥락에서 이해할 수 있도록 설계되었습니다만, 이 선택은 게임의 핵심 재미와 시스템 연결을 강화하여 플레이어에게 유익하고 매력적인 경험을 제공합니다만, 이 선택은 게임의 다양한 측면에서 볼 수 있으며, 각각의 선택은 다른 측면에서도 의미 있게 작용합니다만, 이 선택은 게임의 구"
+    },
+    "local_authoring_parts::07cded765ed9864ef332ccd39306ac01456c8ae8880dec55ddd875b677a099b5:signatureSystems:1": {
+      "id": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-2",
+      "grammarRole": "A",
+      "stateInputs": [
+        "역사",
+        "예술"
+      ],
+      "stateOutputs": [
+        "역사",
+        "예술"
+      ],
+      "name": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
+      "purpose": "게임 정체성을 형성하며 역사와 예술의 상태 교환을 통해 플레이어가 선택하는 대상을 결정하고 세계의 정체성을 이끌어낸다.",
+      "playerChoice": "플레이어의 선택 - 실제 세계 상태 변화를 유발하여 다음 사건을 설정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1037661,
-      "lastMs": 107011,
+      "totalMs": 1139303,
+      "lastMs": 101642,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:24:00.140Z"
+      "updatedAt": "2026-10-10T03:25:41.784Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:06:42.448Z",
-  "updatedAt": "2026-10-10T03:24:00.141Z",
+  "updatedAt": "2026-10-10T03:25:41.784Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1985,8 +2000,8 @@
   "localAuthoringSplits": {
     "2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:24:00.140Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "lastSuccessfulModelCallAt": "2026-10-10T03:25:41.784Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
