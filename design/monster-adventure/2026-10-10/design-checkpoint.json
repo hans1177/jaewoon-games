@@ -194,25 +194,41 @@
         "SELECT: 턴제 전투 시스템을 통해 몬스터의 스킬을 선택하고 속성 상성을 활용하여 적을 제압합니다.",
         "OUTPUT: 전투 보상으로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다."
       ]
+    },
+    "local_authoring_parts::16ef1e8b494e7a1a9e3c395d3d618955a4a3f9788feec17eb845d0c8a305f2be:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_turn_based_strategy_interaction",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_MOVEMENT_SELECTION",
+        "MONSTER_SKILL_CHOICE",
+        "FINAL_WORLD_MAP_MODIFICATION"
+      ],
+      "stateOutputs": [
+        "ADVENTURE_PROGRESSION",
+        "STRATEGIC_DECISION_MAKER"
+      ],
+      "name": "TURN_BASED_STRATEGY_INTERACTION_WITH_ADVENTURE_GROWTH",
+      "purpose": "플레이어가 턴제 전략과 탐험이 결합된 모바일 어드벤처 게임에서 몬스터의 속성과 스킬을 고려하여 전투에 최적화된 선택을 하며, 그 결과로는 새로운 자원과 능력을 획득해 더 강력한 적과 도전하게 된다.",
+      "playerChoice": "플레이어는 월드 맵 이동 시 몬스터와의 조우 또는 자원 수집을 선택하고, 전투 중 몬스터의 스킬 선택 및 속성 상성을 활용하여 적을 제압하며, 전투 후 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 594459,
-      "lastMs": 52801,
+      "totalMs": 672280,
+      "lastMs": 77821,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:36:08.391Z"
+      "updatedAt": "2026-10-10T05:37:26.214Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:26:13.908Z",
-  "updatedAt": "2026-10-10T05:36:08.391Z",
+  "updatedAt": "2026-10-10T05:37:26.214Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -995,7 +1011,7 @@
   "localAuthoringSplits": {
     "502844c286ccc80f21837314df9aa89f4b293f370b889c2df6955852afd630bd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:36:08.391Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:37:26.214Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
