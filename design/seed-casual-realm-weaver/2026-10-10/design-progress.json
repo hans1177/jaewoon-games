@@ -9,10 +9,10 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 12,
-  "lastSuccessfulModelCallAt": "2026-10-10T07:03:15.739Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T07:05:40.626Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN",
   "designerSeed": {
     "file": "design/seed-casual-realm-weaver/2026-10-10/design-seed.json",
     "contentDigest": "a57a086c45d42594c091d79a3599ecfefa7c040ae2c40b50e664313c92188b44",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 866122,
-      "lastMs": 81109,
+      "totalMs": 1011003,
+      "lastMs": 144881,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:03:15.737Z"
+      "updatedAt": "2026-10-10T07:05:40.626Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T07:03:15.744Z"
+  "updatedAt": "2026-10-10T07:05:40.630Z"
 }

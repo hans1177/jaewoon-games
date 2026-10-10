@@ -609,21 +609,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 866122,
-      "lastMs": 81109,
+      "totalMs": 1011003,
+      "lastMs": 144881,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:03:15.737Z"
+      "updatedAt": "2026-10-10T07:05:40.626Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:49.200Z",
-  "updatedAt": "2026-10-10T07:03:15.744Z",
+  "updatedAt": "2026-10-10T07:05:40.630Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1887,20 +1887,82 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "b38648bcd94bccde0fa662599cd615955f1a57dc8279f5884f1970c987d8bf51"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_STATE_EXCHANGE_BROKEN",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "a_road_sign→main_road_sign의 출력과 입력 상태가 연결되지 않는다"
+        },
+        "requiredAction": "systemInterconnections: a_road_sign→main_road_sign의 출력과 입력 상태가 연결되지 않는다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:0:4f53cda18c2baa0c": 1,
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:1:291aa520ed65de38": 1,
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:2:f264711b51c41141": 4,
-    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": 4
+    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": 4,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:03:15.739Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "스테이지가 진행될수록 지형의 복잡도가 증가하며, 새로운 속성을 가진 조각들이 추가됩니다. 플레이어는 점진적으로 더 넓고 화려한 세계를 직조하며, 수집한 조각으로 자신만의 커스텀 맵을 구성할 수 있습니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "STABILIZE",
+        "resourceFlow": "SINGLE",
+        "balanceRules": "기존 MAIN/A/B/C/@의 승인된 역할을 편의상 다시 분류하거나 장르에 없는 수집/전투를 강제하지 않는다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1",
+          "newGameplay": "플레이어가 무작위로 배치된 조각을 연결하여 시각적 피드백과 성취감을 경험하게 하며, 그 과정에서 주변 환경이 변형되고 점수가 증대합니다.",
+          "systemImpact": "주변 환경 변화와 점수 증대"
+        },
+        {
+          "milestone": "2",
+          "newGameplay": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+          "systemImpact": "시각적 피드백과 '생명력의 전이' 경험"
+        },
+        {
+          "milestone": "3",
+          "newGameplay": "모바일 환경에서의 런타임 절차적 조각 생성 및 파티클 효과 발현.",
+          "systemImpact": "런타임 절차적 조각 생성 및 파티클 효과 발현"
+        },
+        {
+          "milestone": "4",
+          "newGameplay": "플레이어가 직접 만족감을 느끼게 하는 조각의 색상/형태 매칭에 의해 인과적으로 연결되어 있으며, 플레이어가 선택한 조각 위치 또는 색상/형태 변경으로 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다.",
+          "systemImpact": "보너스 효과 및 새로운 스테이지 진입"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "점수 감소",
+          "주변 환경 변화 없음"
+        ],
+        "retryFlow": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+        "riskPressure": "시각적 피드백 부재, 주변 환경 변화 유실, 점수 감소로 인해 재접속 필요성이 증대한다.",
+        "recoveryRules": "조각의 위치 또는 색상/형태 변경을 결정하여 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
+      }
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T07:05:40.626Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_STATE_EXCHANGE_BROKEN",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
