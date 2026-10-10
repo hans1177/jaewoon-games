@@ -194,40 +194,25 @@
         "전투 중 적을 처치하여 실시간으로 골목 자원을 획득하고 이를 유닛 업그레이드나 추가 배치에 투자하는 단계",
         "웨이브를 클리어하고 획득한 전리품으로 군단 전체의 영구적 특성을 강화하여 더 높은 난이도에 도전하는 단계"
       ]
-    },
-    "local_authoring_parts::4ba86bc452f676ec23f2a951abe72b4055215ad27a41f90b595c56656fcf5ea7:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_rock",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "자원량 변화",
-        "유닛 소환 결정"
-      ],
-      "stateOutputs": [
-        "유닛 배치 기반 전략적 선택 생성",
-        "실시간 자원 가치 조절 및 타이밍 결정"
-      ],
-      "name": "골목길 시너지 배치 시스템 - 실시간 재화 순환 엔진",
-      "purpose": "플레이어가 골목길의 공간 구조와 자원의 실시간 가치 변동에 따라 유닛의 배치 위치와 소환 타이밍을 전략적으로 결정하며, 시너지 효과로 아지트 방어를 강화하는 독창적인 게임 메커니즘을 제공합니다.",
-      "playerChoice": "특정 골목 구역에서 유닛을 인접하게 배치할 때, 시너지 효과를 극대화하기 위해 특정 속성의 유닛들을 좁은 골목에 밀집하여 배치하거나, 자원의 즉시 소모 또는 저축으로 고성능 유닛의 소환 타이밍을 조절해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 675269,
-      "lastMs": 49940,
+      "totalMs": 685915,
+      "lastMs": 10646,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:52:45.004Z"
+      "updatedAt": "2026-10-10T10:52:55.652Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:41:29.707Z",
-  "updatedAt": "2026-10-10T10:52:45.004Z",
+  "updatedAt": "2026-10-10T10:52:55.652Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1554,14 +1539,24 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::4ba86bc452f676ec23f2a951abe72b4055215ad27a41f90b595c56656fcf5ea7:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::4ba86bc452f676ec23f2a951abe72b4055215ad27a41f90b595c56656fcf5ea7:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "11093b6f50710279f0c8979e373e21d35a1b452344afccfd9ad2185c6a327446": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:52:45.004Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:52:55.652Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
