@@ -2239,8 +2239,8 @@ function nativeDccFamilyForTypes(types=[]){
 }
 // 기존 Blender 제작 책임에서 사용하는 로컬 오픈소스 원본과 제작 범위.
 export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
-  'mesh-ai':freeze({source:'https://github.com/VAST-AI-Research/TripoSR',license:'MIT',
-    engine:'TRIPOSR_IMAGE_TO_3D_WITH_BLENDER',requiresLocalModel:true,
+  'mesh-ai':freeze({source:'https://github.com/microsoft/TRELLIS.2',baselineSource:'https://github.com/VAST-AI-Research/TripoSR',license:'MIT',
+    engine:'PINNED_OFFLINE_TRELLIS2_4B_OR_TRIPOSR_WITH_BLENDER',requiresLocalModel:true,
     types:freezeList(['background','environment','item','weapon','prop'])}),
   human:freeze({source:'https://github.com/makehumancommunity/mpfb2',
     license:'GPL-3.0-or-later',outputLicense:'CC0',engine:'MPFB2_HUMAN_RIG_WITH_BLENDER',
@@ -2278,6 +2278,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const editableSource=clean(recipe?.editableSource||script).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const module=clean(recipe?.module).toLowerCase()||'auto';
   const sourceModel=clean(recipe?.sourceModel).replaceAll('\\','/')||null;
+  const meshModel=clean(recipe?.meshModel).toLowerCase()||'auto';
   const targetName=clean(target).toLowerCase();
   const typeMatch=!types.length||types.some(type=>requiredTypes.includes(type));
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
@@ -2289,12 +2290,13 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)
     &&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))
-    &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel));
+    &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel))
+    &&['auto','triposr','trellis2'].includes(meshModel);
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,
     types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
-    module,sourceModel,sourceSanitized:recipe?.sourceSanitized===true,
+    module,sourceModel,meshModel,sourceSanitized:recipe?.sourceSanitized===true,
     imageToMesh:recipe?.imageToMesh===true,sourceImage:clean(recipe?.sourceImage)||null,
     sourceLicense:clean(recipe?.sourceLicense)||null,sourceCredit:clean(recipe?.sourceCredit)||null,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
@@ -2321,6 +2323,9 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
   const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai':modelRequested?'object':'auto';
+  const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
+  if(!['auto','triposr','trellis2'].includes(meshModel))throw new Error('IMAGE_TO_MESH_MODEL_UNSUPPORTED:'+meshModel);
+  if(meshModel!=='auto'&&!imageRequested)throw new Error('IMAGE_TO_MESH_MODEL_REQUIRES_INPUT_IMAGE');
   if(module==='auto'&&!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
   if(module!=='auto'&&!VIBE_NATIVE_OPEN_SOURCE_MODULES[module].types.includes(typeName))return null;
   if(imageRequested&&module==='human')throw new Error('HUMAN_MPFB_REQUIRES_MODEL_OR_LOCAL_ADDON');
@@ -2382,7 +2387,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
     family,license:resolvedLicense,module:modelModule,
-    imageToMesh:imageRequested,sourceImage:imageRequested?sourceImage:null,
+    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',sourceImage:imageRequested?sourceImage:null,
     sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,
     sourceLicense:(imageRequested||modelRequested)?sourceLicense:null,sourceCredit,
     executor:'BLENDER_PYTHON',
@@ -2393,7 +2398,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
       '--profile',actualProfile,'--target',targetName,'--subject',subject,
       '--style-json',JSON.stringify(expression),'--genre',genre,
       ...(module!=='auto'?['--module',module]:[]),
-      ...(imageRequested?['--source-image',sourceImage]:[]),
+      ...(imageRequested?['--source-image',sourceImage,'--mesh-model',meshModel]:[]),
       ...(modelRequested?['--source-model',sourceModel]:[]),
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
