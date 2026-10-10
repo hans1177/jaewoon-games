@@ -15,9 +15,12 @@ const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))
 
 function centralPolicy(root){
   write(root,'company-learning/platform-release-roadmap.json',{
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY_WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'},
     directNativeDualPlatformDevelopment:{
       status:'OWNER_DIRECT_LOCKED',
       mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
+      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY_WEB']},
       canonicalDevelopmentAdmissionAuthority:true,
       minimumDesignRequired:true,
       strictDesignScoreRequiredForDevelopmentAdmission:false,
@@ -25,14 +28,21 @@ function centralPolicy(root){
       webDevelopmentStageRemoved:false,
       unityWebEnabled:true,
       unityWebRequired:true,
-      unityWebGateRequired:true,
+      unityWebGateRequired:false,
       unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
-      supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
-      automaticPairing:{
-        ROBLOX:['UNITY_WEB_FLOOR','ROBLOX','UNITY'],
-        UNITY:['UNITY_WEB_FLOOR','UNITY','ROBLOX']
+      upperPlatformAdmission:'MINIMUM_DESIGN_READY',
+      development:{
+        unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart:false,
+        upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass:false
       },
-      unityWebValidationSurface:{requiredForDevelopmentAdmission:true}
+      upperPlatformDevelopmentReadinessGate:{
+        gateId:'UPPER_PLATFORM_DEVELOPMENT_READY',
+        allCriteriaRequired:true,
+        targets:['ROBLOX','UNITY']
+      },
+      supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
+      automaticPairing:{ROBLOX:['ROBLOX','UNITY_WEB_FLOOR'],UNITY:['UNITY_WEB_FLOOR']},
+      unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
     }
   });
 }
