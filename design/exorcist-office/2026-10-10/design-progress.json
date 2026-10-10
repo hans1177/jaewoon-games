@@ -9,24 +9,24 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 5,
-  "lastSuccessfulModelCallAt": "2026-10-10T05:51:04.947Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:52:04.722Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:A",
   "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 24,
+      "successes": 23,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1208233,
-      "lastMs": 18822,
+      "totalMs": 1268002,
+      "lastMs": 15066,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:51:04.947Z"
+      "updatedAt": "2026-10-10T05:52:04.722Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T05:51:04.949Z"
+  "updatedAt": "2026-10-10T05:52:04.724Z"
 }
