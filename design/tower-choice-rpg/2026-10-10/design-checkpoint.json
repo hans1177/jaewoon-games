@@ -622,21 +622,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1270546,
-      "lastMs": 65319,
+      "totalMs": 1535595,
+      "lastMs": 265049,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:17:17.578Z"
+      "updatedAt": "2026-10-10T03:21:42.635Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:17:17.584Z",
+  "updatedAt": "2026-10-10T03:21:42.639Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2343,17 +2343,99 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "5ae3e3ad7152c9fe9b1172cb41d71ad45452a56bb9e15e2e7f909728eb31fd46"
   },
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "failureRetryRisk.failureStates[0]",
+          "value": "FORCED_ROUTE_CHANGE"
+        },
+        "requiredAction": "failureRetryRisk.failureStates[0]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      },
+      {
+        "code": "DESIGN_PLACEHOLDER_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "failureRetryRisk.failureStates[1]",
+          "value": "HARD_FAILURE_RETRY"
+        },
+        "requiredAction": "failureRetryRisk.failureStates[1]의 임시 표식을 실제 조건·선택·상태 변화·검증 방법으로 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      },
+      {
+        "code": "DESIGN_RULE_GRAPH_DISCONNECTED",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "systemInterconnections",
+          "detail": "중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다"
+        },
+        "requiredAction": "systemInterconnections: 중심 행동·두 축·보조·파고들기가 실제 상태 교환으로 이어져야 한다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "systemInterconnections"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::systems-progression": 1
   },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:17:17.580Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "progressionDirection": "Forward",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Adaptive Resource Allocation",
+        "resourceFlow": "Base -> Intermediate -> Boss Tier",
+        "balanceRules": "No Single Dominant Strategy Without Contextual Counterpressure"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Base Phase",
+          "newGameplay": "Dynamic Threat Evolution from Base to Boss Tier",
+          "systemImpact": "Environmental Constraints and Spatialized Enemy Density Adjustment"
+        },
+        {
+          "milestone": "Intermediate Phase",
+          "newGameplay": "Combat Strategy Optimization",
+          "systemImpact": "Resource Allocation Shift and Adaptive Combat Logic under Environmental Pressure"
+        },
+        {
+          "milestone": "Boss Tier Phase",
+          "newGameplay": "Threat Evolution from Base to Boss Tier",
+          "systemImpact": "Player Choice Integration and Dynamic Threat Pattern Shift"
+        }
+      ]
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T03:21:42.635Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_RULE_GRAPH_DISCONNECTED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
