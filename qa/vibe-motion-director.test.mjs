@@ -80,6 +80,7 @@ import {
   COMMON_GENRE_MOTION_CONTEXTS,
   COMMON_SKILL_MOTION_GRAMMAR,
   COMMON_MONSTER_ACTION_SPECIES,
+  COMMON_MONSTER_SPECIES_JOINT_POSES,
   createCommonCareerMotionLoadout,
   createCommonMonsterActionLoadout
 } from '../assets/vibe-motion-director.js';
@@ -658,6 +659,53 @@ test('monster species add actionable limb and attack choreography without human 
     assert.equal(x.productionVerified,false);
     assert.equal(x.gameplayAuthority,false);
   }
+});
+
+
+test('twenty monster body plans use distinct 3D joint curves, not speed-scaled humanoid attacks',()=>{
+  assert.equal(Object.keys(COMMON_MONSTER_ACTION_SPECIES).length,20);
+  assert.equal(Object.keys(COMMON_MONSTER_SPECIES_JOINT_POSES).length,20);
+  const profiles=Object.values(COMMON_MONSTER_SPECIES_JOINT_POSES);
+  const poseIds=new Set(profiles.map(row=>JSON.stringify([row.counterPart,row.supportPart,row.coil,row.hit])));
+  assert.equal(poseIds.size,20,'species pose signatures must be distinct');
+  for(const speciesId of Object.keys(COMMON_MONSTER_ACTION_SPECIES)){
+    const loadout=createCommonMonsterActionLoadout({speciesId,platform:'SHARED'});
+    assert.ok(loadout.choreography.length>=2,speciesId);
+    assert.ok(loadout.profile.presentationVariation.limbPhase,speciesId);
+    for(const action of loadout.choreography){
+      assert.ok(action.jointTracks.length>=3,speciesId+':'+action.id);
+      assert.ok(action.motif,speciesId+':'+action.id);
+      assert.equal(action.authoritativeRootMovement,false);
+      assert.equal(action.authoritativeHitboxAndMovementUnchanged,true);
+      assert.equal(action.verified,false);
+      assert.match(action.sourceType,/REQUIRES_NATIVE_RIG_ADAPTATION/);
+      const uniqueParts=new Set(action.jointTracks.map(x=>x.part));
+      assert.ok(uniqueParts.size>=2,speciesId+':'+action.id);
+      for(const track of action.jointTracks){
+        assert.equal(track.rigJointBindingRequired,true);
+        assert.equal(track.semanticChannelsOnly,true);
+        assert.deepEqual(track.frames.map(x=>x.phase).slice(0,1),[0]);
+        assert.equal(track.frames.at(-1).phase,1);
+        assert.ok(track.frames.every(x=>x.rotation.length===3&&x.rotation.every(Number.isFinite)));
+        assert.ok(track.frames.slice(1,-1).some(x=>x.rotation.some(v=>Math.abs(v)>.02)),
+          speciesId+':'+action.id+':'+track.part+' needs actual articulated pose changes');
+      }
+    }
+    assert.equal(loadout.productionVerified,false);
+    assert.equal(loadout.runtimeVerified,false);
+  }
+  const wolf=createCommonMonsterActionLoadout({speciesId:'WOLF'}).choreography;
+  const fox=createCommonMonsterActionLoadout({speciesId:'FOX'}).choreography;
+  assert.notDeepEqual(wolf[0].jointTracks,fox[0].jointTracks);
+  const spider=createCommonMonsterActionLoadout({speciesId:'SPIDER'}).choreography;
+  assert.ok(spider[0].jointTracks.some(row=>row.part==='EIGHT_LEGS'));
+  assert.ok(spider[0].jointTracks.some(row=>row.part==='ABDOMEN'));
+  const beetle=createCommonMonsterActionLoadout({speciesId:'BEETLE'}).choreography;
+  assert.ok(beetle.some(action=>action.jointTracks.some(row=>row.part==='HORN')));
+  const wyvern=createCommonMonsterActionLoadout({speciesId:'WYVERN'}).choreography;
+  assert.ok(wyvern.some(action=>action.jointTracks.some(row=>row.part==='WINGS')));
+  const slime=createCommonMonsterActionLoadout({speciesId:'SLIME'}).choreography;
+  assert.ok(slime.some(action=>action.jointTracks.some(row=>row.part==='LOBES')));
 });
 
 test('canonical motion director directly exposes shared class and creature motion authoring requests',()=>{
