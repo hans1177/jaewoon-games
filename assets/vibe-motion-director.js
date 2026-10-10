@@ -2559,9 +2559,9 @@ export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
 
 // 실제 시간/좌표 표본에서 연속성 문제를 계산한다. 미적 품질·게임 판정 검증은 별도다.
 export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={},requiredDetailChannels={},loop=false}={}){
-  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxJointSpeed:12,maxJointAcceleration:80,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,
+  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxRootJerk:5000,maxJointSpeed:12,maxJointAcceleration:80,maxJointJerk:5000,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,
     maxAttachmentOffset:.02,maxPenetrationDepth:.005,maxGazeErrorRadians:.26,maxGazeAngularSpeed:20,maxExpressionRate:12,...limits};
-  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxJointSpeed:0,maxJointAcceleration:0,maxYawSpeed:0,maxPlantedDrift:0,...(loop===true?{maxLoopJointPosition:0,maxLoopJointVelocity:0}:{})};
+  const issues=[],violations=[],metrics={maxRootAcceleration:0,maxRootJerk:0,maxJointSpeed:0,maxJointAcceleration:0,maxJointJerk:0,maxYawSpeed:0,maxPlantedDrift:0,...(loop===true?{maxLoopJointPosition:0,maxLoopJointVelocity:0}:{})};
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
   const vec=value=>Array.isArray(value)&&value.length===3&&value.every(finite);
   const record=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
@@ -2617,7 +2617,8 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   if(channels.supportedContacts.some(key=>!contactKeys.includes(key)))issues.push('REQUIRED_SUPPORT_CONTACT_MISSING');
   if(samples[0]?.timeSeconds!==0||!finite(samples.at(-1)?.timeSeconds)||Math.abs(samples.at(-1).timeSeconds-durationSeconds)>1e-6)issues.push('FULL_CLIP_BOUNDARIES_REQUIRED');
   if(issues.length)return Object.freeze({verdict:'UNVERIFIED',sourceHash:text(sourceHash),clipId:text(clipId),issues:freezeList(issues),violations:freezeList([]),metrics:null,blocksVerifiedPromotion:true,runtimeVerified:false});
-  const anchors=new Map(),openViolations=new Map(),jointVelocities=new Map();let previousVelocity=null,previousDt=null;
+  const anchors=new Map(),openViolations=new Map(),jointVelocities=new Map(),jointAccelerations=new Map();
+  let previousVelocity=null,previousRootAcceleration=null,previousDt=null;
   const report=(kind,index,value,limit,region,startIndex=Math.max(0,index-1))=>{
     metrics[kind]=Math.max(metrics[kind],value);
     const key=kind+':'+region,open=openViolations.get(key);
@@ -2650,14 +2651,24 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   for(let index=1;index<samples.length;index++){
     const before=samples[index-1],after=samples[index],dt=after.timeSeconds-before.timeSeconds;
     const velocity=after.rootPosition.map((value,axis)=>(value-before.rootPosition[axis])/dt/characterHeightMeters);
-    if(previousVelocity)report('maxRootAcceleration',index,distance(velocity,previousVelocity)/((dt+previousDt)/2),thresholds.maxRootAcceleration,'ROOT');
+    if(previousVelocity){
+      const accelDt=(dt+previousDt)/2,acceleration=velocity.map((v,i)=>(v-previousVelocity[i])/accelDt);
+      report('maxRootAcceleration',index,Math.hypot(...acceleration),thresholds.maxRootAcceleration,'ROOT');
+      if(previousRootAcceleration)report('maxRootJerk',index,distance(acceleration,previousRootAcceleration)/accelDt,thresholds.maxRootJerk,'ROOT',Math.max(0,index-3));
+      previousRootAcceleration=acceleration;
+    }
     previousVelocity=velocity;
     const yawDelta=after.rootYawRadians-before.rootYawRadians;
     report('maxYawSpeed',index,Math.abs(Math.atan2(Math.sin(yawDelta),Math.cos(yawDelta)))/dt,thresholds.maxYawSpeed,'ROOT_YAW');
     for(const key of jointKeys){
       const jointVelocity=after.jointPositions[key].map((value,axis)=>(value-before.jointPositions[key][axis])/dt/characterHeightMeters);
       report('maxJointSpeed',index,Math.hypot(...jointVelocity),thresholds.maxJointSpeed,key);
-      if(jointVelocities.has(key))report('maxJointAcceleration',index,distance(jointVelocity,jointVelocities.get(key))/((dt+previousDt)/2),thresholds.maxJointAcceleration,key,Math.max(0,index-2));
+      if(jointVelocities.has(key)){
+        const accelDt=(dt+previousDt)/2,acceleration=jointVelocity.map((v,i)=>(v-jointVelocities.get(key)[i])/accelDt);
+        report('maxJointAcceleration',index,Math.hypot(...acceleration),thresholds.maxJointAcceleration,key,Math.max(0,index-2));
+        if(jointAccelerations.has(key))report('maxJointJerk',index,distance(acceleration,jointAccelerations.get(key))/accelDt,thresholds.maxJointJerk,key,Math.max(0,index-3));
+        jointAccelerations.set(key,acceleration);
+      }
       jointVelocities.set(key,jointVelocity);
     }
     previousDt=dt;
@@ -2684,7 +2695,7 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   return Object.freeze({verdict:violations.length?'FAIL':'PASS',sourceHash,clipId,issues:freezeList([]),metrics:Object.freeze(metrics),violations:freezeList(violations),thresholds:Object.freeze(thresholds),
     frameCount:samples.length,coordinateContract:'ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS',
     detailCoordinateContract:'ATTACHMENTS_WORLD_METERS_PENETRATION_METERS_GAZE_WORLD_DIRECTIONS_EXPRESSION_WEIGHTS_0_TO_1_SUPPORT_LOCAL_METERS',
-    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),jointAccelerationMeasured:true,loopBoundaryMeasured:loop}),
+    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),jointAccelerationMeasured:true,jointJerkMeasured:true,rootJerkMeasured:true,loopBoundaryMeasured:loop}),
     blocksVerifiedPromotion:violations.length>0,traceChecksOnly:true,runtimeVerified:false});
 }
 
@@ -2775,16 +2786,24 @@ export function evaluateMotionTransition({
   });
 }
 
+// 연구 적용: RigMo(2026) 리그 정합성, PhysSkin(2026) 스킨 정규화,
+// PhyMotion(2026) 물리·접촉 검사, DeepMotion 발 고정, Cascadeur 지지중심.
+// 논문·제품의 신경망을 실행했다는 뜻이 아니며 실제 관측치만 검증한다.
 export function auditMotionContact(input={}){
   const {footSlideNormalized,footPlantDriftNormalized,handWeaponOffsetNormalized,
     attackContactOffsetNormalized,pairContactOffsetNormalized,impactEventNormalizedTimeOffset,
-    groundPenetration,meshIntersection,thresholds={},notApplicable={}}=input;
+    groundPenetration,meshIntersection,thresholds={},notApplicable={},rigPhysics=null}=input;
   const limits={
     footSlideNormalizedMax:Number(thresholds.footSlideNormalizedMax??0.035),
     handWeaponNormalizedMax:Number(thresholds.handWeaponNormalizedMax??0.04),
     attackContactNormalizedMax:Number(thresholds.attackContactNormalizedMax??0.06),
     pairContactNormalizedMax:Number(thresholds.pairContactNormalizedMax??0.05),
-    impactEventNormalizedTimeMax:Number(thresholds.impactEventNormalizedTimeMax??0.04)
+    impactEventNormalizedTimeMax:Number(thresholds.impactEventNormalizedTimeMax??0.04),
+    balanceOutsideSupportNormalizedMax:Number(thresholds.balanceOutsideSupportNormalizedMax??0.025),
+    jointJerkNormalizedMax:Number(thresholds.jointJerkNormalizedMax??35),
+    skinWeightSumErrorMax:Number(thresholds.skinWeightSumErrorMax??0.002),
+    boneLengthDriftNormalizedMax:Number(thresholds.boneLengthDriftNormalizedMax??0.015),
+    restPoseAlignmentErrorNormalizedMax:Number(thresholds.restPoseAlignmentErrorNormalizedMax??0.05)
   };
   const failures=[];
   const numeric=['footSlideNormalized','footPlantDriftNormalized','handWeaponOffsetNormalized','attackContactOffsetNormalized','pairContactOffsetNormalized','impactEventNormalizedTimeOffset'];
@@ -2804,6 +2823,21 @@ export function auditMotionContact(input={}){
   if(Number(impactEventNormalizedTimeOffset)>limits.impactEventNormalizedTimeMax)failures.push('IMPACT_EVENT_OFFSET');
   if(groundPenetration===true)failures.push('GROUND_PENETRATION');
   if(meshIntersection===true)failures.push('MESH_INTERSECTION');
+  const rigFields=[
+    ['balanceOutsideSupportNormalized','balanceOutsideSupportNormalizedMax','CENTER_OF_MASS_OUTSIDE_SUPPORT'],
+    ['jointJerkNormalized','jointJerkNormalizedMax','POSE_JERK_EXCESS'],
+    ['skinWeightSumError','skinWeightSumErrorMax','SKIN_WEIGHT_NOT_NORMALIZED'],
+    ['boneLengthDriftNormalized','boneLengthDriftNormalizedMax','BONE_LENGTH_DRIFT'],
+    ['restPoseAlignmentErrorNormalized','restPoseAlignmentErrorNormalizedMax','RETARGET_REST_POSE_MISMATCH']
+  ];
+  if(rigPhysics!==null){
+    if(!rigPhysics||typeof rigPhysics!=='object'||Array.isArray(rigPhysics))missing.push('RIG_PHYSICS_OBJECT_REQUIRED');
+    else for(const [field,limit,failure]of rigFields){
+      const value=rigPhysics[field];
+      if(typeof value!=='number'||!Number.isFinite(value)||value<0)missing.push('RIG_PHYSICS_MEASUREMENT_REQUIRED:'+field);
+      else if(value>limits[limit])failures.push(failure);
+    }
+  }
   const observedCount=required.length-missing.length-exempt.length;
   if(!observedCount)missing.push('ACTUAL_CONTACT_OBSERVATION_REQUIRED');
   const score=missing.length?null:Math.max(0,100-failures.length*18);
@@ -2816,6 +2850,7 @@ export function auditMotionContact(input={}){
     notApplicable:Object.freeze(Object.fromEntries(exempt.map(key=>[key,text(notApplicable[key])]))),
     failures:Object.freeze(failures),
     limits:Object.freeze(limits),
+    rigPhysics:rigPhysics===null?null:Object.freeze({measurementRequired:true,measuredKeys:Object.freeze(Object.keys(rigPhysics&&typeof rigPhysics==='object'?rigPhysics:{})),runtimeVerified:false}),
     blocksVerifiedPromotion:!pass
   });
 }
@@ -3618,6 +3653,14 @@ export function createMotionDirectorPlan({
     pairMotion:pair?createPairMotionContract(pair):null,
     transition:transition?evaluateMotionTransition(transition):null,
     contactQa:contactQa?auditMotionContact(contactQa):null,
+    researchAlgorithmSources:Object.freeze({
+      rigAndMotion:'https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html',
+      neuralSkinning:'https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html',
+      composableAction:'https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html',
+      physicsTrace:'https://arxiv.org/abs/2605.14269',
+      pbrMaterial:'https://arxiv.org/abs/2506.15442',
+      modelInferenceRan:false,applied:'PAPER_INSPIRED_DETERMINISTIC_QA_ONLY'
+    }),
     gameplayEventBinding:gameplayEvent?bindGameplayEventToMotion(gameplayEvent):null,
     proceduralMotion:procedural?createProceduralMotionProfile(procedural):null,
     groupMotion:group?createGroupMotionPlan(group):null,

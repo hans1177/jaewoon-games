@@ -1,3 +1,5 @@
+// 파일명: assets/asset-library.js
+// 메인: 회사 등록부의 실제 GLB 원본과 내장 액션을 기존 뷰어로 재생한다.
 const $=id=>document.getElementById(id);
 const MANIFEST='/assets/roblox/world-ghosts/native/asset-gallery.json';
 const SYNC_INTERVAL_MS=30000;
@@ -16,6 +18,14 @@ let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-
 const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
+const nativeGLB=value=>typeof value==='string'&&/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(value)?value:'';
+let nativeClip='';
+function nativeClipName(name){
+ const key=String(name).toLowerCase();
+ for(const [term,label]of [['idle','대기'],['walk','걷기'],['run','달리기'],['jog','조깅'],['sprint','전력질주'],['attack','공격'],['hit','피격'],['death','사망'],['guard','방어'],['dodge','회피'],['jump','점프'],['cast','마법'],['skill','기술'],['shot','발사'],['bite','물기']])
+  if(key.includes(term))return label+' · '+name;
+ return name;
+}
 async function request(url,options={}){
  const response=await fetch(url,{cache:'no-cache',signal:AbortSignal.timeout(20000),...options});
  if(!response.ok)throw Error('자산 서버에 연결하지 못했어.');return response;
@@ -106,7 +116,7 @@ function showList(){
   const button=document.createElement('button');button.type='button';button.dataset.id=row.id;button.setAttribute('aria-pressed',String(row.id===selectedId));
   const title=document.createElement('strong');title.textContent=row.title;
   const detail=document.createElement('small');
-  const preview=row.retiredPreview?'홈 미리보기 제외':row.atom?'3D 모션':row.sample?(row.category==='ENVIRONMENT'?'3차원 배경':'3차원 동작'):row.image?'등록 이미지':'미리보기 준비 중';
+  const preview=row.retiredPreview?'홈 미리보기 제외':nativeGLB(row.asset?.path)?'실제 GLB 메쉬':row.atom?'3D 모션':row.sample?(row.category==='ENVIRONMENT'?'3차원 배경':'3차원 동작'):row.image?'등록 이미지':'미리보기 준비 중';
   const quality=row.asset?.internalAuditScore!==undefined?['품질 '+row.asset.internalAuditScore,row.asset?.internalAuditGrade].filter(Boolean).join(' / '):row.asset?.internalAuditGrade?'품질 '+row.asset.internalAuditGrade:'';
   const source=String(row.asset?.sourcePath||row.asset?.path||'').trim(),shared=sourceCounts.get(source)||0;
   detail.textContent=kind==='all'?[categoryLabels[row.category]||row.category,row.id,row.asset?.platform,row.asset?.status,shared>1?'같은 경로 '+shared+'개':'',quality,preview].filter(Boolean).join(' · '):kind==='monster'?(forms[row.form]||row.form)+(row.sample?' · 6가지 동작':row.image?' · 이미지':' · 준비 중'):kind==='common'?(row.atom?(row.role||'공용 R15 동작')+' · 3D 모션':'미리보기 준비 중'):(row.sample?'3차원 배경':row.image?'등록 이미지':'미리보기 준비 중');
@@ -147,6 +157,7 @@ async function getViewer(){
 async function choose(row,force=false){
  const key=kind+':'+row.id+':'+(row.sample?.sha256||row.atom?.atomId||row.image);
  if(!force&&key===currentKey)return;
+ viewer?.cancelLoad();nativeClip='';
  const token=++selectionToken;currentKey='';selectedId=row.id;currentRow=row;
  for(const button of $('assetList').querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.id===row.id));
  const category=row.category||row.asset?.category||row.asset?.family||'OTHER';
@@ -163,12 +174,42 @@ async function choose(row,force=false){
  $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=kind==='all'?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
  $('assetType').textContent=kind==='all'?(categoryLabels[category]||category).toUpperCase():kind==='monster'?'MONSTER STUDIO':kind==='common'?'COMMON CHARACTER MOTION':'WORLD LIBRARY';
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;
+ $('meshControls').hidden=true;$('meshWireframe').checked=false;
  $('previewStatus').textContent='미리보기를 불러오는 중…';$('previewBadge').textContent='불러오는 중';
  try{
   if(row.retiredPreview){
    $('previewBadge').textContent='목록 공개';$('previewStatus').textContent='등록 정보는 공개 중이지만 기존 요청에 따라 이 자산의 홈 미리보기는 제외돼 있어.';
    $('verificationNote').textContent='원본/재사용 기록은 라이브러리에 유지돼.';
-  }else if(row.atom){
+  }else if(nativeGLB(row.asset?.path)){
+    const activeViewer=await getViewer();if(token!==selectionToken)return;
+    const measured=await activeViewer.setGLB({id:row.id,path:nativeGLB(row.asset.path)});
+    if(token!==selectionToken||!measured)return;
+    $('assetCanvas').hidden=false;$('playbackControls').hidden=false;
+    $('meshControls').hidden=false;$('meshWireframe').checked=false;
+    $('pauseMotion').hidden=measured.clips.length===0;$('replayMotion').hidden=measured.clips.length===0;
+    $('playbackSpeed').parentElement.hidden=measured.clips.length===0;
+    const basic=$('basicClips'),actions=$('actionClips');basic.replaceChildren();actions.replaceChildren();
+    for(const native of measured.clips){
+      const action=/(attack|hit|death|guard|parry|dodge|cast|skill|shot|bite|pounce|slash|stun|heavy|light|strike)/i.test(native.id);
+      const button=document.createElement('button');button.type='button';button.dataset.nativeClip=native.id;
+      button.textContent=nativeClipName(native.id);
+      button.addEventListener('click',()=>{
+        if(!activeViewer.selectNativeClip(native.id))return;
+        nativeClip=native.id;
+        for(const control of document.querySelectorAll('[data-native-clip]'))control.setAttribute('aria-pressed',String(control.dataset.nativeClip===native.id));
+        $('previewStatus').textContent='원본 GLB · '+nativeClipName(native.id);
+      });
+      (action?actions:basic).append(button);
+    }
+    $('motionControls').hidden=!measured.clips.length;
+    if(measured.clips.length){
+      nativeClip=measured.clips[0].id;
+      for(const control of document.querySelectorAll('[data-native-clip]'))control.setAttribute('aria-pressed',String(control.dataset.nativeClip===nativeClip));
+    }
+    $('previewBadge').textContent='원본 3D 메시';
+    $('previewStatus').textContent='메시 '+measured.meshes+'개 · 삼각형 '+measured.triangles.toLocaleString('ko-KR')+'개 · 관절 '+measured.bones+'개 · 동작 '+measured.clips.length+'개';
+    $('verificationNote').textContent='실제 등록 GLB를 표시 중이야. 로블록스·유니티 실행, 모바일 프레임, 실제 관절 리타겟 품질은 별도 검증이 필요해.';
+   }else if(row.atom){
    const activeViewer=await getViewer();if(token!==selectionToken)return;
    $('assetCanvas').hidden=false;activeViewer.setCommonMotion(row.atom);
    $('playbackControls').hidden=false;$('motionControls').hidden=true;
@@ -255,8 +296,9 @@ for(const [buttonId,assetId,clipId]of featuredTargets)$(buttonId).addEventListen
 $('allTab').addEventListener('click',()=>switchKind('all'));$('monsterTab').addEventListener('click',()=>switchKind('monster'));$('commonTab').addEventListener('click',()=>switchKind('common'));$('environmentTab').addEventListener('click',()=>switchKind('environment'));
 $('assetSearch').addEventListener('input',showList);$('formFilter').addEventListener('change',showList);for(const id of ['folderFilter','platformFilter','verificationFilter','sourceFilter'])$(id).addEventListener('change',showList);
 $('refreshAssets').addEventListener('click',()=>refresh(true));
-$('pauseMotion').addEventListener('click',()=>{paused=!paused;viewer?.setPaused(paused);pauseLabel();$('previewStatus').textContent=(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+(paused?' · 멈춤':' · 재생');});
-$('replayMotion').addEventListener('click',()=>{paused=false;viewer?.setPaused(false);viewer?.replay();pauseLabel();$('previewStatus').textContent=(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+' · 재생';});
+$('pauseMotion').addEventListener('click',()=>{paused=!paused;viewer?.setPaused(paused);pauseLabel();$('previewStatus').textContent=(nativeClip?'원본 GLB '+nativeClipName(nativeClip):kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+(paused?' · 멈춤':' · 재생');});
+$('replayMotion').addEventListener('click',()=>{paused=false;viewer?.setPaused(false);viewer?.replay();pauseLabel();$('previewStatus').textContent=nativeClip?'원본 GLB '+nativeClipName(nativeClip)+' · 재생':(kind==='common'?(currentRow?.title||'공용 R15 동작'):(clipNames[selectedClip]||selectedClip))+' · 재생';});
+$('meshWireframe').addEventListener('change',()=>viewer?.setWireframe($('meshWireframe').checked));
 $('playbackSpeed').addEventListener('change',()=>viewer?.setSpeed(Number($('playbackSpeed').value)));
 $('viewAngle').addEventListener('input',()=>viewer?.setAngle(Number($('viewAngle').value)));
 $('assetCanvas').addEventListener('previewlost',()=>{$('previewStatus').textContent='화면 연결이 끊겼어. 페이지를 새로 열어 줘.';});

@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="ko" data-asset-library-version="15">
+<html lang="ko" data-asset-library-version="16">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08111e">
 <title>회사 에셋 라이브러리 · 재운게임즈</title>
 <link rel="stylesheet" href="/assets/asset-library.css">
+<script type="importmap">{"imports":{"three":"/assets/roblox/world-ghosts/native/mesh/three/three.module.js","three/addons/":"/assets/roblox/world-ghosts/native/mesh/three/examples/jsm/"}}</script>
 </head>
 <body>
 <main class="shell">
@@ -45,6 +46,7 @@
    <div class="clipRow"><span>액션</span><div id="actionClips"></div></div>
   </div>
   <div class="playback" id="playbackControls"><button id="pauseMotion" type="button" aria-pressed="false">멈춤</button><button id="replayMotion" type="button">처음부터</button><label>재생 속도<select id="playbackSpeed"><option value="1">1배</option><option value="0.25">0.25배</option><option value="0.5">0.5배</option></select></label><label class="angle">보는 각도<input id="viewAngle" type="range" min="0" max="360" value="0"></label></div>
+  <div class="meshControls" id="meshControls" hidden><label><input id="meshWireframe" type="checkbox"> 메쉬 선 보기</label><span>화면을 드래그해 회전 · 두 손가락으로 확대</span></div>
   <p class="note" id="verificationNote">소스로 만든 3차원 미리보기 · 게임 안에서의 품질 검수는 별도야.</p>
  </div>
 </section>

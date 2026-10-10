@@ -551,3 +551,35 @@ test('all per-object factory panels bind observed chest harvest bed light and in
  assert.match(progress,/root:SetAttribute\("OwnsInteractionDuration",false\)/);
  assert.match(progress,/return root,controller,sync/);
 });
+
+
+test('canonical asset library previews actual local skinned GLB and animation clips without claiming native QA',()=>{
+  const page=fs.readFileSync('asset-library.html','utf8');
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  assert.match(page,/type="importmap"/);
+  assert.ok(page.indexOf('type="importmap"')<page.indexOf('src="/assets/asset-library.js"'));
+  assert.match(page,/id="meshControls"/);
+  assert.match(page,/id="meshWireframe"/);
+  assert.match(library,/activeViewer\.setGLB\(/);
+  assert.match(library,/nativeGLB\(row\.asset\?\.path\)/);
+  assert.match(library,/activeViewer\.selectNativeClip\(native\.id\)/);
+  assert.match(viewer,/import \{GLTFLoader\}/);
+  assert.match(viewer,/new THREE\.AnimationMixer\(model\)/);
+  assert.match(viewer,/function disposeNative\(root\)/);
+  assert.match(viewer,/function setWireframe\(value\)/);
+  assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
+  assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
+  assert.match(viewer,/host\.dataset\.format='glb'/);
+  const binaries=registry.assets.filter(row=>row.platform==='SHARED_MASTER'&&
+    /^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(row.path||''));
+  assert.ok(binaries.length>=4);
+  for(const record of binaries.slice(0,4)){
+    const bytes=fs.readFileSync(record.path.slice(1));
+    assert.equal(bytes.subarray(0,4).toString(),'glTF',record.id);
+    assert.equal(bytes.readUInt32LE(8),bytes.length);
+    assert.notEqual(record.productionVerified,true);
+  }
+  assert.match(library,/런타임|검증/);
+});

@@ -1,4 +1,7 @@
+// 파일명: assets/asset-library-viewer.js
+// 임포트: 기존 Three.js와 glTF 로더로 실제 메시·스킨·모션을 렌더한다.
 import * as THREE from '/assets/roblox/world-ghosts/native/mesh/three/three.module.js';
+import {GLTFLoader} from '/assets/roblox/world-ghosts/native/mesh/three/examples/jsm/loaders/GLTFLoader.js';
 const COMMON_R15_RECIPE=Object.freeze({
  bones:{
   HumanoidRootPart:{position:[0,3,0],parent:null},LowerTorso:{position:[0,3.05,0],parent:'HumanoidRootPart'},UpperTorso:{position:[0,4.02,0],parent:'LowerTorso'},Head:{position:[0,5.22,0],parent:'UpperTorso'},
@@ -72,7 +75,9 @@ export function createViewer(host){
   };
  }
 
- renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.setClearColor(0x0d1821);
+ renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(max-width:700px)').matches?1.25:1.5));
+ renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.setClearColor(0x0d1821);
+ if(!software){renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;}
  host.append(renderer.domElement);
  const geometries={
   Block:new THREE.BoxGeometry(1,1,1),
@@ -94,9 +99,32 @@ export function createViewer(host){
  const grid=new THREE.GridHelper(18,18,0x355064,0x233646);grid.position.y=-.08;scene.add(grid);
  const camera=new THREE.PerspectiveCamera(34,1,.01,1000);
  let model=null,materials=[],joints={},entry=null,clip=null,commonMotion=null,center=new THREE.Vector3(),extent=6;
+ let nativeMixer=null,nativeClips=[],nativeAction=null,loadRevision=0,zoom=1,pitch=.18;
  let elapsed=0,angle=0,speed=1,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,visible=true;
+ // 유틸: 실제 GLB 모델을 교체할 때 텍스처와 메시 GPU 메모리를 회수한다.
+ function disposeNative(root){
+  const geometries=new Set(),textures=new Set(),nativeMaterials=new Set();
+  root?.traverse(node=>{
+   if(!node.isMesh)return;
+   if(node.geometry)geometries.add(node.geometry);
+   for(const mat of(Array.isArray(node.material)?node.material:[node.material])){
+    if(!mat)continue;nativeMaterials.add(mat);
+    for(const value of Object.values(mat))if(value?.isTexture)textures.add(value);
+   }
+  });
+  for(const texture of textures)texture.dispose();
+  for(const mat of nativeMaterials)mat.dispose();
+  for(const geometry of geometries)geometry.dispose();
+ }
+ function clearModel(){
+  if(nativeMixer){nativeMixer.stopAllAction();if(model)nativeMixer.uncacheRoot(model);}
+  if(model?.userData.nativePreview)disposeNative(model);
+  if(model)scene.remove(model);
+  for(const mat of materials)mat.dispose();
+  materials=[];model=null;nativeMixer=null;nativeClips=[];nativeAction=null;
+ }
  function setModel(row,environment=false){
-  if(model)scene.remove(model);for(const material of materials)material.dispose();
+  ++loadRevision;clearModel();
   model=new THREE.Group();materials=[];joints={};entry=row;clip=null;commonMotion=null;elapsed=0;
   grid.visible=!environment;
   const recipe=row.model;
@@ -129,7 +157,56 @@ export function createViewer(host){
   scene.add(model);
   const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
   center=bounds.getCenter(new THREE.Vector3());extent=Math.max(size.y,size.x,size.z)*1.16;
-  host.dataset.asset=row.id;host.dataset.kind=environment?'environment':'monster';host.dataset.loaded='true';
+  host.dataset.asset=row.id;host.dataset.kind=environment?'environment':'monster';host.dataset.loaded='true';host.dataset.format='recipe';
+ }
+ // 메인: 등록부의 내부 GLB만 허용하며 실제 삼각형·스킨·클립 개수를 읽는다.
+ async function setGLB(source){
+  const uri=String(source?.path||'');
+  if(!/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(uri))throw Error('내부 등록된 GLB 경로만 열 수 있어.');
+  if(software)throw Error('원본 GLB 렌더링에 WebGL이 필요해.');
+  const requestId=++loadRevision,gltf=await new GLTFLoader().loadAsync(uri);
+  if(requestId!==loadRevision){disposeNative(gltf.scene);return null;}
+  let meshes=0,bones=0,skinned=0,triangles=0;const usedMaterials=new Set();
+  gltf.scene.traverse(node=>{
+   if(node.isBone)bones++;
+   if(!node.isMesh)return;
+   meshes++;if(node.isSkinnedMesh)skinned++;
+   const geometry=node.geometry,position=geometry?.attributes?.position;
+   if(position)triangles+=Math.floor((geometry.index?.count||position.count)/3);
+   for(const mat of(Array.isArray(node.material)?node.material:[node.material]))if(mat)usedMaterials.add(mat);
+  });
+  if(!meshes||!triangles){disposeNative(gltf.scene);throw Error('삼각형이 없는 GLB 모델은 재생하지 않아.');}
+  clearModel();model=gltf.scene;model.userData.nativePreview=true;scene.add(model);
+  nativeClips=(gltf.animations||[]).filter(row=>Number.isFinite(row.duration)&&row.duration>0);
+  nativeMixer=nativeClips.length?new THREE.AnimationMixer(model):null;
+  model.updateMatrixWorld(true);
+  const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3());
+  center=bounds.getCenter(new THREE.Vector3());extent=Math.max(.8,size.x,size.y,size.z)*1.2;
+  grid.visible=true;entry=null;clip=null;commonMotion=null;elapsed=0;zoom=1;pitch=.18;
+  host.dataset.asset=String(source.id||'');host.dataset.kind='native';host.dataset.loaded='true';
+  host.dataset.format='glb';host.dataset.triangles=String(triangles);host.dataset.bones=String(bones);
+  if(nativeClips.length)selectNativeClip(nativeClips[0].name);
+  return {meshes,skinned,bones,triangles,materials:usedMaterials.size,
+   clips:nativeClips.map(row=>({id:row.name,duration:row.duration}))};
+ }
+ function selectNativeClip(name){
+  if(!nativeMixer)return false;
+  const next=nativeClips.find(row=>row.name===name);if(!next)return false;
+  const action=nativeMixer.clipAction(next);
+  if(nativeAction&&nativeAction!==action)nativeAction.fadeOut(.18);
+  const once=/(attack|hit|death|stun|skill|cast|shot|bite|pounce|slash|strike|impact)/i.test(name);
+  action.reset().setEffectiveWeight(1).fadeIn(.18);
+  action.setLoop(once?THREE.LoopOnce:THREE.LoopRepeat,once?1:Infinity);
+  action.clampWhenFinished=once;action.play();nativeAction=action;elapsed=0;host.dataset.clip=name;
+  return true;
+ }
+ function setWireframe(value){
+  if(model?.userData.nativePreview)model.traverse(node=>{
+   if(!node.isMesh)return;
+   for(const mat of(Array.isArray(node.material)?node.material:[node.material]))
+    if(mat&&'wireframe'in mat)mat.wireframe=Boolean(value);
+  });
+  host.dataset.wireframe=String(Boolean(value));
  }
  function resetCommonPose(){for(const joint of Object.values(joints)){joint.position.copy(joint.userData.rest);joint.rotation.set(0,0,0);}}
  function commonRot(name,x=0,y=0,z=0){const joint=joints[name];if(joint)joint.rotation.set(x*Math.PI/180,y*Math.PI/180,z*Math.PI/180,'XYZ');}
@@ -196,13 +273,13 @@ export function createViewer(host){
  }
  function setCommonMotion(atom){setModel({id:'roblox-common-r15-preview',model:COMMON_R15_RECIPE,boneNames:[],clips:[]},false);commonMotion=atom||null;elapsed=0;host.dataset.asset=atom?.atomId||'COMMON_R15';host.dataset.kind='common';host.dataset.clip=atom?.atomId||'';}
  function selectClip(id){commonMotion=null;clip=entry?.clips?.find(row=>row.id===id)||null;elapsed=0;host.dataset.clip=clip?.id||'';}
- function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);renderer.setViewport(0,0,w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
+ function resize(){const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight);renderer.setSize(w,h,false);renderer.setViewport(0,0,w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
  new ResizeObserver(resize).observe(host);resize();
  new IntersectionObserver(([row])=>{visible=row.isIntersecting;},{threshold:.01}).observe(host);
  let last=performance.now();
  renderer.setAnimationLoop(now=>{
   const dt=Math.max(0,Math.min((now-last)/1000,.1));last=now;if(document.hidden||!visible)return;
-  if(!paused)elapsed+=dt*speed;
+  if(!paused){elapsed+=dt*speed;if(nativeMixer)nativeMixer.update(dt*speed);}
   if(commonMotion)applyCommonMotion(commonMotion,elapsed);
   if(clip){
    const t=clip.loop?elapsed%clip.duration:Math.min(elapsed,clip.duration),samples=clip.frames;
@@ -214,12 +291,30 @@ export function createViewer(host){
     joints[name].rotation.set(p[3],p[4],p[5],'XYZ');
    });
   }
-  const distance=extent/(2*Math.tan(34*Math.PI/360))*Math.max(1,1/camera.aspect);
+  const distance=extent/(2*Math.tan(34*Math.PI/360))*Math.max(1,1/camera.aspect)*zoom;
   const yaw=angle*Math.PI/180+.25;
-  camera.position.copy(center).add(new THREE.Vector3(Math.sin(yaw)*distance,distance*(host.dataset.kind==='environment'?.8:.13),-Math.cos(yaw)*distance));camera.lookAt(center);
+  camera.position.copy(center).add(new THREE.Vector3(Math.sin(yaw)*distance,distance*(host.dataset.kind==='native'?pitch:host.dataset.kind==='environment'?.8:.13),-Math.cos(yaw)*distance));camera.lookAt(center);
   renderer.render(scene,camera);host.dataset.frame=String(Math.floor(elapsed*60));
  });
+ // 입력: 한 손가락 드래그 회전, 두 손가락 핀치 확대, 휠 확대.
+ const pointers=new Map();let pinch=0;
+ renderer.domElement.style.touchAction='none';
+ renderer.domElement.addEventListener('pointerdown',event=>{
+  if(host.dataset.kind!=='native')return;
+  pointers.set(event.pointerId,[event.clientX,event.clientY]);
+  renderer.domElement.setPointerCapture?.(event.pointerId);pinch=0;
+ });
+ renderer.domElement.addEventListener('pointermove',event=>{
+  if(host.dataset.kind!=='native'||!pointers.has(event.pointerId))return;
+  const old=pointers.get(event.pointerId);pointers.set(event.pointerId,[event.clientX,event.clientY]);
+  if(pointers.size===1){angle+=(event.clientX-old[0])*.35;pitch=Math.max(-.6,Math.min(.85,pitch-(event.clientY-old[1])*.006));}
+  else if(pointers.size===2){const [a,b]=[...pointers.values()],span=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch>0)zoom=Math.max(.6,Math.min(3,zoom*pinch/Math.max(1,span)));pinch=span;}
+ });
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])renderer.domElement.addEventListener(type,event=>{pointers.delete(event.pointerId);pinch=0;});
+ renderer.domElement.addEventListener('wheel',event=>{if(host.dataset.kind!=='native')return;event.preventDefault();zoom=Math.max(.6,Math.min(3,zoom*Math.exp(event.deltaY*.001)));},{passive:false});
  renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();renderer.setAnimationLoop(null);host.dispatchEvent(new Event('previewlost'));});
  host.dataset.renderer=software?'canvas':'webgl';
- return {setModel,setCommonMotion,selectClip,setPaused:value=>{paused=value;},setSpeed:value=>{speed=value;},setAngle:value=>{angle=value;},replay:()=>{elapsed=0;}};
+ return {setModel,setGLB,setCommonMotion,selectClip,selectNativeClip,setWireframe,cancelLoad:()=>{++loadRevision;},
+  setPaused:value=>{paused=value;},setSpeed:value=>{speed=value;},setAngle:value=>{angle=value;},
+  replay:()=>{elapsed=0;if(nativeAction){nativeAction.reset();nativeAction.play();}}};
 }
