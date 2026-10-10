@@ -2005,9 +2005,13 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
     assert.match(guidance,/REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET/);
     assert.match(guidance,/6933438443/);
 
+    // 환경 모델 후보는 선언된 코드 경로가 아니라 실제 저장소에 존재하는 3D 메시 원본을 제공해야 한다.
+    const natureSource='assets/roblox/midnight-manor/generated/manor-lobby.glb';
+    fs.mkdirSync(path.join(root,'assets','roblox','midnight-manor','generated'),{recursive:true});
+    fs.copyFileSync(path.join(process.cwd(),natureSource),path.join(root,natureSource));
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
-      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'roblox-games/shared/nature.luau',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:natureSource,types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
     },null,2));
     const withCompany=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
@@ -3242,7 +3246,7 @@ test('runtime visual defects flow from asset planning into the source worker pro
 
 
 
-test('usable same-game asset is applied before new authoring and weak regions derive later',()=>{
+test('verified company and same-game reusable assets are compared before new authoring and weak regions derive later',()=>{
   const root=tempRoot();
   try{
     const master='assets/roblox/world-ghosts/native/spider/spider.glb';
@@ -3274,8 +3278,14 @@ test('usable same-game asset is applied before new authoring and weak regions de
     const enemy=plan.decisions.find(row=>row.type==='enemy');
     assert.ok(enemy);
     assert.equal(enemy.applyFirst.enabled,true);
-    assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
-    assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
+    // 검증된 회사 자산이 미검증 동일게임 원본보다 우선하지만, 기존 원본도 재사용 후보로 보존한다.
+    assert.equal(enemy.applyFirst.candidates[0].id,'company-wolf');
+    assert.equal(enemy.applyFirst.candidates[0].mode,'IMPORT_NATIVE_READY_ASSET');
+    const sameGame=enemy.applyFirst.candidates.find(row=>row.id==='existing-wolf');
+    assert.ok(sameGame);
+    assert.equal(sameGame.mode,'PATCH_EXISTING_GAME_BINDING');
+    assert.equal(sameGame.productionVerified,false);
+    assert.equal(enemy.qualitySelection.selectedAssetId,null);
     assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
     assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
     assert.equal(enemy.applyFirst.qualityRescue.donorRecompositionAllowed,true);
