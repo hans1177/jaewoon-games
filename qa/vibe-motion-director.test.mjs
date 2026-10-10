@@ -1644,3 +1644,43 @@ test('motion director and Roblox character plan expose the studio-grade suite fo
   assert.equal(roblox.procedural.corrections.MULTI_LIMB_CONTACT,true);
   assert.equal(roblox.rootTransformOnlyVisualLocomotionForbidden,true);
 });
+
+
+test('shared career source layering resolves inherited actions and skills without duplicating a genre implementation',()=>{
+  const kensei=createCommonCareerMotionLoadout({careerId:'KENSEI',genre:'ACTION_RPG',platform:'UNITY'});
+  assert.deepEqual(kensei.compositionLayers.map(row=>row.sourceCareerId),kensei.careerPath);
+  const iai=kensei.roleRequests.find(row=>row.id==='IAI_DRAW'&&row.group==='skills');
+  assert.equal(iai.sourceCareerId,'SAMURAI');
+  assert.equal(iai.sourceLayerIndex,kensei.careerPath.indexOf('SAMURAI'));
+  assert.ok(kensei.compositionLayers.every(row=>row.productionVerified===false&&row.nativeRigRetargetRequired===true));
+  const horror=createCommonCareerMotionLoadout({careerId:'KENSEI',genre:'HORROR',platform:'WEB'});
+  assert.ok(!horror.roleRequests.some(row=>row.group==='attacks'));
+  assert.deepEqual(horror.careerPath,kensei.careerPath);
+  assert.ok(horror.roleRequests.some(row=>row.group==='skills'));
+  assert.equal(horror.gameplayAuthority,false);
+});
+
+test('creature body-plan, species and tier motion layers preserve combat authority and project to game genres',()=>{
+  const base=createCommonMonsterActionLoadout({speciesId:'WOLF',genre:'SURVIVAL',platform:'UNITY'});
+  const elite=createCommonMonsterActionLoadout({speciesId:'WOLF',genre:'SURVIVAL',platform:'UNITY',tier:'ELITE'});
+  const boss=createCommonMonsterActionLoadout({speciesId:'WOLF',genre:'TOWER_DEFENSE',platform:'SHARED',tier:'BOSS'});
+  assert.deepEqual(elite.speciesHierarchy,['BODY_PLAN:QUADRUPED_CANINE','SPECIES:WOLF','PRESENTATION_TIER:ELITE']);
+  assert.equal(elite.presentationTier,'ELITE');
+  assert.equal(elite.choreography.length,base.choreography.length*2);
+  assert.equal(boss.choreography.length,base.choreography.length*3);
+  assert.deepEqual(elite.choreography[0].poseKeyTimes,base.choreography[0].poseKeyTimes);
+  assert.notDeepEqual(elite.choreography[0].jointTracks[0].frames,base.choreography[0].jointTracks[0].frames);
+  assert.ok(elite.choreography.every(row=>row.contactMarkerUnchanged===true&&!row.verified
+    &&row.authoritativeRootMovement===false&&row.authoritativeHitboxAndMovementUnchanged===true));
+  assert.ok(elite.roleRequests.some(row=>row.group==='attacks'&&row.id.endsWith('_COUNTER_LEAD')
+    &&row.sourceHierarchyLevel==='PRESENTATION_TIER'));
+  assert.ok(elite.roleRequests.some(row=>row.id==='WOLF_ELITE_THREAT'
+    &&row.sourceHierarchyLevel==='PRESENTATION_TIER'));
+  assert.ok(!boss.roleRequests.some(row=>row.group==='locomotion'));
+  assert.ok(boss.roleRequests.some(row=>row.id==='WOLF_BOSS_SIGNATURE_TELL'));
+  assert.equal(boss.master.id,base.master.id);
+  assert.equal(boss.runtimeVerified,false);
+  assert.equal(boss.productionVerified,false);
+  assert.equal(boss.gameplayAuthority,false);
+  assert.throws(()=>createCommonMonsterActionLoadout({tier:'DIVINE'}),/UNKNOWN_COMMON_MONSTER_MOTION_TIER/);
+});
