@@ -2,272 +2,41 @@
   "contractVersion": 4,
   "gameId": "village-dungeons",
   "date": "2026-10-10",
-  "seedId": "OWNER-ALL-DESIGN-RESET-VILLAGE-DUNGEONS-20260917",
-  "fingerprint": "97eb56e1fe083e0ea1283c37b67da55659dabad12825a7cb1af478cc65724939",
+  "seedId": "OWNER-DESIGN-VILLAGE-DUNGEONS",
+  "fingerprint": "352a7e0eb95ca6a7dd044107e377e78aee47655cfb26bd350531667a65e95c55",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf:identity,creativeGrammar": {
-      "identity": "마을 던전 RPG",
-      "creativeGrammar": {
-        "mainIdentity": "기본 게임 주제/정체성: 탐험, 전투, 퀘스트",
-        "a": {
-          "system": "던전 시스템 + 축: 지역 규칙 및 적 행동",
-          "material": "새로운 지역 규칙 및 적 행동 패턴의 융합",
-          "materialDomain": "지역 규칙 및 적 행동",
-          "stateChange": "지역 변경 → 적 행동 변환 → 플레이어 선택 확대"
-        },
-        "b": {
-          "system": "퀘스트 시스템 + 축: 목표 또는 보상",
-          "material": "새로운 목표 또는 보상 구조의 창작",
-          "materialDomain": "목표 또는 보상",
-          "stateChange": "퀘스트 실행 → 보상 획득 → 새로운 선택 가능성 생성"
-        },
-        "abCausality": "양방향 실제 상태 교환: 지역 변화 ↔ 목표 확대, 보상 변화 ↔ 선택 가능성 변동",
-        "abEvolution": {
-          "aChangesB": "A→B: 지역 규칙 강화 → 목표 확대 기회 증가",
-          "bChangesA": "B→A: 보상 변화 → 선택 가능성 재정의 및 확장",
-          "lateGameChange": "중후반 두 시스템 간 상호 작용이 실제로 일어나는 조건과 피드백 명시"
-        },
-        "materialFusion": {
-          "contrast": "주제/소재의 차별성: 무협·엽기·철학 등 다양한 주제 선택",
-          "causalBridge": "인물·예술·역사·종교·철학·과학·무협·엽기 등 다채로운 소재 융합",
-          "removalConsequence": "보조 장르 제거 시 플레이어 선택에 실질적 인과 변화 발생"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어 선택 → 적 행동 변환 → 지역 변경 → 새로운 목표 생성",
-          "characterConflict": "플레이어와 적 갈등 → 선택 가능성 재정의",
-          "playerChoice": "플레이어 선택 → 실제 세계 상태 변화 → 다음 사건 결정",
-          "worldChange": "플레이어 선택 → 세계 규칙 변화 → 게임 정체성 확대",
-          "nextEvent": "다음 사건 결정 및 플레이어 선택 기회 제공"
-        },
-        "cThemes": [
-          {
-            "name": "무협",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전투, 무력, 전략 조합 강화"
-          },
-          {
-            "name": "엽기",
-            "kind": "MATERIAL",
-            "gameplayEffect": "경험, 발견, 숙련 증가 및 보상 확대"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "던전",
-            "gameplayEffect": "지역 규칙 및 적 행동 융합으로 인한 플레이어 선택 확대"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "퀘스트",
-            "gameplayEffect": "목표 또는 보상 구조의 창작과 선택 가능성 변동"
-          }
-        ],
-        "cGenreInterlock": "보조 장르 제거 시 플레이어 선택에 실질적 인과 변화 발생",
-        "cWorldAndGameplayEffect": "게임 정체성 확대를 위한 총체적인 인과 연결 및 상태 변화 생성",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어 선택 → 적 행동 변환 → 지역 변경",
-            "discovery": "새로운 목표 생성 및 선택 가능성 확대",
-            "newChoice": "다른 시스템과의 상호 작용을 통해 새로운 선택 가능성이 생기며 무한 발전 규칙 적용"
-          },
-          {
-            "clue": "보상 변화 → 선택 가능성 재정의",
-            "discovery": "플레이어 선택이 실제 세계 상태 변화와 연관된 새로운 용도가 나타나고",
-            "newChoice": "선택 가능성 증가 및 여러 유효한 해법 도출"
-          },
-          {
-            "clue": "중후반 두 시스템 간 상호 작용",
-            "discovery": "플레이어 선택이 게임 정체성에 직접 영향을 미치는 새로운 구조 형성",
-            "newChoice": "플레이어 선택 기회 제공 및 다음 사건 결정"
-          },
-          {
-            "clue": "지역 규칙 강화 → 목표 확대 기회 증가",
-            "discovery": "플레이어 선택이 보편적으로 확대되는 새로운 상태 변화 발생",
-            "newChoice": "플레이어 선택이 다양한 조합과 숙련으로 바뀌는 플레이 사례 생성"
-          }
-        ],
-        "delveGrowthRule": "4개 이상 초기 사례 및 무한 발전 규칙 적용",
-        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성: 탐험, 전투, 퀘스트의 총체적인 인과 연결 및 상태 변화로 구성된 게임 정체성"
-      }
-    },
-    "local_authoring_parts::72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 지역 규칙에 맞춘 적 행동을 선택하며, 목표 또는 보상을 획득하여 새로운 선택 가능성과 세계 상태 변화를 경험해야 한다.",
-      "coreFun": "{clue}: 플레이어 선택 → 적 행동 변환 → 지역 변경\n{discovery}: 새롭게 생성되는 목표 및 선택 가능성 확대\n{newChoice}: 다른 시스템과의 상호작용을 통해 새로운 선택 가능성이 생기며 무한 발전 규칙 적용"
-    },
-    "local_authoring_parts::5f5cd7ea2c2e2c0a1ffbba450ea841824bf87860562b0d9fe9dc15c1c982f68f:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "마을 던전 RPG",
-      "creativeGrammar": {
-        "mainIdentity": "기본 게임 주제/정체성: 탐험, 전투, 퀘스트",
-        "a": {
-          "system": "던전 시스템 + 축: 지역 규칙 및 적 행동",
-          "material": "새로운 지역 규칙 및 적 행동 패턴의 융합",
-          "materialDomain": "지역 규칙 및 적 행동",
-          "stateChange": "지역 변경 → 적 행동 변환 → 플레이어 선택 확대"
-        },
-        "b": {
-          "system": "퀘스트 시스템 + 축: 목표 또는 보상",
-          "material": "새로운 목표 또는 보상 구조의 창작",
-          "materialDomain": "목표 또는 보상",
-          "stateChange": "퀘스트 실행 → 보상 획득 → 새로운 선택 가능성 생성"
-        },
-        "abCausality": "양방향 실제 상태 교환: 지역 변화 ↔ 목표 확대, 보상 변화 ↔ 선택 가능성 변동",
-        "abEvolution": {
-          "aChangesB": "A→B: 지역 규칙 강화 → 목표 확대 기회 증가",
-          "bChangesA": "B→A: 보상 변화 → 선택 가능성 재정의 및 확장",
-          "lateGameChange": "중후반 두 시스템 간 상호 작용이 실제로 일어나는 조건과 피드백 명시"
-        },
-        "materialFusion": {
-          "contrast": "주제/소재의 차별성: 무협·엽기·철학 등 다양한 주제 선택",
-          "causalBridge": "인물·예술·역사·종교·철학·과학·무협·엽기 등 다채로운 소재 융합",
-          "removalConsequence": "보조 장르 제거 시 플레이어 선택에 실질적 인과 변화 발생"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어 선택 → 적 행동 변환 → 지역 변경 → 새로운 목표 생성",
-          "characterConflict": "플레이어와 적 갈등 → 선택 가능성 재정의",
-          "playerChoice": "플레이어 선택 → 실제 세계 상태 변화 → 다음 사건 결정",
-          "worldChange": "플레이어 선택 → 세계 규칙 변화 → 게임 정체성 확대",
-          "nextEvent": "다음 사건 결정 및 플레이어 선택 기회 제공"
-        },
-        "cThemes": [
-          {
-            "name": "무협",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전투, 무력, 전략 조합 강화"
-          },
-          {
-            "name": "엽기",
-            "kind": "MATERIAL",
-            "gameplayEffect": "경험, 발견, 숙련 증가 및 보상 확대"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "던전",
-            "gameplayEffect": "지역 규칙 및 적 행동 융합으로 인한 플레이어 선택 확대"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "퀘스트",
-            "gameplayEffect": "목표 또는 보상 구조의 창작과 선택 가능성 변동"
-          }
-        ],
-        "cGenreInterlock": "보조 장르 제거 시 플레이어 선택에 실질적 인과 변화 발생",
-        "cWorldAndGameplayEffect": "게임 정체성 확대를 위한 총체적인 인과 연결 및 상태 변화 생성",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어 선택 → 적 행동 변환 → 지역 변경",
-            "discovery": "새로운 목표 생성 및 선택 가능성 확대",
-            "newChoice": "다른 시스템과의 상호 작용을 통해 새로운 선택 가능성이 생기며 무한 발전 규칙 적용"
-          },
-          {
-            "clue": "보상 변화 → 선택 가능성 재정의",
-            "discovery": "플레이어 선택이 실제 세계 상태 변화와 연관된 새로운 용도가 나타나고",
-            "newChoice": "선택 가능성 증가 및 여러 유효한 해법 도출"
-          },
-          {
-            "clue": "중후반 두 시스템 간 상호 작용",
-            "discovery": "플레이어 선택이 게임 정체성에 직접 영향을 미치는 새로운 구조 형성",
-            "newChoice": "플레이어 선택 기회 제공 및 다음 사건 결정"
-          },
-          {
-            "clue": "지역 규칙 강화 → 목표 확대 기회 증가",
-            "discovery": "플레이어 선택이 보편적으로 확대되는 새로운 상태 변화 발생",
-            "newChoice": "플레이어 선택이 다양한 조합과 숙련으로 바뀌는 플레이 사례 생성"
-          }
-        ],
-        "delveGrowthRule": "4개 이상 초기 사례 및 무한 발전 규칙 적용",
-        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성: 탐험, 전투, 퀘스트의 총체적인 인과 연결 및 상태 변화로 구성된 게임 정체성"
-      },
-      "playerFantasy": "플레이어는 지역 규칙에 맞춘 적 행동을 선택하며, 목표 또는 보상을 획득하여 새로운 선택 가능성과 세계 상태 변화를 경험해야 한다.",
-      "coreFun": "{clue}: 플레이어 선택 → 적 행동 변환 → 지역 변경\n{discovery}: 새롭게 생성되는 목표 및 선택 가능성 확대\n{newChoice}: 다른 시스템과의 상호작용을 통해 새로운 선택 가능성이 생기며 무한 발전 규칙 적용"
-    },
-    "local_authoring_parts::94b1a22fc8f3cdae8d4cf9a5cc6e722ad7a59c011a0571c2b7f0412487ed0b9d:coreLoop": {
-      "coreLoop": [
-        "{clue}: 플레이어 선택 → 적 행동 변환 → 지역 변경\n{discovery}: 새롭게 생성되는 목표 및 선택 가능성 확대\n{newChoice}: 다른 시스템과의 상호작용을 통해 새로운 선택 가능성이 생기며 무한 발전 규칙 적용",
-        "{clue}: 보상 변화 → 선택 가능성 재정의\n{discovery}: 플레이어 선택이 실제 세계 상태 변화와 연관된 새로운 용도가 나타나고\n{newChoice}: 선택 가능성 증가 및 여러 유효한 해법 도출",
-        "{clue}: 중후반 두 시스템 간 상호 작용\n{discovery}: 플레이어 선택이 게임 정체성에 직접 영향을 미치는 새로운 구조 형성\n{newChoice}: 플레이어 선택 기회 제공 및 다음 사건 결정"
-      ]
-    },
-    "local_authoring_parts::be55b41e24158f654b8aab9aa1b88fb4f1f416d8341de31846cfa8d5921af1af:signatureSystems:0": {
-      "id": "MAIN",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "플레이어 선택",
-        "보상 변화",
-        "중후반 두 시스템 간 상호 작용"
-      ],
-      "stateOutputs": [
-        "적 행동 변환",
-        "지역 변경",
-        "게임 정체성 확대"
-      ],
-      "name": "마을 던전 RPG",
-      "purpose": "탐험, 전투, 퀘스트의 총체적인 인과 연결 및 상태 변화로 구성된 게임 정체성",
-      "playerChoice": "플레이어 선택 → 적 행동 변환 → 지역 변경 → 새로운 목표 생성 및 선택 가능성 확대 → 무한 발전 규칙 적용 및 세계 상태 변화 발생"
-    },
-    "local_authoring_parts::be55b41e24158f654b8aab9aa1b88fb4f1f416d8341de31846cfa8d5921af1af:signatureSystems:1": {
-      "id": "A",
-      "grammarRole": "A",
-      "stateInputs": [
-        "플레이어 선택",
-        "보상 변화",
-        "중후반 두 시스템 간 상호 작용"
-      ],
-      "stateOutputs": [
-        "역할별 선택 가능성 확대",
-        "실제 세계 상태 변화",
-        "게임 정체성 확대"
-      ],
-      "name": "마을 던전 RPG",
-      "purpose": "플레이어 선택에 따른 적 행동 변환, 지역 변경 및 게임 정체성 확대의 인과적 연결",
-      "playerChoice": "플레이어 선택 → 실제 세계 상태 변화 → 다음 사건 결정 및 플레이어 선택 기회 제공"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 1151082,
-      "lastMs": 106887,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:54:41.749Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:35:30.633Z",
-  "updatedAt": "2026-10-10T02:54:41.757Z",
+  "createdAt": "2026-10-10T05:20:35.149Z",
+  "updatedAt": "2026-10-10T05:20:35.167Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
-          "CHARACTER",
+          "CREATURE",
           "ENVIRONMENT",
           "MATERIAL",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -280,10 +49,22 @@
             "SINGLE_SURVIVAL_DOOR",
             "SOLID_TIMBER_WALL"
           ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
             "CORE_WORLD_PACK",
@@ -347,6 +128,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -399,6 +181,29 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -672,7 +477,7 @@
             }
           },
           {
-            "family": "CHARACTER",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -695,32 +500,24 @@
           },
           {
             "family": "MATERIAL",
-            "action": "ADAPT",
-            "assetId": "roblox-common-material-ice",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "ice"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-run",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "run"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -735,18 +532,25 @@
             }
           },
           {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-character-detail-screen",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "progress"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -774,16 +578,17 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
-          "CHARACTER",
+          "CREATURE",
           "ENVIRONMENT",
           "MATERIAL",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -796,10 +601,22 @@
             "SINGLE_SURVIVAL_DOOR",
             "SOLID_TIMBER_WALL"
           ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
             "CORE_WORLD_PACK",
@@ -863,6 +680,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -915,6 +733,29 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1188,7 +1029,7 @@
             }
           },
           {
-            "family": "CHARACTER",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1211,32 +1052,24 @@
           },
           {
             "family": "MATERIAL",
-            "action": "ADAPT",
-            "assetId": "roblox-common-material-ice",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "ice"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
             "family": "MOTION",
-            "action": "ADAPT",
-            "assetId": "roblox-common-motion-run",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "run"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1251,18 +1084,25 @@
             }
           },
           {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-common-ui-character-detail-screen",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "progress"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1290,16 +1130,17 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
-          "CHARACTER",
+          "CREATURE",
           "ENVIRONMENT",
           "MATERIAL",
           "MOTION",
           "PROP",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
@@ -1312,10 +1153,22 @@
             "SINGLE_SURVIVAL_DOOR",
             "SOLID_TIMBER_WALL"
           ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
+          "CREATURE": [
+            "ARACHNID",
+            "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW_MODULE",
+            "FIELD_ELITE_GROUND",
+            "FIELD_ELITE_WATER",
+            "FIELD_ELITE_WIND",
+            "INSECT_ARACHNID",
+            "LONG_JAW_MODULE",
+            "MONSTER_PACK",
+            "PLAINS_WILD_DARK",
+            "PLAINS_WILD_GROUND",
+            "PLAINS_WILD_WIND",
+            "STARTER_HERO_FIRE",
+            "STARTER_HERO_GRASS",
+            "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
             "CORE_WORLD_PACK",
@@ -1379,6 +1232,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1431,6 +1285,29 @@
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "SURVIVAL_LANTERN_LAMP"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1704,7 +1581,7 @@
             }
           },
           {
-            "family": "CHARACTER",
+            "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1727,32 +1604,24 @@
           },
           {
             "family": "MATERIAL",
-            "action": "USE",
-            "assetId": "roblox-common-material-ice",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "ice"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
             "family": "MOTION",
-            "action": "USE",
-            "assetId": "roblox-common-motion-run",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "run"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1767,18 +1636,25 @@
             }
           },
           {
-            "family": "UI",
-            "action": "USE",
-            "assetId": "roblox-common-ui-character-detail-screen",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "family": "SKILL",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "progress"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
+            "family": "UI",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1806,94 +1682,6 @@
         ]
       }
     },
-    "assetFacts": {
-      "roblox-common-material-ice": {
-        "family": "MATERIAL",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "ice"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "ICE",
-        "sourcePath": "/assets/roblox/common-materials-v1/RobloxCommonMaterials.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 916.3,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-motion-run": {
-        "family": "MOTION",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "run"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "RUN",
-        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 917.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      },
-      "roblox-common-ui-character-detail-screen": {
-        "family": "UI",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "progress"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "CHARACTER_DETAIL_SCREEN",
-        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 956.4,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      }
-    }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::be55b41e24158f654b8aab9aa1b88fb4f1f416d8341de31846cfa8d5921af1af:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "MAIN",
-          "A"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::be55b41e24158f654b8aab9aa1b88fb4f1f416d8341de31846cfa8d5921af1af:signatureSystems:2": 2
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:54:41.749Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+    "assetFacts": {}
+  }
 }
