@@ -1,5 +1,5 @@
 {
-  "version": 559,
+  "version": 560,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-07",
@@ -6781,7 +6781,7 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 11,
+    "version": 12,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
@@ -6816,9 +6816,10 @@
       "publishAfterRuntimeSyncAndHomepageQa": true,
       "reconcileExistingCatalogGamesEveryStatusSync": true,
       "existingCanonicalIndexEnablesWebPlay": true,
-      "missingCanonicalIndexHidesTitleOnlyCard": true,
+      "missingCanonicalIndexHidesTitleOnlyCard": false,
       "discoverCanonicalEntriesEverySync": true,
-      "webExposureQualityRef": "catalogNormalization.ownerWebAutoIngest.webExposureQuality"
+      "webExposureQualityRef": "catalogNormalization.ownerWebAutoIngest.webExposureQuality",
+      "missingCanonicalIndexDisablesPlayOnly": true
     },
     "executionPipeline": {
       "mode": "TWO_STAGE_MANAGER_THEN_DIRECTOR_REVIEW_AND_PUBLISH",
@@ -7012,8 +7013,9 @@
       "hardGatesMustPass": true,
       "maxVisibleTestCandidates": 30,
       "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
-      "artbookRequiredForHomepageRegistration": true,
-      "officialCardRequiresPromotion": true
+      "artbookRequiredForHomepageRegistration": false,
+      "officialCardRequiresPromotion": true,
+      "artbookRequiredForOfficialPromotionOnly": true
     },
     "documentationSyncContract": {
       "centralPolicyFirst": true,
@@ -8906,7 +8908,12 @@
       "verifiedRuntimeRequiredToActivatePlay": true,
       "preserveF0F9Lock": true,
       "existingHomepageManagerDirectorOnly": true,
-      "requiresLiveSiteAndRuntimeVerification": true
+      "requiresLiveSiteAndRuntimeVerification": true,
+      "resolvedConflictingLegacyConditions": [
+        "serverHomepageIntegration.ownerWebUpload.missingCanonicalIndexHidesTitleOnlyCard",
+        "serverHomepageIntegration.testingContract.artbookRequiredForHomepageRegistration",
+        "webRuntimeStartabilityContract.homepageExposureOnFailure"
+      ]
     }
   },
   "vibeExecutionLaneContract": {
@@ -25862,11 +25869,12 @@
       "STATIC_SCREEN_WITHOUT_GAME_STATE_TRANSITION"
     ],
     "failureState": "WEB_VIBE_REPAIR_REQUIRED",
-    "homepageExposureOnFailure": false,
     "retryLimit": null,
     "exactFailureRepairRequired": true,
     "validator": "tools/company-development-web-gameplay-validation.mjs",
-    "planner": "tools/vibe2-auto-planner.mjs"
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "homepageCardVisibleOnRuntimeFailure": true,
+    "homepagePlayableActionOnRuntimeFailure": false
   },
   "continuousLearning24hContract": {
     "version": 1,

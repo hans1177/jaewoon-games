@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "revision": 89,
+  "revision": 90,
   "updatedAt": "2026-10-10T10:00:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -958,8 +958,9 @@
     "hardGatesMustPass": true,
     "maxVisibleTestCandidates": 30,
     "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
-    "artbookRequiredForHomepageRegistration": true,
-    "officialCardRequiresPromotion": true
+    "artbookRequiredForHomepageRegistration": false,
+    "officialCardRequiresPromotion": true,
+    "artbookRequiredForOfficialPromotionOnly": true
   },
   "productionThroughput": {
     "concurrentGameWipTarget": 64,
