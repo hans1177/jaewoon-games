@@ -4946,7 +4946,7 @@ export function buildVibeAssetProductionPlan({
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
     proceduralWorldLayout,
-    autoBiomeSource:worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+    autoBiomeSource:worldInput&&worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
       :worldInput?'EXPLICIT_APPROVED_GAME_WORLD':'NO_VERIFIED_SPATIAL_WORLD',
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
