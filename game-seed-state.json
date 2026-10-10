@@ -7172,7 +7172,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -10207,7 +10207,7 @@
         "date": "2026-10-10"
       },
       "promotion": {
-        "from": "DESIGN_ONLY",
+        "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
         "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "requestedPlatform": "ROBLOX",
@@ -10225,7 +10225,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-10T11:32:10.554Z"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -12398,7 +12398,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -14276,7 +14276,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -16193,7 +16193,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -18092,7 +18092,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -18156,7 +18156,7 @@
         }
       },
       "promotion": {
-        "from": "DESIGN_ONLY",
+        "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
         "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "requestedPlatform": "ROBLOX",
@@ -18173,7 +18173,8 @@
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-10T11:32:10.554Z"
-      }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 1,
@@ -20216,7 +20217,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -20280,7 +20281,7 @@
         }
       },
       "promotion": {
-        "from": "DESIGN_ONLY",
+        "from": "DEVELOPMENT_CONFIRMED",
         "to": "DEVELOPMENT_CONFIRMED",
         "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
         "requestedPlatform": "ROBLOX",
@@ -20297,7 +20298,8 @@
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-10T11:32:10.554Z"
-      }
+      },
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 1,
@@ -22633,7 +22635,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -24782,7 +24784,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -25751,9 +25753,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:daechung-rpg",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -25762,7 +25764,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -25771,18 +25773,30 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/daechung-rpg/2026-10-10/design-revised.json",
+        "date": "2026-10-10"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/daechung-rpg",
+          "UNITY": "unity-games/daechung-rpg"
+        },
+        "designBaselineSource": "design/daechung-rpg/2026-10-10/design-revised.json",
+        "designDate": "2026-10-10",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-10T08:24:08.366Z"
+        "promotedAt": "2026-10-10T11:45:11.398Z"
       },
-      "updatedAt": "2026-10-10T10:59:37.448Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -25798,7 +25812,17 @@
           "createdAt": "2026-10-10T10:59:37.448Z",
           "source": "CANONICAL_GAME_SEED"
         }
-      ]
+      ],
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 3,
@@ -35281,7 +35305,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -35678,7 +35702,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -38717,7 +38741,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-10T09:45:02.101Z"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -39089,7 +39113,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -41719,7 +41743,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -44369,7 +44393,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -46514,7 +46538,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -49140,7 +49164,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:22:33.580Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -51523,7 +51547,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -53704,7 +53728,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -55872,10 +55896,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-10-09T16:57:34.175Z",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -57643,7 +57667,49 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-10T11:35:08.416Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-10T11:35:08.416Z",
+      "productionTier": 2,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/cat-step/2026-10-10/design-revised.json",
+        "date": "2026-10-10"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cat-step/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cat-step/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/cat-step",
+          "UNITY": "unity-games/cat-step"
+        },
+        "designBaselineSource": "design/cat-step/2026-10-10/design-revised.json",
+        "designDate": "2026-10-10",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-10T11:45:11.398Z"
+      }
     },
     {
       "version": 2,
@@ -57989,7 +58055,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -60337,7 +60403,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -62567,7 +62633,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -67241,7 +67307,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -69865,7 +69931,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -72213,7 +72279,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -74865,7 +74931,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:22:33.580Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -77050,7 +77116,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -79173,7 +79239,7 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -91909,7 +91975,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-10T11:32:10.554Z",
+  "updatedAt": "2026-10-10T11:45:11.398Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",

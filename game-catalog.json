@@ -1,6 +1,6 @@
 {
   "version": 32,
-  "updatedAt": "2026-10-10T11:32:10.554Z",
+  "updatedAt": "2026-10-10T11:45:11.398Z",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -261,7 +261,7 @@
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
       "catalogOrder": 2,
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -1360,7 +1360,7 @@
         "낚시"
       ],
       "image": "assets/roblox-thumbnails/cozy-island.svg",
-      "webPath": "/web-games/cozy-island/",
+      "webPath": null,
       "hasWebArchive": true,
       "featured": false,
       "homepageWebPlayable": false,
@@ -1726,7 +1726,7 @@
       "selectedPlatform": "ROBLOX",
       "nameEnglish": "Cozy Island: Build a Tiny Kingdom",
       "internationalTitle": "Cozy Island: Build a Tiny Kingdom",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -2157,7 +2157,7 @@
         "UNITY": "unity-games/fantasy-survival"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "homepageMedia": {
         "gameId": "fantasy-survival",
         "titleEn": "MANA FOREST",
@@ -3402,7 +3402,7 @@
         "ROBLOX": "roblox-games/crystal-defense",
         "UNITY": "unity-games/crystal-defense"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "daechung-rpg",
@@ -3419,22 +3419,22 @@
       "featured": true,
       "unityProjectPath": "unity-games/daechung-rpg",
       "preferredPlatform": "unity-android",
-      "selectedPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
       "homepagePublicationApproved": false,
       "publishTestBuildWhenReady": true,
       "homepageWebPlayable": false,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "ROBLOX",
@@ -3643,7 +3643,7 @@
         "ROBLOX": "roblox-games/daechung-rpg",
         "UNITY": "unity-games/daechung-rpg"
       },
-      "updatedAt": "2026-09-22T19:15:00+09:00",
+      "updatedAt": "2026-10-10T11:45:11.398Z",
       "nameEnglish": "Five Portal RPG: Dungeon Party",
       "internationalTitle": "Five Portal RPG: Dungeon Party",
       "aliases": [
@@ -3717,7 +3717,10 @@
             "purpose": "MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE"
           }
         }
-      }
+      },
+      "productionTier": 2,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false
     },
     {
       "id": "bug-defense",
@@ -4093,7 +4096,7 @@
       },
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "chess-battle",
@@ -4104,7 +4107,7 @@
         "보드"
       ],
       "image": "assets/mock.webp",
-      "webPath": "/web-games/chess-battle/",
+      "webPath": null,
       "hasWebArchive": true,
       "featured": false,
       "homepageWebPlayable": false,
@@ -4308,7 +4311,7 @@
         "ROBLOX": "roblox-games/chess-battle",
         "UNITY": "unity-games/chess-battle"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "core-clash-4v4",
@@ -4520,7 +4523,7 @@
         "UNITY": "unity-games/core-clash-4v4"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "egg-heist",
@@ -4531,7 +4534,7 @@
         "모험"
       ],
       "image": "assets/portal.webp",
-      "webPath": "/web-games/egg-heist/",
+      "webPath": null,
       "hasWebArchive": false,
       "featured": false,
       "homepageWebPlayable": false,
@@ -4688,7 +4691,7 @@
         "ROBLOX": "roblox-games/egg-heist",
         "UNITY": "unity-games/egg-heist"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "human-go",
@@ -4849,7 +4852,7 @@
       },
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "human-go-temp",
@@ -5061,7 +5064,7 @@
         "UNITY": "unity-games/human-go-temp"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "island-village",
@@ -5233,7 +5236,7 @@
         "ROBLOX": "roblox-games/island-village",
         "UNITY": "unity-games/island-village"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "party-rpg",
@@ -5445,7 +5448,7 @@
         "UNITY": "unity-games/party-rpg"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -5614,7 +5617,7 @@
         "UNITY": "unity-games/seed-roblox-roleplay-life-avat-brookhaven-rp"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -5783,7 +5786,7 @@
         "UNITY": "unity-games/seed-roblox-simulator-tycoon-i-adopt-me"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -5952,7 +5955,7 @@
         "UNITY": "unity-games/seed-roblox-story-rpg-adventur-blox-fruits"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "seed-roblox-survival-horror-es-doors",
@@ -6121,7 +6124,7 @@
         "UNITY": "unity-games/seed-roblox-survival-horror-es-doors"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "survival2",
@@ -6289,7 +6292,7 @@
         "ROBLOX": "roblox-games/survival2",
         "UNITY": "unity-games/survival2"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "territory-war",
@@ -6504,7 +6507,7 @@
         "ROBLOX": "roblox-games/territory-war",
         "UNITY": "unity-games/territory-war"
       },
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "cat-step",
@@ -6524,16 +6527,16 @@
       "homepageTestCandidate": false,
       "homepageDisplayMode": "",
       "lifecycleState": "ACTIVE",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_WEB_DIRECT_UPLOAD",
-      "homepageCategory": "design-only",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "homepageCategory": "development-confirmed",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "ownerWebSourceRevision": "1d42dff33eef97c0de6554d84b23d8579d75b5c53c9540068e74f0f460c50fb0",
       "ownerWebEntryFile": "web-games/cat-step/index.html",
       "webDevelopmentResetRequired": false,
-      "productionTarget": "design-only",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "productionTarget": "ROBLOX_UNITY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "UNITY",
@@ -6705,7 +6708,18 @@
         "kind": "MARKETING_ARTWORK",
         "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
         "typography": "bouncy friendly italic bubble lettering, subtle flat navy border"
-      }
+      },
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cat-step",
+        "UNITY": "unity-games/cat-step"
+      },
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "defense",
@@ -6917,7 +6931,7 @@
         "UNITY": "unity-games/defense"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "dice-battle-board",
@@ -7129,7 +7143,7 @@
         "UNITY": "unity-games/dice-battle-board"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "exorcist-office",
@@ -7341,7 +7355,7 @@
         "UNITY": "unity-games/exorcist-office"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "fifty-days",
@@ -7750,7 +7764,7 @@
         "UNITY": "unity-games/gem-survivor"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "kingshot-ad",
@@ -7962,7 +7976,7 @@
         "UNITY": "unity-games/kingshot-ad"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "monster-adventure",
@@ -8384,7 +8398,7 @@
         "UNITY": "unity-games/realistic-builder"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "simple-rpg",
@@ -8596,7 +8610,7 @@
         "UNITY": "unity-games/simple-rpg"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "star-frontier",
@@ -8804,7 +8818,7 @@
         "UNITY": "unity-games/star-frontier"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "survival",
@@ -9175,7 +9189,7 @@
         "UNITY": "unity-games/tower-choice-rpg"
       },
       "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     },
     {
       "id": "zombie-survival",
@@ -9391,7 +9405,7 @@
       },
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
-      "updatedAt": "2026-10-10T11:32:10.554Z"
+      "updatedAt": "2026-10-10T11:45:11.398Z"
     }
   ],
   "runtimeAuthority": "company-runtime",
