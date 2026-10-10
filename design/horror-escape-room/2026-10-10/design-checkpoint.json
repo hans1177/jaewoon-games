@@ -143,25 +143,155 @@
       "name": "로드 전환 시스템",
       "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
       "playerChoice": "학교 → 폐놀이공원"
+    },
+    "local_authoring_parts::5d3fa2c583cc686160a437d47ea10da8b782226433c7c080bef1e6ec48b98404:signatureSystems:3:96132c5f0a271dc7": {
+      "id": "delve_road",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "폐놀이공원"
+      ],
+      "stateOutputs": [
+        "학교"
+      ],
+      "name": "감염 상태",
+      "purpose": "인물 또는 몬스터가 감염 상태를 나타내는 상태 변수",
+      "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+    },
+    "local_authoring_parts::6c32459df165893d8698f150dfeceb442ba0f47f703e1cc00aa612e9d4166169:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "main_road",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "학교"
+          ],
+          "stateOutputs": [
+            "폐놀이공원"
+          ],
+          "name": "로드",
+          "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+          "playerChoice": "학교 → 폐놀이공원"
+        },
+        {
+          "id": "a_main_road",
+          "grammarRole": "A",
+          "stateInputs": [
+            "폐놀이공원"
+          ],
+          "stateOutputs": [
+            "학교"
+          ],
+          "name": "감염 전환 시스템",
+          "purpose": "게임 내 인물/몬스터의 감염 상태 관리 및 전환 로직 구현",
+          "playerChoice": "학교 → 폐놀이공원"
+        },
+        {
+          "id": "b_road",
+          "grammarRole": "B",
+          "stateInputs": [
+            "학교"
+          ],
+          "stateOutputs": [
+            "폐놀이공원"
+          ],
+          "name": "로드 전환 시스템",
+          "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
+          "playerChoice": "학교 → 폐놀이공원"
+        },
+        {
+          "id": "delve_road",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "폐놀이공원"
+          ],
+          "stateOutputs": [
+            "학교"
+          ],
+          "name": "감염 상태",
+          "purpose": "인물 또는 몬스터가 감염 상태를 나타내는 상태 변수",
+          "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        }
+      ]
+    },
+    "local_authoring_parts::1d5b6a8ce38bc8be1add97c837739cfdaf17d202cf899cf7a6b652c44e195fba:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "인간4/몬스터4 배정 및 빈자리 AI 충원",
+        "감염 공격 → 정화 공격 순차적으로 진행",
+        "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다"
+      ],
+      "signatureSystems": [
+        {
+          "id": "main_road",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "학교"
+          ],
+          "stateOutputs": [
+            "폐놀이공원"
+          ],
+          "name": "로드",
+          "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+          "playerChoice": "학교 → 폐놀이공원"
+        },
+        {
+          "id": "a_main_road",
+          "grammarRole": "A",
+          "stateInputs": [
+            "폐놀이공원"
+          ],
+          "stateOutputs": [
+            "학교"
+          ],
+          "name": "감염 전환 시스템",
+          "purpose": "게임 내 인물/몬스터의 감염 상태 관리 및 전환 로직 구현",
+          "playerChoice": "학교 → 폐놀이공원"
+        },
+        {
+          "id": "b_road",
+          "grammarRole": "B",
+          "stateInputs": [
+            "학교"
+          ],
+          "stateOutputs": [
+            "폐놀이공원"
+          ],
+          "name": "로드 전환 시스템",
+          "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
+          "playerChoice": "학교 → 폐놀이공원"
+        },
+        {
+          "id": "delve_road",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "폐놀이공원"
+          ],
+          "stateOutputs": [
+            "학교"
+          ],
+          "name": "감염 상태",
+          "purpose": "인물 또는 몬스터가 감염 상태를 나타내는 상태 변수",
+          "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 246008,
-      "lastMs": 19091,
+      "totalMs": 265134,
+      "lastMs": 6822,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:38:27.229Z"
+      "updatedAt": "2026-10-10T09:38:46.364Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:38:27.229Z",
+  "updatedAt": "2026-10-10T09:38:46.365Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1491,7 +1621,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:38:27.229Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:38:46.365Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
