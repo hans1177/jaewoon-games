@@ -1649,6 +1649,11 @@ test('existing Web game presentation automatically selects optional UX and built
     assert.ok(sync.internalToolMatches.some(row=>row.id==='INVENTORY_EQUIPMENT'));
     assert.ok(sync.internalToolMatches.some(row=>row.id==='CRAFTING'));
     assert.ok(sync.internalToolMatches.every(row=>row.optional&&!row.automaticImport&&!row.runtimeVerified));
+    assert.equal(sync.firstPartyLibraryCount,2);
+    assert.ok(sync.internalLibraryMatches.some(row=>row.library==='assets/inventory-equipment.js'));
+    assert.ok(sync.internalLibraryMatches.some(row=>row.library==='assets/crafting-recipes.js'));
+    assert.ok(!sync.internalLibraryMatches.some(row=>row.library==='assets/vibe-private-engine.js'));
+    assert.ok(sync.internalLibraryMatches.every(row=>row.optional&&!row.automaticImport&&!row.runtimeVerified));
     assert.equal(sync.designMutation,false);assert.equal(sync.runtimeVerified,false);
     assert.match(task.goal,/EXISTING_GAME_INTERFACE_AUTO_MATCH/);
     assert.equal(fs.readFileSync(file,'utf8'),existing);
