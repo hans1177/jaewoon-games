@@ -210,25 +210,41 @@
       "name": "생태학적 선택 - 재료 수집 - 전략 수립",
       "purpose": "플레이어가 실제 선택과 위험을 통해 곤충 생태와 먹이사슬을 체감하는 독자적 생존 게임의 중심 행동을 구현",
       "playerChoice": "세계 변화와 다음 사건의 결정 과정에서 실제 세계 상태 변화가 일어나는 구체적인 사례로, 생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건 순서대로 진행됨으로써 플레이어의 숙련된 선택에 따라 세계가 변화하게 됨"
+    },
+    "local_authoring_parts::1e61fd0bfa4b903fc6da819bc8e28f16073252bfd03ccd6b320ab684bf45afc8:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "생태적 선택",
+        "재료 수집",
+        "전략 수립"
+      ],
+      "stateOutputs": [
+        "곤충 생태 및 먹이사슬의 선택과 위험",
+        "재료 수집 및 전략 수립"
+      ],
+      "name": "생태학적 선택 - 재료 수집 - 전략 수립",
+      "purpose": "게임 정체성의 대표 행동을 수행하며, 생태적 선택 → 재료 수집 → 전략 수립의 순차적인 상태 변화를 구현하여 실제 세계 상태 변화와 다음 사건 결정 과정에 영향을 미친다.",
+      "playerChoice": "세계 변화와 다음 사건의 결정 과정에서 실제 세계 상태 변화가 일어나는 구체적인 사례를 제공함으로써 플레이어의 선택에 따라 게임의 진척을 유도하고, 이는 게임 정체성을 형성하는 핵심 요소이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 887206,
-      "lastMs": 79266,
+      "totalMs": 966316,
+      "lastMs": 79110,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:56:31.445Z"
+      "updatedAt": "2026-10-10T01:57:50.557Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:41:44.101Z",
-  "updatedAt": "2026-10-10T01:56:31.445Z",
+  "updatedAt": "2026-10-10T01:57:50.557Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1904,7 +1920,7 @@
   "localAuthoringSplits": {
     "60f3a02ce1cf1f216dd146fd01ef0f031195d60eefa49be46d483b2b6be5979c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:56:31.445Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:57:50.557Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
