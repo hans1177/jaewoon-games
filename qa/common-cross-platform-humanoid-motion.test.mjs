@@ -105,3 +105,16 @@ test('shared master is registered in the original company library without platfo
     x.family==='CHARACTER'&&x.masterGlbRequired===true&&
     x.targetPlatforms.includes('UNITY')&&x.targetPlatforms.includes('ROBLOX')));
 });
+
+
+test('shared 3D library mutations wake the existing 24H producer instead of a shadow pipeline',()=>{
+  const workflow=fs.readFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'utf8');
+  const continuous=fs.readFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'utf8');
+  assert.match(workflow,/^\s*- 'assets\/shared\/\*\*'$/m);
+  assert.match(workflow,/^\s*- 'company-asset-library\.json'$/m);
+  assert.match(workflow,/VIBE2_ASSET_DEVELOPMENT_MAX: '63'/);
+  assert.match(workflow,/execution_lane: asset-development/);
+  assert.match(continuous,/asset-development/);
+  assert.match(continuous,/Execute declared native DCC authoring verification/);
+  assert.equal(catalog.productionVerified,false);
+});
