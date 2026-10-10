@@ -413,7 +413,7 @@ const reusable3d=[
 const sharedWorld=createVibeProceduralWorldLayout({...seedWorld,gameId:'forest-rpg',target:'ROBLOX',styleFamily:'DARK_FANTASY',libraryAssets:reusable3d});
 assert.equal(sharedWorld.status,'STATIC_LAYOUT_PROPOSED');
 assert.equal(sharedWorld.sharedLibraryBinding.sourceCandidateCount,5,'only rights-cleared native geometry and material inputs are eligible');
-assert.deepEqual(sharedWorld.sharedLibraryBinding.eligibleFamilies,{BUILDING:2,ENVIRONMENT:1,PROP:1,MATERIAL:1});
+assert.deepEqual(sharedWorld.sharedLibraryBinding.eligibleFamilies,{BUILDING:2,ENVIRONMENT:1,PROP:1,MATERIAL:1,CREATURE:0,CHARACTER:0});
 assert.equal(sharedWorld.sharedLibraryBinding.originalAssetsCopied,false);
 assert.equal(sharedWorld.sharedLibraryBinding.actualRuntimeBindingsVerified,false);
 assert.ok(sharedWorld.sharedLibraryBinding.selectedAssetIds.includes('library-forest-tree'));
@@ -501,5 +501,35 @@ assert.equal(firstStructure.runtimeVerified,false);
 assert.ok(firstStructure.candidateAssetIds.every(id=>!['flat-illustration','restricted-building'].includes(id)));
 const flatOnly=createVibeMapDetailReconstruction({sketch:mappedSketch,assets:reusable3d.filter(a=>a.id==='flat-illustration')});
 assert.equal(flatOnly.regions[0].layers.find(layer=>layer.layer==='STRUCTURE').status,'AUTHORING_REQUIRED','2D art is not native spatial geometry');
+
+
+// 옵션 조작 없이 승인된 세계관에서 수계·시대·주민/생명체 맵을 추론해야 한다.
+const worldFromDesign=createVibeProceduralWorldLayout({
+  ...seedWorld,seed:'auto-biome-no-toggle',biome:'ISLAND',buildingStyle:'GOTHIC',gameId:'demo-island'});
+assert.equal(worldFromDesign.oceansAndLakes.requestedWaterMode,'AUTO');
+assert.equal(worldFromDesign.oceansAndLakes.selectedWaterMode,'ISLAND');
+assert.equal(worldFromDesign.oceansAndLakes.waterSelectionMode,'WORLD_GEOGRAPHY_AUTO');
+assert.ok(worldFromDesign.oceansAndLakes.oceanCount>=1);
+assert.equal(worldFromDesign.eraAndCulture.requestedEra,'AUTO');
+assert.equal(worldFromDesign.eraAndCulture.selectedEra,'MEDIEVAL');
+assert.ok(worldFromDesign.buildings.every(row=>row.construction.eraArchitecture.era==='MEDIEVAL'));
+const tiersFromDesign=[
+  {id:'approved-merchant',kind:'NPC',tier:'NORMAL',approved:true,allowedActions:['WORK','TRADE','RAID']},
+  {id:'approved-wolf',kind:'MONSTER',tier:'ELITE',species:'wolf',approved:true,tierAuthorized:true,allowedActions:['HUNT','PATROL']},
+  {id:'approved-guardian',kind:'BOSS',tier:'RARE_BOSS',species:'golem',approved:true,tierAuthorized:true,
+    authorizedTierTransitions:[{from:'RARE_BOSS',to:'LEGENDARY',ownerApproved:true}],
+    allowedActions:['DEFEND','DUNGEON_GUARD']}
+];
+const livingAuto=createVibeProceduralWorldLayout({...seedWorld,seed:'approved-actors-auto',
+  gameId:'demo-forest',ecologyActors:tiersFromDesign});
+assert.equal(livingAuto.livingBiomePopulation.plannedActorCount,3);
+assert.ok(livingAuto.livingBiomePopulation.actorPlacements.every(row=>row.cell!==null));
+assert.equal(livingAuto.livingBiomePopulation.actualAiActorSpawns,0);
+assert.equal(livingAuto.livingBiomePopulation.actualMonsterRankChanges,0);
+assert.equal(livingAuto.livingBiomePopulation.actualRaidsLaunched,0);
+assert.equal(livingAuto.livingBiomePopulation.actorPlacements[0].status,'DESIGN_MAPPED_NATIVE_BINDING_REQUIRED');
+assert.equal(livingAuto.livingBiomePopulation.actorPlacements[0].raidTargetAuthorized,false);
+assert.equal(livingAuto.livingBiomePopulation.actorPlacements[2].evolution.nextTierProposal,'LEGENDARY');
+assert.equal(livingAuto.livingBiomePopulation.actorPlacements[2].evolution.tierMutationPerformed,false);
 
 console.log('vibe-world-macro-causality: ok');
