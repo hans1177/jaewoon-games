@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 탐험과 전투를 통해 획득한 자원으로 캐릭터의 스킬 트리를 능동적으로 재구성하며, 이 과정에서 발생하는 '전술적 선택'이 전투 결과와 스토리 분기에 즉각적인 상태 변화를 일으켜 매번 새로운 공략 경험을 제공합니다. 이러한 선택은 즉각적으로 전투의 승패와 캐릭터의 성장 방향을 결정짓는 가시적인 상태 변화로 이어집니다.",
       "coreFun": "전투 중 스킬의 속성 조합을 선택하여 적의 약점을 공략하고, 탐험 중 발견한 고대 문자를 해석하여 지름길을 개척하는 반복적인 의사결정이 핵심입니다. 이러한 선택은 즉각적으로 전투의 승패와 캐릭터의 성장 방향을 결정짓는 가시적인 상태 변화로 이어집니다. 플레이어는 매 턴마다 어떤 속성의 스킬을 우선 사용할지, 혹은 동료와 어떤 속성 연계를 발동시킬지를 결정하며, 이 선택이 전투의 템포와 피해량을 즉각적으로 변화시킵니다."
+    },
+    "local_authoring_parts::7e58061d10c0b680919911db02869006e135a558ac9fe74ec365a24f24d33458:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험 -> 다음 선택",
+        "타운 탐험 -> 단서 수집 -> 맵 접근성 변경 -> 새로운 보상/스토리 분기 발생",
+        "전투 결과 -> 캐릭터 성장 방향 결정 -> 新보상/스토리 분기 생성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 165468,
-      "lastMs": 165468,
+      "totalMs": 194902,
+      "lastMs": 29434,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:47:21.301Z"
+      "updatedAt": "2026-10-10T09:47:50.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:44:35.720Z",
-  "updatedAt": "2026-10-10T09:47:21.301Z",
+  "updatedAt": "2026-10-10T09:47:50.737Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1640,7 +1647,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:47:21.301Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:47:50.737Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
