@@ -187,25 +187,32 @@
       },
       "playerFantasy": "개미 시뮬레이터에서 플레이어는 세 개 미종족 중 하나를 골라, 거대한 정원을 탐험하며 굴을 지켜야 한다. 이는 생존, 전략, 위험의 중심에 위치한 오픈월드 멀티플레이 게임이다.",
       "coreFun": "{\n \"mainIdentity\": \"개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다\",\n \"a\": {\n \"system\": \"OPENWORLD_SIMULATION\",\n \"material\": \"현실적인 월드 상태, 대상/공간 선택, 위험/보상 예측 기반의 실제 입력 및 결과 변환 시스템\",\n \"materialDomain\": \"OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION\",\n \"stateChange\": \"월드 상태, 대상, 자원, 위험, 진행 상태 변화\"\n },\n \"b\": {\n \"system\": \"ACTION_SURVIVAL_ROGUELITE\",\n \"material\": \"플레이어의 선택에 따른 반응, 즉각적 결과, 다음 목표 결정, 새로운 전략 생성\",\n \"materialDomain\": \"ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY\",\n \"stateChange\": \"선택, 보상, 위험, 다음 목표, 전략 선택\"\n },\n \"abCausality\": \"주기적으로 발생하는 플레이어 선택과 월드 상태 변화는 서로 영향을 주며, A→B와 B→A 양방향으로 이어지게 설계됨\",\n \"abEvolution\": {\n \"aChangesB\": \"플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다\",\n \"bChangesA\": \"플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다\",\n \"lateGameChange\": \"플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦\"\n },\n \"materialFusion\": {\n \""
+    },
+    "local_authoring_parts::e6737ea07cf0d58da690f46f917032e84ffc9b6b578f6e1c02baa0067601cd27:coreLoop": {
+      "coreLoop": [
+        "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다",
+        "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
+        "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 587162,
-      "lastMs": 117330,
+      "totalMs": 675071,
+      "lastMs": 87909,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:04:20.351Z"
+      "updatedAt": "2026-10-10T03:05:48.263Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:33.168Z",
-  "updatedAt": "2026-10-10T03:04:20.352Z",
+  "updatedAt": "2026-10-10T03:05:48.263Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1810,7 +1817,7 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:04:20.352Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:05:48.263Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
