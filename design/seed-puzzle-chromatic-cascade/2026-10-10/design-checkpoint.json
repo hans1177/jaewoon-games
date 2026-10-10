@@ -80,25 +80,53 @@
         "worldChange": "세계가 변환되고, 다음 스테이지로 이동하며 반복 가능한 핵심 루프 유지",
         "nextEvent": "새로운 선택이나 패턴 발생으로 게임이 계속됨"
       }
+    },
+    "local_authoring_parts::545c1142455d5e466c91463d7dbfb77d2e48ba7d6b74570e7ec653743d43d826:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "색채",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 색상을 이해하고 선택하여 세계를 변환함"
+        },
+        {
+          "name": "연쇄",
+          "kind": "GENRE",
+          "gameplayEffect": "색상의 순서나 패턴을 통해 세계를 변화시키는 게임 형식"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "예술·문화",
+          "gameplayEffect": "색상의 주제나 예술적 표현에 기반한 창작 소재"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "기술·과학",
+          "gameplayEffect": "색상 조합 및 상호작용 시스템에 기반한 플레이 방식"
+        }
+      ],
+      "cGenreInterlock": "플레이어가 색상을 이해하고 선택하여 세계를 변화시킴으로 인해 새로운 경로가 열리고, 이 선택이 세계를 다시 변화시켜 반복 가능한 루프가 형성됨",
+      "cWorldAndGameplayEffect": "플레이어 선택은 색상의 조합이나 기존 시스템 활용을 통해 세계를 변화시며, 이 변화는 다음 스테이지로 이동하게 됩니다. 이러한 반복은 모바일에서도 즉시 이해되는 입력과 피드백을 통해 이루어집니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1013448,
-      "lastMs": 92575,
+      "totalMs": 1102529,
+      "lastMs": 89081,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:02:15.465Z"
+      "updatedAt": "2026-10-10T03:03:44.548Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:45:21.790Z",
-  "updatedAt": "2026-10-10T03:02:15.466Z",
+  "updatedAt": "2026-10-10T03:03:44.548Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1720,7 @@
     "3a0e80912fd0079786f4a4edc5ce858faa07e32782956ac54e2ad7d3bf84c691": true,
     "8d3efe3f4e7e759cf951d8037d3abad6594efcd6c9382f386fbbae4ccd757788": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:02:15.466Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:03:44.548Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
