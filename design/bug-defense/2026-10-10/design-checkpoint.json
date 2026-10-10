@@ -120,25 +120,44 @@
       "name": "Main Roadmap",
       "purpose": "Establish the core gameplay strategy for defending against insect waves, with a focus on adaptive resource allocation and strategic placement of defenders.",
       "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+    },
+    "local_authoring_parts::a2e3aa33d39ed132f78790390d571edb2e60ab6fc88e4b2d07d46b03788fed2e:signatureSystems:1:4cb853888d12af03": {
+      "id": "a_main_roadmap",
+      "grammarRole": "A",
+      "stateInputs": [
+        "incoming_insect_wave_pattern",
+        "resource_allocation_state",
+        "defender_placement_adjustment",
+        "next_defense_decision_making"
+      ],
+      "stateOutputs": [
+        "defender_placement_adjustment",
+        "next_defense_decision_making",
+        "incoming_insect_wave_pattern",
+        "resource_allocation_state"
+      ],
+      "name": "After Play Flow",
+      "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically.",
+      "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 171896,
-      "lastMs": 12862,
+      "totalMs": 191628,
+      "lastMs": 3079,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:41:37.657Z"
+      "updatedAt": "2026-10-10T10:41:57.393Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:41:37.657Z",
+  "updatedAt": "2026-10-10T10:41:57.394Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1826,7 +1845,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:41:37.657Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:41:57.393Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
