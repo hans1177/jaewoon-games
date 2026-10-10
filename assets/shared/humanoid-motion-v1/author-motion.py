@@ -1014,6 +1014,12 @@ for clip_name in CLIPS:
         root_metrics['locationMax']=max(root_metrics['locationMax'],*(abs(v) for v in root['l']))
         max_euler=max(max_euler,*[abs(v) for row in snap.values() for v in row['r']])
 
+# Source-only action articulation QA; only the focused authored clip can be promoted.
+focused_action_joint_activity = {
+    bone: rotation_activity(ARGS.focus,bone)
+    for bone in ('Hips','Spine','Chest','UpperArmL','UpperArmR','ThighL','ThighR')
+} if ARGS.focus in ACTION_CLIPS else {}
+focused_action_activity_max = max(focused_action_joint_activity.values(),default=0.0)
 qa_failures=[]
 for clip_name,row in loop_metrics.items():
     if row['rotationMaxRad']>QA_THRESHOLDS['loopRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['loopLocationMax']:
@@ -1028,6 +1034,13 @@ if root_metrics['rotationMaxRad']>QA_THRESHOLDS['rootRotationMaxRad'] or root_me
     qa_failures.append('ROOT_AUTHORITY_INTRUSION')
 if max_euler>QA_THRESHOLDS['maxEulerRad'] or not all_finite:
     qa_failures.append('INVALID_OR_EXTREME_ROTATION')
+if ARGS.focus in ACTION_CLIPS:
+    min_activity = 0.005 if ARGS.focus == 'common_guard_hold_hq' else 0.20
+    if focused_action_activity_max < min_activity:
+        qa_failures.append('COMMON_ACTION_ARTICULATION_STATIC:'+ARGS.focus)
+    if ARGS.focus.startswith(('common_light_attack_','common_heavy_attack_','common_cast_')):
+        if max(focused_action_joint_activity['UpperArmL'],focused_action_joint_activity['UpperArmR'])<0.30:
+            qa_failures.append('COMMON_ACTION_ARM_SWING_MISSING:'+ARGS.focus)
 for clip_name,value in phase_metrics.items():
     if value>QA_THRESHOLDS['leftRightPhaseErrorRad']:
         qa_failures.append('LEFT_RIGHT_PHASE:'+clip_name)
@@ -1056,6 +1069,8 @@ qa_metrics={
     'maxEulerRad':max_euler,
     'allSamplesFinite':all_finite,
     'focusedClip':ARGS.focus,
+    'focusedActionJointRotationRangeRad':focused_action_joint_activity,
+    'focusedActionActivityMaxRad':focused_action_activity_max,
     'rigHeight':height,
     'failures':qa_failures,
     'staticMotionQaPass':not qa_failures,
@@ -1215,12 +1230,8 @@ if ARGS.render_dir:
     SCENE.render.engine='BLENDER_EEVEE'
     SCENE.render.resolution_x=512;SCENE.render.resolution_y=512;SCENE.render.resolution_percentage=100
     SCENE.render.image_settings.file_format='PNG'
-    preview_times={
-        'common_idle_hq':0.44,'common_walk_hq':0.12,'common_jog_hq':0.12,'common_run_hq':0.12,'common_sprint_hq':0.12,
-        'common_start_hq':0.34,'common_stop_hq':0.36,'common_strafe_left_hq':0.44,'common_strafe_right_hq':0.44,
-        'common_backward_hq':0.12,'common_turn_45_hq':0.58,'common_turn_90_hq':0.58,'common_turn_180_hq':0.58,
-        'common_jump_start_hq':0.58,'common_jump_air_hq':0.48,'common_land_hq':0.22,'common_crouch_hq':0.46,
-    }
+    # Only the selected object/clip is reviewed in this one-hour work unit.
+    preview_times={ARGS.focus:0.5}
     reset_pose();bpy.context.view_layer.update()
     baseline=ARGS.render_dir/'source-bind-reference.png'
     SCENE.render.filepath=str(baseline);bpy.ops.render.render(write_still=True)
