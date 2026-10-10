@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::08d765b4f622727f53e18be7a3b64bb31292df3d7cdae66503b38f22d40cc81b:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "야생 생존",
+      "creativeGrammar": {
+        "mainIdentity": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
+        "a": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
+          "materialDomain": "생산 및 진입 시점, 대상/공간 선택, 자원 관리, 위험 예측, 진행 상태 전환",
+          "stateChange": "월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가"
+        },
+        "b": {
+          "system": "ACTION_SURVIVAL_ROGUELITE",
+          "material": "보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
+          "materialDomain": "보상 기반의 목표 설정, 지역 재설정, 상호작업 전략 개발, 자원 배분 최적화",
+          "stateChange": "보상/실패 판정 → 다음 목표 결정 → 지도 재선택 → 전략 조정"
+        },
+        "abCausality": "양방향 실제 상태 교환: 월드 상태 변화 ↔ 보상/실패 판정 적용",
+        "abEvolution": {
+          "aChangesB": "월드 상태 변화 → 보상/실패 판정 적용 → 다음 목표 결정",
+          "bChangesA": "보상/실패 판정 적용 → 다음 목표 결정 → 월드 상태 변화",
+          "lateGameChange": "자원 고갈 시 정체성 변동 및 새로운 선택 사례 생성"
+        },
+        "materialFusion": {
+          "contrast": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
+          "causalBridge": "보상/실패 판정을 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지는 구조",
+          "removalConsequence": "자원 소모 계산, 위험 수준 감소 또는 증가, 월드 상태 재설정"
+        },
+        "storyCausalChain": {
+          "cause": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
+          "characterConflict": "플레이어 선택에 따른 월드 상태 변화와 보상/실패 판정의 갈등",
+          "playerChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
+          "worldChange": "월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가",
+          "nextEvent": "다음 목표 결정 → 지도 재선택 → 전략 조정"
+        },
+        "cThemes": [
+          {
+            "name": "생각",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험"
+          },
+          {
+            "name": "시간",
+            "kind": "MATERIAL",
+            "gameplayEffect": "시간이 진입 시점, 대상 선택, 자원 관리 등에 영향을 미친다"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "장기적인 플레이 및 선택 사례 생성"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "보상/실패 판정 기반의 새로운 선택 사례 생성"
+          }
+        ],
+        "cGenreInterlock": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
+        "cWorldAndGameplayEffect": "월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가",
+        "delveDiscoveries": [
+          {
+            "clue": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
+            "discovery": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험",
+            "newChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
+          },
+          {
+            "clue": "보상/실패 판정을 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지는 구조",
+            "discovery": "월드 상태 변화와 보상/실패 판정 갈등 발생",
+            "newChoice": "다음 목표 결정 → 지도 재선택 → 전략 조정"
+          },
+          {
+            "clue": "자원 고갈 시 정체성 변동 및 새로운 선택 사례 생성",
+            "discovery": "자원 소모 계산, 위험 수준 감소 또는 증가",
+            "newChoice": "자원 고갈 시 정체성 변동 및 새로운 선택 사례 생성"
+          },
+          {
+            "clue": "시간이 진입 시점, 대상 선택, 자원 관리 등에 영향을 미친다",
+            "discovery": "시간은 플레이어의 행동과 선택에 영향을 주는 요소이다",
+            "newChoice": "시간이 진입 시점, 대상 선택, 자원 관리 등에 영향을 미친다"
+          }
+        ],
+        "delveGrowthRule": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
+        "finalGameIdentity": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.의 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
+      },
+      "playerFantasy": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험하며, 월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가하는 과정을 거쳐 다음 목표 결정 및 전략 조정을 수행해야 한다.",
+      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.의 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.의 보상/실패 판정을 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지는 구조이다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 286844,
+      "lastMs": 286844,
+      "lastError": null,
+      "updatedAt": "2026-10-10T03:01:46.331Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:59.147Z",
-  "updatedAt": "2026-10-10T02:56:59.256Z",
+  "updatedAt": "2026-10-10T03:01:46.331Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1611,5 +1712,13 @@
       }
     },
     "assetFacts": {}
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T03:01:46.331Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
