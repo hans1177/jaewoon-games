@@ -95,25 +95,117 @@
         "delveGrowthRule": "역사와 예술의 상태 교환 - 역사는 예술에 영향을 주고, 예술은 역사에 기반을 두며 서로 다른 방식으로 성장",
         "finalGameIdentity": "역사와 예술의 인과적 결합 - 탐험의 시작에서 지역의 풍경, 적의 존재, 스토리의 갈등이 모두 함께 움직이는 세계의 정체성"
       }
+    },
+    "local_authoring_parts::2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730:playerFantasy,coreFun": {
+      "playerFantasy": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
+      "coreFun": "탐험의 시작 - 지역의 풍경, 적의 존재, 스토리의 갈등"
+    },
+    "local_authoring_parts::173715cacf5067052f7efe052a560d148c329d6524982d70fe64b2dbd15072b6:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
+      "creativeGrammar": {
+        "mainIdentity": "탐험의 시작 - 지역의 풍경, 적의 존재, 스토리의 갈등",
+        "a": {
+          "system": "역사",
+          "material": "인물의 유산",
+          "materialDomain": "역사의 전개",
+          "stateChange": "역사의 시스템 연결 및 플레이어의 선택"
+        },
+        "b": {
+          "system": "문화",
+          "material": "예술의 표현",
+          "materialDomain": "문화의 발전",
+          "stateChange": "문화의 상호작용 및 새로운 역할 생성"
+        },
+        "abCausality": "역사와 예술의 상태 교환 - 역사가 예술에 영향을 주고, 예술이 역사에 기반을 두고 서로 다른 방식으로 성장",
+        "abEvolution": {
+          "aChangesB": "역사의 변화 -> 예술의 발전 / 예술의 변화 -> 역사의 확장",
+          "bChangesA": "예술의 변화 -> 역사의 진보 / 역사의 변화 -> 예술의 재발견",
+          "lateGameChange": "역사와 예술의 관계 변화 - 역사의 지배적 요소로 변형되고 예술은 실질적인 인과를 보유"
+        },
+        "materialFusion": {
+          "contrast": "역사 vs 예술 - 각각의 중심 축에서 창작 소재를 융합하여 세계의 정체성을 형성",
+          "causalBridge": "역사의 전개 -> 예술의 표현 / 예술의 발전 -> 역사의 갈등",
+          "removalConsequence": "역사의 제거 -> 예술의 상호작용 증대 / 예술의 제거 -> 역사의 선택 가능성 확대"
+        },
+        "storyCausalChain": {
+          "cause": "역사의 전개 및 예술의 발전 - 플레이어가 선택하는 대상",
+          "characterConflict": "역사와 예술의 갈등 - 플레이어가 선택한 결과",
+          "playerChoice": "플레이어의 선택 - 실제 세계 상태 변화",
+          "worldChange": "세계의 상태 변화 - 다음 사건의 기반이 되는 새로운 조건 생성",
+          "nextEvent": "다음 사건 - 게임의 진보 및 새로운 선택 가능성이 등장"
+        },
+        "cThemes": [
+          {
+            "name": "역사",
+            "kind": "MATERIAL",
+            "gameplayEffect": "역사의 전개, 보상, 위험을 결정"
+          },
+          {
+            "name": "예술",
+            "kind": "MATERIAL",
+            "gameplayEffect": "예술의 표현, 보상, 위험을 결정"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "역사의 전개",
+            "gameplayEffect": "역사의 시스템 연결 및 플레이어의 선택"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "예술의 표현",
+            "gameplayEffect": "예술의 상호작용 및 새로운 역할 생성"
+          }
+        ],
+        "cGenreInterlock": "역사와 예술의 관계 변화 - 역사가 예술에 영향을 주고, 예술이 역사에 기반을 두며 서로 다른 방식으로 성장",
+        "cWorldAndGameplayEffect": "세계의 상태 변화 - 다음 사건의 기반이 되는 새로운 조건 생성",
+        "delveDiscoveries": [
+          {
+            "clue": "역사의 유산과 예술의 표현 - 인물의 정체성 확정",
+            "discovery": "역사의 전개 -> 예술의 발전 / 예술의 발전 -> 역사의 진보",
+            "newChoice": "역사와 예술의 상호작용 증대"
+          },
+          {
+            "clue": "예술의 표현과 역사의 전개 - 인물의 선택 가능성 확대",
+            "discovery": "예술의 발전 -> 역사의 확장 / 역사의 전개 -> 예술의 재발견",
+            "newChoice": "예술과 역사의 관계 변화로 이어지는 플레이어의 선택 가능성이 등장"
+          },
+          {
+            "clue": "역사와 예술의 갈등 해결 - 세계의 정체성 형성",
+            "discovery": "역사의 제거 -> 예술의 상호작용 증대 / 예술의 제거 -> 역사의 선택 가능성 확대",
+            "newChoice": "역사와 예술의 관계 변화로 이어지는 플레이어의 선택 가능성이 등장"
+          },
+          {
+            "clue": "역사와 예술의 연결 강화 - 게임의 진보 및 새로운 선택 가능성이 등장",
+            "discovery": "역사의 전개 -> 예술의 발전 / 예술의 발전 -> 역사의 진보",
+            "newChoice": "역사와 예술의 상호작용 증대"
+          }
+        ],
+        "delveGrowthRule": "역사와 예술의 상태 교환 - 역사는 예술에 영향을 주고, 예술은 역사에 기반을 두며 서로 다른 방식으로 성장",
+        "finalGameIdentity": "역사와 예술의 인과적 결합 - 탐험의 시작에서 지역의 풍경, 적의 존재, 스토리의 갈등이 모두 함께 움직이는 세계의 정체성"
+      },
+      "playerFantasy": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
+      "coreFun": "탐험의 시작 - 지역의 풍경, 적의 존재, 스토리의 갈등"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 477009,
-      "lastMs": 176907,
+      "totalMs": 710561,
+      "lastMs": 233552,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:14:39.480Z"
+      "updatedAt": "2026-10-10T03:18:33.033Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:06:42.448Z",
-  "updatedAt": "2026-10-10T03:14:39.480Z",
+  "updatedAt": "2026-10-10T03:18:33.035Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1859,7 +1951,7 @@
   "localAuthoringSplits": {
     "2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:14:39.480Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:18:33.035Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
