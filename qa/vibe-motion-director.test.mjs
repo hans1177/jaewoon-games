@@ -1767,3 +1767,19 @@ test('2026 paper-grounded optional rig physics samples are measured instead of s
     assert.match(plan.researchAlgorithmSources[key],/^https:\/\//);
   assert.equal(plan.gameplayAuthority,false);
 });
+
+
+test('three-frame jerk is calculated from real motion samples, not markers',()=>{
+  const smooth=auditMotionContinuityTrace(continuityFixture());
+  assert.equal(smooth.verdict,'PASS');
+  assert.ok(smooth.metrics.maxRootJerk<1e-8);
+  assert.ok(smooth.metrics.maxJointJerk<1e-8);
+  assert.equal(smooth.measurementCoverage.jointJerkMeasured,true);
+  const jumped=continuityFixture();
+  jumped.frames[15].jointPositions.head[0]+=.8;
+  const qa=auditMotionContinuityTrace(jumped);
+  assert.equal(qa.verdict,'FAIL');
+  assert.ok(qa.metrics.maxJointJerk>0);
+  assert.ok(qa.violations.some(row=>row.kind==='maxJointJerk'||row.kind==='maxJointAcceleration'));
+  assert.equal(qa.runtimeVerified,false);
+});
