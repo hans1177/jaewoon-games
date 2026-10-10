@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 64,
-  "lastSuccessfulModelCallAt": "2026-10-10T09:56:06.368Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 67,
+  "lastSuccessfulModelCallAt": "2026-10-10T09:56:40.840Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT",
   "designerSeed": {
     "file": "design/horror-escape-room/2026-10-10/design-seed.json",
     "contentDigest": "67404bace92616a697d278e8e7b327bbb54967f2722fd0d6df2431606ffc088c",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1305060,
-      "lastMs": 34243,
+      "totalMs": 1339528,
+      "lastMs": 34468,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:56:06.368Z"
+      "updatedAt": "2026-10-10T09:56:40.837Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T09:56:06.369Z"
+  "updatedAt": "2026-10-10T09:56:40.844Z"
 }

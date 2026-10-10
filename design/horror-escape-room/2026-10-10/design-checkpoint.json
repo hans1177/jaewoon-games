@@ -792,25 +792,50 @@
     },
     "local_authoring_parts::28e1532b7e15b26648e0a46dda3817c3738fde48f37da6724de1bbbfd2d4b660:riskPressure": {
       "riskPressure": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+    },
+    "local_authoring_parts::28e1532b7e15b26648e0a46dda3817c3738fde48f37da6724de1bbbfd2d4b660:recoveryRules": {
+      "recoveryRules": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+    },
+    "local_authoring_parts::db8bdd3d7ab480fdfd8546ec46385e42e8dbea1bff67729d2d7de12b3a2bfdb2:failureRetryRisk": {
+      "failureStates": [
+        "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행",
+        "감염 상태 전환 후 정화 공격 재발",
+        "인물/몬스터 선택 기회 제공"
+      ],
+      "retryFlow": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+      "riskPressure": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+      "recoveryRules": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+    },
+    "local_authoring_parts::3666fa8a3790834fcd100e210b614e258d65eb1779c1ea6acda2b857144e7ff3:failureRetryRisk": {
+      "failureRetryRisk": {
+        "failureStates": [
+          "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행",
+          "감염 상태 전환 후 정화 공격 재발",
+          "인물/몬스터 선택 기회 제공"
+        ],
+        "retryFlow": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+        "riskPressure": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+        "recoveryRules": "감염 상태 전환 후 정화 공격 재발 시, 인물/몬스터 선택 기회 제공 중 발생하는 실패 사례는 다음 단계로 이어진다: 감염 공격 실행, 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1305060,
-      "lastMs": 34243,
+      "totalMs": 1339528,
+      "lastMs": 34468,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:56:06.368Z"
+      "updatedAt": "2026-10-10T09:56:40.837Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:56:06.368Z",
+  "updatedAt": "2026-10-10T09:56:40.843Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2137,15 +2162,131 @@
     }
   },
   "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "designer_draft_slices::systems-progression": "404b02af511f928ee482c4c4f8c43ff20e0a5797d94abcd5986eca9d01c67346"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:56:06.368Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::systems-progression": [
+      {
+        "code": "DESIGN_REPEATED_CONTENT",
+        "kind": "HARD_GATE",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "name": "failureRetryRisk"
+        },
+        "requiredAction": "서로 다른 항목을 같은 설명으로 채우지 않는다. 동선·전조·대응·위험·보상·복구가 각각 어떤 규칙인지 작성한다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "failureRetryRisk"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::systems-progression": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::systems-progression": {
+      "systemInterconnections": [
+        {
+          "fromId": "main_road",
+          "toId": "a_main_road",
+          "stateKeys": [
+            "폐놀이공원"
+          ],
+          "fromSystem": "로드",
+          "toSystem": "감염 전환 시스템",
+          "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행",
+          "stateChange": "감염 공격 실행 후 정화 공격 재발, 인물/몬스터 상태 전환 및 선택 기회 제공"
+        },
+        {
+          "fromId": "a_main_road",
+          "toId": "main_road",
+          "stateKeys": [
+            "학교"
+          ],
+          "fromSystem": "로드",
+          "toSystem": "감염 전환 시스템",
+          "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 및 선택 기회 제공",
+          "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        },
+        {
+          "fromId": "a_main_road",
+          "toId": "b_road",
+          "stateKeys": [
+            "학교"
+          ],
+          "fromSystem": "로드",
+          "toSystem": "로드 전환 시스템",
+          "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        },
+        {
+          "fromId": "b_road",
+          "toId": "a_main_road",
+          "stateKeys": [
+            "폐놀이공원"
+          ],
+          "fromSystem": "로드 전환 시스템",
+          "toSystem": "감염 전환 시스템",
+          "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        },
+        {
+          "fromId": "main_road",
+          "toId": "delve_road",
+          "stateKeys": [
+            "폐놀이공원"
+          ],
+          "fromSystem": "로드",
+          "toSystem": "감염 전환 시스템",
+          "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        },
+        {
+          "fromId": "delve_road",
+          "toId": "main_road",
+          "stateKeys": [
+            "학교"
+          ],
+          "fromSystem": "로드 전환 시스템",
+          "toSystem": "로드 전환 시스템",
+          "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        }
+      ],
+      "progressionDirection": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+      "progressionEconomyBalance": {
+        "progressionLoop": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+        "resourceFlow": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+        "balanceRules": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "newGameplay": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "systemImpact": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        },
+        {
+          "milestone": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "newGameplay": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "systemImpact": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        },
+        {
+          "milestone": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "newGameplay": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+          "systemImpact": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+        }
+      ]
+    }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T09:56:40.840Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "systems-progression",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
