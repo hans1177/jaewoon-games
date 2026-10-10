@@ -187,25 +187,49 @@
       },
       "playerFantasy": "주요 지역 전략 선택 시, 지역 경계 힘과 군사 전술의 상호작용을 통해 자원 배분 방식을 결정하며, 전선 변화 대응 전략에 따라 실제 세계 상태가 변하게 된다.",
       "coreFun": "{\"required\": true, \"infection\": false, \"phases\": [\"OPENING\", \"DEVELOPMENT\", \"RESOLUTION\"], \"lockedNumbers\": {}, \"abilityFacts\": [], \"humanRoster\": [], \"monsterRoster\": []}"
+    },
+    "local_authoring_parts::39560bacd5e6896c23b849b59bcf3e2000de519877f4d00af41764edd0dc1de9:coreLoop": {
+      "coreLoop": [
+        "입력: 주요 지역 전략 선택, 자원 분배 계획 결정",
+        " 상태변화: 지역 경계 힘 증가, 자원 배분 방식 변경",
+        " 보상/ 위험: 전선 변화 대응 전략 실행, 자원 분배 계획 확정"
+      ]
+    },
+    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_unity_web_validation_surface",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "identity-core: 영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
+        "coreFun: 입력: 주요 지역 전략 선택, 자원 분배 계획 결정",
+        "signatureSystems: MAIN/A/B와 DELVE(@) 기존 원본 규칙 입출력"
+      ],
+      "stateOutputs": [
+        "identity-core: 지역 경계 힘 강도 증가, 자원 배분 방식 변경",
+        "coreLoop: 전선 변화 대응 전략 실행, 자원 분배 계획 확정",
+        "signatureSystems: 주요 지역 전략 및 군사 전술의 상태 교환"
+      ],
+      "name": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
+      "purpose": "전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조 관계 형성",
+      "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 611624,
-      "lastMs": 99751,
+      "totalMs": 930617,
+      "lastMs": 110351,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:26:45.047Z"
+      "updatedAt": "2026-10-10T06:32:04.048Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:33.400Z",
-  "updatedAt": "2026-10-10T06:26:45.049Z",
+  "updatedAt": "2026-10-10T06:32:04.049Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1743,14 +1767,33 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": [
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_unity_web_validation_surface"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_unity_web_validation_surface"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:26:45.049Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T06:32:04.048Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
