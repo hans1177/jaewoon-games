@@ -2543,25 +2543,184 @@
         }
       ],
       "antiMonotonyRule": "주제/역사/철학 선택, 퀘스트/보상 선택, 무기/속성 선택 중 하나가 선택되면, 다른 두 가지 선택은 새로운 전략 경로, 게임 세계관 진입 및 경험 상승, 실시간 속도/강화 기능 증가의 유연한 사용 가능성을 제공해야 한다."
+    },
+    "local_authoring_parts::531fb422849c036465c3d0b1ad30f3cdd21fae57c9d2318f5b23bb83ec2cef01:abilities,roleTransitions,regions": {
+      "abilities": [
+        {
+          "id": "50일-무기/속성 선택",
+          "name": "무기/속성 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[0]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "무기/속성",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "실시간 속도/강화 기능 증가",
+          "stateInputs": [
+            "무기/속성 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가"
+          ],
+          "source": "original",
+          "rangeKey": "무기/속성",
+          "costKey": "무기/속성",
+          "cooldownKey": "무기/속성"
+        },
+        {
+          "id": "50일-퀘스트/보상 선택",
+          "name": "퀘스트/보상 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[1]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "퀘스트/보상",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "플레이어 경험/레벨 스토리 상승",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "source": "original",
+          "rangeKey": "퀘스트/보상",
+          "costKey": "퀘스트/보상",
+          "cooldownKey": "퀘스트/보상"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "name": "주제/역사/철학 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[2]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "주제/역사/철학",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "전투 스타일 및 인식 변화",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "퀘스트/보상 선택"
+          ],
+          "source": "original",
+          "rangeKey": "주제/역사/철학",
+          "costKey": "주제/역사/철학",
+          "cooldownKey": "주제/역사/철학"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "플레이어",
+          "humanTool": "무기/속성 선택",
+          "humanAbilityId": "50일-무기/속성 선택",
+          "infectedAbilityId": "50일-무기/속성 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "없음",
+          "changedChoice": "무기/속성 선택"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "퀘스트/보상 선택",
+          "humanAbilityId": "50일-퀘스트/보상 선택",
+          "infectedAbilityId": "50일-퀘스트/보상 선택",
+          "retainedState": "플레이어 경험/레벨 스토리 상승",
+          "removedState": "없음",
+          "changedChoice": "퀘스트/보상 선택"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "주제/역사/철학 선택",
+          "humanAbilityId": "50일-주제/역사/철학 선택",
+          "infectedAbilityId": "50일-주제/역사/철학 선택",
+          "retainedState": "전투 스타일 및 인식 변화",
+          "removedState": "없음",
+          "changedChoice": "주제/역사/철학 선택"
+        }
+      ],
+      "regions": [
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "실시간 속도/강화 기능 증가",
+          "traversal": "주제/역사/철학 선택",
+          "riskReward": "퀘스트/보상 선택",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택",
+          "resourcePressure": "주제/역사/철학 선택",
+          "storyContext": "주제/역사/철학 선택"
+        },
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "플레이어 경험/레벨 스토리 상승",
+          "traversal": "무기/속성 선택",
+          "riskReward": "무기/속성 선택",
+          "landmark": "무기/속성 선택",
+          "encounterPattern": "무기/속성 선택",
+          "resourcePressure": "무기/속성 선택",
+          "storyContext": "무기/속성 선택"
+        },
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "실시간 속도/강화 기능 증가",
+          "traversal": "퀘스트/보상 선택",
+          "riskReward": "퀘스트/보상 선택",
+          "landmark": "퀘스트/보상 선택",
+          "encounterPattern": "퀘스트/보상 선택",
+          "resourcePressure": "퀘스트/보상 선택",
+          "storyContext": "퀘스트/보상 선택"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 25,
+      "calls": 34,
+      "successes": 26,
       "failures": 8,
       "timeouts": 6,
       "jsonFailures": 0,
-      "totalMs": 4941314,
-      "lastMs": 300100,
+      "totalMs": 5192673,
+      "lastMs": 251359,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:26:30.126Z"
+      "updatedAt": "2026-10-10T00:30:41.487Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-10T00:26:30.126Z",
+  "updatedAt": "2026-10-10T00:30:41.487Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4350,10 +4509,10 @@
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:21:30.017Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "content-rules",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:30:41.487Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
