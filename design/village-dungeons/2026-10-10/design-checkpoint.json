@@ -28,25 +28,77 @@
         "stateChange": "던전 승리 -> 리스크 조절 -> 체력 회복 감소"
       },
       "abCausality": "적의 공격 궤적 회피 → 무기 제련 성공; 던전 승리 → 리스크 조절 → 체력 회복 감소; 마을 복구 시설 기술 트리 확장 → 보스 전투 도전 결정됨."
+    },
+    "local_authoring_parts::ac94ff2d6fabd44d91853124b284a80d1a4833f321f2d4a362f0fd1700077714:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "던전 승리 -> 리스크 조절 -> 체력 회복 감소",
+        "bChangesA": "적의 공격 궤적 회피 -> 무기 제련 성공로 인해 기술 트리 확장",
+        "lateGameChange": "마을 복구 시설 기술 트리 확장 → 보스 전투 도전 결정"
+      },
+      "materialFusion": {
+        "contrast": "적의 공격 궤적 및 연타 공격 → 던전 내 인벤토리 슬롯",
+        "causalBridge": "적의 공격 궤적 회피 → 무기 제련 성공; 던전 승리 → 리스크 조절 → 체력 회복 감소",
+        "removalConsequence": "체력 회복 수단 포기 → 무기 제련 성공으로 인한 기술 트리 확장"
+      },
+      "storyCausalChain": {
+        "cause": "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+        "characterConflict": "던전 내 인벤토펜 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+        "playerChoice": "안전한 마을 귀환 주문서를 유지하기 위해 회복 물약을 버릴 것인지, 희귀 보스 드롭 재료를 위해 체력 회복 수단을 포기할 것인지 결정한다.",
+        "worldChange": "마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금하며, 심층 보스 타임어택과 극한의 장비 옵션 튡닝을 통해 지속적인 육성 만족도를 제공한다.",
+        "nextEvent": "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전"
+      }
+    },
+    "local_authoring_parts::80a0e51b1e498c5cc7a032ce46cf8df63ec2150c695ddddaea467172713ebf0c:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+      "a": {
+        "system": "마을 재건 시설 연동 시스템",
+        "material": "적의 공격 궤적 및 연타 공격",
+        "materialDomain": "무기 제련 시설",
+        "stateChange": "적의 공격 궤적 회피 -> 무기 제련 성공"
+      },
+      "b": {
+        "system": "리스크 배낭 정밀 적재 시스템",
+        "material": "던전 내 인벤토리 슬롯",
+        "materialDomain": "체력 회복 수단 포기",
+        "stateChange": "던전 승리 -> 리스크 조절 -> 체력 회복 감소"
+      },
+      "abCausality": "적의 공격 궤적 회피 → 무기 제련 성공; 던전 승리 → 리스크 조절 → 체력 회복 감소; 마을 복구 시설 기술 트리 확장 → 보스 전투 도전 결정됨.",
+      "abEvolution": {
+        "aChangesB": "던전 승리 -> 리스크 조절 -> 체력 회복 감소",
+        "bChangesA": "적의 공격 궤적 회피 -> 무기 제련 성공로 인해 기술 트리 확장",
+        "lateGameChange": "마을 복구 시설 기술 트리 확장 → 보스 전투 도전 결정"
+      },
+      "materialFusion": {
+        "contrast": "적의 공격 궤적 및 연타 공격 → 던전 내 인벤토리 슬롯",
+        "causalBridge": "적의 공격 궤적 회피 → 무기 제련 성공; 던전 승리 → 리스크 조절 → 체력 회복 감소",
+        "removalConsequence": "체력 회복 수단 포기 → 무기 제련 성공으로 인한 기술 트리 확장"
+      },
+      "storyCausalChain": {
+        "cause": "마을 의뢰 게시판에서 자원 채취 및 특정 던전 몬스터 토벌 퀘스트를 수락하고 장비를 점검한다.",
+        "characterConflict": "던전 내 인벤토펜 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다.",
+        "playerChoice": "안전한 마을 귀환 주문서를 유지하기 위해 회복 물약을 버릴 것인지, 희귀 보스 드롭 재료를 위해 체력 회복 수단을 포기할 것인지 결정한다.",
+        "worldChange": "마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금하며, 심층 보스 타임어택과 극한의 장비 옵션 튡닝을 통해 지속적인 육성 만족도를 제공한다.",
+        "nextEvent": "확장된 시설 버프와 신규 제작 무기를 바탕으로 더 깊은 던전 층계 및 보스전에 도전"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 739354,
-      "lastMs": 104163,
+      "totalMs": 891093,
+      "lastMs": 151739,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:14:48.873Z"
+      "updatedAt": "2026-10-10T09:17:20.614Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:02:29.251Z",
-  "updatedAt": "2026-10-10T09:14:48.873Z",
+  "updatedAt": "2026-10-10T09:17:20.616Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1728,7 +1780,7 @@
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:14:48.873Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:17:20.616Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
