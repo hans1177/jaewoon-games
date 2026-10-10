@@ -730,7 +730,16 @@ try{
   console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
 } catch(error) {
   // 실제 브라우저 실패 지점을 기록하고 이전 QA 통과 상태로 대체하지 않는다.
-  const failureSignature=String(error?.message||error);
+  // 메인 루프가 먼저 죽었으면 입력 실패 증상이 아닌 엔진 원인을 증거에 남긴다.
+  const rawFailureSignature=String(error?.message||error);
+  const engineErrors=[...consoleErrors,...pageErrors].join('\n');
+  const missingContentLoadMethod=/Unable to find method ProcessResults in \[UnityEngine\.ContentLoadModule\.dll\]Unity\.Loading\.ContentLoadingSystem/.test(engineErrors);
+  const mainLoopHalted=/Uncaught exception from main loop|RuntimeError:\s*null function|Halting program/i.test(engineErrors);
+  const failureSignature=missingContentLoadMethod&&mainLoopHalted
+    ?'UNITY_WEB_CONTENTLOAD_METHOD_MISSING:Unity.Loading.ContentLoadingSystem.ProcessResults'
+    :mainLoopHalted&&rawFailureSignature.startsWith('UNITY_WEB_QA_')
+      ?'UNITY_WEB_WASM_MAIN_LOOP_HALTED:'+rawFailureSignature
+      :rawFailureSignature;
   if(output&&!fs.existsSync(output)){
     const failureEvidence={
       version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
