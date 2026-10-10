@@ -2272,7 +2272,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   });
 }
 const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','weapon','prop']);
-function genericNativeDccRecipeForType({target='',task={},type=''}={}){
+function genericNativeDccRecipeForType({target='',task={},type='',allowCinematic=true}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
   if(!['web','roblox','unity'].includes(targetName)||!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
@@ -2287,8 +2287,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     :typeName==='prop'&&/\brock\b|\bstone\b|\bboulder\b|바위|돌(?:덩이|멩이|하나|\s)/i.test(clean(task.goal||task.request))?'rock':'generic';
   const genre=clean(task.genre||task.genreFamily||task.concept?.genre).slice(0,80);
   // [CINEMATIC] Only explicitly requested movie jobs consume expensive frame rendering.
-  const cinematic=task?.assetCinematic?.enabled===true||task?.renderVideo===true
-    ||/(?:시네마틱|영상\s*(?:제작|렌더|연출|출력)|동영상|트레일러|카메라\s*연출|cinematic|render[ -]?video|video[ -]?render|trailer|showreel)/i.test(clean(task.goal||task.request));
+  const cinematic=allowCinematic&&(task?.assetCinematic?.enabled===true||task?.renderVideo===true
+    ||/(?:시네마틱|영상\s*(?:제작|렌더|연출|출력)|동영상|트레일러|카메라\s*연출|cinematic|render[ -]?video|video[ -]?render|trailer|showreel)/i.test(clean(task.goal||task.request)));
   const cinematicHigh=cinematic&&clean(task?.assetCinematic?.quality).toUpperCase()==='HIGH';
   return {
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
@@ -2395,7 +2395,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const concreteCovers=type=>concreteRecipes.some(row=>!row.types.length||row.types.includes(type));
   const normalizedGeneric=uniqueDccTypes
     .filter(type=>!explicitRecipeTypes.includes(type)&&!concreteCovers(type))
-    .map(type=>genericNativeDccRecipeForType({target:targetName,task,type}))
+    // Automatic cinematic sampling renders one representative asset per task, not every asset.
+    .map((type,index)=>genericNativeDccRecipeForType({target:targetName,task,type,allowCinematic:index===0}))
     .filter(Boolean)
     .map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{},target,uniqueDccTypes))
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch);
