@@ -110,6 +110,8 @@ export function buildSharedCreature(species='wolf'){
      else ball(1,k,center,[.23,.25,.24]);
    }else pipe(i%2?1:0,k,center,add(center,[0,0,.31]),Math.max(.04,.29-i*.017),Math.max(.03,.27-i*.018),12);
  }
+ // 계층 모션은 공통 3D 기초 → 체형 고유 동작 → 종족별 기술 → 정예/보스 몸짓 순으로 재사용한다.
+ const familyMotion={"wolf":"WOLF_PACK_CIRCLE","spider":"SPIDER_WEB_SIDESTEP","beetle":"BEETLE_TRIPOD_SHIFT","golem":"GOLEM_WEIGHT_BRACE","serpent":"SERPENT_COIL_SLITHER"};
  // 종족별 실제 관절 동작: 기초 회피/방어와 두 가지 전용 기술(피격·피해 판정은 게임 소유).
  const speciesVariants={
    "wolf": [
@@ -453,7 +455,7 @@ export function buildSharedCreature(species='wolf'){
      }
    ]
  };
- const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature,'DODGE_EVADE','GUARD_BRACE',...(speciesVariants[id]||[]).map(move=>move.clip)];
+ const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature,'DODGE_EVADE','GUARD_BRACE',...(speciesVariants[id]||[]).map(move=>move.clip),...['STALK_APPROACH','HIT_SIDE','KNOCKDOWN','RECOVER_STAND',familyMotion[id],'ELITE_INTIMIDATE','ELITE_COUNTER_STEP','BOSS_TELEGRAPH','BOSS_PHASE_SHIFT','BOSS_RECOVERY']];
  function pose(clip,t){
    const special=(speciesVariants[id]||[]).find(move=>move.clip===clip);
    const a=t*Math.PI*2,locomotion=clip==='WALK'||clip==='RUN',fast=clip==='RUN';
@@ -577,6 +579,69 @@ export function buildSharedCreature(species='wolf'){
      if(clip==='ATTACK_B')angles[tail][1]+=.70*contact;
      if(clip==='SKILL_PREPARE')angles[torso][1]+=.29*charge;
    }
+
+   // 공용 체형 계열/강도 계층의 실제 관절 키프레임. 이동·데미지·타이밍 권한은 유지한다.
+   const smooth=t*t*(3-2*t);
+   if(clip==='STALK_APPROACH'){
+     angles[torso]=[-.16-.04*idle,.13*Math.sin(a/2),.10*Math.sin(a)];
+     angles[head]=[.16+.08*idle,.11*Math.cos(a/2),0];
+     angles[tail]=[-.18+.13*Math.sin(a+.7),.16*Math.sin(a),0];
+     for(const l of legs)angles[l.hip]=[.20*Math.sin(a+l.p*.9+(l.side<0?0:Math.PI)),.07*idle,0];
+   }else if(clip==='HIT_SIDE'){
+     const q=pulse(t,.34,.25);
+     angles[torso]=[-.12*q,.42*q,-.29*q];angles[head]=[.23*q,-.35*q,.19*q];
+     angles[tail]=[-.22*q,.39*q,.18*q];
+     for(const l of legs)angles[l.hip]=[.16*q,.23*l.side*q,-.08*q];
+   }else if(clip==='KNOCKDOWN'||clip==='RECOVER_STAND'){
+     const q=clip==='KNOCKDOWN'?smooth:1-smooth;
+     angles[torso]=[.81*q,.24*q,.38*q];angles[head]=[-.55*q,-.14*q,.14*q];
+     angles[tail]=[.27*q,-.30*q,.24*q];
+     for(const l of legs){angles[l.hip]=[.52*q,.18*q,l.side*.24*q];angles[l.knee]=[-.51*q,0,0]}
+   }else if(clip===familyMotion[id]){
+     const scale=id==='golem'?1.25:id==='spider'?1.14:id==='serpent'?.88:1;
+     angles[torso]=[scale*(-.27*wind+.34*contact),scale*(-.41*wind+.51*contact),.29*contact];
+     angles[head]=[scale*(-.31*wind+.46*contact),.16*wind-.37*contact,-.17*contact];
+     angles[tail]=[.44*wind-.55*contact,scale*(-.36*wind+.69*contact),.22*rebound];
+     for(const l of legs){
+       const stagger=l.p%2===0?1:-1;
+       angles[l.hip]=[stagger*scale*(-.43*wind+.51*contact),l.side*.26*contact,0];
+       angles[l.knee]=[.19*wind+.32*contact,0,0];
+     }
+   }else if(clip==='ELITE_INTIMIDATE'){
+     const q=pulse(t,.47,.39);
+     angles[torso]=[-.49*q,.29*q,.16*q];angles[head]=[-.55*q,-.14*q,.07*q];
+     angles[jaw]=[-.33*q,0,0];angles[tail]=[.36*q,-.49*q,.09*q];
+     for(const l of legs)angles[l.hip]=[l.p%2?.19*q:-.26*q,l.side*.16*q,0];
+   }else if(clip==='ELITE_COUNTER_STEP'){
+     angles[torso]=[-.23*wind+.58*contact,-.44*wind+.53*contact,.31*wind-.25*contact];
+     angles[head]=[.22*wind-.44*contact,.21*wind-.31*contact,0];
+     angles[tail]=[-.18*wind+.35*contact,-.65*wind+.46*contact,0];
+     for(const l of legs)angles[l.hip]=[l.side<0?-.44*wind+.60*contact:.32*wind-.47*contact,0,.18*contact];
+   }else if(clip==='BOSS_TELEGRAPH'){
+     const q=pulse(t,.59,.46);
+     angles[torso]=[-.72*q,.17*q,.19*q];angles[head]=[-.49*q,.27*q,0];
+     angles[jaw]=[-.33*q,0,0];angles[tail]=[.35*q,-.41*q,.14*q];
+     for(const l of legs)angles[l.hip]=[.25*q,.11*l.side*q,0];
+   }else if(clip==='BOSS_PHASE_SHIFT'){
+     const q=pulse(t,.35,.20),r=pulse(t,.74,.18);
+     angles[torso]=[-.44*q+.54*r,.55*q-.68*r,-.37*q+.43*r];
+     angles[head]=[.42*q-.67*r,-.34*q+.40*r,.22*q];
+     angles[jaw]=[.43*q-.50*r,0,0];
+     angles[tail]=[.53*q-.64*r,.66*q-.75*r,0];
+     for(const l of legs)angles[l.hip]=[l.p%2===0?-.37*q+.44*r:.28*q-.39*r,.18*l.side*r,0];
+   }else if(clip==='BOSS_RECOVERY'){
+     const q=(1-smooth)*pulse(t,.09,.72);
+     angles[torso]=[.68*q,-.23*q,.31*q];angles[head]=[-.32*q,.17*q,-.16*q];
+     angles[tail]=[-.44*q,.51*q,-.19*q];angles[jaw]=[-.26*q,0,0];
+     for(const l of legs)angles[l.hip]=[.37*q,-.14*l.side*q,.08*q];
+   }
+   if(clip==='ELITE_INTIMIDATE'||clip==='BOSS_PHASE_SHIFT'||clip==='BOSS_TELEGRAPH'||clip==='BOSS_RECOVERY'||clip===familyMotion[id]){
+     for(let i=0;i<extras.length;i++){
+       const k=extras[i],delay=pulse(t,.43+i*.017,.24);
+       const prev=angles[k]||[0,0,0];
+       angles[k]=[prev[0]+.26*delay*(i%2===0?1:-1),prev[1]+.33*delay,prev[2]+.09*delay];
+     }
+   }
    if(clip==='HIT_FRONT'){
      angles[torso]=[-.35*pulse(t,.32,.23),0,.15*pulse(t,.37,.19)];
      angles[head]=[.36*pulse(t,.31,.21),0,0];
@@ -625,7 +690,8 @@ export function buildSharedCreature(species='wolf'){
     inverseBindMatrices:accessor(new Float32Array(inverse),'MAT4',5126)}];
  for(const clip of clips){
    const selected=(speciesVariants[id]||[]).find(move=>move.clip===clip);
-   const frames=25,duration=selected?.duration??(clip==='IDLE_BREATH'?2:clip==='DEATH'?1.4:clip===cfg.signature?1.3:clip==='DODGE_EVADE'?.68:.9),
+   const tierDuration={STALK_APPROACH:1.35,HIT_SIDE:.63,KNOCKDOWN:1.12,RECOVER_STAND:1.32,ELITE_INTIMIDATE:1.46,ELITE_COUNTER_STEP:.79,BOSS_TELEGRAPH:1.53,BOSS_PHASE_SHIFT:1.74,BOSS_RECOVERY:1.18};
+   const frames=25,duration=selected?.duration??tierDuration[clip]??(clip===familyMotion[id]?.95:clip==='IDLE_BREATH'?2:clip==='DEATH'?1.4:clip===cfg.signature?1.3:clip==='DODGE_EVADE'?.68:.9),
     time=accessor(Float32Array.from({length:frames},(_,i)=>i/(frames-1)*duration),'SCALAR',5126,undefined,[0],[duration]);
    const animation={name:clip,samplers:[],channels:[]};
    for(let bone=1;bone<joints.length;bone++){
