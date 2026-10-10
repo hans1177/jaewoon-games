@@ -194,25 +194,39 @@
         " 상태변화: 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조 생성",
         "보상: 새로운 선택 기회 제공, 상황 변화, 실질적 결과 발생, 다음 사건 발생"
       ]
+    },
+    "local_authoring_parts::63f11bfa5b721fc161288130abc205b46a4e40990eba209c4b2f8087e927c5a9:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력: 플레이어의 잠입 전략 및 탈출 선택",
+        " 상태변화: 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조 생성"
+      ],
+      "stateOutputs": [
+        "보상: 새로운 선택 기회 제공, 상황 변화, 실질적 결과 발생, 다음 사건 발생"
+      ],
+      "name": "알 도둑 대작전 - 수집, 모험",
+      "purpose": "플레이어가 잠입 전략을 세우고 탈출 선택을 하며, 실제 세계에 영향을 미치는 코미디적 압박과 위험 관리의 갈등 구조를 경험하게 됩니다.",
+      "playerChoice": "플레이어의 판단 결정 과程에서 실질적인 세계 상태 변화를 일으키는 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 694561,
-      "lastMs": 96208,
+      "totalMs": 803034,
+      "lastMs": 108473,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:15:11.516Z"
+      "updatedAt": "2026-10-10T07:16:59.991Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:03:36.925Z",
-  "updatedAt": "2026-10-10T07:15:11.516Z",
+  "updatedAt": "2026-10-10T07:16:59.991Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1698,7 +1712,7 @@
   "localAuthoringSplits": {
     "0495bc45718498a76a19a71f410e9e41cf5ea2d223be43d40291da5a334eb75f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:15:11.516Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:16:59.991Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
