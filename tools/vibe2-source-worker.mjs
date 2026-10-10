@@ -586,6 +586,10 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           const imageFile=path.resolve(cwd,imagePath);
           if(!fs.existsSync(imageFile)||!fs.statSync(imageFile).isFile())
             throw new Error('IMAGE_TO_MESH_INPUT_MISSING:'+imagePath);
+          const imageRoot=fs.realpathSync(path.join(cwd,'assets'));
+          const actualImage=fs.realpathSync(imageFile);
+          if(!actualImage.startsWith(imageRoot+path.sep)||fs.lstatSync(imageFile).isSymbolicLink())
+            throw new Error('IMAGE_TO_MESH_LOCAL_SOURCE_SCOPE_INVALID:'+imagePath);
           const input=sha256File(imageFile),provenance=evidence?.imageToMesh;
           const modelEngines=new Map([
             ['VAST-AI-Research/TripoSR','stabilityai/TripoSR'],
@@ -656,6 +660,10 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           const originalModelPath=clean(recipe?.sourceModel);
           if(originalModelPath){
             const modelPath=dccRepoPath(originalModelPath),full=path.resolve(cwd,modelPath);
+            const modelRoot=fs.realpathSync(path.join(cwd,'assets'));
+            const actualModel=fs.realpathSync(full);
+            if(!actualModel.startsWith(modelRoot+path.sep)||fs.lstatSync(full).isSymbolicLink())
+              throw new Error('NATIVE_OPEN_SOURCE_SOURCE_MODEL_SCOPE_INVALID:'+modelPath);
             const provenance=evidence?.sourceMesh;
             if(!modelPath.startsWith('assets/')||!fs.existsSync(full)||!fs.statSync(full).isFile()
               ||provenance?.sourcePath!==modelPath||provenance.sourceSha256!==sha256File(full)
