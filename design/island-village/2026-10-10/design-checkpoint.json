@@ -187,25 +187,47 @@
       },
       "playerFantasy": "무인도에서 주민들과 시설들의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임입니다. 플레이어는 단순한 터치 또는 스웨이프 입력으로 시작하여, 자원 수집 및 관리에 대한 선택을 하며, 이 선택은 지역 규칙, 위험, 목표 등 다양한 요소와 함께 실제 상태 변화로 이어집니다. 최초의 선택은 무인도의 기본 정체성과 관련되어 있으며, 이후에는 새로운 경로, 전략, 그리고 세계 상태 변화가 발생합니다.",
       "coreFun": "{\"identity\": \"SETTLEMENT_GROWTH\", \"creativeGrammar\": {\"mainIdentity\": \"SETTLEMENT_GROWTH\", \"a\": {\"system\": \"ISLAND_VILLAGE\", \"material\": \"RESOURCE_COLLECTION_AND_MANAGEMENT\", \"stateChange\": \"RESOURCE_GAINED_AND_VILLAGE_EXPANDED\"}, \"b\": {\"system\": \"MOBILE_INPUT\", \"material\": \"ONE_THUMB_TAP_OR_SWIPE\", \"stateChange\": \"INPUT_RECEIVED_AND_PLAYABLE\"}, \"abCausality\": \"RESOURCE_GAINED_AFFECTS_VILLAGE_SIZE_AND_PLAYER_INPUT\", \"abEvolution\": {\"aChangesB\": \"YES, RESOURCE_GAINED_AFFECTS_VILLAGE_SIZE_AND_PLAYER_INPUT\", \"bChangesA\": \"YES, INPUT_RECEIVED_AFFECTS_PLAYABILITY_AND_PROGRESSION\", \"lateGameChange\": \"RESOURCE_GAINED_AFFECTS_WORLD_STATE_AND_NEXT_ROUTE_CHOICE\"}, \"materialFusion\": {\"contrast\": \"RESOURCE_COLLECTION_AND_VILLAGE_EXPANSION\", \"causalBridge\": \"VILLAGE_SIZE_INCREASE_DUE_TO_RESOURCE_GAIN\", \"removalConsequence\": \"VILLAGE_SIZE_REDUCTION_IF_RESOURCES_RUN_OUT\"}, \"storyCausalChain\": {\"cause\":"
+    },
+    "local_authoring_parts::2f6d5124df26d51ab41246ebdd6b9054ef1614dbeec8fbf8e50d67a165d8d0ba:coreLoop": {
+      "coreLoop": [
+        "INPUT_RECEIVED_AND_PLAYABLE -> STATE_CHANGED_TO_VILLAGE_SIZE_INCREMENTED_AND_PLAYABILITY_IMPROVED",
+        "RESOURCE_GAINED_AND_VILLAGE_EXPANDED -> STATE_CHANGED_TO_VILLAGE_SIZE_INCREMENTED_AND_PLAYABILITY_IMPROVED",
+        "VILLAGE_SIZE_INCREMENTED_AND_PLAYABILITY_IMPROVED -> STATE_CHANGED_TO_SETTLEMENT_GROWTH_COMPLETED_AND_WORLD_STATE_CHANGED"
+      ]
+    },
+    "local_authoring_parts::9321d00ab025b1c5150a2e0057716e3b66184843f230edc1945901c25427279d:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "INPUT_RECEIVED_AND_PLAYABLE",
+        "VILLAGE_SIZE_INCREMENTED_AND_PLAYABILITY_IMPROVED"
+      ],
+      "stateOutputs": [
+        "SETTLEMENT_GROWTH_COMPLETED_AND_WORLD_STATE_CHANGED",
+        "RESOURCE_COLLECTION_AND_VILLAGE_EXPANSION_EFFECTS_WORLD_STATE_AND_NEXT_ROUTE_CHO"
+      ],
+      "name": "SETTLEMENT_GROWTH",
+      "purpose": "Directly build a small community growth game on an island, where players gather resources and manage the village to achieve settlement expansion.",
+      "playerChoice": "Gather more resources, make new routes, improve playability, and enhance the world state through strategic choices and progression."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 482847,
-      "lastMs": 103615,
+      "totalMs": 555123,
+      "lastMs": 38593,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T06:53:04.119Z"
+      "updatedAt": "2026-10-10T06:54:16.399Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:45:01.194Z",
-  "updatedAt": "2026-10-10T06:53:04.120Z",
+  "updatedAt": "2026-10-10T06:54:16.399Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1844,7 +1866,7 @@
   "localAuthoringSplits": {
     "3f62a76716a607a633b33984de2f10079192ce8cc6c5cb00e2e2c50c3481f41b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:53:04.120Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:54:16.399Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
