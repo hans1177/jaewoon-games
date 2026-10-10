@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::9c46df1279a976bc6e9c25d4d86526a494f46bc7b50b79f203f6cab7e906c4b2:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈임없이 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다. 단순한 조작으로 세상을 재구성하고, 그 과정에서 얻는 시각적 만족감과 성취감을 핵심 가치로 삼습니다.",
+      "creativeGrammar": {
+        "mainIdentity": "게임 정체성: '직조' - 조각의 배치와 연결에 기반한 세계 형성",
+        "a": {
+          "system": "지형 조각",
+          "material": "색상/모양 매칭",
+          "materialDomain": "3D 공간 구성",
+          "stateChange": "빛의 퍼져나오기, 식물 자라나기, 파티클 효과 발생"
+        },
+        "b": {
+          "system": "생태계 복원",
+          "material": "플레이어 선택",
+          "materialDomain": "주변 환경 변환",
+          "stateChange": "보너스 효과 발동, 위험 요소 제거, 점수 증가"
+        },
+        "abCausality": "조각의 배치 → 생태계 복원 → 주변 환경 변화 → 보너스 효과 발동",
+        "abEvolution": {
+          "aChangesB": "색상/모양 매칭 → 보너스 효과 발동 → 주변 환경 변화",
+          "bChangesA": "플레이어 선택 → 보너스 효과 발동 → 조각 배치",
+          "lateGameChange": "조각의 재배치로 새로운 테마 해금 및 정원 꾸미"
+        },
+        "materialFusion": {
+          "contrast": "조각의 색상과 형태는 서로 다른 시스템에서 인과적으로 연결되어야 하며, 한쪽이 없으면 상호작용이 끊음",
+          "causalBridge": "조각의 배치와 연결은 '생명력 전이'라는 게임 규칙에 직접 연결됨",
+          "removalConsequence": "조각의 삭제 또는 재배치는 주변 환경 변화를 유발하고, 이는 플레이어의 선택에 따라 달라짐"
+        },
+        "storyCausalChain": {
+          "cause": "조각의 배치 및 연결을 통해 세계 형성 시작",
+          "characterConflict": "플레이어의 선택으로 생태계 복원 과정 중 위험 요소 발생",
+          "playerChoice": "조각의 위치 결정 및 보너스 효과 선택",
+          "worldChange": "주변 환경 변화 및 새로운 테마 해금",
+          "nextEvent": "다음 스테이지 진입 및 조각 수집 기회 제공"
+        },
+        "cThemes": [
+          {
+            "name": "빛의 퍼져나오기",
+            "kind": "MATERIAL",
+            "gameplayEffect": "세상 재구성 시 시각적 만족감"
+          },
+          {
+            "name": "식물 자라나기",
+            "kind": "MATERIAL",
+            "gameplayEffect": "생태계 복원 시 자연적인 피드백"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "직조 게임",
+            "gameplayEffect": "조각의 배치와 연결로 세계 형성"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "생태계 관리",
+            "gameplayEffect": "플레이어 선택에 따른 주변 환경 변환"
+          }
+        ],
+        "cGenreInterlock": "조각의 배치 → 생태계 복원 → 주변 환境 변화 → 보너스 효과 발동",
+        "cWorldAndGameplayEffect": "조각의 재배치는 새로운 테마 해금과 정원 꾸미를 가능하게 함",
+        "delveDiscoveries": [
+          {
+            "clue": "조각의 색상/모양 매칭은 인과적으로 연결되어야 하며, 한쪽이 없으면 상호작용 끊음",
+            "discovery": "빛의 퍼져나오기 및 식물 자라나기는 조각의 배치와 연결에 기반한 세계 형성",
+            "newChoice": "보너스 효과 발동 또는 위험 요소 제거"
+          },
+          {
+            "clue": "플레이어의 선택으로 생태계 복원 과정 중 위험 요소 발생",
+            "discovery": "주변 환경 변화 및 새로운 테마 해금",
+            "newChoice": "조각 위치 결정 및 보너스 효과 선택"
+          },
+          {
+            "clue": "조각의 재배치로 새로운 테마 해금 및 정원 꾸미가 가능함",
+            "discovery": "세상 재구성 시 시각적 만족감과 성취감 획득",
+            "newChoice": "다음 스테이지 진입 및 조각 수집 기회 제공"
+          },
+          {
+            "clue": "조각의 배치는 주변 환境 변화를 유발하고, 이는 플레이어의 선택에 따라 달라짐",
+            "discovery": "생태계 복원 과정에서 위험 요소 발생",
+            "newChoice": "보너스 효과 발동 또는 조각 배치"
+          }
+        ],
+        "delveGrowthRule": "조각의 재배치는 새로운 테마 해금과 정원 꾸미를 가능하게 함",
+        "finalGameIdentity": "세상 재구성 시 시각적 만족감과 성취감을 핵심 가치로 삼은 힐링 퍼즐 게임"
+      },
+      "playerFantasy": "플레이어는 조각들을 조절하여 세계를 완성하는 역할을 수행하며, 그 과정에서 얻는 시각적 만족감과 성취감을 목표로 합니다. 조각의 색상/모양 매칭은 인과적으로 연결되어야 하며, 한쪽이 없으면 상호작용 끊음.",
+      "coreFun": "조각의 배치와 연결을 통해 세계 형성을 시작하고, 그 과정에서 얻는 시각적 만족감과 성취감을 경험합니다. 조각의 색상/모양 매칭은 인과적으로 연결되어야 하며, 한쪽이 없으면 상호작용 끈기입니다. 주변 환경 변화 및 보너스 효과 발동은 플레이어의 선택에 따라 달라집니다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 296398,
+      "lastMs": 296398,
+      "lastError": null,
+      "updatedAt": "2026-10-10T09:06:37.122Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:40.705Z",
-  "updatedAt": "2026-10-10T09:01:40.720Z",
+  "updatedAt": "2026-10-10T09:06:37.122Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1285,5 +1386,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T09:06:37.122Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
