@@ -1244,7 +1244,9 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 let nativeDesignVariation=0;
 function computeVibeNativeDesign(){
   const original=seed.originalDesignContext?.content||{};
-  const preserved=original.creativeGrammar&&original.creativeGrammar.a?.material&&original.creativeGrammar.b?.material;
+  // 원본 소재명이 존재하는 것만으로 완성된 설계라고 보지 않는다. 검증된 문법만 그대로 재사용한다.
+  const preserved=Boolean(original.creativeGrammar?.a?.material&&original.creativeGrammar?.b?.material
+    &&validateDesignAuthoringContent({design:{creativeGrammar:original.creativeGrammar},seed,fields:['creativeGrammar']}).length===0);
   const materialIds=new Set(seed.SEED_MATERIAL_IDS||[]);
   const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
   const computed=computeVibeSeedProposal({
@@ -1268,8 +1270,14 @@ function computeVibeNativeDesign(){
     ?(['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'COOP')
     :(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'SINGLE');
   const signature=Array.isArray(original.signatureSystems)?original.signatureSystems:[];
-  const originalRoles=['MAIN','A','B','DELVE'].every(role=>signature.some(row=>row.grammarRole===role
-    &&row.id&&Array.isArray(row.stateInputs)&&row.stateInputs.length&&Array.isArray(row.stateOutputs)&&row.stateOutputs.length));
+  // 규칙 ID와 상태 배열만 채워진 원본은 재사용하지 않는다. 실제 A↔B·MAIN·@ 인과 연결과
+  // 후속 systemInterconnections의 최소 5개 상태 전달이 가능한 경우에만 원본을 보존한다.
+  const originalRoles=['MAIN','A','B','DELVE'].every(role=>signature.some(row=>row?.grammarRole===role
+    &&row.id&&Array.isArray(row.stateInputs)&&row.stateInputs.length&&Array.isArray(row.stateOutputs)&&row.stateOutputs.length))
+    &&validateDesignAuthoringContent({design:{signatureSystems:signature},seed,fields:['signatureSystems']}).length===0
+    &&signature.reduce((total,from)=>total+signature.filter(to=>from!==to
+      &&Array.isArray(from?.stateOutputs)&&Array.isArray(to?.stateInputs)
+      &&from.stateOutputs.some(key=>to.stateInputs.includes(key))).length,0)>=5;
   const rulePlan=originalRoles?structuredClone(signature):[
     {id:'VIBE_MAIN',grammarRole:'MAIN',name:mainName,
       purpose:shorten(`${main.purpose} 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.`,410),

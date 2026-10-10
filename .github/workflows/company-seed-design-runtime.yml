@@ -187,6 +187,7 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {createHash} from 'node:crypto';
+          import {evaluateMinimumDesignContract} from './tools/company-minimum-design-contract.mjs';
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const designScheduling=directive?.platformStrategy?.designStabilizationScheduling||{};
@@ -217,11 +218,15 @@ jobs:
           const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
             .map(value=>String(value||'').trim()).filter(Boolean));
+          // 같은 스냅샷의 검증 결과를 게임마다 재사용해 정렬·우선순위 단계의 중복 파일 검사를 없앤다.
+          const latestStrictPassCache=new Map();
           const latestStrictPassFor=(seed)=>{
+            const gameId=String(seed?.gameId||'').trim();
+            if(latestStrictPassCache.has(gameId))return latestStrictPassCache.get(gameId);
             const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
             const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed.gameId));
-            if(!fs.existsSync(gameRoot))return null;
+            if(!fs.existsSync(gameRoot)){latestStrictPassCache.set(gameId,null);return null;}
             try{
               const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
@@ -238,13 +243,21 @@ jobs:
                 }
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
                 if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
-                  let ownerDesignEventId=null;
                   const revisedPath=path.join(base,'design-revised.json');
-                  if(fs.existsSync(revisedPath)){try{ownerDesignEventId=String(JSON.parse(fs.readFileSync(revisedPath,'utf8'))?.ownerDesignEventId||'').trim()||null;}catch{}}
-                  return{date,evidenceAt,review,status,ownerDesignEventId};
+                  if(!fs.existsSync(revisedPath))continue;
+                  let revised;
+                  try{revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));}catch{continue;}
+                  // 과거 strict PASS도 현재 V5 기본 설계·양 플랫폼 계약이 유효해야 재사용한다.
+                  // 미완성 원본은 PASS로 캐싱하지 않고 기존 자동 설계 재작성 대상으로 돌린다.
+                  if(!evaluateMinimumDesignContract(revised,{seed,requireGrammar:true}).pass)continue;
+                  const ownerDesignEventId=String(revised?.ownerDesignEventId||'').trim()||null;
+                  const verified={date,evidenceAt,review,status,ownerDesignEventId};
+                  latestStrictPassCache.set(gameId,verified);
+                  return verified;
                 }
               }
             }catch{}
+            latestStrictPassCache.set(gameId,null);
             return null;
           };
           const strictPassFor=seed=>Boolean(latestStrictPassFor(seed));
