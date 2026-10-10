@@ -773,7 +773,7 @@ test('five actual cross-genre creature masters bind 3D skinned action clips whil
     assert.equal(loadout.master.rigJointCount,joints);
     assert.equal(loadout.master.id,'shared-creature-'+species.toLowerCase());
     assert.equal(loadout.master.path,'assets/shared/creature-'+species.toLowerCase()+'.glb');
-    assert.equal(loadout.master.sourceAnimationClips.length,15);
+    assert.equal(loadout.master.sourceAnimationClips.length,25);
     assert.equal(loadout.rigProfile,loadout.master.rigProfile);
     assert.ok(loadout.master.sourceAnimationClips.includes('SKILL_PREPARE'));
     assert.ok(loadout.master.sourceAnimationClips.includes('ATTACK_A'));
@@ -1671,4 +1671,34 @@ test('genre selections bind existing baked career and species clips rather than 
     assert.equal(entry.gameplayAuthority,false);
     assert.equal(entry.platformNativeAdaptationRequired,true);
   }
+});
+
+test('shared monster hierarchy selects real body-plan and elite/boss motions without inventing ranks or game balances',()=>{
+  const source={
+    WOLF:'WOLF_PACK_CIRCLE',SPIDER:'SPIDER_WEB_SIDESTEP',
+    BEETLE:'BEETLE_TRIPOD_SHIFT',GOLEM:'GOLEM_WEIGHT_BRACE',SERPENT:'SERPENT_COIL_SLITHER'
+  };
+  for(const [species,familyClip] of Object.entries(source)){
+    const base=createCommonMonsterActionLoadout({speciesId:species,genre:'SURVIVAL',rank:'NORMAL',platform:'UNITY'});
+    const elite=createCommonMonsterActionLoadout({speciesId:species,genre:'SURVIVAL',rank:'ELITE',platform:'UNITY'});
+    const boss=createCommonMonsterActionLoadout({speciesId:species,genre:'ACTION_RPG',rank:'BOSS',platform:'WEB'});
+    assert.equal(base.master.sourceAnimationCount,25,species);
+    assert.equal(base.sourceHierarchy.bodyPlan.clip,familyClip,species);
+    assert.ok(base.sourceGenreClipBindings.locomotion.includes(familyClip),species);
+    assert.ok(elite.sourceGenreClipBindings.defense.includes('ELITE_COUNTER_STEP'),species);
+    assert.ok(elite.sourceGenreClipBindings.skills.includes('ELITE_INTIMIDATE'),species);
+    assert.ok(boss.sourceGenreClipBindings.attacks.includes('BOSS_TELEGRAPH'),species);
+    assert.ok(boss.sourceGenreClipBindings.skills.includes('BOSS_PHASE_SHIFT'),species);
+    assert.ok(boss.sourceGenreClipBindings.defense.includes('BOSS_RECOVERY'),species);
+    for(const row of [base,elite,boss]){
+      assert.equal(row.productionVerified,false);
+      assert.equal(row.runtimeVerified,false);
+      assert.equal(row.gameplayAuthority,false);
+    }
+  }
+  const unbuilt=createCommonMonsterActionLoadout({speciesId:'FOX',rank:'BOSS',genre:'SURVIVAL'});
+  assert.equal(unbuilt.master,null);
+  assert.equal(unbuilt.sourceHierarchy,null);
+  assert.ok(Object.values(unbuilt.sourceGenreClipBindings).every(clips=>clips.length===0));
+  assert.throws(()=>createCommonMonsterActionLoadout({speciesId:'WOLF',rank:'MYTHIC'}),/UNSUPPORTED_COMMON_MONSTER_RANK/);
 });

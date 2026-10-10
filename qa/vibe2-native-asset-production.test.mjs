@@ -54,7 +54,7 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
       assert.equal(doc.skins.length,1);
       assert.equal(doc.skins[0].joints.length,expected.joints);
       assert.ok(doc.nodes.some(n=>n.mesh===0&&n.skin===0));
-      assert.equal(doc.animations.length,15);
+      assert.equal(doc.animations.length,25);
       assert.ok(doc.animations.some(a=>a.name===expected.signature));
       const ids=new Set(doc.skins[0].joints),primitives=doc.meshes.flatMap(m=>m.primitives);
       assert.ok(primitives.every(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),'actual per-vertex skinned weights');
@@ -89,6 +89,12 @@ test('five common monster body plans bake reproducible skinned GLBs and actual a
         return hash.digest('hex');
       }));
       assert.equal(distinctMotionTracks.size,9,species+' must have nine different attack, defense and skill animations');
+      for(const clipId of ['STALK_APPROACH','HIT_SIDE','KNOCKDOWN','RECOVER_STAND',
+        'ELITE_INTIMIDATE','ELITE_COUNTER_STEP','BOSS_TELEGRAPH','BOSS_PHASE_SHIFT','BOSS_RECOVERY']){
+        const clip=doc.animations.find(a=>a.name===clipId);
+        assert.ok(clip,species+':'+clipId+' missing real rank/common motion');
+        assert.ok(clip.channels.some(c=>c.target.path==='rotation'&&ids.has(c.target.node)),clipId);
+      }
       visualSignatures.add(JSON.stringify({joints:expected.joints,materials:doc.materials.map(m=>m.pbrMetallicRoughness.baseColorFactor),primitiveCount:primitives.length}));
     }
     assert.equal(visualSignatures.size,5,'different body plans need distinct rigs and appearance');
