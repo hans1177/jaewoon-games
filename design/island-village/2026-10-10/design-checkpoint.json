@@ -213,21 +213,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 555123,
-      "lastMs": 38593,
+      "totalMs": 591968,
+      "lastMs": 36845,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T06:54:16.399Z"
+      "updatedAt": "2026-10-10T06:54:53.245Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:45:01.194Z",
-  "updatedAt": "2026-10-10T06:54:16.399Z",
+  "updatedAt": "2026-10-10T06:54:53.246Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1860,14 +1860,33 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::9321d00ab025b1c5150a2e0057716e3b66184843f230edc1945901c25427279d:signatureSystems:1:5f4a9d8677012431": [
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_road"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_road"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::9321d00ab025b1c5150a2e0057716e3b66184843f230edc1945901c25427279d:signatureSystems:1:5f4a9d8677012431": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "3f62a76716a607a633b33984de2f10079192ce8cc6c5cb00e2e2c50c3481f41b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:54:16.399Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T06:54:53.245Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
