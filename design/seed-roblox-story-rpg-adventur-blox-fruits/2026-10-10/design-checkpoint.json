@@ -80,25 +80,53 @@
         "worldChange": "세계 상태 변화는 인과적으로 연결되어 진화하는 플레이를 가능하게 함",
         "nextEvent": "다음 사건은 초기 단서에서부터 시작하여 계속해서 발전하며 새로운 규칙 조합을 요구함"
       }
+    },
+    "local_authoring_parts::81fec5d6f41dcd23188caebe56b6ccf63a903f83021386dd6e73483103ff784a:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "역사",
+          "kind": "MATERIAL",
+          "gameplayEffect": "게임 세계에 역사적 사건을 통합하여 플레이어가 직접 참여할 수 있는 방식 제공"
+        },
+        {
+          "name": "철학",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 선택과 인과 관계를 철학적으로 해석하며 게임의 재미를 높인다"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "무협",
+          "gameplayEffect": "역사와 무협 요소를 결합해 새로운 전략과 경로를 생성"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "종교",
+          "gameplayEffect": "세계 상태 변화와 종교적 가치관을 연결하여 플레이어에게 실질적인 성장 가능성을 제공"
+        }
+      ],
+      "cGenreInterlock": "역사 -> 철학 -> 무협 -> 종교의 순환적 상호작용이 실제 결과를 갈라놓고 플레이어의 선택에 따라 진화한다.",
+      "cWorldAndGameplayEffect": "게임 세계는 초기 단서에서부터 지속적으로 재구성되며, 역사·철학·무협·종교 요소가 각각 다른 시스템으로 통합되어 새로운 규칙 조합을 요구함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 839656,
-      "lastMs": 121249,
+      "totalMs": 959253,
+      "lastMs": 119597,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:24:47.530Z"
+      "updatedAt": "2026-10-10T10:26:47.129Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:10:47.845Z",
-  "updatedAt": "2026-10-10T10:24:47.531Z",
+  "updatedAt": "2026-10-10T10:26:47.129Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1704,7 +1732,7 @@
     "52690f0f103c810e967108933276d82801582a8bf229dc8838f0f1d1b7840d47": true,
     "2208473c4ce7e2969b59feba234a94898e8edc37ffe41509a433fc17e4d694a6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:24:47.531Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:26:47.129Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
