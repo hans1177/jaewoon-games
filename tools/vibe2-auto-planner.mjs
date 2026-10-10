@@ -2803,8 +2803,13 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     baseline:flowBaseline
   }):[];
   const flowSystemBlueprint=flowArchitecture?.systemBlueprint||null;
+  const designToolSync=flowArchitecture?.designToolSync||null;
   // --- 공용 소스 인덱스: 현재 존재하는 파일의 실제 내용 지문만 증거로 전달 ---
-  const sourceLibraryHints=flowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[];
+  const sourceLibraryHints=[...new Set([
+    ...(flowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[]),
+    ...(designToolSync?.requiredNativeLibraryHints||[]),
+    ...(designToolSync?.optionalNativeLibraryHints||[])
+  ])];
   const availableLibrarySources=sourceLibraryHints.map(hint=>{
     if(!hint.startsWith('assets/'))return null;
     const file=path.resolve(repoRoot,hint),assetRoot=path.resolve(repoRoot,'assets')+path.sep;
@@ -2819,6 +2824,17 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
   }).filter(Boolean);
   const presentLibraryHints=availableLibrarySources.map(row=>row.path);
   const absentLibraryHints=sourceLibraryHints.filter(hint=>!presentLibraryHints.includes(hint));
+  const designToolBindings=designToolSync?{
+    ...designToolSync,
+    requiredNativeLibraryHints:designToolSync.requiredNativeLibraryHints||[],
+    designSource,
+    repositoryPresentLibraries:presentLibraryHints,
+    repositoryMissingLibraries:absentLibraryHints,
+    sourceFingerprints:availableLibrarySources,
+    nativeRuntimeVerified:false,
+    codeAndAssetBindingRequiresExistingSource:true,
+    F0F9Unchanged:true
+  }:null;
   const systemRequirements=flowSystemBlueprint?[
     ...(flowSystemBlueprint.requiredSystems||[]).map(row=>({...row,stage:'REQUIRED'})),
     ...(flowSystemBlueprint.expansionSystems||[]).map(row=>({...row,stage:'EXPANSION'}))
@@ -2831,6 +2847,12 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
     phasePlan:flowSystemBlueprint.phasePlan||{},
     interconnectionChains:flowSystemBlueprint.interconnectionChains||[],
     reusableLibraries:sourceLibraryHints,
+    designToolRoles:designToolSync?{
+      requiredSystems:designToolSync.requiredSystems,
+      optionalSystems:designToolSync.optionalSystems,
+      requiredUiRoles:designToolSync.requiredUiRoles,
+      optionalUiRoles:designToolSync.optionalUiRoles
+    }:null,
     repositoryPresentLibraries:presentLibraryHints,
     repositoryMissingLibraries:absentLibraryHints,
     awardCaliberPrinciples:flowSystemBlueprint.awardCaliberPrinciples||[]
@@ -2883,7 +2905,7 @@ export function findStudioContinuousImprovementTask(project,repoRoot,queue,force
       ?` 승인 설계의 progressionDirection/coreLoop/signatureSystems를 실제 목표·보상·해금·웨이브·퀘스트·인벤토리·경제·콘텐츠 깊이 중 해당 게임에 존재하는 책임 시스템으로 구현·심화한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`
       :(designContext?` 승인 설계 맥락을 모든 작업 축에서 실제 구현 기준으로 보존한다. APPROVED_DESIGN=${JSON.stringify(designSummary)}`:'');
   const flowQualityInstruction=flowArchitecture
-    ?` FLOW_QUALITY_CONTRACT=${JSON.stringify(flowArchitecture.qualityGrowthContract||{})}; FLOW_SYSTEM_BLUEPRINT=${JSON.stringify(systemBlueprintSummary||{})}; FLOW_ASSET_REQUIREMENTS=${JSON.stringify(flowAssetRequirements)}. 시스템은 컨셉에 맞는 묶음으로만 사용하고 서로 인과적으로 연결한다. 기존 inventory/crafting/quest/economy/skill/targeting/AI 등 호환 라이브러리가 있으면 먼저 재사용하고, 플랫폼이 다르면 소스 복사가 아니라 같은 의미를 현재 네이티브 책임 구조에 재구현한다. 생존은 채집→제작→하우징/장비→탐험/위험, RPG는 NPC/동료→퀘스트→전투/아이템→관계/지역 변화처럼 핵심 판타지와 연결한다. 메뉴만 존재하거나 시스템이 서로 단절되면 완성도로 인정하지 않는다.${flowAssetInstruction}`
+    ?` FLOW_QUALITY_CONTRACT=${JSON.stringify(flowArchitecture.qualityGrowthContract||{})}; FLOW_SYSTEM_BLUEPRINT=${JSON.stringify(systemBlueprintSummary||{})}; DESIGN_TOOL_SYNC=${JSON.stringify(designToolBindings?{phase:designToolBindings.phase,requiredSystems:designToolBindings.requiredSystems,requiredUiRoles:designToolBindings.requiredUiRoles,optionalUiRoles:designToolBindings.optionalUiRoles,repositoryPresentLibraries:designToolBindings.repositoryPresentLibraries,repositoryMissingLibraries:designToolBindings.repositoryMissingLibraries,menuVisibility:designToolBindings.menuVisibility,nativeRuntimeVerified:false}:null)}; FLOW_ASSET_REQUIREMENTS=${JSON.stringify(flowAssetRequirements)}. 시스템은 컨셉에 맞는 묶음으로만 사용하고 서로 인과적으로 연결한다. 기존 inventory/crafting/quest/economy/skill/targeting/AI 등 호환 라이브러리가 있으면 먼저 재사용하고, 플랫폼이 다르면 소스 복사가 아니라 같은 의미를 현재 네이티브 책임 구조에 재구현한다. 생존은 채집→제작→하우징/장비→탐험/위험, RPG는 NPC/동료→퀘스트→전투/아이템→관계/지역 변화처럼 핵심 판타지와 연결한다. 메뉴만 존재하거나 시스템이 서로 단절되면 완성도로 인정하지 않는다.${flowAssetInstruction}`
     :'';
   const existingBackfillInstruction=existingHolisticBackfillRequired
     ?' 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.'
@@ -2971,6 +2993,7 @@ ${expectationInstruction}
     ...(gameplayDesignRequired?['work-package-scope:design-grounded-gameplay-evolution']:[])
   ]);
   out.assetRequirements=flowAssetRequirements;
+  out.designToolSync=designToolBindings;
   out.systemRequirements=systemRequirements;
   out.systemInterconnectionChains=flowSystemBlueprint?.interconnectionChains||[];
   out.flowArchitecture=flowArchitecture;
