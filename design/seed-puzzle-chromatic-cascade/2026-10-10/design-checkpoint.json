@@ -104,44 +104,25 @@
         "연쇄 기폭 장치를 사용해 형성된 체인을 활성화하여 폭발 효과를 유도하면서, 플레이어가 선택하는 대안적 방식을 통해 게임 진행을 다양화합니다.",
         "게임 스테이지를 클리어하며 튜너 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 상위 구역으로 진입하여 퍼즐의 깊이를 증대시킵니다."
       ]
-    },
-    "local_authoring_parts::6ec4bc286b18d195c972d6f5df1fa1c482f20f6f41e8008263241adf7d817a7a:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_abc",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"color_pattern\": \"blue-red\", \"energy_wave\": \"high\"}",
-        "{\"color_pattern\": \"red-green\", \"energy_wave\": \"medium\"}",
-        "{\"color_pattern\": \"green-yellow\", \"energy_wave\": \"low\"}"
-      ],
-      "stateOutputs": [
-        "{\"color_pattern\": \"blue-red\", \"energy_wave\": \"high\"}",
-        "><!-- A 상태 유지 --><!-- 전술적 선택: 체인 확장 -->",
-        "{\"color_pattern\": \"red-green\", \"energy_wave\": \"medium\"}<!-- B 상태 유지 -->",
-        "><!-- 추가 튜닝로 체인 길이 증가 -->",
-        "{\"color_pattern\": \"green-yellow\", \"energy_wave\": \"low\"}<!-- C 상태 유지 -->"
-      ],
-      "name": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
-      "purpose": "보드 위에 배치된 특정 노드의 색상 주파수를 강제로 변경하여 인접한 다른 색상들과의 동기화 체인을 능동적으로 형성하는 핵심 조작 시스템입니다.",
-      "playerChoice": "플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 348030,
-      "lastMs": 50914,
+      "totalMs": 360363,
+      "lastMs": 12333,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:59:00.014Z"
+      "updatedAt": "2026-10-10T08:59:12.349Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:11.961Z",
-  "updatedAt": "2026-10-10T08:59:00.014Z",
+  "updatedAt": "2026-10-10T08:59:12.350Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1414,11 +1395,21 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::6ec4bc286b18d195c972d6f5df1fa1c482f20f6f41e8008263241adf7d817a7a:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::6ec4bc286b18d195c972d6f5df1fa1c482f20f6f41e8008263241adf7d817a7a:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:59:00.014Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:59:12.349Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
