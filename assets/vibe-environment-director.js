@@ -535,6 +535,30 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const steps=Math.max(Math.abs(hub.x-landmark.x),Math.abs(hub.z-landmark.z))*2;
     for(let i=0;i<=steps;i++){const t=steps?i/steps:0;sightCells.add(at(Math.round(hub.x+(landmark.x-hub.x)*t),Math.round(hub.z+(landmark.z-hub.z)*t)));}
   }
+  // 도시계획: 실제 길 그래프 위 보행 도달 거리, 간선 위계, 대지 홍수·경사 위험을 계산한다.
+  const pedestrianDistance=new Int32Array(w*h).fill(-1),arterial=new Set(),collector=new Set(),roadDegree=new Map();
+  for(const line of routes){
+    const traffic=line.id==='ENTRY-HUB'||line.id==='HUB-LANDMARK'?arterial:collector;
+    for(const cell of line.cells)traffic.add(at(cell.x,cell.z));
+  }
+  const hubRoad=hub?at(hub.x,hub.z):-1;
+  if(roadSet.has(hubRoad)){
+    const queue=[hubRoad];pedestrianDistance[hubRoad]=0;
+    for(let i=0;i<queue.length;i++){
+      const id=queue[i],x=id%w,z=Math.floor(id/w);
+      for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+        if(!within(x+dx,z+dz))continue;
+        const next=at(x+dx,z+dz);
+        if(!roadSet.has(next)||pedestrianDistance[next]!==-1)continue;
+        pedestrianDistance[next]=pedestrianDistance[id]+1;queue.push(next);
+      }
+    }
+  }
+  for(const id of roadSet){
+    const x=id%w,z=Math.floor(id/w),neighbors=[[-1,0],[1,0],[0,-1],[0,1]].filter(([dx,dz])=>within(x+dx,z+dz)&&roadSet.has(at(x+dx,z+dz))).length;
+    roadDegree.set(id,neighbors);
+  }
+  const streetCategory=id=>arterial.has(id)?'ARTERIAL':collector.has(id)?'COLLECTOR':'LOCAL';
   const buildings=[],occupied=new Set([...roadSet,...blocked]),instanceGroups=new Map();
   const maxBuildings=mobile?22:56,style=String(buildingStyle||'LOCAL').toUpperCase();
   const addInstance=(name,x,z,rotation=0,levelY=terrain[at(x,z)].elevation*8)=>{
@@ -567,7 +591,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const stableObjectId=objectNamespace+':LOT:'+x+':'+z;
       const doorway={facing:doorFacing,position:worldPosition(doorGrid.x,doorGrid.z,levelY),roadCell:{x:rx,z:rz},roadAdjacencyVerified:roadSet.has(id),roadSlopeVerified:true,roadSurfaceY,riseToFoundationY:+riseToFoundationY.toFixed(4),runtimeNavigationVerified:false};
       const shapeSeed=proceduralCellHash(hash^0xb17d,x,z)/4294967296;
-      const wallHeight=+(cellSize*(1.3+shapeSeed*.9)).toFixed(3);
+      const storeys=zone==='WORKSHOP'?1:1+(proceduralCellHash(hash^0x512, x,z)%(zone==='COMMERCIAL'?3:2));
+      const floorHeight=+(cellSize*(1.3+shapeSeed*.9)).toFixed(3);
+      const wallHeight=+(floorHeight*storeys).toFixed(3);
       const roofRise=roof==='FLAT_ROOF'?0:+(wallHeight*(.24+shapeSeed*.15)).toFixed(3);
       const sourceBinding=pickSource('BUILDING',zone,x,z);
       const baseMaterial=/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER';
@@ -576,9 +602,23 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
         wall:pickSource('MATERIAL',baseMaterial,x,z),
         roof:pickSource('MATERIAL',roof,x,z)
       });
-      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:baseMaterial,materialBindings,verifiedStructuralEngineering:false,
+      const minFloodBuffer=Math.min(...footprint.map(cell=>terrain[at(cell.x,cell.z)].surface?.waterDistanceCells??999));
+      const maxGroundSlope=Math.max(...footprint.map(cell=>terrain[at(cell.x,cell.z)].slopeDegrees));
+      const weakGround=Math.min(...footprint.map(cell=>terrain[at(cell.x,cell.z)].surface?.substrateStability??1));
+      const accessSteps=pedestrianDistance[id]>=0?pedestrianDistance[id]:null;
+      const accessScore=accessSteps===null?0:Math.max(0,1-accessSteps/Math.max(w,h));
+      const floodScore=minFloodBuffer<=1?0:minFloodBuffer<=3?.5:1;
+      const terrainScore=Math.max(0,1-maxGroundSlope/Math.max(1,maxSlopeDegrees));
+      const landUseScore=+(accessScore*.5+floodScore*.25+terrainScore*.15+weakGround*.1).toFixed(3);
+      const planning=Object.freeze({districtId:zone+':'+Math.floor(x/6)+':'+Math.floor(z/6),
+        landUse:zone,streetClass:streetCategory(id),roadIntersectionDegree:roadDegree.get(id)||0,
+        pedestrianStepsToHub:accessSteps,frontageRoadCell:{x:rx,z:rz},floodBufferCells:minFloodBuffer===999?null:minFloodBuffer,
+        maxGroundSlopeDegrees:maxGroundSlope,minimumSubstrateStability:weakGround,landUseScore,
+        stormwaterDrainage:terrain[at(x,z)].drainageTo||null,streetNetworkVerified:false,
+        zoningAlgorithm:'GRAPH_PEDESTRIAN_ACCESS_AND_MULTICRITERIA_TERRAIN_RISK',runtimeBuildingPermitted:false});
+      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,planning,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:baseMaterial,materialBindings,verifiedStructuralEngineering:false,
         structure3d:dimension==='3D'?Object.freeze({footprintWidthMeters:cellSize*2,footprintDepthMeters:cellSize*2,wallHeightMeters:wallHeight,wallThicknessMeters:+Math.max(.12,cellSize*.08).toFixed(3),foundationThicknessMeters:+Math.max(.15,cellSize*.12).toFixed(3),
-          roofRiseMeters:roofRise,doorOpeningWidthMeters:+(cellSize*.46).toFixed(3),doorOpeningHeightMeters:+(wallHeight*.7).toFixed(3),
+          roofRiseMeters:roofRise,storeys,floorHeightMeters:floorHeight,structuralFloorSlabsRequired:storeys>1,doorOpeningWidthMeters:+(cellSize*.46).toFixed(3),doorOpeningHeightMeters:+(wallHeight*.7).toFixed(3),
           geometryRoles:Object.freeze(['FOUNDATION','WALL_OPENINGS','STRUCTURAL_JOINTS','DOOR_DEPTH','ROOF_GEOMETRY','INTERIOR_SHELL']),realNative3dMeshRequired:true,geometryGenerated:false}):null},
         modules:[style+':FOUNDATION',style+':WALL',style+':DOOR',style+':'+roof],doorFacing,roadAccess:{x:rx,z:rz},gridSnap:cellSize,sourceBindingRequired:true,sourceBinding};
       buildings.push(building);
