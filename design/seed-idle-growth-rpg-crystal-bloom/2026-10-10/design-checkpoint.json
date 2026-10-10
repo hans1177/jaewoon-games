@@ -1181,25 +1181,28 @@
       "toSystem": "MAIN_SYSTEM_16_CHAR_MINIMUM_24_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_16_CHARS",
       "trigger": "ACTION_TRIGGER_24_CHAR_MINIMUM_30_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_24_CHARS",
       "stateChange": "STATE_CHANGE_24_CHAR_MINIMUM_30_CHAR_MAXIMAL_LENGTH_AND_MORE_THAN_24_CHARS"
+    },
+    "local_authoring_parts::05e5f7161dde414641beec656ed5eaf71d5efe28dac8ea661acad36ca7b22697:fromId": {
+      "fromId": "MAIN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 76,
-      "successes": 75,
+      "calls": 77,
+      "successes": 76,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 5039912,
-      "lastMs": 33402,
+      "totalMs": 5071950,
+      "lastMs": 32038,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:00:25.882Z"
+      "updatedAt": "2026-10-10T01:00:57.929Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-10T01:00:25.889Z",
+  "updatedAt": "2026-10-10T01:00:57.929Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3230,10 +3233,10 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:00:25.885Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "systems-progression",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_STATE_EXCHANGE_BROKEN,DESIGN_RULE_GRAPH_DISCONNECTED",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:00:57.929Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
