@@ -103,10 +103,36 @@ export function buildSpatialBlueprintContract({design={},source={},files=[],mode
     seed:worldProposal.seed||worldRequest.seed||null,dimension,coordinateSystem:worldProposal.coordinateSystem||null,
     regionBiome:worldProposal.regionalBiome||null,climate:worldProposal.climate||null,
     grid:worldProposal.size||null,drainage:worldProposal.drainage||null,riverType:worldProposal.riverType||null,
+    // 승인된 오토 바이옴 도안만 Vibe의 기존 월드 소스 담당 작업자에게 전달한다.
+    waterBodies:(worldProposal.oceansAndLakes?.waterBodies||[]).map(row=>({id:row.id,kind:row.kind,salinityPpt:row.salinityPpt,cellCount:row.cellCount})),
+    waterMode:worldProposal.oceansAndLakes?.selectedWaterMode||'AUTO',
+    earthBiomes:worldProposal.earthBiomes?.categories||{},
+    geologyMaterials:worldProposal.geologyAndMaterials?.materialDistribution||{},
+    climateFoodWeb:(worldProposal.ecologyBalance?.habitats||[]).map(row=>({
+      habitat:row.habitat,ambientCue:row.ambientCue,foodWeb:row.foodWebVisual,
+      actualCreatureSpawnCount:0
+    })),
+    eraMode:worldProposal.eraAndCulture?.selectedEra||'LOCAL',
+    eraDistribution:worldProposal.eraAndCulture?.buildingCountByEra||{},
     riverSample:(worldProposal.river||[]).slice(0,24),riverLength:worldProposal.river?.length||0,
     routes:(worldProposal.roads||[]).map(row=>({id:row.id,from:row.from,to:row.to,totalCells:row.cells.length,cellSample:row.cells.slice(0,64),worldPointSample:row.worldPath.slice(0,64)})),
-    buildings:(worldProposal.buildings||[]).slice(0,12).map(row=>({id:row.id,zone:row.zone,position:row.position,footprint:row.footprint,modules:row.modules,doorFacing:row.doorFacing,roadAccess:row.roadAccess,gridSnap:row.gridSnap,sourceBindingRequired:true})),
+    buildings:(worldProposal.buildings||[]).slice(0,12).map(row=>({id:row.id,zone:row.zone,era:row.era,
+      architecturalStrata:row.construction?.eraArchitecture?.visualStrata||[],
+      material:row.construction?.primaryMaterial,position:row.position,footprint:row.footprint,
+      modules:row.modules,doorFacing:row.doorFacing,roadAccess:row.roadAccess,
+      gridSnap:row.gridSnap,sourceBindingRequired:true})),
     totalBuildings:worldProposal.buildings?.length||0,vegetationTypes:(worldProposal.instancingPlan||[]).filter(row=>String(row.module).startsWith('NATURE:')).map(row=>({module:row.module,count:row.count})),
+    // AI 의도·진화는 기존 게임의 승인/보스 등급/드랍/저장 권한을 통과하기 전까지 실행하지 않는다.
+    lifeAndDungeonPlans:(worldProposal.livingBiomePopulation?.actorPlacements||[]).map(row=>({
+      actorId:row.actorId,kind:row.kind,tier:row.tier,approvedSite:row.status==='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED',
+      cell:row.cell,habitat:row.habitat,earthBiome:row.earthBiome,homeSettlementId:row.homeSettlementId,
+      authoredDungeonId:row.authoredDungeonId,raidTargetAuthorized:row.raidTargetAuthorized,
+      behaviorCycle:row.behaviorCycle,visualEvolution:row.evolution?.phenotypeStage||null,
+      nextTierRequiresEngineAuthority:row.evolution?.requiresAuthoritativeEngineRuleAndRuntimeQa===true,
+      backgroundSync:row.backgroundSync,
+      exactActorRuntimeBindingVerified:false
+    })),
+    nativeLifeAndWaterRuntimeVerified:false,
     landmark:worldProposal.landmark||null,sightline:worldProposal.sightline||null,
     budget:worldProposal.mobileBudget||null,fullTerrainOrNativeMeshDelivered:false
   }:null;
