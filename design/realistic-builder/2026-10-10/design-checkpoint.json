@@ -123,21 +123,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 39,
+      "successes": 39,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 450611,
-      "lastMs": 7037,
+      "totalMs": 554479,
+      "lastMs": 7208,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:13:14.069Z"
+      "updatedAt": "2026-10-10T06:14:57.965Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:05:43.335Z",
-  "updatedAt": "2026-10-10T06:13:14.070Z",
+  "updatedAt": "2026-10-10T06:14:57.966Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2022,10 +2022,10 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::a8a22acb23d7800ad543bce65debccc0620c04aa0b6bd52d430a81917611fa50:signatureSystems:1:e0609e605140fc81": 21
+    "local_authoring_parts::a8a22acb23d7800ad543bce65debccc0620c04aa0b6bd52d430a81917611fa50:signatureSystems:1:e0609e605140fc81": 36
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:13:14.069Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:14:57.965Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:A",
   "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
