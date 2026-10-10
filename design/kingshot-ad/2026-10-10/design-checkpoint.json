@@ -370,25 +370,42 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::4aeabe3c9d7a4cb21976d9c972432b5ef6ce6393c1712d3d41a8af2947f0aa09:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "threatened route",
+        "enemy type",
+        "wave composition"
+      ],
+      "stateOutputs": [
+        "defensive adaptation",
+        "resource allocation",
+        "economic constraint"
+      ],
+      "name": "adaptive defense",
+      "purpose": "gameplay core mechanism",
+      "playerChoice": "resource allocation decision based on enemy behavior and wave pattern\",\"worldChange\":\"new economic constraint introduced\"}</think> ملاحظة: هذه الإجابة تتوافق مع شروط التصنيف والتصميم المذكورة، وتم إعدادها بشكل مناسب للوظيفة الأساسية في اللعبة "
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 825557,
-      "lastMs": 88189,
+      "totalMs": 1056822,
+      "lastMs": 231265,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:57:30.661Z"
+      "updatedAt": "2026-10-10T03:01:21.937Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:43:45.072Z",
-  "updatedAt": "2026-10-10T02:57:30.671Z",
+  "updatedAt": "2026-10-10T03:01:21.937Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2224,10 +2241,10 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:57:30.664Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:01:21.937Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
