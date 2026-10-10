@@ -581,6 +581,69 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           ||generated.find(row=>/\.glb$/i.test(row.path))
           ||generated.find(row=>/\.(?:gltf|fbx|blend)$/i.test(row.path))
           ||generated[0];
+        // [CINEMATIC QA] A declared video must be a decodable, source-bound render.
+        // An MP4 filename or Blender completion message alone cannot prove frames exist.
+        let cinematicVideo=null;
+        const declaredVideo=recipe?.cinematicOutput?dccRepoPath(recipe.cinematicOutput):null;
+        const declaredShotlist=recipe?.shotlistOutput?dccRepoPath(recipe.shotlistOutput):null;
+        if(recipe?.cinematic===true||declaredVideo){
+          if(recipe?.cinematic!==true||!declaredVideo||!declaredShotlist)throw new Error('NATIVE_DCC_CINEMATIC_CONTRACT_INCOMPLETE:'+clean(recipe?.id));
+          const encoded=generated.find(row=>row.path===declaredVideo);
+          const storyboardArtifact=generated.find(row=>row.path===declaredShotlist);
+          if(!encoded||encoded.size<=1024||!storyboardArtifact||!evidence?.cinematic)throw new Error('NATIVE_DCC_CINEMATIC_OUTPUT_OR_EVIDENCE_MISSING:'+clean(recipe?.id));
+          const storyboard=JSON.parse(fs.readFileSync(path.resolve(cwd,declaredShotlist),'utf8'));
+          const cinematic=evidence.cinematic;
+          if(storyboard.videoFile!=='cinematic.mp4'||storyboard.sourceArtifact!=='asset.glb'
+            ||cinematic.status!=='BLENDER_VIDEO_RENDERED_NATIVE_RUNTIME_PENDING'
+            ||cinematic.videoSha256!==encoded.sha256||cinematic.videoBytes!==encoded.size
+            ||cinematic.shotlistSha256!==storyboardArtifact.sha256
+            ||cinematic.sourceArtifactSha256!==nativeArtifact.sha256||storyboard.sourceSha256!==nativeArtifact.sha256
+            ||cinematic.productionVerified!==false||cinematic.nativeRuntimeVerified!==false
+            ||storyboard.gameplayMutationAllowed!==false||storyboard.nativeRuntimeVerified!==false
+            ||!Array.isArray(storyboard.shots)||storyboard.shots.length!==4
+            ||!Number.isInteger(storyboard.frameCount)||storyboard.frameCount<24||storyboard.frameCount>72
+            ||![12,24].includes(storyboard.fps)||![640,960].includes(storyboard.resolution?.width)
+            ||storyboard.resolution?.height!==storyboard.resolution.width*9/16
+            ||storyboard.frameCount!==cinematic.frameCount||storyboard.fps!==cinematic.fps
+            ||storyboard.durationSeconds!==cinematic.durationSeconds
+            ||JSON.stringify(storyboard.resolution)!==JSON.stringify(cinematic.resolution)
+            ||storyboard.shots[0].frame!==1||storyboard.shots.at(-1).frame!==storyboard.frameCount
+            ||storyboard.shots.some((shot,index)=>!clean(shot.intent)||!Number.isInteger(shot.frame)
+              ||(index>0&&shot.frame<=storyboard.shots[index-1].frame))
+            ||cinematic.encoder!=='BLENDER_FFMPEG_H264'){
+            throw new Error('NATIVE_DCC_CINEMATIC_SOURCE_OR_STORYBOARD_MISMATCH:'+clean(recipe?.id));
+          }
+          let probe;
+          try{
+            const output=execFileSync(clean(process.env.VIBE2_FFPROBE_BINARY)||'ffprobe',[
+              '-v','error','-count_frames',
+              '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+              '-of','json','-i',path.resolve(cwd,declaredVideo)
+            ],{cwd,encoding:'utf8',timeout:60000,maxBuffer:1024*1024,stdio:['ignore','pipe','pipe']});
+            probe=JSON.parse(output);
+          }catch(error){throw new Error('NATIVE_DCC_CINEMATIC_FFPROBE_REQUIRED:'+clean(recipe?.id)+':'+clean(error?.code||'INVALID_VIDEO'));}
+          const streams=Array.isArray(probe?.streams)?probe.streams:[];
+          const videoStream=streams.find(row=>row.codec_type==='video');
+          const rate=clean(videoStream?.r_frame_rate).split('/').map(Number);
+          const fps=rate.length===2&&rate[1]>0?rate[0]/rate[1]:0;
+          const duration=Number(probe?.format?.duration);
+          if(streams.length!==1||videoStream?.codec_name!=='h264'
+            ||videoStream?.width!==storyboard.resolution.width
+            ||videoStream?.height!==storyboard.resolution.height
+            ||Number(videoStream.nb_read_frames)!==storyboard.frameCount
+            ||Math.abs(fps-storyboard.fps)>0.001
+            ||!Number.isFinite(duration)||Math.abs(duration-storyboard.durationSeconds)>.1){
+            throw new Error('NATIVE_DCC_CINEMATIC_VIDEO_DECODE_OR_TIMELINE_INVALID:'+clean(recipe?.id));
+          }
+          cinematicVideo=Object.freeze({
+            path:declaredVideo,sha256:encoded.sha256,shotlistPath:declaredShotlist,
+            shotlistSha256:storyboardArtifact.sha256,codec:'H264',container:'MP4',
+            fps,frameCount:storyboard.frameCount,durationSeconds:duration,
+            resolution:Object.freeze({...storyboard.resolution}),
+            verifiedBy:'FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH',
+            nativeRuntimeVerified:false,productionVerified:false,gameplayMutationAllowed:false
+          });
+        }
         const family=clean(recipe?.family).toUpperCase()||null;
         const role=clean(recipe?.role||(Array.isArray(recipe?.types)?recipe.types.find(type=>isCrossPlatform3dActorType(type)):'')).toUpperCase().replace(/[\\s-]+/g,'_')||null;
         const masterGlbRequired=recipe?.masterGlbRequired===true||['CHARACTER','CREATURE'].includes(family);
@@ -707,6 +770,7 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           }):null,
           glbDataQaPass:glbInspection?glbInspection.status==='INSPECTED_RECONSTRUCTION_INPUT':null,glbSpatial:glbInspection?.inventory?.spatial||null,platformApplication,
           reproducesExistingNativeArtifact,persistedForCandidate:persist,candidateUsable:persist||reproducesExistingNativeArtifact,
+          cinematicVideo,
           stdoutTail:String(stdout||'').slice(-2000),runtimeVerified:false,companyPromotionEligible:false
         }));
       }finally{
