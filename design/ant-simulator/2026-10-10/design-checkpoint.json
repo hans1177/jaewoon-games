@@ -2104,25 +2104,246 @@
       "name": "진입 지역",
       "traversal": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
       "riskReward": "자원 확보 후 보상/위험 발생"
+    },
+    "local_authoring_parts::7379ecf6d73014360c13ce6d38bf3e31ad2af28f35b02e09b1754364babdca18:landmark,encounterPattern,resourcePressure,storyContext": {
+      "landmark": "진입 지역",
+      "encounterPattern": "월드 탐험 -> 자원 확보 -> 위험 겪기",
+      "resourcePressure": "자원 압박",
+      "storyContext": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기를 통해 다음 목표 결정"
+    },
+    "local_authoring_parts::faccd38fc14c214b9101ed72f7d9ac667d00a0521532cdfdfabfd38b0ab86bff:regions:1": {
+      "id": "REGION_1",
+      "ruleIds": [
+        "CORE_FUN"
+      ],
+      "name": "진입 지역",
+      "traversal": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
+      "riskReward": "자원 확보 후 보상/위험 발생",
+      "landmark": "진입 지역",
+      "encounterPattern": "월드 탐험 -> 자원 확보 -> 위험 겪기",
+      "resourcePressure": "자원 압박",
+      "storyContext": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기를 통해 다음 목표 결정"
+    },
+    "local_authoring_parts::dbee9035223b3670019523d50c74c0141652daeb543ac942e0382b723ace4be0:regions": {
+      "regions": [
+        {
+          "id": "REGION_1",
+          "ruleIds": [
+            "CORE_FUN"
+          ],
+          "name": "진입 지역",
+          "traversal": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
+          "riskReward": "자원 확보 후 보상/위험 발생",
+          "landmark": "진입 지역",
+          "encounterPattern": "월드 탐험 -> 자원 확보 -> 위험 겪기",
+          "resourcePressure": "자원 압박",
+          "storyContext": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기를 통해 다음 목표 결정"
+        },
+        {
+          "id": "REGION_1",
+          "ruleIds": [
+            "CORE_FUN"
+          ],
+          "name": "진입 지역",
+          "traversal": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
+          "riskReward": "자원 확보 후 보상/위험 발생",
+          "landmark": "진입 지역",
+          "encounterPattern": "월드 탐험 -> 자원 확보 -> 위험 겪기",
+          "resourcePressure": "자원 압박",
+          "storyContext": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기를 통해 다음 목표 결정"
+        }
+      ]
+    },
+    "local_authoring_parts::0d279aeb72c3a4e8e6873fe7940565732245b1d56ee44b2103634da9d85e1bce:abilities,roleTransitions,regions": {
+      "abilities": [
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_1",
+          "name": "개미 종족 선택",
+          "kind": "MOVEMENT",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN",
+          "trigger": "플레이어가 개미 종족 중 하나를 선택하여 월드 탐험 및 굴 지킴 시작",
+          "range": 1,
+          "rangeUnit": "종족",
+          "resource": "선택권",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "플레이어의 선택에 따라 월드 상태와 보상/위험 발생",
+          "avoidance": "선택 무의미함",
+          "effect": "월드 상태 변환 및 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "OPENING",
+          "rangeKey": "ANT_KIND_SELECTION",
+          "costKey": "SELECTED_ANT",
+          "cooldownKey": "ANT_SELECTION_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_2",
+          "name": "월드 탐험",
+          "kind": "MOVEMENT",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN",
+          "trigger": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
+          "range": 3,
+          "rangeUnit": "정원",
+          "resource": "자원",
+          "cost": 1,
+          "cooldownSeconds": 5,
+          "telegraph": "플레이어의 입력으로 월드 상태와 보상/위험 조정됨",
+          "avoidance": "타겟 선택 무의미함",
+          "effect": "월드 상태 변화 및 보상/위험 발생",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "OPENING",
+          "rangeKey": "WORLD_TRAVEL",
+          "costKey": "RESOURCE_ACQUISITION",
+          "cooldownKey": "TRAVERSAL_COOLDOWN"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_3",
+          "name": "자원 확보",
+          "kind": "MOVEMENT",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN",
+          "trigger": "플레이어가 자원을 확보하여 다음 목표 결정",
+          "range": 2,
+          "rangeUnit": "자원",
+          "resource": "자원",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "플레이어의 선택에 따라 자원 압박 및 위험 감수",
+          "avoidance": "자원 부족",
+          "effect": "자원 확보 및 다음 목표 결정",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "OPENING",
+          "rangeKey": "RESOURCE_AQUARIUM",
+          "costKey": "RESOURCE_STORAGE",
+          "cooldownKey": "RESOURCE_ACCESS"
+        },
+        {
+          "id": "ACTION_SURVIVAL_ROGUELITE_4",
+          "name": "위험 겪기",
+          "kind": "MOVEMENT",
+          "ownerId": "ANT_SIMULATOR_CORE",
+          "ruleId": "CORE_FUN",
+          "trigger": "플레이어가 위험을 겪고 보상/위험 조정",
+          "range": 1,
+          "rangeUnit": "위험",
+          "resource": "보상",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "플레이어의 입력으로 월드 상태와 보상/위험 변화",
+          "avoidance": "타겟 선택 무의미함",
+          "effect": "월드 상태 변환 및 보상/위험 발생",
+          "stateInputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "stateOutputs": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "source": "OPENING",
+          "rangeKey": "RISK_ACQUISITION",
+          "costKey": "RISK_BONUS",
+          "cooldownKey": "RISK_COOLDOWN"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "PLAYER_1",
+          "humanTool": "MONTHLY_RESEARCHER",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_1",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_2",
+          "retainedState": "WORLD_TRAVEL",
+          "removedState": "ANT_SELECTION",
+          "changedChoice": "RESOURCE_AQUARIUM"
+        },
+        {
+          "humanId": "PLAYER_2",
+          "humanTool": "MONTHLY_RESEARCHER",
+          "humanAbilityId": "ACTION_SURVIVAL_ROGUELITE_3",
+          "infectedAbilityId": "ACTION_SURVIVAL_ROGUELITE_4",
+          "retainedState": "RESOURCE_AQUARIUM",
+          "removedState": "DELVE",
+          "changedChoice": "RISK_ACQUISITION"
+        }
+      ],
+      "regions": [
+        {
+          "id": "REGION_1",
+          "ruleIds": [
+            "CORE_FUN"
+          ],
+          "name": "진입 지역",
+          "traversal": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
+          "riskReward": "자원 확보 후 보상/위험 발생",
+          "landmark": "진입 지역",
+          "encounterPattern": "월드 탐험 -> 자원 확보 -> 위험 겪기",
+          "resourcePressure": "자원 압박",
+          "storyContext": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기를 통해 다음 목표 결정"
+        },
+        {
+          "id": "REGION_1",
+          "ruleIds": [
+            "CORE_FUN"
+          ],
+          "name": "진입 지역",
+          "traversal": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기",
+          "riskReward": "자원 확보 후 보상/위험 발생",
+          "landmark": "진입 지역",
+          "encounterPattern": "월드 탐험 -> 자원 확보 -> 위험 겪기",
+          "resourcePressure": "자원 압박",
+          "storyContext": "플레이어가 월드 탐험을 수행하여 자원 확보 및 위험 겪기를 통해 다음 목표 결정"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 90,
-      "successes": 86,
+      "calls": 91,
+      "successes": 87,
       "failures": 4,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 3616481,
-      "lastMs": 27505,
+      "totalMs": 3640918,
+      "lastMs": 24437,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:53:22.586Z"
+      "updatedAt": "2026-10-10T00:53:47.025Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-10T00:53:22.586Z",
+  "updatedAt": "2026-10-10T00:53:47.030Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3843,7 +4064,7 @@
     "0d279aeb72c3a4e8e6873fe7940565732245b1d56ee44b2103634da9d85e1bce": true,
     "dbee9035223b3670019523d50c74c0141652daeb543ac942e0382b723ace4be0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:53:22.586Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:53:47.030Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
