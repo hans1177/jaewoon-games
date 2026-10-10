@@ -388,6 +388,7 @@ jobs:
           [[ '${{ steps.license.outcome }}' == 'success' ]] || exit 198
 
       - name: Build Unity Web
+        timeout-minutes: 40
         shell: bash
         env:
           UNITY_EDITOR_PATH: ${{ steps.unity.outputs.editor }}
@@ -485,6 +486,7 @@ jobs:
           echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
 
       - name: Prepare Unity Web browser runtime
+        timeout-minutes: 12
         shell: bash
         run: |
           set -euo pipefail
@@ -493,6 +495,7 @@ jobs:
           echo 'UNITY_WEB_BROWSER_RUNTIME=READY'
 
       - name: Run Unity Web actual browser play
+        timeout-minutes: 10
         # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
         continue-on-error: true
@@ -511,6 +514,7 @@ jobs:
             --screenshot="/tmp/unity-web/gameplay-mobile.png"
 
       - name: Run Unity Web independent QA
+        timeout-minutes: 10
         # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
         continue-on-error: true
@@ -529,6 +533,7 @@ jobs:
             --screenshot="/tmp/unity-web/independent-qa-mobile.png"
 
       - name: Run Unity Web regression
+        timeout-minutes: 10
         # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
         continue-on-error: true

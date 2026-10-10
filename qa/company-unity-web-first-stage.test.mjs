@@ -394,3 +394,28 @@ test('existing local Vibe director reuses Blender and the active Unity MCP edito
   assert.match(director,/company-learning\/security-immune-system\.json/);
   assert.doesNotMatch(director,/Priority game project: unity-games\/daechung-rpg/);
 });
+
+
+test('Unity Web game-specific browser QA cannot strand GitHub runners while preserving all mandatory gates',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const section=name=>{
+    const start=workflow.indexOf('      - name: '+name+'\n');
+    assert.ok(start>=0,'missing workflow stage '+name);
+    const end=workflow.indexOf('\n      - name: ',start+1);
+    return workflow.slice(start,end>start?end:undefined);
+  };
+  assert.match(section('Build Unity Web'),/timeout-minutes: 40/);
+  assert.match(section('Prepare Unity Web browser runtime'),/timeout-minutes: 12/);
+  for(const stage of ['Run Unity Web actual browser play','Run Unity Web independent QA','Run Unity Web regression']){
+    const step=section(stage);
+    assert.match(step,/timeout-minutes: 10/);
+    assert.match(step,/continue-on-error: true/);
+    assert.match(step,/company-unity-web-gameplay-validation\.mjs/);
+    assert.match(step,/--output="\/tmp\/unity-web\/web-games\/\$GAME_ID\//);
+  }
+  assert.match(section('Write build evidence'),/UNITY_WEB_QA_REPAIR_REQUIRED/);
+  assert.match(section('Write build evidence'),/UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED/);
+  assert.match(section('Upload Unity Web artifact'),/always\(\) && steps\.output\.outcome == 'success'/);
+  assert.match(workflow,/needs\.build\.result == 'failure'/);
+  assert.match(workflow,/vibe2-queue-control\.mjs fail/);
+});
