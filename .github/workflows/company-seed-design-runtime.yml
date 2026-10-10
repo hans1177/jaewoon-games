@@ -30,10 +30,10 @@ permissions:
   actions: write
 
 concurrency:
-  # 기존 실행의 게임별 체크포인트는 보존하고, 오래된 대기 설계 대신 최신 main 설계만 다음 순서로 유지한다.
-  group: company-seed-design-runtime
+  # 같은 엔진 버전의 중복 예약만 직렬화한다. 오래된 버전의 긴 배치가 최신 설계를 막지 않는다.
+  group: company-seed-design-runtime-${{ github.sha }}
   cancel-in-progress: false
-  queue: max # 기존 정식 설계 대기 작업을 후속 main 변경이 취소하지 않게 보호
+  queue: max # 실행 중 작업은 취소하지 않고 최신 버전의 확인을 독립 진행한다
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -398,6 +398,11 @@ jobs:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    concurrency:
+      # 동일 게임만 직렬화하고 다른 게임의 바이브 설계를 병렬 진행한다.
+      group: company-seed-design-game-${{ matrix.target.game_id }}
+      cancel-in-progress: false
+      queue: max
     steps:
       - uses: actions/checkout@v4
         with:
