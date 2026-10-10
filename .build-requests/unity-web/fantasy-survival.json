@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "unity-web-fantasy-survival-real-3d-browser-revalidation-20261010",
+  "requestId": "unity-web-fantasy-survival-native-physics-module-fix-build-20261010",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
@@ -12,5 +12,6 @@
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
   "upperPlatformReadinessRequired": true,
-  "homepageCardVisibleRegardlessOfBuildResult": true
+  "homepageCardVisibleRegardlessOfBuildResult": true,
+  "repairCause": "UNITY_EDITOR_CS1069_COLLIDER_PHYSICS_MODULE_MISSING_FIXED_IN_CANONICAL_PACKAGES_MANIFEST"
 }
