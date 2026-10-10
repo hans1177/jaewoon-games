@@ -1,3 +1,5 @@
+// 파일명: assets/asset-library.js
+// 메인: 회사 등록부의 실제 GLB 원본과 내장 액션을 기존 뷰어로 재생한다.
 const $=id=>document.getElementById(id);
 const MANIFEST='/assets/roblox/world-ghosts/native/asset-gallery.json';
 const SYNC_INTERVAL_MS=30000;
@@ -16,6 +18,14 @@ let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-
 const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
+const nativeGLB=value=>typeof value==='string'&&/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(value)?value:'';
+let nativeClip='';
+function nativeClipName(name){
+ const key=String(name).toLowerCase();
+ for(const [term,label]of [['idle','대기'],['walk','걷기'],['run','달리기'],['jog','조깅'],['sprint','전력질주'],['attack','공격'],['hit','피격'],['death','사망'],['guard','방어'],['dodge','회피'],['jump','점프'],['cast','마법'],['skill','기술'],['shot','발사'],['bite','물기']])
+  if(key.includes(term))return label+' · '+name;
+ return name;
+}
 async function request(url,options={}){
  const response=await fetch(url,{cache:'no-cache',signal:AbortSignal.timeout(20000),...options});
  if(!response.ok)throw Error('자산 서버에 연결하지 못했어.');return response;
@@ -106,7 +116,7 @@ function showList(){
   const button=document.createElement('button');button.type='button';button.dataset.id=row.id;button.setAttribute('aria-pressed',String(row.id===selectedId));
   const title=document.createElement('strong');title.textContent=row.title;
   const detail=document.createElement('small');
-  const preview=row.retiredPreview?'홈 미리보기 제외':row.atom?'3D 모션':row.sample?(row.category==='ENVIRONMENT'?'3차원 배경':'3차원 동작'):row.image?'등록 이미지':'미리보기 준비 중';
+  const preview=row.retiredPreview?'홈 미리보기 제외':nativeGLB(row.asset?.path)?'실제 GLB 메쉬':row.atom?'3D 모션':row.sample?(row.category==='ENVIRONMENT'?'3차원 배경':'3차원 동작'):row.image?'등록 이미지':'미리보기 준비 중';
   const quality=row.asset?.internalAuditScore!==undefined?['품질 '+row.asset.internalAuditScore,row.asset?.internalAuditGrade].filter(Boolean).join(' / '):row.asset?.internalAuditGrade?'품질 '+row.asset.internalAuditGrade:'';
   const source=String(row.asset?.sourcePath||row.asset?.path||'').trim(),shared=sourceCounts.get(source)||0;
   detail.textContent=kind==='all'?[categoryLabels[row.category]||row.category,row.id,row.asset?.platform,row.asset?.status,shared>1?'같은 경로 '+shared+'개':'',quality,preview].filter(Boolean).join(' · '):kind==='monster'?(forms[row.form]||row.form)+(row.sample?' · 6가지 동작':row.image?' · 이미지':' · 준비 중'):kind==='common'?(row.atom?(row.role||'공용 R15 동작')+' · 3D 모션':'미리보기 준비 중'):(row.sample?'3차원 배경':row.image?'등록 이미지':'미리보기 준비 중');
@@ -147,6 +157,7 @@ async function getViewer(){
 async function choose(row,force=false){
  const key=kind+':'+row.id+':'+(row.sample?.sha256||row.atom?.atomId||row.image);
  if(!force&&key===currentKey)return;
+ viewer?.cancelLoad();nativeClip='';
  const token=++selectionToken;currentKey='';selectedId=row.id;currentRow=row;
  for(const button of $('assetList').querySelectorAll('button'))button.setAttribute('aria-pressed',String(button.dataset.id===row.id));
  const category=row.category||row.asset?.category||row.asset?.family||'OTHER';
@@ -163,6 +174,7 @@ async function choose(row,force=false){
  $('selectedTitle').textContent=row.title;$('selectedInfo').textContent=kind==='all'?['ID '+row.id,'카테고리 '+(categoryLabels[category]||category),'플랫폼 '+(row.asset?.platform||'미기재'),'상태 '+(row.asset?.status||'미기재'),quality,production,runtime,consumers,sourceInfo,sharedInfo,sourceVersion,registryVersion].filter(Boolean).join(' · '):kind==='monster'?[(forms[row.form]||row.form),row.role].filter(Boolean).join(' · '):kind==='common'?[row.atom?.atomId||'공용 R15',row.role].filter(Boolean).join(' · '):'게임을 채우는 환경 자산';
  $('assetType').textContent=kind==='all'?(categoryLabels[category]||category).toUpperCase():kind==='monster'?'MONSTER STUDIO':kind==='common'?'COMMON CHARACTER MOTION':'WORLD LIBRARY';
  $('assetCanvas').hidden=true;$('assetImage').hidden=true;$('motionControls').hidden=true;$('playbackControls').hidden=true;
+ $('meshControls').hidden=true;$('meshWireframe').checked=false;
  $('previewStatus').textContent='미리보기를 불러오는 중…';$('previewBadge').textContent='불러오는 중';
  try{
   if(row.retiredPreview){
