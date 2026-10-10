@@ -32,6 +32,7 @@ PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','ob
 PARSER.add_argument('--source-model', default='')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
 PARSER.add_argument('--motion-kind', choices=['sway','turntable','bounce'], default='sway')
+PARSER.add_argument('--mesh-model', choices=['auto','trellis2','triposr'], default='auto')
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
@@ -105,7 +106,7 @@ SOURCE_PROVENANCE = None
 ASSET_ARMATURES = []
 # 기존 실행기 안에서만 사용하는 오픈소스 기능. 설치되지 않은 외부 엔진의 PASS를 만들지 않는다.
 OPEN_SOURCE_MODULES = {
-    'mesh-ai': {'source': 'https://github.com/VAST-AI-Research/TripoSR', 'engine': 'TripoSR', 'license': 'MIT'},
+    'mesh-ai': {'source': 'https://github.com/microsoft/TRELLIS.2', 'baselineSource': 'https://github.com/VAST-AI-Research/TripoSR', 'engine': 'TRELLIS.2_4B_OR_TRIPOSR', 'license': 'MIT'},
     'human': {'source': 'https://github.com/makehumancommunity/mpfb2', 'engine': 'MPFB2', 'license': 'GPL-3.0-or-later', 'assetLicense': 'CC0'},
     'object': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderNativeGeometry', 'license': 'GPL-2.0-or-later'},
     'clothing': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderMeshAndCloth', 'license': 'GPL-2.0-or-later'},
@@ -248,68 +249,148 @@ def crate_asset():
 def image_mesh_asset():
     global IMAGE_PROVENANCE
     source = Path(ARGS.source_image).resolve()
-    license_name = ARGS.source_license.strip()
+    source_license = ARGS.source_license.strip()
     if not source.is_file() or source.suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp'):
         raise RuntimeError('IMAGE_TO_MESH_LOCAL_IMAGE_REQUIRED')
     if source.stat().st_size <= 0 or source.stat().st_size > 25 * 1024 * 1024:
         raise RuntimeError('IMAGE_TO_MESH_IMAGE_SIZE_INVALID')
-    if license_name.lower() not in ('project-original', 'cc0', 'cc-by'):
+    if source_license.lower() not in ('project-original', 'cc0', 'cc-by'):
         raise RuntimeError('IMAGE_TO_MESH_SOURCE_RIGHTS_REQUIRED')
-    if license_name.lower() == 'cc-by' and not ARGS.source_credit.strip():
+    if source_license.lower() == 'cc-by' and not ARGS.source_credit.strip():
         raise RuntimeError('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED')
 
-    engine_home = Path(os.environ.get('VIBE_TRIPOSR_HOME', '')).expanduser()
-    model_home = Path(os.environ.get('VIBE_TRIPOSR_MODEL_DIR', '')).expanduser()
-    engine_file = engine_home / 'run.py'
-    engine_license = engine_home / 'LICENSE'
-    engine_source = engine_home / 'tsr' / 'system.py'
-    model_config = model_home / 'config.yaml'
-    model_weights = model_home / 'model.ckpt'
-    if not os.environ.get('VIBE_TRIPOSR_HOME') or not engine_file.is_file() or not engine_source.is_file() or not engine_license.is_file():
-        raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED')
-    if 'MIT License' not in engine_license.read_text(encoding='utf-8'):
-        raise RuntimeError('IMAGE_TO_MESH_ENGINE_LICENSE_UNVERIFIED')
-    if not os.environ.get('VIBE_TRIPOSR_MODEL_DIR') or not model_config.is_file() or not model_weights.is_file():
-        raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED')
-    # TripoSR의 DINO 토크나이저는 HF의 config.json도 호출한다.
-    # 설치할 때 미리 허가한 캐시에 받아 두고 실행 중에는 네트워크 접근을 차단한다.
-    interpreter = os.environ.get('VIBE_TRIPOSR_PYTHON', 'python3')
-    expected_source = os.environ.get('VIBE_TRIPOSR_EXPECTED_SOURCE_SHA256', '').lower()
-    expected_weights = os.environ.get('VIBE_TRIPOSR_EXPECTED_WEIGHTS_SHA256', '').lower()
-    if not expected_source or len(expected_source) != 64 or not all(c in '0123456789abcdef' for c in expected_source):
-        raise RuntimeError('IMAGE_TO_MESH_PINNED_SOURCE_HASH_REQUIRED')
-    if not expected_weights or len(expected_weights) != 64 or not all(c in '0123456789abcdef' for c in expected_weights):
-        raise RuntimeError('IMAGE_TO_MESH_PINNED_WEIGHTS_HASH_REQUIRED')
-    actual_source = hashlib.sha256(engine_file.read_bytes()).hexdigest()
-    if actual_source != expected_source:
-        raise RuntimeError('IMAGE_TO_MESH_ENGINE_SOURCE_HASH_MISMATCH')
-    with model_weights.open('rb') as weights_file:
-        weights_sha = hashlib.file_digest(weights_file, 'sha256').hexdigest()
-    if weights_sha != expected_weights:
-        raise RuntimeError('IMAGE_TO_MESH_MODEL_WEIGHTS_HASH_MISMATCH')
-    offline_environment = dict(os.environ)
-    offline_environment.update({
-        'HF_HUB_OFFLINE': '1',
-        'TRANSFORMERS_OFFLINE': '1',
-        'HF_DATASETS_OFFLINE': '1',
-        'HF_HUB_DISABLE_TELEMETRY': '1',
-    })
-    with tempfile.TemporaryDirectory(prefix='vibe-image-mesh-') as work:
-        command = [
-            interpreter, str(engine_file), str(source), '--output-dir', work,
-            '--model-save-format', 'glb', '--mc-resolution', '256',
-            '--pretrained-model-name-or-path', str(model_home),
-        ]
+    # 기존 Blender 제작 책임 함수에서 실행 능력에 따라 실제 설치된 모델만 선택한다.
+    # TRELLIS.2는 고품질 로컬 CUDA 24GiB 이상일 때 사용하며 추론 오류를 조용히 하위 품질로 대체하지 않는다.
+    requested = ARGS.mesh_model
+    trellis_env = ('VIBE_TRELLIS2_HOME', 'VIBE_TRELLIS2_MODEL_DIR')
+    trellis_requested = requested == 'trellis2' or (requested == 'auto' and any(os.environ.get(k) for k in trellis_env))
+    model_engine = 'microsoft/TRELLIS.2' if trellis_requested else 'VAST-AI-Research/TripoSR'
+    source_file_hash = ''
+    weights_sha = ''
+    model_license = 'MIT'
+    with tempfile.TemporaryDirectory(prefix='vibe-image-mesh-') as temporary:
+        result_mesh = Path(temporary) / 'mesh.glb'
+        offline_environment = dict(os.environ)
+        offline_environment.update({
+            'HF_HUB_OFFLINE': '1',
+            'TRANSFORMERS_OFFLINE': '1',
+            'HF_DATASETS_OFFLINE': '1',
+            'HF_HUB_DISABLE_TELEMETRY': '1',
+            'OPENCV_IO_ENABLE_OPENEXR': '1',
+        })
+        if trellis_requested:
+            if not all(os.environ.get(k) for k in trellis_env):
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_LOCAL_CONFIG_REQUIRED')
+            engine_home = Path(os.environ['VIBE_TRELLIS2_HOME']).expanduser().resolve()
+            model_home = Path(os.environ['VIBE_TRELLIS2_MODEL_DIR']).expanduser().resolve()
+            entry = engine_home / 'example.py'
+            pipeline = engine_home / 'trellis2' / 'pipelines' / 'trellis2_image_to_3d.py'
+            license_file = engine_home / 'LICENSE'
+            config = model_home / 'pipeline.json'
+            if not entry.is_file() or not pipeline.is_file() or not license_file.is_file():
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_SOURCE_REQUIRED')
+            if 'MIT License' not in license_file.read_text(encoding='utf-8'):
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_LICENSE_UNVERIFIED')
+            if not config.is_file():
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_OFFLINE_WEIGHTS_REQUIRED')
+            # 모든 로컬 체크포인트를 스트림으로 해시해 승인된 정확한 모델 스냅샷만 실행한다.
+            checkpoints = sorted(f for f in model_home.rglob('*') if f.is_file()
+                                 and f.suffix.lower() in ('.safetensors', '.bin', '.ckpt', '.pt'))
+            if not checkpoints or len(checkpoints) > 96:
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_WEIGHTS_INCOMPLETE')
+            expected_source = os.environ.get('VIBE_TRELLIS2_EXPECTED_SOURCE_SHA256', '').lower()
+            expected_weights = os.environ.get('VIBE_TRELLIS2_EXPECTED_WEIGHTS_SHA256', '').lower()
+            for pin in (expected_source, expected_weights):
+                if len(pin) != 64 or any(char not in '0123456789abcdef' for char in pin):
+                    raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_PIN_REQUIRED')
+            source_file_hash = hashlib.sha256(entry.read_bytes()).hexdigest()
+            if source_file_hash != expected_source:
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_SOURCE_HASH_MISMATCH')
+            manifest = hashlib.sha256()
+            for checkpoint in checkpoints:
+                manifest.update(checkpoint.relative_to(model_home).as_posix().encode('utf-8') + b'\0')
+                with checkpoint.open('rb') as stream:
+                    for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+                        manifest.update(chunk)
+            weights_sha = manifest.hexdigest()
+            if weights_sha != expected_weights:
+                raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_WEIGHTS_HASH_MISMATCH')
+            # 외부 서비스를 호출하지 않고 공개된 TRELLIS.2 원본 파이프라인을 그대로 실행한다.
+            inference = """
+import sys, torch
+from PIL import Image
+import o_voxel
+from trellis2.pipelines import Trellis2ImageTo3DPipeline
+if not torch.cuda.is_available():
+    raise RuntimeError('TRELLIS2_NVIDIA_CUDA_GPU_REQUIRED')
+if torch.cuda.get_device_properties(0).total_memory < 24 * 1024 ** 3:
+    raise RuntimeError('TRELLIS2_24G_GPU_REQUIRED')
+pipeline = Trellis2ImageTo3DPipeline.from_pretrained(sys.argv[1])
+pipeline.cuda()
+mesh = pipeline.run(Image.open(sys.argv[2]).convert('RGBA'))[0]
+mesh.simplify(16777216)
+glb = o_voxel.postprocess.to_glb(
+    vertices=mesh.vertices, faces=mesh.faces, attr_volume=mesh.attrs,
+    coords=mesh.coords, attr_layout=mesh.layout, voxel_size=mesh.voxel_size,
+    aabb=[[-0.5,-0.5,-0.5],[0.5,0.5,0.5]],
+    decimation_target=180000, texture_size=2048, remesh=True,
+    remesh_band=1, remesh_project=0, verbose=False)
+glb.export(sys.argv[3], extension_webp=False)
+"""
+            cmd = [os.environ.get('VIBE_TRELLIS2_PYTHON', 'python3'), '-c',
+                   inference, str(model_home), str(source), str(result_mesh)]
+            offline_environment['PYTHONPATH'] = str(engine_home) + os.pathsep + offline_environment.get('PYTHONPATH', '')
+            error_marker = 'IMAGE_TO_MESH_TRELLIS2_INFERENCE_FAILED'
+            chosen_model = 'microsoft/TRELLIS.2-4B'
+            module_source = 'https://github.com/microsoft/TRELLIS.2'
+        else:
+            engine_var = os.environ.get('VIBE_TRIPOSR_HOME')
+            model_var = os.environ.get('VIBE_TRIPOSR_MODEL_DIR')
+            if not engine_var or not model_var:
+                raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_LOCAL_INSTALL_REQUIRED')
+            engine_home = Path(engine_var).expanduser().resolve()
+            model_home = Path(model_var).expanduser().resolve()
+            entry = engine_home / 'run.py'
+            engine_source = engine_home / 'tsr' / 'system.py'
+            license_file = engine_home / 'LICENSE'
+            config = model_home / 'config.yaml'
+            weights = model_home / 'model.ckpt'
+            if not entry.is_file() or not engine_source.is_file() or not license_file.is_file():
+                raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED')
+            if 'MIT License' not in license_file.read_text(encoding='utf-8'):
+                raise RuntimeError('IMAGE_TO_MESH_ENGINE_LICENSE_UNVERIFIED')
+            if not config.is_file() or not weights.is_file():
+                raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED')
+            expected_source = os.environ.get('VIBE_TRIPOSR_EXPECTED_SOURCE_SHA256', '').lower()
+            expected_weights = os.environ.get('VIBE_TRIPOSR_EXPECTED_WEIGHTS_SHA256', '').lower()
+            for pin in (expected_source, expected_weights):
+                if len(pin) != 64 or any(char not in '0123456789abcdef' for char in pin):
+                    raise RuntimeError('IMAGE_TO_MESH_PINNED_SOURCE_AND_WEIGHTS_REQUIRED')
+            source_file_hash = hashlib.sha256(entry.read_bytes()).hexdigest()
+            if source_file_hash != expected_source:
+                raise RuntimeError('IMAGE_TO_MESH_ENGINE_SOURCE_HASH_MISMATCH')
+            with weights.open('rb') as stream:
+                weights_sha = hashlib.file_digest(stream, 'sha256').hexdigest()
+            if weights_sha != expected_weights:
+                raise RuntimeError('IMAGE_TO_MESH_MODEL_WEIGHTS_HASH_MISMATCH')
+            output_dir = Path(temporary) / 'triposr'
+            cmd = [os.environ.get('VIBE_TRIPOSR_PYTHON', 'python3'), str(entry),
+                   str(source), '--output-dir', str(output_dir), '--model-save-format', 'glb',
+                   '--mc-resolution', '256', '--pretrained-model-name-or-path', str(model_home)]
+            error_marker = 'IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED'
+            chosen_model = 'stabilityai/TripoSR'
+            module_source = 'https://github.com/VAST-AI-Research/TripoSR'
         try:
-            subprocess.run(command, cwd=str(engine_home), check=True, env=offline_environment,
-                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=490)
+            subprocess.run(cmd, cwd=str(engine_home), env=offline_environment, check=True,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=480)
         except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
-            raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED') from exc
-        reconstructed = Path(work) / '0' / 'mesh.glb'
-        if not reconstructed.is_file() or reconstructed.stat().st_size < 1024:
+            raise RuntimeError(error_marker) from exc
+        if not trellis_requested:
+            result_mesh = output_dir / '0' / 'mesh.glb'
+        if not result_mesh.is_file() or result_mesh.stat().st_size <= 1024:
             raise RuntimeError('IMAGE_TO_MESH_GENERATED_GLB_MISSING')
         before = set(bpy.data.objects)
-        bpy.ops.import_scene.gltf(filepath=str(reconstructed))
+        bpy.ops.import_scene.gltf(filepath=str(result_mesh))
         imported = [obj for obj in bpy.data.objects if obj not in before and obj.type == 'MESH']
         triangles = sum(sum(len(face.vertices) - 2 for face in obj.data.polygons) for obj in imported)
         if not imported or triangles < 8 or triangles > 450000:
@@ -319,24 +400,24 @@ def image_mesh_asset():
                 obj.data.materials.append(MID)
             ASSET_OBJECTS.append(obj)
 
-    # 원본 이미지와 가중치는 읽기 전용. 해시와 라이선스만 제작 근거로 보존한다.
     IMAGE_PROVENANCE = {
-        'engine': 'VAST-AI-Research/TripoSR',
-        'engineLicense': 'MIT',
-        'engineSourceSha256': actual_source,
-        'model': 'stabilityai/TripoSR',
+        'engine': model_engine,
+        'engineLicense': model_license,
+        'engineSource': module_source,
+        'engineSourceSha256': source_file_hash,
+        'model': chosen_model,
         'modelWeightSha256': weights_sha,
         'offlineInference': True,
+        'modelTier': 'HIGH_FIDELITY' if trellis_requested else 'BASELINE',
         'inputPath': ARGS.source_image,
         'inputSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
-        'sourceLicense': license_name,
+        'sourceLicense': source_license,
         'sourceCredit': ARGS.source_credit.strip() or None,
         'generatedGeometry': True,
         'rigged': False,
         'originalImageImmutable': True,
         'runtimeVerified': False,
     }
-
 
 # 메인: 블렌더 오픈소스 패턴을 사용해 실제 입체 의류 패널과 소매를 제작한다.
 # 메인: MPFB2의 CC0 인체 베이스와 실제 아마추어 리그를 사용한다. 애드온이 없으면 실패한다.
