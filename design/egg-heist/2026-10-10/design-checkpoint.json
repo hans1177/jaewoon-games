@@ -3,216 +3,18 @@
   "gameId": "egg-heist",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
-  "fingerprint": "d4f63753b9a87431bc65c5ed5dfc570ad2e84b3938c85283a2b60a9258dcbbc9",
+  "fingerprint": "46421eb8f94190dde6ec1cbd94eeb6cc86fa669969891378e0883ce9bb589cba",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::a66d394b7b76a93b3d79b8a2da98b646a7514462943f3ced458fd317a1521942:identity,creativeGrammar": {
-      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "기본 게임 주제/정체성: 알 도둑 대작전",
-        "a": {
-          "system": "게임 시스템 + 해당 축 창작 소재: 탐험, 위협, 자원 수집",
-          "material": "대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과: 단일 지역 탐사, 위험 평가, 자원 획득",
-          "materialDomain": "주 장르(role=PRIMARY): 모험, 보조 장르(role=SECONDARY): 수집 및 전략",
-          "stateChange": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결"
-        },
-        "b": {
-          "system": "다른 시스템 + 해당 축 창작 소재: 적, 기회비용, 리스크 조절",
-          "material": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙",
-          "materialDomain": "보조 장르(role=SECONDARY): 무력, 경쟁, 재난",
-          "stateChange": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결"
-        },
-        "abCausality": "양방향 실제 상태 교환: MAIN->A, A->MAIN; B->C, C->B",
-        "abEvolution": {
-          "aChangesB": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-          "bChangesA": "B→A, A→B, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
-        },
-        "materialFusion": {
-          "contrast": "서로 다른 단서·발견·새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지) 및 상한 없는 발전 규칙",
-          "causalBridge": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-          "removalConsequence": "보상은 발견과 이해와 숙련에 맞게 약속된다. 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담을 기존 검증에서 확인한다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-          "characterConflict": "인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
-          "playerChoice": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-          "worldChange": "실제 세계 상태 변화 -> 다음 사건",
-          "nextEvent": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결"
-        },
-        "cThemes": [
-          {
-            "name": "문화·역사·철학",
-            "kind": "MATERIAL",
-            "gameplayEffect": "서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
-          },
-          {
-            "name": "과학·기술·무협",
-            "kind": "MATERIAL",
-            "gameplayEffect": "서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "모험",
-            "gameplayEffect": "게임 정체성의 대표 행동: 탐험, 위협, 자원 수집"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "수집 및 전략",
-            "gameplayEffect": "게임 시스템과 해당 축 창작 소재의 인과 변화"
-          }
-        ],
-        "cGenreInterlock": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-        "cWorldAndGameplayEffect": "실제 세계 상태 변화 -> 다음 사건, 플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-        "delveDiscoveries": [
-          {
-            "clue": "알 도둑 대작전의 코믹 잠입·탈출 게임 구조",
-            "discovery": "플레이어가 실제 게임 내에서 수행하는 단일 지역 탐사, 위험 평가, 자원 획득",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          },
-          {
-            "clue": "무력, 경쟁, 재난 등 보조 장르의 관계 변화",
-            "discovery": "중후반 두 시스템의 관계 변화",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          },
-          {
-            "clue": "게임 정체성과 인과적 연관성",
-            "discovery": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          },
-          {
-            "clue": "실제 세계 상태 변화와 다음 사건의 연결",
-            "discovery": "실제 세계 상태 변화 -> 다음 사건",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          }
-        ],
-        "delveGrowthRule": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성: 코믹 잠입·탈출 게임으로 재설계된 알 도둑 대작전"
-      }
-    },
-    "local_authoring_parts::a66d394b7b76a93b3d79b8a2da98b646a7514462943f3ced458fd317a1521942:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 단일 지역 탐사, 위험 평가, 자원 획득을 통해 실제 세계 상태 변화에 참여하며, 이 과정에서 새로운 대표 행동, 선택, 규칙을 경험하게 된다. 플레이어는 무력, 경쟁, 재난 등 보조 장르의 관계 변화를 이해함으로써 게임 정체성과 인과적 연관성을 확보한다.",
-      "coreFun": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결을 구현하여, 코믹 잠입·탈출 게임의 인과적 구조를 형성한다. 주요 축인 모험과 수집 및 전략의 관계 변화를 통해 다양한 상황별 규칙을 생성하고, 이로 인해 플레이어는 숙련된 선택을 하게 되며, 이를 바탕으로 게임의 중후반에서는 두 시스템 간의 관계 변화와 실질적인 결과를 만들어내는 데 기여한다."
-    },
-    "local_authoring_parts::6727e42da19bb5c675dd3f6fd66ba81a4455c04412d8992c63c62716e9e92dd2:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "기본 게임 주제/정체성: 알 도둑 대작전",
-        "a": {
-          "system": "게임 시스템 + 해당 축 창작 소재: 탐험, 위협, 자원 수집",
-          "material": "대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과: 단일 지역 탐사, 위험 평가, 자원 획득",
-          "materialDomain": "주 장르(role=PRIMARY): 모험, 보조 장르(role=SECONDARY): 수집 및 전략",
-          "stateChange": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결"
-        },
-        "b": {
-          "system": "다른 시스템 + 해당 축 창작 소재: 적, 기회비용, 리스크 조절",
-          "material": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙",
-          "materialDomain": "보조 장르(role=SECONDARY): 무력, 경쟁, 재난",
-          "stateChange": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결"
-        },
-        "abCausality": "양방향 실제 상태 교환: MAIN->A, A->MAIN; B->C, C->B",
-        "abEvolution": {
-          "aChangesB": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-          "bChangesA": "B→A, A→B, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
-        },
-        "materialFusion": {
-          "contrast": "서로 다른 단서·발견·새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지) 및 상한 없는 발전 규칙",
-          "causalBridge": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-          "removalConsequence": "보상은 발견과 이해와 숙련에 맞게 약속된다. 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담을 기존 검증에서 확인한다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-          "characterConflict": "인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
-          "playerChoice": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-          "worldChange": "실제 세계 상태 변화 -> 다음 사건",
-          "nextEvent": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결"
-        },
-        "cThemes": [
-          {
-            "name": "문화·역사·철학",
-            "kind": "MATERIAL",
-            "gameplayEffect": "서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
-          },
-          {
-            "name": "과학·기술·무협",
-            "kind": "MATERIAL",
-            "gameplayEffect": "서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "모험",
-            "gameplayEffect": "게임 정체성의 대표 행동: 탐험, 위협, 자원 수집"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "수집 및 전략",
-            "gameplayEffect": "게임 시스템과 해당 축 창작 소재의 인과 변화"
-          }
-        ],
-        "cGenreInterlock": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-        "cWorldAndGameplayEffect": "실제 세계 상태 변화 -> 다음 사건, 플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-        "delveDiscoveries": [
-          {
-            "clue": "알 도둑 대작전의 코믹 잠입·탈출 게임 구조",
-            "discovery": "플레이어가 실제 게임 내에서 수행하는 단일 지역 탐사, 위험 평가, 자원 획득",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          },
-          {
-            "clue": "무력, 경쟁, 재난 등 보조 장르의 관계 변화",
-            "discovery": "중후반 두 시스템의 관계 변화",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          },
-          {
-            "clue": "게임 정체성과 인과적 연관성",
-            "discovery": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          },
-          {
-            "clue": "실제 세계 상태 변화와 다음 사건의 연결",
-            "discovery": "실제 세계 상태 변화 -> 다음 사건",
-            "newChoice": "새로운 대표 행동, 새로운 선택, 새로운 상황별 규칙"
-          }
-        ],
-        "delveGrowthRule": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결",
-        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성: 코믹 잠입·탈출 게임으로 재설계된 알 도둑 대작전"
-      },
-      "playerFantasy": "플레이어는 단일 지역 탐사, 위험 평가, 자원 획득을 통해 실제 세계 상태 변화에 참여하며, 이 과정에서 새로운 대표 행동, 선택, 규칙을 경험하게 된다. 플레이어는 무력, 경쟁, 재난 등 보조 장르의 관계 변화를 이해함으로써 게임 정체성과 인과적 연관성을 확보한다.",
-      "coreFun": "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택의 연결을 구현하여, 코믹 잠입·탈출 게임의 인과적 구조를 형성한다. 주요 축인 모험과 수집 및 전략의 관계 변화를 통해 다양한 상황별 규칙을 생성하고, 이로 인해 플레이어는 숙련된 선택을 하게 되며, 이를 바탕으로 게임의 중후반에서는 두 시스템 간의 관계 변화와 실질적인 결과를 만들어내는 데 기여한다."
-    },
-    "local_authoring_parts::d1093bf079751a1178d96dd7bb95d7c97905bac66dd706d12af6d1fec226ce15:coreLoop": {
-      "coreLoop": [
-        "플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택",
-        "단일 지역 탐사 -> 위험 평가 -> 자원 획득",
-        "실제 세계 상태 변화 -> 다음 사건"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 680643,
-      "lastMs": 92605,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:53:32.934Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T08:42:12.264Z",
-  "updatedAt": "2026-10-10T09:37:00.025Z",
+  "createdAt": "2026-10-10T10:02:41.840Z",
+  "updatedAt": "2026-10-10T10:02:41.940Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1696,16 +1498,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "a66d394b7b76a93b3d79b8a2da98b646a7514462943f3ced458fd317a1521942": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:53:32.934Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
