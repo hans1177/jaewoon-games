@@ -108,25 +108,357 @@
       ],
       "cGenreInterlock": "생존 위협 → 새로운 전략 구축 → 세계 상태 변화 → 다음 사건 연결",
       "cWorldAndGameplayEffect": "플레이어 선택은 자원 확보, 적 상대성 변화, 그리고 다음 선택으로 이어지는 실제 상태 변화를 유도한다."
+    },
+    "local_authoring_parts::49db18690aa92ae37a74f5bdae9462c40abbc74647206aaf14b69f3b0dcaa8be:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "마력 숲의 퀘스트 및 위험",
+          "discovery": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정",
+          "newChoice": "자원 수집, 단서 추적, 적 상대성 변화"
+        },
+        {
+          "clue": "생존 위협의 다양성",
+          "discovery": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식",
+          "newChoice": "자원 확보, 적 상대성 변화"
+        },
+        {
+          "clue": "플레이어의 선택과 세계 상태 변화",
+          "discovery": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지는 조건과 피드백",
+          "newChoice": "새로운 전략과 경로의 발전 규칙"
+        },
+        {
+          "clue": "시작부터의 플레이어 행동",
+          "discovery": "플레이어가 마력 숲과 연결된 지역을 탐험하며 퀘스트와 위험을 읽고 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 게임 정체성",
+          "newChoice": "자원, 단서, 적의 선택 및 새로운 경로의 개척"
+        }
+      ],
+      "delveGrowthRule": "플레이어는 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축",
+      "finalGameIdentity": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축으로 구성된 새 정체성"
+    },
+    "local_authoring_parts::91bdffcdafd2a373da1d24a3afcd3ab3f268849f8cc1586c3bb256b3fd8ff399:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "생존",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 과정"
+        },
+        {
+          "name": "마력 숲",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 이동, 전투, 캐릭터 움직임 등 시스템 간 상태 변환을 통해 세계를 탐험하는 공간"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "자원 수집, 단서 추적, 적 상대성 변화와 같은 플레이어 선택이 주제/소재에 인과적인 영향을 미치는 요소"
+        }
+      ],
+      "cGenreInterlock": "생존 위협 → 새로운 전략 구축 → 세계 상태 변화 → 다음 사건 연결",
+      "cWorldAndGameplayEffect": "플레이어 선택은 자원 확보, 적 상대성 변화, 그리고 다음 선택으로 이어지는 실제 상태 변화를 유도한다.",
+      "delveDiscoveries": [
+        {
+          "clue": "마력 숲의 퀘스트 및 위험",
+          "discovery": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정",
+          "newChoice": "자원 수집, 단서 추적, 적 상대성 변화"
+        },
+        {
+          "clue": "생존 위협의 다양성",
+          "discovery": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식",
+          "newChoice": "자원 확보, 적 상대성 변화"
+        },
+        {
+          "clue": "플레이어의 선택과 세계 상태 변화",
+          "discovery": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지는 조건과 피드백",
+          "newChoice": "새로운 전략과 경로의 발전 규칙"
+        },
+        {
+          "clue": "시작부터의 플레이어 행동",
+          "discovery": "플레이어가 마력 숲과 연결된 지역을 탐험하며 퀘스트와 위험을 읽고 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 게임 정체성",
+          "newChoice": "자원, 단서, 적의 선택 및 새로운 경로의 개척"
+        }
+      ],
+      "delveGrowthRule": "플레이어는 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축",
+      "finalGameIdentity": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축으로 구성된 새 정체성"
+    },
+    "local_authoring_parts::c9ff64a867f702ca5661840e3fc24ad57825db37996f5d320644f904cb3c2006:creativeGrammar": {
+      "mainIdentity": "마력숲 생존기 - 플레이어가 마력 숲과 연결된 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 게임 정체성입니다.",
+      "a": {
+        "system": "이동",
+        "material": "자원 수집",
+        "materialDomain": "지역 탐험",
+        "stateChange": "플레이어 위치 변경 및 자원 확보 상태 변환"
+      },
+      "b": {
+        "system": "전투",
+        "material": "적 행동",
+        "materialDomain": "생존 위협",
+        "stateChange": "플레이어 대응 전략 적용 및 적 상대성 변화"
+      },
+      "abCausality": "양방향 실제 상태 교환: 이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화; 반대로 적 상대성 변화 → 이동 시스템의 위치 변화",
+      "abEvolution": {
+        "aChangesB": "이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화",
+        "bChangesA": "적 상대성 변화 → 이동 시스템의 위치 변화로 양방향 상태 교환",
+        "lateGameChange": "생존 위협에 따른 플레이어 선택 및 세계 상태 변화가 다음 사건으로 연결"
+      },
+      "materialFusion": {
+        "contrast": "자원 수집 + 적 행동 융합, 지역 탐험 + 생존 위협 융합",
+        "causalBridge": "플레이어 선택 → 상태변화 → 보상/위험/다음 선택의 순차적 인과 관계",
+        "removalConsequence": "보조 장르 제거 시 주제/소재 간 실제 인과 변화가 바뀌는 플레이 사례를 명시"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 선택 및 자원 확보 상태 변환",
+        "characterConflict": "생존 위협과 새로운 전략 개척의 갈등",
+        "playerChoice": "자원, 단서, 적을 선택하여 새로운 경로와 전략 구축",
+        "worldChange": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지게 한다",
+        "nextEvent": "새로운 전략과 경로가 다음 게임 상황으로 연결되는 조건과 피드백을 명시"
+      },
+      "cThemes": [
+        {
+          "name": "생존",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 과정"
+        },
+        {
+          "name": "마력 숲",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 이동, 전투, 캐릭터 움직임 등 시스템 간 상태 변환을 통해 세계를 탐험하는 공간"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "자원 수집, 단서 추적, 적 상대성 변화와 같은 플레이어 선택이 주제/소재에 인과적인 영향을 미치는 요소"
+        }
+      ],
+      "cGenreInterlock": "생존 위협 → 새로운 전략 구축 → 세계 상태 변화 → 다음 사건 연결",
+      "cWorldAndGameplayEffect": "플레이어 선택은 자원 확보, 적 상대성 변화, 그리고 다음 선택으로 이어지는 실제 상태 변화를 유도한다.",
+      "delveDiscoveries": [
+        {
+          "clue": "마력 숲의 퀘스트 및 위험",
+          "discovery": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정",
+          "newChoice": "자원 수집, 단서 추적, 적 상대성 변화"
+        },
+        {
+          "clue": "생존 위협의 다양성",
+          "discovery": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식",
+          "newChoice": "자원 확보, 적 상대성 변화"
+        },
+        {
+          "clue": "플레이어의 선택과 세계 상태 변화",
+          "discovery": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지는 조건과 피드백",
+          "newChoice": "새로운 전략과 경로의 발전 규칙"
+        },
+        {
+          "clue": "시작부터의 플레이어 행동",
+          "discovery": "플레이어가 마력 숲과 연결된 지역을 탐험하며 퀘스트와 위험을 읽고 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 게임 정체성",
+          "newChoice": "자원, 단서, 적의 선택 및 새로운 경로의 개척"
+        }
+      ],
+      "delveGrowthRule": "플레이어는 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축",
+      "finalGameIdentity": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축으로 구성된 새 정체성"
+    },
+    "local_authoring_parts::ae49bb6b88f644dc2436595f30cccaab2fe0be2a2698573c66a3218ab8358514:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "마력숲 생존기 - 플레이어가 마력 숲과 연결된 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 게임 정체성입니다.",
+        "a": {
+          "system": "이동",
+          "material": "자원 수집",
+          "materialDomain": "지역 탐험",
+          "stateChange": "플레이어 위치 변경 및 자원 확보 상태 변환"
+        },
+        "b": {
+          "system": "전투",
+          "material": "적 행동",
+          "materialDomain": "생존 위협",
+          "stateChange": "플레이어 대응 전략 적용 및 적 상대성 변화"
+        },
+        "abCausality": "양방향 실제 상태 교환: 이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화; 반대로 적 상대성 변화 → 이동 시스템의 위치 변화",
+        "abEvolution": {
+          "aChangesB": "이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화",
+          "bChangesA": "적 상대성 변화 → 이동 시스템의 위치 변화로 양방향 상태 교환",
+          "lateGameChange": "생존 위협에 따른 플레이어 선택 및 세계 상태 변화가 다음 사건으로 연결"
+        },
+        "materialFusion": {
+          "contrast": "자원 수집 + 적 행동 융합, 지역 탐험 + 생존 위협 융합",
+          "causalBridge": "플레이어 선택 → 상태변화 → 보상/위험/다음 선택의 순차적 인과 관계",
+          "removalConsequence": "보조 장르 제거 시 주제/소재 간 실제 인과 변화가 바뀌는 플레이 사례를 명시"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 및 자원 확보 상태 변환",
+          "characterConflict": "생존 위협과 새로운 전략 개척의 갈등",
+          "playerChoice": "자원, 단서, 적을 선택하여 새로운 경로와 전략 구축",
+          "worldChange": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지게 한다",
+          "nextEvent": "새로운 전략과 경로가 다음 게임 상황으로 연결되는 조건과 피드백을 명시"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 과정"
+          },
+          {
+            "name": "마력 숲",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 이동, 전투, 캐릭터 움직임 등 시스템 간 상태 변환을 통해 세계를 탐험하는 공간"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "RPG",
+            "gameplayEffect": "자원 수집, 단서 추적, 적 상대성 변화와 같은 플레이어 선택이 주제/소재에 인과적인 영향을 미치는 요소"
+          }
+        ],
+        "cGenreInterlock": "생존 위협 → 새로운 전략 구축 → 세계 상태 변화 → 다음 사건 연결",
+        "cWorldAndGameplayEffect": "플레이어 선택은 자원 확보, 적 상대성 변화, 그리고 다음 선택으로 이어지는 실제 상태 변화를 유도한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "마력 숲의 퀘스트 및 위험",
+            "discovery": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정",
+            "newChoice": "자원 수집, 단서 추적, 적 상대성 변화"
+          },
+          {
+            "clue": "생존 위협의 다양성",
+            "discovery": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식",
+            "newChoice": "자원 확보, 적 상대성 변화"
+          },
+          {
+            "clue": "플레이어의 선택과 세계 상태 변화",
+            "discovery": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지는 조건과 피드백",
+            "newChoice": "새로운 전략과 경로의 발전 규칙"
+          },
+          {
+            "clue": "시작부터의 플레이어 행동",
+            "discovery": "플레이어가 마력 숲과 연결된 지역을 탐험하며 퀘스트와 위험을 읽고 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 게임 정체성",
+            "newChoice": "자원, 단서, 적의 선택 및 새로운 경로의 개척"
+          }
+        ],
+        "delveGrowthRule": "플레이어는 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축",
+        "finalGameIdentity": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축으로 구성된 새 정체성"
+      }
+    },
+    "local_authoring_parts::b4161ac3a3a990f24ca8f2826f0161889f8341671d0d20cdea429189d7adf5f0:identity,creativeGrammar": {
+      "identity": "마력숲 생존기 - 플레이어가 마력 숲과 연결된 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 게임 정체성입니다. 주제는 '생존'이며, 핵심 루프는 '선택 → 상태 변화 → 보상/위험/다음 선택'입니다. MAIN은 기존 게임의 중심 주제인 '생존', A는 게임 시스템(예: 이동, 캐릭터 움직임) + 축(예: 자원 수집), B는 다른 시스템(예: 전투, 스토리) + 축(예: 적 행동)에 대한 창작 소재입니다. C는 두 가지 서로 다른 주제/소재를 융합하고, 메인 장르(PRIMARY)와 보조 장르(SECONDARY) 각각 하나씩 지정합니다. @는 4개 이상의 초기 사례와 무한 발전 규칙으로 구성되어 있습니다.",
+      "creativeGrammar": {
+        "mainIdentity": "마력숲 생존기 - 플레이어가 마력 숲과 연결된 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 게임 정체성입니다.",
+        "a": {
+          "system": "이동",
+          "material": "자원 수집",
+          "materialDomain": "지역 탐험",
+          "stateChange": "플레이어 위치 변경 및 자원 확보 상태 변환"
+        },
+        "b": {
+          "system": "전투",
+          "material": "적 행동",
+          "materialDomain": "생존 위협",
+          "stateChange": "플레이어 대응 전략 적용 및 적 상대성 변화"
+        },
+        "abCausality": "양방향 실제 상태 교환: 이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화; 반대로 적 상대성 변화 → 이동 시스템의 위치 변화",
+        "abEvolution": {
+          "aChangesB": "이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화",
+          "bChangesA": "적 상대성 변화 → 이동 시스템의 위치 변화로 양방향 상태 교환",
+          "lateGameChange": "생존 위협에 따른 플레이어 선택 및 세계 상태 변화가 다음 사건으로 연결"
+        },
+        "materialFusion": {
+          "contrast": "자원 수집 + 적 행동 융합, 지역 탐험 + 생존 위협 융합",
+          "causalBridge": "플레이어 선택 → 상태변화 → 보상/위험/다음 선택의 순차적 인과 관계",
+          "removalConsequence": "보조 장르 제거 시 주제/소재 간 실제 인과 변화가 바뀌는 플레이 사례를 명시"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 선택 및 자원 확보 상태 변환",
+          "characterConflict": "생존 위협과 새로운 전략 개척의 갈등",
+          "playerChoice": "자원, 단서, 적을 선택하여 새로운 경로와 전략 구축",
+          "worldChange": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지게 한다",
+          "nextEvent": "새로운 전략과 경로가 다음 게임 상황으로 연결되는 조건과 피드백을 명시"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "GENRE",
+            "gameplayEffect": "플레이어가 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 과정"
+          },
+          {
+            "name": "마력 숲",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 이동, 전투, 캐릭터 움직임 등 시스템 간 상태 변환을 통해 세계를 탐험하는 공간"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "RPG",
+            "gameplayEffect": "자원 수집, 단서 추적, 적 상대성 변화와 같은 플레이어 선택이 주제/소재에 인과적인 영향을 미치는 요소"
+          }
+        ],
+        "cGenreInterlock": "생존 위협 → 새로운 전략 구축 → 세계 상태 변화 → 다음 사건 연결",
+        "cWorldAndGameplayEffect": "플레이어 선택은 자원 확보, 적 상대성 변화, 그리고 다음 선택으로 이어지는 실제 상태 변화를 유도한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "마력 숲의 퀘스트 및 위험",
+            "discovery": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정",
+            "newChoice": "자원 수집, 단서 추적, 적 상대성 변화"
+          },
+          {
+            "clue": "생존 위협의 다양성",
+            "discovery": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식",
+            "newChoice": "자원 확보, 적 상대성 변화"
+          },
+          {
+            "clue": "플레이어의 선택과 세계 상태 변화",
+            "discovery": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지는 조건과 피드백",
+            "newChoice": "새로운 전략과 경로의 발전 규칙"
+          },
+          {
+            "clue": "시작부터의 플레이어 행동",
+            "discovery": "플레이어가 마력 숲과 연결된 지역을 탐험하며 퀘스트와 위험을 읽고 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 게임 정체성",
+            "newChoice": "자원, 단서, 적의 선택 및 새로운 경로의 개척"
+          }
+        ],
+        "delveGrowthRule": "플레이어는 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축",
+        "finalGameIdentity": "플레이어가 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 과정에서 시스템 간 상태 변환을 통해 세계를 탐험하며 생존 위협에 대응하여 새로운 전략 구축으로 구성된 새 정체성"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 4,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1235865,
-      "lastMs": 134425,
+      "totalMs": 1393744,
+      "lastMs": 157879,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:20:46.746Z"
+      "updatedAt": "2026-10-10T07:23:24.626Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:00:10.852Z",
-  "updatedAt": "2026-10-10T07:20:46.746Z",
+  "updatedAt": "2026-10-10T07:23:24.632Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1846,7 +2178,7 @@
     "b4161ac3a3a990f24ca8f2826f0161889f8341671d0d20cdea429189d7adf5f0": true,
     "ae49bb6b88f644dc2436595f30cccaab2fe0be2a2698573c66a3218ab8358514": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:20:46.746Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:23:24.632Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
