@@ -579,8 +579,13 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const roadSurfaceY=terrain[id].elevation*8;
       const riseToFoundationY=Math.max(...footing)-roadSurfaceY;
       if(Math.abs(riseToFoundationY)>maxAccessibleRise)continue;
+      // 대지 선정에 실제 지질·배수 적합도를 반영한다. 기존 게임 구조물은 수정하지 않는다.
+      const foundationStability=Math.min(...footprint.map(c=>terrain[at(c.x,c.z)].surface.substrateStability));
+      const floodBuffer=Math.min(...footprint.map(c=>terrain[at(c.x,c.z)].surface.waterDistanceCells??999));
+      const erosionRisk=Math.max(...footprint.map(c=>terrain[at(c.x,c.z)].catchment.erosionRisk));
+      const siteSuitability=Math.max(.65,1-(1-foundationStability)*.2-erosionRisk*.1-(floodBuffer<=1?.12:floodBuffer<=3?.05:0));
       const roll=proceduralCellHash(hash,x,z)/4294967296;
-      if(roll>density)continue;
+      if(roll>density*siteSuitability)continue;
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
       const distance=Math.hypot(x-(hub?.x??w/2),z-(hub?.z??h/2));
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
