@@ -1,0 +1,461 @@
+{
+  "version": 1,
+  "gameId": "daechung-rpg",
+  "state": "REPAIR_REQUIRED",
+  "pass": false,
+  "sourceCommit": "bfc137fa5a791c8d23be52509bdddacdaf8c0e7e",
+  "unitySourceTreeSha256": "836bf4cb9f4608c81c11216a6deec9488b7a1e3e1f0fd528ec52daf9a464c085",
+  "buildTreeSha256": "b347ba9b63ceaf9f6e67724e39866c60449e4a28fbd32a692daf54f39426b7eb",
+  "criteria": {
+    "design": {
+      "pass": true
+    },
+    "code": {
+      "pass": false
+    },
+    "graphics": {
+      "pass": false,
+      "native3dVerified": false,
+      "requiredDimension": "3D",
+      "native3dChecks": [
+        {
+          "stage": "BROWSER_PLAY",
+          "requiredDimension": "3D",
+          "source": "UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF",
+          "observedMeshCount": 0,
+          "observedTriangles": 0,
+          "depthPass": false,
+          "perspectiveCamera": false,
+          "worldMeshes3d": 0,
+          "worldDepthCm": 0,
+          "gameplayActors3d": 0,
+          "spriteGameplayActors": -1,
+          "pass": false
+        },
+        {
+          "stage": "INDEPENDENT_QA",
+          "requiredDimension": "3D",
+          "source": "UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF",
+          "observedMeshCount": 0,
+          "observedTriangles": 0,
+          "depthPass": false,
+          "perspectiveCamera": false,
+          "worldMeshes3d": 0,
+          "worldDepthCm": 0,
+          "gameplayActors3d": 0,
+          "spriteGameplayActors": -1,
+          "pass": false
+        },
+        {
+          "stage": "REGRESSION",
+          "requiredDimension": "3D",
+          "source": "UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF",
+          "observedMeshCount": 0,
+          "observedTriangles": 0,
+          "depthPass": false,
+          "perspectiveCamera": false,
+          "worldMeshes3d": 0,
+          "worldDepthCm": 0,
+          "gameplayActors3d": 0,
+          "spriteGameplayActors": -1,
+          "pass": false
+        }
+      ],
+      "assetCounts": {
+        "Art": 20,
+        "Prefabs": 0,
+        "Materials": 1,
+        "Animations": 0
+      },
+      "bootstrapGraphicsBlocked": false
+    },
+    "webglBuild": {
+      "pass": true
+    },
+    "actualPlay": {
+      "pass": false
+    },
+    "qa": {
+      "pass": false,
+      "multiplayerRequired": true,
+      "multiplayerPass": false
+    },
+    "portability": {
+      "pass": true
+    },
+    "precisionQa": {
+      "pass": false,
+      "status": "PRECISION_RUNTIME_REPAIR_REQUIRED",
+      "scenarioStages": [
+        "BROWSER_PLAY",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ]
+    },
+    "nativeSystems": {
+      "pass": false,
+      "status": "NATIVE_SYSTEM_IMPLEMENTATION_REPAIR_REQUIRED",
+      "staticCoverageComplete": false,
+      "authoredRoles": 4,
+      "verifiedRoles": 0
+    }
+  },
+  "buildUpGrowth": {
+    "version": 1,
+    "platform": "UNITY_WEB",
+    "gameId": "daechung-rpg",
+    "status": "RUNTIME_QA_NOT_VERIFIED",
+    "verifiedGrowth": false,
+    "comparisonAvailable": false,
+    "sourceChanged": false,
+    "changedKinds": [],
+    "focus": "CORE_FUN",
+    "runtimeQaVerified": false,
+    "sourceTreeSha256": "836bf4cb9f4608c81c11216a6deec9488b7a1e3e1f0fd528ec52daf9a464c085",
+    "previousSourceTreeSha256": null,
+    "signals": {
+      "gameplay": false,
+      "graphics": false,
+      "visiblePresentation": false,
+      "performance": false,
+      "newContentIds": [
+        "enemy:green-slime",
+        "region:field-1",
+        "region:town"
+      ],
+      "newPersistentStateKeys": [
+        "exp",
+        "gold"
+      ],
+      "newEventKinds": [
+        "CORE_FUN",
+        "REGION",
+        "REWARD"
+      ]
+    },
+    "observed": {
+      "source": {
+        "scriptsSha256": "7f4ada5aa7f692a1921dcb97c1d52706eae1e82d502b9474458cfa7f884a6d8c",
+        "scriptsFiles": 4,
+        "graphicsSha256": "658e690c9e0bf38d8725dcea75a56997cd99db806589f23c810ce7e253be54bf",
+        "graphicsFiles": 22,
+        "contentSha256": null,
+        "contentFiles": 0
+      },
+      "runtime": {
+        "nativeMeshCount": 0,
+        "worldMeshes3d": 0,
+        "gameplayActors3d": 0,
+        "persistentStateKeys": [
+          "exp",
+          "gold"
+        ],
+        "eventKinds": [
+          "CORE_FUN",
+          "REGION",
+          "REWARD"
+        ],
+        "contentIds": [
+          "enemy:green-slime",
+          "region:field-1",
+          "region:town"
+        ],
+        "sceneCaptureSha256": "32f370044dfa0ffdfda05e825dda68254e6441bb29649eee8de85f98b4915595",
+        "colorBuckets": 338,
+        "p95FrameMs": 66.70000000000073,
+        "bootMilliseconds": 5307
+      }
+    },
+    "baselineIsActualThreeBrowserRuns": false,
+    "sourceOnlyOrMarkerOnlyNeverPass": true,
+    "noArtificialContentCountOrGenerationLimit": true,
+    "preserveBalanceSaveAndNetworkAuthority": true
+  },
+  "buildUpGrowthRequired": false,
+  "precisionQa": {
+    "version": 1,
+    "gameId": "daechung-rpg",
+    "platform": "UNITY_WEB",
+    "pass": false,
+    "status": "PRECISION_RUNTIME_REPAIR_REQUIRED",
+    "checks": [
+      {
+        "stage": "BROWSER_PLAY",
+        "scenarioId": "actual-play",
+        "pass": false,
+        "failedChecks": [
+          "native3dPixels"
+        ]
+      },
+      {
+        "stage": "INDEPENDENT_QA",
+        "scenarioId": "independent-qa",
+        "pass": false,
+        "failedChecks": [
+          "native3dPixels"
+        ]
+      },
+      {
+        "stage": "REGRESSION",
+        "scenarioId": "regression",
+        "pass": false,
+        "failedChecks": [
+          "native3dPixels"
+        ]
+      }
+    ],
+    "failures": [
+      "BROWSER_PLAY:native3dPixels",
+      "INDEPENDENT_QA:native3dPixels",
+      "REGRESSION:native3dPixels"
+    ],
+    "actualIndependentQaScenarioRequired": true,
+    "postReloadSecondGameplayCycleRequired": true,
+    "sourceMarkersAloneNeverProvePass": true,
+    "noRobloxOrUnityAndroidGateChanges": true
+  },
+  "precisionQaRequired": true,
+  "nativeSystemAudit": {
+    "version": 1,
+    "gameId": "daechung-rpg",
+    "platform": "UNITY_WEB",
+    "pass": false,
+    "status": "NATIVE_SYSTEM_IMPLEMENTATION_REPAIR_REQUIRED",
+    "staticCoverageComplete": false,
+    "runtimeValid": false,
+    "algorithms": [
+      "INTERPROCEDURAL_CALL_GRAPH_BFS",
+      "FIELD_DEF_USE_DATA_FLOW",
+      "PLAYER_INPUT_REACHABILITY",
+      "DESIGN_PRODUCER_CONSUMER_DEPENDENCY_PROOF",
+      "THREE_RUN_STATE_TRANSITION_INTERSECTION",
+      "MUTATION_SENSITIVE_NEGATIVE_CANARIES"
+    ],
+    "sourceFiles": [
+      "unity-games/daechung-rpg/Assets/Scripts/GameCore.cs",
+      "unity-games/daechung-rpg/Assets/Scripts/MultiplayerSession.cs",
+      "unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs",
+      "unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs"
+    ],
+    "nativeMethodCount": 104,
+    "callbackMethodCount": 10,
+    "inputEntrypointCount": 11,
+    "reachableMethodCount": 97,
+    "interactiveReachableMethodCount": 69,
+    "ambiguousCalls": [],
+    "problems": [],
+    "roles": [
+      {
+        "systemId": "VIBE_MAIN",
+        "role": "MAIN",
+        "staticComplete": false,
+        "runtimeComplete": false,
+        "failures": [
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:WorldAccessState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:IntentState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RouteState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:WorldAccessState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:IntentState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:RouteState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:WorldAccessState",
+          "STATE_TO_PLAYER_FEEDBACK_NOT_CONNECTED",
+          "THREE_REAL_WEBGL_SCENARIOS_NOT_VERIFIED"
+        ],
+        "declaredInputKeys": [
+          "WorldAccessState",
+          "IntentState"
+        ],
+        "declaredOutputKeys": [
+          "RouteState",
+          "WorldAccessState"
+        ],
+        "foundNativeStateDeclarationKeys": [],
+        "reachableInputReaders": [
+          {
+            "key": "WorldAccessState",
+            "owners": []
+          },
+          {
+            "key": "IntentState",
+            "owners": []
+          }
+        ],
+        "reachableOutputWriters": [
+          {
+            "key": "RouteState",
+            "writers": [],
+            "runtimeObserved": false
+          },
+          {
+            "key": "WorldAccessState",
+            "writers": [],
+            "runtimeObserved": false
+          }
+        ],
+        "hasPlayerFeedback": false,
+        "unverifiedCodeMarkersAreNotPass": true
+      },
+      {
+        "systemId": "VIBE_A",
+        "role": "A",
+        "staticComplete": false,
+        "runtimeComplete": false,
+        "failures": [
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RouteState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RiskState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:ResourceState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:RouteState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:RiskState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:RiskState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:ResourceState",
+          "STATE_TO_PLAYER_FEEDBACK_NOT_CONNECTED",
+          "THREE_REAL_WEBGL_SCENARIOS_NOT_VERIFIED"
+        ],
+        "declaredInputKeys": [
+          "RouteState",
+          "RiskState"
+        ],
+        "declaredOutputKeys": [
+          "RiskState",
+          "ResourceState"
+        ],
+        "foundNativeStateDeclarationKeys": [],
+        "reachableInputReaders": [
+          {
+            "key": "RouteState",
+            "owners": []
+          },
+          {
+            "key": "RiskState",
+            "owners": []
+          }
+        ],
+        "reachableOutputWriters": [
+          {
+            "key": "RiskState",
+            "writers": [],
+            "runtimeObserved": false
+          },
+          {
+            "key": "ResourceState",
+            "writers": [],
+            "runtimeObserved": false
+          }
+        ],
+        "hasPlayerFeedback": false,
+        "unverifiedCodeMarkersAreNotPass": true
+      },
+      {
+        "systemId": "VIBE_B",
+        "role": "B",
+        "staticComplete": false,
+        "runtimeComplete": false,
+        "failures": [
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RiskState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:ResourceState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RouteState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:RiskState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:ResourceState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:RouteState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:RiskState",
+          "STATE_TO_PLAYER_FEEDBACK_NOT_CONNECTED",
+          "THREE_REAL_WEBGL_SCENARIOS_NOT_VERIFIED"
+        ],
+        "declaredInputKeys": [
+          "RiskState",
+          "ResourceState"
+        ],
+        "declaredOutputKeys": [
+          "RouteState",
+          "RiskState"
+        ],
+        "foundNativeStateDeclarationKeys": [],
+        "reachableInputReaders": [
+          {
+            "key": "RiskState",
+            "owners": []
+          },
+          {
+            "key": "ResourceState",
+            "owners": []
+          }
+        ],
+        "reachableOutputWriters": [
+          {
+            "key": "RouteState",
+            "writers": [],
+            "runtimeObserved": false
+          },
+          {
+            "key": "RiskState",
+            "writers": [],
+            "runtimeObserved": false
+          }
+        ],
+        "hasPlayerFeedback": false,
+        "unverifiedCodeMarkersAreNotPass": true
+      },
+      {
+        "systemId": "VIBE_DELVE",
+        "role": "DELVE",
+        "staticComplete": false,
+        "runtimeComplete": false,
+        "failures": [
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RouteState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:RiskState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:WorldAccessState",
+          "NATIVE_FIELD_OR_PROPERTY_MISSING:IntentState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:RouteState",
+          "LIVE_CODE_STATE_READ_UNREACHABLE:RiskState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:WorldAccessState",
+          "PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:IntentState",
+          "STATE_TO_PLAYER_FEEDBACK_NOT_CONNECTED",
+          "THREE_REAL_WEBGL_SCENARIOS_NOT_VERIFIED"
+        ],
+        "declaredInputKeys": [
+          "RouteState",
+          "RiskState"
+        ],
+        "declaredOutputKeys": [
+          "WorldAccessState",
+          "IntentState"
+        ],
+        "foundNativeStateDeclarationKeys": [],
+        "reachableInputReaders": [
+          {
+            "key": "RouteState",
+            "owners": []
+          },
+          {
+            "key": "RiskState",
+            "owners": []
+          }
+        ],
+        "reachableOutputWriters": [
+          {
+            "key": "WorldAccessState",
+            "writers": [],
+            "runtimeObserved": false
+          },
+          {
+            "key": "IntentState",
+            "writers": [],
+            "runtimeObserved": false
+          }
+        ],
+        "hasPlayerFeedback": false,
+        "unverifiedCodeMarkersAreNotPass": true
+      }
+    ],
+    "edges": [],
+    "sourceStaticPassIsNeverActualRuntimePass": true,
+    "automatedAnalysisCannotProveFullCSemantics": true,
+    "actualCompilerAndWebglQaRemainMandatory": true
+  },
+  "nativeSystemAuditRequired": true,
+  "nativeSystemAuditSourceTreeSha256": "836bf4cb9f4608c81c11216a6deec9488b7a1e3e1f0fd528ec52daf9a464c085",
+  "passAction": null,
+  "failureAction": "REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION",
+  "releaseOrDeploymentAuthority": false,
+  "generatedAt": "2026-10-10T18:07:30.310Z"
+}
