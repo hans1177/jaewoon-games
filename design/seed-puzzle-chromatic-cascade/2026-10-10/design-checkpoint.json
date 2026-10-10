@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 보드 위의 색상 주파수를 조절하여 연쇄 반응을 일으키고, 매칭의 파급 효과를 최대화하는 독창적인 선택을 경험하게 됩니다. 이 과정에서 플레이어는 전술적 성취감과 즉각적인 시각적 피드백을 느끼며, 게임은 끝없는 발견과 숙련으로 발전합니다.",
       "coreFun": "플레이어는 턴당 특정 노드의 색상을 튜닝하여 주파수를 일치시킬 수 있으며, 동기화된 노드들이 연쇄적으로 폭발하며 보드 전체의 장애물을 제거하고 보상을 획득합니다. 이 과정에서는 플레이어가 전략적으로 선택한 색상 변환 패턴이 실제 상태 변화에 영향을 미칩니다."
+    },
+    "local_authoring_parts::feb25a30fbe42700992ac592564649f564c9e74e0ea41068caeeeb1e8eb7cb37:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "플레이어는 색채 노드를 튜닝하여 주파수를 맞추며, 동기화된 노드들이 연쇄적으로 폭발하며 보상을 획득합니다.",
+        "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으켜 게임의 전략적 성취감과 즉각적인 시각적 피드백을 경험합니다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 267761,
-      "lastMs": 267761,
+      "totalMs": 324880,
+      "lastMs": 57119,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:31:02.417Z"
+      "updatedAt": "2026-10-10T07:31:59.538Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:26:34.639Z",
-  "updatedAt": "2026-10-10T07:31:02.417Z",
+  "updatedAt": "2026-10-10T07:31:59.538Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1382,7 +1389,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:31:02.417Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:31:59.538Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
