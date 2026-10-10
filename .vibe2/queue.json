@@ -53,7 +53,7 @@
       "presentationPass": null,
       "graphicsReplacementContract": null,
       "motionRepairWorkUnit": null,
-      "executionLane": "ASSET_DEVELOPMENT",
+      "executionLane": "RELEASE_WAIT",
       "goal": "[WORLD_LOBBY_FIRST]\n게임=cozy-island 포근섬 Simulation Conquest Economy\n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 한 번, 이벤트 연결은 중복 없이, 반복 탐색·과도한 파티클·매 프레임 UI 갱신을 줄인다. Studio는 한 창에서 현재 프로세스 준비를 기다린다. 멀티는 소스 계약 검사로 기록하고 실제 다인 실행 성공으로 쓰지 않는다.\n소스/정적 통과와 Studio 실측을 구분해 기록한다. 로비 생성·시작·복귀의 책임 파일과 실제 변경 근거를 남기며, 사진/문구/마커만으로 구현 완료를 주장하지 않는다.\n[/WORLD_LOBBY_FIRST]\n[POST_RELEASE_FOCUSED_DEVELOPMENT]\ncozy-island의 현재 내부 Roblox 릴리스를 기준으로 실제 플레이테스트를 수행하고 버그·오류·진행막힘·완성도·UX·그래픽·오디오·밸런스·성능을 함께 리뷰한다.\n리뷰와 피드백은 구현 강제가 아니다. Vibe가 증거를 보고 ACCEPT / PARTIAL_ACCEPT / DEFER / REJECT를 직접 결정하며 채택하지 않은 피드백은 구현하지 않는다.\n크래시, 시작 실패, 진행 막힘, 저장/불러오기 문제, 조작 불능, 멀티 동기화 깨짐, 재현 가능한 게임플레이 오류는 HOTFIX 최고 우선순위로 처리하고 진행 중인 MAJOR 준비 때문에 늦추지 않는다.\n채택한 작업은 Vibe가 HOTFIX / MINOR / MAJOR로 분류한다. HOTFIX는 재현→책임 지점 수정→incremental QA→플랫폼 smoke→focused regression→정확 아티팩트 게이트 후 즉시 재배포를 우선한다. MINOR는 작은 기능강화/저위험 품질개선으로 관련 검증 후 빠르게 재배포한다.\nMAJOR는 현재 릴리스의 플레이 가능 상태를 유지한 채 업데이트 후보를 미리 준비하고 반복 플레이테스트, 자잘한 오류 디버깅, 저장 호환성, 독립 QA, 전체 회귀, 성능, 최종 게임 리뷰를 충분히 통과한 뒤 재배포한다.\n현재 릴리스의 핵심 정체성, 세이브 의미, 동작을 보존한다.\n중앙 우선순위: release-blocking-bugs, progress-blockers, gameplay-completeness, content-depth, small-safe-quality-improvements, roblox-native-ux, mobile-readability, performance, maintainability, verified-learning-reuse.\n숫자/라벨만 바꾸는 작업, 릴리스 근거 조작, QA 우회, 검증 전 공개 버전 교체는 금지한다.\n보안담당(VIBE_SECURITY_STEWARD)은 Roblox 본사 안티치트를 복제하지 않고 서버 권한, Remote 입력 검증/레이트리밋, 저장·경제·보상·데미지·쿨다운 권한, 멀티 동기화 악용, 백도어/외부 모듈 위험을 기존 보안체계로 검토한다. 일반 게임평 피드백은 Vibe가 수용 여부를 결정하지만 확정된 보안 취약점은 보안 게이트로 HOTFIX 우선 처리한다.\n검증된 결과는 Vibe 학습 입력으로 다시 흡수하고 다음 포커스 사이클에서 재평가한다.\n[VERIFIED_RECOMBINATION_CONTEXT]\nrecipe=recombine_15140be67dd46ddd\nsource_projects=external-commercial-afk-arena,external-commercial-asphalt-legends\nfeature_blend=idle-reward,offline-progress,upgrade-layer,claim-idempotency,persistent-growth,commercial-idle-runtime-architecture,vehicle-control,race-progress\ntransformation=change-session-structure\nUse the verified patterns as abstract implementation context only; preserve this released game identity and create a new project-specific expression.\n\n[GAME_SPECIFIC_BUILD_UP_DIRECTIVE]\nid=cozy-island-build-up-g1-c8aa66f0c387; generation=1; depth=1; stage=FOUNDATION_COMPLETENESS; focus=PRESENTATION\nGAME_IDENTITY: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.\nPRIMARY_GOAL: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 직접 채집와 주민 자동화가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.\nWHY_NOW: 현재 검증 신호와 소스에서 PRESENTATION를 우선한다. 게임 고유 앵커는 \"직접 채집\"이며 실제 source delta까지 검증된 루프만 다음 깊이로 상승한다.\nSTUDIO_OBSERVED_FAILURES: NO_CURRENT_EXACT_ARTIFACT_EVIDENCE\nSTUDIO_REPAIR_RULE: Treat observed failures as diagnostic data; repair their responsible systems, then replay the failing scenarios. Never infer a PASS from source edits alone.\nSOURCE_ANCHORS:\n- exact symbol unavailable; use exact responsible file plus observed runtime/state anchor\nEXPECTED_PLAYER_EFFECT: UNKNOWN\nPREVIOUS_EFFECT: REGRESSION - current source Studio product-quality failure\nNEXT_VIBE_ACTION: CAUSAL_REPAIR - current source Studio product-quality failure requires source repair before another observation\nAUTONOMOUS_CONTENT_EXPANSION: mode=AUTONOMOUS_CONTENT_BUILD_UP; theme=AUTO; themeDepth=1; decisionOwner=VIBE; boundary=EXISTING_BUILD_UP_ONLY\nCONTENT_BREADTH_LEDGER: covered=0/0; missing=NONE; leastCovered=NONE\nDATA_CAPACITY_BUDGET: state=NORMAL; strategy=CONTINUE_BUILD_UP; saveMax=0; webMax=0; singleFileMax=0; mobileMemoryTarget=0; mobileMinFps=0; generationLimit=NONE; contentCountLimit=NONE\nDATA_CAPACITY_ACTION: BUILD_UP을 멈추지 말고 새 원시 데이터 추가보다 기존 에셋/시스템 재사용·재조합, 압축, 스트리밍/LOD, 풀링, 수명 관리와 시스템 심화를 우선한다. 저장 진행/인벤토리/장비/해금/퀘스트 의미를 삭제해서 예산을 맞추지 않는다.\nEXISTING_COMPLETENESS_CHECK: CHECK_EXISTING_AND_EXPAND_OR_IMPROVE; dimensions=\nCOHERENT_CONTENT_BUNDLE:\n\nANTI_CLONE: DISTINCT_CONTENT_REQUIRED; axes=\nCONTINUITY_CAUSALITY: required=false; questions=\nDERIVED_RULE_EVOLUTION: PRESERVE_CANONICAL_RULES\nPLATFORM_NATIVE_GUIDANCE: \nGAMEPLAY: 직접 채집를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다. | 주민 자동화가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다. | 고유 시스템 직접 채집, 주민 자동화, 병영/병사, 5개 자원 거점, 협동 지원 중 이번 목표와 직접 연결된 시스템을 기존 책임 코드에서 심화한다. | 핵심 게임플레이 의미는 보존하면서 이번 품질축에 필요한 연결만 수정한다.\nPROGRESSION_WORLD: 초반 직접 노동 → 주민 자동화 → 병영/병사 → 지역 기지 점령 → 특수자원 확보 → 고급 병종/무역 → 해전·공성 → 대형 섬/왕국 정복 순서로 확장한다. 낚시는 포함하지 않는다.을 현재 루프의 실제 목표·보상·해금·콘텐츠 연결로 구현/심화한다. | 새 콘텐츠는 기존 핵심 루프와 연결되어야 하며 단순 수량 복제나 색/수치만 다른 변형으로 채우지 않는다. | 맵/지역이 있는 게임은 동선·위험/보상·랜드마크·조우/자원 역할이 서로 구별되도록 유지하거나 강화한다.\nHOLISTIC_CORE_DOMAIN_STATUS:\n- CORE_FUN=EVALUATED/MONITOR_OR_CONNECT\n- PLAYER_ACTIONS=EVALUATED/MONITOR_OR_CONNECT\n- PROGRESSION=EVALUATED/MONITOR_OR_CONNECT\n- CONTENT_VARIETY=EVALUATED/MONITOR_OR_CONNECT\n- WORLD_MAP_TOPOLOGY=EVALUATED/MONITOR_OR_CONNECT\n- REGIONS=EVALUATED/MONITOR_OR_CONNECT\n- INVENTORY=EVALUATED/MONITOR_OR_CONNECT\n- INPUT=EVALUATED/MONITOR_OR_CONNECT\n- MOBILE_UX=EVALUATED/MONITOR_OR_CONNECT\n- RUNTIME_STABILITY=EVALUATED/MONITOR_OR_CONNECT\nPRIORITY_DOMAIN_DIRECTIVES:\n- LANDMARKS[BUILD_UP_NOW]: 주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.\n- CHARACTER_VISUALS[FIX_NOW]: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 플레이어/NPC의 역할·등급·장비가 실루엣, 비율, 자세, 재질에서 구별되고 핵심 행동 모션과 연결되게 한다.\n- ENEMY_VISUALS[FIX_NOW]: 적 종류와 위험도가 색상만이 아니라 실루엣·크기·이동 리듬·공격 전조·피격/사망 반응으로 구별되게 한다.\n- WEAPONS_AND_EQUIPMENT[BUILD_UP_NOW]: 무기/장비 외형이 실제 기능·사거리·무게감·공격 궤적·장착 상태와 맞고 플레이어 손/몸에 자연스럽게 연결되게 한다.\n- BUILDINGS_AND_PROPS[BUILD_UP_NOW]: 건물·상호작용 오브젝트·장식물은 기능과 상태가 형태/배치/재질로 구별되고 플레이 동선과 충돌하지 않게 한다.\n- ENVIRONMENT[FIX_NOW]: 전경/중경/배경, 식생/소품, 위험/안전 신호, 환경 스토리텔링을 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 아트 방향 안에서 통일하고 빈 장식면을 줄인다.\n- TERRAIN[FIX_NOW]: 지형 높낮이·경계·통로·전투/상호작용 공간이 플레이 기능과 맞고 반복 평면/단일 primitive 위주 구성을 실제 지형 형태로 교체한다.\n- MATERIALS[FIX_NOW]: 재질은 이름 등록이 아니라 거칠기·광택·마모·투명/발광·빛 반응이 표면 역할과 맞게 실제 렌더에 적용되도록 한다.\n- PALETTE[BUILD_UP_NOW]: 팔레트는 지역/진영/위험/보상/상호작용 상태를 구분하면서 전체 게임 정체성을 유지하고 단순 색상 교체만으로 개선 완료를 주장하지 않는다.\n- LIGHTING[BUILD_UP_NOW]: 조명은 시간/분위기뿐 아니라 플레이 동선, 적 전조, 상호작용 대상, 랜드마크 가독성을 지원하고 캐릭터 실루엣을 배경에서 분리한다.\n- ANIMATION[BUILD_UP_NOW]: 주요 캐릭터/적 행동을 idle→locomotion→anticipation→impact→recovery→hit/death 상태와 실제 게임 이벤트에 연결하고 정지 모델 판정을 금지한다.\n- SECONDARY_MOTION[BUILD_UP_NOW]: 장비·의상·머리·꼬리·식생·기계 등 적합한 요소에 지연/관성/반동을 추가해 무게감과 생동감을 주되 판정/권한은 바꾸지 않는다.\n- VFX[BUILD_UP_NOW]: 일반 타격, 강공격, 위험 전조, 상태이상, 보상, 보스/시그니처 이벤트의 VFX 형태·강도·지속시간을 분리하고 실제 상태 변화 시점에 동기화한다.\n- CAMERA[BUILD_UP_NOW]: 기본 시야·FOV·추적을 모바일 가독성에 맞추고 강한 타격/대시/보스/탐색 포인트에 짧고 단계적인 카메라 반응을 적용해 멀미와 과도한 흔들림을 피한다.\n- UI_HUD[BUILD_UP_NOW]: HUD는 현재 목표·체력/위험·핵심 자원·쿨다운/상태·다음 선택의 우선순위를 명확히 하고 게임 아트 언어와 일치하는 패널/아이콘/상태 피드백을 사용한다.\n- AUDIO_VISUAL_TIMING[BUILD_UP_NOW]: 핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.\n- ENVIRONMENTAL_MOTION[BUILD_UP_NOW]: 세계에 맞는 바람/식생/물/빛/먼지/기계 등 미세 환경 움직임을 추가해 정적인 무대를 피하되 플레이 정보와 성능을 방해하지 않는다.\nVISUAL:\n- CHARACTER: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임. 플레이어의 역할이 실루엣·장비·자세에서 읽히게 만들고 idle/이동/핵심행동 사이 포즈 차이를 명확히 한다.\n- ENEMY_CREATURE: 직접 채집의 상대 역할마다 색만 바꾸지 말고 크기·실루엣·이동 리듬·공격 전조·피격/사망 반응을 다르게 만든다.\n- WEAPON_EQUIPMENT: 장비가 실제 기능과 연결되어 손에 쥔 형태, 공격 궤적, impact/recovery, 장착 피드백이 서로 일치하게 만든다.\n- BUILDING_PROP: 상호작용 가능한 구조물과 장식물을 형태·배치·상태 변화로 구분하고 플레이 동선을 가리는 무의미한 소품 반복을 피한다.\n- ENVIRONMENT_TERRAIN: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 세계 역할을 지역별 지형·랜드마크·전경/중경/후경·높낮이·환경 움직임으로 구분한다.\n- MATERIAL_SURFACE: 나무/돌/금속 등 이름 등록만 하지 말고 실제 표면 반응·거칠기·광택·마모·발광을 장면 조명과 맞춘다.\n- PALETTE: 위험·안전·보상·상호작용 상태가 게임 팔레트 안에서 즉시 읽히게 하고 단순 색 교체를 정체성 개선으로 계산하지 않는다.\n- LIGHTING: 핵심 동선·위험·랜드마크를 조명으로 유도하고 캐릭터와 적 실루엣이 배경에 묻히지 않게 한다.\n- ANIMATION: 주요 액션을 ANTICIPATION→ACCELERATION→IMPACT→RECOVERY로 구성하고 idle/walk/run/attack/hit/death 전환을 실제 상태에 연결한다.\n- SECONDARY_MOTION: 무기·장비·머리·의상·식생 등 해당 오브젝트에 지연/흔들림을 추가하되 판정과 충돌 권한은 바꾸지 않는다.\n- VFX: 일반 타격·강한 타격·위험 예고·상태이상·보상 VFX의 형태와 타이밍을 분리하고 실제 impact 이벤트에 동기화한다.\n- CAMERA: 기본 시야와 모바일 가독성을 보존하면서 핵심행동·강공격·보스/시그니처 순간에 강도가 다른 짧은 카메라 반응을 준다.\n- UI_HUD: 작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임.의 핵심 목표·자원·위험·다음 선택이 한눈에 보이게 하고 게임 세계관과 맞는 패널/아이콘/피드백 언어를 사용한다.\n- AUDIO_VISUAL_SYNC: damage/VFX/animation/camera/audio가 같은 impact 순간을 공유하게 하며 소리만 먼저/늦게 나오는 불일치를 제거한다.\n- ENVIRONMENTAL_MOTION: 정적인 배경을 피하고 식생·빛·파티클·기계/건축 요소 중 세계에 맞는 미세 움직임을 지속시킨다.\n- SCENE_DENSITY: 빈 공간과 반복 오브젝트 밀도를 실제 플레이 동선 기준으로 조정하고 중요 영역에는 의미 있는 시각 정보가 있게 한다.\n- LANDMARK_READABILITY: 플레이어가 지도 없이도 방향과 지역 역할을 기억할 수 있는 실루엣이 다른 랜드마크를 유지·강화한다.\nEXPERIENCE_BUILD_UP: {}\nUX_INPUT: 핵심 행동, 위험, 현재 목표, 다음 선택을 모바일 화면에서 우선순위가 명확하게 보이게 한다. | 터치 입력은 실제 게임 상태 변화에 연결하고 키보드/검증용 우회 입력이 모바일 PASS를 대신하지 못하게 한다. | 실패/재시도/복귀 시 플레이어가 무엇이 유지되고 무엇이 초기화되는지 즉시 알 수 있게 한다.\n\n\n\n\n\nPRESERVE: 기존 세이브 키와 의미를 명시적 마이그레이션 없이 변경하지 않는다. | 승인 없는 밸런스/경제/보상/드랍/쿨다운/히트 의미 변경 금지. | 멀티플레이 권한과 authoritative state를 프레젠테이션 이유로 클라이언트로 이동하지 않는다. | wrapper/shadow/temporary override 대신 기존 책임 시스템을 직접 수정한다.\nACCEPTANCE: CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM | WORKFLOW_QA_HOMEPAGE_ONLY_CHANGE_DOES_NOT_COUNT | GAMEPLAY_CLAIM_REQUIRES_OBSERVABLE_GAME_STATE_DELTA | VISUAL_CLAIM_REQUIRES_ACTUAL_RENDERED_DELTA | BEFORE_AFTER_OR_VERIFIED_BASELINE_COMPARISON | NO_PROTECTED_SAVE_BALANCE_ECONOMY_NETWORK_SEMANTIC_REGRESSION | FOUNDATION_ONLY_REPAIR_COUNTS_ONLY_WHEN_FOUNDATION_IS_THIS_DIRECTIVE_PRIMARY_VERIFIED_GAP\nNEXT_ESCALATION: DEEPEN_CORE_FUN_DECISION_DENSITY | CONNECT_VISUAL_LANGUAGE_TO_GAMEPLAY_TELEGRAPH_AND_WORLD_IDENTITY | CLOSE_NEXT_HIGHEST_VALUE_GAP_FROM_RUNTIME_OR_PLAYTEST | OPTIMIZE_MOBILE_FRAME_INPUT_RENDER_OR_STATE_BOTTLENECK_WHEN_VERIFIED",
       "responsibleFiles": [
         "roblox-games/cozy-island/server/Game.server.luau",
@@ -78,7 +78,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "post-release-focused:yes",
         "focus-release-kind:INTERNAL_PLATFORM_RELEASE",
@@ -2318,7 +2318,8 @@
         "worker-artifact-run:38050602488",
         "worker-artifact-run:38055975540",
         "worker-artifact-run:38060291601",
-        "worker-artifact-run:38063746610"
+        "worker-artifact-run:38063746610",
+        "worker-artifact-run:38090227358"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "38090227358:1",
@@ -47503,7 +47504,7 @@
       "portfolioValueScore": 0,
       "ownerDevelopmentHold": false,
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -49731,10 +49732,10 @@
         "worker-artifact-run:38087187184"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "38091783863:1",
+      "reservationRunId": "38091783863",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-10-10T22:45:07Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "runtimeEvidenceCandidate": {
@@ -52693,7 +52694,7 @@
       "portfolioValueScore": 0,
       "ownerDevelopmentHold": false,
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -54874,10 +54875,10 @@
         "worker-artifact-run:38087187184"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "38091783863:1",
+      "reservationRunId": "38091783863",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-10-10T22:45:07Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "runtimeEvidenceCandidate": {
@@ -57844,7 +57845,7 @@
       "portfolioValueScore": 0,
       "ownerDevelopmentHold": false,
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -59971,10 +59972,10 @@
         "worker-artifact-run:38087187184"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "38091783863:1",
+      "reservationRunId": "38091783863",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-10-10T22:45:07Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "runtimeEvidenceCandidate": {
@@ -62931,7 +62932,7 @@
       "portfolioValueScore": 0,
       "ownerDevelopmentHold": false,
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 1,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -65108,10 +65109,10 @@
         "worker-artifact-run:38084674672"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "38091783863:1",
+      "reservationRunId": "38091783863",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-10-10T22:45:07Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "runtimeEvidenceCandidate": {
@@ -325910,7 +325911,7 @@
       "portfolioValueScore": 0,
       "ownerDevelopmentHold": false,
       "releaseState": "release-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
@@ -326217,10 +326218,10 @@
         "worker-artifact-run:38062458025"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "38091783863:1",
+      "reservationRunId": "38091783863",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-10-10T22:45:07Z",
       "neuronExpectedVariants": 1,
       "neuronResults": [],
       "runtimeEvidenceCandidate": null,
@@ -483077,7 +483078,7 @@
       "presentationPass": null,
       "graphicsReplacementContract": null,
       "motionRepairWorkUnit": null,
-      "executionLane": "ASSET_DEVELOPMENT",
+      "executionLane": "RELEASE_WAIT",
       "goal": "[WORLD_LOBBY_FIRST]\n게임=card-grid-duel card-grid-duel  \n첫 구현 순서는 F2 월드 로비·안전 스폰 → F5 안내·입력·시작 전환 → F8 기존 핵심 플레이 연결 → F9 시작·복귀 회귀 확인이다. 치명적 부팅/저장 오류를 수리하되 빌드업은 계속한다.\n현재 소스와 설계에서 이미 완성된 로비는 보존·재사용한다. 미완성 부분만 먼저 채우고 같은 사이클에 원래 기능 작업을 이어간다. 로비를 매번 다시 짓거나 완료 확인만 반복하지 않는다.\n컨셉 후보(현재 게임 규칙과 실제 월드에 맞게 선택·변형): 현재 게임 세계의 출발 거점, 핵심 행동을 예고하는 고유 랜드마크, 실제 첫 목표로 이어지는 길. 심야대탈출의 호텔이나 UI를 다른 게임에 복제하지 않는다. 색만 바꾼 공통 로비는 금지한다.\n월드 공간의 형태·동선, 대표 랜드마크, 재질·조명, 가벼운 환경음·카메라 연출을 하나의 게임 정체성으로 맞춘다. 안전 스폰과 바닥 충돌, 첫 목표 안내, 모바일 도달 가능한 실제 시작 행동, 플레이 후 복귀를 연결한다. 없는 상점·파티·경제 기능을 장식 버튼으로 만들지 않는다.\nUI는 로비→선택→플레이 상태와 연결한다. 직업 선택은 서버 확정 후 닫고, 이미 선택한 캐릭터는 매번 다시 묻지 않는다. 기존 저장 키·진행·전투 규칙을 보존하고 오래된 이벤트 연결과 겹친 화면을 정리한다.\n저사양 기준으로 로비 생성은 한 번, 이벤트 연결은 중복 없이, 반복 탐색·과도한 파티클·매 프레임 UI 갱신을 줄인다. Studio는 한 창에서 현재 프로세스 준비를 기다린다. 멀티는 소스 계약 검사로 기록하고 실제 다인 실행 성공으로 쓰지 않는다.\n소스/정적 통과와 Studio 실측을 구분해 기록한다. 로비 생성·시작·복귀의 책임 파일과 실제 변경 근거를 남기며, 사진/문구/마커만으로 구현 완료를 주장하지 않는다.\n[/WORLD_LOBBY_FIRST]\n[STUDIO_QUALITY_EVOLUTION] cycle=1; phase=BUILD_UP; focus=PRESENTATION; baseline=source:roblox-games/card-grid-duel\n 기존 게임 품질 백필 세대다. 현재 구현을 새 게임처럼 초기화하지 말고 기존 기능·세이브·진행·권한·핵심 규칙을 보존한다. 현재 BUILD_UP의 전체 PASS/GAP/NOT_APPLICABLE 도메인을 다시 판정하고, 이 focus에 속한 실제 GAP를 기존 책임 소스에서 직접 닫는다. 기존 게임이라는 이유로 맵·게임플레이·인벤토리·UI·편의성·세션 흐름·중후반 깊이·성능 결함을 grandfather 처리하지 않는다.설계 문장에 적힌 항목 수를 구현 상한으로 취급하지 않는다. 승인된 게임 의미 안에서 기존 시스템을 실제 플레이 기준으로 더 완성한다. 서로 연결된 구현을 최소 3개 이상 필요한 만큼 한 패키지에서 완성하고, 기능 연결·피드백·연출·예외 처리 중 적어도 두 축을 체감 가능하게 개선한다. 그래픽은 마커/상수/파티클 존재만으로 완료하지 않는다. 캐릭터·적 실루엣, 환경 깊이와 랜드마크, 애니메이션 상태, 공격/피격/사망 반응, VFX, 조명, UI 계층, 카메라/오디오 타이밍 중 현재 약한 부분을 실제 렌더 소스에서 여러 요소 함께 개선하고 전후 차이가 눈에 보여야 한다.\n현재 근거=EXISTING_GAME_HOLISTIC_BACKFILL:PRESENTATION\n설계는 게임 의미/제약의 기준선이지 구현 분량의 상한이 아니다. Vibe가 기존 책임 시스템을 읽고 현재 게임에 필요한 완성도·연결·폴리시·오류 복구·최적화를 설계 문장보다 더 깊게 구현할 수 있다. 단 새 핵심 규칙, 밸런스 수치, 경제/진행 의미, 세이브 스키마, 네트워크 권한은 승인 없이 바꾸지 않는다.\n작업 뒤에는 이전 verified baseline과 비교해 최소 하나의 실제 품질 gap이 닫혔거나 체감 가능한 품질 축이 좋아졌다는 근거를 남긴다. 그대로면 evolution 완료가 아니다. 다음 사이클은 다시 BUILD_UP→REPAIR(오류가 있을 때)→OPTIMIZE→COMPARE→BUILD_UP로 이어진다.\n[PLATFORM_ADAPTATION:ROBLOX:SOCIAL_FAST_SESSION]\n핵심 게임 정체성·밸런스 의미·세이브 의미는 유지한다.\nRoblox 환경에 맞춰 빠른 진입, 모바일 우선 입력/UI, 친구 합류와 소셜/멀티 흐름, 짧고 반복 가능한 목표, 서버 권위 동기화, 저사양 기기 표현 밀도를 우선 최적화한다.\nUnity UI/카메라/렌더 구조를 문자 그대로 복사하지 않고 Roblox 네이티브 서비스와 표현으로 재구성한다.\n[ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT]\nVibe가 현재 실제 화면과 소스를 보고 필요한 교체 수를 스스로 정한다. 고정 30개를 채우지 않는다.\n가변 교체와 메뉴 경험 계약은 현재 개발 활성 플랫폼인 WEB / ROBLOX / UNITY에 공통으로 쓰되 공통 계약이 동일 런타임 코드를 뜻하지는 않는다. FORTNITE_UEFN은 개발보류 상태라 자동 BUILD_UP 대상에서 제외한다.\nUnity 앱과 Unity Web은 별도 웹 게임으로 갈라지지 않는다. 둘 다 unity-games/<gameId>/의 같은 canonical Unity 프로젝트와 같은 UI 소스를 기본으로 쓰고 Unity Web은 그 프로젝트의 WebGL 빌드다. Unity Web 전용 HTML/CSS/JS gameplay UI를 따로 만들어 대체하지 않는다.\nRoblox는 기존 Roblox 네이티브 UI 책임 구조로 구현한다. 기존 generic/legacy Web UI가 있더라도 그것으로 Unity WebGL 구현을 대신하지 않는다. Fortnite UEFN은 OWNER_HOLD/개발보류가 해제되기 전에는 이 자동 표현 작업을 생성하지 않는다.\n현재 메뉴 platform binding profile은 ROBLOX_NATIVE_UI_RUNTIME이다. Unity Web 작업이 WEB 토큰을 쓰더라도 GENERIC_WEB_OR_LEGACY_VALIDATION_UI_RUNTIME이 아니라 UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE를 사용한다.\n실제 교체 수는 최소 1개, 최대 60개다. 작은 결함은 1~10개, 일반 개선은 대체로 10~30개, 지역/표현 대형 리프레시는 필요할 때 30~60개를 사용할 수 있다.\n대상에는 배경·지형·환경·건물·소품·랜드마크·캐릭터·몬스터·무기·아이템·장비·재질·텍스처·VFX·모션/애니메이션·메뉴·로비/허브·실제 준비 상태 로딩·첫 플레이 안내·HUD·인벤토리·상점·제작·퀘스트·설정·결과 UI·아이콘·타이포·카메라·환경 연출이 포함된다. 오디오 표현도 관련 있을 때 함께 연결할 수 있다.\n메뉴/UI를 이번 작업에서 건드릴 때는 실제 게임의 메인메뉴·로비/허브·로딩 전환·첫 플레이 안내·인벤토리·상점·제작·퀘스트·설정·결과창을 현재 장르와 규칙에 맞게 선택하거나 혼합한다. 빠진 진입 흐름은 기존 플레이와 연결해 새로 만들되 같은 화면을 중복 생성하지 않는다.\n로비/허브는 세션 시작·파티·목표 선택 등 실제 게임에 있는 행동으로 이어지고, 로딩은 애셋·월드·세션 준비 상태를 반영하며, 시작/뒤로가기/도움말/설정은 실제 동작해야 한다. 주의 문구는 검증된 게임 내용과 접근성 안내만 표시한다. 시간만 흐르는 가짜 진행률이나 장식용 버튼은 완료로 인정하지 않는다.\n모든 게임에 같은 카드/그리드/탭 템플릿을 복사한 뒤 색이나 배경만 바꾸는 방식은 메뉴 다양화로 인정하지 않는다. 정해진 장르별 단일 템플릿도 금지하며 Vibe가 기존 UI 책임 구조와 플레이 흐름을 보고 패턴을 선택·응용·혼합하거나 프로젝트 전용 구성을 만든다.\n없는 게임플레이 시스템을 메뉴를 채우려고 새로 만들지 않는다. 기존 경제·저장·퀘스트·진행 의미를 보존하고 모바일 44px 터치, safe area, 좁은 화면 잘림 방지, 스크롤 도달성, 엄지 도달성을 지킨다.\n우선순위는 placeholder → 저품질 → 컨셉/Style Lock 불일치 → 중복/과다 재사용 → 가독성 저하 → 약한 VFX/모션 → 그 밖의 검증된 표현 gap 순이다.\n이미 만들어진 것을 그대로 쓰는 것만 고집하지 않는다. 현재 컨셉에 이미 정확히 맞으면 직접 재사용하고, 더 맞게 만들 수 있으면 변형/재질·색·비율·타이밍·레이아웃을 재설계하며, 여러 호환 후보의 장점이 필요하면 모델/재질/모션/VFX/UI 아이디어를 응용·재조합해 현재 게임 전용 새 표현으로 만든다.\n서로 다른 에셋팩을 무가공으로 짬뽕하지 않는다. 재조합 결과는 하나의 게임별 Style Lock과 세계/지역 맥락으로 정규화해야 한다.\n완료 시 실제 교체 개수, 변경한 표현 계열, DIRECT_REUSE/ADAPT_RESTYLE/TRANSFORMATIVE_RECOMBINATION/NEW_EXPRESSION 중 사용 방식을 결과 근거에 기록한다.\n선택만 하고 미적용, 마커/주석만 변경, 실제 교체 0개는 이 presentation/graphics 작업의 PASS가 아니다. 실제 source/binding과 플레이 화면이 바뀌어야 한다.",
       "responsibleFiles": [
         "roblox-games/card-grid-duel/client/Game.client.luau",
@@ -483104,7 +483105,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -483724,7 +483725,8 @@
         "worker-artifact-run:38059335074",
         "worker-artifact-run:38062458025",
         "worker-artifact-run:38065091025",
-        "worker-artifact-run:38084674672"
+        "worker-artifact-run:38084674672",
+        "worker-artifact-run:38090227358"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "38090227358:1",
@@ -693786,7 +693788,7 @@
         ],
         "preservedAxes": {}
       },
-      "executionLane": "ASSET_DEVELOPMENT",
+      "executionLane": "RELEASE_WAIT",
       "goal": "[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-dueoksini의 기존 walk 동작 하나를 약 60분의 실제 수정 작업량으로 깊게 개선한다. 원본을 읽고 자세·중심 이동·관절 곡선·접촉·후행 움직임·복귀와 루프를 검토한다. 같은 오브젝트와 같은 동작만 수정하며 다른 모션, 루트 이동, 판정, 게임 소스는 변경하지 않는다. 변경하지 않는 축은 소스 근거로 보존한다. 전후 실제 native 재생과 검수 전에는 품질 통과를 주장하지 않는다. 실패는 같은 대상의 기존 수리 흐름에서 반복 수정한다.",
       "responsibleFiles": [
         "assets/roblox/world-ghosts/motions/dueoksini/init.luau"
@@ -693809,7 +693811,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -694107,7 +694109,8 @@
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22internal-motion-dueoksini-walk-v1%7C38067608450%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22internal-motion-dueoksini-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
         "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22internal-motion-dueoksini-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22internal-motion-dueoksini-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
-        "worker-artifact-run:38084674672"
+        "worker-artifact-run:38084674672",
+        "worker-artifact-run:38090227358"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "38090227358:1",
@@ -703638,7 +703641,7 @@
         ],
         "preservedAxes": {}
       },
-      "executionLane": "ASSET_DEVELOPMENT",
+      "executionLane": "RELEASE_WAIT",
       "goal": "[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-dodomeki의 기존 walk 동작 하나를 약 60분의 실제 수정 작업량으로 깊게 개선한다. 원본을 읽고 자세·중심 이동·관절 곡선·접촉·후행 움직임·복귀와 루프를 검토한다. 같은 오브젝트와 같은 동작만 수정하며 다른 모션, 루트 이동, 판정, 게임 소스는 변경하지 않는다. 변경하지 않는 축은 소스 근거로 보존한다. 전후 실제 native 재생과 검수 전에는 품질 통과를 주장하지 않는다. 실패는 같은 대상의 기존 수리 흐름에서 반복 수정한다.",
       "responsibleFiles": [
         "assets/roblox/world-ghosts/motions/dodomeki/init.luau"
@@ -703661,7 +703664,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -703918,7 +703921,8 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22internal-motion-dodomeki-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "worker-artifact-run:38090227358"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "38090227358:1",
@@ -707175,7 +707179,7 @@
         ],
         "preservedAxes": {}
       },
-      "executionLane": "ASSET_DEVELOPMENT",
+      "executionLane": "RELEASE_WAIT",
       "goal": "[INTERNAL ASSET MOTION REPAIR] roblox-world-ghost-shui-gui의 기존 walk 동작 하나를 약 60분의 실제 수정 작업량으로 깊게 개선한다. 원본을 읽고 자세·중심 이동·관절 곡선·접촉·후행 움직임·복귀와 루프를 검토한다. 같은 오브젝트와 같은 동작만 수정하며 다른 모션, 루트 이동, 판정, 게임 소스는 변경하지 않는다. 변경하지 않는 축은 소스 근거로 보존한다. 전후 실제 native 재생과 검수 전에는 품질 통과를 주장하지 않는다. 실패는 같은 대상의 기존 수리 흐름에서 반복 수정한다.",
       "responsibleFiles": [
         "assets/roblox/world-ghosts/motions/shui-gui/init.luau"
@@ -707198,7 +707202,7 @@
       "supervisionApproved": false,
       "supervisionContract": null,
       "supervisionReview": null,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "asset-production-parallel:v1",
         "single-object-motion-repair:v1",
@@ -707441,7 +707445,8 @@
         "neural-shadow-feedback:%7B%22version%22%3A2%2C%22predictionContractVersion%22%3A2%2C%22predictionBasis%22%3A%22OBSERVED_SOURCE_GENERATION_FAILURE_HISTORY%22%2C%22sampleId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%22%2C%22predictedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22predictedConfidence%22%3A0.98%2C%22observedStage%22%3A%22SOURCE_GENERATION%22%2C%22observedResponsibility%22%3A%22SOURCE_GENERATION%22%2C%22matchState%22%3A%22MATCH%22%2C%22responsibilityMatch%22%3Atrue%2C%22sampleEligible%22%3Atrue%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%7D",
         "neural-root-cause:%7B%22version%22%3A2%2C%22sampleId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%22%2C%22verificationStage%22%3A%22WORKER_RESULT%22%2C%22state%22%3A%22UNRESOLVED%22%2C%22causalRepairVerified%22%3Afalse%2C%22independentConfirmation%22%3Afalse%2C%22responsibleSystemVerified%22%3Afalse%2C%22responsibleSystem%22%3Anull%2C%22predictedResponsibleSystem%22%3A%22SAVE_SYSTEM%22%2C%22predictedSystemConsistentWithVerified%22%3Anull%2C%22rootCauseVerified%22%3Afalse%2C%22learningEligible%22%3Afalse%2C%22actionFiringAllowed%22%3Afalse%2C%22phase2AuthorityEligible%22%3Afalse%2C%22nextEvidenceRequired%22%3A%5B%22PREPATCH_FAILURE_REPRODUCTION%22%2C%22POSTPATCH_CAUSAL_REPLAY_PASS%22%5D%7D",
         "neural-event-shadow:%7B%22version%22%3A3%2C%22eventIdentityVersion%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22eventId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22eventPlatform%22%3Anull%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionReason%22%3A%22ROOT_CAUSE_UNRESOLVED%22%2C%22wouldFireWithoutPhase2Authority%22%3Afalse%2C%22inhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22fireAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22authorityPromotionEligible%22%3Afalse%7D",
-        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D"
+        "neural-work-graph-shadow:%7B%22version%22%3A2%2C%22authorityMode%22%3A%22SHADOW%22%2C%22graphId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventId%22%3A%22internal-motion-shui-gui-walk-v1%7C38067608450%3A1%7Cprimary%7CWORKER_RESULT%22%2C%22eventType%22%3A%22WORKER_RESULT%22%2C%22nodeCount%22%3A16%2C%22edgeCount%22%3A14%2C%22byClass%22%3A%7B%22GOAL%22%3A1%2C%22EVIDENCE%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A5%2C%22BLOCKER%22%3A1%2C%22RISK%22%3A2%2C%22ACTION%22%3A2%7D%2C%22byNeuronType%22%3A%7B%22INTENT%22%3A1%2C%22SENSOR%22%3A1%2C%22FACT%22%3A4%2C%22HYPOTHESIS%22%3A3%2C%22CAUSAL%22%3A1%2C%22RESPONSIBILITY%22%3A1%2C%22BOTTLENECK%22%3A1%2C%22SUPERVISOR%22%3A2%2C%22PLANNING%22%3A1%2C%22ACTION%22%3A1%7D%2C%22actionKind%22%3A%22REQUEST_EVIDENCE%22%2C%22actionActivationState%22%3A%22INHIBITED%22%2C%22actionInhibitors%22%3A%5B%22SECURITY_POLICY_BLOCK%22%2C%22ROOT_CAUSE_NOT_VERIFIED%22%5D%2C%22wouldActivateWithoutPhase2Authority%22%3Afalse%2C%22dependencyCount%22%3A0%2C%22unsatisfiedDependencyCount%22%3A0%2C%22executionAllowed%22%3Afalse%2C%22workerCreationAllowed%22%3Afalse%2C%22queueMutationAllowed%22%3Afalse%2C%22waveReorderAllowed%22%3Afalse%2C%22automaticTuningAllowed%22%3Afalse%2C%22lockAcquisitionAllowed%22%3Afalse%2C%22policyMutationAllowed%22%3Afalse%2C%22automaticLearningAllowed%22%3Afalse%2C%22authorityPromotionAllowed%22%3Afalse%7D",
+        "worker-artifact-run:38090227358"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "38090227358:1",
