@@ -532,25 +532,33 @@
       },
       "playerFantasy": "플레이어는 작은 섬에서 나무와 식량을 직접 모으며, 주민을 고용해 자동화를 거쳐 5개 전략 거점을 점령하며, 협력하여 강대한 왕국을 건설해야 한다. 이 과정에서는 자신이 선택하는 행동과 결과가 실제 세계에 영향을 미치며, 다양한 플레이어 간의 협력을 통해 최종적으로 큰 왕국을 확보하게 된다.",
       "coreFun": "{\n \"mainIdentity\": \"협동 왕국 성장 게임: 큰 머리·둥근 얼굴·짧고 굵은 팔다리를 가진 치비 주민과 하나의 연결된 실루엣으로 보이는 야생 동물 파츠를 월드 노드에서 직접 상호작용하여 획득하며, 주민 자동화 시스템을 통해 자원을 생산하고 반복 노동을 자동화하는 게임\",\n \"a\": {\n \"system\": \"직접 채집\",\n \"material\": \"나무 및 식량\",\n \"materialDomain\": \"월드 노드\",\n \"stateChange\": \"획득 상태 변환됨, 월드 노드에 연결됨\"\n },\n \"b\": {\n \"system\": \"주민 자동화\",\n \"material\": \"주민\",\n \"materialDomain\": \"직업\",\n \"stateChange\": \"직업 배치, 반복 노동 자동화됨, 생산 상태 증가됨\"\n },\n \"abCausality\": \"직접 채집 → 주민 자동화: 나무/식량 획득 → 주민 생산 → 병력 전환 → 지역 기지 확보 → 고급 병종 확보 → 해전 · 공성 정복 순서로 진행됨. 각 단계는 실제 상태 변화를 통해 인과적 관계 유지됨\",\n \"abEvolution\": \"{\n \"aChangesB\": \"직접 채집 -> 주민 자동화: 나무/식량 획득 -> 주민 생산 -> 병력 전환 -> 지역 기지 확보 -> 고급 병종 확보 -> 해전 · 공성 정복 순서로 진행됨\",\n \"bChangesA\": \"직접 채집 -> 주민 자동화: 나무/식량 획득 -> 주민 생산 -> 병력 전환 -> 지역 기지 확보 -> 고급 본종 확보 -> 해전 · 공성 정복 순서로 진행됨\",\n \"lateGameChange\": \"해전 · 공성 정복: 게임의 최종 단계에서, 모든 플레이어가 협력하여 강대한 거점에 점령하며, 이는 게임의 핵심 루프를"
+    },
+    "local_authoring_parts::b3fd01b22cfa4a5c90c9196c2eb0aa7029c1f641f291a51368fb5ee14ba205f2:coreLoop": {
+      "coreLoop": [
+        "직접 채집 → 월드 노드에 연결됨",
+        "주민 자동화 → 직업 배치 및 반복 노동 자동화됨",
+        "병력 전환 → 지역 기지 확보",
+        "고급 병종 확보 → 해전 · 공성 정복 순서로 진행됨"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1422653,
-      "lastMs": 242609,
+      "totalMs": 1510517,
+      "lastMs": 87864,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:08:51.510Z"
+      "updatedAt": "2026-10-10T10:10:19.377Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:45:08.683Z",
-  "updatedAt": "2026-10-10T10:08:51.512Z",
+  "updatedAt": "2026-10-10T10:10:19.378Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1614,7 +1622,7 @@
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true,
     "eb01898a3b729b92d8d3856ec1406e7d6425ed9eff6547af95b6d21ef1ccb5d6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:08:51.512Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:10:19.377Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
