@@ -1,0 +1,332 @@
+{
+  "version": 6,
+  "date": "2026-10-10",
+  "gameId": "territory-war",
+  "gameName": "영토전쟁",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+    "category": "SINGLE_DEFENSE_STRATEGY",
+    "source": "design/territory-war/2026-10-10/design-seed.json",
+    "inputSource": "game-seed-state.json",
+    "authorRole": "GAME_DESIGNER_AI",
+    "complete": true,
+    "gameplaySketchVersion": 5,
+    "inputGameplaySketchVersion": 5,
+    "advancedDesignDepth": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "vibe-native:causal-design-v1",
+    "singleAuthor": true,
+    "sameModelRevised": false
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "audio"
+    ],
+    "leadModels": {},
+    "resolvedLeadModels": {
+      "planning": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "graphics": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "development": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "qa": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "audio": "DETERMINISTIC_EVIDENCE_ENGINE"
+    },
+    "distinctLeadModels": [
+      "DETERMINISTIC_EVIDENCE_ENGINE"
+    ],
+    "distinctLeadModelCount": 1,
+    "leadModelsDistinct": false,
+    "reviewModelCount": 0,
+    "modelAudit": {
+      "planning": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "graphics": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "development": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "qa": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "audio": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      }
+    },
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
+    "aiReviewRequired": false,
+    "aiReviewUsed": false,
+    "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE"
+  },
+  "meeting": {
+    "required": false,
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
+  },
+  "disposition": {
+    "version": 2,
+    "gameId": "territory-war",
+    "date": "2026-10-10",
+    "state": "ACTIVE",
+    "sameDesignerRevisionAttempted": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicDepartmentEvidenceCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "strictGateStillAuthoritative": true,
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 75,
+      "deterministic_pre_gate": 7,
+      "deterministic_department_evidence": 2
+    },
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 0,
+    "totalModelCallMs": 0,
+    "modelPhaseConcurrency": 1,
+    "phaseConcurrency": {},
+    "maxLoadedModelLanes": 1,
+    "modelKeepAlive": "NONE",
+    "modelHealth": {},
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
+    "checkpoint": {
+      "contractVersion": 4,
+      "engineDigest": "0764aae8ff08370ba78e035644b427ff29805e71ab79c6bb19aa747d50e36643",
+      "reused": false,
+      "completedPhases": 3,
+      "cachedTasks": 11
+    },
+    "simplifiedLeadOnlyReview": false,
+    "deterministicDepartmentEvidence": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 0,
+    "departmentScopedContext": true
+  },
+  "designLearning": {
+    "candidateCount": 2,
+    "usedAsDesignContext": true,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [],
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": true,
+  "vibe2LearningContextUsed": true,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "company-learning/platform-release-roadmap.json",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "ACTIVE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+        "source": "design/territory-war/2026-10-10/design-seed.json",
+        "designerSeed": {
+          "source": "design/territory-war/2026-10-10/design-seed.json",
+          "authorModel": "vibe-native:causal-design-v1",
+          "contentDigest": "ff59b23ffc245c62251f83faaf284dd77cc603f1ebbb800503c4de1528c3010c"
+        }
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "COOP",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "deterministicDesignGate": {
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/territory-war/2026-10-10/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
+        "hardFailures": [],
+        "criticalAxisFailures": []
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": true,
+        "source": "company-qa-runtime-evidence.json"
+      },
+      "minimumDesign": {
+        "required": false,
+        "pass": true,
+        "source": "design/territory-war/2026-10-10/design-revised.json",
+        "date": "2026-10-10"
+      },
+      "upperPlatformReadiness": {
+        "required": false,
+        "pass": false,
+        "source": "web-games/territory-war/upper-platform-development-readiness.json",
+        "reason": "MISSING",
+        "state": null,
+        "unitySourceTreeSha256": null,
+        "currentUnitySourceTreeSha256": null
+      },
+      "webGameplay": {
+        "required": false,
+        "supportingOnly": true,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": false,
+        "path": null,
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
+      "aiReviewIsGateAuthority": false,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsDirectNative": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresMinimumDualPlatformDesign": true,
+      "developmentConfirmedRequiresUpperPlatformReadinessBeforeNewNativeStart": true,
+      "existingNativeTechnicalEvidenceGrandfathered": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookRunsInParallel": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-10-10T11:18:59.264Z"
+  },
+  "artbookUi": {
+    "status": "WRITING",
+    "label": "작성중",
+    "path": "artbook-submissions/territory-war/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
+  }
+}
