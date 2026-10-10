@@ -660,6 +660,8 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           const originalModelPath=clean(recipe?.sourceModel);
           if(originalModelPath){
             const modelPath=dccRepoPath(originalModelPath),full=path.resolve(cwd,modelPath);
+            if(!fs.existsSync(full)||!fs.statSync(full).isFile())
+              throw new Error('NATIVE_OPEN_SOURCE_IMPORTED_MODEL_UNVERIFIED:'+modelPath);
             const modelRoot=fs.realpathSync(path.join(cwd,'assets'));
             const actualModel=fs.realpathSync(full);
             if(!actualModel.startsWith(modelRoot+path.sep)||fs.lstatSync(full).isSymbolicLink())
