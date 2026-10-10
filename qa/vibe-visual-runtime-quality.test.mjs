@@ -215,7 +215,12 @@ test('cinematic proof stays inside existing graphics production and cannot grant
     ...base,
     nativeAuthoringExecution:{dcc:{
       ...base.nativeAuthoringExecution.dcc,
-      executionEvidence:{recipes:[{id:'cinematic-prop',cinematicVideo:{verifiedBy:'FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH'}}]}
+      executionEvidence:{recipes:[{id:'cinematic-prop',cinematicVideo:{
+        verifiedBy:'FFPROBE_DECODED_FRAME_COUNT_AND_SOURCE_HASH',
+        path:'assets/generated/roblox/demo/prop/cinematic.mp4',
+        shotlistPath:'assets/generated/roblox/demo/prop/shotlist.json',
+        sha256:'a'.repeat(64),shotlistSha256:'b'.repeat(64)
+      }}]}
     }}
   };
   const rendered=createVibeGraphicsProduction({gameId:'demo',target:'roblox',assetProductionPlan:claimed});
