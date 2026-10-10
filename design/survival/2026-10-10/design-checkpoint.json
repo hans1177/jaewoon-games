@@ -153,21 +153,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 193,
-      "successes": 193,
+      "calls": 204,
+      "successes": 204,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1903446,
-      "lastMs": 7646,
+      "totalMs": 2019927,
+      "lastMs": 7967,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:00:00.173Z"
+      "updatedAt": "2026-10-10T06:01:56.682Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:28:15.947Z",
-  "updatedAt": "2026-10-10T06:00:00.174Z",
+  "updatedAt": "2026-10-10T06:01:56.683Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1912,15 +1912,6 @@
   "sliceRepairFeedback": {
     "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": [
       {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "main_essential_survival_state_transition",
-          "a_essential_survival_state_transition",
-          "b_essential_survival_state_transition"
-        ]
-      },
-      {
         "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
         "grammarRole": "DELVE",
         "previousRuleIds": [
@@ -1942,11 +1933,11 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 99,
-    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": 89
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": 100
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:00:00.173Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:01:56.682Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
