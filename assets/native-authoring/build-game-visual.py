@@ -680,6 +680,28 @@ else:
 
 # 애니메이션·영상 내장 모듈: 실제 메시/관절에 프레임별 키를 넣고 GLB에 포함한다.
 # 포즈 이동은 시각 표현으로만 사용하고 게임의 데미지·물리 판정을 변경하지 않는다.
+# Apply authored geometry before measuring it. Smart UVs include bevel faces.
+for obj in ASSET_OBJECTS:
+    bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
+    # 인체 리그 바인딩을 유지하며 기존 정적 메쉬의 모디파이어 처리만 유지한다.
+    if not ASSET_ARMATURES:
+        for modifier in list(obj.modifiers):bpy.ops.object.modifier_apply(modifier=modifier.name)
+    bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.025)
+    bpy.ops.object.mode_set(mode='OBJECT')
+bpy.context.view_layer.update()
+# Match the GLB inspector: rotated bounding-box corners are not mesh contact.
+points=[obj.matrix_world@vertex.co for obj in ASSET_OBJECTS for vertex in obj.data.vertices]
+lo=Vector(tuple(min(p[i] for p in points) for i in range(3)))
+hi=Vector(tuple(max(p[i] for p in points) for i in range(3)))
+shift=Vector((-(lo.x+hi.x)/2,-(lo.y+hi.y)/2,-lo.z))
+for obj in ASSET_OBJECTS:
+    if obj.parent not in ASSET_ARMATURES:obj.location+=shift
+for rig in ASSET_ARMATURES:rig.location+=shift
+bpy.context.view_layer.update()
+BOUNDS_SIZE=list(hi-lo)
+
+# 모션 키는 지면 피벗·크기 정규화가 끝난 뒤 기록한다. 이동 키프레임은 정규화 전 좌표로 되돌아가면 안 된다.
 MOTION_CLIPS=[]
 if ARGS.module in ('animation','video'):
     if ARGS.module=='video' and ARGS.source_sanitized=='yes':
@@ -721,26 +743,6 @@ if ARGS.module in ('animation','video'):
         'videoEncoding':'FFMPEG_MPEG4_LGPL_PATH' if ARGS.module=='video' else None,
         'runtimeVerified':False}
 
-# Apply authored geometry before measuring it. Smart UVs include bevel faces.
-for obj in ASSET_OBJECTS:
-    bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
-    # 인체 리그 바인딩을 유지하며 기존 정적 메쉬의 모디파이어 처리만 유지한다.
-    if not ASSET_ARMATURES:
-        for modifier in list(obj.modifiers):bpy.ops.object.modifier_apply(modifier=modifier.name)
-    bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.025)
-    bpy.ops.object.mode_set(mode='OBJECT')
-bpy.context.view_layer.update()
-# Match the GLB inspector: rotated bounding-box corners are not mesh contact.
-points=[obj.matrix_world@vertex.co for obj in ASSET_OBJECTS for vertex in obj.data.vertices]
-lo=Vector(tuple(min(p[i] for p in points) for i in range(3)))
-hi=Vector(tuple(max(p[i] for p in points) for i in range(3)))
-shift=Vector((-(lo.x+hi.x)/2,-(lo.y+hi.y)/2,-lo.z))
-for obj in ASSET_OBJECTS:
-    if obj.parent not in ASSET_ARMATURES:obj.location+=shift
-for rig in ASSET_ARMATURES:rig.location+=shift
-bpy.context.view_layer.update()
-BOUNDS_SIZE=list(hi-lo)
 
 # Deterministic metadata on actual exported objects.
 for obj in ASSET_OBJECTS:
