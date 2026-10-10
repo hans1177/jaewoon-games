@@ -194,25 +194,42 @@
         "DEVELOPMENT: Players return or push deeper based on current supplies and group readiness.",
         "RESOLUTION: Players craft a survival advantage, improve shelter or equipment, and prepare for the next stronger threat."
       ]
+    },
+    "local_authoring_parts::1327ae72b447ffba868782c3caae1c941baa453376db9c4334697c2ffca46c5f:signatureSystems:0": {
+      "id": "SURVIVAL2-MAIN",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "OPENING: Player explores forest for needed resource while reading environmental/",
+        "DEVELOPMENT: Player returns or pushes deeper based on current supplies and group",
+        "RESOLUTION: Player crafts survival advantage, improves shelter/equipment, and "
+      ],
+      "stateOutputs": [
+        "OPENING: Player gains access to critical resource, learns about potential threat",
+        "DEVELOPMENT: Players collaborate to secure resources, negotiate strategies, and",
+        "RESOLUTION: Cooperative systems evolve into dynamic, multi-layered networks"
+      ],
+      "name": "Survival System",
+      "purpose": "Core mechanics for resource gathering, risk assessment, and shelter progression",
+      "playerChoice": "Strategic resource management and group collaboration"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 624722,
-      "lastMs": 98195,
+      "totalMs": 732798,
+      "lastMs": 108076,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:56:15.318Z"
+      "updatedAt": "2026-10-10T01:58:03.397Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:45:50.305Z",
-  "updatedAt": "2026-10-10T01:56:15.318Z",
+  "updatedAt": "2026-10-10T01:58:03.397Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1921,7 +1938,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:56:15.318Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:58:03.397Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
