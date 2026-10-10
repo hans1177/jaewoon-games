@@ -60,7 +60,9 @@ test('Unity Web C# code audit verifies two different authored systems through re
     ' public int RouteState; public int RiskState; public int ResourceState;',
     ' private string _message;',
     ' public void OnGUI(){ if(GUI.Button(new Rect(0,0,64,64),"Explore")) ExecuteAction(); }',
-    ' private void ExecuteAction(){ RiskState=RouteState+1; ResourceState=RiskState+5; _message="Reward acquired"; }',
+    ' private void ExecuteAction(){ RiskState=RouteState+1; ResourceState=RiskState+5; _message="Reward acquired"; '+
+    'Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=native-systems system=SOURCE_MAIN state=RiskState before="); '+
+    'Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=native-systems system=SOURCE_A state=ResourceState before="); }',
     ' public void Update(){ GUILayout.Label(ResourceState.ToString()); }',
     '}'
   ].join('\n');
@@ -152,6 +154,65 @@ test('Unity Web C# code audit verifies two different authored systems through re
     }}});
     assert.equal(wrongEdges.pass,false);
     assert.ok(wrongEdges.edges[0].failures.includes('PRODUCER_OUTPUT_NOT_AUTHORED:ResourceState'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 회귀/변이 검증: 각 설계 핵심 시스템의 고유 C# 메서드가 실제 UI 입력에서
+// 호출돼야 하며, 타 시스템의 동일 상태 기록으로 대체되어서는 안 된다.
+// 정적 검증은 독립 브라우저 3회 결과 없이 절대로 최종 PASS가 되지 않는다.
+test('Daechung four design systems each own real C# input-to-state code; disconnect one to fail closed',()=>{
+  const originalRoot=path.resolve(new URL('../',import.meta.url).pathname);
+  const id='daechung-rpg';
+  const design={content:{signatureSystems:[
+    {id:'VIBE_MAIN',grammarRole:'MAIN',stateInputs:['WorldAccessState','IntentState'],
+      stateOutputs:['RouteState','WorldAccessState']},
+    {id:'VIBE_A',grammarRole:'A',stateInputs:['RouteState','RiskState'],
+      stateOutputs:['RiskState','ResourceState']},
+    {id:'VIBE_B',grammarRole:'B',stateInputs:['RiskState','ResourceState'],
+      stateOutputs:['RouteState','RiskState']},
+    {id:'VIBE_DELVE',grammarRole:'DELVE',stateInputs:['RouteState','RiskState'],
+      stateOutputs:['WorldAccessState','IntentState']}
+  ]}};
+  const inspect=root=>auditUnityWebNativeSystems({repoRoot:root,gameId:id,designRecord:design});
+  const source=inspect(originalRoot);
+  assert.equal(source.roles.length,4);
+  assert.equal(source.staticCoverageComplete,true,JSON.stringify(source.roles.map(
+    role=>({id:role.systemId,failures:role.failures,handlers:role.roleBoundNativeMethods}))));
+  assert.equal(source.pass,false,'C# source static coverage alone cannot prove a compiled WebGL playtest');
+  assert.equal(source.runtimeValid,false);
+  for(const role of source.roles){
+    assert.equal(role.staticComplete,true,role.systemId);
+    assert.ok(role.roleBoundNativeMethods.some(method=>method.symbol==='Record'+({
+      VIBE_MAIN:'WorldChoice',VIBE_A:'ConsequenceChoice',
+      VIBE_B:'ExplorationOutcome',VIBE_DELVE:'DelveOutcome'
+    })[role.systemId]),role.systemId);
+  }
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'daechung-system-role-mutation-'));
+  try{
+    const relative='unity-games/'+id+'/Assets/Scripts';
+    const nativeScripts=path.join(originalRoot,relative);
+    const copiedScripts=path.join(root,relative);
+    fs.mkdirSync(path.dirname(copiedScripts),{recursive:true});
+    fs.cpSync(nativeScripts,copiedScripts,{recursive:true});
+    const runtime=path.join(copiedScripts,'RuntimeBootstrap.cs');
+    const original=fs.readFileSync(runtime,'utf8');
+    for(const [role,call] of [
+      ['VIBE_MAIN','_core.RecordWorldChoice();'],
+      ['VIBE_A','_core.RecordConsequenceChoice();'],
+      ['VIBE_B','_core.RecordExplorationOutcome();'],
+      ['VIBE_DELVE','_core.RecordDelveOutcome();']
+    ]){
+      assert.ok(original.includes(call),call);
+      fs.writeFileSync(runtime,original.replace(call,''));
+      const mutated=inspect(root);
+      assert.equal(mutated.staticCoverageComplete,false,'mutation of '+role+' must block static acceptance');
+      assert.equal(mutated.roles.find(row=>row.systemId===role).staticComplete,false);
+      assert.ok(mutated.roles.find(row=>row.systemId===role).failures.some(
+        reason=>reason.startsWith('DESIGN_SYSTEM_OWN_NATIVE_INPUT_STATE_HANDLER_MISSING')
+          ||reason.startsWith('PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE')),
+        role);
+      fs.writeFileSync(runtime,original);
+    }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
