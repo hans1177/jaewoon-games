@@ -1838,6 +1838,61 @@ test('generic environment and prop authoring declares task-specific Blender outp
   assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
 });
 
+test('licensed single image enters existing Blender TripoSR DCC recipe with genuine multiview render outputs',()=>{
+  const task={
+    gameId:'image-mesh-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 게임 환경 배경 소품 3D',
+    imageToAsset:true,referenceImages:[{
+      sourceId:'owned-prop-ref',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+      path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'
+    }]
+  };
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+    assert.ok(recipes.length>0,target);
+    for(const recipe of recipes){
+      assert.equal(recipe.imageToMesh,true);
+      assert.equal(recipe.sourceImage,'assets/roblox/world-ghosts/dokkaebi.png');
+      assert.equal(recipe.sourceLicense,'project-original');
+      assert.equal(recipe.runMode,'VERIFY_ONLY');
+      assert.equal(recipe.runtimeVerificationRequired,true);
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.ok(recipe.args.includes('--source-image'));
+      assert.equal(recipe.args[recipe.args.indexOf('--source-image')+1],recipe.sourceImage);
+      assert.ok(recipe.args.includes('--source-license'));
+      assert.ok(recipe.outputs.some(name=>name.endsWith('/preview.png')));
+      for(const angle of ['000','090','180','270']){
+        assert.ok(recipe.outputs.some(name=>name.endsWith('/preview-angle-'+angle+'.png')),angle);
+      }
+    }
+  }
+  const ccby={...task,referenceImages:[{
+    path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY',credit:'Creator, source, CC-BY'
+  }]};
+  const byPlan=buildVibeAssetProductionPlan({target:'roblox',task:ccby,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(byPlan.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.license==='CC-BY'));
+  const invalid={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:invalid,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
+  const traversal={...task,referenceImages:[{path:'../private.png',license:'project-original'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:traversal,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED/);
+  const noCredit={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:noCredit,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_ATTRIBUTION_REQUIRED/);
+});
+
+test('image mesh reconstruction requires real local open-source weights and cannot silently substitute primitives',()=>{
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED/);
+  assert.match(py,/IMAGE_TO_MESH_GENERATED_GEOMETRY_INVALID/);
+  assert.match(py,/IMAGE_TO_MESH_VIEW_RENDER_MISSING/);
+  assert.match(py,/STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING/);
+  const executor=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(executor,/IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID/);
+  assert.match(executor,/IMAGE_TO_MESH_MULTIVIEW_RENDER_REQUIRED/);
+  assert.match(executor,/sha256File\(imageFile\)/);
+});
+
 test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
   const threeD=buildVibeAssetProductionPlan({
     target:'web',
