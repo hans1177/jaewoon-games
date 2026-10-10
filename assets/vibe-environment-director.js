@@ -682,8 +682,14 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       footprint.forEach(c=>occupied.add(at(c.x,c.z)));
       const distance=Math.hypot(x-(hub?.x??w/2),z-(hub?.z??h/2));
       const zone=distance<Math.min(w,h)*.23?'COMMERCIAL':x>w*.75?'WORKSHOP':'RESIDENTIAL';
+      // 시대·기술 수준은 건축 모델과 문화층에만 적용한다. 전투·기술 해금·경제 단계는 바꾸지 않는다.
+      const eraRequest=String(eraByZone[zone]||eraKey).toUpperCase();
+      const eras=['ANCIENT','MEDIEVAL','MODERN','FUTURE'];
+      const eraResolved=eraRequest==='HYBRID'
+        ?eras[proceduralCellHash(hash^0xe2a,x,z)%eras.length]:eraRequest;
       const climateText=String(climate).toUpperCase(),biomeText=String(biome).toUpperCase();
-      const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
+      const roof=/WET|RAIN|SNOW|COLD/.test(climateText)?'PITCHED_ROOF':
+        eraResolved==='ANCIENT'||eraResolved==='MODERN'||eraResolved==='FUTURE'||/ARID|DESERT/.test(climateText+' '+biomeText)?'FLAT_ROOF':'ROOF';
       const levelY=Math.max(...footing),pivot=worldPosition(x,z,levelY),doorFacing=dx!==0?(dx>0?'WEST':'EAST'):(dz>0?'NORTH':'SOUTH');
       // 문 위치와 길 연결은 월드 배치의 검증된 제안이며 실제 네비/충돌 권한은 게임 런타임이 가진다.
       const doorGrid=doorFacing==='WEST'?{x:x-.5,z:z+.5}:doorFacing==='EAST'?{x:x+1.5,z:z+.5}:doorFacing==='NORTH'?{x:x+.5,z:z-.5}:{x:x+.5,z:z+1.5};
@@ -694,8 +700,19 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       const floorHeight=+(cellSize*(1.3+shapeSeed*.9)).toFixed(3);
       const wallHeight=+(floorHeight*storeys).toFixed(3);
       const roofRise=roof==='FLAT_ROOF'?0:+(wallHeight*(.24+shapeSeed*.15)).toFixed(3);
-      const sourceBinding=pickSource('BUILDING',zone,x,z);
-      const baseMaterial=/GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER';
+      const sourceBinding=pickSource('BUILDING',eraResolved==='LOCAL'?zone:eraResolved+':'+zone,x,z);
+      const baseMaterial=eraResolved==='ANCIENT'?'STONE':eraResolved==='MEDIEVAL'?'TIMBER_STONE':
+        eraResolved==='MODERN'?'STEEL_GLASS':eraResolved==='FUTURE'?'ENGINEERED_COMPOSITE':
+        /GOTHIC|CASTLE/.test(style)?'STONE':/MODERN/.test(style)?'METAL_GLASS':/ARID|DESERT/.test(climateText+' '+biomeText)?'CLAY':'TIMBER';
+      const eraModules=eraResolved==='ANCIENT'?['COLUMN','COURT','STONE_ARCH','ROOF_DRAIN']
+        :eraResolved==='MEDIEVAL'?['TIMBER_FRAME','WALL_INFILL','LOAD_BEAM','BATTLEMENT_OR_PITCHED_ROOF']
+        :eraResolved==='MODERN'?['REINFORCED_FRAME','GLAZED_FACADE','SERVICE_CORE','ELEVATOR_ACCESS']
+        :eraResolved==='FUTURE'?['MODULAR_STRUCTURAL_FRAME','SMART_ENVELOPE','SKYBRIDGE_SOCKET','SERVICE_SHAFT']
+        :['FOUNDATION','WALL','DOOR','ROOF'];
+      const eraArchitecture=Object.freeze({era:eraResolved,eraSelection:eraRequest,
+        structuralGrammar:Object.freeze(eraModules),constructionLayer:'ARCHITECTURAL_VISUAL_AUTHORING_ONLY',
+        gameTechnologyOrProgressionUnlockChanged:false,periodMixSupported:eraRequest==='HYBRID',
+        cultureIdentityPreserved:true,native3dComponentsRequired:true,nativeArchitectureVerified:false});
       const materialBindings=Object.freeze({
         foundation:pickSource('MATERIAL',terrain[at(x,z)].surface?.stratum||'STONE',x,z),
         wall:pickSource('MATERIAL',baseMaterial,x,z),
@@ -715,7 +732,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
         maxGroundSlopeDegrees:maxGroundSlope,minimumSubstrateStability:weakGround,landUseScore,
         stormwaterDrainage:terrain[at(x,z)].drainageTo||null,streetNetworkVerified:false,
         zoningAlgorithm:'GRAPH_PEDESTRIAN_ACCESS_AND_MULTICRITERIA_TERRAIN_RISK',runtimeBuildingPermitted:false});
-      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,planning,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:baseMaterial,materialBindings,verifiedStructuralEngineering:false,
+      const building={id:'LOT_'+buildings.length,stableObjectId,doorway,planning,era:eraResolved,interactionBinding:{stableObjectId,kind:'ENTER',status:'GAMEPLAY_BINDING_REQUIRED',authoritativeState:false},zone,style,footprint,position:pivot,foundation:{terrainMinY:Math.min(...footing),terrainMaxY:Math.max(...footing),levelY},construction:{climate:climateText,primaryMaterial:baseMaterial,materialBindings,eraArchitecture,verifiedStructuralEngineering:false,
         structure3d:dimension==='3D'?Object.freeze({footprintWidthMeters:cellSize*2,footprintDepthMeters:cellSize*2,wallHeightMeters:wallHeight,wallThicknessMeters:+Math.max(.12,cellSize*.08).toFixed(3),foundationThicknessMeters:+Math.max(.15,cellSize*.12).toFixed(3),
           roofRiseMeters:roofRise,storeys,floorHeightMeters:floorHeight,structuralFloorSlabsRequired:storeys>1,doorOpeningWidthMeters:+(cellSize*.46).toFixed(3),doorOpeningHeightMeters:+(wallHeight*.7).toFixed(3),
           geometryRoles:Object.freeze(['FOUNDATION','WALL_OPENINGS','STRUCTURAL_JOINTS','DOOR_DEPTH','ROOF_GEOMETRY','INTERIOR_SHELL']),realNative3dMeshRequired:true,geometryGenerated:false}):null},
@@ -882,6 +899,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       season:seasonKey,seasonalThermal,habitatDistribution:Object.freeze(Object.fromEntries([...habitatCounts].sort(([a],[b])=>a.localeCompare(b)))),
       habitats:Object.freeze(habitatBalance),feedbackAccepted,resourceAndCreatureSpawnAuthority:false,
       originalGameplaySpeciesAndPopulationPreserved:true,realBiologySimulationClaimed:false,nativeVisualsVerified:false}),
+    eraAndCulture:Object.freeze({requestedEra:eraKey,eraByZone:Object.freeze({...eraByZone}),
+      supportedEras:Object.freeze(supportedEras),usedEras:Object.freeze([...new Set(buildings.map(row=>row.era))].sort()),
+      buildingCountByEra:Object.freeze(Object.fromEntries([...new Set(buildings.map(row=>row.era))].sort().map(period=>
+        [period,buildings.filter(row=>row.era===period).length]))),
+      structuralGrammarsAreNativeAuthoringInputs:true,noTechnologyEconomyOrGameplayProgressionMutation:true,
+      perBuildingEraAndStyleSynchronizationRequired:true,nativeEraWorldRuntimeVerified:false}),
     urbanPlanning:Object.freeze({algorithm:'ROAD_GRAPH_BFS_WEIGHTED_LAND_USE_STORMWATER_AND_LOT_STRUCTURAL_GRAMMAR',
       roadCellCount:roadSet.size,roadIntersections:[...roadDegree.values()].filter(degree=>degree>=3).length,
       arterialRoadCells:arterial.size,walkableHubRoadCells:pedestrianDistance.filter(value=>value>=0).length,
