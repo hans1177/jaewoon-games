@@ -132,25 +132,38 @@
       "name": "Material Innovation System",
       "purpose": "Enables strategic resource utilization and structural development through innovation.",
       "playerChoice": "Select advanced building materials or methods to optimize construction efficiency and durability."
+    },
+    "local_authoring_parts::9a3490df5426b5231694277b82b5f6485a2bff72879dc2a2ac990ab661da9d5d:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Player discovers new materials"
+      ],
+      "stateOutputs": [
+        "Enhances construction quality"
+      ],
+      "name": "Material Innovation System",
+      "purpose": "Enables structural development through material innovation",
+      "playerChoice": "Select new building material or method"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 453761,
-      "lastMs": 93361,
+      "totalMs": 546890,
+      "lastMs": 93129,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:52:03.372Z"
+      "updatedAt": "2026-10-10T01:53:36.502Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:44:29.587Z",
-  "updatedAt": "2026-10-10T01:52:03.372Z",
+  "updatedAt": "2026-10-10T01:53:36.502Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1751,7 +1764,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:52:03.372Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:53:36.502Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
