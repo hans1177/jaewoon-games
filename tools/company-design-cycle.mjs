@@ -1476,7 +1476,7 @@ function computeVibeNativeDesign(){
       balanceRules:'한쪽 선택이 언제나 이득이 되지 않도록 위험·정보·기회비용을 함께 비교하고 기존 원본 수치는 바꾸지 않는다.'
     },
     contentExpansionPlan:grammar.expansionVectors.slice(0,4).map((value,index)=>({
-      milestone:['첫 선택의 결과','두 시스템의 충돌','숨은 인과법칙','재방문과 장기 숙련'][index],
+      milestone:['초반 선택에 따른 접근 경로와 위험 재구성','중반 두 시스템의 반작용과 대응 조건 충돌','숨겨진 세계 인과법칙을 이용한 새로운 접근','누적된 관계를 되짚는 재방문과 장기 숙련'][index],
       newGameplay:shorten(`${value} ${[
         '첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.',
         '중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.',
