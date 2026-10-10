@@ -8,25 +8,30 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 8,
-  "lastSuccessfulModelCallAt": "2026-10-10T09:38:46.365Z",
+  "cachedTaskCount": 11,
+  "lastSuccessfulModelCallAt": "2026-10-10T09:40:03.152Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "designerSeed": null,
+  "designerSeed": {
+    "file": "design/horror-escape-room/2026-10-10/design-seed.json",
+    "contentDigest": "67404bace92616a697d278e8e7b327bbb54967f2722fd0d6df2431606ffc088c",
+    "authorModel": "ollama:qwen3:1.7b",
+    "status": "AUTHORED_CANDIDATE"
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 8,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 265134,
-      "lastMs": 6822,
+      "totalMs": 341918,
+      "lastMs": 76784,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:38:46.364Z"
+      "updatedAt": "2026-10-10T09:40:03.150Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T09:38:46.366Z"
+  "updatedAt": "2026-10-10T09:40:03.160Z"
 }

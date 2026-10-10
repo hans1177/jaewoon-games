@@ -1,0 +1,320 @@
+{
+  "version": 1,
+  "gameId": "horror-escape-room",
+  "date": "2026-10-10",
+  "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "ollama:qwen3:1.7b",
+  "singleAuthor": true,
+  "sourceStage": "identity-core",
+  "phase": "designer_draft",
+  "status": "AUTHORED_CANDIDATE",
+  "inputSource": "OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS",
+  "originalSource": "design/horror-escape-room/2026-09-22/design-revised.json",
+  "codingBasis": {
+    "state": "DESIGN_CANDIDATE",
+    "codeGenerationAuthorized": false,
+    "requiredGate": "DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE",
+    "identity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+    "creativeGrammar": {
+      "mainIdentity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+      "a": {
+        "system": "감염 전환 시스템",
+        "material": "명시적 서버 권한 감염 공격",
+        "materialDomain": "게임 내 인물/몬스터의 감염 상태 관리",
+        "stateChange": "인간 감염 후 몬스터로 전환, 고유 감염 스킬 획득"
+      },
+      "b": {
+        "system": "정화 시스템",
+        "material": "정화 공격",
+        "materialDomain": "감염된 인물/몬스터의 생명력 제거",
+        "stateChange": "몬스터를 라운드에서 제거, 인간을 회복"
+      },
+      "abCausality": "감염 상태 변화는 정화 상태 변화와 양방향 교환이다. 감염은 정화에 의해 해결되며, 정화는 감염에 의해 재발할 수 있다.",
+      "abEvolution": {
+        "aChangesB": "감염이 발생하면 정화가 실행된다. 감염은 정화로 해결되고, 정화는 감염으로 다시 시작될 수 있다.",
+        "bChangesA": "정화가 실행되면 감염이 재발한다. 정화는 감염으로부터 회복되며, 감염은 정화로부터 재생 될 수 있다.",
+        "lateGameChange": "감염과 정화 사이의 상호작용은 계속 유지되어야 하며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다."
+      },
+      "materialFusion": {
+        "contrast": "명시적 서버 권한 감염 공격 vs. 정화 공격",
+        "causalBridge": "감염은 정화로 해결됨, 정화는 감염으로 재생됨",
+        "removalConsequence": "감염된 인물/몬스터는 몬스터로 전환, 정화된 인물/몬스터는 인간으로 되돌아옴"
+      },
+      "storyCausalChain": {
+        "cause": "인간4/몬스터4 배정 및 빈자리 AI 충원",
+        "characterConflict": "감염 공격과 정화 공격 간의 대립 싸움",
+        "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택",
+        "worldChange": "감염된 인간이 몬스터로 전환, 정화된 인간이 인간으로 되돌아옴",
+        "nextEvent": "다음 플레이어 선택 및 새로운 감염 상태 생성"
+      },
+      "cThemes": [
+        {
+          "name": "감염",
+          "kind": "MATERIAL",
+          "gameplayEffect": "인간-몬스터 4대4 감염 추격전"
+        },
+        {
+          "name": "정화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "감염된 인물/몬스터의 생명력 제거"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "감염 시스템",
+          "gameplayEffect": "명시적 서버 권한 감염 공격 및 정화"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "정화 시스템",
+          "gameplayEffect": "감염된 인물/몬스터의 생명력 제거"
+        }
+      ],
+      "cGenreInterlock": "감염과 정화는 서로 다른 게임 내 시스템이며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다.",
+      "cWorldAndGameplayEffect": "감염은 정화로 해결됨, 정화는 감염으로 재생됨. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다.",
+      "delveDiscoveries": [
+        {
+          "clue": "인간4/몬스터4 배정",
+          "discovery": "AI 충원을 통해 빈자리가 채워진다",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "감염 공격과 정화 공격",
+          "discovery": "감염은 정화로 해결되고, 정화는 감염으로 재생된다",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "감염된 인간이 몬스터로 전환",
+          "discovery": "고유 감염 스킬 획득",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "정화된 인간이 인간으로 되돌아옴",
+          "discovery": "정화 공격 실행됨으로 인해 생명력 제거",
+          "newChoice": "정화 공격 실행 및 새로운 감염 상태 생성"
+        }
+      ],
+      "delveGrowthRule": "감염과 정화 사이의 상호작용은 계속 유지되어야 하며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다.",
+      "finalGameIdentity": "감염과 정화 시스템을 통한 인간-몬스터 4대4 감염 추격전"
+    },
+    "coreFun": "감염 공격 → 정화 공격 순차적으로 진행하며, 감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다.",
+    "coreLoop": [
+      "인간4/몬스터4 배정 및 빈자리 AI 충원",
+      "감염 공격 → 정화 공격 순차적으로 진행",
+      "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다"
+    ],
+    "signatureSystems": [
+      {
+        "id": "main_road",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "학교"
+        ],
+        "stateOutputs": [
+          "폐놀이공원"
+        ],
+        "name": "로드",
+        "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "a_main_road",
+        "grammarRole": "A",
+        "stateInputs": [
+          "폐놀이공원"
+        ],
+        "stateOutputs": [
+          "학교"
+        ],
+        "name": "감염 전환 시스템",
+        "purpose": "게임 내 인물/몬스터의 감염 상태 관리 및 전환 로직 구현",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "b_road",
+        "grammarRole": "B",
+        "stateInputs": [
+          "학교"
+        ],
+        "stateOutputs": [
+          "폐놀이공원"
+        ],
+        "name": "로드 전환 시스템",
+        "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "delve_road",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "폐놀이공원"
+        ],
+        "stateOutputs": [
+          "학교"
+        ],
+        "name": "감염 상태",
+        "purpose": "인물 또는 몬스터가 감염 상태를 나타내는 상태 변수",
+        "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+      }
+    ],
+    "multiplayerMode": "COMPETITIVE",
+    "targetPlatform": "ROBLOX"
+  },
+  "fingerprint": "bf57de8fac719c6434a13564aeb3a3ebdeec753618c62ea55d653cb21832f91b",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "contentDigest": "67404bace92616a697d278e8e7b327bbb54967f2722fd0d6df2431606ffc088c",
+  "externalSeedRequired": false,
+  "designPass": false,
+  "runtimePass": false,
+  "content": {
+    "identity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+    "creativeGrammar": {
+      "mainIdentity": "감염 전환 및 정화 시스템, 인간-몬스터 4대4 감염 추격전",
+      "a": {
+        "system": "감염 전환 시스템",
+        "material": "명시적 서버 권한 감염 공격",
+        "materialDomain": "게임 내 인물/몬스터의 감염 상태 관리",
+        "stateChange": "인간 감염 후 몬스터로 전환, 고유 감염 스킬 획득"
+      },
+      "b": {
+        "system": "정화 시스템",
+        "material": "정화 공격",
+        "materialDomain": "감염된 인물/몬스터의 생명력 제거",
+        "stateChange": "몬스터를 라운드에서 제거, 인간을 회복"
+      },
+      "abCausality": "감염 상태 변화는 정화 상태 변화와 양방향 교환이다. 감염은 정화에 의해 해결되며, 정화는 감염에 의해 재발할 수 있다.",
+      "abEvolution": {
+        "aChangesB": "감염이 발생하면 정화가 실행된다. 감염은 정화로 해결되고, 정화는 감염으로 다시 시작될 수 있다.",
+        "bChangesA": "정화가 실행되면 감염이 재발한다. 정화는 감염으로부터 회복되며, 감염은 정화로부터 재생 될 수 있다.",
+        "lateGameChange": "감염과 정화 사이의 상호작용은 계속 유지되어야 하며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다."
+      },
+      "materialFusion": {
+        "contrast": "명시적 서버 권한 감염 공격 vs. 정화 공격",
+        "causalBridge": "감염은 정화로 해결됨, 정화는 감염으로 재생됨",
+        "removalConsequence": "감염된 인물/몬스터는 몬스터로 전환, 정화된 인물/몬스터는 인간으로 되돌아옴"
+      },
+      "storyCausalChain": {
+        "cause": "인간4/몬스터4 배정 및 빈자리 AI 충원",
+        "characterConflict": "감염 공격과 정화 공격 간의 대립 싸움",
+        "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택",
+        "worldChange": "감염된 인간이 몬스터로 전환, 정화된 인간이 인간으로 되돌아옴",
+        "nextEvent": "다음 플레이어 선택 및 새로운 감염 상태 생성"
+      },
+      "cThemes": [
+        {
+          "name": "감염",
+          "kind": "MATERIAL",
+          "gameplayEffect": "인간-몬스터 4대4 감염 추격전"
+        },
+        {
+          "name": "정화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "감염된 인물/몬스터의 생명력 제거"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "감염 시스템",
+          "gameplayEffect": "명시적 서버 권한 감염 공격 및 정화"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "정화 시스템",
+          "gameplayEffect": "감염된 인물/몬스터의 생명력 제거"
+        }
+      ],
+      "cGenreInterlock": "감염과 정화는 서로 다른 게임 내 시스템이며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다.",
+      "cWorldAndGameplayEffect": "감염은 정화로 해결됨, 정화는 감염으로 재생됨. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다.",
+      "delveDiscoveries": [
+        {
+          "clue": "인간4/몬스터4 배정",
+          "discovery": "AI 충원을 통해 빈자리가 채워진다",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "감염 공격과 정화 공격",
+          "discovery": "감염은 정화로 해결되고, 정화는 감염으로 재생된다",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "감염된 인간이 몬스터로 전환",
+          "discovery": "고유 감염 스킬 획득",
+          "newChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+        },
+        {
+          "clue": "정화된 인간이 인간으로 되돌아옴",
+          "discovery": "정화 공격 실행됨으로 인해 생명력 제거",
+          "newChoice": "정화 공격 실행 및 새로운 감염 상태 생성"
+        }
+      ],
+      "delveGrowthRule": "감염과 정화 사이의 상호작용은 계속 유지되어야 하며, 각각의 상태 변화는 다른 방식으로 이루어질 수 있다.",
+      "finalGameIdentity": "감염과 정화 시스템을 통한 인간-몬스터 4대4 감염 추격전"
+    },
+    "playerFantasy": "인간은 감염에 노출되면 즉시 몬스터로 변하고, 정화를 통해 생명력을 회복하는 게임. 감염은 정화로 해결되며, 정화는 감염으로 재생된다.",
+    "coreFun": "감염 공격 → 정화 공격 순차적으로 진행하며, 감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다. 감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다.",
+    "coreLoop": [
+      "인간4/몬스터4 배정 및 빈자리 AI 충원",
+      "감염 공격 → 정화 공격 순차적으로 진행",
+      "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다"
+    ],
+    "signatureSystems": [
+      {
+        "id": "main_road",
+        "grammarRole": "MAIN",
+        "stateInputs": [
+          "학교"
+        ],
+        "stateOutputs": [
+          "폐놀이공원"
+        ],
+        "name": "로드",
+        "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "a_main_road",
+        "grammarRole": "A",
+        "stateInputs": [
+          "폐놀이공원"
+        ],
+        "stateOutputs": [
+          "학교"
+        ],
+        "name": "감염 전환 시스템",
+        "purpose": "게임 내 인물/몬스터의 감염 상태 관리 및 전환 로직 구현",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "b_road",
+        "grammarRole": "B",
+        "stateInputs": [
+          "학교"
+        ],
+        "stateOutputs": [
+          "폐놀이공원"
+        ],
+        "name": "로드 전환 시스템",
+        "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
+        "playerChoice": "학교 → 폐놀이공원"
+      },
+      {
+        "id": "delve_road",
+        "grammarRole": "DELVE",
+        "stateInputs": [
+          "폐놀이공원"
+        ],
+        "stateOutputs": [
+          "학교"
+        ],
+        "name": "감염 상태",
+        "purpose": "인물 또는 몬스터가 감염 상태를 나타내는 상태 변수",
+        "playerChoice": "감염 스킬 획득 및 정화 공격 실행 선택"
+      }
+    ],
+    "multiplayerMode": "COMPETITIVE"
+  },
+  "updatedAt": "2026-10-10T09:40:03.159Z"
+}
