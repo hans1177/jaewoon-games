@@ -539,25 +539,40 @@
         "감정 상태 유도 → 수익 증가 및 시설 업그레이드",
         "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임"
       ]
+    },
+    "local_authoring_parts::9e063a96b3f7bb1d8dae443a95f824bbb2486433fb6c0fc2f9109b025e3521ea:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "손님의 감정 상태가 긍정적일 때, 놀이기구의 스릴 강도를 낮추거나 테마 장식을 추가하여 만족도를 증대시킨다.",
+        "공원 전체의 수용 능력에 영향을 주는 동선 최적화 시스템에서 플레이어가 놀이기구 입구 위치와 너비를 직접 제어할 수 있다."
+      ],
+      "stateOutputs": [
+        "감정 기반 만족도 엔진이 공원 평판에 영향을 미쳐 수익 재투자를 유도하며, 이로 인해 공원의 수용 능력이 상승한다.",
+        "동선 최적화 시스템이 손님의 이동 흐름을 조절함으로써, 놀이기구의 배치와 운영 효율성이 개선된다."
+      ],
+      "name": "주요 역할: 놀이기구 배치 및 동선 설계 전략",
+      "purpose": "플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임의 핵심 목적",
+      "playerChoice": "손님의 감정 상태 변화를 반영하여 놀이기구의 스릴 강도, 테마 장식, 음식 가격 등을 조절하고, 이를 바탕으로 공원 전체의 수용 능력을 최적화"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1518935,
-      "lastMs": 19130,
+      "totalMs": 1597189,
+      "lastMs": 78254,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T11:11:45.743Z"
+      "updatedAt": "2026-10-10T11:13:03.999Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:46:26.756Z",
-  "updatedAt": "2026-10-10T11:11:45.743Z",
+  "updatedAt": "2026-10-10T11:13:03.999Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1847,8 +1862,8 @@
     "f69d140ab6fa7ef054cf920b6575ecb855330d79d6d53b065b4cd990254c44f8": true,
     "aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:11:45.743Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T11:13:03.999Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
