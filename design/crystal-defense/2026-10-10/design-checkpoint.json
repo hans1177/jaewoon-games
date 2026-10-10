@@ -471,25 +471,40 @@
       "name": "주기적인 적 대응 시스템",
       "purpose": "전투 주제와 관련된 실질적 인과 변화를 통해 방어 효과 반복 및 변동",
       "playerChoice": "배치 위치 선택을 통해 전투 주제의 변화를 유도하여 방어 효과 반복 및 결과 변동"
+    },
+    "local_authoring_parts::2cf9b6046944192494272879a657d1c7d2a6483f668f814a4920502d15f096e5:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "배치 위치 선택",
+        "전투 주제 변경"
+      ],
+      "stateOutputs": [
+        "방해받는 공간에 따른 방어 효과 증대 또는 감소",
+        "새로운 전투 장면 경험 및 방어 효과 재설계"
+      ],
+      "name": "발견 · 숙련",
+      "purpose": "플레이어가 선호하는 공간 활용 패턴과 전투 상황의 유사성을 바탕으로 방어 전략의 진화적 투입 시스템을 형성하여 실제 세계 상태 변화를 유도합니다.",
+      "playerChoice": "플레이어는 배치 위치와 전투 주제를 선택하며, 이를 통해 방해받는 공간의 방어 효과와 전투 상황의 유사성이 높아지는 방어 전략을 설계합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 19,
+      "calls": 20,
+      "successes": 20,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1521715,
-      "lastMs": 67498,
+      "totalMs": 1596987,
+      "lastMs": 75272,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:29:10.377Z"
+      "updatedAt": "2026-10-10T00:30:25.651Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-10T00:29:10.377Z",
+  "updatedAt": "2026-10-10T00:30:25.657Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2225,7 +2240,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:1": 1,
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:2": 2,
-    "designer_draft_slices::identity-core": 2,
+    "designer_draft_slices::identity-core": 3,
     "local_authoring_parts::1a0b85a4eeab9483697d398faa7ddeab8bd1dd3d133ed2bb3cba42401a872503:signatureSystems:1": 2
   },
   "slicePartialResults": {
@@ -2324,10 +2339,10 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:29:10.377Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:30:25.653Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
