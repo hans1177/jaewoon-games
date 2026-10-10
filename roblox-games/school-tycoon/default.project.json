@@ -1,0 +1,30 @@
+{
+  "name": "school-tycoon",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "shared"
+      }
+    },
+    "ServerScriptService": {
+      "GameServer": {
+        "$path": "server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "GameClient": {
+          "$path": "client"
+        }
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Technology": "Voxel",
+        "LightingStyle": "Soft",
+        "PrioritizeLightingQuality": false
+      }
+    }
+  }
+}
