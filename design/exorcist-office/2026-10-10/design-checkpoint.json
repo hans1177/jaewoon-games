@@ -194,25 +194,40 @@
         "역사적 사건을 해석하며 새로운 가치관 형성이 되면서 시스템 내부에 상태 변화가 발생하고, 이는 플레이어의 선택에 따라 진보하게 된다.",
         "시작 단계에서는 간단한 한 손 만족 입력과 명확한 점수나 거리, 짧은 세션 목표로 시작되어, 이후에는 빠른 피드백과 작은 위험/선택 결정을 통해 게임이 재실행된다."
       ]
+    },
+    "local_authoring_parts::d78d2ec4d8bbb20c66c772ae48362c07fc1345322dc871313977e74946fda0ae:signatureSystems:0": {
+      "id": "역사-경제 융합 시스템",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "역사적 단서",
+        "경제적 선택"
+      ],
+      "stateOutputs": [
+        "문화적 발견",
+        "경제적 관리"
+      ],
+      "name": "역사·경제 융합 시스템",
+      "purpose": "플레이어가 역사적 단서를 인지하여 경제적 선택을 하여 새로운 가치관 형성 과정에서 실제 선택을 하는 행동이다.",
+      "playerChoice": "역사적 단서를 해석하며, 이를 기반으로 경제적 결정을 내리는 과정에서 새로운 가치관 형성이 발생합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 675290,
-      "lastMs": 100044,
+      "totalMs": 775043,
+      "lastMs": 99753,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:08:38.555Z"
+      "updatedAt": "2026-10-10T02:10:18.310Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:57:23.240Z",
-  "updatedAt": "2026-10-10T02:08:38.555Z",
+  "updatedAt": "2026-10-10T02:10:18.311Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1707,7 @@
   "localAuthoringSplits": {
     "1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:08:38.555Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:10:18.310Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
