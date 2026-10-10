@@ -862,6 +862,42 @@ export function buildDesignToPlatformCodingTrace({
     &&bindings.every(row=>row.designStatus==='AUTHORED')
     &&(!hasCreativeGrammar||creativeCReady);
   const mandatory=multiplayerRequired===true;
+  // Unity Web의 같은 게임 C# 원본을 Roblox 코딩에 읽기 전용으로 인계한다.
+  // 공통 설계 원본을 벗어나 소스 파일을 복제하거나 Unity 실행 결과를 Roblox 통과로 승계하지 않는다.
+  const unityWebSourceSync=selected==='ROBLOX'?(()=>{
+    const scriptsRoot=`${roots.UNITY_WEB}/Assets/Scripts`;
+    const inspected=inspectGameSource({repoRoot:rootReal,sourceRoot:scriptsRoot});
+    const candidates=(inspected?.topFiles||[]).filter(row=>clean(row?.file).startsWith(scriptsRoot+'/')
+      &&clean(row?.file).toLowerCase().endsWith('.cs'));
+    const anchors=(inspected?.sourceAnchors||[]).filter(row=>clean(row?.file).startsWith(scriptsRoot+'/')
+      &&clean(row?.file).toLowerCase().endsWith('.cs')
+      &&['METHOD','FUNCTION'].includes(row?.kind))
+      .slice(0,16).map(row=>Object.freeze({
+        file:posix(row.file),line:Number(row.line)||0,symbol:clean(row.symbol),signature:clean(row.context).slice(0,180)
+      }));
+    const available=Number(inspected?.fileCount||0)>0&&candidates.length>0;
+    return Object.freeze({
+      version:1,kind:'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC',
+      canonicalGameId:id,canonicalDesignFingerprint:sha(JSON.stringify(design)),
+      unityWebProjectRoot:roots.UNITY_WEB,
+      unityWebBuildOutputRoot:`web-games/${id}`,
+      unityWebSourceAvailable:available,
+      unityWebScriptsFingerprint:available?clean(inspected.sourceTreeFingerprint):null,
+      unityWebScriptCount:available?Number(inspected.fileCount||0):0,
+      sourceFiles:Object.freeze(available?candidates.slice(0,8).map(row=>posix(row.file)):[]),
+      sourceMethods:Object.freeze(available?anchors:[]),
+      referenceStatus:available?'SOURCE_READ_ONLY_UNVERIFIED':'SOURCE_NOT_AVAILABLE',
+      verificationTransferred:false,sourceImplementationPassed:false,robloxRuntimeVerified:false,
+      ruleOwner:'COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT',
+      codeConversion:'REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS',
+      optimizationTarget:'ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE',
+      protectedState:'SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY',
+      sourceReferenceOnly:true,directCsCopyForbidden:true,shadowPipelineForbidden:true,
+      nextAction:available
+        ?'COMPARE_UNITY_WEB_CURRENT_SOURCE_METHODS_WITH_SHARED_DESIGN_AND_ROBLOX_OWNER_CODE_THEN_NATIVE_IMPLEMENT_AND_INDEPENDENT_QA'
+        :'CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE'
+    });
+  })():null;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
   const spatialReady=clean(unityDepth.dimension)==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
@@ -890,6 +926,7 @@ export function buildDesignToPlatformCodingTrace({
   return Object.freeze({
     version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
     gameId:id,requestedPlatform:declared,activePlatform:selected,
+    unityWebSourceSync,
     designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
     platformCodingPlans:Object.freeze(platforms),
@@ -1658,7 +1695,7 @@ function buildAutonomousContentExpansion({
 
 function platformDirectives({identity,goal}){
   const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
   const unity=`${identity}: 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
