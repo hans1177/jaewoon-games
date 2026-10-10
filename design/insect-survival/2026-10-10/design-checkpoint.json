@@ -97,25 +97,32 @@
       },
       "playerFantasy": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
       "coreFun": "SELECTED_INSECT_RACE_OR_SPECIES, CHANGED_RESOURCE_POOL, MODIFIED_HABITAT_CONDITION, UPGRADABLE_REWARDS, BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION"
+    },
+    "local_authoring_parts::0bbcbca3f710c7fbcf0ef94f13020fbd28e3019c3ceec9f146db1f12eea23fef:coreLoop": {
+      "coreLoop": [
+        "INPUT_PLAYER_CHOICE -> STATE_CHANGE: SELECTED_INSECT_RACE_OR_SPECIES, CHANGED_RESOURCE_POOL, MODIFIED_HABITAT_CONDITION",
+        "STATE_CHANGE -> REWARD_SELECTION, BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION",
+        "BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION -> NEXT_PLAY_STYLE_OPTION"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 279387,
-      "lastMs": 279387,
+      "totalMs": 330831,
+      "lastMs": 51444,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:14:11.518Z"
+      "updatedAt": "2026-10-10T09:15:02.964Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:09:32.110Z",
-  "updatedAt": "2026-10-10T09:14:11.518Z",
+  "updatedAt": "2026-10-10T09:15:02.976Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1840,8 +1847,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:14:11.518Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:15:02.964Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
