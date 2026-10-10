@@ -2738,25 +2738,259 @@
           "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 지속적으로 조정하며, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 반복하여 플레이어에게 새로운 행동 조합과 전략 경로를 제공함으로써 게임의 시스템적 깊이와 다양성을 확보한다"
         }
       ]
+    },
+    "local_authoring_parts::e07bccd6c44af60c6fd482ba21245d07e52089a18afbdd8c8fdfb3732322e282:antiMonotonyRule": {
+      "antiMonotonyRule": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하며, 퀘스트/보상 선택은 플레이어 경험/레벨 스토리 상승의 강도를 조절해야 함. 이 두 요소는 서로 다른 맥락에서 유연하게 교환되어 새로운 행동 조합과 전략 경로를 연다."
+    },
+    "local_authoring_parts::531fb422849c036465c3d0b1ad30f3cdd21fae57c9d2318f5b23bb83ec2cef01:enemiesOrChallenges,objectives,antiMonotonyRule": {
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "선택",
+          "counterplay": "전투 스타일 및 인식 변화",
+          "positioning": "실시간 속도/강화 기능 증가",
+          "timing": "주제/역사/철학 선택 후",
+          "mobility": "주제/역사/철학 선택에 따른 전략 변경 가능",
+          "groupRole": "전략적 결정 요소",
+          "identity": "주제/역사/철학 선택",
+          "rewardMeaning": "전투 스타일 및 인식 변화의 깊이"
+        },
+        {
+          "name": "퀘스트/보상 선택",
+          "behavior": "선택",
+          "counterplay": "플레이어 경험/레벨 스토리 상승",
+          "positioning": "무기/속성 선택",
+          "timing": "퀘스트/보상 선택 후",
+          "mobility": "퀘스트/보상 선택에 따른 루틴 변경 가능",
+          "groupRole": "게임 세계관 진입 요소",
+          "identity": "퀘스트/보상 선택",
+          "rewardMeaning": "플레이어 경험/레벨 스토리 상승의 강도"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "중간 목표",
+          "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하고, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 이끌며 실시간 속도/강화 기능 증가를 유연하게 사용할 수 있는 전략 경로를 연다"
+        },
+        {
+          "role": "장기 목표",
+          "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 지속적으로 조정하며, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 반복하여 플레이어에게 새로운 행동 조합과 전략 경로를 제공함으로써 게임의 시스템적 깊이와 다양성을 확보한다"
+        }
+      ],
+      "antiMonotonyRule": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하며, 퀘스트/보상 선택은 플레이어 경험/레벨 스토리 상승의 강도를 조절해야 함. 이 두 요소는 서로 다른 맥락에서 유연하게 교환되어 새로운 행동 조합과 전략 경로를 연다."
+    },
+    "local_authoring_parts::83eee04213bdb8db04b8bfaf6259dfa682991643a49ab2bed6ed100e1168f4d7:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "50일-무기/속성 선택",
+          "name": "무기/속성 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[0]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "무기/속성",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "실시간 속도/강화 기능 증가",
+          "stateInputs": [
+            "무기/속성 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가"
+          ],
+          "source": "original",
+          "rangeKey": "무기/속성",
+          "costKey": "무기/속성",
+          "cooldownKey": "무기/속성"
+        },
+        {
+          "id": "50일-퀘스트/보상 선택",
+          "name": "퀘스트/보상 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[1]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "퀘스트/보상",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "플레이어 경험/레벨 스토리 상승",
+          "stateInputs": [
+            "퀘스트/보상 선택"
+          ],
+          "stateOutputs": [
+            "주제/역사/철학 선택"
+          ],
+          "source": "original",
+          "rangeKey": "퀘스트/보상",
+          "costKey": "퀘스트/보상",
+          "cooldownKey": "퀘스트/보상"
+        },
+        {
+          "id": "50일-주제/역사/철학 선택",
+          "name": "주제/역사/철학 선택",
+          "kind": "MONSTER",
+          "ownerId": "50일",
+          "ruleId": "signatureSystems[2]",
+          "trigger": "INPUT",
+          "range": 1,
+          "rangeUnit": "개",
+          "resource": "주제/역사/철학",
+          "cost": 0,
+          "cooldownSeconds": 0,
+          "telegraph": "선택",
+          "avoidance": "없음",
+          "effect": "전투 스타일 및 인식 변화",
+          "stateInputs": [
+            "주제/역사/철학 선택"
+          ],
+          "stateOutputs": [
+            "실시간 속도/강화 기능 증가",
+            "퀘스트/보상 선택"
+          ],
+          "source": "original",
+          "rangeKey": "주제/역사/철학",
+          "costKey": "주제/역사/철학",
+          "cooldownKey": "주제/역사/철학"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "플레이어",
+          "humanTool": "무기/속성 선택",
+          "humanAbilityId": "50일-무기/속성 선택",
+          "infectedAbilityId": "50일-무기/속성 선택",
+          "retainedState": "실시간 속도/강화 기능 증가",
+          "removedState": "없음",
+          "changedChoice": "무기/속성 선택"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "퀘스트/보상 선택",
+          "humanAbilityId": "50일-퀘스트/보상 선택",
+          "infectedAbilityId": "50일-퀘스트/보상 선택",
+          "retainedState": "플레이어 경험/레벨 스토리 상승",
+          "removedState": "없음",
+          "changedChoice": "퀘스트/보상 선택"
+        },
+        {
+          "humanId": "플레이어",
+          "humanTool": "주제/역사/철학 선택",
+          "humanAbilityId": "50일-주제/역사/철학 선택",
+          "infectedAbilityId": "50일-주제/역사/철학 선택",
+          "retainedState": "전투 스타일 및 인식 변화",
+          "removedState": "없음",
+          "changedChoice": "주제/역사/철학 선택"
+        }
+      ],
+      "regions": [
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "실시간 속도/강화 기능 증가",
+          "traversal": "주제/역사/철학 선택",
+          "riskReward": "퀘스트/보상 선택",
+          "landmark": "주제/역사/철학 선택",
+          "encounterPattern": "주제/역사/철학 선택",
+          "resourcePressure": "주제/역사/철학 선택",
+          "storyContext": "주제/역사/철학 선택"
+        },
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "플레이어 경험/레벨 스토리 상승",
+          "traversal": "무기/속성 선택",
+          "riskReward": "무기/속성 선택",
+          "landmark": "무기/속성 선택",
+          "encounterPattern": "무기/속성 선택",
+          "resourcePressure": "무기/속성 선택",
+          "storyContext": "무기/속성 선택"
+        },
+        {
+          "id": "생존 전략 교환 시스템",
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]"
+          ],
+          "name": "실시간 속도/강화 기능 증가",
+          "traversal": "퀘스트/보상 선택",
+          "riskReward": "퀘스트/보상 선택",
+          "landmark": "퀘스트/보상 선택",
+          "encounterPattern": "퀘스트/보상 선택",
+          "resourcePressure": "퀘스트/보상 선택",
+          "storyContext": "퀘스트/보상 선택"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "선택",
+          "counterplay": "전투 스타일 및 인식 변화",
+          "positioning": "실시간 속도/강화 기능 증가",
+          "timing": "주제/역사/철학 선택 후",
+          "mobility": "주제/역사/철학 선택에 따른 전략 변경 가능",
+          "groupRole": "전략적 결정 요소",
+          "identity": "주제/역사/철학 선택",
+          "rewardMeaning": "전투 스타일 및 인식 변화의 깊이"
+        },
+        {
+          "name": "퀘스트/보상 선택",
+          "behavior": "선택",
+          "counterplay": "플레이어 경험/레벨 스토리 상승",
+          "positioning": "무기/속성 선택",
+          "timing": "퀘스트/보상 선택 후",
+          "mobility": "퀘스트/보상 선택에 따른 루틴 변경 가능",
+          "groupRole": "게임 세계관 진입 요소",
+          "identity": "퀘스트/보상 선택",
+          "rewardMeaning": "플레이어 경험/레벨 스토리 상승의 강도"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "중간 목표",
+          "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하고, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 이끌며 실시간 속도/강화 기능 증가를 유연하게 사용할 수 있는 전략 경로를 연다"
+        },
+        {
+          "role": "장기 목표",
+          "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 지속적으로 조정하며, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 반복하여 플레이어에게 새로운 행동 조합과 전략 경로를 제공함으로써 게임의 시스템적 깊이와 다양성을 확보한다"
+        }
+      ],
+      "antiMonotonyRule": "주제/역사/철학 선택은 전투 스타일과 인식 변화의 깊이를 결정하며, 퀘스트/보상 선택은 플레이어 경험/레벨 스토리 상승의 강도를 조절해야 함. 이 두 요소는 서로 다른 맥락에서 유연하게 교환되어 새로운 행동 조합과 전략 경로를 연다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 27,
+      "calls": 37,
+      "successes": 28,
       "failures": 9,
       "timeouts": 7,
       "jsonFailures": 0,
-      "totalMs": 5589926,
-      "lastMs": 97223,
+      "totalMs": 5635878,
+      "lastMs": 45952,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:37:18.744Z"
+      "updatedAt": "2026-10-10T00:38:04.699Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-10T00:37:18.744Z",
+  "updatedAt": "2026-10-10T00:38:04.715Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4540,15 +4774,15 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::content-rules": 4
+    "designer_draft_slices::content-rules": 5
   },
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:37:18.744Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:38:04.707Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {

@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 44,
-  "lastSuccessfulModelCallAt": "2026-10-10T00:37:18.744Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 47,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:38:04.707Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "designerSeed": {
     "file": "design/fifty-days/2026-10-10/design-seed.json",
     "contentDigest": "32baafe9134baf37850f147a6ed155433722f358b9a54113c5ebe31c4b5263e9",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 36,
-      "successes": 27,
+      "calls": 37,
+      "successes": 28,
       "failures": 9,
       "timeouts": 7,
       "jsonFailures": 0,
-      "totalMs": 5589926,
-      "lastMs": 97223,
+      "totalMs": 5635878,
+      "lastMs": 45952,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:37:18.744Z"
+      "updatedAt": "2026-10-10T00:38:04.699Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T00:37:18.747Z"
+  "updatedAt": "2026-10-10T00:38:04.717Z"
 }
