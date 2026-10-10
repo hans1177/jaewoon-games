@@ -138,16 +138,8 @@ function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
-    // 실행 빌드 검증은 버튼 활성화에만 적용한다. 정식 개발 게임 카드는 유지한다.
-    .sort((a,b)=>{
-      const sa=scoreState(a),sb=scoreState(b);
-      if(sa.score!==null||sb.score!==null){
-        if(sa.score===null)return 1;
-        if(sb.score===null)return-1;
-        if(sb.score!==sa.score)return sb.score-sa.score;
-      }
-      return catalogOrderCompare(a,b);
-    });
+    // 카드는 원본 카탈로그 순서를 유지한다. 게임 점수·플랫폼 빌드 여부는 노출 순서를 바꾸지 않는다.
+    .sort((a,b)=>catalogOrderOf(a)-catalogOrderOf(b));
 }
 function canonicalWebHref(row){
   const id=gameIdOf(row);
