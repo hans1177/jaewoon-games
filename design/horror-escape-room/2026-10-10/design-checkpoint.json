@@ -1625,25 +1625,44 @@
       "kind": "HUMAN",
       "ownerId": "PHOTOGRAPHER",
       "ruleId": "CAMERA_FLASH_RU12345678901234567890123456789012345678901234567890123456789012345"
+    },
+    "local_authoring_parts::bad160705bcc4a2bae20adc6bd6fadc244aebfc31d5844ff8be3321b22683372:trigger,range,rangeUnit,resource,cost": {
+      "trigger": "섬광 촬영 실행",
+      "range": 19,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 30
+    },
+    "local_authoring_parts::c227fc3d0a76b1a1fc2aab13eae56a26d3fa0051b23f32964a1408390210e3ab:id,name,kind,ownerId,ruleId,trigger,range,rangeUnit,resource,cost": {
+      "id": "CAMERA_FLASH",
+      "name": "섬광 촬영",
+      "kind": "HUMAN",
+      "ownerId": "PHOTOGRAPHER",
+      "ruleId": "CAMERA_FLASH_RU12345678901234567890123456789012345678901234567890123456789012345",
+      "trigger": "섬광 촬영 실행",
+      "range": 19,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 30
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 87,
-      "successes": 84,
+      "calls": 88,
+      "successes": 85,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2606094,
-      "lastMs": 49151,
+      "totalMs": 2616484,
+      "lastMs": 10390,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:17:47.506Z"
+      "updatedAt": "2026-10-10T10:17:57.897Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:17:47.506Z",
+  "updatedAt": "2026-10-10T10:17:57.898Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2978,7 +2997,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:17:47.506Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:17:57.898Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
