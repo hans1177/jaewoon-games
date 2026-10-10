@@ -577,6 +577,9 @@ test('Unity Web admits current design independently of Roblox F0 and promotes bo
   assert.match(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
   assert.match(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
   assert.match(bootstrap,/Reuse pending design-bound Unity source PR/);
+  assert.match(bootstrap,/node tools\/company-shared-context\.mjs --output=\/tmp\/company-unity-web-bootstrap-context\.json/);
+  assert.match(bootstrap,/--search "in:title \\"dev: bootstrap Unity Web floor source \$GAME_ID\\""/);
+  assert.doesNotMatch(bootstrap,/--state open --limit 300/);
   assert.match(bootstrap,/source\.generatorFingerprint!==generator/);
   assert.match(bootstrap,/source\.identity!==identity/);
   assert.match(bootstrap,/JSON\.stringify\(source\.unityPlatformProfile\)!==JSON\.stringify\(design\.platformProfiles\?\.UNITY\)/);
