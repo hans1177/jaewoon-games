@@ -1307,3 +1307,31 @@ test('system interconnection children can use only causal edges from designer-au
   assert.deepEqual(rows.map(row=>({fromId:row.fromId,toId:row.toId,stateKeys:row.stateKeys})),edges);
   assert.ok(seen.length>=5,'every edge still has designer-authored action and state explanation');
 });
+
+
+test('homepage-only policy migration reuses exact authored slices but rejects any stale input fingerprint',()=>{
+  const begin=design.indexOf('const homepageOnlyDesignCheckpointEligible=');
+  const end=design.indexOf('if(!checkpointReusable&&(',begin);
+  assert.ok(begin>0&&end>begin);
+  const source=design.slice(begin,end);
+  const previousPolicy='91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f';
+  const currentPolicy='e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef';
+  const engine='90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71';
+  const context={contractVersion:4,gameId:'daechung-rpg',date:'2026-10-10',seed:{seedId:'GAME'},policyDigest:currentPolicy,engineDigest:'new'};
+  const checkpoint={contractVersion:4,gameId:'daechung-rpg',date:'2026-10-10',seedId:'GAME',
+    policyDigest:previousPolicy,engineDigest:engine,phases:{},tasks:{savedRole:{id:'a_supply'}},modelHealth:{}};
+  checkpoint.fingerprint=createHash('sha256').update(JSON.stringify({...context,policyDigest:previousPolicy,engineDigest:engine})).digest('hex');
+  const evaluate=(value,policy=currentPolicy,version=560,locked=true)=>runInNewContext(source+'\nhomepageOnlyDesignCheckpointEligible',{
+    designCheckpoint:value,DESIGN_CHECKPOINT_CONTRACT_VERSION:4,policyDigest:policy,
+    CANONICAL_POLICY_PATH:'policy.json',
+    readJson:()=>({version,finalDevelopmentLock:{sequenceLock:{status:locked?'LOCKED':'UNLOCKED'}}}),
+    gameId:'daechung-rpg',date:'2026-10-10',seed:{seedId:'GAME'},
+    checkpointCompatibleEngineDigests:new Set([engine]),checkpointInputContext:context,
+    createHash,clean:v=>String(v??'').trim()
+  });
+  assert.equal(evaluate(checkpoint),true,'verified 558-to-560 homepage-only change preserves authored slices');
+  assert.equal(evaluate({...checkpoint,fingerprint:'stale'}),false,'different designer input must never reuse old content');
+  assert.equal(evaluate({...checkpoint,engineDigest:'unknown'}),false,'unknown engine change must not migrate');
+  assert.equal(evaluate(checkpoint,currentPolicy,559),false,'wrong current policy version cannot migrate');
+  assert.equal(evaluate(checkpoint,currentPolicy,560,false),false,'sequence lock must remain intact');
+});
