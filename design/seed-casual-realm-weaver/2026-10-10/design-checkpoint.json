@@ -80,25 +80,53 @@
         "worldChange": "世界深度增加，场景动态变化，环境响应玩家行为",
         "nextEvent": "根据当前状态变化，生成新的游戏事件，推动流程前进"
       }
+    },
+    "local_authoring_parts::2d30254692ca54411c3778ab61ce7335b7dba8b649374a184d6a220e7e17778d:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "世界/故事",
+          "kind": "MATERIAL",
+          "gameplayEffect": "世界深度增加，场景动态变化，环境响应玩家行为"
+        },
+        {
+          "name": "人物冲突",
+          "kind": "MATERIAL",
+          "gameplayEffect": "玩家选择影响实际状态变化，触发后续事件"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "游戏流程",
+          "gameplayEffect": "单手触摸输入，即时反馈，收集奖励，尝试新路线"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "生态复原",
+          "gameplayEffect": "特定区域恢复，附加效果获取，主游戏流程推进"
+        }
+      ],
+      "cGenreInterlock": "初始发现4个以上(단서→실험→新选择)，持续扩展，无简单数值强化或功能列举",
+      "cWorldAndGameplayEffect": "世界/故事 -> 人物冲突 -> 游戏选择 -> 实际状态变化 -> 新事件生成，生動感增强，環境響應玩家行為，點數與獎勵提供，下一階段進入，狀態交換依賴遊戲流程推進"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 785702,
-      "lastMs": 86889,
+      "totalMs": 870602,
+      "lastMs": 84900,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:53:04.276Z"
+      "updatedAt": "2026-10-10T10:54:29.179Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:39:58.485Z",
-  "updatedAt": "2026-10-10T10:53:04.277Z",
+  "updatedAt": "2026-10-10T10:54:29.179Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1378,7 +1406,7 @@
     "3494965358adaa47568a2781dd1beee82d89f407eafbeb235f0c1cdd3fec7065": true,
     "0187fb8566ad53393c895181a44eef7f8b727eb064654e2f5daf4676a0fc38c0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:53:04.277Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:54:29.179Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
