@@ -1,0 +1,130 @@
+{
+  "version": 5,
+  "gameId": "bug-defense",
+  "date": "2026-10-10",
+  "gameSeedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
+  "productionClass": "DESIGN_ONLY",
+  "authorRole": "OWNER_REQUESTED_SOURCE_GROUNDED_MINIMUM",
+  "status": "MINIMUM_DEVELOPMENT_DESIGN_CANDIDATE",
+  "sourceAuthority": "OWNER_GAME_SEED_AND_EXISTING_GAME_IMPLEMENTATION",
+  "minimumDesignReady": true,
+  "strictDesignReviewed": false,
+  "strictDesignPass": false,
+  "independentQaPass": false,
+  "runtimePass": false,
+  "releasePass": false,
+  "designEvolutionNext": "GAME_DESIGNER_AI_STRICT_REVIEW_PARALLEL",
+  "content": {
+    "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
+    "coreFun": "wave defense readability / meaningful placement choices / enemy-type counterplay — Place or adjust defenders and spend limited resources on the highest-value counter.",
+    "coreLoop": [
+      "Read the incoming insect wave and its threat pattern.",
+      "Place or adjust defenders and spend limited resources on the highest-value counter.",
+      "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+    ],
+    "signatureSystems": [
+      {
+        "id": "DEFENSE_PLACEMENT",
+        "name": "DEFENSE PLACEMENT",
+        "purpose": "positioning and placement alter routes ranges targets or combat outcomes",
+        "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      },
+      {
+        "id": "WAVE_ENCOUNTER",
+        "name": "WAVE ENCOUNTER",
+        "purpose": "encounter waves change composition rules and pressure rather than only health scaling",
+        "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      },
+      {
+        "id": "ECONOMY_SHOP",
+        "name": "ECONOMY SHOP",
+        "purpose": "sources sinks prices shops and rewards connect to progression without free loops",
+        "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      },
+      {
+        "id": "UPGRADE_BRANCH",
+        "name": "UPGRADE BRANCH",
+        "purpose": "upgrades create branching roles and tradeoffs rather than linear stat inflation",
+        "playerChoice": "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      }
+    ],
+    "progressionDirection": "세션 성장: 현재 플레이에서 자원·위치·장비·전술 선택이 즉시 다음 행동 가능성을 바꾼다 중기 성장: 해금·지역·시스템 연결 또는 빌드 선택이 새로운 전략 경로를 연다 장기 성장: 숙련·월드 상태·수집·관계·메타 목표 중 장르에 맞는 축이 다음 세션의 선택 폭을 넓힌다",
+    "failureRetryRisk": {
+      "failureStates": [
+        "웨이브 방어 목표 실패: Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.",
+        "자원·전략 압박으로 계획 변경이 필요한 상태: Place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "retryFlow": "방어 실패 원인을 확인하고 게임 원본의 저장·재시도 규칙에 맞게 복구한다.",
+      "riskPressure": "FAILURE_COSTS_MUST_DIFFER_BY_CONTEXT_AND_PRESERVE_A_REAL_RECOVERY_OR_RETRY_PATH",
+      "recoveryRules": "기존 저장과 진행·보상·웨이브 수치·배치 규칙을 보존한 채 복구한다."
+    },
+    "multiplayerMode": "SINGLE",
+    "technicalAssumptions": [
+      "기존 코드와 오너 GAME_SEED가 권위이며 웨이브·체력·공격력·드랍·보상 수치를 임의로 변경하지 않는다.",
+      "기존 저장 키와 진행·장비·재화 의미를 보존하며 스키마 변경 시에는 마이그레이션한다.",
+      "이 최소 설계는 코딩 착수용이며 정밀 설계 심사·실행·독립 QA·출시 PASS가 아니다."
+    ],
+    "playerInput": "웨이브 확인과 방어 유닛 배치를 터치 및 키보드·게임패드로 실제 조작하게 한다.",
+    "winLoseOrSessionEnd": "웨이브 방어 성공·실패 및 다음 수비 준비를 실제 상태로 다룬다. 기존 30웨이브 목표를 보존한다.",
+    "coreNumbersAndBalance": {
+      "authority": "EXISTING_GAME_SOURCE_AND_OWNER_GAME_SEED",
+      "catalogScope": "30웨이브 곤충 디펜스",
+      "existingBalanceRules": [
+        "하나의 지배 전략이 모든 상황을 해결하지 못하도록 상황별 비용·카운터·기회비용을 둔다",
+        "플레이어 파워 성장과 위협·목표 복잡도 상승을 함께 조정해 성장 체감을 지우지 않는다",
+        "실패는 다음 선택이 가능한 복구 경로를 남기고 반복 손실로 진행을 완전히 봉쇄하지 않는다",
+        "경제·자원은 획득원과 소비처를 함께 두고 무한 무료 루프나 의미 없는 과잉 축적을 막는다"
+      ],
+      "knownWaveGoal": 30,
+      "inventedNumericValues": false
+    },
+    "saveMeaning": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+    "coreContentScope": [
+      "DEFENSE_PLACEMENT",
+      "WAVE_ENCOUNTER",
+      "ECONOMY_SHOP",
+      "UPGRADE_BRANCH",
+      "RESEARCH_TECH",
+      "TARGETING_COMBAT",
+      "HOUSING_BUILDING",
+      "NPC_INTERACTION",
+      "QUEST_DIALOGUE",
+      "FACTION_WORLD_STATE",
+      "SOCIAL_RELATIONSHIP",
+      "WEATHER_ENVIRONMENT",
+      "SKILL_BUILD"
+    ],
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox 터치·조이스틱·키보드와 게임패드를 원본 행동에 연결한다.",
+        "sessionModel": "Roblox의 원본 목표 세션과 재진입·복귀를 다룬다.",
+        "multiplayerRuntime": "원본 싱글 진행을 보존하며 인위적 멀티를 추가하지 않는다.",
+        "performanceBudget": "Roblox 모바일 FPS, 로딩, 이펙트·입력 반응 점검이 필요하다.",
+        "uiUx": "Roblox 모바일 안전 영역과 터치 버튼·HUD 가독성을 확보한다.",
+        "saveAndNetwork": "DataStore 및 서버 검증으로 PRESERVE_OR_MIGRATE_BEFORE_SWAP 정책을 보존한다.",
+        "platformContentAdaptation": "원본 웨이브와 방어 규칙을 Roblox 네이티브 공간에 옮긴다.",
+        "internalReleaseTarget": "Roblox 비공개 테스트 게임에서 실제 입력과 플레이를 확인한다.",
+        "validationEvidence": "Roblox 실제 실행·웨이브·저장·독립 QA·회귀 증거가 별도로 필요하다."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System 터치·드래그·가상 조이스틱을 지원한다.",
+        "sessionModel": "Unity 앱과 WebGL 프로젝트의 세션 재진입·복구를 점검한다.",
+        "multiplayerRuntime": "원본 싱글 세션을 유지하며 허위 네트워크 동기화를 만들지 않는다.",
+        "performanceBudget": "Unity 실제 3D 깊이와 WebGL FPS, 메모리, 발열을 검증한다.",
+        "uiUx": "안전 영역·해상도별 터치 UI와 방어 배치 가독성을 확보한다.",
+        "saveAndNetwork": "버전 있는 저장과 PRESERVE_OR_MIGRATE_BEFORE_SWAP 원본 의미를 보존한다.",
+        "platformContentAdaptation": "공통 게임 규칙을 Unity 씬·프리팹에서 구현하며 WebGL 별도 게임을 만들지 않는다.",
+        "internalReleaseTarget": "Unity 비공개 내부 테스트와 실제 브라우저 플레이를 목표로 한다.",
+        "validationEvidence": "Unity WebGL·네이티브 실행·진행·저장·독립 QA 증거가 별도로 필요하다."
+      }
+    }
+  },
+  "createdAt": "2026-10-10T04:40:20.189Z",
+  "updatedAt": "2026-10-10T04:40:20.189Z"
+}
