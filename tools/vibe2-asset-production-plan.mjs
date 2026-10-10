@@ -5443,13 +5443,20 @@ export function assetProductionGuidance(plan={}){
       return{
         status:world.status,issues:world.issues,seed:world.seed,size:world.size,dimension:world.dimension,regionalBiome:world.regionalBiome,climate:world.climate,
         sharedLibraryBinding:world.sharedLibraryBinding,placementDiversity:world.placementDiversity,
+        geologyAndMaterials:world.geologyAndMaterials,ecologyBalance:world.ecologyBalance,urbanPlanning:world.urbanPlanning,
         terrainHeightY:world.terrain.map(cell=>+(cell.elevation*8).toFixed(2)),
+        terrainMaterialPalette:[...new Set(world.terrain.map(cell=>cell.surface?.primary))].filter(Boolean).sort(),
+        terrainMaterialIds:(()=>{const palette=[...new Set(world.terrain.map(cell=>cell.surface?.primary))].filter(Boolean).sort();
+          return world.terrain.map(cell=>palette.indexOf(cell.surface?.primary));})(),
+        terrainHabitatPalette:[...new Set(world.terrain.map(cell=>cell.ecology?.habitat))].filter(Boolean).sort(),
+        terrainHabitatIds:(()=>{const palette=[...new Set(world.terrain.map(cell=>cell.ecology?.habitat))].filter(Boolean).sort();
+          return world.terrain.map(cell=>palette.indexOf(cell.ecology?.habitat));})(),
         roads:world.roads.map(road=>({id:road.id,cells:road.cells.map(cell=>[cell.x,cell.z])})),
-        buildings:world.buildings.map(row=>({stableObjectId:row.stableObjectId,zone:row.zone,position:row.position,footprint:row.footprint,doorway:row.doorway,construction:row.construction,modules:row.modules,sourceBinding:row.sourceBinding})),
-        vegetation:world.vegetation.map(row=>({stableObjectId:row.stableObjectId,kind:row.kind,position:row.position,scale:row.scale,sourceBinding:row.sourceBinding})),
+        buildings:world.buildings.map(row=>({stableObjectId:row.stableObjectId,zone:row.zone,planning:row.planning,position:row.position,footprint:row.footprint,doorway:row.doorway,construction:row.construction,modules:row.modules,sourceBinding:row.sourceBinding})),
+        vegetation:world.vegetation.map(row=>({stableObjectId:row.stableObjectId,kind:row.kind,habitat:row.habitat,seasonalAppearance:row.seasonalAppearance,position:row.position,scale:row.scale,sourceBinding:row.sourceBinding,surfaceMaterialBinding:row.surfaceMaterialBinding})),
         protected:world.protected,runtimeVerified:false
       };
-    })(plan.proceduralWorldLayout))}. 3D 고도·기초/벽 개구부·문 깊이·지붕·식생을 현재 게임 소스의 실제 Mesh/Prefab/Model로만 구현한다. 공용 에셋 sourceBinding은 참조/변환 작업 입력이며 적용 완료가 아니다. 선택 후보 전부를 복사하지 말고 역할 호환 원본만 바인딩한다. 실제 네이티브 메시·입체 공간·동선/시야·모바일 화면·성능·저장/전투 불변 조건을 검증하기 전에는 완료 판정 금지. 기존 A* 경로와 fBM 지형 생성 결과에 해시 기반 최소거리 분산 배치를 결합한 제안이며 외부 원본 코드/맵 직접 복제 금지. `:'',
+    })(plan.proceduralWorldLayout))}. 3D 고도·기초/벽 개구부·문 깊이·지붕·식생을 현재 게임 소스의 실제 Mesh/Prefab/Model로만 구현한다. 공용 에셋 sourceBinding은 참조/변환 작업 입력이며 적용 완료가 아니다. 생물학은 서식지별 시각 부양량·계절 외형만, 지질학은 유역 유출·Voronoi 지층·재질 분포만, 건축/도시공학은 도로망 보행 접근성·건축 골조·홍수 완충·지반 안정성만 이 기존 맵 소스에 반영한다. 실제 몬스터/동물 개체 생성 수, 드랍, 보상, 체력, 식량, 기존 저장 오브젝트와 서버 권한은 절대 변경하지 않는다. 수목·지질·건물·도시·환경 공용 자산은 원본 불변으로 게임별 네이티브 파생을 적용하고 비교 검증한다. 선택 후보 전부를 복사하지 말고 역할 호환 원본만 바인딩한다. 실제 네이티브 메시·입체 공간·동선/시야·모바일 화면·성능·저장/전투 불변 조건을 검증하기 전에는 완료 판정 금지. 기존 A* 경로와 fBM 지형 생성 결과에 해시 기반 최소거리 분산 배치를 결합한 제안이며 외부 원본 코드/맵 직접 복제 금지. `:'',
     plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰하고 검증된 관찰에서 나온 task-local 아이디어를 현재 VOLUME_UP worklist 앞에 우선 배치한다. 중앙 registry에는 원본 사진·관찰·임시 아이디어를 영속 저장하지 않는다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
     plan.companyGraphicsLibrary?.characterNpcCustomization?.requested?`[CHARACTER NPC CUSTOMIZATION] ${JSON.stringify(plan.companyGraphicsLibrary.characterNpcCustomization)}. 플레이어와 NPC는 같은 체형·머리·얼굴·피부·눈·헤어·수염·흉터·문신·화장·피어싱·종족 파츠·의상·액세서리·표정·보행 자산 풀을 공유한다. NPC는 지역/직업/계층/연령/기후/개인 이력으로 조합 편향만 주고 색상만 다른 복제 NPC를 만들지 않는다. 사진 레퍼런스는 보이는 형태와 재질 아이디어만 source-bound로 사용하고 고유 얼굴·의상·UI를 직접 복제하지 않는다.`:'',
     plan.assetSynchronization?`[UNITY / WEB SHARED VISUAL DOCUMENT] status=${plan.assetSynchronization.status}; issues=${plan.assetSynchronization.issues.join('|')||'NONE'}; document=${JSON.stringify(plan.assetSynchronization.document)}; applications=${JSON.stringify(plan.assetSynchronization.applications)}; motions=${JSON.stringify(plan.assetSynchronization.motions)}. 같은 gameId/revision/sourceHash의 커마·스타일·UI·아이콘·동작 설정을 기존 자산 저장소와 작업주문으로 공유한다. SYNC_CONFLICT면 재조회하며 부분 적용하지 않는다. 플랫폼 변형이나 연결점이 없으면 AUTHORING_REQUIRED로 제작하고 문서만으로 동기화 완료를 주장하지 않는다.`:'',
