@@ -1371,7 +1371,8 @@ test('V5 B role repairs a clone and maintains A-to-B and B-to-A state exchange',
     B:{id:'b_combat',name:'보스 패링',purpose:'보스 공격 전조를 읽고 반격한다',playerChoice:'보스 패링 시점을 선택한다',stateInputs:['PartyReady'],stateOutputs:['PortalOpen']},
     DELVE:{id:'delve_secret',name:'비밀 발견',purpose:'세계의 숨겨진 보상을 발견한다',playerChoice:'비밀 장소를 조사한다',stateInputs:['SecretSignal'],stateOutputs:['PartyReady']}
   };
-  const calls=[],cache={tasks:{}};
+  const calls=[],prompts=[],cache={tasks:{}};
+  const authoredCreativeGrammar={mainIdentity:'포탈 전투형 RPG',a:{system:'포탈 전투',material:'몬스터와 보스'},b:{system:'AI 동료 편성',material:'파티 3명'},delveDiscoveries:[{clue:'비밀 보스',discovery:'동료 영입'}]};
   const author=runInNewContext(source+'\ncallLocalDesignerModel',{
     createHash,seedGameplaySketchVersion:5,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,
     localDesignerModel:'test',designerRoute:{id:'test'},designCheckpoint:cache,
@@ -1379,16 +1380,16 @@ test('V5 B role repairs a clone and maintains A-to-B and B-to-A state exchange',
     seed:{gameId:'daechung-rpg',CORE_LOOP:['준비','전투','보상']},
     clean:value=>String(value??'').trim(),persistDesignCheckpoint(){},recordModelHealth(){},
     runCheckpointTask:async(phase,key,work)=>cache.tasks[phase+'::'+key]||(cache.tasks[phase+'::'+key]=await work()),
-    requestLocalDesignerRaw:async(_prompt,{schema:contract})=>{
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
       const role=contract.properties.grammarRole.enum[0],count=calls.filter(x=>x===role).length+1;
-      calls.push(role);
+      calls.push(role);prompts.push({role,prompt});
       const value={...candidates[role],grammarRole:role};
       if(role==='B'&&count===1){value.name=candidates.A.name;value.purpose=candidates.A.purpose;}
       return JSON.stringify(value);
     },
     parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema
   });
-  const value=await author('게임 설계','원본의 포탈·전투·동료 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  const value=await author('게임 설계','원본의 포탈·전투·동료 규칙 보존',schema,{predict:1600,includeAssetContext:false,authoredCreativeGrammar});
   const rows=JSON.parse(JSON.stringify(value.signatureSystems));
   const a=rows.find(row=>row.grammarRole==='A'),b=rows.find(row=>row.grammarRole==='B');
   assert.equal(rows.length,4);
@@ -1396,4 +1397,6 @@ test('V5 B role repairs a clone and maintains A-to-B and B-to-A state exchange',
   assert.ok(a.stateOutputs.some(key=>b.stateInputs.includes(key)),'A output must reach B');
   assert.ok(b.stateOutputs.some(key=>a.stateInputs.includes(key)),'B output must reach A');
   assert.equal(new Set(rows.map(row=>row.id)).size,4);
+  assert.ok(prompts.some(row=>row.role==='A'&&row.prompt.includes('포탈 전투')),'A must consume the authored A creative axis');
+  assert.ok(prompts.some(row=>row.role==='B'&&row.prompt.includes('AI 동료 편성')),'B must consume the authored B creative axis');
 });
