@@ -97,25 +97,32 @@
       },
       "playerFantasy": "a player who can instinctively adapt their defense strategy to any enemy type or wave composition while managing limited resources to maintain strategic flexibility. The game challenges players to balance immediate tactical adjustments with long-term resource management.",
       "coreFun": "read the next enemy wave, place towers/defenders in positions that cover the threatened route; earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases; adapt the defense to enemy types and wave composition, protect the objective, and clear the stage/boss to unlock harder defense choices."
+    },
+    "local_authoring_parts::e0d5a5395783b49891dc623b60a3f33022186f23e036b98e27394939eaea78a1:coreLoop": {
+      "coreLoop": [
+        "Read the next enemy wave, place towers/defenders in positions that cover the threatened route; earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases; adapt the defense to enemy types and wave composition, protect the objective, and clear the stage/boss to unlock hard",
+        "Defensive adaptation → resource allocation → economic constraint",
+        "Defensive adaptation changes to match new enemy types; resource allocation shifts based on battlefield constraints; economic constraint becomes a permanent state"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 283019,
-      "lastMs": 283019,
+      "totalMs": 333294,
+      "lastMs": 50275,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:48:28.111Z"
+      "updatedAt": "2026-10-10T02:49:18.387Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:43:45.072Z",
-  "updatedAt": "2026-10-10T02:48:28.111Z",
+  "updatedAt": "2026-10-10T02:49:18.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1821,7 +1828,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:48:28.111Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:49:18.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
