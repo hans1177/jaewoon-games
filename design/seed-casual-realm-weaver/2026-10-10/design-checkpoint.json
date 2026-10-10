@@ -419,25 +419,40 @@
       "name": "역사적 전개",
       "purpose": "플레이어가 역사적 사건을 재해석하여 새로운 의미를 창출하며, 이는 세계의 관문과 플레이어의 선택에 영향을 미친다.",
       "playerChoice": "디지털 공간의 재구성과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다."
+    },
+    "local_authoring_parts::88d923a25af36fabe6015600bf5549ae892aeba5a033f917faf2493eda76aa58:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "디지털 시스템 투입",
+        "역사적 사건 재해석"
+      ],
+      "stateOutputs": [
+        "세계의 관문 재정의",
+        "플레이어 선택 변형"
+      ],
+      "name": "디지털 시스템과 역사적 전개의 결합",
+      "purpose": "디지털 시스템에 대한 직접적인 참여와 역사적 사건의 재해석을 통해 세계의 구조와 플레이어의 선택을 재정의하는 핵심 요소를 형성함.",
+      "playerChoice": "디지털 공간의 재구성과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계하여, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 11,
+      "calls": 12,
+      "successes": 12,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 638196,
-      "lastMs": 42014,
+      "totalMs": 680944,
+      "lastMs": 42748,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:54:37.656Z"
+      "updatedAt": "2026-10-10T01:55:20.405Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:43:59.422Z",
-  "updatedAt": "2026-10-10T01:54:37.656Z",
+  "updatedAt": "2026-10-10T01:55:20.410Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1947,7 +1962,7 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::d6eafee2873cf51ca26c23b7b5aa21c25c3c9bbdf2c6a0106e5e821f3ca7a3ae:signatureSystems:2": 1,
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2045,10 +2060,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:54:37.656Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T01:55:20.407Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
