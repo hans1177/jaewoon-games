@@ -1335,3 +1335,65 @@ test('homepage-only policy migration reuses exact authored slices but rejects an
   assert.equal(evaluate(checkpoint,currentPolicy,559),false,'wrong current policy version cannot migrate');
   assert.equal(evaluate(checkpoint,currentPolicy,560,false),false,'sequence lock must remain intact');
 });
+
+
+test('grammar-role timeout must not split the atomic seven-field rule or invent a partial role',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const schema={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:['B']},name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  let attempts=0;
+  const logs=[];
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,seedGameplaySketchVersion:5,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,
+    localDesignerModel:'test',designerRoute:{id:'test'},designCheckpoint:{tasks:{}},
+    designAssetLibraryContext:{status:'UNAVAILABLE'},modelCallStats:[],
+    console:{log:value=>logs.push(value)},clean:value=>String(value??'').trim(),persistDesignCheckpoint(){},
+    recordModelHealth(){},requestLocalDesignerRaw:async()=>{attempts++;throw new Error('OLLAMA_DESIGN_TIMEOUT 300000ms');},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema
+  });
+  await assert.rejects(author('원본 디자이너','LOCAL_OUTPUT_PATH=signatureSystems[2]',schema,{predict:1600,includeAssetContext:false}),/OLLAMA_DESIGN_TIMEOUT/);
+  assert.equal(attempts,1,'timeout must leave the exact role for a later checkpointed retry');
+  assert.equal(logs.some(line=>line.includes('DESIGN_LOCAL_SPLIT=')),false,'a grammar rule cannot be authored as unrelated disconnected pieces');
+});
+
+test('V5 B role repairs a clone and maintains A-to-B and B-to-A state exchange',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},name:{type:'string'},purpose:{type:'string'},
+    playerChoice:{type:'string'},stateInputs:{type:'array',minItems:1,items:{type:'string'}},stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
+  const candidates={
+    MAIN:{id:'main_portal',name:'포탈 출발',purpose:'마을과 포탈 진행을 연결한다',playerChoice:'입장할 지역을 선택한다',stateInputs:['PartyReady'],stateOutputs:['PortalOpen','SecretSignal']},
+    A:{id:'a_equipment',name:'장비 준비',purpose:'장비 및 동료를 편성한다',playerChoice:'전투 전에 장비를 선택한다',stateInputs:['PortalOpen'],stateOutputs:['PartyReady']},
+    B:{id:'b_combat',name:'보스 패링',purpose:'보스 공격 전조를 읽고 반격한다',playerChoice:'보스 패링 시점을 선택한다',stateInputs:['PartyReady'],stateOutputs:['PortalOpen']},
+    DELVE:{id:'delve_secret',name:'비밀 발견',purpose:'세계의 숨겨진 보상을 발견한다',playerChoice:'비밀 장소를 조사한다',stateInputs:['SecretSignal'],stateOutputs:['PartyReady']}
+  };
+  const calls=[],cache={tasks:{}};
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,seedGameplaySketchVersion:5,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,
+    localDesignerModel:'test',designerRoute:{id:'test'},designCheckpoint:cache,
+    designAssetLibraryContext:{status:'UNAVAILABLE'},modelCallStats:[],console:{log(){}},
+    seed:{gameId:'daechung-rpg',CORE_LOOP:['준비','전투','보상']},
+    clean:value=>String(value??'').trim(),persistDesignCheckpoint(){},recordModelHealth(){},
+    runCheckpointTask:async(phase,key,work)=>cache.tasks[phase+'::'+key]||(cache.tasks[phase+'::'+key]=await work()),
+    requestLocalDesignerRaw:async(_prompt,{schema:contract})=>{
+      const role=contract.properties.grammarRole.enum[0],count=calls.filter(x=>x===role).length+1;
+      calls.push(role);
+      const value={...candidates[role],grammarRole:role};
+      if(role==='B'&&count===1){value.name=candidates.A.name;value.purpose=candidates.A.purpose;}
+      return JSON.stringify(value);
+    },
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema
+  });
+  const value=await author('게임 설계','원본의 포탈·전투·동료 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  const rows=JSON.parse(JSON.stringify(value.signatureSystems));
+  const a=rows.find(row=>row.grammarRole==='A'),b=rows.find(row=>row.grammarRole==='B');
+  assert.equal(rows.length,4);
+  assert.equal(calls.filter(role=>role==='B').length,2,'the cloned B role must be rewritten');
+  assert.ok(a.stateOutputs.some(key=>b.stateInputs.includes(key)),'A output must reach B');
+  assert.ok(b.stateOutputs.some(key=>a.stateInputs.includes(key)),'B output must reach A');
+  assert.equal(new Set(rows.map(row=>row.id)).size,4);
+});
