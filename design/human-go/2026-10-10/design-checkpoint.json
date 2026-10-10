@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb:identity": {
+      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 600202,
-      "lastMs": 300100,
+      "totalMs": 709428,
+      "lastMs": 109226,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:43:16.597Z"
+      "updatedAt": "2026-10-10T08:45:05.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:33:16.266Z",
-  "updatedAt": "2026-10-10T08:43:16.597Z",
+  "updatedAt": "2026-10-10T08:45:05.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1551,5 +1555,9 @@
   "localAuthoringSplits": {
     "bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753": true,
     "f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T08:45:05.824Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
