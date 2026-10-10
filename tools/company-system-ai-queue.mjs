@@ -503,6 +503,10 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
   const wanted=unique(ids),excluded=new Set(unique(excludedGameIds));
   if(!wanted.length)throw new Error('SYSTEM_AI_TARGET_IDS_REQUIRED');
   const byId=new Map(queue.tasks.map(t=>[t.id,t]));
+  const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
+  const commonCanarySignatures=new Set(active.map(task=>profiles.get(task.id))
+    .filter(profile=>profile?.commonBottleneck===true&&clean(profile.signature))
+    .map(profile=>clean(profile.signature)));
   const chosen=[];
   for(const id of wanted){
     const task=byId.get(id);
@@ -511,11 +515,32 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
     if(task.status!=='queued')continue;
     if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_TARGET_DEPENDENCY_NOT_READY:'+id);
     if([...active,...chosen].some(other=>overlap(task,other)))continue;
+    // 센서가 제공한 타깃도 일반 batch와 동일하게 공통 실패 canary 한 건만 예약한다.
+    const impact=profiles.get(task.id);
+    const signature=clean(impact?.signature);
+    if(impact?.commonBottleneck===true&&signature){
+      if(commonCanarySignatures.has(signature))continue;
+      commonCanarySignatures.add(signature);
+    }
     chosen.push(task);
   }
   const chosenIds=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai-target:${Date.now()}`;
-  const tasks=queue.tasks.map(t=>chosenIds.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
+  const tasks=queue.tasks.map(t=>{
+    if(!chosenIds.has(t.id))return t;
+    const impact=profiles.get(t.id);
+    return{
+      ...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null,
+      impactScore:impact.score,impactComponents:impact.components,
+      evidence:unique([...(t.evidence||[]),
+        `system-ai-impact-score:${impact.score}`,
+        `system-ai-blocked-task-count:${impact.blockedTaskCount}`,
+        `system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,
+        ...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),
+        ...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])
+      ])
+    };
+  });
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled,completedReused:compacted.completedReused||0};
 }
 export function applySystemAiResults(queueInput,results=[]){

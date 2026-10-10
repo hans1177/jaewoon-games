@@ -248,11 +248,27 @@ export function analyzeSystemAiBottlenecks({
     })
     .sort((a,b)=>b.size-a.size||a.signature.localeCompare(b.signature));
 
+  // 예약 추천은 실제 예약기와 같은 선행 작업·대표 canary 조건을 사용한다.
+  // 그렇지 않으면 미완료 dependency 하나가 targeted reserve 전체를 실패시킨다.
+  const taskById=new Map(tasks.map(task=>[clean(task.id),task]));
+  const dependencyBlocked=queued.filter(task=>(task.dependencies||[])
+    .some(id=>clean(taskById.get(clean(id))?.status).toLowerCase()!=='done'));
+  const dependencyBlockedIds=new Set(dependencyBlocked.map(task=>clean(task.id)));
+  const activeCanarySignatures=new Set(running.map(task=>impactProfiles.get(clean(task.id)))
+    .filter(profile=>profile?.commonBottleneck===true&&clean(profile.signature))
+    .map(profile=>clean(profile.signature)));
   const disjointQueued=[];
-  for(const task of [...queued].sort((a,b)=>(impactProfiles.get(clean(b.id))?.score||0)-(impactProfiles.get(clean(a.id))?.score||0)
-    ||rankPriority(b.priority)-rankPriority(a.priority)
-    ||clean(a.createdAt).localeCompare(clean(b.createdAt)))){
+  for(const task of queued.filter(task=>!dependencyBlockedIds.has(clean(task.id)))
+    .sort((a,b)=>(impactProfiles.get(clean(b.id))?.score||0)-(impactProfiles.get(clean(a.id))?.score||0)
+      ||rankPriority(b.priority)-rankPriority(a.priority)
+      ||clean(a.createdAt).localeCompare(clean(b.createdAt)))){
     if([...running,...disjointQueued].some(other=>fileOverlap(task,other)))continue;
+    const profile=impactProfiles.get(clean(task.id));
+    const signature=clean(profile?.signature);
+    if(profile?.commonBottleneck===true&&signature){
+      if(activeCanarySignatures.has(signature))continue;
+      activeCanarySignatures.add(signature);
+    }
     disjointQueued.push(task);
   }
 
@@ -378,7 +394,7 @@ export function analyzeSystemAiBottlenecks({
     version:1,
     kind:'company-system-ai-bottleneck-snapshot',
     observedAt:new Date(at).toISOString(),
-    queueDepth:{total:tasks.length,queued:queued.length,running:running.length,awaitingSupervisor:awaiting.length},
+    queueDepth:{total:tasks.length,queued:queued.length,running:running.length,awaitingSupervisor:awaiting.length,dependencyBlocked:dependencyBlocked.length},
     staleReservations:stale.map(t=>({taskId:clean(t.id),reservationId:clean(t.reservationId)||null,reservedAt:clean(t.reservedAt)||null})),
     commonFailureCohorts,
     representativeCanaryTaskIds:uniq(commonFailureCohorts.map(x=>x.representativeTaskId)),
@@ -445,6 +461,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   if(clean(a.output)){fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');}
   console.log('SYSTEM_AI_BOTTLENECK_QUEUE_DEPTH='+result.queueDepth.queued);
+  console.log('SYSTEM_AI_BOTTLENECK_DEPENDENCY_BLOCKED='+result.queueDepth.dependencyBlocked);
   console.log('SYSTEM_AI_DEVELOPMENT_FLOOR_GAMES='+result.development.total);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_EXACT='+result.development.exactF0Count);
   console.log('SYSTEM_AI_DEVELOPMENT_DUAL_PLATFORM_PREFLIGHT_MISMATCH='+result.development.dualPlatformPreflightMismatchCount);

@@ -720,3 +720,42 @@ test('System AI sensor reads the current fan-in package-review failure and ignor
   assert.equal(snapshot.externalLearningApplications.gameTaskFailureCount,1);
   assert.equal(snapshot.externalLearningApplications.gameTaskFailures[0].signature,'VERIFIED_EXTERNAL_LEARNING_SILENTLY_IGNORED');
 });
+
+test('System AI sensor recommends only dependency-ready work and does not strand reserve',()=>{
+  const snapshot=analyzeSystemAiBottlenecks({
+    systemAiQueue:{tasks:[
+      {id:'pending',status:'running',responsibleFiles:['tools/pending.mjs'],reservationId:'r',reservedAt:'2026-10-11T00:00:00Z'},
+      {id:'blocked',status:'queued',priority:'critical',responsibleFiles:['tools/blocked.mjs'],dependencies:['pending']},
+      {id:'ready',status:'queued',priority:'high',responsibleFiles:['tools/ready.mjs'],dependencies:[]}
+    ]},
+    maxBatch:4,at:Date.parse('2026-10-11T00:01:00Z')
+  });
+  assert.equal(snapshot.queueDepth.dependencyBlocked,1);
+  assert.deepEqual(snapshot.recommendedReserveTaskIds,['ready']);
+  assert.equal(snapshot.recommendedBatch,1);
+});
+
+test('System AI sensor uses the same shared-failure canary decision as actual reservation',()=>{
+  const queue={tasks:[
+    {id:'a',status:'queued',priority:'critical',responsibleFiles:['tools/a.mjs'],failureSignature:'SHARED_FAILURE',createdAt:'2026-10-11T00:00:00Z'},
+    {id:'b',status:'queued',priority:'high',responsibleFiles:['tools/b.mjs'],failureSignature:'SHARED_FAILURE',createdAt:'2026-10-11T00:00:01Z'},
+    {id:'c',status:'queued',priority:'normal',responsibleFiles:['tools/c.mjs'],failureSignature:'OTHER',createdAt:'2026-10-11T00:00:02Z'}
+  ]};
+  const snapshot=analyzeSystemAiBottlenecks({systemAiQueue:queue,maxBatch:3,at:Date.parse('2026-10-11T00:01:00Z')});
+  assert.deepEqual(snapshot.recommendedReserveTaskIds,['a','c']);
+  const targeted=reserveSystemAiTargets(queue,{ids:snapshot.recommendedReserveTaskIds,reservationId:'test-canary',at:Date.parse('2026-10-11T00:01:00Z')});
+  assert.deepEqual(targeted.reserved.map(task=>task.id),['a','c']);
+  assert.ok(targeted.reserved.find(task=>task.id==='a').evidence.includes('system-ai-representative-canary:SHARED_FAILURE'));
+  assert.equal(targeted.queue.tasks.find(task=>task.id==='b').status,'queued');
+});
+
+test('System AI target reservations reject duplicate shared failure even if caller supplies both targets',()=>{
+  const queue={tasks:[
+    {id:'a',status:'queued',priority:'critical',responsibleFiles:['tools/a.mjs'],failureSignature:'SAME',createdAt:'2026-10-11T00:00:00Z'},
+    {id:'b',status:'queued',priority:'high',responsibleFiles:['tools/b.mjs'],failureSignature:'SAME',createdAt:'2026-10-11T00:00:01Z'},
+    {id:'c',status:'queued',priority:'normal',responsibleFiles:['tools/c.mjs'],createdAt:'2026-10-11T00:00:02Z'}
+  ]};
+  const selected=reserveSystemAiTargets(queue,{ids:['a','b','c'],reservationId:'test-direct'});
+  assert.deepEqual(selected.reserved.map(task=>task.id),['a','c']);
+  assert.ok(selected.reserved.find(task=>task.id==='a').evidence.includes('system-ai-representative-canary:SAME'));
+});
