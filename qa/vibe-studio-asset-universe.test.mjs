@@ -5580,3 +5580,22 @@ test('genre responsive game window and system library atoms stay synchronized an
     assert.equal(forbidden.test(source),false,String(forbidden));
   }
 });
+
+
+test('game settings use only authorized choices and never persist or fake a successful local change',()=>{
+  const here=path.dirname(fileURLToPath(import.meta.url));
+  const root=path.resolve(here,'..');
+  const source=fs.readFileSync(path.join(root,'assets/roblox/common-ui-v1/RobloxCommonUI.luau'),'utf8');
+  const start=source.indexOf('function RobloxCommonUI.CreateSettingsPanel(options)');
+  const end=source.indexOf('function RobloxCommonUI.CreateSearchField',start);
+  assert.ok(start>0&&end>start);
+  const impl=source.slice(start,end);
+  for(const token of [
+    'CreateFilterBar','ScrollingFrame','AutomaticCanvasSize','type(options.onChange)=="function"',
+    'allowedValues','GameReportedEditable','onCategorySelect','GameSnapshotRevision',
+    'OwnsSettingsPersistence",false','OwnsSaveAuthority",false','return root,content,{Sync=sync'
+  ])assert.ok(impl.includes(token),token);
+  for(const forbidden of ['DataStoreService','FireServer(', 'InvokeServer(', 'SetAsync(', 'UpdateAsync(']){
+    assert.equal(impl.includes(forbidden),false,forbidden);
+  }
+});
