@@ -175,3 +175,18 @@ test('promotion imports the canonical V5 grammar validator and all transitive se
   }
   assert.match(promotion,/node tools\/design-only-promotion-sync\.mjs/);
 });
+
+test('promotion loads latest four central policies into the isolated runtime worktree',()=>{
+  const checkout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
+  const reset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
+  const policyFiles=[
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ];
+  for(const file of policyFiles){
+    assert.ok(checkout.split(/\s+/).includes(file),'missing runtime validation policy: '+file);
+    assert.ok(reset.split(/\s+/).includes(file),'canonical policy must not be persisted to runtime branch: '+file);
+  }
+});
