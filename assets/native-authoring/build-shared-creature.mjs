@@ -12,6 +12,14 @@ export const SHARED_CREATURE_SPECIES=Object.freeze({
   golem:{bodyPlan:'HEAVY_GOLEM_OR_BOSS',pairs:1,height:1.70,signature:'GOLEM_CORE_PULSE',palette:[.42,.42,.41]},
   serpent:{bodyPlan:'REPTILE_OR_SERPENT',pairs:0,height:.44,signature:'SERPENT_COIL_STRIKE',palette:[.17,.35,.24]}
 });
+// 공용 종별 모션 확장팩. 플랫폼 독립 스킨·관절 키프레임이며 기존 원본 보존.
+export const SHARED_CREATURE_ACTION_LIBRARY=Object.freeze({
+ wolf:['WOLF_STALK_CROUCH','WOLF_FLANK_LUNGE','WOLF_POUNCE_PIN','WOLF_PACK_HOWL_LOOP','WOLF_GUARD_BACKSTEP','WOLF_HEAVY_HIT','WOLF_GET_UP','WOLF_BOSS_PHASE_TELL'],
+ spider:['SPIDER_SILK_DESCENT','SPIDER_WALL_PIVOT','SPIDER_TWO_LEG_STAB','SPIDER_FANG_BURST','SPIDER_WEB_AIM','SPIDER_SHELL_BRACE','SPIDER_KNOCKBACK','SPIDER_BOSS_PHASE_TELL'],
+ beetle:['BEETLE_HORN_UPSWEEP','BEETLE_TURN_RAM','BEETLE_SHELL_BLOCK','BEETLE_HORN_FEINT','BEETLE_MANDIBLE_CLAMP','BEETLE_LEG_STOMP','BEETLE_REEL_BACK','BEETLE_BOSS_PHASE_TELL'],
+ golem:['GOLEM_CORE_CHANNEL','GOLEM_DOUBLE_FIST_SLAM','GOLEM_GROUND_STOMP','GOLEM_GUARD_BRACE','GOLEM_SLOW_TURN','GOLEM_HEAD_RECOIL','GOLEM_FALL_RECOVER','GOLEM_BOSS_PHASE_TELL'],
+ serpent:['SERPENT_COIL_CHARGE','SERPENT_SIDE_FANG','SERPENT_TAIL_WHIP','SERPENT_SPIRAL_EVADE','SERPENT_VENOM_AIM','SERPENT_HIT_COIL','SERPENT_UNCOIL_RECOVER','SERPENT_BOSS_PHASE_TELL']
+});
 const add=(a,b)=>a.map((v,i)=>v+b[i]);
 const diff=(a,b)=>a.map((v,i)=>v-b[i]);
 const mul=(a,s)=>a.map(v=>v*s);
@@ -22,7 +30,7 @@ const quaternion=(x,y,z)=>{
  const a=Math.cos(x/2),b=Math.sin(x/2),c=Math.cos(y/2),d=Math.sin(y/2),e=Math.cos(z/2),f=Math.sin(z/2);
  return [b*c*e-a*d*f,a*d*e+b*c*f,a*c*f-b*d*e,a*c*e+b*d*f];
 };
-export function buildSharedCreature(species='wolf'){
+export function buildSharedCreature(species='wolf',{extended=false}={}){
  const id=String(species).toLowerCase(),cfg=SHARED_CREATURE_SPECIES[id];
  if(!cfg)throw Error('UNKNOWN_SHARED_CREATURE:'+id);
  const joints=[],world=[],addJoint=(name,parent,position)=>{
@@ -110,7 +118,8 @@ export function buildSharedCreature(species='wolf'){
      else ball(1,k,center,[.23,.25,.24]);
    }else pipe(i%2?1:0,k,center,add(center,[0,0,.31]),Math.max(.04,.29-i*.017),Math.max(.03,.27-i*.018),12);
  }
- const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature];
+ const extraClips=extended?SHARED_CREATURE_ACTION_LIBRARY[id]:[];
+ const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature,...extraClips];
  function pose(clip,t){
    const a=t*Math.PI*2,locomotion=clip==='WALK'||clip==='RUN',fast=clip==='RUN';
    const wind=pulse(t,.26,.18),contact=pulse(t,.57,.17),rebound=pulse(t,.78,.15);
@@ -207,6 +216,40 @@ export function buildSharedCreature(species='wolf'){
      for(const l of legs)angles[l.hip]=[.47*t,0,l.side*.25*t];
      for(let i=0;i<extras.length;i++)angles[extras[i]]=[.37*t,.19*t,0];
    }
+   // 종족 신체·관절 위상에 맞게 모션을 제작하며 피해·히트박스·AI·이동 권한은 포함하지 않는다.
+   const mode=extraClips.indexOf(clip);
+   if(mode>=0){
+     const brace=pulse(t,.25,.16),act=pulse(t,.56,.17),rest=pulse(t,.82,.17),wave=Math.sin(Math.PI*t);
+     const side=mode%2===0?1:-1,shape=[
+       [-.18,.10,-.25,.15,.13],[-.36,.52,-.43,.65,.24],[-.45,.36,-.28,.78,.32],
+       [-.33,.10,-.70,.35,.47],[.28,-.09,.36,-.16,-.23],[.52,-.21,.48,-.14,-.42],
+       [.34,-.16,-.27,.22,-.31],[-.49,.24,-.53,.52,.45]
+     ][mode];
+     angles[torso]=[shape[0]*brace+shape[1]*act,.18*side*(act-brace),.17*side*(brace-rest)];
+     angles[head]=[shape[2]*brace+shape[3]*act,.14*side*Math.sin(a),.09*side*act];
+     angles[jaw]=[shape[4]*brace-.42*act,0,0];
+     angles[tail]=[.28*wave-.19*act,.31*side*(wave-act),.07*Math.sin(a)];
+     if(mode===0||mode===3||mode===7){angles[torso][0]-=.21*wave;angles[head][0]-=.27*wave;}
+     for(const leg of legs){
+       const phase=Math.sin(a+leg.p*.72+(leg.side<0?0:Math.PI)),lead=leg.p===0?1:.55;
+       angles[leg.hip]=[-.25*brace*lead+.41*act*lead,.17*side*leg.side*act,.15*leg.side*brace];
+       angles[leg.knee]=[.18*wave+.23*act*lead,0,.06*phase];
+       angles[leg.foot]=[-.17*act,.07*phase,.08*leg.side*act];
+       if(mode===4){angles[leg.hip][0]*=-1;angles[leg.hip][1]*=1.5;}
+       if(mode===6)angles[leg.knee][0]+=.34*(1-t)*wave;
+       if(id==='spider')angles[leg.hip][0]+=(leg.p%2?1:-1)*.20*pulse(t,.51+leg.p*.021,.2);
+     }
+     for(let index=0;index<extras.length;index++){
+       const limb=extras[index],phase=pulse(t,.53+index*.025,.18),sign=index%2?1:-1;
+       angles[limb]=[-.27*brace+.53*phase*sign,.26*side*wave-.18*act,.12*Math.sin(a-index*.42)];
+       if(id==='serpent')angles[limb]=[.12*Math.sin(a*1.4-index*.4),.26*Math.sin(a-index*.48)+.16*side*act,.11*Math.sin(a-index*.25)];
+       if(id==='golem')angles[limb]=[-.35*brace+.55*act,.18*sign*brace-.18*sign*act,.11*sign*wave];
+     }
+     if(id==='wolf')angles[head][0]+=-.21*brace+.23*act;
+     if(id==='beetle')angles[jaw][0]+=-.30*brace+.39*act;
+     if(id==='serpent')angles[tail][1]+=.47*side*act;
+     if(id==='spider')angles[head][1]+=.23*side*act;
+   }
    return angles;
  }
  const doc={asset:{version:'2.0',generator:'Jaewoon shared GRAPHICS_PRODUCTION creature'},
@@ -275,10 +318,11 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const wanted=arg?arg.slice(10).split(',').map(x=>x.trim()).filter(Boolean):Object.keys(SHARED_CREATURE_SPECIES);
   const targetArg=process.argv.slice(2).find(x=>!x.startsWith('--'));
   const targetDir=path.resolve(targetArg||'assets/shared');
+  const extended=process.argv.includes('--extended-actions');
   if(!wanted.length)throw Error('NO_CREATURE_SPECIES_REQUESTED');
   fs.mkdirSync(targetDir,{recursive:true});
   for(const id of new Set(wanted)){
-    const actor=buildSharedCreature(id),file=path.join(targetDir,'creature-'+id+'.glb');
+    const actor=buildSharedCreature(id,{extended}),file=path.join(targetDir,'creature-'+id+(extended?'-actions':'')+'.glb');
     fs.writeFileSync(file,actor.bytes);
     console.log(JSON.stringify({file,bodyPlan:actor.bodyPlan,triangles:actor.triangles,skinnedJoints:actor.jointCount,clips:actor.clipNames,nativeRuntimeVerified:false}));
   }

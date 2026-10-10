@@ -1199,9 +1199,21 @@ export function createCommonCareerMotionLoadout({
     sourceStructureIsNotNativeRuntimeVerification:true,
     runtimeVerified:false,productionVerified:false
   });
+  // 실제로 굽힌 공용 관절 GLB를 상속 직업이 같이 사용한다. 엔진 네이티브 PASS는 별도다.
+  const actionSource=Object.freeze({
+    assetId:'shared-humanoid-'+masterFamily+'-actions',
+    path:'assets/shared/humanoid-'+masterFamily+'-actions.glb',
+    sourceMasterPath:master.path,
+    authoringSource:'assets/native-authoring/build-shared-humanoid.mjs',
+    clipCount:['traveler','guardian'].includes(masterFamily)?23:24,
+    additionalAuthoredClipCount:8,
+    hasSkinnedJointChannels:true,platformNativeAdaptationRequired:true,
+    sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
+    productionVerified:false,runtimeVerified:false,gameplayAuthority:false
+  });
   return Object.freeze({
     id,careerPath:freezeList(ancestors),genre:requestedGenre,platform:platformId,
-    master,
+    master,actionSource,
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
     groups,skills,genreGroups:requiredGroups,compositionLayers,roleRequests,
@@ -1371,6 +1383,16 @@ export function createCommonMonsterActionLoadout({
   const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
   const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
+  const actionSource=master?Object.freeze({
+    assetId:'shared-creature-'+id.toLowerCase()+'-actions',
+    path:'assets/shared/creature-'+id.toLowerCase()+'-actions.glb',
+    sourceMasterPath:master.path,
+    authoringSource:'assets/native-authoring/build-shared-creature.mjs',
+    clipCount:19,additionalAuthoredClipCount:8,
+    hasSkinnedJointChannels:true,platformNativeAdaptationRequired:true,
+    sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
+    productionVerified:false,runtimeVerified:false,gameplayAuthority:false
+  }):null;
   if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
   const tierActing=tierProfile.acting.map(role=>id+'_'+role);
   const tierSignature=tierProfile.signature.map(role=>id+'_'+role);
@@ -1461,7 +1483,7 @@ export function createCommonMonsterActionLoadout({
   const coverage=auditMotionCoverage(profile);
   return Object.freeze({
     id,species,profile,genre:requestedGenre,platform:platformId,
-    master,masterActuallyExistsInSharedRepository:!!master,
+    master,actionSource,masterActuallyExistsInSharedRepository:!!master,
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
     presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
     speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),

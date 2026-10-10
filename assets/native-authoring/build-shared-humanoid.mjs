@@ -4,7 +4,18 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-function buildSharedHumanoid(kind='traveler'){
+// 직업을 늘리지 않고 같은 스킨 리그의 동작을 생활/전투/스킬/제작 장르가 공유한다.
+export const SHARED_HUMANOID_ACTION_LIBRARY=Object.freeze({
+ traveler:['TRAVELER_IDLE_SCAN','TRAVELER_PICKUP','TRAVELER_CARRY','TRAVELER_INTERACT','TRAVELER_ROLL','TRAVELER_CLIMB_REACH','TRAVELER_CAMP_REST','TRAVELER_GREET'],
+ guardian:['GUARDIAN_SHIELD_WALL','GUARDIAN_PARRY','GUARDIAN_CHARGE','GUARDIAN_STAGGER','GUARDIAN_REVIVE','GUARDIAN_BATTLE_CRY','GUARDIAN_COUNTER','GUARDIAN_BOSS_TELL'],
+ samurai:['SAMURAI_LOW_CUT','SAMURAI_RISING_CUT','SAMURAI_DEFLECT','SAMURAI_DASH_SLASH','SAMURAI_FINISHER','SAMURAI_SHEATH','SAMURAI_HIT_RECOVER','SAMURAI_ULTIMATE_POSE'],
+ archer:['ARCHER_CROUCH_AIM','ARCHER_SIDE_STRAFE','ARCHER_DOUBLE_SHOT','ARCHER_RETREAT_SHOT','ARCHER_AIM_HOLD','ARCHER_BOW_SKILL','ARCHER_RELOAD_QUIVER','ARCHER_MARK_TARGET'],
+ mage:['MAGE_PROJECTILE_CAST','MAGE_BARRIER','MAGE_CHANNEL','MAGE_SUMMON','MAGE_HEAL','MAGE_BEAM','MAGE_COUNTERSPELL','MAGE_ULTIMATE'],
+ rogue:['ROGUE_SNEAK','ROGUE_SHADOW_DASH','ROGUE_DUAL_CUT','ROGUE_PARRY','ROGUE_BACKSTAB','ROGUE_TRAP','ROGUE_EVADE','ROGUE_CLOAK'],
+ lancer:['LANCER_GUARD','LANCER_JUMP_STAB','LANCER_SWEEP','LANCER_CHARGE','LANCER_DOUBLE_THRUST','LANCER_PARRY','LANCER_BACKSTEP','LANCER_FINISHER'],
+ blacksmith:['BLACKSMITH_TONGS','BLACKSMITH_ANVIL','BLACKSMITH_COOL_METAL','BLACKSMITH_INSPECT','BLACKSMITH_REPAIR','BLACKSMITH_CRAFT','BLACKSMITH_LIFT','BLACKSMITH_SHOW_TOOL']
+});
+export function buildSharedHumanoid(kind='traveler',{extended=false}={}){
  const guardian=kind==='guardian', deg=Math.PI/180;
  const joints=[
  ['Root',-1,[0,0,0]],['Hips',0,[0,1.03,0]],['Spine',1,[0,.22,0]],['Chest',2,[0,.31,0]],['Neck',3,[0,.27,0]],['Head',4,[0,.16,0]],
@@ -164,6 +175,8 @@ function buildSharedHumanoid(kind='traveler'){
    blacksmith:{clip:'BLACKSMITH_FORGE_HAMMER',duration:1.26,pre:.44,contact:.77,bones:{Chest:[-26,36,14,-11],Shoulder_R:[-108,98,8,0],Shoulder_L:[-80,79,-8,0],Elbow_R:[-41,28,0,0],Elbow_L:[-30,22,0,0],Hips:[15,-24,-9,0]}}
   };
   if(roleActions[kind])defs.push([roleActions[kind].clip,roleActions[kind].duration,25]);
+ const extraClips=extended?SHARED_HUMANOID_ACTION_LIBRARY[kind]||[]:[];
+ for(const name of extraClips)defs.push([name,1.1,25]);
  const pulse=(u,at=.42,w=.3)=>Math.exp(-Math.pow((u-at)/w,2)*2);
  function pose(name,u){
   const s=Math.sin(2*Math.PI*u),c=Math.cos(2*Math.PI*u),E={},T=[0,1.03,0];
@@ -194,6 +207,59 @@ function buildSharedHumanoid(kind='traveler'){
        E[bone]=[angles[0]*wind+angles[1]*impact,angles[2]*wind+angles[3]*impact,0];
      T[1]-=.032*wind-.014*impact;
    }
+   // 역할별 양팔 접촉축, 체중 이동, 시선 및 자세를 다르게 구성한다.
+   // 이동·공격 판정·스킬 권한을 생성하지 않는 실제 회전 관절 키프레임이다.
+   const mode=extraClips.indexOf(name);
+   if(mode>=0){
+     const b=pulse(u,.24,.17),hit=pulse(u,.61,.16),end=pulse(u,.83,.18),
+       h=Math.sin(Math.PI*u),side=mode%2?1:-1,accent=Math.sin(2*Math.PI*u);
+     const weight=[
+       [-24,18,-19,25],[-36,44,-29,54],[-18,37,-46,44],
+       [-32,54,-37,49],[-44,76,-55,72],[15,-12,24,-28],
+       [30,-24,-13,19],[-41,32,-38,35]
+     ][mode];
+     const control={traveler:.62,guardian:.94,samurai:1.1,archer:.83,mage:1.03,rogue:.98,lancer:1.12,blacksmith:.9}[kind]||1;
+     const arm=kind==='mage'?1:kind==='archer'?-.65:kind==='blacksmith'?.85:kind==='guardian'?-.9:side;
+     E.Chest=[(weight[0]*b+weight[1]*hit)*control,side*(14*b-19*hit),side*8*end];
+     E.Hips=[10*b-14*hit,side*(9*b-10*hit),side*7*h];
+     E.Head=[(weight[2]*b+weight[3]*hit)*.52,side*10*(hit-b),-side*4*h];
+     E.Shoulder_R=[(-45*b-61*hit)*control,side*13*hit,(24*b-20*hit)*arm];
+     E.Elbow_R=[-44*b+38*hit,0,-11*arm*hit];
+     E.Shoulder_L=[(-37*b-49*hit)*control,-side*9*hit,(-21*b+15*hit)*arm];
+     E.Elbow_L=[-35*b+24*hit,0,8*arm*hit];
+     E.UpperLeg_L=[(18*b-24*hit)*control,side*8*h,side*9*hit];
+     E.UpperLeg_R=[(-13*b+20*hit)*control,-side*8*h,-side*9*hit];
+     E.Knee_L=[10*h+16*hit,0,0];E.Knee_R=[12*h+14*b,0,0];
+     if(kind==='mage'){
+       E.Shoulder_L=[-100*b-28*hit,-28*h,8*hit];
+       E.Shoulder_R=[-95*b-33*hit,28*h,-8*hit];
+       E.Elbow_L=[-25*h+18*hit,0,0];E.Elbow_R=[-24*h+20*hit,0,0];
+     }else if(kind==='archer'){
+       E.Shoulder_L=[-91*b+38*hit,-19*h,-15*b];
+       E.Shoulder_R=[-62*b+21*hit,26*h,19*b];
+       E.Elbow_R=[-81*b+74*hit,0,0];
+     }else if(kind==='blacksmith'){
+       E.Shoulder_R=[-117*b+113*hit,18*h,5*hit];
+       E.Elbow_R=[-65*b+38*hit,0,0];
+       E.Shoulder_L=[-61*b+38*hit,-12*h,0];
+     }else if(kind==='guardian'){
+       E.Shoulder_L=[-95*h+20*hit,-12*h,-31*h];
+       E.Elbow_L=[-64*h+24*hit,0,0];
+     }else if(kind==='lancer'){
+       E.Shoulder_L=[-64*b-31*hit,-22*b,8*hit];
+       E.Shoulder_R=[-65*b-32*hit,22*b,-8*hit];
+     }else if(kind==='rogue'){
+       E.Chest[2]+=23*accent;E.Shoulder_L[0]-=22*hit;
+     }else if(kind==='samurai'){
+       E.Shoulder_R[0]-=39*b;E.Shoulder_L[0]-=19*hit;E.Chest[1]+=21*hit;
+     }
+     if(mode===0){T[1]-=.09*h;E.UpperLeg_L[0]+=22*h;E.UpperLeg_R[0]+=19*h;}
+     if(mode===4){E.Shoulder_R[0]-=24*hit;E.Chest[1]+=19*side*hit;}
+     if(mode===5){E.Shoulder_L[0]-=23*h;E.Head[0]-=16*b;}
+     if(mode===6){E.Knee_L[0]+=31*(1-u)*h;E.Knee_R[0]+=26*(1-u)*h;}
+     if(mode===7){E.Chest[0]-=24*h;E.Shoulder_L[0]-=17*h;E.Shoulder_R[0]-=22*h;}
+     T[1]-=.025*b-.015*hit;
+   }
    return {E,T};
  }
  for(const [name,d,n] of defs){
@@ -216,6 +282,7 @@ function buildSharedHumanoid(kind='traveler'){
 }
 
 const outputDir=path.resolve(process.argv[2]||'assets/shared');
+const extended=process.argv.includes('--extended-actions');
 fs.mkdirSync(outputDir,{recursive:true});
 const defaultRoles=['traveler','guardian'];
 const availableRoles=[...defaultRoles,'samurai','archer','mage','rogue','lancer','blacksmith'];
@@ -223,8 +290,8 @@ const roleArg=process.argv.find(value=>value.startsWith('--roles='));
 const requestedRoles=roleArg?roleArg.slice(8).split(',').map(x=>x.trim()).filter(Boolean):defaultRoles;
 if(!requestedRoles.length||requestedRoles.some(role=>!availableRoles.includes(role)))throw Error('UNKNOWN_SHARED_HUMANOID_ROLE');
 for(const role of [...new Set(requestedRoles)]){
-  const asset=buildSharedHumanoid(role);
-  const destination=path.join(outputDir,'humanoid-'+role+'.glb');
+  const asset=buildSharedHumanoid(role,{extended});
+  const destination=path.join(outputDir,'humanoid-'+role+(extended?'-actions':'')+'.glb');
   fs.writeFileSync(destination,asset.bytes);
   console.log(JSON.stringify({path:destination,vertices:asset.vertexCount,triangles:asset.triangleCount,joints:asset.jointCount,animations:asset.clipNames,nativeRuntimeVerified:false}));
 }
