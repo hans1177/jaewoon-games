@@ -1055,6 +1055,13 @@ test('Roblox coding reads the same game Unity Web C# origin with exact change fi
     assert.equal(without.unityWebSourceSync.unityWebScriptsFingerprint,null);
     assert.equal(without.unityWebSourceSync.verificationTransferred,false);
     assert.equal(without.sourceImplementationPassed,false);
+    write(unityFile,'public class UnityWebFloorGame {\n  private const string CoreLoop = "generic";\n  private int progress;\n  private void PerformAction(bool mobile) { progress++; }\n}\n');
+    const generic=buildDesignToPlatformCodingTrace({
+      gameId,design,platform:'ROBLOX',repoRoot:root,sourceRoot:'roblox-games/'+gameId,multiplayerRequired:false
+    });
+    assert.equal(generic.unityWebSourceSync.unityWebSourceAvailable,false,'generic Unity Web scaffold has no transferable gameplay authority');
+    assert.equal(generic.unityWebSourceSync.referenceStatus,'GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY');
+    assert.deepEqual(generic.unityWebSourceSync.sourceMethods,[]);
     write(unityFile,'public class GameCore {\n  public int Health = 12;\n  public void ApplyDamage() { Health--; }\n  public void RestoreState() { Health++; }\n}\n');
     const sourceRoots=['roblox-games/'+gameId];
     const observed=inspectGameSources({repoRoot:root,sourceRoots});
