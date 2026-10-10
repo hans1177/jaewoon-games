@@ -539,40 +539,25 @@
         "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
         "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다."
       ]
-    },
-    "local_authoring_parts::7bd6b9c3a45e353bb8a6b1edbbc5944a2080d8422af2ea9d6b52a3a7ce47de8e:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"action\": \"재건 시설에 자원 투자\", \"status\": {\"스탯 버프\": \"+10% 전투력\", \"신규 스킬\": \"마을 복구 기술\"}}",
-        "{\"action\": \"리스크 배낭 재구성\", \"status\": {\"인벤토리 제한\": \"3/5\", \"보상\": \"체력 회복 물약\"}}"
-      ],
-      "stateOutputs": [
-        "{\"status\": {\"스탯 버프\": \"+20% 전투력\", \"신규 스킬\": \"마을 복구 강화\"}, \"message\": \"재건 시설의 영구적 효과",
-        "{\"status\": {\"인벤토리 제한\": \"4/5\", \"보상\": \"더 빠른 체력 회복\"}, \"message\": \"리스크 배낭의 효율성이 개선됨."
-      ],
-      "name": "주요 선택 및 상태 변화",
-      "purpose": "플레이어의 대표 행동과 그 행동이 바꾸는 관찰 가능한 세계 상태를 정의한다.",
-      "playerChoice": "즉시 전투력을 높이는 무기 제련 시설을 우선 복구할 것인지, 소비 물약 효율과 던전 내 추가 부활 기회를 부여하는 연금소를 먼저 지을지 선택한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 12,
+      "calls": 15,
+      "successes": 13,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1327055,
-      "lastMs": 59341,
+      "totalMs": 1344240,
+      "lastMs": 17185,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:12:05.637Z"
+      "updatedAt": "2026-10-10T10:12:22.824Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:49:58.534Z",
-  "updatedAt": "2026-10-10T10:12:05.637Z",
+  "updatedAt": "2026-10-10T10:12:22.837Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2264,8 +2249,8 @@
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:12:05.637Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:12:22.824Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_NO_PROGRESS MAIN DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
