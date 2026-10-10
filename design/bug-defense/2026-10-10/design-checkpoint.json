@@ -612,25 +612,34 @@
     },
     "local_authoring_parts::29edf4600af6eb142357841854a1edbdf5d6d4dbd746490da95997fdd1563a26:trigger": {
       "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::29edf4600af6eb142357841854a1edbdf5d6d4dbd746490da95997fdd1563a26:stateChange": {
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::b144450b5335a2a2e6a29033f190938015c5d2c717cfaddb2f6cd5d6e521204f:systemInterconnections:3:15f00406522ffa17": {
+      "fromSystem": "Main Defensive Strategy",
+      "toSystem": "Game Designer AI",
+      "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 27,
+      "calls": 28,
+      "successes": 28,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 664398,
-      "lastMs": 32070,
+      "totalMs": 695198,
+      "lastMs": 30800,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:12:08.083Z"
+      "updatedAt": "2026-10-10T09:12:38.884Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:12:08.083Z",
+  "updatedAt": "2026-10-10T09:12:38.885Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2323,7 +2332,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:12:08.083Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:12:38.885Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
