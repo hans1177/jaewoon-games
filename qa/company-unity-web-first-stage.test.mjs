@@ -34,7 +34,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     ].join('\n');
     fs.writeFileSync(path.join(root,'Assets','Scripts','Game.cs'),valid3d);
     fs.writeFileSync(path.join(root,'Assets','Editor','Build.cs'),'public static class SeedAndroidBuild { public static void BuildWeb(){} }\n');
-    fs.writeFileSync(path.join(root,'Packages','manifest.json'),'{}\n');
+    fs.writeFileSync(path.join(root,'Packages','manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.physics':'1.0.0'}})+'\n');
     fs.writeFileSync(path.join(root,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
     process.chdir(tmp);
     execFileSync(process.execPath,[tool,'--game-id=sample-game','--source-commit=abc'],{stdio:'pipe'});
@@ -56,6 +56,37 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
     assert.equal(req.existing2dOr2_5dSourceRequiresInPlace3dRebuild,true);
     // 실제 C# 파일로 검사기를 실행하고 2D 탐지가 실패 원인인지 확인한다.
     const run=()=>execFileSync(process.execPath,[tool,'--game-id=sample-game'],{stdio:'pipe'});
+    assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
+    // 검증 모드에서는 요청 파일이 없어야 하며 실패는 정확한 모듈을 보고한다.
+    const moduleManifest=path.join(root,'Packages','manifest.json');
+    const preflightRequest=path.join(tmp,'.build-requests','unity-web','sample-game.json');
+    fs.rmSync(preflightRequest,{force:true});
+    const preflight=execFileSync(process.execPath,[tool,'--game-id=sample-game','--validate-only'],{stdio:'pipe'}).toString();
+    assert.match(preflight,/UNITY_WEB_NATIVE_MODULES=VALIDATED/);
+    assert.match(preflight,/UNITY_WEB_SOURCE_PREFLIGHT=PASS/);
+    assert.equal(fs.existsSync(preflightRequest),false);
+    assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
+    fs.writeFileSync(moduleManifest,'{}\n');
+    assert.throws(run,error=>{
+      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_MODULE_MISSING:com\.unity\.modules\.physics:/);
+      return true;
+    });
+    fs.writeFileSync(moduleManifest,JSON.stringify({dependencies:{'com.unity.modules.physics':'1.0.0'}})+'\n');
+    for(const [reference,module] of [
+      ['Animator actor;', 'animation'],
+      ['AudioSource sound;', 'audio'],
+      ['string value = JsonUtility.ToJson(this);', 'jsonserialize'],
+      ['GUI.Button(new Rect(0,0,10,10), "Play");', 'imgui']
+    ]){
+      const sourceFile=path.join(root,'Assets','Scripts','Game.cs');
+      fs.writeFileSync(sourceFile,'using UnityEngine; public class Game:MonoBehaviour { '+reference+' }\n');
+      try{
+        assert.throws(run,error=>{
+          assert.match(String(error.stderr),new RegExp('UNITY_WEB_NATIVE_MODULE_MISSING:com\\.unity\\.modules\\.'+module+':'));
+          return true;
+        });
+      }finally{fs.writeFileSync(sourceFile,valid3d);}
+    }
     assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
     const reject=(relative,body)=>{
       const target=path.join(root,relative);

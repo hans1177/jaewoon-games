@@ -64,12 +64,32 @@ if(scriptFiles.length===0)throw new Error('UNITY_WEB_CSHARP_SOURCE_REQUIRED');
 // C# 식별자 단어 경계는 정규식 리터럴의 단일 \\b로 검사한다 (중복 이스케이프 금지).
 // UI 이미지와 텍스처는 3D 게임 화면을 대체하지 않는 한 계속 재사용할 수 있다.
 const forbidden2dComponents=/\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|Tilemap|TilemapRenderer|TilemapCollider2D|SpriteShapeRenderer)\b/u;
+// 컴파일 전 실제 C# 기본 모듈 사용과 manifest를 비교한다.
+const nativeManifestPath=path.join(sourceRoot,'Packages','manifest.json');
+let nativeManifest;
+try{nativeManifest=JSON.parse(fs.readFileSync(nativeManifestPath,'utf8'));}
+catch(error){throw new Error('UNITY_WEB_NATIVE_MODULE_MANIFEST_INVALID:'+String(error?.message||error));}
+const nativeDependencies=nativeManifest?.dependencies||{};
+if(typeof nativeDependencies!=='object'||Array.isArray(nativeDependencies))
+  throw new Error('UNITY_WEB_NATIVE_MODULE_DEPENDENCIES_INVALID');
+const nativeModuleUses=[
+  ['com.unity.modules.physics',/\b(?:Physics|Rigidbody|Collider|BoxCollider|SphereCollider|CapsuleCollider|MeshCollider|CharacterController|RaycastHit|QueryTriggerInteraction|PhysicMaterial)\b/u],
+  ['com.unity.modules.animation',/\b(?:Animator|Animation|AnimationClip|AnimationEvent)\b/u],
+  ['com.unity.modules.audio',/\b(?:AudioSource|AudioListener|AudioClip|AudioMixer)\b/u],
+  ['com.unity.modules.jsonserialize',/\bJsonUtility\b/u],
+  ['com.unity.modules.imgui',/\b(?:GUI|GUILayout|GUISkin|GUIStyle)\b/u],
+  ['com.unity.modules.particlesystem',/\bParticleSystem\b/u]
+];
 for(const file of scriptFiles){
   // 문자열(URL 포함)과 주석을 식별자 검사에서 제외하되, 실제 C# 컴포넌트 선언은 검사한다.
   const gameplaySource=fs.readFileSync(file,'utf8')
     .replace(/@?"(?:""|\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,' ');
   if(forbidden2dComponents.test(gameplaySource))
     throw new Error(`UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:${file}`);
+  for(const [module,pattern] of nativeModuleUses){
+    if(pattern.test(gameplaySource)&&nativeDependencies[module]!=='1.0.0')
+      throw new Error(`UNITY_WEB_NATIVE_MODULE_MISSING:${module}:${file}`);
+  }
 }
 
 const editorRoot=path.join(sourceRoot,'Assets','Editor');
@@ -107,6 +127,11 @@ if(fs.existsSync(metadataPath)){
   }
 }
 
+console.log('UNITY_WEB_NATIVE_MODULES=VALIDATED');
+if(args['validate-only']==='true'){
+  console.log('UNITY_WEB_SOURCE_PREFLIGHT=PASS');
+  process.exit(0);
+}
 fs.mkdirSync(path.dirname(requestPath),{recursive:true});
 const request={
   version:1,

@@ -205,6 +205,10 @@ jobs:
 
       - name: Verify Unity Web development-floor contract
         shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+          PROJECT_PATH: ${{ steps.request.outputs.project_path }}
+          BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
@@ -219,6 +223,11 @@ jobs:
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
           console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
           NODE
+          node tools/company-unity-web-first-stage.mjs \
+            --game-id="$GAME_ID" \
+            --source-root="$PROJECT_PATH" \
+            --build-method="$BUILD_METHOD" \
+            --validate-only
 
       - name: Bind canonical Unity source tree
         id: source
