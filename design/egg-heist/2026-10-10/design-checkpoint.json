@@ -3,231 +3,31 @@
   "gameId": "egg-heist",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
-  "fingerprint": "83a9108aefa16cf96dd4b8365d739c8dd2b67a37b42f50566cf003099f3debb9",
+  "fingerprint": "db44bead5a930f6bb57291c0c4728fbb78e89713aa82e5ac43f6652d80673186",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24:identity,creativeGrammar": {
-      "identity": "알 도둑 대작전 - 코믹 잠입·탈출 게임 재설계",
-      "creativeGrammar": {
-        "mainIdentity": "Scout a small area and identify the target egg and patrol risk.",
-        "a": {
-          "system": "Stealth",
-          "material": "Risk-reward escape mechanism with dynamic environment interaction",
-          "materialDomain": "Environmental hazards, player perception, and adaptive behavior patterns",
-          "stateChange": "Player gains awareness of environmental risks while maintaining stealth"
-        },
-        "b": {
-          "system": "Escape Route System",
-          "material": "Multiple path options with varying levels of danger and reward",
-          "materialDomain": "Path complexity, resource distribution, and spatial constraints",
-          "stateChange": "Player selects an optimal escape route based on current threat level and available resources"
-        },
-        "abCausality": "Player choice affects both system dynamics and environmental response, creating emergent gameplay mechanics that evolve over time",
-        "abEvolution": {
-          "aChangesB": "Increased environmental hazard density triggers new escape strategies",
-          "bChangesA": "Optimized path selection reduces perceived risk but increases exposure to hidden threats",
-          "lateGameChange": "System integration creates self-sustaining escape sequences"
-        },
-        "materialFusion": {
-          "contrast": "Dynamic environmental interactions create unpredictable escape outcomes",
-          "causalBridge": "Player perception of risk influences both system navigation and environmental responses",
-          "removalConsequence": "Loss of escape routes leads to increased environmental hostility and strategic adaptation"
-        },
-        "storyCausalChain": {
-          "cause": "Player initial scouting behavior",
-          "characterConflict": "Environmental hazards introduce uncertainty in player strategy",
-          "playerChoice": "Player decides between stealth or direct confrontation",
-          "worldChange": "Escape route becomes a dynamic environment with evolving risks and rewards",
-          "nextEvent": "Player must adapt to new environmental conditions while maintaining stealth"
-        },
-        "cThemes": [
-          {
-            "name": "Stealth",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player maintains low visibility while navigating complex environments"
-          },
-          {
-            "name": "Risk",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Environment introduces increasing levels of danger that challenge player strategy"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Stealth Navigation",
-            "gameplayEffect": "Player navigates through complex environments using adaptive strategies"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Environmental Hazard Response",
-            "gameplayEffect": "Player reacts to unpredictable environmental threats"
-          }
-        ],
-        "cGenreInterlock": "Player choice affects both system navigation and environmental responses, creating emergent gameplay mechanics that evolve over time",
-        "cWorldAndGameplayEffect": "Player's perception of risk influences both system dynamics and environmental responses, leading to strategic adaptation and evolution of gameplay mechanics",
-        "delveDiscoveries": [
-          {
-            "clue": "Dynamic environmental hazards introduce unpredictability in escape routes",
-            "discovery": "Player learns to anticipate and counteract evolving risks",
-            "newChoice": "Player chooses between stealth or direct confrontation"
-          },
-          {
-            "clue": "Optimized path selection reduces perceived risk but increases exposure to hidden threats",
-            "discovery": "Player gains insight into resource distribution and spatial constraints",
-            "newChoice": "Player selects an optimal escape route based on current threat level and available resources"
-          },
-          {
-            "clue": "System integration creates self-sustaining escape sequences",
-            "discovery": "Player adapts to new environmental conditions while maintaining stealth",
-            "newChoice": "Player must adapt to new environmental conditions while maintaining stealth"
-          },
-          {
-            "clue": "Loss of escape routes leads to increased environmental hostility and strategic adaptation",
-            "discovery": "Player develops new strategies for navigating hostile environments",
-            "newChoice": "Player chooses between different escape options"
-          }
-        ],
-        "delveGrowthRule": "Player choice affects both system navigation and environmental responses, creating emergent gameplay mechanics that evolve over time",
-        "finalGameIdentity": "Player's perception of risk influences both system dynamics and environmental responses, leading to strategic adaptation and evolution of gameplay mechanics"
-      }
-    },
-    "local_authoring_parts::2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 잠입과 탈출에 대한 전략적 숙련을 통해 환경의 위험과 기회를 예측하며, 단순한 행동보다 더 복잡한 선택과 결과를 경험하게 된다.",
-      "coreFun": "플레이어는 작은 지역에서 목적지 알리미를 확인하고, 타겟 계란과 경보 리스크를 식별하는 과정에서, 실제 상태 변화와 피드백을 즉시 경험할 수 있는 핵심 행동을 수행하여, 다음 전략 및 경로를 실제로 달라지는 경험을 반복한다."
-    },
-    "local_authoring_parts::0c64898ccda1c0f5aefee8e561dc9c6594ec34baa1c3a5c4f8b463bb2c5d957d:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "알 도둑 대작전 - 코믹 잠입·탈출 게임 재설계",
-      "creativeGrammar": {
-        "mainIdentity": "Scout a small area and identify the target egg and patrol risk.",
-        "a": {
-          "system": "Stealth",
-          "material": "Risk-reward escape mechanism with dynamic environment interaction",
-          "materialDomain": "Environmental hazards, player perception, and adaptive behavior patterns",
-          "stateChange": "Player gains awareness of environmental risks while maintaining stealth"
-        },
-        "b": {
-          "system": "Escape Route System",
-          "material": "Multiple path options with varying levels of danger and reward",
-          "materialDomain": "Path complexity, resource distribution, and spatial constraints",
-          "stateChange": "Player selects an optimal escape route based on current threat level and available resources"
-        },
-        "abCausality": "Player choice affects both system dynamics and environmental response, creating emergent gameplay mechanics that evolve over time",
-        "abEvolution": {
-          "aChangesB": "Increased environmental hazard density triggers new escape strategies",
-          "bChangesA": "Optimized path selection reduces perceived risk but increases exposure to hidden threats",
-          "lateGameChange": "System integration creates self-sustaining escape sequences"
-        },
-        "materialFusion": {
-          "contrast": "Dynamic environmental interactions create unpredictable escape outcomes",
-          "causalBridge": "Player perception of risk influences both system navigation and environmental responses",
-          "removalConsequence": "Loss of escape routes leads to increased environmental hostility and strategic adaptation"
-        },
-        "storyCausalChain": {
-          "cause": "Player initial scouting behavior",
-          "characterConflict": "Environmental hazards introduce uncertainty in player strategy",
-          "playerChoice": "Player decides between stealth or direct confrontation",
-          "worldChange": "Escape route becomes a dynamic environment with evolving risks and rewards",
-          "nextEvent": "Player must adapt to new environmental conditions while maintaining stealth"
-        },
-        "cThemes": [
-          {
-            "name": "Stealth",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player maintains low visibility while navigating complex environments"
-          },
-          {
-            "name": "Risk",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Environment introduces increasing levels of danger that challenge player strategy"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Stealth Navigation",
-            "gameplayEffect": "Player navigates through complex environments using adaptive strategies"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Environmental Hazard Response",
-            "gameplayEffect": "Player reacts to unpredictable environmental threats"
-          }
-        ],
-        "cGenreInterlock": "Player choice affects both system navigation and environmental responses, creating emergent gameplay mechanics that evolve over time",
-        "cWorldAndGameplayEffect": "Player's perception of risk influences both system dynamics and environmental responses, leading to strategic adaptation and evolution of gameplay mechanics",
-        "delveDiscoveries": [
-          {
-            "clue": "Dynamic environmental hazards introduce unpredictability in escape routes",
-            "discovery": "Player learns to anticipate and counteract evolving risks",
-            "newChoice": "Player chooses between stealth or direct confrontation"
-          },
-          {
-            "clue": "Optimized path selection reduces perceived risk but increases exposure to hidden threats",
-            "discovery": "Player gains insight into resource distribution and spatial constraints",
-            "newChoice": "Player selects an optimal escape route based on current threat level and available resources"
-          },
-          {
-            "clue": "System integration creates self-sustaining escape sequences",
-            "discovery": "Player adapts to new environmental conditions while maintaining stealth",
-            "newChoice": "Player must adapt to new environmental conditions while maintaining stealth"
-          },
-          {
-            "clue": "Loss of escape routes leads to increased environmental hostility and strategic adaptation",
-            "discovery": "Player develops new strategies for navigating hostile environments",
-            "newChoice": "Player chooses between different escape options"
-          }
-        ],
-        "delveGrowthRule": "Player choice affects both system navigation and environmental responses, creating emergent gameplay mechanics that evolve over time",
-        "finalGameIdentity": "Player's perception of risk influences both system dynamics and environmental responses, leading to strategic adaptation and evolution of gameplay mechanics"
-      },
-      "playerFantasy": "플레이어는 잠입과 탈출에 대한 전략적 숙련을 통해 환경의 위험과 기회를 예측하며, 단순한 행동보다 더 복잡한 선택과 결과를 경험하게 된다.",
-      "coreFun": "플레이어는 작은 지역에서 목적지 알리미를 확인하고, 타겟 계란과 경보 리스크를 식별하는 과정에서, 실제 상태 변화와 피드백을 즉시 경험할 수 있는 핵심 행동을 수행하여, 다음 전략 및 경로를 실제로 달라지는 경험을 반복한다."
-    },
-    "local_authoring_parts::e30a3f0fa815c6179f538a9ee2f483295e6ed645003d04193d22312d3475377f:coreLoop": {
-      "coreLoop": [
-        "INPUT: Player scouts a small area, identifies target egg and environmental risks",
-        "STATE CHANGE: Player gains awareness of environmental hazards while maintaining stealth",
-        "ACTION: Player chooses between stealth or direct confrontation based on threat level",
-        "OUTCOME: Player adapts to new environmental conditions while maintaining low visibility",
-        "NEXT EVENT: Player must navigate through evolving environmental challenges"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 735876,
-      "lastMs": 98131,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:28:05.417Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:15:49.512Z",
-  "updatedAt": "2026-10-10T02:28:05.425Z",
+  "createdAt": "2026-10-10T07:03:36.925Z",
+  "updatedAt": "2026-10-10T07:03:36.945Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -249,6 +49,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -286,6 +87,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -634,13 +436,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -657,14 +463,13 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "lock",
-                "move"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -695,8 +500,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -718,6 +523,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -755,6 +561,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1103,13 +910,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1126,14 +937,13 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "lock",
-                "move"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1164,8 +974,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1187,6 +997,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1224,6 +1035,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1572,13 +1384,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1595,14 +1411,13 @@
           {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-item-context-menu",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "lock",
-                "move"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1634,18 +1449,38 @@
       }
     },
     "assetFacts": {
-      "roblox-common-ui-item-context-menu": {
-        "family": "UI",
+      "roblox-common-motion-run": {
+        "family": "MOTION",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "lock",
-            "move"
+            "run"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "ITEM_CONTEXT_MENU",
+        "role": "RUN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-ui-character-detail-screen": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "progress"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "CHARACTER_DETAIL_SCREEN",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1657,26 +1492,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::38dde27da158b5b4bfa557b458022557d0fa06643ee88f698cbe173c24addbcc:signatureSystems:0": [
-      {
-        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
-        "grammarRole": "MAIN",
-        "previousRuleIds": []
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::38dde27da158b5b4bfa557b458022557d0fa06643ee88f698cbe173c24addbcc:signatureSystems:0": 2
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "2bcafdcc5ed4f319f1e44dd001a1fb53e8efbca7b17be359e6e775a0b1066f24": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:28:05.417Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  }
 }
