@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다. 실시간으로 변화하는 수정의 원소 속성을 선택하여, 이에 맞춰 영웅들의 스킬 체인을 구성하며, 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백을 받습니다.",
       "coreFun": "수정의 개화에서 느끼는 핵심 재미는 실시간으로 변화하는 수정의 원소 속성을 선택하고, 이에 맞춰 영웅들의 스킬 체인을 구성하여 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백에 있습니다."
+    },
+    "local_authoring_parts::4012b551481eb491dcf767b3ee67d2ca7bfb69505fa3e9b12ba4ed038afcce72:coreLoop": {
+      "coreLoop": [
+        "INPUT: Player taps or swipes to select elemental node activation",
+        "STATE CHANGE: Elemental node control is lost due to environmental factors or player decision",
+        "OUTPUT: Skill tree optimization and enhanced combat mechanics are triggered"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 228211,
-      "lastMs": 228211,
+      "totalMs": 269521,
+      "lastMs": 41310,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:18:08.863Z"
+      "updatedAt": "2026-10-10T09:18:50.175Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:14:20.633Z",
-  "updatedAt": "2026-10-10T09:18:08.863Z",
+  "updatedAt": "2026-10-10T09:18:50.176Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1391,7 +1398,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:18:08.863Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:18:50.175Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
