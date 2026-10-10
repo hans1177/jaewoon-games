@@ -195,25 +195,41 @@
         "Build Combination → Wave Survival → Boss Conquest",
         "Expanded Playstyle → Multi-System Integration → Dynamic Risk Reward Balance"
       ]
+    },
+    "local_authoring_parts::c7f23ecf25f36e916773b290ac3019f6a061a0a27e2fe51b3aa7bbe866bdf20b:signatureSystems:0": {
+      "id": "core-clash-4v4",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player Input",
+        "Enemy Strategy"
+      ],
+      "stateOutputs": [
+        "State Change",
+        "Reward/Risk",
+        "Next Action"
+      ],
+      "name": "코어 전장 4대4",
+      "purpose": "Player Input → State Change → Reward/Risk → Next Action",
+      "playerChoice": "Build Combination → Wave Survival → Boss Conquest"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 600153,
-      "lastMs": 91491,
+      "totalMs": 695398,
+      "lastMs": 95245,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:19:42.530Z"
+      "updatedAt": "2026-10-10T02:21:17.777Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:09:42.351Z",
-  "updatedAt": "2026-10-10T02:19:42.530Z",
+  "updatedAt": "2026-10-10T02:21:17.777Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1926,7 +1942,7 @@
   "localAuthoringSplits": {
     "095b4594537e611b00c85889c82a0aa4447dc8ad046e0c10bf4f9d1c6c95fe82": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:19:42.530Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:21:17.777Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
