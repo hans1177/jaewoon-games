@@ -194,25 +194,40 @@
         "지형 길이 변화로 적 이동 경로 최적화 또는 타워 속성 병합하여 전투 효과 발생",
         "보상으로 기술 연구/강화 후 방어 효율 극대화 및 세계 상태 변화"
       ]
+    },
+    "local_authoring_parts::4252d6c8d14d31c7730a985437c3fd6de917d67295b662f35640511134b6b4a3:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "{\"type\": \"ground\", \"value\": \"grass\"}",
+        "{\"type\": \"obstacle\", \"value\": \"wall\"}"
+      ],
+      "stateOutputs": [
+        "{\"type\": \"modified_ground\", \"value\": \"slope\"}",
+        "{\"type\": \"obstacle\", \"value\": \"blocked\"}"
+      ],
+      "name": "지형 변형",
+      "purpose": "플레이어가 전장의 지형을 직접 변경하여 적의 이동 경로를 제어하는 전략적 자유도를 극대화합니다.",
+      "playerChoice": "특정 구역의 지형을 높여 적의 이동을 차단하거나, 낮추어 특정 타워의 사거리 안으로 적을 유인할 수 있습니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 578961,
-      "lastMs": 61743,
+      "totalMs": 621676,
+      "lastMs": 42715,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:49:08.668Z"
+      "updatedAt": "2026-10-10T09:49:51.385Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:39:29.682Z",
-  "updatedAt": "2026-10-10T09:49:08.668Z",
+  "updatedAt": "2026-10-10T09:49:51.385Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1491,7 +1506,7 @@
   "localAuthoringSplits": {
     "d2e965905db4d312da2b7d2f47caad87fa448d69ba5272d75a279300dc5c981a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:49:08.668Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:49:51.385Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
