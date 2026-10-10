@@ -187,25 +187,32 @@
       },
       "playerFantasy": "보석 생존전에서는 플레이어가 빠르게 이해할 수 있는 입력과 피드백을 제공하며, 진입 시점부터 반복 가능한 핵심 루프로 구성된다. 게임 내에서 전략적 선택과 경로 변경이 즉각적으로 결과를 만들어내며, 모바일에서도 즉시 읽을 수 있는 방식으로 설계되었다.",
       "coreFun": "보석 생존전의 핵심 재미는 실제 플레이 선택에 기반하여 구현되며, 진행·위험·보상이 서로 연결되는 반복 가능한 학습 루프를 통해 숙련되고 성장 가능성이 실제로 달라지는 경험을 제공한다. 이는 단순한 수치 증가보다는 새로운 행동 조합과 경로 개발을 요구하며, 게임 전체의 인과적 상태 변화와 상호작용을 포함한다."
+    },
+    "local_authoring_parts::04e00c0bb1b1004d2b82ede93ec1d1bda4afc6afd246bb45da4711472922c822:coreLoop": {
+      "coreLoop": [
+        "INPUT: PLAYER_INITIATE_RUN_WITH_ELEVATED_PRESSURE",
+        "STATE_CHANGE: ENEMY_PRESSURE_INCREASED_AND_BUILD_STRENGTHENED",
+        "OUTPUT: CONVERT_RUN_RESULT_TO_NEXT_BUILD"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 473006,
-      "lastMs": 57544,
+      "totalMs": 520596,
+      "lastMs": 47590,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:42:56.873Z"
+      "updatedAt": "2026-10-10T08:43:44.466Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:35:03.843Z",
-  "updatedAt": "2026-10-10T08:42:56.875Z",
+  "updatedAt": "2026-10-10T08:43:44.474Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "c2848a4fb2acede57e0098fdfbd4d7ec946968286341e0f6a544dcb82f1cd4ce": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:42:56.875Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:43:44.466Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
