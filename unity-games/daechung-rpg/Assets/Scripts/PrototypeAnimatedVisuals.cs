@@ -441,8 +441,13 @@ namespace JaewoonGames.DaechungRpg
                     zMin = Mathf.Min(zMin, filter.transform.position.z);
                     zMax = Mathf.Max(zMax, filter.transform.position.z);
                 }
-                foreach (var renderer in FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
-                    if (renderer != null && renderer.gameObject.activeInHierarchy) spriteGameplayActors++;
+                // QA 진단도 2D 컴포넌트를 게임 소스에 직접 연결하지 않고 실제 렌더러 유형으로 확인한다.
+                foreach (var renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                {
+                    if (renderer != null && renderer.enabled && renderer.gameObject.activeInHierarchy
+                        && renderer.GetType().FullName == "UnityEngine.SpriteRenderer")
+                        spriteGameplayActors++;
+                }
                 int gameplayActors3d = (_player.NativeMeshReady ? 1 : 0)
                     + (_battleVisible && _enemy.NativeMeshReady ? 1 : 0);
                 int cameraPerspective = _sceneCamera != null && !_sceneCamera.orthographic ? 1 : 0;
