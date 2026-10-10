@@ -383,25 +383,38 @@
       "name": "Gather a focused set of island resources",
       "purpose": "Enable structural development through resource collection",
       "playerChoice": "Select new building material or method"
+    },
+    "local_authoring_parts::bdd17392539f8f73a5b7c6853b55b2e2297d194f7d49e0af8faa664f7296bb46:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Resources collected and stored in village storage system"
+      ],
+      "stateOutputs": [
+        "Select new building material or method"
+      ],
+      "name": "Delve into Resource Management and Architectural Innovation",
+      "purpose": "Player discovers new materials, learns about economic distribution, finds new building techniques, unlocks new areas of the island, and selects new regions to build in.",
+      "playerChoice": "Select new building material or method based on discovered resources and learned strategies for optimal construction efficiency and improved village function."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
+      "calls": 11,
+      "successes": 11,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1141998,
-      "lastMs": 98263,
+      "totalMs": 1242498,
+      "lastMs": 100500,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:03:31.632Z"
+      "updatedAt": "2026-10-10T02:05:12.133Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:44:29.587Z",
-  "updatedAt": "2026-10-10T02:03:31.632Z",
+  "updatedAt": "2026-10-10T02:05:12.139Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2034,7 +2047,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2134,10 +2147,10 @@
       "multiplayerMode": "COOP"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:03:31.632Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T02:05:12.134Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
