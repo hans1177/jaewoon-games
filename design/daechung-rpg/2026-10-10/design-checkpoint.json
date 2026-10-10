@@ -644,25 +644,47 @@
     },
     "local_authoring_parts::6c9f94166c762ee9db7da444cb082e643a67f417212ecb565c4214da6b381360:name": {
       "name": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG"
+    },
+    "local_authoring_parts::6c9f94166c762ee9db7da444cb082e643a67f417212ecb565c4214da6b381360:gameplayEffect": {
+      "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::0a2eab67f154bfac608b075b73bf4df2da9f685e486bd4bdfc1da9fddb3cd18f:cGenres:1:db728102b9ef7af2": {
+      "role": "PRIMARY",
+      "name": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::7ba1d647e0a9a6361700a884dfe0a4c1c12b2aa1d2a9c5b1afacf5ad336dd9de:cGenres": {
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+          "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+        },
+        {
+          "role": "PRIMARY",
+          "name": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+          "gameplayEffect": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 44,
-      "successes": 43,
+      "calls": 45,
+      "successes": 44,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2499238,
-      "lastMs": 60535,
+      "totalMs": 2558372,
+      "lastMs": 59134,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:14:21.685Z"
+      "updatedAt": "2026-10-10T10:15:20.821Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T10:14:21.685Z",
+  "updatedAt": "2026-10-10T10:15:20.824Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2673,7 +2695,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:14:21.685Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:15:20.824Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
