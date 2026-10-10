@@ -4484,16 +4484,21 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
   local guiService=game:GetService("GuiService")
   local selectedId=""
   local presets={
-    RPG={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","SKILL_TREE","QUEST_LOG","PARTY","MAP_FULL_SCREEN","CODEX_SCREEN","JOURNAL_TIMELINE","TRADE_ESCROW_REVIEW","SETTINGS_PANEL"},
+    RPG={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","SKILL_TREE_SCREEN","QUEST_LOG","PARTY","MAP_FULL_SCREEN","CODEX_SCREEN","JOURNAL_TIMELINE","TRADE_ESCROW_REVIEW","SETTINGS_PANEL"},
     SURVIVAL={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","CRAFTING_FULL_SCREEN","MAP_FULL_SCREEN","QUEST_LOG","JOURNAL_TIMELINE","SETTINGS_PANEL"},
     STRATEGY={"STATUS_OVERVIEW","MAP_FULL_SCREEN","PARTY","QUEST_LOG","WORLD_EVENT_TIMELINE","SETTINGS_PANEL"},
     DEFENSE={"STATUS_OVERVIEW","EQUIPMENT","QUEST_LOG","WORLD_EVENT_TIMELINE","CODEX_SCREEN","SETTINGS_PANEL"},
     TYCOON={"STATUS_OVERVIEW","SHOP_FULL_SCREEN","MAP_FULL_SCREEN","WORLD_EVENT_TIMELINE","SETTINGS_PANEL"},
     HORROR={"STATUS_OVERVIEW","INVENTORY","MAP_FULL_SCREEN","QUEST_LOG","JOURNAL_TIMELINE","SETTINGS_PANEL"},
-    CASUAL={"STATUS_OVERVIEW","QUEST_LOG","CODEX_SCREEN","SETTINGS_PANEL"}
+    CASUAL={"STATUS_OVERVIEW","QUEST_LOG","CODEX_SCREEN","SETTINGS_PANEL"},
+    ACTION={"STATUS_OVERVIEW","EQUIPMENT","SKILL_TREE_SCREEN","QUEST_LOG","MAP_FULL_SCREEN","CODEX_SCREEN","SETTINGS_PANEL"},
+    PUZZLE={"STATUS_OVERVIEW","JOURNAL_TIMELINE","QUEST_LOG","MAP_FULL_SCREEN","SETTINGS_PANEL"},
+    BUILDING={"STATUS_OVERVIEW","INVENTORY","CRAFTING_FULL_SCREEN","MAP_FULL_SCREEN","SHOP_FULL_SCREEN","WORLD_EVENT_TIMELINE","SETTINGS_PANEL"},
+    IDLE={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","SKILL_TREE_SCREEN","SHOP_FULL_SCREEN","QUEST_LOG","SETTINGS_PANEL"},
+    SOCIAL={"STATUS_OVERVIEW","PARTY","TRADE_ESCROW_REVIEW","JOURNAL_TIMELINE","WORLD_EVENT_TIMELINE","SETTINGS_PANEL"}
   }
   local titles={
-    STATUS_OVERVIEW="상태",INVENTORY="인벤토리",EQUIPMENT="장비",SKILL_TREE="스킬트리",
+    STATUS_OVERVIEW="상태",INVENTORY="인벤토리",EQUIPMENT="장비",SKILL_TREE_SCREEN="스킬트리",
     QUEST_LOG="퀘스트",PARTY="파티",MAP_FULL_SCREEN="지도",CODEX_SCREEN="도감",JOURNAL_TIMELINE="저널",
     TRADE_ESCROW_REVIEW="거래",SETTINGS_PANEL="설정",CRAFTING_FULL_SCREEN="제작",SHOP_FULL_SCREEN="상점",
     WORLD_EVENT_TIMELINE="이벤트"
@@ -4507,17 +4512,37 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
     for key,value in pairs(allowed)do
       if type(key)=="number"then available[tostring(value)]=true elseif value==true then available[tostring(key)]=true end
     end
+    -- 시스템 ID는 게임에서 선언한 것만 통과시킨다. 레거시 표기는 같은 기존 화면으로 정규화.
+    for legacy,canonical in pairs({SKILL_TREE="SKILL_TREE_SCREEN",CODEX="CODEX_SCREEN",WORLD_EVENT="WORLD_EVENT_TIMELINE",JOURNAL="JOURNAL_TIMELINE",TRADE="TRADE_ESCROW_REVIEW"})do
+      if available[legacy]then available[canonical]=true end
+    end
     local genre=string.upper(tostring(state.genre or options.genre or ""))
-    local profile="CASUAL"
-    if string.find(genre,"RPG",1,true)then profile="RPG"
-    elseif string.find(genre,"SURVIV",1,true)then profile="SURVIVAL"
-    elseif string.find(genre,"DEFEN",1,true)then profile="DEFENSE"
-    elseif string.find(genre,"STRATEG",1,true)then profile="STRATEGY"
-    elseif string.find(genre,"TYCOON",1,true)or string.find(genre,"SIMULAT",1,true)then profile="TYCOON"
-    elseif string.find(genre,"HORROR",1,true)then profile="HORROR"end
-    local result={}
-    for _,id in ipairs(presets[profile])do
-      if available[id]then table.insert(result,{id=id,title=titles[id],enabled=true})end
+    local profiles={}
+    local function matchProfile(id,needles)
+      for _,needle in ipairs(needles)do
+        if string.find(genre,needle,1,true)then table.insert(profiles,id);return end
+      end
+    end
+    matchProfile("RPG",{"RPG","역할수행","모험","판타지"})
+    matchProfile("SURVIVAL",{"SURVIV","생존","서바이벌"})
+    matchProfile("DEFENSE",{"DEFEN","디펜스","타워"})
+    matchProfile("STRATEGY",{"STRATEG","전략","전술"})
+    matchProfile("TYCOON",{"TYCOON","타이쿤","경영"})
+    matchProfile("HORROR",{"HORROR","공포","퇴마"})
+    matchProfile("ACTION",{"ACTION","액션","격투","전투"})
+    matchProfile("PUZZLE",{"PUZZLE","퍼즐","수수께끼"})
+    matchProfile("BUILDING",{"BUILD","건축","건설","샌드박스"})
+    matchProfile("IDLE",{"IDLE","방치","자동성장"})
+    matchProfile("SOCIAL",{"SOCIAL","협동","소셜"})
+    if #profiles==0 then table.insert(profiles,"CASUAL")end
+    local result,used={},{}
+    for _,profile in ipairs(profiles)do
+      for _,id in ipairs(presets[profile])do
+        if available[id]and not used[id]then
+          table.insert(result,{id=id,title=titles[id],enabled=true})
+          used[id]=true
+        end
+      end
     end
     return result
   end
@@ -4589,6 +4614,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
       button.Selectable=enabled and type(options.onSelect)=="function"
       button.Active=button.Selectable
       button.BackgroundColor3=id~=""and id==selectedId and theme.Primary or theme.PanelRaised
+      local underline=button:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=id~=""and id==selectedId end
       button:SetAttribute("BoundMenuId",id)
       button:SetAttribute("GameReportedEnabled",enabled)
     end
@@ -4615,7 +4642,7 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
       if child~=title and child:IsA("GuiObject")then child.Parent=nil end
     end
     if typeof(ui)=="Instance"and ui:IsA("GuiObject")then
-      ui.Parent=screen;ui.Position=UDim2.fromOffset(0,0);ui.Size=UDim2.fromScale(1,1)
+      ui.Parent=screen
       title.Visible=false
       local previousFocus=focusByMenu[selectedId]
       if previousFocus and previousFocus:IsDescendantOf(ui)then guiService.SelectedObject=previousFocus end
