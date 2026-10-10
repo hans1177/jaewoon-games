@@ -735,7 +735,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       system,
       `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nAUTHORED_RULE_IDS_AND_HANDOFFS=${requestedFields.includes('systemInterconnections')?clip(authoredStateHandoffContract(merged.signatureSystems),4000):'NOT_APPLICABLE'}\nSYSTEM_INTERCONNECTION_AUTHORING_RULE=Use actual signatureSystems IDs for fromId/toId and exact overlapping output-to-input state keys; never use coreFun as a rule ID or invent gameplay states.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       callSchema,
-      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
+      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),authoredHandoffs:requestedFields.includes('systemInterconnections')?authoredStateHandoffContract(merged.signatureSystems).handoffs:[],authoredRoles:Object.fromEntries((merged.signatureSystems||[]).map(row=>[row.grammarRole,row.id])),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
       ));
       result={...partial,...result};
       feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
@@ -1240,7 +1240,7 @@ async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numC
     req.end(body);
   });
 }
-async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false,includeAssetContext=true}={}){
+async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false,includeAssetContext=true,authoredHandoffs=[],authoredRoles={}}={}){
   if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
   const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
@@ -1302,15 +1302,32 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
       let merged={};
       if(objectChild){
         merged[field]=await runCheckpointTask('local_authoring_parts',`${identity}:${field}`,()=>callLocalDesignerModel(
-          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields,includeAssetContext}
+          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields,includeAssetContext,authoredHandoffs,authoredRoles}
         ));
       }else if(arrayChild){
         const rows=[];
+        // 메인: 모델이 저작한 규칙 간 실제 공통 상태로만 연결 후보를 제한한다.
+        const orderedHandoffs=[];
+        if(field==='systemInterconnections'){
+          for(const [fromRole,toRole] of [['MAIN','A'],['A','B'],['B','A'],['MAIN','DELVE'],...(authoredRoles.c?[['B','c'],['c','B']]:[]),['DELVE','MAIN'],['A','MAIN']]){
+            const edge=authoredHandoffs.find(row=>row.fromId===authoredRoles[fromRole]&&row.toId===authoredRoles[toRole]);
+            if(edge&&!orderedHandoffs.includes(edge))orderedHandoffs.push(edge);
+          }
+          for(const edge of authoredHandoffs)if(!orderedHandoffs.includes(edge))orderedHandoffs.push(edge);
+        }
         for(let index=0;index<child.minItems;index++){
           const orderedKey=field==='designAlternatives'?'label':field==='playthrough'?'phase':null;
           let itemSchema=orderedKey&&child.items.properties?.[orderedKey]?.enum?.[index]
             ?{...child.items,properties:{...child.items.properties,[orderedKey]:{...child.items.properties[orderedKey],enum:[child.items.properties[orderedKey].enum[index]]}}}
             :child.items;
+          const exactHandoff=field==='systemInterconnections'?orderedHandoffs[index]||null:null;
+          if(exactHandoff){
+            itemSchema={...itemSchema,properties:{...itemSchema.properties,
+              fromId:{...itemSchema.properties.fromId,enum:[exactHandoff.fromId]},
+              toId:{...itemSchema.properties.toId,enum:[exactHandoff.toId]},
+              stateKeys:{...itemSchema.properties.stateKeys,items:{...itemSchema.properties.stateKeys.items,enum:exactHandoff.stateKeys}}
+            }};
+          }
           // 원본 능력의 ID·수치는 생성 대상이 아니다. 현재 소스 사실을 스키마에 고정한다.
           const fact=field==='abilities'&&typeof playableRequirements!=='undefined'?playableRequirements.abilityFacts[index]:null;
           const grammarRole=field==='signatureSystems'?(seedGameplaySketchVersion>=5?['MAIN','A','B','DELVE']:['MAIN','A','B','c','DELVE'])[index]:null;
@@ -1337,7 +1354,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\nORIGINAL_ROLE_REFERENCE=${JSON.stringify(originalSystemHint)}\nROLE_MUST_READ_PRIOR_OUTPUT=${JSON.stringify(previousRead)}\nROLE_MUST_WRITE_PRIOR_INPUT=${JSON.stringify(previousWrite)}\n이전 역할이 변경하는 기존 상태 키를 정확히 입력으로 읽고 이전 역할이 읽는 상태 키를 출력으로 변경해 A와 B를 실제로 왕복 연결한다. 기존 역할 이름·목적·선택 복제는 금지한다.\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${exactHandoff?`EXACT_AUTHORED_HANDOFF=${JSON.stringify(exactHandoff)}\n앞에서 디자이너가 저작한 규칙·상태만 참조해 실제 전투/자원/진행의 트리거와 변화를 쓰고 동일한 fromId/toId/stateKeys를 사용한다.\n`:''}${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\nORIGINAL_ROLE_REFERENCE=${JSON.stringify(originalSystemHint)}\nROLE_MUST_READ_PRIOR_OUTPUT=${JSON.stringify(previousRead)}\nROLE_MUST_WRITE_PRIOR_INPUT=${JSON.stringify(previousWrite)}\n이전 역할이 변경하는 기존 상태 키를 정확히 입력으로 읽고 이전 역할이 읽는 상태 키를 출력으로 변경해 A와 B를 실제로 왕복 연결한다. 기존 역할 이름·목적·선택 복제는 금지한다.\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,authoredHandoffs,authoredRoles}
             ));
             if(!grammarRole){rows.push(value);break;}
             const roleIssues=[];
@@ -1378,7 +1395,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const partSchema={...schema,required:(schema.required||[]).filter(field=>part.includes(field)),properties:Object.fromEntries(part.map(field=>[field,schema.properties[field]]))};
           const value=await runCheckpointTask('local_authoring_parts',`${identity}:${part.join(',')}`,()=>callLocalDesignerModel(
             system,`${user}\nCURRENT_OBJECT_FIELDS=${JSON.stringify(merged)}\nLOCAL_REQUIRED_FIELDS=${JSON.stringify(part)}\n이전 지시의 출력 범위 대신 LOCAL_REQUIRED_FIELDS만 출력한다. 먼저 작성된 필드와 일관성을 지키고 필수 구조와 설계 깊이는 유지한다.`,
-            partSchema,{predict,temperature,numCtx,isolateFields,includeAssetContext}
+            partSchema,{predict,temperature,numCtx,isolateFields,includeAssetContext,authoredHandoffs,authoredRoles}
           ));
           Object.assign(merged,value);
         }
