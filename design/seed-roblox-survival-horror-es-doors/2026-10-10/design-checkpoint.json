@@ -3,142 +3,18 @@
   "gameId": "seed-roblox-survival-horror-es-doors",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SURVIVAL-HORROR-ES-DOORS-20260917",
-  "fingerprint": "4376d5a5a08c1ce6c28daff10c514a169f79db8a28012550c090c3183929d848",
-  "policyDigest": "91e16bb38a98ed8bb25f0d59b281101259e938d98d07ef163c7e36b27ffb029f",
+  "fingerprint": "436885079d98a7add6a47622dca4657dd65683c38753c4902f528163d44a710f",
+  "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
   "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::b2ccc943b487fda20fd82c9bd67babb6ff4942c855581bf540a2bcb07a964030:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "Last Lantern - Player's Journey Through a Living Board Game",
-      "creativeGrammar": {
-        "mainIdentity": "A dynamic board game where players navigate through a living world of puzzles, risks, and rewards.",
-        "a": {
-          "system": "Living Board Game System",
-          "material": "Player-driven progression with evolving challenges and adaptive mechanics",
-          "materialDomain": "Dynamic puzzle-solving with emergent gameplay patterns",
-          "stateChange": "Players select actions that influence the environment, leading to new puzzles or risks"
-        },
-        "b": {
-          "system": "Risk Management Engine",
-          "material": "Adaptive risk levels based on player strategy and environmental conditions",
-          "materialDomain": "Balanced decision-making with consequences affecting future choices",
-          "stateChange": "Players face escalating risks while maintaining strategic control over their progress"
-        },
-        "abCausality": "Players' decisions directly affect the state of the game, altering both the environment and available options in real-time.",
-        "abEvolution": {
-          "aChangesB": "When a player selects an action, it triggers a new set of rules or environmental changes for the next phase.",
-          "bChangesA": "If the player faces a high-risk situation, it forces them to make a different choice that alters the overall game flow.",
-          "lateGameChange": "In later stages, players are forced to choose between multiple viable paths, each with its own unique outcome."
-        },
-        "materialFusion": {
-          "contrast": "The core theme is 'Player's Journey', where every decision shapes the world around them.",
-          "causalBridge": "Every move leads to a new puzzle or risk, creating a self-reinforcing loop of discovery and adaptation.",
-          "removalConsequence": "Removing any element from this system breaks the causal chain and disrupts the gameplay structure."
-        },
-        "storyCausalChain": {
-          "cause": "Player selection leads to environmental change",
-          "characterConflict": "The game world reacts to player choices, introducing new challenges or rewards",
-          "playerChoice": "Players must adapt their strategies based on the evolving world state",
-          "worldChange": "Each decision creates a new configuration of puzzles, risks, and available options in real-time",
-          "nextEvent": "The game continues to evolve as players navigate through increasingly complex scenarios"
-        },
-        "cThemes": [
-          {
-            "name": "Player's Journey",
-            "kind": "MATERIAL",
-            "gameplayEffect": "All decisions shape the environment"
-          },
-          {
-            "name": "Adaptive Risk Management",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Risks increase with strategy complexity"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Living Board Game System",
-            "gameplayEffect": "Dynamic puzzle-solving with emergent mechanics"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Risk Management Engine",
-            "gameplayEffect": "Balanced decision-making with consequences affecting future choices"
-          }
-        ],
-        "cGenreInterlock": "The system evolves by combining different gameplay elements, creating new patterns of interaction and outcomes.",
-        "cWorldAndGameplayEffect": "Every choice alters the environment, leading to new puzzles or risks that challenge the player's strategy and adaptation abilities.",
-        "delveDiscoveries": [
-          {
-            "clue": "Players begin with a clear goal and limited moves",
-            "discovery": "They encounter obstacles that force them to adapt their strategies",
-            "newChoice": "They must choose between multiple paths that lead to different outcomes"
-          },
-          {
-            "clue": "Each move leads to a new configuration of puzzles and risks",
-            "discovery": "The game world reacts to player decisions, introducing new challenges or rewards",
-            "newChoice": "Players are forced to make strategic choices based on the evolving environment"
-          },
-          {
-            "clue": "In later stages, players face complex scenarios requiring multi-layered decision making",
-            "discovery": "The game introduces new mechanics that require careful planning and risk assessment",
-            "newChoice": "Players must balance multiple factors to achieve their goals while managing increasing complexity"
-          },
-          {
-            "clue": "At each step, there is an opportunity for growth and progression",
-            "discovery": "New elements emerge as players navigate through increasingly difficult environments",
-            "newChoice": "Players can either continue forward or explore new areas with potential rewards"
-          }
-        ],
-        "delveGrowthRule": "Every discovery adds a new layer of gameplay, influencing future choices and expanding the possible outcomes.",
-        "finalGameIdentity": "A living board game where every choice shapes the world around the player, creating a self-reinforcing loop of discovery and adaptation."
-      },
-      "playerFantasy": "A player's journey through a dynamic world of puzzles, risks, and rewards. Every decision shapes the environment, leading to new challenges and opportunities. The game evolves as players adapt their strategies, facing escalating difficulties and discovering new ways to overcome them.",
-      "coreFun": "Player-driven progression through a living board game system. Players select actions that influence the environment, leading to new puzzles or risks. Each move leads to a new configuration of challenges and opportunities, forcing players to adapt their strategies and make strategic decisions based on the evolving world state. The game continues to evolve as players navigate through increasingly complex scenarios, balancing multiple factors to achieve their goals while managing increasing complexity."
-    },
-    "local_authoring_parts::aeb6c1ba44c4f6c0704dbd887f7f343bd5cd33e139eda29de2af144af51b2d5b:coreLoop": {
-      "coreLoop": [
-        "Input/Selection → State Change → Reward/Risk/Next Choice",
-        "Player's Decision → Environmental Shift → Adaptive Strategy Adjustment",
-        "Discovery Loop: Puzzle → Risk → Reward → New Challenge"
-      ]
-    },
-    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:0": {
-      "id": "signatureSystems_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "playerSelection",
-        "environmentState"
-      ],
-      "stateOutputs": [
-        "newPuzzle",
-        "riskLevel",
-        "rewardOffer"
-      ],
-      "name": "Living Board Game System",
-      "purpose": "Player-driven progression with evolving challenges and adaptive mechanics",
-      "playerChoice": "Players select actions that influence the environment, leading to new puzzles or risks in real-time based on their strategy and risk tolerance levels within the game's dynamic system framework."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 10,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 581696,
-      "lastMs": 10582,
-      "lastError": null,
-      "updatedAt": "2026-10-10T00:31:47.573Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-09T20:56:32.142Z",
-  "updatedAt": "2026-10-10T00:31:47.580Z",
+  "createdAt": "2026-10-10T02:20:16.789Z",
+  "updatedAt": "2026-10-10T02:20:16.799Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1723,26 +1599,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "signatureSystems_0"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:0": 1,
-    "local_authoring_parts::86f2e5aa4162cb08091842c5c2bcfef66a71ae3cf72a96a9bdb324592b62a779:signatureSystems:1": 6
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T00:31:47.573Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  }
 }
