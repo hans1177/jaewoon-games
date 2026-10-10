@@ -165,25 +165,204 @@
       "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
       "purpose": "조각의 색상/형태 매칭에 의해 인과적으로 연결되어, 주변 환경의 색상/패턴 변화와 점수 증대를 통해 플레이어에게 즉각적인 시각적 피드백과 성취감을 제공합니다.",
       "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 다음 스테이지 진입을 선택합니다."
+    },
+    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": {
+      "id": "delve_road_sign",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "scene",
+        "playerAction"
+      ],
+      "stateOutputs": [
+        "environmentChange",
+        "scoreIncrease"
+      ],
+      "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+      "purpose": "플레이어가 무작위로 배치된 조각을 연결하여 풍경을 재구성할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+      "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 다음 스테이지 진입을 유도합니다."
+    },
+    "local_authoring_parts::2fefa3dbbe3a3ed8033d0b2703bf0b798916b2c33c5f46f40708f5fa2644f683:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "main_road_sign",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "scene",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "플레이어가 무작위로 배치된 조각을 선택 및 연결하여 시각적 피드백과 성취감을 경험하며, 그 과정에서 주변 환경이 변화합니다.",
+          "playerChoice": "조각의 위치 또는 색상/형태 변경을 결정하여 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
+        },
+        {
+          "id": "a_road_sign",
+          "grammarRole": "A",
+          "stateInputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "stateOutputs": [
+            "scene",
+            "playerAction"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "플레이어가 무작위로 배치된 조각을 연결하며 시각적 피드백과 성취감을 경험하게 하며, 그 과정에서 주변 환경이 변형되고 점수가 증대합니다.",
+          "playerChoice": "조각의 위치 변경 또는 환경 복원 결정을 통해 새로운 스테이지 진입 및 보상 시스템 획득을 선택합니다."
+        },
+        {
+          "id": "b_road_sign",
+          "grammarRole": "B",
+          "stateInputs": [
+            "scene",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+          "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 보상 획득을 선택합니다."
+        },
+        {
+          "id": "c_road_sign",
+          "grammarRole": "c",
+          "stateInputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "stateOutputs": [
+            "scene",
+            "playerAction"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "조각의 색상/형태 매칭에 의해 인과적으로 연결되어, 주변 환경의 색상/패턴 변화와 점수 증대를 통해 플레이어에게 즉각적인 시각적 피드백과 성취감을 제공합니다.",
+          "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 다음 스테이지 진입을 선택합니다."
+        },
+        {
+          "id": "delve_road_sign",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "scene",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "플레이어가 무작위로 배치된 조각을 연결하여 풍경을 재구성할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+          "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 다음 스테이지 진입을 유도합니다."
+        }
+      ]
+    },
+    "local_authoring_parts::34fac531695c35304b0cc9932af361a96d0a08624079638377d5d0f76b1f4598:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생",
+        "완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험",
+        "모바일 환경에서의 런타임 절차적 조각 생성 및 파티클 효과 발현"
+      ],
+      "signatureSystems": [
+        {
+          "id": "main_road_sign",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "scene",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "플레이어가 무작위로 배치된 조각을 선택 및 연결하여 시각적 피드백과 성취감을 경험하며, 그 과정에서 주변 환경이 변화합니다.",
+          "playerChoice": "조각의 위치 또는 색상/형태 변경을 결정하여 보너스 효과를 얻거나 새로운 스테이지 진입을 합니다."
+        },
+        {
+          "id": "a_road_sign",
+          "grammarRole": "A",
+          "stateInputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "stateOutputs": [
+            "scene",
+            "playerAction"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "플레이어가 무작위로 배치된 조각을 연결하며 시각적 피드백과 성취감을 경험하게 하며, 그 과정에서 주변 환경이 변형되고 점수가 증대합니다.",
+          "playerChoice": "조각의 위치 변경 또는 환경 복원 결정을 통해 새로운 스테이지 진입 및 보상 시스템 획득을 선택합니다."
+        },
+        {
+          "id": "b_road_sign",
+          "grammarRole": "B",
+          "stateInputs": [
+            "scene",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "조각 배치 및 연결 시 즉각적인 시각적 피드백 발생, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+          "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 보상 획득을 선택합니다."
+        },
+        {
+          "id": "c_road_sign",
+          "grammarRole": "c",
+          "stateInputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "stateOutputs": [
+            "scene",
+            "playerAction"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "조각의 색상/형태 매칭에 의해 인과적으로 연결되어, 주변 환경의 색상/패턴 변화와 점수 증대를 통해 플레이어에게 즉각적인 시각적 피드백과 성취감을 제공합니다.",
+          "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 다음 스테이지 진입을 선택합니다."
+        },
+        {
+          "id": "delve_road_sign",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "scene",
+            "playerAction"
+          ],
+          "stateOutputs": [
+            "environmentChange",
+            "scoreIncrease"
+          ],
+          "name": "세계의 직조자는 플레이어가 흩어진 조각들을 연결하여 끈무르게 변화하는 풍경을 완성하는 힐링 퍼즐 게임입니다.",
+          "purpose": "플레이어가 무작위로 배치된 조각을 연결하여 풍경을 재구성할 때 발생하는 즉각적인 시각적 피드백과, 완성된 풍경이 생동감 있게 변하는 '생명력의 전이' 경험을 구현합니다.",
+          "playerChoice": "조각의 위치 변화 또는 환경 복원 결정을 통해 새로운 상태 생성 및 다음 스테이지 진입을 유도합니다."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 17,
+      "successes": 17,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 690197,
-      "lastMs": 95324,
+      "totalMs": 785013,
+      "lastMs": 94816,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:00:19.808Z"
+      "updatedAt": "2026-10-10T07:01:54.625Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:49.200Z",
-  "updatedAt": "2026-10-10T07:00:19.808Z",
+  "updatedAt": "2026-10-10T07:01:54.627Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1447,30 +1626,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "main_road_sign",
-          "a_road_sign",
-          "b_road_sign",
-          "c_road_sign"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "DELVE",
-        "previousRuleIds": [
-          "main_road_sign",
-          "a_road_sign",
-          "b_road_sign",
-          "c_road_sign"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:0:4f53cda18c2baa0c": 1,
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:1:291aa520ed65de38": 1,
@@ -1478,8 +1634,8 @@
     "local_authoring_parts::c23bc5ddadbf78c5c3f401d87b8f4b8f4d0a6fe1a2e85193833db091490064ff:signatureSystems:4:2b7f101697ae36ff": 4
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:00:19.808Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T07:01:54.627Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
