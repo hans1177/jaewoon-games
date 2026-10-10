@@ -119,25 +119,55 @@
       "name": "Adaptive Defense - Economic Constraint Chain",
       "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints in a single-player defense strategy game",
       "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions, with adaptive defense strategies to maintain strategic flexibility while managing limited resources for long-term survival and progression in the game world"
+    },
+    "local_authoring_parts::532bbc5813d539744d5bb42e3166cb13616b72376a31532408dc942a05977714:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "enemy wave composition",
+        "defensive placement"
+      ],
+      "stateOutputs": [
+        "resource allocation decision",
+        "economic constraint state"
+      ],
+      "name": "Adaptive Defense - Economic Constraint Chain",
+      "purpose": "Establishes the causal relationship between defensive adaptation and economic constraint, enabling strategic resource management under evolving battlefield conditions.",
+      "playerChoice": "Resource allocation decision based on enemy type variation and battlefield constraints, leading to permanent economic constraint as a long-term strategy limitation."
+    },
+    "local_authoring_parts::532bbc5813d539744d5bb42e3166cb13616b72376a31532408dc942a05977714:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "enemy wave composition",
+        "defensive placement"
+      ],
+      "stateOutputs": [
+        "resource allocation decision",
+        "economic constraint state"
+      ],
+      "name": "Adaptive Defense - Economic Constraint Chain",
+      "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints, with each step introducing a new gameplay effect that alters subsequent decisions.",
+      "playerChoice": "The player must balance immediate tactical adjustments with long-term resource management to maintain strategic flexibility while adapting to changing enemy types and wave compositions."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 367713,
-      "lastMs": 34419,
+      "totalMs": 640288,
+      "lastMs": 240467,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:49:52.808Z"
+      "updatedAt": "2026-10-10T02:54:25.387Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:43:45.072Z",
-  "updatedAt": "2026-10-10T02:49:52.808Z",
+  "updatedAt": "2026-10-10T02:54:25.387Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1843,7 +1873,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:49:52.808Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:54:25.387Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
