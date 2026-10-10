@@ -2756,25 +2756,44 @@
       "name": "개미 시뮬레이터 DELVE 규칙",
       "traversal": "DELVE_PHASE",
       "riskReward": "STATE_CHANGE_AND_PROGRESSION"
+    },
+    "local_authoring_parts::999a856d20674f52cddcb09924ec4a9a86bead6747f38b7f87e18abfa2c59844:landmark,encounterPattern,resourcePressure,storyContext": {
+      "landmark": "거대한 정원",
+      "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+      "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+      "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
+    },
+    "local_authoring_parts::398b9d6a37d8bafbbfd294cd8cea3fde3a1a4c2b8860308d8268e9fc923ea4a9:regions:0": {
+      "id": "ANT_SIMULATOR_DELVE",
+      "ruleIds": [
+        "CORE_FUN_04"
+      ],
+      "name": "개미 시뮬레이터 DELVE 규칙",
+      "traversal": "DELVE_PHASE",
+      "riskReward": "STATE_CHANGE_AND_PROGRESSION",
+      "landmark": "거대한 정원",
+      "encounterPattern": "플레이어가 월드 상태에 따라 자원을 선택하여 위험/보상을 받는 순차적 경험이다",
+      "resourcePressure": "자원은 주요 요소와 보조 요소 간 조합으로 이어지며, 각 단계에서 보상/위험 발생",
+      "storyContext": "개미 종족 선택 -> 월드 탐험 -> 자원 확보 -> 위험 겪기 -> 목표 결정 -> 다음 행동 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 96,
-      "successes": 90,
+      "calls": 97,
+      "successes": 91,
       "failures": 6,
       "timeouts": 5,
       "jsonFailures": 0,
-      "totalMs": 4696141,
-      "lastMs": 47819,
+      "totalMs": 4731286,
+      "lastMs": 35145,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:11:22.275Z"
+      "updatedAt": "2026-10-10T01:11:57.422Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:40:09.933Z",
-  "updatedAt": "2026-10-10T01:11:22.275Z",
+  "updatedAt": "2026-10-10T01:11:57.424Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4482,7 +4501,7 @@
     "b021013ed102f71322f5c2a2e5ddf0bfb80d003323f507d9ba6c2a1f06ff19df": true,
     "ca1eedfd0ea578c72093879f6d8020bd00d0df2777aa2b6cc9aecef68c0aeb3a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:11:22.275Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:11:57.424Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
