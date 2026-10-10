@@ -505,25 +505,40 @@
       "name": "주사위 전투 보드 - 진보적 시스템 혁명",
       "purpose": "플레이어의 선택에 따라 장애물 배열 및 NPC의 대화 내용이 변환되는 반복 가능한 루프 형성",
       "playerChoice": "플레이어의 주사위 결정 → 장애물 배치 변경 → 성공/실패 판정, 플레이어의 선택 → NPC의 대화 내용 변화 → 게임 상태 변환, 선택 ↔ 대화 내용 변화 양방향 영향 적용됨"
+    },
+    "local_authoring_parts::4feb3b4fbb02686a5c519ba7496d6c58f6d3acd6bcdad43f763fbaeef8d2e530:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "dice_roll",
+        "role_assignment"
+      ],
+      "stateOutputs": [
+        "terrain_configuration",
+        "dialogue_flow"
+      ],
+      "name": "주사위 전투 보드 - 진보적 시스템 혁명",
+      "purpose": "플레이어의 선택과 NPC의 대화 내용이 서로 다른 방식으로 발전하며, 게임 상태와 역할 분담에 따라 새로운 플레이 경험을 제공하는 기반 시스템",
+      "playerChoice": "플레이어의 주사위 결정 → 장애물 배열 변환 → 성공/실패 판정 및 NPC의 대화 내용 변화 → 게임 상태 변환 및 다음 사건 발생 유도로 이어짐"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1520589,
-      "lastMs": 100148,
+      "totalMs": 1620963,
+      "lastMs": 100374,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:04:23.359Z"
+      "updatedAt": "2026-10-10T03:06:03.734Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:39:02.717Z",
-  "updatedAt": "2026-10-10T03:04:23.359Z",
+  "updatedAt": "2026-10-10T03:06:03.740Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2121,10 +2136,12 @@
         "evidenceLevel": null,
         "minimumRequired": null,
         "evidence": {
-          "aToB": true,
+          "aToB": false,
           "bToA": false,
           "unconnected": [
-            "A"
+            "A",
+            "B",
+            "DELVE"
           ],
           "ruleIds": [
             "signatureSystems[0]",
@@ -2143,7 +2160,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2244,10 +2261,10 @@
   "localAuthoringSplits": {
     "fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:04:23.359Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T03:06:03.735Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
