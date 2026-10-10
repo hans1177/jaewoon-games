@@ -80,25 +80,53 @@
         "worldChange": "실질 세계 상태 변화, 다음 사건, 새로운 규칙 조합",
         "nextEvent": "새로운 규칙 조합, 다음 사건, 새로운 게임 규칙"
       }
+    },
+    "local_authoring_parts::7eca993eee7df373371b520e373a9f343d55f4f777bc08c9e1cf6e73a62d9ed8:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "행동",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 실제 행동을 통해 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다."
+        },
+        {
+          "name": "관계",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어와 다른 인물 갈등 및 관계 형성에 기반하여 플레이어의 선택에 영향을 미칩니다."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "생활 탐험",
+          "gameplayEffect": "단순한 입력과 명확한 목표를 바탕으로 플레이어가 세계를 탐험하는 기본적인 게임 유형"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "문화적 발견",
+          "gameplayEffect": "플레이어가 다양한 문화, 예술, 역사 등 측면에서 새로운 것을 발견하고 성장시키는 추가적인 게임 유형"
+        }
+      ],
+      "cGenreInterlock": "플레이어의 행동은 주제와 소재에 따라 상호작용하며, 보조 장르 제거 시 새로운 플레이 스타일이 생성됩니다.",
+      "cWorldAndGameplayEffect": "플레이어의 선택은 실질적으로 세계 상태를 변화시켜 다음 사건을 결정합니다. 이는 게임의 진보와 규칙 조합에 직접적인 영향을 줍니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 847342,
-      "lastMs": 84289,
+      "totalMs": 929662,
+      "lastMs": 82320,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:47:23.741Z"
+      "updatedAt": "2026-10-10T08:48:46.063Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:33:16.266Z",
-  "updatedAt": "2026-10-10T08:47:23.742Z",
+  "updatedAt": "2026-10-10T08:48:46.063Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1624,7 +1652,7 @@
     "bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753": true,
     "f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:47:23.742Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:48:46.063Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
