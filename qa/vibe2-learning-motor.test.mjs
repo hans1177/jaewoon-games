@@ -2156,6 +2156,7 @@ test('official-source Unity Web and Android coding drills reuse the existing pra
     assert.equal(injected.added,true);
     assert.equal(injected.task.target,'unity');
     assert.deepEqual(injected.task.responsibleFiles,[]);
-    assert.equal(injected.task.productionPass,false);
+    assert.ok(injected.task.evidence.includes('production-pass:NO'));
+    assert.ok(injected.task.completionCriteria.includes('PRODUCTION_PASS_NO'));
   }
 });
