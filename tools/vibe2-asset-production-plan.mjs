@@ -2732,6 +2732,14 @@ function internalAssetPlatformApplicationMode(asset={},target=''){
   const targets=unique([...(asset?.targetPlatforms||[]),...(asset?.platforms||[])].map(value=>clean(value).toUpperCase()));
   const variants=Object.keys(asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{}).map(value=>clean(value).toUpperCase());
   if(platform===resolved||targets.includes(resolved)||variants.includes(resolved))return'USE_AS_IS';
+  // 플랫폼이 명시되지 않은 공용 3D 모델은 스타일 변경만으로 타 플랫폼 네이티브 자산이 되지 않는다.
+  const family=clean(asset?.family||asset?.category).toUpperCase();
+  const spatialSource=[asset?.path,asset?.masterGlb,asset?.meshArtifact,asset?.masterSourcePath,
+    ...(Array.isArray(asset?.nativeArtifacts)?asset.nativeArtifacts:[]),
+    ...(Array.isArray(asset?.sourceFiles)?asset.sourceFiles:[])];
+  if(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN'].includes(family)
+    &&spatialSource.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(clean(file)))
+    &&['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
   if(/^SHARED_/.test(platform)||platform==='SHARED'||targets.length===0&&variants.length===0)return'STYLE_ADAPT';
   if(['ROBLOX','UNITY','WEB'].includes(resolved))return'NATIVE_REAUTHOR_BASE';
   return'NOT_SUPPORTED';
