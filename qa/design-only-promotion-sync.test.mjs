@@ -532,3 +532,12 @@ test('canonical promotion feeds exactly one grounded Vibe starter into native co
       new Set(['one-defense','two-defense']));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('new owner reset does not reuse an older minimum design as the basis for code admission',()=>{
+  const minimumSource=fs.readFileSync('tools/company-minimum-design-contract.mjs','utf8');
+  const promotionSource=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
+  assert.match(minimumSource,/ownerResetAt=0/);
+  assert.match(minimumSource,/String\(existing\.date\)>resetDate/);
+  assert.match(promotionSource,/ownerResetAt=resetIds\.has\(gameId\)\?resetAt:0/);
+  assert.match(promotionSource,/materializeVibeMinimumDesign\(\{root,seed,catalogGame,ownerResetAt\}\)/);
+});

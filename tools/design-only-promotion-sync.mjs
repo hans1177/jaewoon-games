@@ -365,8 +365,10 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     const catalogGame=catalogById.get(gameId);
     const lifecycle=clean(catalogGame?.canonical?.lifecycle?.state||catalogGame?.lifecycleState||'ACTIVE').toUpperCase();
     if(!['ACTIVE','REBUILD'].includes(lifecycle))continue;
-    if(latestMinimumDesign(root,gameId))continue;
-    const result=materializeVibeMinimumDesign({root,seed,catalogGame});
+    const existing=latestMinimumDesign(root,gameId);
+    const ownerResetAt=resetIds.has(gameId)?resetAt:0;
+    if(existing&&freshAfterOwnerReset(existing,ownerResetAt))continue;
+    const result=materializeVibeMinimumDesign({root,seed,catalogGame,ownerResetAt});
     if(result.created){
       vibeMinimumCreated.push({gameId,file:result.file});
       break;

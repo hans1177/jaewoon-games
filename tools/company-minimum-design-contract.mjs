@@ -66,13 +66,18 @@ export function evaluateMinimumDesignContract(record={}){
   });
 }
 // 메인: 바이브 개발 착수용 최소 설계. GAME_SEED의 검증 가능한 원본 의도만 사용하고 정밀 설계 PASS를 주장하지 않는다.
-export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},date=''}={}){
+export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},date='',ownerResetAt=0}={}){
   const gameId=clean(seed?.gameId);
   if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId)||clean(seed?.status).toUpperCase()!=='ACTIVE'){
     return {created:false,reason:'ACTIVE_GAME_SEED_REQUIRED'};
   }
   const existing=latestMinimumDesign(root,gameId);
-  if(existing)return{created:false,reason:'EXISTING_MINIMUM_DESIGN_PRESERVED',file:existing.file};
+  // 메인: 소유자 초기화보다 오래된 설계는 새 기본 설계 생성의 근거가 아니다.
+  // 이미 작성한 같은 날짜의 설계나 유효한 최신 설계는 덮어쓰지 않는다.
+  const resetAt=Number(ownerResetAt)||0;
+  const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+  if(existing&&(!resetDate||String(existing.date)>resetDate))
+    return{created:false,reason:'EXISTING_MINIMUM_DESIGN_PRESERVED',file:existing.file};
   const identity=clean(seed?.DISTINCT_IDENTITY||seed?.GAMEPLAY_SKETCH?.identityCore?.oneLineFantasy);
   const loop=list(seed?.CORE_LOOP).map(clean).filter(Boolean);
   const fun=list(seed?.CORE_FUN_TO_LEARN).map(clean).filter(Boolean);
