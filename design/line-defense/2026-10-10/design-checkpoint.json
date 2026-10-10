@@ -149,25 +149,173 @@
       "name": "Battlefield Layout and Economic Management System",
       "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
       "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
+    },
+    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "defensiveStrategyAdaptation",
+        "resourceAllocationDecision"
+      ],
+      "stateOutputs": [
+        "newDefensiveStrategyImplementation",
+        "adjustedResourceBudget"
+      ],
+      "name": "Enemy Type Adaptability and Resource Efficiency System",
+      "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
+      "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
+    },
+    "local_authoring_parts::268a3cba0ae9dfb8d4544130d721316a0a45c6e703291f1a7039721a1776e1db:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Battlefield Layout and Economic Management System",
+          "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
+          "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Battlefield Layout and Economic Management System",
+          "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
+          "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Battlefield Layout and Economic Management System",
+          "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
+          "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Enemy Type Adaptability and Resource Efficiency System",
+          "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
+          "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
+        }
+      ]
+    },
+    "local_authoring_parts::e3121708a566b68713e67b0578d91bb4b0ddef8f0f273d8a633a6c9374b584d7:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Battlefield Layout and Economic Management System",
+          "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
+          "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Battlefield Layout and Economic Management System",
+          "purpose": "Establishes the interplay between defensive strategy adaptation and economic resource management, influencing both immediate gameplay decisions and long-term progression.",
+          "playerChoice": "Adapt defense to enemy types and wave composition while managing limited resources for optimal strategic positioning and resource allocation."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Battlefield Layout and Economic Management System",
+          "purpose": "Coordinates defensive strategy adaptation with resource allocation decisions, ensuring strategic position control and economic efficiency.",
+          "playerChoice": "Adapt to enemy types and wave composition; adjust resource spending based on upgrade costs and resource gains;"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "defensiveStrategyAdaptation",
+            "resourceAllocationDecision"
+          ],
+          "stateOutputs": [
+            "newDefensiveStrategyImplementation",
+            "adjustedResourceBudget"
+          ],
+          "name": "Enemy Type Adaptability and Resource Efficiency System",
+          "purpose": "Enables players to adapt defensive strategies based on enemy types and manage resources efficiently.",
+          "playerChoice": "Adapt defense to enemy type, prioritize resource efficiency, or shift focus to positional control in late game rounds."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 506916,
-      "lastMs": 66305,
+      "totalMs": 573015,
+      "lastMs": 66099,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:47:03.249Z"
+      "updatedAt": "2026-10-10T02:48:09.349Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:38:36.139Z",
-  "updatedAt": "2026-10-10T02:47:03.249Z",
+  "updatedAt": "2026-10-10T02:48:09.352Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1873,7 +2021,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:47:03.249Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:48:09.352Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
