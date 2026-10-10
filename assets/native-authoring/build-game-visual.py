@@ -28,6 +28,9 @@ PARSER.add_argument('--genre', default='')
 PARSER.add_argument('--source-image', default='')
 PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
+PARSER.add_argument('--module', choices=['auto','mesh-ai','clothing','design','medical'], default='auto')
+PARSER.add_argument('--source-model', default='')
+PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
 ARGS.output.mkdir(parents=True, exist_ok=True)
@@ -95,6 +98,21 @@ GLOW = material('Game_Glow', tuple(v*.55 for v in GLOW_RGB), .30, .18, GLOW_RGB)
 
 ASSET_OBJECTS = []
 IMAGE_PROVENANCE = None
+MODULE_PROVENANCE = None
+SOURCE_PROVENANCE = None
+# 기존 실행기 안에서만 사용하는 오픈소스 기능. 설치되지 않은 외부 엔진의 PASS를 만들지 않는다.
+OPEN_SOURCE_MODULES = {
+    'mesh-ai': {'source': 'https://github.com/VAST-AI-Research/TripoSR', 'engine': 'TripoSR', 'license': 'MIT'},
+    'clothing': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderMeshAndCloth', 'license': 'GPL-2.0-or-later'},
+    'design': {'source': 'https://github.com/blender/blender', 'engine': 'BlenderParametricGeometry', 'license': 'GPL-2.0-or-later'},
+    'medical': {'source': 'https://github.com/Slicer/Slicer', 'engine': 'SlicerCompatibleSurfaceImportAndBlender', 'license': 'BSD-style-Slicer-GPL-Blender'},
+}
+if ARGS.module == 'medical' and (ARGS.source_image or not ARGS.source_model):
+    raise RuntimeError('MEDICAL_SOURCE_SURFACE_MODEL_REQUIRED')
+if ARGS.module == 'mesh-ai' and not ARGS.source_image:
+    raise RuntimeError('IMAGE_TO_MESH_LOCAL_IMAGE_REQUIRED')
+if ARGS.source_image and ARGS.source_model:
+    raise RuntimeError('SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE')
 
 def finish(obj, mat, bevel=.06):
     obj.data.materials.append(mat)
@@ -312,8 +330,122 @@ def image_mesh_asset():
         'runtimeVerified': False,
     }
 
-if ARGS.source_image:
+
+# 메인: 블렌더 오픈소스 패턴을 사용해 실제 입체 의류 패널과 소매를 제작한다.
+def clothing_asset():
+    global MODULE_PROVENANCE
+    verts, faces = [], []
+    segments = 24
+    sections = [(0.12,0.56,0.37),(0.32,0.55,0.36),(0.72,0.46,0.32),(1.14,0.52,0.34),(1.55,0.64,0.38),(1.78,0.49,0.30)]
+    for z, rx, ry in sections:
+        for idx in range(segments):
+            angle = idx * math.tau / segments
+            verts.append((rx*math.cos(angle),ry*math.sin(angle),z+0.035*math.cos(angle*6)))
+    for idx in range(len(sections)-1):
+        for segment in range(segments):
+            nxt=(segment+1)%segments
+            faces.append((idx*segments+segment,idx*segments+nxt,(idx+1)*segments+nxt,(idx+1)*segments+segment))
+    mesh = bpy.data.meshes.new('ClothingPatternMesh')
+    mesh.from_pydata(verts,[],faces); mesh.update()
+    obj=bpy.data.objects.new('TailoredGarment',mesh)
+    SCENE.collection.objects.link(obj)
+    finish(obj,MID,0)
+    thick=obj.modifiers.new('GarmentFabricThickness','SOLIDIFY')
+    thick.thickness=0.045
+    for side in (-1,1):
+        cylinder(f'GarmentSleeve_{side}',(side*.73,0,1.49),.33,.58,BASE,vertices=24,
+                 rot=(0,math.pi/2,0),bevel=.025)
+        torus(f'GarmentCuff_{side}',(side*.99,0,1.49),.31,.045,ACCENT,
+              rot=(0,math.pi/2,0))
+    torus('ClothingCollar',(0,0,1.76),.48,.047,ACCENT)
+    for side in (-1,1):
+        box(f'GarmentSeam_{side}',(side*.32,-.345,.85),(.028,.025,.56),DARK,bevel=.008)
+    MODULE_PROVENANCE={'kind':'clothing','source':OPEN_SOURCE_MODULES['clothing'],
+                       'method':'BLENDER_MESH_PATTERN_SOLIDIFY_AND_MATERIAL',
+                       'generatedGeometry':True,'runtimeVerified':False}
+
+
+# 메인: 블렌더 형상·베벨·재질을 활용한 파라메트릭 설계용 입체 메시.
+def design_asset():
+    global MODULE_PROVENANCE
+    box('DesignMainFrame',(0,0,.78),(1.15,.85,.60),BASE,bevel=.14)
+    box('DesignTopPanel',(0,0,1.44),(1.0,.74,.12),MID,bevel=.075)
+    box('DesignInset',(0,-.865,.92),(.75,.035,.32),ACCENT,bevel=.04)
+    for side in (-1,1):
+        cylinder(f'DesignSupport_{side}',(side*.92,0,.80),.12,1.22,METAL,vertices=32)
+        torus(f'DesignMount_{side}',(side*.92,-.02,1.41),.20,.045,ACCENT)
+    box('DesignHandle',(0,-.98,1.14),(.39,.18,.08),DARK,bevel=.035)
+    for index in range(5):
+        cylinder(f'DesignDial_{index}',(-.55+index*.28,-.94,.77),.075,.035,GLOW,vertices=16,
+                 rot=(math.pi/2,0,0),bevel=.012)
+    MODULE_PROVENANCE={'kind':'design','source':OPEN_SOURCE_MODULES['design'],
+                       'method':'BLENDER_PARAMETRIC_BEVEL_UV_AND_MATERIAL',
+                       'generatedGeometry':True,'runtimeVerified':False}
+
+
+# 메인: FreeCAD 또는 3D Slicer의 비민감 메시 산출물을 원본 보존 방식으로 가져온다.
+# 영상·의료진단·환자 메타데이터는 읽거나 생성하지 않는다.
+def import_source_surface():
+    global MODULE_PROVENANCE, SOURCE_PROVENANCE
+    src=Path(ARGS.source_model).resolve()
+    rights=ARGS.source_license.strip().lower()
+    if not src.is_file() or src.suffix.lower() not in ('.obj','.stl','.glb'):
+        raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_REQUIRED')
+    if src.stat().st_size<=0 or src.stat().st_size>64*1024*1024:
+        raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_SIZE_INVALID')
+    if rights not in ('project-original','cc0','cc-by'):
+        raise RuntimeError('OPEN_SOURCE_SURFACE_RIGHTS_REQUIRED')
+    if rights=='cc-by' and not ARGS.source_credit.strip():
+        raise RuntimeError('OPEN_SOURCE_SURFACE_ATTRIBUTION_REQUIRED')
+    if ARGS.module=='medical' and ARGS.source_sanitized!='yes':
+        raise RuntimeError('MEDICAL_SOURCE_SANITIZED_CONFIRMATION_REQUIRED')
+    before=set(bpy.data.objects)
+    if src.suffix.lower()=='.glb':
+        bpy.ops.import_scene.gltf(filepath=str(src))
+    elif src.suffix.lower()=='.stl':
+        if hasattr(bpy.ops.wm,'stl_import'): bpy.ops.wm.stl_import(filepath=str(src))
+        else: bpy.ops.import_mesh.stl(filepath=str(src))
+    else:
+        if hasattr(bpy.ops.wm,'obj_import'): bpy.ops.wm.obj_import(filepath=str(src))
+        else: bpy.ops.import_scene.obj(filepath=str(src))
+    imported=[obj for obj in bpy.data.objects if obj not in before and obj.type=='MESH']
+    faces=sum(sum(max(0,len(poly.vertices)-2) for poly in obj.data.polygons) for obj in imported)
+    if not imported or not 4<=faces<=450000:
+        raise RuntimeError('OPEN_SOURCE_SURFACE_GEOMETRY_INVALID')
+    for obj in imported:
+        if not obj.data.materials: obj.data.materials.append(MID)
+        ASSET_OBJECTS.append(obj)
+    SOURCE_PROVENANCE={
+        'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
+        'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
+        'sanitizedAsserted':ARGS.source_sanitized=='yes','sourceFileImmutable':True
+    }
+    kind=ARGS.module if ARGS.module!='auto' else 'design'
+    MODULE_PROVENANCE={
+        'kind':kind,'source':OPEN_SOURCE_MODULES[kind],
+        'method':'LICENSE_VERIFIED_EXTERNAL_SURFACE_IMPORT',
+        'sourcePlatform':'3D_SLICER_OR_FREECAD_USER_EXPORTED_SURFACE',
+        'generatedGeometry':False,'deidentifiedAssertionOnly':kind=='medical',
+        'clinicalUseApproved':False,'clinicalDiagnosisAllowed':False,'runtimeVerified':False
+    }
+
+
+if ARGS.source_model:
+    import_source_surface()
+elif ARGS.source_image:
     image_mesh_asset()
+    if ARGS.module in ('clothing','design'):
+        MODULE_PROVENANCE={'kind':ARGS.module,'source':OPEN_SOURCE_MODULES[ARGS.module],
+                           'method':'TRIPOSR_IMAGE_MESH_THEN_BLENDER_RECONSTRUCTION',
+                           'generatedGeometry':True,'runtimeVerified':False}
+    else:
+        MODULE_PROVENANCE={'kind':'mesh-ai','source':OPEN_SOURCE_MODULES['mesh-ai'],
+                           'method':'LOCAL_TRIPOSR_INFERENCE','generatedGeometry':True,
+                           'runtimeVerified':False}
+elif ARGS.module == 'clothing':
+    clothing_asset()
+elif ARGS.module == 'design':
+    design_asset()
 elif ARGS.subject=='rock':
     rock_asset()
 elif ARGS.subject=='crate' or ARGS.profile=='prop' and not TECH:
@@ -350,10 +482,13 @@ for obj in ASSET_OBJECTS:
     obj['vibeGenre']=ARGS.genre
     obj['vibeUnit']='meter'
     obj['vibePivot']='ground-centered'
-    obj['vibeProjectOriginal']=not bool(IMAGE_PROVENANCE) or IMAGE_PROVENANCE['sourceLicense'].lower()=='project-original'
+    obj['vibeProjectOriginal']=(IMAGE_PROVENANCE['sourceLicense'].lower()=='project-original') if IMAGE_PROVENANCE else (SOURCE_PROVENANCE['license'].lower()=='project-original' if SOURCE_PROVENANCE else True)
     if IMAGE_PROVENANCE:
         obj['vibeSourceImageSha256']=IMAGE_PROVENANCE['inputSha256']
         obj['vibeSourceLicense']=IMAGE_PROVENANCE['sourceLicense']
+    if SOURCE_PROVENANCE:
+        obj['vibeSourceMeshSha256']=SOURCE_PROVENANCE['sourceSha256']
+        obj['vibeSourceLicense']=SOURCE_PROVENANCE['license']
 
 # Export only authored asset objects.
 bpy.ops.object.select_all(action='DESELECT')
@@ -451,6 +586,8 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'pivot':'GROUND_CENTER','surfaceDistribution':physical_analysis,'style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,'geometrySurface':geometry_surface,
     'optimization':{'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb','originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,'deploymentBytes':glb.stat().st_size,'byteMeasurementScope':'SELECTED_GLB_PAYLOAD_ONLY','deploymentBundleBytes':None,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False},
     'imageToMesh':IMAGE_PROVENANCE,
+    'openSourceModule':MODULE_PROVENANCE,
+    'sourceMesh':SOURCE_PROVENANCE,
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -519,7 +656,7 @@ if max_pixel_error>1e-5: raise RuntimeError('LOSSLESS_OPTIMIZATION_CHANGED_RENDE
 # 렌더: 이미지 기반 자산은 실제 GLB의 네 방향을 동일한 조명에서 추가 촬영한다.
 # 이는 Blender 정적 증거이며 플랫폼 런타임 QA로 간주하지 않는다.
 IMAGE_VIEW_OUTPUTS = []
-if IMAGE_PROVENANCE:
+if MODULE_PROVENANCE:
     old_camera = Vector(cam.location)
     existing = set(bpy.data.objects)
     bpy.ops.import_scene.gltf(filepath=str(glb))
@@ -562,8 +699,10 @@ evidence={
     'sourceHash':source_hash,
     'artifactHash':artifact_hash,
     'previewHash':preview_hash,
-    'license':IMAGE_PROVENANCE['sourceLicense'] if IMAGE_PROVENANCE else 'project-original',
+    'license':IMAGE_PROVENANCE['sourceLicense'] if IMAGE_PROVENANCE else SOURCE_PROVENANCE['license'] if SOURCE_PROVENANCE else 'project-original',
     'imageToMesh':IMAGE_PROVENANCE,
+    'openSourceModule':MODULE_PROVENANCE,
+    'sourceMesh':SOURCE_PROVENANCE,
     'multiViewPreview':IMAGE_VIEW_OUTPUTS,
     'targetPlatforms':[ARGS.target.upper()],
     'runtimeVerificationState':'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
