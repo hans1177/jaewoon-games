@@ -2559,7 +2559,7 @@ export function applySemanticGapPreparation({profile={},gapPlan={}}={}){
 
 // 실제 시간/좌표 표본에서 연속성 문제를 계산한다. 미적 품질·게임 판정 검증은 별도다.
 export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',clipId='',durationSeconds,characterHeightMeters,frames=[],limits={},requiredDetailChannels={},loop=false}={}){
-  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxRootJerk:5000,maxJointSpeed:12,maxJointAcceleration:80,maxJointJerk:5000,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,
+  const thresholds={maxSampleGapSeconds:1/15,maxRootAcceleration:80,maxRootJerk:5000,maxJointSpeed:12,maxJointAcceleration:80,maxJointJerk:5000,maxLoopJointPosition:.005,maxLoopJointVelocity:.15,maxYawSpeed:20,maxPlantedDrift:.015,maxStaticBalanceOutsideNormalized:.06,
     maxAttachmentOffset:.02,maxPenetrationDepth:.005,maxGazeErrorRadians:.26,maxGazeAngularSpeed:20,maxExpressionRate:12,...limits};
   const issues=[],violations=[],metrics={maxRootAcceleration:0,maxRootJerk:0,maxJointSpeed:0,maxJointAcceleration:0,maxJointJerk:0,maxYawSpeed:0,maxPlantedDrift:0,...(loop===true?{maxLoopJointPosition:0,maxLoopJointVelocity:0}:{})};
   const finite=value=>typeof value==='number'&&Number.isFinite(value);
@@ -2578,7 +2578,10 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   const jointKeys=Object.keys(samples[0]?.jointPositions||{}),contactKeys=Object.keys(samples[0]?.contacts||{});
   const groups=['attachments','penetrations','gaze','expressions','supportedContacts'];
   const declared=record(requiredDetailChannels)?requiredDetailChannels:{};
-  if(!record(requiredDetailChannels)||Object.entries(declared).some(([group,keys])=>!groups.includes(group)||!Array.isArray(keys)||keys.some(key=>typeof key!=='string'||!key.trim())||new Set(keys).size!==keys.length))issues.push('INVALID_DETAIL_CHANNEL_REQUIREMENTS');
+  if(!record(requiredDetailChannels)||Object.entries(declared).some(([group,keys])=>group==='staticBalance'?typeof keys!=='boolean':!groups.includes(group)||!Array.isArray(keys)||keys.some(key=>typeof key!=='string'||!key.trim())||new Set(keys).size!==keys.length))issues.push('INVALID_DETAIL_CHANNEL_REQUIREMENTS');
+  const staticBalanceMeasured=declared.staticBalance===true||samples.some(frame=>frame&&Object.hasOwn(frame,'balance'));
+  const staticBalanceSampleCount=samples.filter(frame=>frame?.balance?.mode==='STATIC_SUPPORT').length;
+  if(staticBalanceMeasured)metrics.maxStaticBalanceOutsideNormalized=0;
   const channels=Object.fromEntries(groups.map(group=>[group,[...new Set([
     ...(Array.isArray(declared[group])?declared[group]:[]),
     ...(group==='supportedContacts'?contactKeys.filter(key=>samples[0].contacts[key]?.supportId!==undefined||samples[0].contacts[key]?.supportLocalPosition!==undefined):Object.keys(samples[0]?.[group]||{}))
@@ -2593,6 +2596,10 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
     if(!frame||!finite(frame.timeSeconds)||!vec(frame.rootPosition)||!finite(frame.rootYawRadians)||!record(frame.jointPositions)||!record(frame.contacts)
       ||jointKeys.some(key=>!vec(frame.jointPositions?.[key]))||Object.keys(frame.jointPositions||{}).length!==jointKeys.length
       ||contactKeys.some(key=>typeof frame.contacts?.[key]?.planted!=='boolean'||!vec(frame.contacts?.[key]?.worldPosition))||Object.keys(frame.contacts||{}).length!==contactKeys.length){issues.push('INVALID_FRAME:'+index);continue;}
+    if(staticBalanceMeasured&&(!record(frame.balance)||!vec(frame.balance?.centerOfMassWorldPosition)||!['STATIC_SUPPORT','DYNAMIC'].includes(frame.balance?.mode)))
+      issues.push('INVALID_BALANCE_SAMPLE:'+index);
+    if(staticBalanceMeasured&&frame.balance?.mode==='STATIC_SUPPORT'&&!contactKeys.some(key=>frame.contacts?.[key]?.planted===true))
+      issues.push('STATIC_BALANCE_SUPPORT_REQUIRED:'+index);
     if(frame.timeSeconds<0||frame.timeSeconds>durationSeconds)issues.push('FRAME_OUTSIDE_CLIP:'+index);
     if(index&&(frame.timeSeconds<=samples[index-1]?.timeSeconds||frame.timeSeconds-samples[index-1]?.timeSeconds>thresholds.maxSampleGapSeconds+1e-9))issues.push('FRAME_GAP_OR_ORDER:'+index);
     for(const group of groups.filter(group=>group!=='supportedContacts')){
@@ -2633,9 +2640,35 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   };
   // 발판 이동·회전을 제거한 동일 지지물의 로컬 좌표를 계측 측에서 미터로 기록한다.
   const contactPosition=(frame,key)=>channels.supportedContacts.includes(key)?frame.contacts[key].supportLocalPosition:frame.contacts[key].worldPosition;
+  // Cascadeur AutoPhysics와 ICCV 2025 Morph의 접지·균형 원리를 실제 측정값의 기하 검사로 응용한다.
+  // 정적 지지 상태에만 적용한다. 동적 도약/달리기는 모션 물리 엔진이 따로 검증한다.
+  const outsideSupportDistance=(center,contactPoints)=>{
+    const projected=contactPoints.map(point=>[point[0],point[2]]);
+    const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+    const points=[...new Map(projected.map(point=>[point.join(','),point])).values()]
+      .sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+    if(!points.length)return Infinity;
+    const lower=[],upper=[];
+    for(const point of points){while(lower.length>=2&&cross(lower.at(-2),lower.at(-1),point)<=0)lower.pop();lower.push(point);}
+    for(const point of [...points].reverse()){while(upper.length>=2&&cross(upper.at(-2),upper.at(-1),point)<=0)upper.pop();upper.push(point);}
+    const hull=points.length===1?points:lower.slice(0,-1).concat(upper.slice(0,-1));
+    const position=[center[0],center[2]];
+    if(hull.length>=3&&hull.every((point,index)=>cross(point,hull[(index+1)%hull.length],position)>=-1e-9))return 0;
+    const segmentDistance=(a,b)=>{
+      const dx=b[0]-a[0],dy=b[1]-a[1],lengthSquared=dx*dx+dy*dy;
+      const t=lengthSquared>0?Math.max(0,Math.min(1,((position[0]-a[0])*dx+(position[1]-a[1])*dy)/lengthSquared)):0;
+      return Math.hypot(position[0]-a[0]-t*dx,position[1]-a[1]-t*dy);
+    };
+    return Math.min(...hull.map((point,index)=>segmentDistance(point,hull[(index+1)%hull.length])));
+  };
   for(const key of contactKeys)if(samples[0].contacts[key].planted)anchors.set(key,contactPosition(samples[0],key));
   for(let index=0;index<samples.length;index++){
     const frame=samples[index],previous=samples[index-1];
+    if(staticBalanceMeasured&&frame.balance.mode==='STATIC_SUPPORT'){
+      const supports=contactKeys.filter(key=>frame.contacts[key].planted).map(key=>frame.contacts[key].worldPosition);
+      const outside=outsideSupportDistance(frame.balance.centerOfMassWorldPosition,supports)/characterHeightMeters;
+      report('maxStaticBalanceOutsideNormalized',index,outside,thresholds.maxStaticBalanceOutsideNormalized,'CENTER_OF_MASS',index);
+    }
     for(const key of channels.attachments){
       const value=frame.attachments[key];
       report('maxAttachmentOffset',index,value.active?distance(value.effectorWorldPosition,value.targetWorldPosition)/characterHeightMeters:0,thresholds.maxAttachmentOffset,key,index);
@@ -2695,7 +2728,7 @@ export function auditMotionContinuityTrace({sourceHash='',expectedSourceHash='',
   return Object.freeze({verdict:violations.length?'FAIL':'PASS',sourceHash,clipId,issues:freezeList([]),metrics:Object.freeze(metrics),violations:freezeList(violations),thresholds:Object.freeze(thresholds),
     frameCount:samples.length,coordinateContract:'ROOT_AND_CONTACT_WORLD_METERS_JOINTS_ROOT_LOCAL_METERS_YAW_RADIANS',
     detailCoordinateContract:'ATTACHMENTS_WORLD_METERS_PENETRATION_METERS_GAZE_WORLD_DIRECTIONS_EXPRESSION_WEIGHTS_0_TO_1_SUPPORT_LOCAL_METERS',
-    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),jointAccelerationMeasured:true,jointJerkMeasured:true,rootJerkMeasured:true,loopBoundaryMeasured:loop}),
+    measurementCoverage:Object.freeze({channels,requiredDetailChannels:declared,unmeasuredGroups:groups.filter(group=>!channels[group].length),staticBalanceMeasured,staticBalanceSampleCount,staticBalanceAlgorithm:staticBalanceMeasured?'CONVEX_SUPPORT_POLYGON_CENTER_OF_MASS_DISTANCE':null,jointAccelerationMeasured:true,jointJerkMeasured:true,rootJerkMeasured:true,loopBoundaryMeasured:loop}),
     blocksVerifiedPromotion:violations.length>0,traceChecksOnly:true,runtimeVerified:false});
 }
 
@@ -3658,6 +3691,10 @@ export function createMotionDirectorPlan({
       neuralSkinning:'https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html',
       composableAction:'https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html',
       physicsTrace:'https://arxiv.org/abs/2605.14269',
+      staticBalancePhysics:'https://openaccess.thecvf.com/content/ICCV2025/html/Li_Morph_A_Motion-free_Physics_Optimization_Framework_for_Human_Motion_Generation_ICCV_2025_paper.html',
+      contactGuidance:'https://openaccess.thecvf.com/content/ICCV2025/html/Yang_SMGDiff_Soccer_Motion_Generation_using_Diffusion_Probabilistic_Models_ICCV_2025_paper.html',
+      mocapReference:'https://www.deepmotion.com/animate-3d-api',
+      autoPhysicsReference:'https://cascadeur.com/help/tools/physics_tools/autophysics',
       pbrMaterial:'https://arxiv.org/abs/2506.15442',
       modelInferenceRan:false,applied:'PAPER_INSPIRED_DETERMINISTIC_QA_ONLY'
     }),
