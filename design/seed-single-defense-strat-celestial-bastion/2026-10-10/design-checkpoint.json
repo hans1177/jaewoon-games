@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 실시간으로 전장의 지형을 변형하며, 유닛의 속성을 동적으로 조합하여 적의 경로 예측 및 방어선 구축에 직접 참여할 수 있는 창의적인 선택을 할 수 있습니다.",
       "coreFun": "지형 길이 변화 → 적 이동 차단/유인; 타워 속성 병합 → 광범위 폭발 또는 느린 이동; 자원 최적화 → 방어 효율 극대화; 플레이어 선택 → 세계 상태 변화; 새로운 기술 연구/강화 → 다음 단계 대비 준비"
+    },
+    "local_authoring_parts::53ed89a40aa06fca56dc6fbabe92e95501c70e91c289c1e650302c491a2c9003:coreLoop": {
+      "coreLoop": [
+        "적 웨이브 정보 확인 및 자원 배치 결정",
+        "지형 길이 변화로 적 이동 경로 최적화 또는 타워 속성 병합하여 전투 효과 발생",
+        "보상으로 기술 연구/강화 후 방어 효율 극대화 및 세계 상태 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 517218,
-      "lastMs": 61068,
+      "totalMs": 578961,
+      "lastMs": 61743,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:48:06.922Z"
+      "updatedAt": "2026-10-10T09:49:08.668Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:39:29.682Z",
-  "updatedAt": "2026-10-10T09:48:06.924Z",
+  "updatedAt": "2026-10-10T09:49:08.668Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1484,7 +1491,7 @@
   "localAuthoringSplits": {
     "d2e965905db4d312da2b7d2f47caad87fa448d69ba5272d75a279300dc5c981a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:48:06.924Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:49:08.668Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
