@@ -399,6 +399,25 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
 }
+// 기존 실행의 호환 체크포인트에 남은 문장형 상태 키는 설계 참조 ID가 아니다.
+// 잘못된 역할 조각만 폐기하고 다른 창작 내용과 정상 규칙 체크포인트는 보존한다.
+const invalidRoleStateTasks=Object.entries(designCheckpoint.tasks||{}).filter(([key,row])=>{
+  if(!key.startsWith('local_authoring_parts::')||!key.includes(':signatureSystems:')||!row?.grammarRole)return false;
+  const inputs=Array.isArray(row.stateInputs)?row.stateInputs:[];
+  const outputs=Array.isArray(row.stateOutputs)?row.stateOutputs:[];
+  const states=[...inputs,...outputs];
+  return !inputs.length||!outputs.length||states.some(key=>typeof key!=='string'
+    ||!/^[^\\s:→]{1,80}$/u.test(key)||/→|->|\\b(?:INPUT|SELECT|OUTPUT|STATE)\\s*:/i.test(key));
+}).map(([key])=>key);
+if(invalidRoleStateTasks.length){
+  for(const key of invalidRoleStateTasks){
+    delete designCheckpoint.tasks[key];
+    if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[key];
+    if(designCheckpoint.sliceRepairAttempts)delete designCheckpoint.sliceRepairAttempts[key];
+  }
+  writeJson(checkpointPath,designCheckpoint);
+  console.log('DESIGN_INVALID_STALE_ROLE_STATE_KEYS_REAUTHOR='+invalidRoleStateTasks.length);
+}
 if(priorCheckpointStatus==='PRE_GATE_BLOCKED'&&Object.prototype.hasOwnProperty.call(designCheckpoint.phases||{},'designer_draft')){
   const retryPhases=[
     'designer_pre_gate_repair_1',
