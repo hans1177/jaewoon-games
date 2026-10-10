@@ -660,25 +660,116 @@
     },
     "local_authoring_parts::20efafcdab45facab883a76e3865d372eae3352442940cae08890c4b57d4c36e:trigger": {
       "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::20efafcdab45facab883a76e3865d372eae3352442940cae08890c4b57d4c36e:stateChange": {
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+    },
+    "local_authoring_parts::b144450b5335a2a2e6a29033f190938015c5d2c717cfaddb2f6cd5d6e521204f:systemInterconnections:5:fa6a18da4d68d177": {
+      "fromSystem": "Main Defensive Strategy",
+      "toSystem": "Delve into Adaptive Defensive Mechanics",
+      "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+      "fromId": "delve_abc",
+      "toId": "main_abc",
+      "stateKeys": [
+        "defender_positioning_strategy",
+        "incoming_insect_wave_pattern"
+      ]
+    },
+    "local_authoring_parts::d1d605854c85e2435edebddfda52c813d4fce5ba7563c4cb702dee60058dacb0:systemInterconnections": {
+      "systemInterconnections": [
+        {
+          "fromId": "main_abc",
+          "toId": "a_main",
+          "stateKeys": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "fromSystem": "Main Defensive Strategy",
+          "toSystem": "Game Designer AI",
+          "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+          "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+        },
+        {
+          "fromId": "a_main",
+          "toId": "main_abc",
+          "stateKeys": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "fromSystem": "Main Defensive Strategy",
+          "toSystem": "Game Designer AI",
+          "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+          "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+        },
+        {
+          "fromId": "a_main",
+          "toId": "b_main",
+          "stateKeys": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "fromSystem": "Main Defensive Strategy",
+          "toSystem": "Adaptive Defensive Tactics",
+          "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+          "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+        },
+        {
+          "fromId": "b_main",
+          "toId": "a_main",
+          "stateKeys": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "fromSystem": "Main Defensive Strategy",
+          "toSystem": "Game Designer AI",
+          "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+          "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+        },
+        {
+          "fromId": "main_abc",
+          "toId": "delve_abc",
+          "stateKeys": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "fromSystem": "Main Defensive Strategy",
+          "toSystem": "Delve into Adaptive Defensive Mechanics",
+          "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+          "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+        },
+        {
+          "fromId": "delve_abc",
+          "toId": "main_abc",
+          "stateKeys": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "fromSystem": "Main Defensive Strategy",
+          "toSystem": "Delve into Adaptive Defensive Mechanics",
+          "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+          "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 35,
+      "calls": 36,
+      "successes": 36,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 912534,
-      "lastMs": 31745,
+      "totalMs": 943734,
+      "lastMs": 31200,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:16:16.231Z"
+      "updatedAt": "2026-10-10T09:16:47.432Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:16:16.231Z",
+  "updatedAt": "2026-10-10T09:16:47.434Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2371,7 +2462,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:16:16.231Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:16:47.434Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
