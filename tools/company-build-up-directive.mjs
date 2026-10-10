@@ -1050,6 +1050,48 @@ export function buildDesignToPlatformCodingTrace({
         weight:mismatch?110:75,stateKeys:edge.stateKeys,
         expectedNativeBehavior:'PRODUCER_WRITE_TO_CONSUMER_READ_TO_PLAYER_CONSEQUENCE'});
     }
+    // 콘텐츠/그래픽도 설계 목표에 남겨 게임 시스템만 반복하는 편향을 막는다.
+    const coreOwnerFiles=uniq(bindings.flatMap(row=>row.suggestedExistingOwnerFiles));
+    const contentOwnerFiles=coreOwnerFiles.filter(file=>/core|gameplay|quest|progress|world|region|content|inventory|save/i.test(file));
+    const contentOwners=contentOwnerFiles.length?contentOwnerFiles:coreOwnerFiles;
+    const graphicsOwners=uniq([
+      ...coreOwnerFiles.filter(file=>/visual|render|anim|camera|scene|world|bootstrap|gamecore/i.test(file)),
+      ...(sourceObservation?.topFiles||[]).map(row=>posix(row?.file)).filter(file=>
+        file.startsWith(roots.UNITY_WEB+'/Assets/')
+        &&/\.(?:unity|prefab|mat|anim|controller|fbx|obj|glb|gltf)$/i.test(file))
+    ]);
+    const spatialOwners=graphicsOwners.length?graphicsOwners:coreOwnerFiles;
+    const loop=Array.isArray(design?.coreLoop)?design.coreLoop:[];
+    loop.forEach((row,index)=>{
+      const step=clean(typeof row==='string'?row:row?.name||row?.step||row?.action);
+      if(!step)return;
+      const id='LOOP:'+index;
+      requirements.set(id,{id,kind:'CORE_LOOP',title:step,weight:85,
+        sourceOwnerCandidates:contentOwners,
+        expectedNativeBehavior:'PLAYER_ACTION_CAUSES_AUTHORED_LOOP_STATE_AND_NEXT_CHOICE'});
+    });
+    const milestones=Array.isArray(design?.contentExpansionPlan)?design.contentExpansionPlan:[];
+    milestones.forEach((row,index)=>{
+      const title=clean(row?.milestone||row?.name||row?.id);
+      if(!title)return;
+      const id='CONTENT:'+index;
+      requirements.set(id,{id,kind:'DESIGNED_CONTENT_MILESTONE',title,weight:80,
+        designedGameplay:clean(row?.newGameplay),designedSystemImpact:clean(row?.systemImpact),
+        sourceOwnerCandidates:contentOwners,
+        expectedNativeBehavior:'REAL_UNLOCK_OR_CONTENT_STATE_REACHABLE_AND_PLAYER_CONSEQUENCE'});
+    });
+    if(hasCreativeGrammar){
+      requirements.set('CREATIVE_C_CAUSALITY',{id:'CREATIVE_C_CAUSALITY',
+        kind:'DESIGN_CREATIVE_INTERLOCK',title:'A_B_C_PRIMARY_SECONDARY_GAMEPLAY_EFFECT',
+        weight:creativeCReady?75:115,sourceOwnerCandidates:contentOwners,
+        expectedNativeBehavior:'ACTUAL_GAMEPLAY_STATE_AND_PLAYER_DECISION_CHANGE_FROM_CREATIVE_C'});
+    }
+    requirements.set('NATIVE_3D_VISUAL',{id:'NATIVE_3D_VISUAL',kind:'UNITY_WEB_SPATIAL_PRESENTATION',
+      weight:spatialReady?65:125,sourceOwnerCandidates:spatialOwners,
+      expectedNativeBehavior:'REAL_NATIVE_UNITY_3D_MESH_CAMERA_MOTION_MATERIAL_AND_MOBILE_BROWSER_PIXELS'});
+    if(mandatory)requirements.set('MULTIPLAYER_SYNC',{id:'MULTIPLAYER_SYNC',kind:'NATIVE_MULTIPLAYER',
+      weight:110,sourceOwnerCandidates:coreOwnerFiles,
+      expectedNativeBehavior:'TWO_REAL_BROWSER_CLIENTS_SHARED_AUTHORITATIVE_SESSION_AND_RECONNECT_QA'});
     const ownerSets=new Map();
     const offer=(files,covered)=>{
       const nativeFiles=uniq(files).filter(file=>file.startsWith(roots.UNITY_WEB+'/')).sort();
@@ -1068,6 +1110,10 @@ export function buildDesignToPlatformCodingTrace({
       const fromOwner=from?.suggestedExistingOwnerFiles?.[0];
       const toOwner=to?.suggestedExistingOwnerFiles?.[0];
       offer([fromOwner,toOwner].filter(Boolean),['EDGE:'+edge.fromId+'->'+edge.toId]);
+    }
+    for(const requirement of requirements.values()){
+      if(requirement.kind==='DESIGN_ROLE'||requirement.kind==='DESIGN_DEPENDENCY')continue;
+      for(const file of requirement.sourceOwnerCandidates||[])offer([file],[requirement.id]);
     }
     // 가중 탐욕 집합 덮개: 이번 반복에서 빠진 설계 계약을 가장 많이 해소할 파일 묶음부터 선택한다.
     // 전체 볼륨 상한을 뜻하지 않으며 한 번에 동일한 파일을 중복 수정하지 않는다.
