@@ -773,7 +773,12 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       system,
       `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nAUTHORED_RULE_IDS_AND_HANDOFFS=${requestedFields.includes('systemInterconnections')?clip(authoredStateHandoffContract(merged.signatureSystems),4000):'NOT_APPLICABLE'}\nSYSTEM_INTERCONNECTION_AUTHORING_RULE=Use actual signatureSystems IDs for fromId/toId and exact overlapping output-to-input state keys; never use coreFun as a rule ID or invent gameplay states.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       callSchema,
-      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'),grammarContext:partial.creativeGrammar||merged.creativeGrammar||null}
+      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'),grammarContext:requestedFields.includes('systemInterconnections')
+         ?{...(partial.creativeGrammar||merged.creativeGrammar||{}),
+           authoredRuleHandoffs:authoredStateHandoffContract(merged.signatureSystems),
+           authoredRuleNames:Object.fromEntries((merged.signatureSystems||[]).map(row=>[row.id,row.name])),
+           authoredRuleRoles:Object.fromEntries((merged.signatureSystems||[]).map(row=>[row.grammarRole,row.id]))}
+         :partial.creativeGrammar||merged.creativeGrammar||null}
       ));
       result={...partial,...result};
       feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
@@ -1344,7 +1349,58 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
         ));
       }else if(arrayChild){
         const rows=[];
-        for(let index=0;index<child.minItems;index++){
+        // MAIN/A/B/@의 실제 상태 출력→입력에 근거한 연결만 작성한다.
+        // 소규모 모델이 5개 임의 간선을 반복 생성하면 A↔B와 MAIN/@ 도달성이 끊어지므로
+        // 기존 정식 상태 계약에서 필요한 방향성 간선을 먼저 선정하고 설명만 창작한다.
+        const handoffContext=field==='systemInterconnections'?grammarContext?.authoredRuleHandoffs:null;
+        const handoffEdges=Array.isArray(handoffContext?.handoffs)?handoffContext.handoffs:[];
+        const plannedHandoffs=[];
+        if(field==='systemInterconnections'&&handoffContext?.ruleIds?.length>=4){
+          const ruleIds=handoffContext.ruleIds;
+          const edgesByFrom=new Map(ruleIds.map(id=>[id,handoffEdges.filter(edge=>edge.fromId===id)]));
+          const findPath=(from,to)=>{
+            if(!from||!to||!edgesByFrom.has(from)||!edgesByFrom.has(to))return null;
+            const queue=[{id:from,edges:[]}],visited=new Set();
+            while(queue.length){
+              const current=queue.shift();
+              if(current.id===to)return current.edges;
+              if(visited.has(current.id))continue;
+              visited.add(current.id);
+              for(const edge of edgesByFrom.get(current.id)||[]){
+                if(!visited.has(edge.toId))queue.push({id:edge.toId,edges:[...current.edges,edge]});
+              }
+            }
+            return null;
+          };
+          const includePath=path=>{
+            for(const edge of path||[]){
+              if(!plannedHandoffs.some(row=>row.fromId===edge.fromId&&row.toId===edge.toId))
+                plannedHandoffs.push(edge);
+            }
+          };
+          const roles=grammarContext.authoredRuleRoles||{};
+          const main=roles.MAIN;
+          if(!main||!ruleIds.includes(main))throw new Error('DESIGN_CANONICAL_MAIN_HANDOFF_MISSING');
+          for(const id of ruleIds){
+            if(id===main)continue;
+            const forward=findPath(main,id),reverse=findPath(id,main);
+            if(!forward&&!reverse)throw new Error('DESIGN_CANONICAL_ROLE_HANDOFF_DISCONNECTED '+id);
+            includePath(forward);includePath(reverse);
+          }
+          const a=roles.A,b=roles.B;
+          const aToB=findPath(a,b),bToA=findPath(b,a);
+          if(!aToB||!bToA)throw new Error('DESIGN_CANONICAL_A_B_HANDOFF_DISCONNECTED');
+          includePath(aToB);includePath(bToA);
+          for(const edge of handoffEdges){
+            if(plannedHandoffs.length>=child.minItems)break;
+            includePath([edge]);
+          }
+          if(plannedHandoffs.length<child.minItems||plannedHandoffs.length>Number(child.maxItems||24))
+            throw new Error('DESIGN_CANONICAL_HANDOFF_EDGE_COUNT_INVALID '+plannedHandoffs.length);
+          console.log('DESIGN_CANONICAL_HANDOFF_EDGE_PLAN='+plannedHandoffs.length+'|authoritativeStates=YES');
+        }
+        for(let index=0;index<(plannedHandoffs.length||child.minItems);index++){
+          const selectedHandoff=plannedHandoffs[index]||null;
           const orderedKey=field==='designAlternatives'?'label':field==='playthrough'?'phase':null;
           let itemSchema=orderedKey&&child.items.properties?.[orderedKey]?.enum?.[index]
             ?{...child.items,properties:{...child.items.properties,[orderedKey]:{...child.items.properties[orderedKey],enum:[child.items.properties[orderedKey].enum[index]]}}}
@@ -1415,9 +1471,19 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              focusedChildSystem,`${grammarRole?roleContext:user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_ROLE_CONTENT=${clip(rows.map(row=>({role:row.grammarRole,purpose:row.purpose,playerChoice:row.playerChoice})),1250)}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,grammarContext}
+              focusedChildSystem,`${grammarRole?roleContext:user}\n${selectedHandoff?'AUTHORITATIVE_EXISTING_EDGE='+JSON.stringify({fromId:selectedHandoff.fromId,toId:selectedHandoff.toId,fromSystem:grammarContext.authoredRuleNames?.[selectedHandoff.fromId],toSystem:grammarContext.authoredRuleNames?.[selectedHandoff.toId],stateKeys:selectedHandoff.stateKeys})+'\\n기존 상태 연결에 맞춰 trigger와 stateChange의 구체적인 조건·선택·반응을 창작하라. 규칙 ID나 상태 키를 새로 만들지 마라.':' '}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_ROLE_CONTENT=${clip(rows.map(row=>({role:row.grammarRole,purpose:row.purpose,playerChoice:row.playerChoice})),1250)}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,grammarContext}
             ));
-            if(!grammarRole){rows.push(value);break;}
+            if(!grammarRole){
+              if(selectedHandoff){
+                // 기 작성된 규칙의 참조 ID·상태 키는 창작 대상이 아니다.
+                value.fromId=selectedHandoff.fromId;
+                value.toId=selectedHandoff.toId;
+                value.stateKeys=selectedHandoff.stateKeys;
+                value.fromSystem=grammarContext.authoredRuleNames?.[selectedHandoff.fromId]||value.fromSystem;
+                value.toSystem=grammarContext.authoredRuleNames?.[selectedHandoff.toId]||value.toSystem;
+              }
+              rows.push(value);break;
+            }
             // 규칙 내용은 모델이 작성하고 참조용 ID 형식만 안전하게 정규화한다.
             const authoredId=clean(value?.id);
             if(!new RegExp(`^${grammarRole.toLowerCase()}_[a-z][a-z0-9_-]{2,69}$`).test(authoredId)||rows.some(row=>clean(row.id)===authoredId)){
