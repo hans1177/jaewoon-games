@@ -451,25 +451,34 @@
         }
       ],
       "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::7ba1d647e0a9a6361700a884dfe0a4c1c12b2aa1d2a9c5b1afacf5ad336dd9de:mainIdentity": {
+      "mainIdentity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG"
+    },
+    "local_authoring_parts::d52a6034d56e59b93dd55d2bed359a664cda715babd5ae2eae3e848dadd0db88:system": {
+      "system": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG"
+    },
+    "local_authoring_parts::d52a6034d56e59b93dd55d2bed359a664cda715babd5ae2eae3e848dadd0db88:material": {
+      "material": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 15,
+      "successes": 14,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1081747,
-      "lastMs": 155504,
+      "totalMs": 1204950,
+      "lastMs": 17890,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:50:44.117Z"
+      "updatedAt": "2026-10-10T09:52:47.334Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T09:50:44.127Z",
+  "updatedAt": "2026-10-10T09:52:47.334Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2480,10 +2489,10 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:50:44.120Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_PLACEHOLDER_CONTENT,DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:52:47.334Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
