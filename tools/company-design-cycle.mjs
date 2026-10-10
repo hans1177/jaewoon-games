@@ -68,8 +68,8 @@ function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
       const mode=clean(original.multiplayerMode||original.robloxBuildProfile?.playMode).toUpperCase();
       if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(mode))input.MULTIPLAYER_DESIGN_MODE=mode;
     }
-    // 기존 접수 계약은 유지하되 자동 조합 문법을 디자이너의 창작 결과로 넘기지 않는다.
-    delete input.GAMEPLAY_SKETCH;
+    // 기존 계약의 V5 접수 스케치는 입력으로만 보존한다. 디자인 원본과 PASS 근거는 아니다.
+    // 접수 스케치를 지우면 호환 정규화가 V1 스케치를 채워 새 기본 문법 심사를 무력화한다.
     const inputCheck=validateGameSeed(input);
     if(!inputCheck.pass)input.inputRepairNotes=inputCheck.errors;
     input.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
@@ -89,11 +89,11 @@ const seedInput=resolveDesignerSeedInput({state:seedState,gameId,catalog,brief:p
 const seed=seedInput.seed;
 if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
-const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
+const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||5));
 // 자동 접수 V5의 미완성 임시 문구는 디자이너가 재사용해야 할 확정 창작안이 아니다.
 const intakeFusion=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion;
 const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
-  &&seed?.novelGrammarBackfill?.authoringPending===true
+  &&(seed?.novelGrammarBackfill?.authoringPending===true||!seedGameplaySketch)
   &&(!Array.isArray(intakeFusion?.majorAxes)||intakeFusion.majorAxes.length!==2
     ||intakeFusion.majorAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
     ||!Array.isArray(intakeFusion?.themeFusion?.themes)||intakeFusion.themeFusion.themes.length!==2

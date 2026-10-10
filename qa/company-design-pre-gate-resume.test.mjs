@@ -22,6 +22,44 @@ const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const authoredHandoffSource=design.slice(design.indexOf('function authoredStateHandoffContract('),design.indexOf('const DESIGN_BASE='));
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+// 메인: 새 게임 디자이너 접수는 임시 스케치를 지운 뒤 참조하지 않고 V5 문법으로 시작한다.
+test('new designer intake preserves un-authored V5 sketch and cannot fall back to legacy V1 grammar',()=>{
+  const start=design.indexOf('function resolveDesignerSeedInput(');
+  const end=design.indexOf('\nconst gameId=',start);
+  assert.ok(start>=0&&end>start);
+  const resolve=runInNewContext(design.slice(start,end)+'\nresolveDesignerSeedInput',{
+    path,
+    clean:value=>String(value??'').replace(/\s+/g,' ').trim(),
+    activeSeedForGame:()=>null,
+    ownerDesignResetSeedForGame:()=>null,
+    makeAutoMissingDesignSeed:game=>({
+      gameId:game.id,gameName:game.name,GAMEPLAY_SKETCH:{version:5,source:'AUTO_INTAKE_NOT_AUTHORED'},
+      novelGrammarBackfill:{authoringPending:true}
+    }),
+    latestUsableDesign:()=>null,
+    validateGameSeed:input=>{
+      if(!input.GAMEPLAY_SKETCH)input.GAMEPLAY_SKETCH={version:1,source:'LEGACY_COMPATIBILITY_DOWNGRADE'};
+      return{pass:true,errors:[]};
+    }
+  });
+  const state={seeds:[]};
+  const {seed,created}=resolve({
+    state,gameId:'design-auto-test',
+    catalog:{games:[{id:'design-auto-test',name:'설계 자동 접수',lifecycleState:'ACTIVE'}]}
+  });
+  assert.equal(created,true);
+  assert.equal(seed.GAMEPLAY_SKETCH.version,5);
+  assert.equal(seed.GAMEPLAY_SKETCH.source,'DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN');
+  assert.equal(seed.novelGrammarBackfill.authoringPending,true);
+  assert.doesNotMatch(design.slice(start,end),/delete input\.GAMEPLAY_SKETCH/);
+  assert.equal(seed.seedAuthoring.stage,'identity-core');
+  assert.equal(state.seeds.length,1);
+  assert.match(design,/seedGameplaySketch\?\.version\|\|5/);
+  assert.match(design,/authoringPending===true\|\|!seedGameplaySketch/);
+  const gate=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  assert.match(gate,/seed\?\.GAMEPLAY_SKETCH==null/);
+});
+
 // 메인: 문법 작성 대기와 최종 설계 검증을 혼동해 설계 엔진을 멈추지 않도록 회귀 검사.
 test('canonical un-authored V5 A/B/C/@ input starts design without weakening completed-seed validation',()=>{
   const sketch={version:5,novelGameGrammar:{delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[]}}};
@@ -236,7 +274,9 @@ test('designer starts from owner identity without treating legacy MAIN-only desi
     assert.equal(input.seed.originalDesignContext,undefined,'incomplete legacy creative design must not be copied as canonical');
     assert.notEqual(input.seed.REUSE_PRIOR_DESIGN_BASELINE,true);
     assert.equal(input.seed.MULTIPLAYER_DESIGN_MODE,'SINGLE','intake mode is provisional until source-grounded designer authors multiplayer');
-    assert.equal(input.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
+    assert.equal(input.seed.GAMEPLAY_SKETCH.version,5);
+    assert.ok(input.seed.GAMEPLAY_SKETCH.novelGameGrammar?.gameplaySystemFusion);
+    assert.equal(input.seed.novelGrammarBackfill.authoringPending,true);
     assert.match(input.seed.GAMEPLAY_SKETCH.source,/NOT_AUTHORED_DESIGN/);
     assert.equal(input.seed.seedAuthoring.externalSeedRequired,false);
     assert.equal(resolve({state,gameId:'demo',catalog,root}).created,false);
