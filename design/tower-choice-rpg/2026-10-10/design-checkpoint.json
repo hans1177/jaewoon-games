@@ -754,25 +754,41 @@
     },
     "local_authoring_parts::f587c799e54ae11659b6bd30ae417bb8d5bf4e5c91b04de43121702befdfe9be:trigger": {
       "trigger": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다."
+    },
+    "local_authoring_parts::f587c799e54ae11659b6bd30ae417bb8d5bf4e5c91b04de43121702befdfe9be:stateChange": {
+      "stateChange": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다."
+    },
+    "local_authoring_parts::d4b5fe8205952701091ee83110ae289a0b22d3d593104dfc6995b7f576971d94:systemInterconnections:3": {
+      "fromId": "signatureSystems[3]",
+      "toId": "signatureSystems[3]",
+      "stateKeys": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "fromSystem": "BASE_TERRAIN",
+      "toSystem": "BASE_TERRAIN",
+      "trigger": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다.",
+      "stateChange": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 39,
-      "successes": 39,
+      "calls": 40,
+      "successes": 40,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2512181,
-      "lastMs": 62864,
+      "totalMs": 2574563,
+      "lastMs": 62382,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:37:59.268Z"
+      "updatedAt": "2026-10-10T03:39:01.652Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:37:59.268Z",
+  "updatedAt": "2026-10-10T03:39:01.653Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2568,7 +2584,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:37:59.268Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:39:01.653Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
