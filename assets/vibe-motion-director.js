@@ -4,6 +4,7 @@
 
 // 임포트: 자산과 모션이 같은 스타일 원본을 사용한다.
 import {ASSET_STYLE_PROFILES,createStyleBible} from './vibe-studio-asset-universe.js';
+import {createVibeCommonSkillFxSource} from './vibe-motion-effects-director.js';
 
 const freezeList = value => Object.freeze([...(Array.isArray(value) ? value : [])]);
 const text = value => String(value ?? '').trim();
@@ -1143,6 +1144,7 @@ export function createCommonClassMotionLoadout({
       vfxCue:grammar.effect,audioCue:grammar.audio,cameraCue:grammar.camera,
       genrePreferred:genreProfile.focus.includes('skill'),
       sourcePoseCandidates:Object.freeze(applicable),
+      fxSource:createVibeCommonSkillFxSource({id,skillFamily:mode,bodyPlan:body,genre:genreKey,styleFamily,contact:grammar.contact}),
       visualRoles:groups.vfx,actualEffectRequiresGameBinding:true,
       nativeRuntimeVerificationRequired:true,productionVerified:false,
       damageAuthority:false,cooldownAuthority:false,gameplayAuthority:false
@@ -1933,11 +1935,23 @@ export function createReusableCreatureMotionPack({
   return Object.freeze({
     valid:true,profile,genre:upper(genre),platform:upper(platform),
     candidates:motionSetToCandidates(profile,platform,styleFamily),
-    skillMotion:Object.freeze(profile.groups.skill.map(id=>Object.freeze({
-      id,sequence:buildSkillMotionSequence(),bodyPlan:canonical,
-      specialBodyPartContactRequired:true,rigAndEffectBindingRequired:true,
-      gameplayAuthority:false
-    }))),
+    skillMotion:Object.freeze(profile.groups.skill.map(id=>{
+      const kind=upper(id);
+      const skillFamily=/SUMMON|SPLIT|RECOMBINE|SWARM_CLONE|EGG_SAC/.test(kind)?'SUMMON'
+        :/HEAL|REVIVE/.test(kind)?'HEAL'
+        :/PHASE|TELEPORT|BURROW|AMBUSH/.test(kind)?'STEALTH'
+        :/HOWL|ROAR|RAGE|PHEROMONE|STAMPEDE|RALLY/.test(kind)?'COMMAND'
+        :/SLAM|STOMP|CHARGE_ATTACK|SWIPE|GRAB/.test(kind)?'STRIKE'
+        :/WEB|VENOM|ACID|PROJECTILE|BREATH|BEAM|WING|STORM/.test(kind)?'PROJECTILE'
+        :'SPELL';
+      return Object.freeze({
+        id,sequence:buildSkillMotionSequence({hold:['SPELL','SUMMON','PROJECTILE'].includes(skillFamily)?'HOLD':null}),
+        bodyPlan:canonical,skillFamily,
+        fxSource:createVibeCommonSkillFxSource({id,skillFamily,bodyPlan:canonical,genre,styleFamily}),
+        specialBodyPartContactRequired:true,rigAndEffectBindingRequired:true,
+        gameplayAuthority:false
+      });
+    })),
     procedural,bodyPlanSpecificMotion:true,
     motionDNA:Object.freeze({
       bodyPlan:canonical,rigProfile:upper(rigProfile),archetype:upper(archetype),
