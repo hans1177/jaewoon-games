@@ -139,25 +139,40 @@
       "name": "After Play Flow",
       "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically.",
       "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+    },
+    "local_authoring_parts::a2e3aa33d39ed132f78790390d571edb2e60ab6fc88e4b2d07d46b03788fed2e:signatureSystems:2:c3162bff87bd32be": {
+      "id": "b_defense_adaptation",
+      "grammarRole": "B",
+      "stateInputs": [
+        "incoming_insect_wave_pattern",
+        "resource_allocation_state"
+      ],
+      "stateOutputs": [
+        "defender_placement_adjustment",
+        "next_defense_decision_making"
+      ],
+      "name": "Defense Adaptation",
+      "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation and decision-making.",
+      "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift, prioritizing high-value countermeasures and survival strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 191628,
-      "lastMs": 3079,
+      "totalMs": 209252,
+      "lastMs": 17624,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:41:57.393Z"
+      "updatedAt": "2026-10-10T10:42:15.019Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:41:57.394Z",
+  "updatedAt": "2026-10-10T10:42:15.019Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1845,7 +1860,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:41:57.393Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:42:15.019Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
