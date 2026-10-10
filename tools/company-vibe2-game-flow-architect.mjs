@@ -41,6 +41,13 @@ export const AWARD_CALIBER_SYSTEM_PRINCIPLES=Object.freeze([
 
 const SYSTEM_CATALOG=Object.freeze({
   SURVIVAL_VITALS:Object.freeze({owners:['PLAYER','CORE_STATE'],libraries:[],purpose:'bounded health hunger energy temperature or equivalent survival pressure when concept-relevant'}),
+  STATUS_HUD:Object.freeze({owners:['PRESENTATION','PLAYER','INPUT'],libraries:['assets/vibe-presentation-director.js'],purpose:'live health stats effects resources and navigation reflect existing authoritative game snapshots without owning game state'}),
+  SETTINGS_ACCESSIBILITY:Object.freeze({owners:['PRESENTATION','INPUT','SAVE'],libraries:['assets/vibe-presentation-director.js'],purpose:'device input focus readable scaling contrast reduced motion audio and existing preference persistence without changing saved gameplay rules'}),
+  PLAYER_TRADE_ESCROW:Object.freeze({owners:['ECONOMY','SAVE','MULTIPLAYER'],libraries:['assets/inventory-equipment.js','assets/economy-loot-shop.js'],purpose:'two-sided peer exchange uses server-authoritative offer locks revision checks two-party confirmation atomic settlement expiry and anti-duplication'}),
+  SKILL_TREE:Object.freeze({owners:['PROGRESSION','COMBAT','SAVE'],libraries:['assets/skill-effects.js'],purpose:'internal active passive mastery and external profession companion faction environment branches expose prerequisite DAG and server-authoritative unlock rules'}),
+  JOURNAL_CHRONICLE:Object.freeze({owners:['NARRATIVE','SAVE','PRESENTATION'],libraries:['assets/quest-dialogue.js'],purpose:'ordered journal entries derive only from verified quest exploration encounter and narrative event facts; event-id dedupe and provenance protect persistence'}),
+  WORLD_EVENT_DIRECTOR:Object.freeze({owners:['WORLD','AI','NARRATIVE','PROGRESSION'],libraries:['assets/common-ai.js','assets/quest-dialogue.js'],purpose:'state-machine scheduled events and biomes NPCs creatures quests scenes share one causal world event with bounds cooldowns and game-owned rewards'}),
+  CINEMATIC_PRESENTATION:Object.freeze({owners:['PRESENTATION','CAMERA','AUDIO'],libraries:['assets/vibe-presentation-director.js'],purpose:'event intro discovery boss and ending camera audio UI presentation replay without changing game rule outcome or blocking player control'}),
   GATHERING_RESOURCE:Object.freeze({owners:['WORLD','INTERACTION','ECONOMY'],libraries:['assets/inventory-equipment.js'],purpose:'world resources become real inventory inputs through spatial interaction'}),
   INVENTORY_EQUIPMENT:Object.freeze({owners:['PLAYER','ECONOMY','SAVE'],libraries:['assets/inventory-equipment.js'],purpose:'acquire compare equip replace and persist items without shadow inventory authority'}),
   ITEM_LOOT:Object.freeze({owners:['ECONOMY','PROGRESSION'],libraries:['assets/economy-loot-shop.js','assets/inventory-equipment.js'],purpose:'drops and rewards have source tables rarity roles and meaningful use'}),
@@ -203,9 +210,15 @@ function novelGrammarFromBaseline(baseline={}){
 export function buildConceptSystemBlueprint({genre='',baseline={},architecture={}}={}){
   const {key,bundle}=normalizedGenreSystemBundle(genre);
   const semantic=baselineText(baseline).toUpperCase();
-  const required=new Set(bundle.required||[]),recommended=new Set(bundle.recommended||[]);
+  const required=new Set(['STATUS_HUD','SETTINGS_ACCESSIBILITY',...(bundle.required||[])]),recommended=new Set(bundle.recommended||[]);
   const promote=id=>{recommended.delete(id);required.add(id);};
   if(/CRAFT|제작/.test(semantic))promote('CRAFTING');
+  if(/TRADE|ESCROW|PLAYER.?MARKET|거래|교환|매매/.test(semantic))promote('PLAYER_TRADE_ESCROW');
+  if(/SKILL.?TREE|TALENT|MASTERY|스킬트리|특성트리|직업트리|내부.?외부.?스킬/.test(semantic)){promote('SKILL_BUILD');promote('SKILL_TREE');}
+  if(/JOURNAL|CHRONICLE|DIARY|저널|일지|기록장|모험록/.test(semantic))promote('JOURNAL_CHRONICLE');
+  if(/WORLD.?EVENT|DYNAMIC.?EVENT|EVENT.?DIRECTOR|월드.?이벤트|돌발.?이벤트|이벤트/.test(semantic))promote('WORLD_EVENT_DIRECTOR');
+  if(/CINEMATIC|CUTSCENE|STORY.?SCENE|연출|컷신|시네마틱/.test(semantic))promote('CINEMATIC_PRESENTATION');
+  if(/CODEX|BESTIARY|COLLECTION|도감|수집/.test(semantic))promote('CODEX_COLLECTION');
   if(/HOUSE|HOUSING|BASE|SHELTER|건축|집|기지|거점/.test(semantic))promote('HOUSING_BUILDING');
   if(/COMPANION|PARTY|동료|파티/.test(semantic))promote('COMPANION_PARTY');
   if(/NPC|DIALOG|QUEST|대화|퀘스트/.test(semantic)){promote('NPC_INTERACTION');promote('QUEST_DIALOGUE');}
@@ -220,7 +233,10 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
   const phasePlan={};
   for(const phase of ['EARLY','MID','LATE']){
     const ids=uniq(bundle.phases?.[phase]||[]).filter(id=>required.has(id)||recommended.has(id));
-    phasePlan[phase]=Object.freeze(ids);
+    if(phase==='EARLY')ids.unshift('STATUS_HUD','SETTINGS_ACCESSIBILITY');
+    if(phase==='MID')for(const id of ['PLAYER_TRADE_ESCROW','SKILL_TREE','JOURNAL_CHRONICLE'])if(required.has(id)&&!ids.includes(id))ids.push(id);
+    if(phase==='LATE')for(const id of ['WORLD_EVENT_DIRECTOR','CINEMATIC_PRESENTATION'])if(required.has(id)&&!ids.includes(id))ids.push(id);
+    phasePlan[phase]=Object.freeze(uniq(ids));
   }
   return Object.freeze({
     version:1,profile:key,
@@ -229,8 +245,38 @@ export function buildConceptSystemBlueprint({genre='',baseline={},architecture={
     requiredSystems:Object.freeze(requiredRows),
     expansionSystems:Object.freeze(recommendedRows),
     phasePlan:Object.freeze(phasePlan),
-    interconnectionChains:Object.freeze(uniq(bundle.chains||[])),
+    interconnectionChains:Object.freeze(uniq([
+      ...(bundle.chains||[]),
+      'STATUS_HUD->SETTINGS_ACCESSIBILITY',
+      ...(required.has('SKILL_TREE')?['SKILL_BUILD->SKILL_TREE->INVENTORY_EQUIPMENT']:[]),
+      ...(required.has('JOURNAL_CHRONICLE')?['QUEST_DIALOGUE->JOURNAL_CHRONICLE->CODEX_COLLECTION']:[]),
+      ...(required.has('PLAYER_TRADE_ESCROW')?['INVENTORY_EQUIPMENT->PLAYER_TRADE_ESCROW->ECONOMY_SHOP']:[]),
+      ...(required.has('WORLD_EVENT_DIRECTOR')?['THREAT_ECOLOGY->WORLD_EVENT_DIRECTOR->QUEST_DIALOGUE']:[]),
+      ...(required.has('CINEMATIC_PRESENTATION')?['WORLD_EVENT_DIRECTOR->CINEMATIC_PRESENTATION->JOURNAL_CHRONICLE']:[])
+    ])),
     novelGrammarContract,
+    // UI / event algorithms specify safe integration, not a second source of game truth.
+    systemExperienceArchitecture:Object.freeze({
+      version:1,
+      applicability:'CONCEPT_AND_EXISTING_SOURCE_GATED',
+      uiRootRoles:Object.freeze(['STATUS_HUD','INVENTORY_EQUIPMENT','ECONOMY_SHOP','COMPANION_PARTY','SKILL_TREE','JOURNAL_CHRONICLE','CODEX_COLLECTION','QUEST_DIALOGUE','WORLD_EVENT_DIRECTOR','SETTINGS_ACCESSIBILITY']),
+      activeSystemIds:Object.freeze([...required]),
+      algorithmPatterns:Object.freeze([
+        'MODEL_VIEW_SNAPSHOT_BINDING','DEPENDENCY_DAG_TOPOLOGICAL_SORT_AND_CYCLE_REJECTION',
+        'CAUSAL_EVENT_STATE_MACHINE','EVENT_ID_IDEMPOTENCY_AND_PROVENANCE',
+        'TWO_PARTY_CONFIRMATION_AND_ATOMIC_TRADE_SETTLEMENT','ADAPTIVE_TOUCH_FOCUS_LAYOUT',
+        'CINEMATIC_TIMELINE_REDUCED_MOTION_AND_SAFE_SKIP'
+      ]),
+      nativeAuthority:'EXISTING_GAME_SOURCE_PLAYER_ECONOMY_COMBAT_QUEST_SAVE_NETWORK',
+      displayAuthority:'EXISTING_COMMON_UI_PRESENTATION_ONLY',
+      gameBindingRequired:true,
+      acceptedExternalAlgorithmUse:'DESIGN_PATTERN_ONLY_WITHOUT_UNLICENSED_CODE_OR_EXTERNAL_RUNTIME_DEPENDENCY',
+      assetResolution:'CANONICAL_INTERNAL_LIBRARY_FIRST_AND_VERIFIED_LICENSED_GAP_FILL',
+      stateSynchronization:'GAME_OWNED_VERSIONED_SNAPSHOT_WITH_EVENT_ID_AND_REFRESH',
+      conditionalFeaturesRequireGameEvidence:true,
+      saveKeysAndBalancesUnchanged:true,
+      verifiedRuntimeRequiredForCompletion:true
+    }),
     awardCaliberPrinciples:AWARD_CALIBER_SYSTEM_PRINCIPLES,
     libraryReusePolicy:Object.freeze({
       existingCompatibleLibraryFirst:true,
@@ -294,6 +340,13 @@ function pickModes(seed,items,min=2,max=3){const count=Math.min(items.length,min
 
 const SYSTEM_ASSET_ROLE_MAP=Object.freeze({
   SURVIVAL_VITALS:[['UI','STATUS']],
+  STATUS_HUD:[['UI','HUD'],['UI','STATUS']],
+  SETTINGS_ACCESSIBILITY:[['UI','SETTINGS'],['UI','INPUT_HINT']],
+  PLAYER_TRADE_ESCROW:[['UI','TRADE_ESCROW_REVIEW'],['UI','INVENTORY'],['AUDIO','UI']],
+  SKILL_TREE:[['UI','SKILL_TREE_SCREEN'],['SKILL','VFX'],['UI','ICON']],
+  JOURNAL_CHRONICLE:[['UI','JOURNAL_TIMELINE'],['UI','CODEX']],
+  WORLD_EVENT_DIRECTOR:[['UI','WORLD_EVENT_TIMELINE'],['VFX','ENVIRONMENT'],['AUDIO','UI']],
+  CINEMATIC_PRESENTATION:[['UI','EVENT_CINEMATIC_CARD'],['VFX','BOSS'],['AUDIO','BOSS']],
   GATHERING_RESOURCE:[['PROP','RESOURCE'],['MOTION','SURVIVAL_CRAFTING'],['UI','ICON']],
   INVENTORY_EQUIPMENT:[['UI','INVENTORY'],['UI','ICON'],['CHARACTER','ACCESSORY']],
   ITEM_LOOT:[['PROP','RESOURCE'],['UI','ICON']],
