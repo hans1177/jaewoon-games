@@ -1,8 +1,8 @@
 {
-  "version": 123,
+  "version": 124,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-10T11:52:00+09:00",
+  "updatedAt": "2026-10-10T12:38:00+09:00",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -73071,8 +73071,241 @@
       },
       "improvementNeed": "COMMON_IDLE_WALK_RUN_AND_ACTION_HQ_CHARACTER_MOTION_FIRST",
       "qaPromotionAuthority": "EXISTING_NATIVE_3D_RUNTIME_AND_MOBILE_QA_ONLY"
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 15,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-traveler.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-traveler",
+      "title": "공통 3D 여행자 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "TRAVELER_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-traveler.glb",
+      "masterGlb": "assets/shared/humanoid-traveler.glb",
+      "meshArtifact": "assets/shared/humanoid-traveler.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-traveler.glb",
+      "vertices": 3904,
+      "triangles": 6058,
+      "visualIdentityAxes": [
+        "TRAVEL_CLOAK",
+        "SATCHEL",
+        "SOFT_SHOULDER_WRAP",
+        "HAIR_PROFILE"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-traveler.glb"
+        ]
+      },
+      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함."
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 15,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-guardian.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-guardian",
+      "title": "공통 3D 수호자 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "ARMORED_GUARDIAN_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-guardian.glb",
+      "masterGlb": "assets/shared/humanoid-guardian.glb",
+      "meshArtifact": "assets/shared/humanoid-guardian.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-guardian.glb",
+      "vertices": 4028,
+      "triangles": 6276,
+      "visualIdentityAxes": [
+        "ARMORED_PAULDRONS",
+        "FULL_CHEST_ARMOR",
+        "HELMET",
+        "METAL_TREATS"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-guardian.glb"
+        ]
+      },
+      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함."
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 15,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-traveler.glb",
+        "assets/shared/humanoid-guardian.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-motion-suite",
+      "title": "공통 휴머노이드 이동·전투 액션 15종",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "ANIMATED_GLB_CLIP_LIBRARY",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-traveler.glb",
+      "masterGlb": "assets/shared/humanoid-traveler.glb",
+      "supportedRigProfiles": [
+        "SHARED_HUMANOID_SKINNED_19"
+      ],
+      "motionCount": 15,
+      "notes": "실제 3D 스킨 애니메이션 클립. 클립 수가 런타임 품질 인증을 의미하지 않음.",
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-traveler.glb",
+          "assets/shared/humanoid-guardian.glb"
+        ]
+      }
     }
-],
+  ],
   "research": [
     {
       "id": "unity-character",
