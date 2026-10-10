@@ -874,25 +874,35 @@
         "riskPressure": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
         "recoveryRules": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
       }
+    },
+    "local_authoring_parts::c30379dc6481a123c2286bd97e02e4d7572a3b48dfa41adaa1609441fa890702:failureRetryRisk": {
+      "failureStates": [
+        "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+        "Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements.",
+        "Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
+      ],
+      "retryFlow": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
+      "riskPressure": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies.",
+      "recoveryRules": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization. Defender positions shift based on observed enemy patterns, leading to more sophisticated strategic placements. Resource allocation is adjusted according to risk-reward analysis, driving the evolution of defensive strategies."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 53,
+      "calls": 54,
+      "successes": 54,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1573740,
-      "lastMs": 35340,
+      "totalMs": 1619210,
+      "lastMs": 45470,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:27:17.472Z"
+      "updatedAt": "2026-10-10T09:28:02.951Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:27:17.479Z",
+  "updatedAt": "2026-10-10T09:28:02.959Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2603,7 +2613,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::dc86a2543022b72c06bfce4b7216f60ec55b11169175c107b1f05af6ac2db1eb:signatureSystems:0:4f53cda18c2baa0c": 1,
     "designer_draft_slices::identity-core": 1,
-    "designer_draft_slices::systems-progression": 1
+    "designer_draft_slices::systems-progression": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::systems-progression": {
@@ -2706,8 +2716,8 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:27:17.476Z",
-  "failedPhase": "designer_draft_slices",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:28:02.952Z",
+  "failedPhase": "designer_draft",
   "failedTask": "systems-progression",
   "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_REPEATED_CONTENT",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
