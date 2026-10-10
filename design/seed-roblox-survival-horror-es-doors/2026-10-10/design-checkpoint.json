@@ -12,25 +12,93 @@
   "tasks": {
     "local_authoring_parts::9c1d3d842ea276c56dab0e9fff7ee474737810c31522461393eba1345eaf5bb2:identity": {
       "identity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices"
+    },
+    "local_authoring_parts::8c4762cc790c9fa7f7597aee744a9b66fe4a42cfd26c4c4bd042ead6f8b472a4:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+      "a": {
+        "system": "Survival",
+        "material": "Shadows",
+        "materialDomain": "World",
+        "stateChange": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+      },
+      "b": {
+        "system": "Action",
+        "material": "Choices",
+        "materialDomain": "Gameplay",
+        "stateChange": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      },
+      "abCausality": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns; Goals → Rewards/Unlocking; Moves → New Boards/Obstacles"
+    },
+    "local_authoring_parts::8c4762cc790c9fa7f7597aee744a9b66fe4a42cfd26c4c4bd042ead6f8b472a4:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "Choices → Survivals; Actions → Shadows; Matches → New Patterns",
+        "bChangesA": "Survivals → Choices; Shadows → Actions; New Patterns → Obstacles",
+        "lateGameChange": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Boards"
+      },
+      "materialFusion": {
+        "contrast": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+        "causalBridge": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "removalConsequence": "Goals → Rewards/Unlocking; Moves → New Boards/Obstacles; Obstacles → New Patterns"
+      },
+      "storyCausalChain": {
+        "cause": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "characterConflict": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+        "playerChoice": "The player makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+        "worldChange": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+        "nextEvent": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems."
+      }
+    },
+    "local_authoring_parts::e1e9547bdf21c264f1e510b5ae061525e50a97d611e1349113636024a089d0ca:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "Last Lantern - A Board Game of Discovery and Survival in a World of Shadows and Choices",
+      "a": {
+        "system": "Survival",
+        "material": "Shadows",
+        "materialDomain": "World",
+        "stateChange": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+      },
+      "b": {
+        "system": "Action",
+        "material": "Choices",
+        "materialDomain": "Gameplay",
+        "stateChange": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+      },
+      "abCausality": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Patterns; Goals → Rewards/Unlocking; Moves → New Boards/Obstacles",
+      "abEvolution": {
+        "aChangesB": "Choices → Survivals; Actions → Shadows; Matches → New Patterns",
+        "bChangesA": "Survivals → Choices; Shadows → Actions; New Patterns → Obstacles",
+        "lateGameChange": "Shadows → Choices; Actions → Survivals; Matches → Combinations; Obstacles → New Boards"
+      },
+      "materialFusion": {
+        "contrast": "Shadows vs. Actions; Goals vs. Obstacles; Moves vs. Patterns",
+        "causalBridge": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "removalConsequence": "Goals → Rewards/Unlocking; Moves → New Boards/Obstacles; Obstacles → New Patterns"
+      },
+      "storyCausalChain": {
+        "cause": "Player chooses to start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "characterConflict": "The world reacts by shifting the player's choices and introducing new patterns of conflict.",
+        "playerChoice": "The player makes deliberate puzzle moves, creates combos, and uses immediate feedback to solve the current objective.",
+        "worldChange": "Clearing the level goal earns rewards or unlocks the next stage, then faces a new board pattern or obstacle combination.",
+        "nextEvent": "A new pressure type is introduced, altering the decision structure and opening up new routes or systems."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 613641,
-      "lastMs": 13487,
+      "totalMs": 772806,
+      "lastMs": 104072,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:20:13.276Z"
+      "updatedAt": "2026-10-10T07:22:52.444Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:09:59.454Z",
-  "updatedAt": "2026-10-10T07:20:13.277Z",
+  "updatedAt": "2026-10-10T07:22:52.445Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1630,7 +1698,7 @@
     "dbf66706c7e4f36533b725fe9d6e472e9cbce910498a1b0159dd08322c0fe7aa": true,
     "9c1d3d842ea276c56dab0e9fff7ee474737810c31522461393eba1345eaf5bb2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:20:13.276Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:22:52.445Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
