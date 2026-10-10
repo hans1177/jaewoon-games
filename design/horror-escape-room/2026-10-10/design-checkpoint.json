@@ -607,25 +607,28 @@
     },
     "local_authoring_parts::a0c658c2b1eece34ff5265559cf2cb70e9237af51e73d5d1416b992a2b574fe3:toSystem": {
       "toSystem": "로드 전환 시스템"
+    },
+    "local_authoring_parts::a0c658c2b1eece34ff5265559cf2cb70e9237af51e73d5d1416b992a2b574fe3:trigger": {
+      "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 31,
-      "successes": 31,
+      "calls": 32,
+      "successes": 32,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 620070,
-      "lastMs": 32612,
+      "totalMs": 655026,
+      "lastMs": 34956,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:44:41.343Z"
+      "updatedAt": "2026-10-10T09:45:16.300Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:44:41.343Z",
+  "updatedAt": "2026-10-10T09:45:16.300Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1957,7 +1960,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:44:41.343Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:45:16.300Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
