@@ -419,3 +419,22 @@ test('Unity Web game-specific browser QA cannot strand GitHub runners while pres
   assert.match(workflow,/needs\.build\.result == 'failure'/);
   assert.match(workflow,/vibe2-queue-control\.mjs fail/);
 });
+
+
+test('Unity Web successful publication and causal failure never strand the existing Vibe queue after three write conflicts',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const promoted=workflow.slice(workflow.indexOf('if [ -n "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = \'true\' ]; then'),workflow.indexOf('      - name: Mark Unity Web floor repair requirement'));
+  const failure=workflow.slice(workflow.indexOf('  settle-vibe2-failure:'),workflow.indexOf('\n  repair-vibe2:'));
+  assert.match(promoted,/settle_attempt=0\s+while true; do\s+settle_attempt=\$\(\(settle_attempt\+1\)\)/);
+  assert.match(failure,/attempt=0\s+while true; do\s+attempt=\$\(\(attempt\+1\)\)/);
+  assert.match(promoted,/UNITY_WEB_PASS_QUEUE_CONFLICT_RETRY=/);
+  assert.match(failure,/UNITY_WEB_FAILURE_QUEUE_CONFLICT_RETRY=/);
+  assert.match(promoted,/settle_attempt<5\?settle_attempt:5/);
+  assert.match(failure,/attempt<5\?attempt:5/);
+  assert.doesNotMatch(promoted,/for settle_attempt in 1 2 3/);
+  assert.doesNotMatch(failure,/for attempt in 1 2 3/);
+  assert.match(promoted,/vibe2-queue-control\.mjs pass/);
+  assert.match(failure,/vibe2-queue-control\.mjs fail/);
+  assert.match(promoted,/vibe2-fanin-refill/);
+  assert.match(failure,/vibe2-fanin-refill/);
+});
