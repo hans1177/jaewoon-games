@@ -104,40 +104,25 @@
         "STATE CHANGE: Elemental node control is lost due to environmental factors or player decision",
         "OUTPUT: Skill tree optimization and enhanced combat mechanics are triggered"
       ]
-    },
-    "local_authoring_parts::5bb84f682d05308e03601cc05ccd06ca1af415d4a3c3cff6515608a9eaa660d9:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_rock_elemental_resonance",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Player activates the 'Rock' node in the Crystal Bloom System to enhance elementa",
-        "The Rock element is synchronized with the protagonist's elemental affinity, trig"
-      ],
-      "stateOutputs": [
-        "Combat mechanics are optimized through enhanced elemental synergy and skill tree",
-        "The player gains increased damage values and critical hit rates when using Rock-"
-      ],
-      "name": "Rock Elemental Resonance",
-      "purpose": "Enhances combat effectiveness by aligning the protagonist's elemental affinity with the active Rock node, creating synergistic effects that improve overall performance.",
-      "playerChoice": "Select Rock as the primary elemental node for optimal gameplay progression and strategic advantage."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 363903,
-      "lastMs": 43411,
+      "totalMs": 375991,
+      "lastMs": 12088,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:20:24.562Z"
+      "updatedAt": "2026-10-10T09:20:36.651Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:14:20.633Z",
-  "updatedAt": "2026-10-10T09:20:24.562Z",
+  "updatedAt": "2026-10-10T09:20:36.651Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1420,11 +1405,11 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::5bb84f682d05308e03601cc05ccd06ca1af415d4a3c3cff6515608a9eaa660d9:signatureSystems:0:4f53cda18c2baa0c": 1
+    "local_authoring_parts::5bb84f682d05308e03601cc05ccd06ca1af415d4a3c3cff6515608a9eaa660d9:signatureSystems:0:4f53cda18c2baa0c": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:20:24.562Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:20:36.651Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
