@@ -965,25 +965,76 @@
       "stateInputs": [
         "학교"
       ]
+    },
+    "local_authoring_parts::d928ddbacdb30e9d0aa3bcb104c0af53b8899dd776603c978818be394beffc05:stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "INFECT_ATTACK",
+      "costKey": "INFECT_ATTACK_COST",
+      "cooldownKey": "INFECT_ATTACK_COOLDOWN"
+    },
+    "local_authoring_parts::6a2edc9ec423ef88a428f2f71b35210daafb7dc50dcaba65764f27f95150801b:cooldownSeconds,telegraph,avoidance,effect,stateInputs,stateOutputs,source,rangeKey,costKey,cooldownKey": {
+      "cooldownSeconds": 1.2,
+      "telegraph": "감염 공격 실행 시 정화 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 감염 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "INFECT_ATTACK",
+      "costKey": "INFECT_ATTACK_COST",
+      "cooldownKey": "INFECT_ATTACK_COOLDOWN"
+    },
+    "local_authoring_parts::34ee3eaa215f531fb7c61932d65225e8e6fc007da46b0f27c9f49ae84132d656:abilities:0:4f53cda18c2baa0c": {
+      "id": "INFECT_ATTACK",
+      "name": "감염 공격",
+      "kind": "INFECTION",
+      "ownerId": "BASE",
+      "ruleId": "INFECT_ATTACK_RU1234567890123456789012345678901234567890123456789012345678901234",
+      "trigger": "감염 공격 실행",
+      "range": 8,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 30,
+      "cooldownSeconds": 1.2,
+      "telegraph": "감염 공격 실행 시 정화 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 감염 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "source": "roblox-games/horror-escape-room/shared/GameConfig.luau",
+      "rangeKey": "INFECT_ATTACK",
+      "costKey": "INFECT_ATTACK_COST",
+      "cooldownKey": "INFECT_ATTACK_COOLDOWN"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 57,
-      "successes": 54,
+      "calls": 58,
+      "successes": 55,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2085808,
-      "lastMs": 12837,
+      "totalMs": 2095733,
+      "lastMs": 9925,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:09:07.139Z"
+      "updatedAt": "2026-10-10T10:09:17.065Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:09:07.139Z",
+  "updatedAt": "2026-10-10T10:09:17.073Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2318,7 +2369,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:09:07.139Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:09:17.073Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
