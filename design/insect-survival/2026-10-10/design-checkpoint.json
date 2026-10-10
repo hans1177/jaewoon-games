@@ -493,25 +493,42 @@
       "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
       "purpose": "플레이어가 작은 세계에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며, 그 선택에 따라 다양한 상태 변화와 보상을 경험해야 한다.",
       "playerChoice": "세계 변화와 다음 사건의 결정 과정에서 실제 세계 상태 변화가 일어나는 구체적인 사례를 생성한다."
+    },
+    "local_authoring_parts::8e9ebb015e66d839e9bffa43d1dafe20e177a98ac98bf811ec322b858302404c:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "생태적 선택",
+        "재료 수집",
+        "전략 수립"
+      ],
+      "stateOutputs": [
+        "곤충 생태 및 먹이사슬의 선택과 위험",
+        "재료 수집 및 전략 수립",
+        "세계 변화와 다음 사건"
+      ],
+      "name": "small-world survival pressure, resource-driven survival choices, creature ecology as gameplay",
+      "purpose": "플레이어가 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하며 세계 상태를 유도하는 주요 행동",
+      "playerChoice": "세계 변화와 다음 사건의 결정 과정에서 실제 세계 상태 변화가 일어나는 구체적인 사례로, 생태적 선택 → 재료 수집 → 전략 수립 → 세계 변화 → 다음 사건의 순환을 통해 게임 정체성에 영향을 미친다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1247580,
-      "lastMs": 76114,
+      "totalMs": 1325904,
+      "lastMs": 78324,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:02:31.837Z"
+      "updatedAt": "2026-10-10T02:03:50.162Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:41:44.101Z",
-  "updatedAt": "2026-10-10T02:02:31.837Z",
+  "updatedAt": "2026-10-10T02:03:50.162Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2317,7 +2334,7 @@
   "localAuthoringSplits": {
     "60f3a02ce1cf1f216dd146fd01ef0f031195d60eefa49be46d483b2b6be5979c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:02:31.837Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:03:50.162Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
