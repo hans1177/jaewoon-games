@@ -1,8 +1,8 @@
 {
-  "version": 122,
+  "version": 123,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-07T12:05:00+09:00",
+  "updatedAt": "2026-10-10T11:52:00+09:00",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -72971,8 +72971,108 @@
           "assets/roblox/common-ui-v1/quality-evidence.json"
         ]
       }
+    },
+    {
+      "id": "shared-humanoid-motion-v1",
+      "title": "공용 3D 휴머노이드 스킨·기본 모션 액션 원본",
+      "family": "MOTION",
+      "category": "MOTION",
+      "platform": "SHARED_NATIVE_SOURCE",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "reuseScope": "ALL_COMPATIBLE_UNITY_ROBLOX_WEB_SOURCE_REAUTHORING",
+      "gameSpecificStyleAdaptationRequired": true,
+      "originAssetId": "gwisin-bride",
+      "originalSourcePreserved": true,
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATION",
+      "sourceFiles": [
+        "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+        "assets/shared/humanoid-motion-v1/catalog.json",
+        "assets/shared/humanoid-motion-v1/author-motion.py"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb"
+        ],
+        "authoring": [
+          "assets/shared/humanoid-motion-v1/author-motion.py"
+        ],
+        "catalogs": [
+          "assets/shared/humanoid-motion-v1/catalog.json"
+        ],
+        "support": []
+      },
+      "authoringRecipes": [
+        {
+          "id": "shared-humanoid-baseline-light-attack-1-20261010",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "assetId": "shared-humanoid-motion-v1",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_light_attack_1_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60
+        }
+      ],
+      "intendedConsumerGameIds": [],
+      "consumerGameIds": [],
+      "originalAssetStable": true,
+      "oneObjectOneClipWorkUnit": true,
+      "motionSourceDefinitions": 31,
+      "bakedNewSharedMotionClips": 0,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "studioMotionRuntimeVerified": false,
+      "unityAnimationRuntimeVerified": false,
+      "robloxAnimationRuntimeVerified": false,
+      "webRuntimeVerified": false,
+      "license": "project-original",
+      "sourceProvenance": {
+        "upstreamPath": "assets/roblox/world-ghosts/native/mesh/bride.glb",
+        "upstreamGitBlobSha": "9b316a619a985033753da5145605c0ca4c96bfc5",
+        "sourceRigBones": 80,
+        "sourceAnimationCount": 6,
+        "shaValidationRequired": true
+      },
+      "improvementNeed": "COMMON_IDLE_WALK_RUN_AND_ACTION_HQ_CHARACTER_MOTION_FIRST",
+      "qaPromotionAuthority": "EXISTING_NATIVE_3D_RUNTIME_AND_MOBILE_QA_ONLY"
     }
-  ],
+],
   "research": [
     {
       "id": "unity-character",

@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "id": "shared-humanoid-motion-v1",
+  "kind": "PLATFORM_NEUTRAL_SKINNED_GLTF_MOTION_SOURCE",
+  "family": "MOTION",
+  "common3dMaster": true,
+  "status": "PREPARED_SOURCE_RUNTIME_UNVERIFIED",
+  "companyCommonBase": true,
+  "exclusiveToGame": false,
+  "targetPlatforms": [
+    "UNITY",
+    "ROBLOX",
+    "WEB"
+  ],
+  "origin": {
+    "existingModelId": "gwisin-bride",
+    "originalPath": "assets/roblox/world-ghosts/native/mesh/bride.glb",
+    "originalGitBlobSha": "9b316a619a985033753da5145605c0ca4c96bfc5",
+    "preserveOriginal": true,
+    "license": "project-original",
+    "modelStyle": "GHOST_BRIDE_DONOR_NOT_GENERIC_FINISHED_PLAYER"
+  },
+  "master": {
+    "path": "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+    "sourceType": "GLB_2_0",
+    "sourceBones": 80,
+    "sourceMeshObjects": 14,
+    "sourceOriginalAnimationCount": 6,
+    "sourceVertices": 15284,
+    "sourceTriangles": 29882,
+    "derivedMotionRuntimeVerified": false,
+    "platformAdapters": "SEPARATE_NATIVE_AUTHORING_REQUIRED"
+  },
+  "authoring": {
+    "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+    "focusedClipDefault": "common_light_attack_1_hq",
+    "focusedOutputRoot": "assets/shared/humanoid-motion-v1/derived/",
+    "supportedMotionDefinitions": 31,
+    "locomotionSourceDefinitions": 17,
+    "actionSourceDefinitions": 14,
+    "focusedExportPerWorkUnit": 1,
+    "workUnit": {
+      "objectCount": 1,
+      "motionCount": 1,
+      "defaultActiveEditingBudgetMinutes": 60,
+      "actualTimeSpentVerified": null,
+      "preparationAndQaSeparate": true
+    },
+    "sha256ContentVerificationRequired": true,
+    "footPlantValidationRequired": true,
+    "groundedRuntimeEvidenceRequired": true
+  },
+  "sourceAuthoredClips": [
+    {
+      "name": "common_idle_hq",
+      "durationSeconds": 3.6
+    },
+    {
+      "name": "common_walk_hq",
+      "durationSeconds": 1.05
+    },
+    {
+      "name": "common_jog_hq",
+      "durationSeconds": 0.86
+    },
+    {
+      "name": "common_run_hq",
+      "durationSeconds": 0.72
+    },
+    {
+      "name": "common_sprint_hq",
+      "durationSeconds": 0.6
+    },
+    {
+      "name": "common_start_hq",
+      "durationSeconds": 0.75
+    },
+    {
+      "name": "common_stop_hq",
+      "durationSeconds": 0.66
+    },
+    {
+      "name": "common_strafe_left_hq",
+      "durationSeconds": 0.92
+    },
+    {
+      "name": "common_strafe_right_hq",
+      "durationSeconds": 0.92
+    },
+    {
+      "name": "common_backward_hq",
+      "durationSeconds": 1.02
+    },
+    {
+      "name": "common_turn_45_hq",
+      "durationSeconds": 0.62
+    },
+    {
+      "name": "common_turn_90_hq",
+      "durationSeconds": 0.78
+    },
+    {
+      "name": "common_turn_180_hq",
+      "durationSeconds": 0.96
+    },
+    {
+      "name": "common_jump_start_hq",
+      "durationSeconds": 0.48
+    },
+    {
+      "name": "common_jump_air_hq",
+      "durationSeconds": 0.62
+    },
+    {
+      "name": "common_land_hq",
+      "durationSeconds": 0.58
+    },
+    {
+      "name": "common_crouch_hq",
+      "durationSeconds": 2.4
+    },
+    {
+      "name": "common_light_attack_1_hq",
+      "durationSeconds": 0.56
+    },
+    {
+      "name": "common_light_attack_2_hq",
+      "durationSeconds": 0.64
+    },
+    {
+      "name": "common_light_attack_3_hq",
+      "durationSeconds": 0.77
+    },
+    {
+      "name": "common_heavy_attack_1_hq",
+      "durationSeconds": 1.06
+    },
+    {
+      "name": "common_heavy_attack_2_hq",
+      "durationSeconds": 1.15
+    },
+    {
+      "name": "common_guard_raise_hq",
+      "durationSeconds": 0.35
+    },
+    {
+      "name": "common_guard_hold_hq",
+      "durationSeconds": 1.12
+    },
+    {
+      "name": "common_parry_hq",
+      "durationSeconds": 0.42
+    },
+    {
+      "name": "common_dodge_left_hq",
+      "durationSeconds": 0.64
+    },
+    {
+      "name": "common_dodge_right_hq",
+      "durationSeconds": 0.64
+    },
+    {
+      "name": "common_hit_front_hq",
+      "durationSeconds": 0.62
+    },
+    {
+      "name": "common_hit_back_hq",
+      "durationSeconds": 0.66
+    },
+    {
+      "name": "common_death_front_hq",
+      "durationSeconds": 1.72
+    },
+    {
+      "name": "common_cast_burst_hq",
+      "durationSeconds": 0.84
+    }
+  ],
+  "authoredSourceIsBakedProductionPass": false,
+  "newMotionGlbFilesCommitted": 0,
+  "sourceModelOnlyHasOriginalEmbeddedAnimations": 6,
+  "platformRuntimeVerified": false,
+  "productionVerified": false,
+  "conversion": {
+    "unity": "SEPARATE_NATIVE_ANIMATOR_REANIMATION_REQUIRED",
+    "roblox": "SEPARATE_NATIVE_RIG_ANIMATION_ASSET_REQUIRED",
+    "web": "GLTF_ANIMATION_MIXER_RUNTIME_BINDING_REQUIRED",
+    "directCrossPlatformNativeBinaryUseForbidden": true
+  },
+  "nextWorkPriority": [
+    "common_idle_hq",
+    "common_walk_hq",
+    "common_run_hq",
+    "common_start_hq",
+    "common_stop_hq",
+    "common_light_attack_1_hq",
+    "common_light_attack_2_hq",
+    "common_light_attack_3_hq",
+    "common_heavy_attack_1_hq",
+    "common_parry_hq",
+    "common_hit_front_hq"
+  ]
+}
