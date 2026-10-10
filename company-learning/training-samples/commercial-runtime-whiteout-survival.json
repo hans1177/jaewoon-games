@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "taskType": "unity",
+  "implementationTargets": [
+    "web",
+    "roblox"
+  ],
+  "designAxes": {
+    "genre": {
+      "id": "STRATEGY_SURVIVAL",
+      "subgenre": "",
+      "rules": []
+    },
+    "style": {
+      "id": "",
+      "visual": [],
+      "motion": []
+    },
+    "concept": {
+      "id": "",
+      "world": [],
+      "mood": []
+    },
+    "sourceRevision": "external-playtest-38073191216-whiteout-survival"
+  },
+  "implementationPractice": {
+    "version": 1,
+    "authority": "PRACTICE_ONLY",
+    "practiceOnly": true,
+    "runtimePromotionAllowed": false,
+    "state": "READY_FOR_INDEPENDENT_PRACTICE",
+    "sourceRevision": "external-playtest-38073191216-whiteout-survival",
+    "gameId": "whiteout-survival",
+    "designAxes": {
+      "genre": {
+        "id": "STRATEGY_SURVIVAL",
+        "subgenre": "",
+        "rules": []
+      },
+      "style": {
+        "id": "",
+        "visual": [],
+        "motion": []
+      },
+      "concept": {
+        "id": "",
+        "world": [],
+        "mood": []
+      },
+      "sourceRevision": "external-playtest-38073191216-whiteout-survival"
+    },
+    "classificationAuthority": "CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED",
+    "observation": {
+      "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+      "beforeScreenshotSha256": "ecbc73e36c8acdcfc1987617a5c8058bde98b5b0a7e6aa8051a54365db11d1cc",
+      "afterScreenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+      "measuredInputCount": 3,
+      "visualChange": true,
+      "inputSequences": [
+        1,
+        2,
+        3
+      ]
+    },
+    "comparison": {
+      "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+      "sourceGameplayEquivalenceVerified": false,
+      "physicalParametersVerified": false,
+      "motionCurvesVerified": false,
+      "menuSemanticsVerified": false,
+      "reobserveUntilMeasured": [
+        "GAMEPLAY_RULES",
+        "VISUAL_STYLE",
+        "WORLD_CONCEPT",
+        "PHYSICS_PARAMETERS",
+        "ANIMATION_CURVES",
+        "MENU_SEMANTICS"
+      ]
+    },
+    "exercises": [
+      {
+        "platform": "web",
+        "drillId": "web-input-save",
+        "domains": [
+          "MOBILE_INPUT",
+          "SAVE",
+          "WEB_RUNTIME"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      },
+      {
+        "platform": "roblox",
+        "drillId": "authority",
+        "domains": [
+          "STATE_MACHINE",
+          "PROGRESSION"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      }
+    ],
+    "retryPolicy": "NEXT_CANONICAL_PRACTICE_GENERATION",
+    "knowledgePath": "EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION",
+    "modelWeightsChanged": false
+  },
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-whiteout-survival",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Whiteout Survival의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=STRATEGY_SURVIVAL; inputProfile=STRATEGY_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED; deliveredInputs=3/3; implementationVerified=NO",
+  "output": "관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.\n이 장르의 생존 전략 동작을 독립 구현할 때는 정착지 상태, 생존 자원, 유닛/영웅 성장, 이벤트 압력, 소셜 또는 동맹 상태를 분리한다. 생산과 소비를 원장형으로 관리하고 장기 진행과 일시 이벤트가 서로 덮어쓰지 않게 한다.",
+  "observationScope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+  "measuredInputCount": 3,
+  "unmeasured": [
+    "PHYSICS_PARAMETERS",
+    "ANIMATION_CURVES",
+    "ACTION_HIT_TIMING",
+    "MENU_SEMANTICS",
+    "INTERNAL_IMPLEMENTATION"
+  ],
+  "implementationInferenceVerified": false,
+  "sourceRevision": "external-playtest-38073191216-whiteout-survival",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Whiteout Survival",
+    "packageId": "com.gof.global",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.gof.global",
+    "playtestRunId": "38073191216",
+    "beforeScreenshotSha256": "ecbc73e36c8acdcfc1987617a5c8058bde98b5b0a7e6aa8051a54365db11d1cc",
+    "afterScreenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+    "inputTrace": [
+      {
+        "sequence": 1,
+        "input": "tap 540 1440",
+        "inputDelivered": true,
+        "screenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+        "foreground": true
+      },
+      {
+        "sequence": 2,
+        "input": "tap 734 1248",
+        "inputDelivered": true,
+        "screenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+        "foreground": true
+      },
+      {
+        "sequence": 3,
+        "input": "tap 345 1248",
+        "inputDelivered": true,
+        "screenshotSha256": "8c71902cd2d81e104bb896030a81b2b235c6a00d842f16b34e63f61ae03b22b1",
+        "foreground": true
+      }
+    ],
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-survival-strategy-runtime-architecture",
+  "tags": [
+    "settlement-growth",
+    "survival-resource",
+    "hero-or-unit-growth",
+    "event-pressure",
+    "alliance-layer"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-hay-day",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Hay Day의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=FARM_COZY; inputProfile=STRATEGY_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=NOT_CONFIRMED",
+  "output": "관찰된 농장·코지 동작을 독립 구현할 때는 작물/생산 타이머, 재고, 주문/요청, 시설 상태, 확장 진행을 분리한다. 수확과 납품 보상은 한 번만 반영하고 생산 큐와 화면 연출을 분리하며, 오프라인 경과 시간이 동일한 규칙으로 복원되게 한다.",
+  "sourceRevision": "external-playtest-35430868228-hay-day",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Hay Day",
+    "packageId": "com.supercell.hayday",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.supercell.hayday",
+    "playtestRunId": "35430868228",
+    "beforeScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+    "afterScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-farm-cozy-runtime-architecture",
+  "tags": [
+    "crop-cycle",
+    "production-chain",
+    "order-loop",
+    "inventory",
+    "expansion"
+  ]
+}

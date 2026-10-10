@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "taskType": "unity",
+  "implementationTargets": [
+    "web",
+    "roblox"
+  ],
+  "designAxes": {
+    "genre": {
+      "id": "SPORTS_FOOTBALL",
+      "subgenre": "",
+      "rules": []
+    },
+    "style": {
+      "id": "",
+      "visual": [],
+      "motion": []
+    },
+    "concept": {
+      "id": "",
+      "world": [],
+      "mood": []
+    },
+    "sourceRevision": "external-playtest-38076771642-efootball"
+  },
+  "implementationPractice": {
+    "version": 1,
+    "authority": "PRACTICE_ONLY",
+    "practiceOnly": true,
+    "runtimePromotionAllowed": false,
+    "state": "READY_FOR_INDEPENDENT_PRACTICE",
+    "sourceRevision": "external-playtest-38076771642-efootball",
+    "gameId": "efootball",
+    "designAxes": {
+      "genre": {
+        "id": "SPORTS_FOOTBALL",
+        "subgenre": "",
+        "rules": []
+      },
+      "style": {
+        "id": "",
+        "visual": [],
+        "motion": []
+      },
+      "concept": {
+        "id": "",
+        "world": [],
+        "mood": []
+      },
+      "sourceRevision": "external-playtest-38076771642-efootball"
+    },
+    "classificationAuthority": "CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED",
+    "observation": {
+      "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+      "beforeScreenshotSha256": "54bd61e198bc175cbcedb6f55b649248966c83e1945ff242364357dd552c005a",
+      "afterScreenshotSha256": "71201a52a0ea1aef4e8138d5bf12fec99ef3d0483f9a869c1abf61399e0c1584",
+      "measuredInputCount": 3,
+      "visualChange": true,
+      "inputSequences": [
+        1,
+        2,
+        3
+      ]
+    },
+    "comparison": {
+      "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+      "sourceGameplayEquivalenceVerified": false,
+      "physicalParametersVerified": false,
+      "motionCurvesVerified": false,
+      "menuSemanticsVerified": false,
+      "reobserveUntilMeasured": [
+        "GAMEPLAY_RULES",
+        "VISUAL_STYLE",
+        "WORLD_CONCEPT",
+        "PHYSICS_PARAMETERS",
+        "ANIMATION_CURVES",
+        "MENU_SEMANTICS"
+      ]
+    },
+    "exercises": [
+      {
+        "platform": "web",
+        "drillId": "web-input-save",
+        "domains": [
+          "MOBILE_INPUT",
+          "SAVE",
+          "WEB_RUNTIME"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      },
+      {
+        "platform": "roblox",
+        "drillId": "authority",
+        "domains": [
+          "STATE_MACHINE",
+          "PROGRESSION"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      }
+    ],
+    "retryPolicy": "NEXT_CANONICAL_PRACTICE_GENERATION",
+    "knowledgePath": "EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION",
+    "modelWeightsChanged": false
+  },
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-efootball",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 eFootball의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=SPORTS_FOOTBALL; inputProfile=ARENA_DUAL_STICK; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED; deliveredInputs=3/3; implementationVerified=NO",
+  "output": "관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.\n이 장르의 모바일 축구 동작을 독립 구현할 때는 선수 선택/이동 입력, 공 소유권, 패스·슛 행동, 포메이션 상태, 경기 시간과 점수를 분리한다. 시각적 공 이동과 실제 소유권 판정을 한 책임 계층에서 일관되게 관리하고 경기 재개·교체·득점 이벤트가 중복 적용되지 않게 한다.",
+  "observationScope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+  "measuredInputCount": 3,
+  "unmeasured": [
+    "PHYSICS_PARAMETERS",
+    "ANIMATION_CURVES",
+    "ACTION_HIT_TIMING",
+    "MENU_SEMANTICS",
+    "INTERNAL_IMPLEMENTATION"
+  ],
+  "implementationInferenceVerified": false,
+  "sourceRevision": "external-playtest-38076771642-efootball",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "eFootball",
+    "packageId": "jp.konami.pesam",
+    "storeUrl": "https://play.google.com/store/apps/details?id=jp.konami.pesam",
+    "playtestRunId": "38076771642",
+    "beforeScreenshotSha256": "54bd61e198bc175cbcedb6f55b649248966c83e1945ff242364357dd552c005a",
+    "afterScreenshotSha256": "71201a52a0ea1aef4e8138d5bf12fec99ef3d0483f9a869c1abf61399e0c1584",
+    "inputTrace": [
+      {
+        "sequence": 1,
+        "input": "swipe 237 1824 324 1584 650",
+        "inputDelivered": true,
+        "screenshotSha256": "4ceb65242e45b22ee47eeb3c2d3a6bc3766992c25fe92d06c844dbb8aea810e1",
+        "foreground": true
+      },
+      {
+        "sequence": 2,
+        "input": "tap 885 1728",
+        "inputDelivered": true,
+        "screenshotSha256": "51fc67d2f4313dd91552f94d493cbb53ec571b43f3e21cc715bd751ad2810599",
+        "foreground": true
+      },
+      {
+        "sequence": 3,
+        "input": "tap 777 1488",
+        "inputDelivered": true,
+        "screenshotSha256": "25f1524564395c2cc6b378ae2b52e4bf8e5ec5cb2567689b3363686b23c3ffc9",
+        "foreground": true
+      }
+    ],
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-football-runtime-architecture",
+  "tags": [
+    "team-control",
+    "possession-state",
+    "match-clock",
+    "formation",
+    "action-feedback"
+  ]
+}

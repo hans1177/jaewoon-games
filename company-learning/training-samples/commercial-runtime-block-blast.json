@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "taskType": "unity",
+  "implementationTargets": [
+    "web",
+    "roblox"
+  ],
+  "designAxes": {
+    "genre": {
+      "id": "PUZZLE",
+      "subgenre": "",
+      "rules": []
+    },
+    "style": {
+      "id": "",
+      "visual": [],
+      "motion": []
+    },
+    "concept": {
+      "id": "",
+      "world": [],
+      "mood": []
+    },
+    "sourceRevision": "external-playtest-38052120762-block-blast"
+  },
+  "implementationPractice": {
+    "version": 1,
+    "authority": "PRACTICE_ONLY",
+    "practiceOnly": true,
+    "runtimePromotionAllowed": false,
+    "state": "READY_FOR_INDEPENDENT_PRACTICE",
+    "sourceRevision": "external-playtest-38052120762-block-blast",
+    "gameId": "block-blast",
+    "designAxes": {
+      "genre": {
+        "id": "PUZZLE",
+        "subgenre": "",
+        "rules": []
+      },
+      "style": {
+        "id": "",
+        "visual": [],
+        "motion": []
+      },
+      "concept": {
+        "id": "",
+        "world": [],
+        "mood": []
+      },
+      "sourceRevision": "external-playtest-38052120762-block-blast"
+    },
+    "classificationAuthority": "CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED",
+    "observation": {
+      "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+      "beforeScreenshotSha256": "c039ccbc3a0cc44b5eb9b6a605653014657d694a9a5065359441cb4f380b491f",
+      "afterScreenshotSha256": "df5ed85b0daf1bc363fff148837e6db57ccdcf3dc4eed648c8c1b79c44d67273",
+      "measuredInputCount": 3,
+      "visualChange": true,
+      "inputSequences": [
+        1,
+        2,
+        3
+      ]
+    },
+    "comparison": {
+      "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+      "sourceGameplayEquivalenceVerified": false,
+      "physicalParametersVerified": false,
+      "motionCurvesVerified": false,
+      "menuSemanticsVerified": false,
+      "reobserveUntilMeasured": [
+        "GAMEPLAY_RULES",
+        "VISUAL_STYLE",
+        "WORLD_CONCEPT",
+        "PHYSICS_PARAMETERS",
+        "ANIMATION_CURVES",
+        "MENU_SEMANTICS"
+      ]
+    },
+    "exercises": [
+      {
+        "platform": "web",
+        "drillId": "web-input-save",
+        "domains": [
+          "MOBILE_INPUT",
+          "SAVE",
+          "WEB_RUNTIME"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      },
+      {
+        "platform": "roblox",
+        "drillId": "authority",
+        "domains": [
+          "STATE_MACHINE",
+          "PROGRESSION"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      }
+    ],
+    "retryPolicy": "NEXT_CANONICAL_PRACTICE_GENERATION",
+    "knowledgePath": "EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION",
+    "modelWeightsChanged": false
+  },
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-block-blast",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Block Blast!의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=PUZZLE; inputProfile=BLOCK_PUZZLE; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED; deliveredInputs=3/3; implementationVerified=NO",
+  "output": "관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.\n이 장르의 퍼즐 동작을 Unity로 독립 구현할 때는 보드 논리 상태를 단일 source of truth로 두고 입력, 매치/클리어 판정, 연쇄 처리, 애니메이션을 분리한다. 입력 중복은 해상 중인 보드 상태에서 gate하고, 애니메이션은 결과 상태를 표현할 뿐 규칙 상태를 직접 바꾸지 않게 한다. 레벨 목표와 진행 저장은 보드 프레임 상태와 분리해 재시작·백그라운드 복귀에서도 동일 규칙으로 복원되게 한다.",
+  "observationScope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+  "measuredInputCount": 3,
+  "unmeasured": [
+    "PHYSICS_PARAMETERS",
+    "ANIMATION_CURVES",
+    "ACTION_HIT_TIMING",
+    "MENU_SEMANTICS",
+    "INTERNAL_IMPLEMENTATION"
+  ],
+  "implementationInferenceVerified": false,
+  "sourceRevision": "external-playtest-38052120762-block-blast",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Block Blast!",
+    "packageId": "com.block.juggle",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.block.juggle",
+    "playtestRunId": "38052120762",
+    "beforeScreenshotSha256": "c039ccbc3a0cc44b5eb9b6a605653014657d694a9a5065359441cb4f380b491f",
+    "afterScreenshotSha256": "df5ed85b0daf1bc363fff148837e6db57ccdcf3dc4eed648c8c1b79c44d67273",
+    "inputTrace": [
+      {
+        "sequence": 1,
+        "input": "swipe 270 1967 410 1248 500",
+        "inputDelivered": true,
+        "screenshotSha256": "79c6ac9b78c1466e17539f8883887cfa16b29f0321542fcf732e0cbbab11fc4c",
+        "foreground": true
+      },
+      {
+        "sequence": 2,
+        "input": "swipe 540 1967 594 1152 500",
+        "inputDelivered": true,
+        "screenshotSha256": "211d3b7a1bdc08fab264a90303b6c272e0792399fe5db9c08bac053ca798e16b",
+        "foreground": true
+      },
+      {
+        "sequence": 3,
+        "input": "swipe 810 1967 734 1392 500",
+        "inputDelivered": true,
+        "screenshotSha256": "6710a236358771201a4ffa4ededf3418e1c2395c8793f1c8d2c0201e5d192423",
+        "foreground": true
+      }
+    ],
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-puzzle-runtime-architecture",
+  "tags": [
+    "board-state",
+    "goal-loop",
+    "combo-feedback",
+    "level-progression",
+    "touch-input"
+  ]
+}

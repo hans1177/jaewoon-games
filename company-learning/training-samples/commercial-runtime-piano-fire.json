@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "taskType": "unity",
+  "implementationTargets": [
+    "web",
+    "roblox"
+  ],
+  "designAxes": {
+    "genre": {
+      "id": "RHYTHM",
+      "subgenre": "",
+      "rules": []
+    },
+    "style": {
+      "id": "",
+      "visual": [],
+      "motion": []
+    },
+    "concept": {
+      "id": "",
+      "world": [],
+      "mood": []
+    },
+    "sourceRevision": "external-playtest-38051274431-piano-fire"
+  },
+  "implementationPractice": {
+    "version": 1,
+    "authority": "PRACTICE_ONLY",
+    "practiceOnly": true,
+    "runtimePromotionAllowed": false,
+    "state": "READY_FOR_INDEPENDENT_PRACTICE",
+    "sourceRevision": "external-playtest-38051274431-piano-fire",
+    "gameId": "piano-fire",
+    "designAxes": {
+      "genre": {
+        "id": "RHYTHM",
+        "subgenre": "",
+        "rules": []
+      },
+      "style": {
+        "id": "",
+        "visual": [],
+        "motion": []
+      },
+      "concept": {
+        "id": "",
+        "world": [],
+        "mood": []
+      },
+      "sourceRevision": "external-playtest-38051274431-piano-fire"
+    },
+    "classificationAuthority": "CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED",
+    "observation": {
+      "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+      "beforeScreenshotSha256": "cb17681c7848e6e845a57a71d0b3c65d5f092e3a2c2ac8d10260d0c0adfac4bd",
+      "afterScreenshotSha256": "631f4bee49a4004982862e9ae57dc00336230bf603f65ec0afbc015d91b48094",
+      "measuredInputCount": 3,
+      "visualChange": true,
+      "inputSequences": [
+        1,
+        2,
+        3
+      ]
+    },
+    "comparison": {
+      "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+      "sourceGameplayEquivalenceVerified": false,
+      "physicalParametersVerified": false,
+      "motionCurvesVerified": false,
+      "menuSemanticsVerified": false,
+      "reobserveUntilMeasured": [
+        "GAMEPLAY_RULES",
+        "VISUAL_STYLE",
+        "WORLD_CONCEPT",
+        "PHYSICS_PARAMETERS",
+        "ANIMATION_CURVES",
+        "MENU_SEMANTICS"
+      ]
+    },
+    "exercises": [
+      {
+        "platform": "web",
+        "drillId": "web-input-save",
+        "domains": [
+          "MOBILE_INPUT",
+          "SAVE",
+          "WEB_RUNTIME"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      },
+      {
+        "platform": "roblox",
+        "drillId": "authority",
+        "domains": [
+          "STATE_MACHINE",
+          "PROGRESSION"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      }
+    ],
+    "retryPolicy": "NEXT_CANONICAL_PRACTICE_GENERATION",
+    "knowledgePath": "EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION",
+    "modelWeightsChanged": false
+  },
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-piano-fire",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Piano Fire: Edm Music & Piano의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=RHYTHM; inputProfile=CARD_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED; deliveredInputs=3/3; implementationVerified=NO",
+  "output": "관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.\n이 장르의 리듬 게임 동작을 독립 구현할 때는 오디오 시간축, 노트 스케줄, 입력 시각, 판정 윈도우, 콤보/점수 상태를 분리한다. 렌더 프레임보다 일관된 시간 기준으로 판정하고 시각 이펙트가 실제 타이밍 판정을 바꾸지 않게 하며 일시정지·재개에서 시간축 드리프트를 방지한다.",
+  "observationScope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+  "measuredInputCount": 3,
+  "unmeasured": [
+    "PHYSICS_PARAMETERS",
+    "ANIMATION_CURVES",
+    "ACTION_HIT_TIMING",
+    "MENU_SEMANTICS",
+    "INTERNAL_IMPLEMENTATION"
+  ],
+  "implementationInferenceVerified": false,
+  "sourceRevision": "external-playtest-38051274431-piano-fire",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Piano Fire: Edm Music & Piano",
+    "packageId": "beatmaker.edm.musicgames.PianoGames",
+    "storeUrl": "https://play.google.com/store/apps/details?id=beatmaker.edm.musicgames.PianoGames",
+    "playtestRunId": "38051274431",
+    "beforeScreenshotSha256": "cb17681c7848e6e845a57a71d0b3c65d5f092e3a2c2ac8d10260d0c0adfac4bd",
+    "afterScreenshotSha256": "631f4bee49a4004982862e9ae57dc00336230bf603f65ec0afbc015d91b48094",
+    "inputTrace": [
+      {
+        "sequence": 1,
+        "input": "tap 324 1680",
+        "inputDelivered": true,
+        "screenshotSha256": "4ca07bd159144106ecc03321445292d21e23bac5ba83b1eedadab19964f02b8c",
+        "foreground": true
+      },
+      {
+        "sequence": 2,
+        "input": "tap 540 1680",
+        "inputDelivered": true,
+        "screenshotSha256": "4fc378e394ecb3fd4d0bfba6532771fc49b1ecfd900bd43a7b3c0562e7c4f0cc",
+        "foreground": true
+      },
+      {
+        "sequence": 3,
+        "input": "tap 756 1680",
+        "inputDelivered": true,
+        "screenshotSha256": "4fc378e394ecb3fd4d0bfba6532771fc49b1ecfd900bd43a7b3c0562e7c4f0cc",
+        "foreground": true
+      }
+    ],
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-rhythm-runtime-architecture",
+  "tags": [
+    "timing-window",
+    "note-stream",
+    "input-judgement",
+    "combo-state",
+    "audio-visual-sync"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-brawl-stars",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Brawl Stars의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=ACTION_PVP; inputProfile=ARENA_DUAL_STICK; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 모바일 PvP 동작을 독립 구현할 때는 이동 입력, 조준/능력 입력, 전투 상태, 쿨다운, 점수 및 매치 상태를 분리한다. 짧은 매치에서 네트워크 권한과 로컬 피드백을 구분하고, 능력 효과와 판정은 한 책임 계층에서 소유하도록 설계한다.",
+  "sourceRevision": "external-playtest-35352264048-brawl-stars",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Brawl Stars",
+    "packageId": "com.supercell.brawlstars",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.supercell.brawlstars",
+    "playtestRunId": "35352264048",
+    "beforeScreenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+    "afterScreenshotSha256": "223509f2f6d22b4cfd9ba7ed6aacd8a5b9ad700f4c29d5b984cf31a468133b68",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-action-pvp-runtime-architecture",
+  "tags": [
+    "short-match",
+    "arena-positioning",
+    "ability-cooldown",
+    "team-role",
+    "combat-feedback"
+  ]
+}

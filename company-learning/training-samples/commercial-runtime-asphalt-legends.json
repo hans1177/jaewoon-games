@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "taskType": "unity",
+  "implementationTargets": [
+    "web",
+    "roblox"
+  ],
+  "designAxes": {
+    "genre": {
+      "id": "RACING",
+      "subgenre": "",
+      "rules": []
+    },
+    "style": {
+      "id": "",
+      "visual": [],
+      "motion": []
+    },
+    "concept": {
+      "id": "",
+      "world": [],
+      "mood": []
+    },
+    "sourceRevision": "external-playtest-38074846594-asphalt-legends"
+  },
+  "implementationPractice": {
+    "version": 1,
+    "authority": "PRACTICE_ONLY",
+    "practiceOnly": true,
+    "runtimePromotionAllowed": false,
+    "state": "READY_FOR_INDEPENDENT_PRACTICE",
+    "sourceRevision": "external-playtest-38074846594-asphalt-legends",
+    "gameId": "asphalt-legends",
+    "designAxes": {
+      "genre": {
+        "id": "RACING",
+        "subgenre": "",
+        "rules": []
+      },
+      "style": {
+        "id": "",
+        "visual": [],
+        "motion": []
+      },
+      "concept": {
+        "id": "",
+        "world": [],
+        "mood": []
+      },
+      "sourceRevision": "external-playtest-38074846594-asphalt-legends"
+    },
+    "classificationAuthority": "CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED",
+    "observation": {
+      "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+      "beforeScreenshotSha256": "ea911ae43ec3cd7e534de551a53840db62ad4b1c3dac67ceff919bcc068705dc",
+      "afterScreenshotSha256": "cf3844da63a6c498d6b0b67d2a4fca4cd6a0382bcd30e7973067a1c434ff4b6a",
+      "measuredInputCount": 3,
+      "visualChange": true,
+      "inputSequences": [
+        1,
+        2,
+        3
+      ]
+    },
+    "comparison": {
+      "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+      "sourceGameplayEquivalenceVerified": false,
+      "physicalParametersVerified": false,
+      "motionCurvesVerified": false,
+      "menuSemanticsVerified": false,
+      "reobserveUntilMeasured": [
+        "GAMEPLAY_RULES",
+        "VISUAL_STYLE",
+        "WORLD_CONCEPT",
+        "PHYSICS_PARAMETERS",
+        "ANIMATION_CURVES",
+        "MENU_SEMANTICS"
+      ]
+    },
+    "exercises": [
+      {
+        "platform": "web",
+        "drillId": "web-input-save",
+        "domains": [
+          "MOBILE_INPUT",
+          "SAVE",
+          "WEB_RUNTIME"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      },
+      {
+        "platform": "roblox",
+        "drillId": "authority",
+        "domains": [
+          "STATE_MACHINE",
+          "PROGRESSION"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      }
+    ],
+    "retryPolicy": "NEXT_CANONICAL_PRACTICE_GENERATION",
+    "knowledgePath": "EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION",
+    "modelWeightsChanged": false
+  },
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-asphalt-legends",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Asphalt Legends의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=RACING; inputProfile=DRIVE_TWO_BUTTON; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED; deliveredInputs=3/3; implementationVerified=NO",
+  "output": "관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.\n이 장르의 모바일 레이싱 동작을 독립 구현할 때는 조향·가속 입력, 차량 물리 상태, 트랙 진행, 체크포인트/순위, 업그레이드 상태를 분리한다. 입력 보조와 실제 물리 권한을 구분하고 속도 연출이 판정 상태를 직접 변경하지 않게 하며, 재시작 시 차량·트랙·타이머 상태를 명시적으로 초기화한다.",
+  "observationScope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+  "measuredInputCount": 3,
+  "unmeasured": [
+    "PHYSICS_PARAMETERS",
+    "ANIMATION_CURVES",
+    "ACTION_HIT_TIMING",
+    "MENU_SEMANTICS",
+    "INTERNAL_IMPLEMENTATION"
+  ],
+  "implementationInferenceVerified": false,
+  "sourceRevision": "external-playtest-38074846594-asphalt-legends",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Asphalt Legends",
+    "packageId": "com.gameloft.android.ANMP.GloftA9HM",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.gameloft.android.ANMP.GloftA9HM",
+    "playtestRunId": "38074846594",
+    "beforeScreenshotSha256": "ea911ae43ec3cd7e534de551a53840db62ad4b1c3dac67ceff919bcc068705dc",
+    "afterScreenshotSha256": "cf3844da63a6c498d6b0b67d2a4fca4cd6a0382bcd30e7973067a1c434ff4b6a",
+    "inputTrace": [
+      {
+        "sequence": 1,
+        "input": "tap 842 1967",
+        "inputDelivered": true,
+        "screenshotSha256": "ea911ae43ec3cd7e534de551a53840db62ad4b1c3dac67ceff919bcc068705dc",
+        "foreground": true
+      },
+      {
+        "sequence": 2,
+        "input": "tap 237 1967",
+        "inputDelivered": true,
+        "screenshotSha256": "ea911ae43ec3cd7e534de551a53840db62ad4b1c3dac67ceff919bcc068705dc",
+        "foreground": true
+      },
+      {
+        "sequence": 3,
+        "input": "tap 842 1967",
+        "inputDelivered": true,
+        "screenshotSha256": "59543814483c2073230b620af4035ff01977e777d9e176b6563912d1635518cf",
+        "foreground": true
+      }
+    ],
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-racing-runtime-architecture",
+  "tags": [
+    "vehicle-control",
+    "race-progress",
+    "speed-feedback",
+    "track-pressure",
+    "upgrade-loop"
+  ]
+}

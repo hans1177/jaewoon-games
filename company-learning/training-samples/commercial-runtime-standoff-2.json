@@ -1,0 +1,178 @@
+{
+  "version": 2,
+  "taskType": "unity",
+  "implementationTargets": [
+    "web",
+    "roblox"
+  ],
+  "designAxes": {
+    "genre": {
+      "id": "FPS_TACTICAL",
+      "subgenre": "",
+      "rules": []
+    },
+    "style": {
+      "id": "",
+      "visual": [],
+      "motion": []
+    },
+    "concept": {
+      "id": "",
+      "world": [],
+      "mood": []
+    },
+    "sourceRevision": "external-playtest-38076771642-standoff-2"
+  },
+  "implementationPractice": {
+    "version": 1,
+    "authority": "PRACTICE_ONLY",
+    "practiceOnly": true,
+    "runtimePromotionAllowed": false,
+    "state": "READY_FOR_INDEPENDENT_PRACTICE",
+    "sourceRevision": "external-playtest-38076771642-standoff-2",
+    "gameId": "standoff-2",
+    "designAxes": {
+      "genre": {
+        "id": "FPS_TACTICAL",
+        "subgenre": "",
+        "rules": []
+      },
+      "style": {
+        "id": "",
+        "visual": [],
+        "motion": []
+      },
+      "concept": {
+        "id": "",
+        "world": [],
+        "mood": []
+      },
+      "sourceRevision": "external-playtest-38076771642-standoff-2"
+    },
+    "classificationAuthority": "CATALOG_GENRE_ONLY_STYLE_AND_CONCEPT_UNOBSERVED",
+    "observation": {
+      "scope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+      "beforeScreenshotSha256": "97cd381b8fe5d51d92c15db377992cd7e3d2537eec8f9e058c26434ba8c8dc6f",
+      "afterScreenshotSha256": "ea6cc1ed026f874a7023a54e1504144114089da1315194d89e820f9e21753047",
+      "measuredInputCount": 3,
+      "visualChange": true,
+      "inputSequences": [
+        1,
+        2,
+        3
+      ]
+    },
+    "comparison": {
+      "scope": "INPUT_RESPONSE_CONTRACT_ONLY",
+      "sourceGameplayEquivalenceVerified": false,
+      "physicalParametersVerified": false,
+      "motionCurvesVerified": false,
+      "menuSemanticsVerified": false,
+      "reobserveUntilMeasured": [
+        "GAMEPLAY_RULES",
+        "VISUAL_STYLE",
+        "WORLD_CONCEPT",
+        "PHYSICS_PARAMETERS",
+        "ANIMATION_CURVES",
+        "MENU_SEMANTICS"
+      ]
+    },
+    "exercises": [
+      {
+        "platform": "web",
+        "drillId": "web-input-save",
+        "domains": [
+          "MOBILE_INPUT",
+          "SAVE",
+          "WEB_RUNTIME"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      },
+      {
+        "platform": "roblox",
+        "drillId": "authority",
+        "domains": [
+          "STATE_MACHINE",
+          "PROGRESSION"
+        ],
+        "basis": "INDEPENDENT_ENGINEERING_PROPOSAL"
+      }
+    ],
+    "retryPolicy": "NEXT_CANONICAL_PRACTICE_GENERATION",
+    "knowledgePath": "EXISTING_PRACTICE_WORKER_EXECUTION_THEN_VERIFIED_DISTILLATION",
+    "modelWeightsChanged": false
+  },
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-standoff-2",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Standoff 2의 black-box 런타임 관찰 범위를 구분하고, 웹·Roblox 우선의 독립 구현과 기존 Unity 재사용에 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=FPS_TACTICAL; inputProfile=ARENA_DUAL_STICK; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED; deliveredInputs=3/3; implementationVerified=NO",
+  "output": "관찰 범위는 앱 실행·전경 상태·입력 시도 및 전달 상태·캡처 변화 여부다. 아래 구현 원칙은 관찰에 대한 독립 설계 제안이며, 해당 게임의 내부 코드·물리·모션 곡선을 확인했다는 뜻이 아니다.\n이 장르의 전술 FPS 동작을 독립 구현할 때는 이동, 시점/조준, 무기 상태, 피해 판정, 라운드 상태를 분리한다. 발사·재장전·무기교체의 상태 전이를 명시적으로 소유하고 네트워크 권한과 로컬 피드백을 구분하며, 라운드 종료 후 전투 상태가 다음 라운드로 누적되지 않게 한다.",
+  "observationScope": "APP_LAUNCH_AND_BOUNDED_INPUT_TRACE",
+  "measuredInputCount": 3,
+  "unmeasured": [
+    "PHYSICS_PARAMETERS",
+    "ANIMATION_CURVES",
+    "ACTION_HIT_TIMING",
+    "MENU_SEMANTICS",
+    "INTERNAL_IMPLEMENTATION"
+  ],
+  "implementationInferenceVerified": false,
+  "sourceRevision": "external-playtest-38076771642-standoff-2",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Standoff 2",
+    "packageId": "com.axlebolt.standoff2",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.axlebolt.standoff2",
+    "playtestRunId": "38076771642",
+    "beforeScreenshotSha256": "97cd381b8fe5d51d92c15db377992cd7e3d2537eec8f9e058c26434ba8c8dc6f",
+    "afterScreenshotSha256": "ea6cc1ed026f874a7023a54e1504144114089da1315194d89e820f9e21753047",
+    "inputTrace": [
+      {
+        "sequence": 1,
+        "input": "swipe 237 1824 324 1584 650",
+        "inputDelivered": true,
+        "screenshotSha256": "7a7ec4fa93ec6edf64bf9513208fbe06df59cad7ea2a73673fcb62009df1b05d",
+        "foreground": true
+      },
+      {
+        "sequence": 2,
+        "input": "tap 885 1728",
+        "inputDelivered": true,
+        "screenshotSha256": "7a7ec4fa93ec6edf64bf9513208fbe06df59cad7ea2a73673fcb62009df1b05d",
+        "foreground": true
+      },
+      {
+        "sequence": 3,
+        "input": "tap 777 1488",
+        "inputDelivered": true,
+        "screenshotSha256": "7a7ec4fa93ec6edf64bf9513208fbe06df59cad7ea2a73673fcb62009df1b05d",
+        "foreground": true
+      }
+    ],
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-tactical-fps-runtime-architecture",
+  "tags": [
+    "aim-input",
+    "movement-state",
+    "weapon-state",
+    "round-loop",
+    "combat-feedback"
+  ]
+}
