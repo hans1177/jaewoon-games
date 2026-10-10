@@ -9,12 +9,135 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::9bf143083bcab5844cd9f6bc7b028daf40799390ac2fc872bb12a8bf250b8131:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "나의 생존기",
+      "creativeGrammar": {
+        "mainIdentity": "생존,채집,살리기,진출,보상,위험,성장",
+        "a": {
+          "system": "생존,채집",
+          "material": "생존 기록, 채집 선택, 진출 전략, 보상 위험",
+          "materialDomain": "생존,채집",
+          "stateChange": "생존 상태 변화, 채집 선택, 진출 전략"
+        },
+        "b": {
+          "system": "게임 내부 시스템",
+          "material": "플레이어 역할, 대사, 장면, 이벤트",
+          "materialDomain": "플레이어 역할",
+          "stateChange": "플레이어 행동, 대사 변화, 이벤트 발생"
+        },
+        "abCausality": "생존 상태 변화 → 플레이어 행동 → 이벤트 발생 → 다음 전략",
+        "abEvolution": {
+          "aChangesB": "생존 상태 변화 → 플레이어 행동 → 이벤트 발생",
+          "bChangesA": "플레이어 행동 → 이벤트 발생 → 다음 전략 변화",
+          "lateGameChange": "이벤트 발생 → 다음 전략 변화로 인한 게임 정체성 변화"
+        },
+        "materialFusion": {
+          "contrast": "생존 상태 변화와 플레이어 행동의 상호작용을 통해 실제 세계 상태 변화를 생성한다.",
+          "causalBridge": "생존 상태 변화 → 플레이어 행동 → 이벤트 발생 → 다음 전략 변화",
+          "removalConsequence": "생존 상태 변화가 없으면 플레이어 행동과 이벤트 발생은 무효화된다."
+        },
+        "storyCausalChain": {
+          "cause": "생존 상태 변화, 채집 선택, 진출 전략",
+          "characterConflict": "플레이어 행동, 대사 변화, 이벤트 발생",
+          "playerChoice": "이벤트 발생, 다음 전략 변화, 게임 정체성 변화",
+          "worldChange": "게임 정체성 변화, 다음 전략 변화, 보상 위험 변화",
+          "nextEvent": "다음 전략 변화, 게임 정체성 변화, 보상 위험 변화"
+        },
+        "cThemes": [
+          {
+            "name": "생존",
+            "kind": "MATERIAL",
+            "gameplayEffect": "생존 상태 변화, 채집 선택, 진출 전략"
+          },
+          {
+            "name": "채집",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어 행동, 대사 변화, 이벤트 발생"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "생존",
+            "gameplayEffect": "생존 상태 변화, 채집 선택, 진출 전략"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "채집",
+            "gameplayEffect": "플레이어 행동, 대사 변화, 이벤트 발생"
+          }
+        ],
+        "cGenreInterlock": "생존 상태 변화와 플레이어 행동의 상호작용을 통해 실제 세계 상태 변화를 생성한다. 채집 선택과 이벤트 발생은 생존 상태 변화 없이 무효화된다.",
+        "cWorldAndGameplayEffect": "생존 상태 변화 → 플레이어 행동 → 이벤트 발생 → 다음 전략 변화",
+        "delveDiscoveries": [
+          {
+            "clue": "생존 상태 변화, 채집 선택, 진출 전략",
+            "discovery": "플레이어 행동, 대사 변화, 이벤트 발생",
+            "newChoice": "이벤트 발생, 다음 전략 변화, 게임 정체성 변화"
+          },
+          {
+            "clue": "플레이어 행동, 대사 변화, 이벤트 발생",
+            "discovery": "생존 상태 변화, 채집 선택, 진출 전략",
+            "newChoice": "이벤트 발생, 다음 전략 변화, 게임 정체성 변화"
+          },
+          {
+            "clue": "이벤트 발생, 다음 전략 변화, 게임 정체성 변화",
+            "discovery": "생존 상태 변화, 채집 선택, 진출 전략",
+            "newChoice": "다음 전략 변화, 게임 정체성 변화, 보상 위험 변화"
+          },
+          {
+            "clue": "다음 전략 변화, 게임 정체성 변화, 보상 위험 변화",
+            "discovery": "이벤트 발생, 다음 전략 변화, 게임 정체성 변화",
+            "newChoice": "게임 정체성 변화, 보상 위험 변화, 다음 전략 변화"
+          }
+        ],
+        "delveGrowthRule": "이벤트 발생 → 다음 전략 변화 → 게임 정체성 변화 → 보상 위험 변화",
+        "finalGameIdentity": "생존 상태 변화, 채집 선택, 진출 전략 → 플레이어 행동, 대사 변화, 이벤트 발생 → 이벤트 발생, 다음 전략 변화, 게임 정체성 변화"
+      },
+      "playerFantasy": "플레이어는 생존의 고통을 견디고 채집의 기쁨을 느끼며, 각 단계에서 새로운 전략과 세계를 발견해야 한다. 이는 실질적 인과 변화와 숙련으로 이루어져야 하며, 무한한 반복이나 복잡한 용어는 금지된다.",
+      "coreFun": "생존 상태 변화 → 플레이어 행동 → 이벤트 발생 → 다음 전략 변화"
+    },
+    "local_authoring_parts::29514f4520dc429f78bf2946eed687a87d00d836018fe2b20f3b4891cf65f2ea:coreLoop": {
+      "coreLoop": [
+        "입력: 생존 상태 변화, 채집 선택, 진출 전략",
+        "선택: 플레이어 행동, 이벤트 발생",
+        "보상: 이벤트 발생, 다음 전략 변화, 게임 정체성 변화"
+      ]
+    },
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential_survival_state_transition",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "survival_status_change",
+        "resource_selection"
+      ],
+      "stateOutputs": [
+        "event_occurrence",
+        "strategy_shift"
+      ],
+      "name": "Essential Survival State Transition",
+      "purpose": "Establishes the core causal chain of survival, resource selection, and event occurrence leading to strategy shift.",
+      "playerChoice": "Event occurrence triggers strategy shift, which is validated through gameplay mechanics and narrative progression."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 4,
+      "successes": 4,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 285758,
+      "lastMs": 37731,
+      "lastError": null,
+      "updatedAt": "2026-10-10T05:33:02.026Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:28:15.947Z",
-  "updatedAt": "2026-10-10T05:28:16.057Z",
+  "updatedAt": "2026-10-10T05:33:02.028Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1754,5 +1877,32 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": [
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_essential_survival_state_transition"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_essential_survival_state_transition"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 1
+  },
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T05:33:02.026Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
