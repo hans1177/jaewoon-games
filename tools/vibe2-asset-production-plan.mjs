@@ -2257,11 +2257,15 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\\s-]+/g,'_')||null;
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
-  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput));
+  const cinematic=recipe?.cinematic===true||args.includes('--cinematic');
+  const cinematicOutput=outputs.find(value=>/\/cinematic\.mp4$/i.test(value))||null;
+  const shotlistOutput=outputs.find(value=>/\/shotlist\.json$/i.test(value))||null;
+  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))&&(!cinematic||Boolean(cinematicOutput&&shotlistOutput&&evidenceJson&&preview));
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
+    cinematic,cinematicOutput,shotlistOutput,videoRequiresActualFfprobe:true,
     masterGlbRequired,masterGlbOutput,masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     primitivePartAssemblyPrototypeOnly:masterGlbRequired,
     runtimeVerificationRequired:true,companyPromotionAllowed:false
@@ -2282,6 +2286,10 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const subject=['rock','crate'].includes(requestedSubject)?requestedSubject
     :typeName==='prop'&&/\brock\b|\bstone\b|\bboulder\b|바위|돌(?:덩이|멩이|하나|\s)/i.test(clean(task.goal||task.request))?'rock':'generic';
   const genre=clean(task.genre||task.genreFamily||task.concept?.genre).slice(0,80);
+  // [CINEMATIC] Only explicitly requested movie jobs consume expensive frame rendering.
+  const cinematic=task?.assetCinematic?.enabled===true||task?.renderVideo===true
+    ||/(?:시네마틱|영상\s*(?:제작|렌더|연출|출력)|동영상|트레일러|카메라\s*연출|cinematic|render[ -]?video|video[ -]?render|trailer|showreel)/i.test(clean(task.goal||task.request));
+  const cinematicHigh=cinematic&&clean(task?.assetCinematic?.quality).toUpperCase()==='HIGH';
   return {
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
@@ -2292,10 +2300,11 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     editableSource:'assets/native-authoring/build-game-visual.py',
     types:[typeName],
     targetPlatforms:[targetName],
-    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre],
-    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`],
+    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre,...(cinematic?['--cinematic','--video-fps',cinematicHigh?'24':'12','--video-width',cinematicHigh?'960':'640']:[])],
+    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`,...(cinematic?[`${outputRoot}/cinematic.mp4`,`${outputRoot}/shotlist.json`]:[])],
     evidenceJson:`${outputRoot}/evidence.json`,
     preview:`${outputRoot}/preview.png`,
+    cinematic,
     runMode:'VERIFY_ONLY'
   };
 }
@@ -2445,6 +2454,19 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       editableSourceArtifactRequired:true,
       exportedNativeArtifactRequired:true,
       previewRenderRequired:true,
+      cinematicVideo:freeze({
+        supported:true,
+        requested:executionRecipes.some(row=>row.cinematic===true),
+        executionRecipes:freezeList(executionRecipes.filter(row=>row.cinematic===true).map(row=>row.id)),
+        encoder:'BLENDER_FFMPEG_H264',
+        container:'MP4',
+        sourceBoundShotlistRequired:true,
+        ffprobeDecodeMetadataRequired:true,
+        silentVideoOnly:true,
+        audioAuthoringOwner:'audio',
+        gameplayMutationAllowed:false,
+        nativeRuntimeVerifiedByDccRender:false
+      }),
       artifactHashesRequired:true,
       requiredEvidenceFields:freezeList(['recipe','editableSource','nativeArtifact','artifactHash','preview','runtimeVerificationState']),
       crossPlatform3dMasterGlbRequired:uniqueDccTypes.some(isCrossPlatform3dActorType),
