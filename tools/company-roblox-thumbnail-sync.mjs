@@ -19,21 +19,21 @@ export function resolveRobloxThumbnailTarget({catalog={},queue={},gameId=''}) {
   const source=clean(canonical?.marketing?.thumbnail||game.marketingThumbnail||canonical?.identity?.image||game.image);
   if(!source)throw new Error('ROBLOX_THUMBNAIL_SOURCE_MISSING:'+id);
   if(!source.startsWith('assets/roblox-thumbnails/'))throw new Error('ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL:'+source);
+  // 메인: Roblox 공식 서버에 검증된 해당 게임의 전용 universe/place만 업로드한다.
   const item=(queue.items||[]).find(row=>clean(row?.gameId)===id)||{};
-  const candidates=[
-    item.robloxPublicationTarget,
-    item.robloxRuntimeCandidateEvidence,
-    item.robloxInternalReleaseEvidence,
-    item.robloxReleaseEvidence,
-    item.robloxDedicatedExperience
-  ].filter(Boolean);
-  let universeId='';
-  let placeId='';
-  for(const row of candidates){
-    if(validId(row?.universeId)&&validId(row?.placeId)){universeId=clean(row.universeId);placeId=clean(row.placeId);break;}
+  const target=item.robloxPublicationTarget||{};
+  if(target.verified!==true||target.dedicated!==true||target.shared===true
+    ||clean(target.gameId||id)!==id
+    ||!validId(target.universeId)||!validId(target.placeId)){
+    throw new Error('ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING:'+id);
   }
-  if(!validId(universeId))throw new Error('ROBLOX_THUMBNAIL_VERIFIED_UNIVERSE_MISSING:'+id);
-  return Object.freeze({gameId:id,source,universeId,placeId,name:clean(canonical?.identity?.name||game.name||id)});
+  if(!source.startsWith('assets/roblox-thumbnails/'+id+'.')){
+    throw new Error('ROBLOX_THUMBNAIL_WRONG_GAME_SOURCE:'+id);
+  }
+  return Object.freeze({
+    gameId:id,source,universeId:clean(target.universeId),placeId:clean(target.placeId),
+    name:clean(canonical?.identity?.name||game.name||id)
+  });
 }
 
 export function validateCanonicalThumbnail({root='.',target={}}={}) {
