@@ -91,6 +91,10 @@ test('all first-party game libraries are automatically screened and only existin
   assert.ok(!contract.internalLibraryMatches.some(row=>row.library==='assets/vibe-system-steward.js'));
   assert.ok(contract.internalLibraryMatches.every(row=>row.optional&&!row.automaticImport&&!row.newGameplayAuthority&&!row.runtimeVerified));
   assert.ok(contract.internalLibraryMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
+  const signalOnly=buildInterfaceBlueprintContract({enabled:true,focus:'USABILITY',mode:'EXISTING_PLAY_PRESENTATION',
+    design:{genre:'SURVIVAL',coreLoop:['걷기']},source:{sourceAnchors:[],signals:{inventory:20,combat:20}},
+    availableLibraryPaths:libraries});
+  assert.deepEqual(signalOnly.internalLibraryMatches,[],'signals cannot substitute source anchors');
   const empty=buildInterfaceBlueprintContract({enabled:true,mode:'EXISTING_PLAY_PRESENTATION',
     design:{genre:'SURVIVAL',coreLoop:['걷기']},source:{sourceAnchors:[]},availableLibraryPaths:libraries});
   assert.equal(empty.internalLibraryMatches.length,0);
