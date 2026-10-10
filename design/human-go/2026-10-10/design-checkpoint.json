@@ -454,25 +454,38 @@
       "name": "Player Discovers Hidden Map Leading to Uncharted Forest",
       "purpose": "The player discovers a new location with unique environmental hazards and opportunities.",
       "playerChoice": "The player must choose between exploring the forest or returning to the starting point."
+    },
+    "local_authoring_parts::dc9065d7af33ea1b866c5f28a13fd2e617a150609305187c8906a279519aac51:signatureSystems:2": {
+      "id": "SIGNATURE_SYSTEM_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_DISCOVERS_HIDDEN_MAP_LEADING_TO_UNCHARTED_FOREST"
+      ],
+      "stateOutputs": [
+        "FIGURE_REVEALS_NEW_LOCATION_WITH_UNIQUE_ENVIRONMENTAL_HAZARDS_AND_OPPORTUNITIES"
+      ],
+      "name": "Player Discovers New Location with Unique Environmental Hazards and Opportunities",
+      "purpose": "Enables player to explore new areas with unique environmental hazards and opportunities",
+      "playerChoice": "The player must choose between exploring the forest or returning to the starting point, influenced by the environment's challenges and rewards"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1484599,
-      "lastMs": 100663,
+      "totalMs": 1586359,
+      "lastMs": 101760,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:01:47.001Z"
+      "updatedAt": "2026-10-10T03:03:28.762Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:37:02.353Z",
-  "updatedAt": "2026-10-10T03:01:47.001Z",
+  "updatedAt": "2026-10-10T03:03:28.763Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2119,7 +2132,7 @@
   "localAuthoringSplits": {
     "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:01:47.001Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:03:28.762Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
