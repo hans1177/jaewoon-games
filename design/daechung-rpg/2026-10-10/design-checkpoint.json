@@ -489,25 +489,48 @@
     },
     "local_authoring_parts::c1c0fb574b09b8313c6fe6c9cef4b1c9b8aec8321527f73cb4849ebb91c4633b:materialDomain": {
       "materialDomain": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG"
+    },
+    "local_authoring_parts::c1c0fb574b09b8313c6fe6c9cef4b1c9b8aec8321527f73cb4849ebb91c4633b:stateChange": {
+      "stateChange": "마을에서 퀘스트와 장비 준비 과정에서, AI 유저와 파티 구성 시 플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::88dcc5a791b15c5018129589333af2a93e6f5d17a063991047fd1fd1c2c2af66:b": {
+      "system": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "material": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "materialDomain": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "stateChange": "마을에서 퀘스트와 장비 준비 과정에서, AI 유저와 파티 구성 시 플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::7ba1d647e0a9a6361700a884dfe0a4c1c12b2aa1d2a9c5b1afacf5ad336dd9de:b": {
+      "b": {
+        "system": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+        "material": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+        "materialDomain": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+        "stateChange": "마을에서 퀘스트와 장비 준비 과정에서, AI 유저와 파티 구성 시 플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+      }
+    },
+    "local_authoring_parts::7ba1d647e0a9a6361700a884dfe0a4c1c12b2aa1d2a9c5b1afacf5ad336dd9de:abCausality": {
+      "abCausality": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::2d63a14b12c430991a34ed1ec9edb31f1fdb0c66b7edabc6a6c063dbd9c778ae:aChangesB": {
+      "aChangesB": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 20,
-      "successes": 19,
+      "calls": 23,
+      "successes": 22,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1309768,
-      "lastMs": 18424,
+      "totalMs": 1375462,
+      "lastMs": 21085,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:54:32.161Z"
+      "updatedAt": "2026-10-10T09:55:37.863Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T09:54:32.162Z",
+  "updatedAt": "2026-10-10T09:55:37.863Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2518,7 +2541,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:54:32.161Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:55:37.863Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
