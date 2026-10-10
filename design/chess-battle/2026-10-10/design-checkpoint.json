@@ -97,25 +97,32 @@
       },
       "playerFantasy": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 단순히 터트리기만 하는 것이 아니라, 전략적 판단을 통해 전장을 점령하고 승패를 결정하는 데 기여할 수 있는 역할을 수행하게 된다.",
       "coreFun": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다. 플레이어는 단순히 터트리기만 하는 것이 아니라, 전략적 판단을 통해 전장을 점령하고 승패를 결정하는 데 기여할 수 있는 역할을 수행하게 된다. 이는 입력 후 즉각적인 상태 변화와 피드백을 제공하며, 숫자 상승뿐 아니라 새 행동 조합·경로·대응법을 연다. 첫 성공과 위험/선택을 경험하여 다음 전략·경로·성장 가능성이 실제로 일어나도록 설계된다. 주요 요소인 '전략적 판단'은 여러 시스템 간의 인과적 연결을 통해 구현되며, 복잡한 용어 및 반복은 최소화되어야 한다. 이는 학문 소재로서도 가치가 있으며, 발전 규칙에 따라 무제한적으로 확장될 수 있다."
+    },
+    "local_authoring_parts::913596c3cd7caa857ee3ee24814dec1e277c354d4c248af1906d986908f6f835:coreLoop": {
+      "coreLoop": [
+        "INPUT: PLAYER_ACTION_OR_NEGLECT -> STATE CHANGE: ACTION_SEQUENCE_AND_SPACE_ORIENTATION -> REWARD: DECISION_FLOW_AND_TERRITORY_EXPANSION",
+        "INPUT: BOARD_LAYOUT_AND_ENEMY_THREAT -> STATE CHANGE: BOARD_CONTROL_CHANGE -> REWARD: TERRITORY_CONQUEST",
+        "INPUT: ACTION_SEQUENCE_AND_TERRITORY_EXPANSION -> STATE CHANGE: DECISION_FLOW_AND_TERRITORY_EXPANSION -> REWARD: BOARD_CONTROL_CHANGE"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 164683,
-      "lastMs": 164683,
+      "totalMs": 200401,
+      "lastMs": 35718,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:32:19.497Z"
+      "updatedAt": "2026-10-10T02:32:55.218Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:29:34.732Z",
-  "updatedAt": "2026-10-10T02:32:19.497Z",
+  "updatedAt": "2026-10-10T02:32:55.218Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1755,7 +1762,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:32:19.497Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:32:55.218Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
