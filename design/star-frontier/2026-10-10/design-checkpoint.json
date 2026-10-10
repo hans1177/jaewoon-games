@@ -21,25 +21,50 @@
         "materialDomain": "학문적 규칙, 인과적 상태 변화",
         "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
       }
+    },
+    "local_authoring_parts::42c1923fb561b00b95d9531a783f8f5234bf6a95ff699819108cc69ab429d12c:b,abCausality": {
+      "b": {
+        "system": "게임 내부 루프와 외부 세계 연결",
+        "material": "진보적 선택, 보상, 위험, 세계 변화",
+        "materialDomain": "학문적 규칙, 인과적 상태 변화",
+        "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "abCausality": "양방향 실제 상태 교환 및 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다"
+    },
+    "local_authoring_parts::f5a814bce8af0a0ba3d0a1e25487f54606e0ed9c559e8a47538934e9f5c6da95:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "별길 개척자: 진보적 루프, 선택, 보상, 세계 연결, 모바일 이해 가능한 입력/피드백, 숙련 및 성장, 복잡한 용도, 단서, 시그니처 세계, 층위, 인과적 상태 변화, 게임 정체성, 주요 행동, 두 창작 소재, 세션 성장, 중기 성장, 장기 성장, 다중 플레이어, 기존 규칙, 저장, 경로, 위험, 보상, 실패, 재시도, 회복, 저장, 소프트락, 리턴, 이탈, 구조, 압박 유형, 지역, 적, 퀘스트, 보상, 전략, 상호 작용, 대응, 새로운 규칙 조합, 심리적 발전, 실질적 인과 변화, 학문적 규칙, 게임 자체의 깊이, 무한 반복 방지, 수치, 원본 규칙, 저장, 경로, 위험, 보상, 실패, 재시도, 회복, 저장, 소프트락, 리턴, 이탈",
+      "a": {
+        "system": "게임 내부 루프와 외부 세계 연결",
+        "material": "진보적 선택, 보상, 위험, 세계 변화",
+        "materialDomain": "학문적 규칙, 인과적 상태 변화",
+        "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "b": {
+        "system": "게임 내부 루프와 외부 세계 연결",
+        "material": "진보적 선택, 보상, 위험, 세계 변화",
+        "materialDomain": "학문적 규칙, 인과적 상태 변화",
+        "stateChange": "선택 -> 상태변화 -> 보상/위험/다음 선택"
+      },
+      "abCausality": "양방향 실제 상태 교환 및 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 2,
+      "calls": 6,
+      "successes": 3,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1335003,
-      "lastMs": 217861,
+      "totalMs": 1390085,
+      "lastMs": 55082,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:59:59.125Z"
+      "updatedAt": "2026-10-10T09:00:54.208Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:37:43.767Z",
-  "updatedAt": "2026-10-10T08:59:59.125Z",
+  "updatedAt": "2026-10-10T09:00:54.209Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1541,7 +1566,7 @@
     "9a396cbd4a2c1209951a539122c8bb32e94e98023583a867e8e3b98683101531": true,
     "42c1923fb561b00b95d9531a783f8f5234bf6a95ff699819108cc69ab429d12c": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:59:59.125Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:00:54.209Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
