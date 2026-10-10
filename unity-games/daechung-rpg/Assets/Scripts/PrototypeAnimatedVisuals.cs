@@ -1,6 +1,6 @@
 // 파일명: PrototypeAnimatedVisuals.cs
-// 역할: 대충 RPG 초안에 검증된 무료 Pirate/Skeleton 애니메이션 스프라이트를 실제 적용한다.
-// 출처: https://github.com/chongdashu/ai-pixel-snapped-game-sprites (MIT)
+// 역할: 대충 RPG의 기존 전투·NPC 연출을 Unity 네이티브 입체 모델과 3D 카메라에서 수행한다.
+// 그래픽: 저장소 원본 OBJ 3D 모델 사용. 기존 MIT 픽셀 애니메이션 시트는 연출 데이터로 보존한다.
 
 using System;
 using System.Collections;
@@ -31,7 +31,7 @@ namespace JaewoonGames.DaechungRpg
         private Coroutine _combatRoutine;
         private Coroutine _travelRoutine;
         // 그래픽: 원격 에셋을 유지하고 오프라인 전용 아트·사냥터 장면을 제공한다.
-        private SpriteRenderer _backdrop;
+        private MeshRenderer _backdrop;
         private MeshRenderer _depthGround;
         private MeshRenderer _depthPath;
         private Camera _sceneCamera;
@@ -97,27 +97,33 @@ namespace JaewoonGames.DaechungRpg
             _enemy.SetVisible(false);
             _coopPartner = new AnimatedActor("CoopPartner", new Vector3(-0.8f, -1.65f, -0.45f), true);
             _coopPartner.SetVisible(false);
-            var backdropObject = new GameObject("DaechungRegionBackground");
+            // 3D 배경: 기존 픽셀 풍경 텍스처를 후방 메시의 보조 텍스처로만 사용한다.
+            // 메인 캐릭터·몬스터·NPC는 SpriteRenderer가 아니라 별도 OBJ 입체 메시로 렌더한다.
+            var backdropObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            backdropObject.name = "DaechungRegionBackground3D";
             backdropObject.transform.SetParent(transform, false);
-            _backdrop = backdropObject.AddComponent<SpriteRenderer>();
-            _backdrop.sortingOrder = -30;
-            var pixelShader = Shader.Find("Jaewoon/DaechungPixelArt");
-            if (pixelShader != null)
-            {
-                var material = new Material(pixelShader);
-                _backdrop.sharedMaterial = material;
-                _player.SetMaterial(material);
-                _enemy.SetMaterial(material);
-                _coopPartner.SetMaterial(material);
-            }
+            var backdropCollider = backdropObject.GetComponent<Collider>();
+            if (backdropCollider != null) Destroy(backdropCollider);
+            _backdrop = backdropObject.GetComponent<MeshRenderer>();
+            var backdropShader = Shader.Find("Unlit/Texture");
+            if (backdropShader != null) _backdrop.sharedMaterial = new Material(backdropShader);
             SetRegionVisual("town");
             InstallLocalActor(_player, "hero");
             InstallLocalActor(_enemy, "skeleton");
             InstallLocalActor(_coopPartner, "hero");
             InitializeVillageResidents();
             _coopPartner.SetTint(new Color(0.64f, 1.0f, 0.8f, 1f));
-            _ready = true;
+            _ready = _player.NativeMeshReady && _enemy.NativeMeshReady
+                && _coopPartner.NativeMeshReady
+                && _villageResidents.TrueForAll(resident => resident.Actor.NativeMeshReady);
+            if (!_ready)
+            {
+                _loadError = "Native 3D OBJ model import missing; gameplay visual QA blocked.";
+                Debug.LogError("JAEWOON_UNITY_WEB_QA NATIVE_3D_ACTOR_MISSING game=daechung-rpg status=REPAIR_REQUIRED");
+            }
             ShowTown();
+            // 3D 모델이 실제 준비된 시점에만 통합 메시/깊이 수치를 측정한다.
+            SetRegionVisual("town");
             StartCoroutine(LoadAll());
         }
 
@@ -318,9 +324,11 @@ namespace JaewoonGames.DaechungRpg
                 sprite = CreateBackdrop(id);
                 _regions[id] = sprite;
             }
-            _backdrop.sprite = sprite;
+            if (_backdrop.sharedMaterial != null && sprite != null)
+                _backdrop.sharedMaterial.mainTexture = sprite.texture;
             _backdrop.transform.position = new Vector3(0f, 0f, 8f);
-            _backdrop.transform.localScale = Vector3.one * 3.0f;
+            _backdrop.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            _backdrop.transform.localScale = new Vector3(32f, 20f, 1f);
 
             // 그래픽: 같은 Unity 카메라에서 원근 투영하는 실제 XZ 지형과 길.
             // 단순 2D 배경 확대가 아니라 지역마다 색이 바뀌는 3D 깊이 기하를 렌더한다.
@@ -381,7 +389,7 @@ namespace JaewoonGames.DaechungRpg
 #if UNITY_WEBGL && !UNITY_EDITOR
             // 메인: 기존 2D/2.5D 바닥·길만으로 3D를 주장하지 않고 실제 입체 메시를 요구한다.
             // 레거시 스프라이트는 3D 대체본 검증 전까지 보존하되 입체 메시로 세지 않는다.
-            if (Application.absoluteURL.Contains("qa=1"))
+            if (_ready && Application.absoluteURL.Contains("qa=1"))
             {
                 int inspected = 0, validMeshes = 0, triangles = 0, volumetricMeshes = 0;
                 bool materialsValid = true;
@@ -411,11 +419,37 @@ namespace JaewoonGames.DaechungRpg
                     materialsValid &= renderer.sharedMaterial != null
                         && renderer.sharedMaterial.shader != null && renderer.sharedMaterial.shader.isSupported;
                 }
-                var backdropTexture = _backdrop != null && _backdrop.sprite != null ? _backdrop.sprite.texture : null;
+                var backdropTexture = _backdrop != null && _backdrop.sharedMaterial != null
+                    ? _backdrop.sharedMaterial.mainTexture as Texture2D : null;
                 bool textureDecoded = backdropTexture != null && backdropTexture.width > 0 && backdropTexture.height > 0;
                 bool geometryPass = inspected >= 2 && validMeshes == inspected && triangles > 0
                     && volumetricMeshes > 0 && materialsValid && textureDecoded;
                 Debug.Log($"JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER inspected={inspected} validMeshes={validMeshes} triangles={triangles} volumetricMeshes={volumetricMeshes} materialPass={(materialsValid ? 1 : 0)} texturePass={(textureDecoded ? 1 : 0)} status={(geometryPass ? "PASS" : "REPAIR_REQUIRED")}");
+
+                // 실제 런타임의 3축 입체 메시·카메라·캐릭터를 독립 계수한다.
+                // 스프라이트가 하나라도 게임 장면에 남았다면 3D 검사를 실패시킨다.
+                int worldMeshes3d = 0, spriteGameplayActors = 0;
+                float zMin = float.PositiveInfinity, zMax = float.NegativeInfinity;
+                foreach (var filter in FindObjectsByType<MeshFilter>(FindObjectsSortMode.None))
+                {
+                    if (filter == null || !filter.gameObject.activeInHierarchy || filter.sharedMesh == null) continue;
+                    var size = filter.sharedMesh.bounds.size;
+                    if (size.x <= 0.02f || size.y <= 0.02f || size.z <= 0.02f) continue;
+                    worldMeshes3d++;
+                    zMin = Mathf.Min(zMin, filter.transform.position.z);
+                    zMax = Mathf.Max(zMax, filter.transform.position.z);
+                }
+                foreach (var renderer in FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
+                    if (renderer != null && renderer.gameObject.activeInHierarchy) spriteGameplayActors++;
+                int gameplayActors3d = (_player.NativeMeshReady ? 1 : 0)
+                    + (_battleVisible && _enemy.NativeMeshReady ? 1 : 0);
+                int cameraPerspective = _sceneCamera != null && !_sceneCamera.orthographic ? 1 : 0;
+                int worldDepthCm = worldMeshes3d >= 2
+                    ? Mathf.RoundToInt(Mathf.Max(0f, zMax - zMin) * 100f) : 0;
+                bool spatialPass = geometryPass && cameraPerspective == 1
+                    && worldMeshes3d >= 2 && worldDepthCm >= 50 && gameplayActors3d >= 1
+                    && spriteGameplayActors == 0;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH cameraPerspective={cameraPerspective} worldMeshes3d={worldMeshes3d} worldDepthCm={worldDepthCm} gameplayActors3d={gameplayActors3d} spriteGameplayActors={spriteGameplayActors} status={(spatialPass ? "PASS" : "REPAIR_REQUIRED")}");
             }
 #endif
         }
@@ -469,6 +503,8 @@ namespace JaewoonGames.DaechungRpg
                 }
                 actor.AddClip(action, frames, action == "walk" ? 8 : 5);
             }
+            // 소스/게임 규칙 변경 없이 시각 모델만 교체한다. 원본 저장소의 OBJ가 없으면 QA에서 실패한다.
+            actor.SetNativeModel(id);
             actor.Play("idle", true, true);
         }
 
@@ -880,8 +916,7 @@ namespace JaewoonGames.DaechungRpg
                 camera = cameraObject.AddComponent<Camera>();
             }
 
-            // 그래픽: 2.5D 원근 카메라. 3D XZ 지형과 깊이가 다른 2D 애니메이션 배우를
-            // 하나의 Unity 씬에서 합성하며 2D 전용 정면 카메라를 사용하지 않는다.
+            // 그래픽: 3D 월드·캐릭터·몬스터·NPC 메시를 원근 카메라로 렌더한다.
             camera.orthographic = false;
             camera.fieldOfView = 40f;
             camera.nearClipPlane = 0.2f;
@@ -911,55 +946,127 @@ namespace JaewoonGames.DaechungRpg
             {
                 public Sprite[] Frames;
                 public float Fps;
-                public float Duration => Frames == null || Frames.Length == 0 ? 0f : Frames.Length / Mathf.Max(1f, Fps);
+                public float Duration => Frames == null || Frames.Length == 0
+                    ? 0f : Frames.Length / Mathf.Max(1f, Fps);
             }
 
-            private readonly Dictionary<string, Clip> _clips = new Dictionary<string, Clip>(StringComparer.OrdinalIgnoreCase);
+            private readonly Dictionary<string, Clip> _clips =
+                new Dictionary<string, Clip>(StringComparer.OrdinalIgnoreCase);
             private readonly GameObject _root;
-            private readonly SpriteRenderer _renderer;
+            private GameObject _visual;
+            private MeshRenderer[] _renderers = Array.Empty<MeshRenderer>();
+            private Color _tint = Color.white;
+            private bool _faceRight;
+            private bool _visible = true;
             private string _currentAction = string.Empty;
             private bool _loop = true;
             private float _actionStarted;
+            public bool NativeMeshReady { get; private set; }
 
             public AnimatedActor(string name, Vector3 position, bool faceRight)
             {
                 _root = new GameObject(name);
                 _root.transform.position = position;
-                _root.transform.localScale = Vector3.one * 1.4f;
-                _renderer = _root.AddComponent<SpriteRenderer>();
-                _renderer.flipX = faceRight;
-                _renderer.sortingOrder = 10;
+                _root.transform.localScale = Vector3.one;
+                _faceRight = faceRight;
             }
 
-            public void SetTint(Color tint) { _renderer.color = tint; }
-            public void FaceRight(bool facingRight) { _renderer.flipX = facingRight; }
-            public void SetMaterial(Material material) { _renderer.sharedMaterial = material; }
+            // 실제 기존 원본 3D 메시는 Assets/Art/Resources/DaechungModels에 보관한다.
+            // Unity가 .obj를 기본 GameObject로 가져오므로 별도 외부 런타임/에셋 파이프라인이 없다.
+            public void SetNativeModel(string id)
+            {
+                if (_visual != null) UnityEngine.Object.Destroy(_visual);
+                _visual = new GameObject("Native3DActor");
+                _visual.transform.SetParent(_root.transform, false);
+                _visual.transform.localRotation = Quaternion.Euler(-90f, 0f, 0f);
+                _visual.transform.localScale = Vector3.one * 0.90f;
+                string[] models;
+                if (id == "hero")
+                    models = new[] { "torso_cloth", "head_canine", "shoulder_light" };
+                else if (id.Contains("boar"))
+                    models = new[] { "boar" };
+                else if (id.Contains("wolf") || id.Contains("panther") || id.Contains("tiger"))
+                    models = new[] { "flamefox" };
+                else if (id.Contains("slime"))
+                    models = new[] { "leafturtle" };
+                else if (id.Contains("ogre") || id.Contains("orc") || id.Contains("knight"))
+                    models = new[] { "hornbull" };
+                else if (id.Contains("demon"))
+                    models = new[] { "stormeagle" };
+                else
+                    models = new[] { "rockgator" };
+
+                bool allLoaded = true;
+                foreach (var modelId in models)
+                {
+                    var source = Resources.Load<GameObject>("DaechungModels/" + modelId);
+                    if (source == null)
+                    {
+                        allLoaded = false;
+                        Debug.LogError("DAECHUNG_3D_IMPORT_MISSING model=" + modelId);
+                        continue;
+                    }
+                    var part = UnityEngine.Object.Instantiate(source, _visual.transform, false);
+                    part.name = modelId + "_3D";
+                }
+
+                _renderers = _visual.GetComponentsInChildren<MeshRenderer>(true);
+                var nativeShader = Shader.Find("Standard");
+                if (nativeShader == null) nativeShader = Shader.Find("Universal Render Pipeline/Lit");
+                if (nativeShader == null) nativeShader = Shader.Find("Unlit/Color");
+                foreach (var renderer in _renderers)
+                {
+                    if (nativeShader != null)
+                        renderer.sharedMaterial = new Material(nativeShader) { color = _tint };
+                }
+                NativeMeshReady = allLoaded && _renderers.Length > 0
+                    && Array.Exists(_visual.GetComponentsInChildren<MeshFilter>(true),
+                        filter => filter.sharedMesh != null && filter.sharedMesh.bounds.size.x > 0.02f
+                            && filter.sharedMesh.bounds.size.y > 0.02f
+                            && filter.sharedMesh.bounds.size.z > 0.02f);
+                if (!NativeMeshReady)
+                    Debug.LogError("DAECHUNG_3D_ACTOR_INVALID id=" + id);
+                FaceRight(_faceRight);
+                SetVisible(_visible);
+            }
+
+            public void SetTint(Color tint)
+            {
+                _tint = tint;
+                foreach (var renderer in _renderers)
+                    if (renderer != null && renderer.sharedMaterial != null)
+                        renderer.sharedMaterial.color = tint;
+            }
+
+            public void FaceRight(bool faceRight)
+            {
+                _faceRight = faceRight;
+                if (_visual != null)
+                    _visual.transform.localRotation = Quaternion.Euler(-90f, faceRight ? 0f : 180f, 0f);
+            }
 
             public bool Loaded { get; set; }
             public bool Dead { get; set; }
-
             public Vector3 Position
             {
                 get => _root.transform.position;
                 set => _root.transform.position = value;
             }
-
             public void SetVisible(bool visible)
             {
-                _renderer.enabled = visible;
+                _visible = visible;
+                _root.SetActive(visible);
             }
-
             public void AddClip(string action, Sprite[] frames, int fps)
             {
                 _clips[action] = new Clip { Frames = frames, Fps = fps };
             }
-
             public void Play(string action, bool shouldLoop, bool force = false)
             {
                 if (Dead && !string.Equals(action, "death", StringComparison.OrdinalIgnoreCase)) return;
                 if (!_clips.ContainsKey(action)) return;
-                if (!force && string.Equals(_currentAction, action, StringComparison.OrdinalIgnoreCase) && _loop == shouldLoop) return;
-
+                if (!force && string.Equals(_currentAction, action, StringComparison.OrdinalIgnoreCase)
+                    && _loop == shouldLoop) return;
                 _currentAction = action;
                 _loop = shouldLoop;
                 _actionStarted = Time.time;
@@ -967,25 +1074,27 @@ namespace JaewoonGames.DaechungRpg
 
             public void Tick(float now)
             {
-                if (!_clips.TryGetValue(_currentAction, out var clip) || clip.Frames == null || clip.Frames.Length == 0) return;
-
+                if (_visual == null || !_clips.TryGetValue(_currentAction, out var clip)
+                    || clip.Frames == null || clip.Frames.Length == 0) return;
                 var elapsed = Mathf.Max(0f, now - _actionStarted);
-                int frameIndex;
-                if (_loop)
+                if (!_loop && !Dead && elapsed >= clip.Duration
+                    && !string.Equals(_currentAction, "idle", StringComparison.OrdinalIgnoreCase))
                 {
-                    frameIndex = Mathf.FloorToInt(elapsed * clip.Fps) % clip.Frames.Length;
-                }
-                else
-                {
-                    frameIndex = Mathf.Min(clip.Frames.Length - 1, Mathf.FloorToInt(elapsed * clip.Fps));
-                    if (!Dead && elapsed >= clip.Duration && !string.Equals(_currentAction, "idle", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Play("idle", true, true);
-                        return;
-                    }
+                    Play("idle", true, true);
+                    return;
                 }
 
-                _renderer.sprite = clip.Frames[frameIndex];
+                // 원본 공격/피격/사망/보행 타이밍을 Unity 3D 메시 움직임으로 표현한다.
+                var bob = _currentAction == "walk" ? Mathf.Sin(elapsed * clip.Fps * 2f) * 0.055f : 0f;
+                var rush = _currentAction == "attack" ? Mathf.Sin(Mathf.Min(1f, elapsed / 0.30f)
+                    * Mathf.PI) * 0.26f : 0f;
+                _visual.transform.localPosition = new Vector3(rush, bob
+                    - (_currentAction == "death" ? Mathf.Min(0.65f, elapsed * 0.75f) : 0f), 0f);
+                var flash = _currentAction == "hurt" && elapsed < 0.24f
+                    ? new Color(1f, 0.35f, 0.35f, 1f) : _tint;
+                foreach (var renderer in _renderers)
+                    if (renderer != null && renderer.sharedMaterial != null)
+                        renderer.sharedMaterial.color = flash;
             }
         }
     }
