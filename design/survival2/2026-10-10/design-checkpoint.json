@@ -97,25 +97,33 @@
       },
       "playerFantasy": "생존자는 자원을 수집하고 위험을 관리하며, 그 선택은 다른 플레이어에게 정보를 공유하거나 전략적 조건을 제시해야 한다. 이는 사회적 상호작용과 자연환경의 갈등에서 발생한다.",
       "coreFun": "자원 위치 변경/가시성 증대/위험 감소 → 선택 결과로 인한 사회적 구조 변화/정보 공유 → 플레이어의 숙련된 선택이 새로운 경로를 연다. 이는 생존의 중심 역할이며, 보상은 발견과 이해에 기반하여 결정된다."
+    },
+    "local_authoring_parts::5e0ff9d8ad23565c995973760cde8fd9d26b9fc317ba2f1f2bd09f951b396b81:coreLoop": {
+      "coreLoop": [
+        "입력: 자원 위치 변경/가시성 증대/위험 감소",
+        "선택: 자원 확보 방식 또는 협력 전략의 변화",
+        "상태변화: 사회적 구조 변화 및 정보 전달",
+        "보상: 플레이어의 숙련된 선택에 기반하여 결정되는 새로운 경로"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 187638,
-      "lastMs": 187638,
+      "totalMs": 222608,
+      "lastMs": 34970,
       "lastError": null,
-      "updatedAt": "2026-10-10T04:56:19.686Z"
+      "updatedAt": "2026-10-10T04:56:54.657Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:53:11.716Z",
-  "updatedAt": "2026-10-10T04:56:19.686Z",
+  "updatedAt": "2026-10-10T04:56:54.657Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1827,7 +1835,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T04:56:19.686Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:56:54.657Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
