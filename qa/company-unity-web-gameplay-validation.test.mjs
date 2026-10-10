@@ -170,6 +170,56 @@ test('Unity Web visual QA reads actual gameplay pixels and detects missing shade
   assert.match(source,/realDeviceVerified:false/);
 });
 
+test('Unity Web scene screenshots retain boot and gameplay canvas pixels independently of the HTML viewport',()=>{
+  const boot=source.indexOf("const bootSceneCapture=await canvas.screenshot({scale:'css'})");
+  const gameplay=source.indexOf("const sceneCapture=approvedEnvironment.required===true?await canvas.screenshot({scale:'css'})");
+  const coreFun=source.indexOf('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
+  const screenshots=source.indexOf("const liveCapture=await page.screenshot({fullPage:false})");
+  assert.ok(boot>0&&boot<coreFun&&gameplay>coreFun&&gameplay>screenshots);
+  assert.match(source,/fs\.writeFileSync\(bootScenePath,bootSceneCapture\)/);
+  assert.match(source,/fs\.writeFileSync\(sceneScreenshot,sceneCapture\)/);
+  assert.match(source,/createImageBitmap\(new Blob\(\[bytes\],\{type:'image\/png'\}\)\)/);
+  assert.match(source,/sceneCapture\.toString\('base64'\)/);
+  assert.match(source,/source:'REAL_UNITY_CANVAS_SCREENSHOT'/);
+  assert.match(source,/source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_NATIVE_LIT_MESH_INSPECTION'/);
+  assert.match(source,/bootCaptureSha256:bootSceneCaptureSha256/);
+  assert.match(source,/sceneCaptureSha256,sceneCapturePersisted:Boolean\(screenshot&&sceneCapture\)/);
+  assert.match(source,/comparedWithLastApprovedGoldenScene:false/,'do not claim an unperformed visual golden comparison');
+  assert.match(source,/realDeviceVerified:false/,'mobile emulation is not a real Android phone');
+  assert.match(source,/visualBlocked[\s\S]*renderSurfaceVerified\|\|!sceneScreenVerified/);
+});
+
+test('Unity Web approved world screenshot gate rejects unlit, incomplete normals, flat canvas and magenta frames',()=>{
+  const start=source.indexOf('  const worldRenderMarker=');
+  const end=source.indexOf('  const shaderLikelyMissing=',start);
+  assert.ok(start>=0&&end>start);
+  const evaluate=new Function('markers','gameId','approvedEnvironment','scenePixels',
+    source.slice(start,end)+'\nreturn {surface:renderSurfaceVerified,screen:sceneScreenVerified};');
+  const gameId='sample-game';
+  const env={required:true};
+  const marker='UNITY_WEB_WORLD=RENDER_SURFACE game=sample-game source=UNITY_RUNTIME_LIT_MESH '+
+    'meshes=9 normals=9 triangles=240 materials=12 litMaterials=12 status=PASS';
+  const image={pixelCount:3500,magentaRatio:0.01,dominantColorRatio:0.45,distinctColorBuckets:120};
+  assert.deepEqual(evaluate([marker],gameId,env,image),{surface:true,screen:true});
+  for(const [label,lines] of [
+    ['missing native renderer',[]],
+    ['wrong game marker',[marker.replace('game=sample-game','game=other-game')]],
+    ['fake pass without triangles',[marker.replace('triangles=240','triangles=none')]],
+    ['unlit material',[marker.replace('litMaterials=12','litMaterials=11')]],
+    ['missing mesh normals',[marker.replace('normals=9','normals=8')]],
+    ['missing actual status',[marker.replace('status=PASS','status=REPAIR_REQUIRED')]],
+  ])assert.equal(evaluate(lines,gameId,env,image).surface,false,label);
+  for(const [label,pixels] of [
+    ['no browser scene pixels',null],
+    ['shader error magenta',{...image,magentaRatio:0.5}],
+    ['blank canvas',{...image,dominantColorRatio:0.99}],
+    ['low color diversity',{...image,distinctColorBuckets:2}],
+    ['insufficient pixels',{...image,pixelCount:2}],
+  ])assert.equal(evaluate([marker],gameId,env,pixels).screen,false,label);
+  assert.deepEqual(evaluate([],'sample-game',{required:false},null),{surface:true,screen:true},
+    'unapproved world keeps existing QA unchanged');
+});
+
 test('Unity Web renderer cost evidence is measured only from real Unity markers, never made-up counters',()=>{
   assert.match(source,/RENDER_STATS/);
   assert.match(source,/source=UNITY_NATIVE_RENDERER/);
@@ -381,7 +431,7 @@ test('Unity Web 3D gameplay rejects pseudo-depth even when triangles exist',()=>
 
 test('실제 Unity 메시·원근·3축 깊이 검증식이 2D/2.5D와 평면 메시를 승인하지 않는다',()=>{
   const start=source.indexOf('  const nativeMeshMarker=');
-  const end=source.indexOf('  const shaderLikelyMissing=',start);
+  const end=source.indexOf('  const worldRenderMarker=',start);
   assert.ok(start>=0&&end>start,'evaluate the actual browser QA 3D proof expressions');
   const evaluate=new Function('markers','gameId',source.slice(start,end)+
     '\nreturn {mesh:nativeMeshVerified,depth:nativeDepthVerified,missing:nativeMeshMissing};');
