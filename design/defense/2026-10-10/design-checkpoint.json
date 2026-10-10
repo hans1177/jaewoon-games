@@ -187,25 +187,32 @@
       },
       "playerFantasy": "숲길 디펜스에서는 플레이어가 전략적 방어 시스템을 직접 조작하며, 적의 웨이브에 맞춘 팀워크와 자원 관리로 스토리의 진입점을 만든다. 이 게임은 단순한 빌딩 게임이 아니라, 숙련 과정에서 실제 선택과 결과가 서로 연결되는 반복 가능한 핵심 루프를 제공한다.",
       "coreFun": "{\"identity\": \"Tactical Defense System with Dynamic Adaptation Based On Player Mastery and Enemy Behavior\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\",\n \\\"a\\\": {\\n \\\"system\\\": \"Strategy & Defense\",\\n \\\"material\\\": \"Enemy Wave Composition, Defensive Lane Placement, Tactical Resource Allocation\",\\n \\\"materialDomain\\\": \"Tactical Adaptation\",\\n \\\"stateChange\\\": \"Defensive Strategy Adjustment Based On Enemy Type and Wave Pattern\"\n },\n \\\"b\\\": {\\n \\\"system\\\": \"Economy & Resource Management\",\\n \\\"material\\\": \"Resource Gain from Defeated Enemies, Strategic Cost-Benefit Analysis\",\\n \\\"materialDomain\\\": \"Economic Tradeoff\",\\n \\\"stateChange\\\": \"Resource Allocation Prioritized by Tactical Needs Before Pressure Increases\"\n },\n \\\"abCausality\\\": \"Defensive Strategy→"
+    },
+    "local_authoring_parts::4c30082c0ea063e9d9300497ef200d38d6dfbcd3d29c621c416fcfac6a6d2a59:coreLoop": {
+      "coreLoop": [
+        "Input/Choice → Defensive Strategy Adjustment Based On Enemy Type and Wave Pattern",
+        "Resource Allocation Prioritized by Tactical Needs Before Pressure Increases",
+        "Adapt to Dynamic Enemy Behavior and Environmental Conditions"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 555566,
-      "lastMs": 103323,
+      "totalMs": 600859,
+      "lastMs": 45293,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:14:17.255Z"
+      "updatedAt": "2026-10-10T02:15:02.552Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:05:01.641Z",
-  "updatedAt": "2026-10-10T02:14:17.257Z",
+  "updatedAt": "2026-10-10T02:15:02.552Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1914,7 +1921,7 @@
   "localAuthoringSplits": {
     "de619f8198b3052df60b6bf980bc2d045f52e51aac8a32e9578b1d59c30ded5f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:14:17.257Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:15:02.552Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
