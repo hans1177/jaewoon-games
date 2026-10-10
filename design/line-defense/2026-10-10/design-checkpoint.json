@@ -80,25 +80,53 @@
         "worldChange": "웨이브 클리어 후 획득한 전리품은 군단 전체의 영구적 특성을 강화하여, 다음 웨이브에서 기존 루프와 상호작용하며 새로운 선택과 상태 변화를 생성함",
         "nextEvent": "다음 웨이브에서는 골목길 시너지 배치 시스템과 실시간 재화 순환 엔진의 상호작용이 다시 발생하며, 플레이어가 새로운 선택과 상태 변화를 생성할 수 있음"
       }
+    },
+    "local_authoring_parts::67d53958217377bc342421182b3281bb6890fca8c47552002bf13992ed3f8fe7:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "골목길 시너지",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 공간 배치 기반의 전략적 선택과 자원 관리 타이밍 조율을 통해 이루어지는 게임 메커니즘"
+        },
+        {
+          "name": "실시간 재화 순환",
+          "kind": "MATERIAL",
+          "gameplayEffect": "전투 중 획득하는 자원의 가치 변동을 실시간으로 조절하여 자원 수집 및 소비의 타이밍 조절"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "라인 디펜스",
+          "gameplayEffect": "실시간 라인 디펜스 게임에서 플레이어가 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 전략적 선택"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "자원 관리",
+          "gameplayEffect": "전투 중 획득한 자원의 가치 변동을 통제하고, 이를 유닛 업그레이드나 추가 배치에 투자하는 자원 관리 시스템"
+        }
+      ],
+      "cGenreInterlock": "골목길 시너지 배치 시스템과 실시간 재화 순환 엔진은 서로 다른 메인 장르로 각각 운영되며, 상호작용은 플레이어의 공간 배치 결정과 자원 관리 타이밍 조율을 통해 이루어짐.",
+      "cWorldAndGameplayEffect": "플레이어는 골목길의 최적 위치에 유닛을 배치하여 시너지 효과를 극대화하거나, 자원의 가치 변동을 통해 자원 수집 및 소비의 타이밍 조절을 수행함으로써 즉각적인 전투력 변화와 방어 성공의 쾌감을 경험하게 됩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 770540,
-      "lastMs": 106516,
+      "totalMs": 875178,
+      "lastMs": 104638,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T05:37:32.811Z"
+      "updatedAt": "2026-10-10T05:39:17.451Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:24:42.248Z",
-  "updatedAt": "2026-10-10T05:37:32.812Z",
+  "updatedAt": "2026-10-10T05:39:17.451Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -687,7 +715,7 @@
     "d993346d5612397053769c80070e8291cd8e833457a04509217722b9256421ea": true,
     "e855dfe35b6163e298efec00c38e171ef543327830843230e8b2a8f8135f3e2e": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:37:32.812Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:39:17.451Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
