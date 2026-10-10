@@ -121,21 +121,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 356384,
-      "lastMs": 31504,
+      "totalMs": 388835,
+      "lastMs": 32451,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:32:31.043Z"
+      "updatedAt": "2026-10-10T07:33:03.495Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:26:34.639Z",
-  "updatedAt": "2026-10-10T07:32:31.043Z",
+  "updatedAt": "2026-10-10T07:33:03.496Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1399,11 +1399,30 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::daa98e241d7a3f4aecf6d15165f6254ed2f314d6c651fd183c3dc9d61b50afe0:signatureSystems:1:f0045b742c5f8095": [
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_qualified_frequency_tuner"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_qualified_frequency_tuner"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::daa98e241d7a3f4aecf6d15165f6254ed2f314d6c651fd183c3dc9d61b50afe0:signatureSystems:1:f0045b742c5f8095": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:32:31.043Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T07:33:03.495Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
