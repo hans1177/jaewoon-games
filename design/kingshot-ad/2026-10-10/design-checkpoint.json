@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 전략적 디펜스에서 진입 방식, 위험 관리, 성장 가능성을 실제 플레이 선택에 연결되는 루프를 경험하며, 적 유형 대응, 보상 및 자원 조절, 새로운 전략 경로를 통해 게임을 진행해야 한다.",
       "coreFun": "{\"identity\": \"전략적 디펜스\", \"creativeGrammar\": {\"mainIdentity\": \"기본 게임 주제/정체성: 전략적 디펜스, 진입 방식, 위험 관리, 성장 가능성 실제 플레이 선택에 연결되는 루프\", \"a\": {\"system\": \"게임 시스템 + 해당 축 창작 소재: 전투 및 장비 선택, 지역 및 경로 확장, 적 유형 대응\", \"material\": \"신화, 역사, 철학, 과학, 예술 등 제한 없음: 전략적 선택, 장비 구조, 지역 배치\", \"materialDomain\": \"전략적 선택, 장비 구조, 지역 배치\", \"stateChange\": \"전략 선택 -> 장비 구조 변화 -> 지역 및 경로 확장\" }, \"b\": {\"system\": \"다른 시스템 + 해당 축 창작 소재: 적 유형 대응, 보상 및 자원 조절, 새로운 전략 경로\", \"material\": \"신화, 역사, 철학, 과학, 예술 등 제한 없음: 적 유형 대응, 보상 및 자원 조절, 새로운 전략 경로\", \"materialDomain\": \"적 유형 대응, 보상 및 자원 조절, 새로운 전략 경로\", \"stateChange\": \"적 유형 대응 -> 보상 및 자원 조절 -> 새로운 전략 경로\" }, \"abCausality\": \"양방향 실제 상태 교환: 전략 선택 -> 장비 구조 변화 -> 지역 및 경로 확장; 적 유형 대응 -> 보상 및 자원 조절 -> 새로운 전략 경로\", \"abEvolution\": {\"aChangesB\": \"적 유형 대응 -> 보상 및 자원 조절 -> 새로운 전략 경로\", \"bChangesA\": \"전략 선택 -> 장비 구조 변화 -> 지역 및 경로 확장\", \"lateGameChange\": \"전략 선택 -> 장비 구조 변화 -> 지역 및 경로 확장; 적 유형 대응 -> 보상 및 자원 조절 ->새"
+    },
+    "local_authoring_parts::92f4c8ec2af2c02c732658302814ccf0c4d539d57ab78c95018692c85209fbac:coreLoop": {
+      "coreLoop": [
+        "입력: 전략 선택",
+        "선택: 장비 구조 변화",
+        "보상: 지역 및 경로 확장, 새로운 전략 경로"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 793025,
-      "lastMs": 286971,
+      "totalMs": 882897,
+      "lastMs": 89872,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:14:59.927Z"
+      "updatedAt": "2026-10-10T10:16:29.803Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:01:46.879Z",
-  "updatedAt": "2026-10-10T10:14:59.929Z",
+  "updatedAt": "2026-10-10T10:16:29.812Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1929,8 +1936,8 @@
   "localAuthoringSplits": {
     "0a548e04e3e3dc28725bfaf750831fdca83f34e311c1c8378fdbfe641668f9bc": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:14:59.929Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:16:29.803Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
