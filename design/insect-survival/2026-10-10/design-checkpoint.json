@@ -3,126 +3,18 @@
   "gameId": "insect-survival",
   "date": "2026-10-10",
   "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
-  "fingerprint": "5f34f636e4530b6fb75bc594531d8e69d0624ac212738c69c97d0c9632f73cc4",
+  "fingerprint": "4f066bbee393974f68bcb87b8b72d354d7d903a790fceac3c401acf7fe3b3984",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::1188bc53a5e2de739f2210e01bf23c9507d8955b4a0bb596645298d66c3c0c29:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "GAME_SEED_GAMEMAP",
-        "a": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "INSECT_ECOLOGY_AND_FOOD_CHAINS",
-          "materialDomain": "ECOLOGICAL_SYSTEM",
-          "stateChange": "SELECTED_INSECT_RACE_OR_SPECIES, CHANGED_RESOURCE_POOL, MODIFIED_HABITAT_CONDITION"
-        },
-        "b": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "SURVIVAL_BUILDER_AND_UPGRADE_ENGINE",
-          "materialDomain": "BUILDING_SYSTEM",
-          "stateChange": "CHOOSE_UPGRADES, REWARD_SELECTION, BUILD_COMBINATION"
-        },
-        "abCausality": "SELECTED_UPGRADE_SET_MODIFIES_BUILD_EFFECT, UPGRADABLE_REWARDS_AFFECT_BUILD_DECISION, INSECT_RACE_CHANGES_WORLD_RELATIONSHIP",
-        "abEvolution": {
-          "aChangesB": "UPGRADE_SET_CHANGE_IMPROVES_BUILD_STRENGTH",
-          "bChangesA": "REWARD_SELECTION_ALLOWS_BUILD_CUSTOMIZATION",
-          "lateGameChange": "INSECT_RACE_CHANGE_IMPACTS_WORLD_STATE"
-        },
-        "materialFusion": {
-          "contrast": "INSECT_ECOLOGY_AS_GAMEPLAY_ELEMENT",
-          "causalBridge": "PLAYER_CHOICE_MODIFIES_ENVIRONMENTAL_CONDITIONS",
-          "removalConsequence": "ENVIRONMENTAL_CHANGE_AFFECTS_PLAYER_STRATEGY"
-        },
-        "storyCausalChain": {
-          "cause": "PLAYER_INITIATES_SURVIVAL_RUN",
-          "characterConflict": "ENEMY_PRESSURE_INCREASES_WITHOUT_PLAYER_DEFENSE",
-          "playerChoice": "SELECT_UPGRADES_OR_REWARDS",
-          "worldChange": "MODIFIED_RESOURCE_POOL_AND_HABITAT_CONDITION",
-          "nextEvent": "BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION"
-        },
-        "cThemes": [
-          {
-            "name": "INSECT_ECOLOGY",
-            "kind": "MATERIAL",
-            "gameplayEffect": "ALTERED_ENVIRONMENT"
-          },
-          {
-            "name": "SURVIVAL_BUILDER",
-            "kind": "MATERIAL",
-            "gameplayEffect": "CHANGED_BUILDING_SYSTEM"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "REAL_TIME_SURVIVAL"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "ECOLOGICAL_SYSTEM",
-            "gameplayEffect": "ENVIRONMENT_MODIFICATION"
-          }
-        ],
-        "cGenreInterlock": "PLAYER_CHOICE_IMPLEMENTS_ENVIRONMENTAL_CHANGE, ENVIRONMENTAL_CHANGE_AFFECTS_STRATEGY_SELECTION, STRATEGY_SELECTION_ALLOWS_BUILD_CUSTOMIZATION",
-        "cWorldAndGameplayEffect": "PLAYER_ACTION_IMPLEMENTS_WORLD_STATE, WORLD_STATE_AFFECTS_PLAYER_STRATEGY, STRATEGY_SELECTION_ALLOWS_BUILD_COMBINATIONS",
-        "delveDiscoveries": [
-          {
-            "clue": "SELECTED_INSECT_RACE",
-            "discovery": "MODIFIED_HABITAT_CONDITION",
-            "newChoice": "UPGRADE_SET_SELECTION"
-          },
-          {
-            "clue": "REWARD_SELECTION",
-            "discovery": "BUILD_COMBINATION_EFFECT",
-            "newChoice": "ENEMY_PRESSURE_RESPONSE"
-          },
-          {
-            "clue": "INSECT_RACE_CHANGE",
-            "discovery": "MODIFIED_RESOURCE_POOL",
-            "newChoice": "SURVIVAL_BUILDER_UPGRADES"
-          },
-          {
-            "clue": "ACTION_SEQUENCE",
-            "discovery": "CHANGED_ENVIRONMENTAL_CONDITION",
-            "newChoice": "NEW_PLAY_STYLE_OPTION"
-          }
-        ],
-        "delveGrowthRule": "ACTION_SEQUENCE_MODIFIES_ENVIRONMENTAL_CONDITION, ENVIRONMENTAL_CONDITION_AFFECTS_STRATEGY_SELECTION, STRATEGY_SELECTION_ALLOWS_BUILD_COMBINATIONS",
-        "finalGameIdentity": "ACTION_SURVIVAL_ROGUELITE_WITH_ECOLOGICAL_SYSTEM"
-      },
-      "playerFantasy": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
-      "coreFun": "SELECTED_INSECT_RACE_OR_SPECIES, CHANGED_RESOURCE_POOL, MODIFIED_HABITAT_CONDITION, UPGRADABLE_REWARDS, BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION"
-    },
-    "local_authoring_parts::0bbcbca3f710c7fbcf0ef94f13020fbd28e3019c3ceec9f146db1f12eea23fef:coreLoop": {
-      "coreLoop": [
-        "INPUT_PLAYER_CHOICE -> STATE_CHANGE: SELECTED_INSECT_RACE_OR_SPECIES, CHANGED_RESOURCE_POOL, MODIFIED_HABITAT_CONDITION",
-        "STATE_CHANGE -> REWARD_SELECTION, BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION",
-        "BUILD_COMBINATION_RESULT_ANNOTATED_AS_NEXT_PROGRESSION -> NEXT_PLAY_STYLE_OPTION"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 330831,
-      "lastMs": 51444,
-      "lastError": null,
-      "updatedAt": "2026-10-10T09:15:02.964Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T09:09:32.110Z",
-  "updatedAt": "2026-10-10T09:41:41.049Z",
+  "createdAt": "2026-10-10T10:22:10.686Z",
+  "updatedAt": "2026-10-10T10:22:10.774Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1842,13 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:15:02.964Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
