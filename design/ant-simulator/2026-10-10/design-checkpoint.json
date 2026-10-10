@@ -194,25 +194,42 @@
         "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
         "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦"
       ]
+    },
+    "local_authoring_parts::d353cc3cdfd7eb08c97969a954064ee3269b0be1f0bb7054679a0fda03137ff2:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "월드 상태",
+        "대상/공간 선택",
+        "위험/보상 예측"
+      ],
+      "stateOutputs": [
+        "월드 상태 변화",
+        "새로운 목표 결정",
+        "신규 전략 생성"
+      ],
+      "name": "OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION",
+      "purpose": "플레이어의 선택에 따른 월드 상태 변화와 즉각적 결과 변환 시스템",
+      "playerChoice": "특정 대상을 선택하여 월드 상태를 재구성하고, 이로 인해 새로운 목표와 전략이 생겨난다 중에서 하나의 행동을 취함으로써 게임 루프를 형성하게 만듦으로서 플레이어가 실제 수행하는 주체 역할을 정의한다음, 이 과정에서 발생한 상황과 결과를 바탕으로 다음 선택을 결정해야 한다고 명시한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 675071,
-      "lastMs": 87909,
+      "totalMs": 726226,
+      "lastMs": 51155,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:05:48.263Z"
+      "updatedAt": "2026-10-10T03:06:39.420Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:33.168Z",
-  "updatedAt": "2026-10-10T03:05:48.263Z",
+  "updatedAt": "2026-10-10T03:06:39.420Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1817,7 +1834,7 @@
   "localAuthoringSplits": {
     "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:05:48.263Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:06:39.420Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
