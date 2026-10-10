@@ -250,7 +250,7 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
   }
   const directDependents=dependentMap.get(task.id)||[];
   const transitiveDependents=new Set(),visited=new Set([task.id]);
-  let frontier=[task.id],criticalPathDepth=0;
+  let frontier=[task.id],breadthDepth=0;
   while(frontier.length){
     const next=[];
     for(const parentId of frontier){
@@ -261,9 +261,32 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
         next.push(childId);
       }
     }
-    if(next.length)criticalPathDepth++;
+    if(next.length)breadthDepth++;
     frontier=next;
   }
+  // Kahn longest-path DP: a converging downstream node must retain its longest
+  // upstream chain, not merely the earliest breadth-first visit.
+  const reachableIds=[task.id,...transitiveDependents];
+  const incoming=new Map(reachableIds.map(id=>[id,0]));
+  for(const id of reachableIds){
+    for(const childId of dependentMap.get(id)||[]){
+      if(childId!==task.id&&incoming.has(childId))incoming.set(childId,incoming.get(childId)+1);
+    }
+  }
+  const depths=new Map([[task.id,0]]),readyIds=[task.id];
+  for(let index=0;index<readyIds.length;index++){
+    const parentId=readyIds[index],parentDepth=depths.get(parentId)||0;
+    for(const childId of dependentMap.get(parentId)||[]){
+      if(childId===task.id||!incoming.has(childId))continue;
+      depths.set(childId,Math.max(depths.get(childId)||0,parentDepth+1));
+      const remaining=incoming.get(childId)-1;
+      incoming.set(childId,remaining);
+      if(remaining===0)readyIds.push(childId);
+    }
+  }
+  // Invalid cyclic dependencies cannot execute; keep scoring finite and
+  // preserve the observed breadth-depth floor without inventing runtime costs.
+  const criticalPathDepth=Math.max(breadthDepth,...depths.values());
   const signatureCohort=signature?live.filter(x=>x.id!==task.id&&failureSignatureOf(x)===signature).map(x=>x.id):[];
   const explicitCohort=Math.max(0,Number(numericEvidence(task,'cohort-size:')??0));
   const blockedIds=unique([...(task.blockedTaskIds||[]),...(task.relatedTaskIds||[]),...transitiveDependents,...signatureCohort]);
