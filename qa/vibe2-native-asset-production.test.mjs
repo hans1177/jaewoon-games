@@ -3898,3 +3898,45 @@ test('Blender cinematic path is syntax-valid and never claims platform runtime c
   const source=fs.readFileSync(script,'utf8');
   for(const token of ['--cinematic','cinematic.mp4','shotlist.json',"'H264'",'BLENDER_VIDEO_RENDERED_NATIVE_RUNTIME_PENDING','nativeRuntimeVerified'])assert.ok(source.includes(token),token);
 });
+
+
+test('Blender renders and decodes an actual source-bound cinematic with separate presentation animation',
+  {skip:!process.env.VIBE2_BLENDER_BINARY,timeout:240000},()=>{
+    const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-cinematic-render-'));
+    const sha=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    try{
+      const args=['--background','--threads','2','--python-exit-code','1',
+        '--python','assets/native-authoring/build-game-visual.py','--',
+        '--output',root,'--asset-id','cinematic-qa','--profile','prop',
+        '--subject','crate','--target','web','--cinematic','--video-fps','12','--video-seconds','2',
+        '--video-width','640'];
+      execFileSync(process.env.VIBE2_BLENDER_BINARY,args,
+        {timeout:200000,encoding:'utf8',maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
+      const video=path.join(root,'cinematic.mp4'),shotlist=path.join(root,'shotlist.json'),glb=path.join(root,'asset.glb');
+      assert(fs.statSync(video).size>1024,'real H264 frames must be present');
+      const doc=JSON.parse(fs.readFileSync(shotlist,'utf8'));
+      const evidence=JSON.parse(fs.readFileSync(path.join(root,'evidence.json'),'utf8'));
+      assert.equal(doc.sourceSha256,sha(glb));
+      assert.equal(evidence.cinematic.videoSha256,sha(video));
+      assert.equal(evidence.cinematic.shotlistSha256,sha(shotlist));
+      assert.equal(doc.presentationAnimation.sourceMeshUnchanged,true);
+      assert.equal(doc.presentationAnimation.keyframes.length,4);
+      assert.equal(doc.frameCount,24);
+      const probe=JSON.parse(execFileSync(process.env.VIBE2_FFPROBE_BINARY||'ffprobe',
+        ['-v','error','-count_frames','-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration','-of','json','-i',video],
+        {timeout:30000,encoding:'utf8'}));
+      const stream=probe.streams.find(row=>row.codec_type==='video');
+      assert.equal(stream.codec_name,'h264');
+      assert.equal(stream.width,640);
+      assert.equal(stream.height,360);
+      assert.equal(Number(stream.nb_read_frames),24);
+      assert.equal(Number(probe.format.duration),2);
+      assert.equal(evidence.productionVerified,false);
+      assert.equal(evidence.companyPromotionEligible,false);
+      assert.equal(evidence.cinematic.nativeRuntimeVerified,false);
+      assert.equal(fs.readdirSync(root).some(name=>name.startsWith('__vibe_cinematic_render')),false,
+        'Blender frame-range intermediate files must not escape the declared output');
+    }finally{
+      fs.rmSync(root,{recursive:true,force:true});
+    }
+});
