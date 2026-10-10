@@ -2,192 +2,141 @@
   "contractVersion": 4,
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "date": "2026-10-10",
-  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
-  "fingerprint": "939d8f03dc2c1dbba9cd32f9c66d8e2391fa73b5fd8ff0065c005d7d34d8f715",
+  "seedId": "OWNER-DESIGN-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR",
+  "fingerprint": "6deb28f63c79018caddeb89eefa0124fd496b944334f7a6ba4742681a0a95723",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
   "tasks": {
-    "local_authoring_parts::458a668f6b874dad1bb5c601ad709e7138f63e9859f5dabc1a862da3889134b9:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "잃어버린 별의 메아리",
+    "local_authoring_parts::021873febc37db4a387af98f3b1ccb1d5406c9442df1f6490cd8927b721be859:identity,creativeGrammar": {
+      "identity": "잃어버린 별의 메아리는 우주적 엔트로피에 맞서 싸우는 액션 생존 로그라이트 게임입니다. 플레이어는 '메아리(Echo)' 시스템을 통해 시간과 공간을 조작하며, 단순한 이동을 넘어선 전술적 위치 선정과 즉각적인 빌드 구성을 경험합니다. 이 게임은 매 순간의 선택이 전투의 흐름을 바꾸는 역동적인 시스템 연결을 통해, 기존 생존 게임과는 차별화된 깊이 있는 성장 경험을 제공합니다.",
       "creativeGrammar": {
-        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "mainIdentity": "메아리 공명 시스템 - 실시간 전투와 빌드 강화",
         "a": {
-          "system": "Survival",
-          "material": "Enemy Pressure, Resource Management, Adaptive Strategy",
-          "materialDomain": "Action & Survival",
-          "stateChange": "Positioning Around Enemy Pressure"
+          "system": "메아리 선택",
+          "material": "파편 수집 및 빌드 구성",
+          "materialDomain": "전략적 위치 선점 + 즉각적 빌드 변화",
+          "stateChange": "플레이어가 파편을 사용하여 무기/스킬/능력치를 강화"
         },
         "b": {
-          "system": "Progression",
-          "material": "Run Rewards, Upgrade Choices, Strategic Build",
-          "materialDomain": "Gameplay & Progression",
-          "stateChange": "Convert Run Result into Next Progression Choice"
+          "system": "엔트로피 미터",
+          "material": "위험 지역 진입 및 보상 결정",
+          "materialDomain": "실시간 난이도 조절 + 전략적 선택",
+          "stateChange": "플레이어가 엔트로피 수준에 따른 위험/보상을 선택"
         },
-        "abCausality": "Adaptive Strategy → Resource Management → Positioning → Run Outcome → New Play Style",
+        "abCausality": "{\"a\": \"파편 수집 → 빌드 강화\", \"b\": \"위험 지역 진입 → 보상 결정\"}, {\"b\": \"보상 결정 → 빌드 강화\", \"a\": \"파편 수집 → 빌드 강화\"} }, \"cGenres\": [{\"primary\": \"액션 생존 게임\", \"secondary\": \"전략적 빌드 관리\"}, {\"primary\": \"전술적 실시간 전투\", \"secondary\": \"데이터 기반 빌드 최적화\"}], \"finalGameIdentity\": \"메아리 공명 시스템 - 실시간 전투와 빌드 강화의 역동적인 성장 경로\"}",
         "abEvolution": {
-          "aChangesB": "Upgrade Choices Influence Positioning and Run Outcomes",
-          "bChangesA": "Run Results Shape Future Strategic Builds and Player Behavior",
-          "lateGameChange": "Player Adaptation Drives System Evolution"
+          "aChangesB": "파편 수집 -> 빌드 강화, 파편 수집 -> 빌드 강화",
+          "bChangesA": "위험 지역 진입 -> 보상 결정, 위험 지역 진입 -> 보상 결정",
+          "lateGameChange": "플레이어가 자신의 빌드를 반복적으로 조정하여 메타 성장 재화로 변환"
         },
         "materialFusion": {
-          "contrast": "Enemy Pressure vs. Player Adaptability",
-          "causalBridge": "Resource Management as the Common Ground for All Systems",
-          "removalConsequence": "Loss of Control Over Resource Allocation Leads to System Reconfiguration"
+          "contrast": "네온 컬러 + 우주 공간감을 강조한 하이 콘트라스트 비주얼 스타일",
+          "causalBridge": "메아리 파편 → 빌드 구성 → 전략적 선택 → 메타 성장 재화",
+          "removalConsequence": "플레이어는 자신만의 빌드를 반복적으로 조정하여 새로운 전략적 우위를 점할 수 있다"
         },
         "storyCausalChain": {
-          "cause": "Player's Initial Positioning and Resource Distribution",
-          "characterConflict": "System Evolves Due to Player Adaptation",
-          "playerChoice": "New Strategic Build Influences Future Gameplay",
-          "worldChange": "Player's Adaptive Strategies Lead to System Transformation and New Gameplay Mechanics",
-          "nextEvent": "Player's New Playstyle Shapes the Game's Core Dynamics"
+          "cause": "플레이어가 적의 공격을 피하며 최적 위치 선점",
+          "characterConflict": "메아리 파편의 가치와 사용법에 대한 갈등",
+          "playerChoice": "파편 수집 및 빌드 구성 선택, 위험 지역 진입 및 보상 결정",
+          "worldChange": "플레이어의 빌드 변화로 인해 실시간 전투 흐름이 바뀌고, 이는 다음 런의 전략적 우위를 좌우한다",
+          "nextEvent": "플레이어가 자신의 빌드를 반복적으로 조정하여 메타 성장 재화로 변환"
         },
         "cThemes": [
           {
-            "name": "Adaptability",
+            "name": "전술적 빌드 관리",
             "kind": "MATERIAL",
-            "gameplayEffect": "Player's Strategy Shapes System Evolution"
+            "gameplayEffect": "실시간 전투에서 빌드 강화 후 전략적 우위 확보"
           },
           {
-            "name": "Survival",
+            "name": "데이터 기반 빌드 최적화",
             "kind": "MATERIAL",
-            "gameplayEffect": "Player's Resource Management Affects Outcome"
+            "gameplayEffect": "빌드 강화 시 데이터 기반 최적화 적용으로 새로운 전략적 선택 가능"
           }
         ],
         "cGenres": [
           {
             "role": "PRIMARY",
-            "name": "Action & Survival",
-            "gameplayEffect": "Player's Adaptive Strategy Drives System Change"
+            "name": "액션 생존 게임",
+            "gameplayEffect": "실시간 전투 + 빌드 강화의 역동적인 성장 경로"
           },
           {
             "role": "SECONDARY",
-            "name": "Progression",
-            "gameplayEffect": "Run Results Shape Future Strategic Builds"
+            "name": "전략적 빌드 관리",
+            "gameplayEffect": "데이터 기반 빌드 최적화 및 전략적 선택 가능성"
           }
         ],
-        "cGenreInterlock": "Adaptive Strategy → Resource Management → Positioning → Run Outcome → New Play Style",
-        "cWorldAndGameplayEffect": "Player's Adaptive Behavior Drives System Evolution and New Gameplay Mechanics",
+        "cGenreInterlock": "메아리 파편 → 빌드 구성 → 전략적 선택 → 메타 성장 재화 변화, 이는 보조 장르(전략적 빌드 관리)의 인과 변화를 반영한다",
+        "cWorldAndGameplayEffect": "{\"primary\": \"실시간 전투와 빌드 강화의 역동적인 성장 경로\", \"secondary\": \"데이터 기반 빌드 최적화 및 전략적 선택 가능성\"}",
         "delveDiscoveries": [
           {
-            "clue": "Enemy Pressure vs. Player Adaptation",
-            "discovery": "System Evolves Due to Player Adaptation",
-            "newChoice": "New Strategic Build Influences Future Gameplay"
+            "clue": "플레이어가 적을 쓸어버리는 즉각적인 쾌감",
+            "discovery": "파편 수집 및 빌드 구성 선택",
+            "newChoice": "파편 수집 -> 빌드 강화, 위험 지역 진입 -> 보상 결정"
           },
           {
-            "clue": "Resource Management as Common Ground",
-            "discovery": "Player's Resource Distribution Affects Outcome",
-            "newChoice": "New Strategic Build Influences Future Gameplay"
+            "clue": "위험 지역에서의 보상 결정",
+            "discovery": "보상 결정 및 빌드 강화",
+            "newChoice": "빌드 강화 -> 데이터 기반 최적화, 파편 수집 -> 빌드 강화"
           },
           {
-            "clue": "Player's Adaptive Strategies Lead to System Transformation",
-            "discovery": "Player's New Playstyle Shapes Game Core Dynamics",
-            "newChoice": "New Playstyle Influences System Evolution"
+            "clue": "플레이어의 빌드 조정이 다음 런에 영향을 미침",
+            "discovery": "빌드 조정 및 메타 성장 재화 변환",
+            "newChoice": "빌드 조정 -> 메타 성장 재화 변환, 파편 수집 -> 빌드 강화"
           },
           {
-            "clue": "Loss of Control Over Resources Leads to System Reconfiguration",
-            "discovery": "Player's Adaptive Behavior Drives System Evolution",
-            "newChoice": "New Playstyle Influences System Evolution"
+            "clue": "메아리 공명 시스템은 플레이어의 선택에 따라 실시간으로 변화한다",
+            "discovery": "실시간 전투와 빌드 강화의 역동적인 성장 경로",
+            "newChoice": "실시간 전투 흐름 변경 -> 빌드 강화, 빌드 강화 -> 메타 성장 재화 변환"
           }
         ],
-        "delveGrowthRule": "Player's Adaptive Behavior Drives System Evolution and New Gameplay Mechanics",
-        "finalGameIdentity": "Player's Adaptive Behavior Drives System Evolution and New Gameplay Mechanics"
-      },
-      "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
-      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
-    },
-    "local_authoring_parts::9ff842cf496400cd9389932e04dc432decf0139e7aa87ad6b2c1dee924ac3573:coreLoop": {
-      "coreLoop": [
-        "Input/Choice → State Change → Reward/Risk/Next Choice",
-        "Adaptive Strategy → Resource Management → Positioning → Run Outcome → New Play Style",
-        "Player's Initial Positioning and Resource Distribution → System Evolves Due to Player Adaptation → New Strategic Build Influences Future Gameplay"
-      ]
-    },
-    "local_authoring_parts::e18e75e4cafee826e3c7113be1076db07a1cea543a84e88215b55bd399c68486:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Player's Initial Positioning and Resource Distribution"
-      ],
-      "stateOutputs": [
-        "System Evolves Due to Player Adaptation"
-      ],
-      "name": "Adaptive Strategy",
-      "purpose": "Player's Strategy Shapes System Evolution",
-      "playerChoice": "New Strategic Build Influences Future Gameplay"
-    },
-    "local_authoring_parts::e18e75e4cafee826e3c7113be1076db07a1cea543a84e88215b55bd399c68486:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "Player's Adaptive Strategies Lead to System Evolution"
-      ],
-      "stateOutputs": [
-        "New Playstyle Influences System Evolution"
-      ],
-      "name": "Adaptive Strategy",
-      "purpose": "Player's Strategic Adaptation Drives System Change and New Gameplay Mechanics",
-      "playerChoice": "New Strategic Build Influences Future Gameplay and System Evolution"
+        "delveGrowthRule": "{\"a\": \"파편 수집 → 빌드 강화\", \"b\": \"위험 지역 진입 → 보상 결정\"}, {\"b\": \"보상 결정 → 빌드 강화\", \"a\": \"파편 수집 → 빌드 강화\"} }, {\"a\": \"빌드 조정 → 메타 성장 재화 변환\", \"b\": \"데이터 기반 최적화 적용\"}",
+        "finalGameIdentity": "메아리 공명 시스템 - 실시간 전투와 빌드 강화의 역동적인 성장 경로"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 528310,
-      "lastMs": 63626,
-      "lastError": null,
-      "updatedAt": "2026-10-10T02:51:10.387Z"
+      "totalMs": 516301,
+      "lastMs": 216296,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T07:07:05.988Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:42:22.053Z",
-  "updatedAt": "2026-10-10T02:51:10.395Z",
+  "createdAt": "2026-10-10T06:58:29.666Z",
+  "updatedAt": "2026-10-10T07:07:05.988Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
           "CREATURE",
-          "ENVIRONMENT",
           "MOTION",
-          "PROP",
-          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD_MODULE",
@@ -204,13 +153,6 @@
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
             "STARTER_HERO_WATER"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -239,6 +181,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -275,45 +218,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -576,40 +480,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "CREATURE",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -635,39 +506,15 @@
             }
           },
           {
-            "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "current",
-                "next",
-                "boss"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -675,17 +522,13 @@
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-boss-warning-pulse",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -702,34 +545,18 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
           "CREATURE",
-          "ENVIRONMENT",
           "MOTION",
-          "PROP",
-          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD_MODULE",
@@ -746,13 +573,6 @@
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
             "STARTER_HERO_WATER"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -781,6 +601,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -817,45 +638,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1118,40 +900,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "CREATURE",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1177,39 +926,15 @@
             }
           },
           {
-            "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "current",
-                "next",
-                "boss"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1217,17 +942,13 @@
           },
           {
             "family": "VFX",
-            "action": "ADAPT",
-            "assetId": "roblox-common-vfx-boss-warning-pulse",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1244,34 +965,18 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
-          "BUILDING",
-          "CHARACTER",
           "CREATURE",
-          "ENVIRONMENT",
           "MOTION",
-          "PROP",
-          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
-          "BUILDING": [
-            "GABLE_SURVIVAL_ROOF",
-            "RECTANGULAR_SURVIVAL_FOUNDATION",
-            "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
-          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD_MODULE",
@@ -1288,13 +993,6 @@
             "STARTER_HERO_FIRE",
             "STARTER_HERO_GRASS",
             "STARTER_HERO_WATER"
-          ],
-          "ENVIRONMENT": [
-            "CORE_WORLD_PACK",
-            "DIRT_TRAVEL_PATH",
-            "MEDIUM_RESOURCE_ROCK",
-            "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
             "BED_LIE_DOWN",
@@ -1323,6 +1021,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1359,45 +1058,6 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
-          ],
-          "PROP": [
-            "LORE_ATTENDANCE_BOOK",
-            "LORE_CAROUSEL_PHOTO",
-            "LORE_CLOWN_LOST_ITEM",
-            "LORE_COLLECTIBLE",
-            "LORE_DISCHARGE_RECORD",
-            "LORE_GYM_WHISTLE",
-            "LORE_LOCKER_GRAFFITI",
-            "LORE_LUNCH_MENU",
-            "LORE_MORGUE_TAG",
-            "LORE_SURGERY_NOTE",
-            "LORE_TORN_TICKET",
-            "RESOURCE_CHEST",
-            "RESOURCE_CRATE",
-            "SURVIVAL_LANTERN_LAMP"
-          ],
-          "SKILL": [
-            "AREA",
-            "AREA_TELEGRAPH_PRESENTATION",
-            "AUDIO_ROLE",
-            "AURA",
-            "BEAM",
-            "CAMERA_ROLE",
-            "CAST_ORIGIN_PRESENTATION",
-            "CHANNEL",
-            "DASH",
-            "HEAL",
-            "ICON",
-            "INTERRUPT",
-            "MOBILE_DENSITY",
-            "PROJECTILE",
-            "SHIELD",
-            "SKILL_PACK",
-            "SMALL_IMPACT_PRESENTATION",
-            "STATUS_APPLY",
-            "STATUS_CLEANSE",
-            "SUMMON",
-            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1660,40 +1320,7 @@
             }
           },
           {
-            "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "CREATURE",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "ENVIRONMENT",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1719,39 +1346,15 @@
             }
           },
           {
-            "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "current",
-                "next",
-                "boss"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1759,17 +1362,13 @@
           },
           {
             "family": "VFX",
-            "action": "USE",
-            "assetId": "roblox-common-vfx-boss-warning-pulse",
-            "applicationMode": "USE_AS_IS",
-            "reason": "REUSABLE_LIBRARY_MATCH",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [
-                "boss"
-              ],
-              "currentSourceBound": false,
-              "verifiedRoleMatch": true
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
             }
           },
           {
@@ -1808,19 +1407,17 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-wave-forecast-ribbon": {
+      "roblox-common-ui-character-detail-screen": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "current",
-            "next",
-            "boss"
+            "progress"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "WAVE_FORECAST_RIBBON",
+        "role": "CHARACTER_DETAIL_SCREEN",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1830,49 +1427,18 @@
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
-      },
-      "roblox-common-vfx-boss-warning-pulse": {
-        "family": "VFX",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [
-            "boss"
-          ],
-          "currentSourceBound": false,
-          "verifiedRoleMatch": true
-        },
-        "role": "BOSS",
-        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 913.1,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
       }
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::e18e75e4cafee826e3c7113be1076db07a1cea543a84e88215b55bd399c68486:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::e18e75e4cafee826e3c7113be1076db07a1cea543a84e88215b55bd399c68486:signatureSystems:2": 2
-  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:51:10.387Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "localAuthoringSplits": {
+    "021873febc37db4a387af98f3b1ccb1d5406c9442df1f6490cd8927b721be859": true
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T07:07:05.988Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }

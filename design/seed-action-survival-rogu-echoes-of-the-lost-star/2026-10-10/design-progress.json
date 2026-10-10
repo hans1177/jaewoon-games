@@ -2,31 +2,31 @@
   "version": 2,
   "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
   "date": "2026-10-10",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 4,
-  "lastSuccessfulModelCallAt": "2026-10-10T02:51:10.387Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "cachedTaskCount": 1,
+  "lastSuccessfulModelCallAt": "2026-10-10T07:07:05.988Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 528310,
-      "lastMs": 63626,
-      "lastError": null,
-      "updatedAt": "2026-10-10T02:51:10.387Z"
+      "totalMs": 516301,
+      "lastMs": 216296,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T07:07:05.988Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T02:51:10.395Z"
+  "updatedAt": "2026-10-10T07:07:05.988Z"
 }
