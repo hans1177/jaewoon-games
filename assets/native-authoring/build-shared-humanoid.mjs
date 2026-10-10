@@ -154,6 +154,16 @@ function buildSharedHumanoid(kind='traveler'){
  gltf.skins=[{name:'ReusableHumanoidRig',skeleton:0,joints:joints.map((_,i)=>i),inverseBindMatrices:acc(new Float32Array(ibm),'MAT4',5126)}];
  const quat=(x=0,y=0,z=0)=>{x*=deg/2;y*=deg/2;z*=deg/2;const cx=Math.cos(x),sx=Math.sin(x),cy=Math.cos(y),sy=Math.sin(y),cz=Math.cos(z),sz=Math.sin(z);return [sx*cy*cz-cx*sy*sz,cx*sy*cz+sx*cy*sz,cx*cy*sz-sx*sy*cz,cx*cy*cz+sx*sy*sz]};
  const defs=[['IDLE_BREATH',2.2,17],['WALK',1.12,21],['RUN',.78,21],['SPRINT',.67,21],['COMBAT_READY',1.8,17],['ATTACK_LIGHT_JAB',.58,13],['ATTACK_LIGHT_SLASH',.84,15],['ATTACK_HEAVY',1.08,17],['GUARD_BLOCK',.9,13],['DODGE_LEFT',.72,13],['HIT_FRONT',.6,13],['JUMP',.9,13],['CAST_SPELL',1.2,17],['DEATH_FRONT',1.4,17],['GET_UP',1.18,17]];
+  // 직업별 독립 관절 클립. 공용 동작 시각화이며 전투 판정·스킬 권한 없음.
+  const roleActions={
+   samurai:{clip:'SAMURAI_IAI_DRAW',duration:.87,pre:.28,contact:.58,bones:{Chest:[-14,23,18,-30],Shoulder_R:[27,-98,-13,24],Elbow_R:[-44,28,0,0],Shoulder_L:[-26,22,0,0],Hips:[6,-10,-18,26],UpperLeg_L:[18,-13,0,0]}},
+   archer:{clip:'ARCHER_DRAW_RELEASE',duration:1.12,pre:.42,contact:.75,bones:{Chest:[-8,15,13,-7],Shoulder_L:[-88,20,-12,3],Shoulder_R:[-75,23,19,-9],Elbow_R:[-93,87,0,0],Hips:[4,-3,-11,7],Head:[-6,9,5,-4]}},
+   mage:{clip:'MAGE_AREA_CAST',duration:1.28,pre:.41,contact:.72,bones:{Chest:[-21,30,15,-15],Shoulder_L:[-106,60,-16,6],Shoulder_R:[-109,53,14,-8],Elbow_L:[-34,21,0,0],Elbow_R:[-33,19,0,0],Hips:[-9,12,0,0]}},
+   rogue:{clip:'ROGUE_BACKSTEP_CUT',duration:.76,pre:.25,contact:.59,bones:{Chest:[-22,29,-22,28],Shoulder_R:[38,-96,0,-18],Elbow_R:[-32,25,0,0],Hips:[-17,19,20,-26],UpperLeg_R:[35,-18,0,0],UpperLeg_L:[-28,18,0,0]}},
+   lancer:{clip:'LANCER_SPEAR_THRUST',duration:.83,pre:.33,contact:.65,bones:{Chest:[-23,35,14,-13],Shoulder_R:[-60,-30,0,0],Shoulder_L:[-59,-30,0,0],Elbow_L:[-38,16,0,0],Elbow_R:[-39,18,0,0],Hips:[-11,15,-14,0]}},
+   blacksmith:{clip:'BLACKSMITH_FORGE_HAMMER',duration:1.26,pre:.44,contact:.77,bones:{Chest:[-26,36,14,-11],Shoulder_R:[-108,98,8,0],Shoulder_L:[-80,79,-8,0],Elbow_R:[-41,28,0,0],Elbow_L:[-30,22,0,0],Hips:[15,-24,-9,0]}}
+  };
+  if(roleActions[kind])defs.push([roleActions[kind].clip,roleActions[kind].duration,25]);
  const pulse=(u,at=.42,w=.3)=>Math.exp(-Math.pow((u-at)/w,2)*2);
  function pose(name,u){
   const s=Math.sin(2*Math.PI*u),c=Math.cos(2*Math.PI*u),E={},T=[0,1.03,0];
@@ -176,7 +186,15 @@ function buildSharedHumanoid(kind='traveler'){
   if(name==='JUMP'){const q=Math.sin(Math.PI*u);E.UpperLeg_L=[29*q,0,0];E.UpperLeg_R=[18*q,0,0];E.Knee_L=[34*q,0,0];E.Knee_R=[35*q,0,0];E.Shoulder_L=[-68*q,0,-10*q];E.Shoulder_R=[-65*q,0,10*q];T[1]+=.12*q;}
   if(name==='CAST_SPELL'){const q=pulse(u,.55,.51);E.Shoulder_L=[-110*q,0,-17*q];E.Shoulder_R=[-120*q,0,17*q];E.Elbow_L=[-24*q,0,0];E.Elbow_R=[-24*q,0,0];E.Chest=[-15*q,4*q,0];E.Head=[-12*q,0,0];T[1]+=.03*q;}
   if(name==='DEATH_FRONT'||name==='GET_UP'){const q=name==='DEATH_FRONT'?u:u<.2?1:1-(u-.2)/.8;E.Chest=[55*q,0,0];E.Head=[-37*q,0,0];E.UpperLeg_L=[-54*q,0,10*q];E.UpperLeg_R=[-50*q,0,-8*q];E.Knee_L=[71*q,0,0];E.Knee_R=[69*q,0,0];E.Shoulder_L=[31*q,0,-22*q];E.Shoulder_R=[40*q,0,25*q];T[1]-=.45*q;}
-  return {E,T};
+  // 스킬 준비→관절 접촉 포즈→회복의 키프레임. 이동·타격 시점은 게임 소유.
+   const roleAction=roleActions[kind];
+   if(roleAction&&name===roleAction.clip){
+     const wind=pulse(u,roleAction.pre,.20),impact=pulse(u,roleAction.contact,.15);
+     for(const [bone,angles] of Object.entries(roleAction.bones))
+       E[bone]=[angles[0]*wind+angles[1]*impact,angles[2]*wind+angles[3]*impact,0];
+     T[1]-=.032*wind-.014*impact;
+   }
+   return {E,T};
  }
  for(const [name,d,n] of defs){
   const times=Float32Array.from({length:n},(_,i)=>d*i/(n-1)),input=acc(times,'SCALAR',5126,undefined,{min:[0],max:[d]});
