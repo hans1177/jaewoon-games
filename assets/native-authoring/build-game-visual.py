@@ -617,6 +617,10 @@ def import_source_surface():
             obj.data.name=f'MedicalSurfaceGeometry_{index}'
             for key in list(obj.keys()): del obj[key]
             for key in list(obj.data.keys()): del obj.data[key]
+            # 원본 GLB의 상위 Empty/노드 이름이 다시 출력되지 않도록 메시 계층을 분리한다.
+            world_matrix=obj.matrix_world.copy()
+            obj.parent=None
+            obj.matrix_world=world_matrix
             obj.data.materials.clear()
             obj.data.materials.append(MID)
         elif not obj.data.materials:obj.data.materials.append(MID)
