@@ -1353,13 +1353,29 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             inputKeysFromPreviousOutputs:previousRule.stateOutputs,
             outputKeysToPreviousInputs:previousRule.stateInputs
           }:null;
+          // 창작 모델이 앞 규칙의 상태 이름을 새로 지어 연결하지 않도록
+          // 원래 생성 스키마에서 직전 역할의 실제 작성 키만 선택하게 한다.
+          // 설계 인과 및 실제 게임 구현 검증은 기존 게이트의 책임으로 남긴다.
+          if(roleHandoff){
+            for(const [field,sourceKeys] of [
+              ['stateInputs',roleHandoff.inputKeysFromPreviousOutputs],
+              ['stateOutputs',roleHandoff.outputKeysToPreviousInputs]
+            ]){
+              const values=uniq(sourceKeys).filter(key=>!/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(key)).slice(0,12);
+              if(!values.length)throw new Error('DESIGN_GRAMMAR_STATE_INTERFACE_INVALID '+grammarRole+':'+field);
+              const current=itemSchema.properties[field];
+              itemSchema={...itemSchema,properties:{...itemSchema.properties,
+                [field]:{...current,minItems:1,maxItems:values.length,items:{...current.items,enum:values}}
+              }};
+            }
+          }
           // 이전 역할을 수정했다면 같은 인덱스의 낡은 응답은 재사용하지 않는다.
           const itemKey=`${identity}:${field}:${index}:${createHash('sha256').update(JSON.stringify(previousItems)).digest('hex').slice(0,16)}`;
           const itemTaskKey=`local_authoring_parts::${itemKey}`;
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              focusedChildSystem,`${grammarRole?roleContext:user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,grammarContext}
+              focusedChildSystem,`${grammarRole?roleContext:user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_ROLE_CONTENT=${clip(rows.map(row=>({role:row.grammarRole,purpose:row.purpose,playerChoice:row.playerChoice})),1250)}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext,grammarContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             // 규칙 내용은 모델이 작성하고 참조용 ID 형식만 안전하게 정규화한다.

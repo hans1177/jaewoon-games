@@ -303,7 +303,7 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   const author=runInNewContext(source+'\nauthorDesignInCheckpointedSlices',{
     ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],designAssetLibrary:null,designAssetFamilies:[],playableRequirements:designPlayabilityRequirements(fixture.seed),currentRuleSourceContext:{},currentRuleSource:'',
     seed:{...fixture.seed,seedId:'test',designInputMode:'DESIGNER_SELF_SEED'},seedDesignDepthContext:{invented:'automatic sketch must not be input'},gameId:'demo',date:'2026-10-08',designerSeedPath:'design/demo/2026-10-08/design-seed.json',engineDigest:'engine',checkpointFingerprint:'input',activeDesignerRoute:{id:'ollama:test-model'},
-    clip:(v,n)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.slice(0,n);},createHash,DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,repairStructureContract:v=>v,designCheckpoint:checkpoint,
+    clip:(v,n)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.slice(0,n);},clean:v=>String(v??'').trim(),createHash,DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,repairStructureContract:v=>v,designCheckpoint:checkpoint,
     validateDesignAuthoringContent,assertSchemaValue:assertDesignSchema,writeJson:(file,value)=>writes.push({file,value:structuredClone(value)}),persistDesignCheckpoint(){},console:{log(){}},
     runCheckpointTask:async(phase,id,work)=>checkpoint.tasks[id]||(checkpoint.tasks[id]=await work()),
     callDesignerModel:async(system,user)=>{calls.push(user);if(user.includes('SLICE_ID=identity-core'))return structuredClone(content);if(failDetail)throw new Error('MODEL_TEMPORARILY_UNAVAILABLE');return{progressionDirection:'검사용 후속 설계가 같은 인원과 자원 상태를 이어받는다'};},
@@ -319,7 +319,7 @@ test('the same designer authors and checkpoints the seed before detailed slices 
   assert.equal(calls.filter(p=>p.includes('SLICE_ID=identity-core')).length,1,'resume reuses the same model-authored seed');
   const invalid={...content,signatureSystems:[{...content.signatureSystems[0],grammarRole:'MAIN'}]};
   const save=runInNewContext(design.slice(design.indexOf('function persistDesignerSeed('),design.indexOf('async function authorDesignInCheckpointedSlices('))+'\npersistDesignerSeed',{
-    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,seed:fixture.seed,ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');}
+    DESIGN_AUTHORING_SLICES:slices,designSliceSchema:schemaFor,assertSchemaValue:assertDesignSchema,validateDesignAuthoringContent,clean:v=>String(v??'').trim(),seed:fixture.seed,ownerPreservationDesign:false,allGamesMultiplayerRequired:false,MULTIPLAYER_MODES:['COOP','COMPETITIVE','HYBRID'],currentRuleSource:'',writeJson(){throw new Error('invalid seed must never be saved');}
   });
   assert.throws(()=>save(invalid,'designer_draft'),/DESIGNER_SEED_REPAIR_REQUIRED/);
 });
@@ -1284,7 +1284,7 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const checkpoint={tasks:{}},calls=[];
   const author=runInNewContext(source+'\ncallLocalDesignerModel',{
-    seedGameplaySketchVersion:4,createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    seedGameplaySketchVersion:4,gameId:'grammar-test',game:{name:'문법 검사'},seed:{GAME_CATEGORY:'ACTION',CORE_LOOP:['행동','변화','결과']},clip:(v,n)=>String(typeof v==='string'?v:JSON.stringify(v)).slice(0,n),createHash,designAssetLibraryContext:{sha256:'library'},localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
     designerRoute:{id:'ollama:local'},designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
     parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
     runCheckpointTask:async(phase,id,work)=>work(),
@@ -1312,6 +1312,19 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
   assert.ok(result.signatureSystems.every(row=>row.stateInputs.length>0&&row.stateOutputs.length>0),
     'Every complete role rule must declare both consumed and produced state');
   assert.equal(calls.length,5,'one designer call per whole rule, including content repair');
+});
+
+// 메인: 기본설계 V5의 상태 연결은 모델 생성 스키마에서 정확한 키로 제한한다.
+test('V5 designer state handoffs are schema-constrained and require distinct authored roles',()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  assert.match(source,/if\(roleHandoff\)\{/);
+  assert.match(source,/inputKeysFromPreviousOutputs/);
+  assert.match(source,/outputKeysToPreviousInputs/);
+  assert.match(source,/items:\{\.\.\.current\.items,enum:values\}/);
+  assert.match(source,/DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING/);
+  assert.match(source,/DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING/);
+  assert.match(source,/DESIGN_GRAMMAR_ROLE_CONTENT_CLONED/);
+  assert.match(source,/PREVIOUS_ROLE_CONTENT=/);
 });
 
 test('bootstrap creative diagnostics do not stop designer intake or fake a design pass and copying still fails',()=>{
