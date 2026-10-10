@@ -28,25 +28,437 @@
         "stateChange": "손님의 이동 흐름 최적화됨, 공원 전체 수용 능력 증대됨."
       },
       "abCausality": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성 변화의 양방향 실제 상태 교환됨."
+    },
+    "local_authoring_parts::2aec183bbc980d1bf20fe59dc6d23f4d164f2f949e26358926337986975001b4:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "감정 상태 긍정 유도 → 수익 증가 및 시설 업그레이드",
+        "bChangesA": "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임",
+        "lateGameChange": "공원 전체 수용 능력과 수익성의 양방향 실제 상태 교환"
+      },
+      "materialFusion": {
+        "contrast": "예술·철학·역사로 구성된 감정 기반 만족도 엔진과 지능·과학·기술로 구성된 동선 최적화 시스템",
+        "causalBridge": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환",
+        "removalConsequence": "감정 시스템 제거 시 이동 흐름 및 수익 성장 패턴 파괴됨"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어의 놀이기구 배치와 동선 설계 결정",
+        "characterConflict": "손님의 만족도와 수익 사이의 갈등 발생",
+        "playerChoice": "감정 상태 유도, 이동 흐름 최적화 선택",
+        "worldChange": "공원 수용 능력 및 수익성 증대, 플레이어 역할 확장",
+        "nextEvent": "수익 재투자 및 새로운 구역 개방으로 인한 세계 진보"
+      }
+    },
+    "local_authoring_parts::dabebce459c7c2f10eadb26dd4a6461db755156e32f64554e9453fa34e8f41ba:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
+      "a": {
+        "system": "감정 기반 만족도 엔진",
+        "material": "손님의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정",
+        "materialDomain": "예술·철학·역사",
+        "stateChange": "손님의 감정 상태 긍정적으로 유도됨."
+      },
+      "b": {
+        "system": "동선 최적화 시스템",
+        "material": "길의 너비, 놀이기구 입구 위치, 휴식 공간의 배치",
+        "materialDomain": "지능·과학·기술",
+        "stateChange": "손님의 이동 흐름 최적화됨, 공원 전체 수용 능력 증대됨."
+      },
+      "abCausality": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성 변화의 양방향 실제 상태 교환됨.",
+      "abEvolution": {
+        "aChangesB": "감정 상태 긍정 유도 → 수익 증가 및 시설 업그레이드",
+        "bChangesA": "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임",
+        "lateGameChange": "공원 전체 수용 능력과 수익성의 양방향 실제 상태 교환"
+      },
+      "materialFusion": {
+        "contrast": "예술·철학·역사로 구성된 감정 기반 만족도 엔진과 지능·과학·기술로 구성된 동선 최적화 시스템",
+        "causalBridge": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환",
+        "removalConsequence": "감정 시스템 제거 시 이동 흐름 및 수익 성장 패턴 파괴됨"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어의 놀이기구 배치와 동선 설계 결정",
+        "characterConflict": "손님의 만족도와 수익 사이의 갈등 발생",
+        "playerChoice": "감정 상태 유도, 이동 흐름 최적화 선택",
+        "worldChange": "공원 수용 능력 및 수익성 증대, 플레이어 역할 확장",
+        "nextEvent": "수익 재투자 및 새로운 구역 개방으로 인한 세계 진보"
+      }
+    },
+    "local_authoring_parts::528b41e022283b5b6dd5b5d0f9618418f894d4e7229a6992990967dc8d44d071:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "감정 기반 만족도",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 감정 상태 유도로 손님의 만족도 증대"
+        },
+        {
+          "name": "동선 최적화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "손님의 이동 흐름 최적화 및 공원 수용 능력 증가"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략 경영 게임",
+          "gameplayEffect": "플레이어의 놀이기구 배치와 동선 설계에 따라 전략적 결정 요구"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "예술 시뮬레이션",
+          "gameplayEffect": "테마 장식, 음식 가격 책정 등 예술 관련 선택 제공"
+        }
+      ],
+      "cGenreInterlock": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+      "cWorldAndGameplayEffect": "감정 상태 유도 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환으로 세계 진보가 발생한다."
+    },
+    "local_authoring_parts::528b41e022283b5b6dd5b5d0f9618418f894d4e7229a6992990967dc8d44d071:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어의 놀이기구 배치와 동선 설계 결정",
+          "discovery": "감정 상태 유도, 이동 흐름 최적화 선택",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 사용"
+        },
+        {
+          "clue": "손님의 만족도와 수익 사이의 갈등 발생",
+          "discovery": "감정 상태 긍정 유도, 이동 흐름 최적화 선택",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 활용"
+        },
+        {
+          "clue": "공원 전체 수용 능력과 수익성 증대",
+          "discovery": "감정 상태 유도 → 수익 재투자 및 최적화",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 적용"
+        },
+        {
+          "clue": "수익 재투자 및 새로운 구역 개방",
+          "discovery": "수익 증가 및 시설 업그레이드",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 통합"
+        }
+      ],
+      "delveGrowthRule": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+      "finalGameIdentity": "감정 기반 만족도 엔진과 동선 최적화 시스템으로 구성된 전략 경영 게임. 손님의 감정 상태 유도와 이동 흐름 최적화는 놀이공원의 수용 능력과 수익성에 직접적인 영향을 미칩니다."
+    },
+    "local_authoring_parts::dabebce459c7c2f10eadb26dd4a6461db755156e32f64554e9453fa34e8f41ba:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "감정 기반 만족도",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 감정 상태 유도로 손님의 만족도 증대"
+        },
+        {
+          "name": "동선 최적화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "손님의 이동 흐름 최적화 및 공원 수용 능력 증가"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략 경영 게임",
+          "gameplayEffect": "플레이어의 놀이기구 배치와 동선 설계에 따라 전략적 결정 요구"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "예술 시뮬레이션",
+          "gameplayEffect": "테마 장식, 음식 가격 책정 등 예술 관련 선택 제공"
+        }
+      ],
+      "cGenreInterlock": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+      "cWorldAndGameplayEffect": "감정 상태 유도 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환으로 세계 진보가 발생한다.",
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어의 놀이기구 배치와 동선 설계 결정",
+          "discovery": "감정 상태 유도, 이동 흐름 최적화 선택",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 사용"
+        },
+        {
+          "clue": "손님의 만족도와 수익 사이의 갈등 발생",
+          "discovery": "감정 상태 긍정 유도, 이동 흐름 최적화 선택",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 활용"
+        },
+        {
+          "clue": "공원 전체 수용 능력과 수익성 증대",
+          "discovery": "감정 상태 유도 → 수익 재투자 및 최적화",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 적용"
+        },
+        {
+          "clue": "수익 재투자 및 새로운 구역 개방",
+          "discovery": "수익 증가 및 시설 업그레이드",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 통합"
+        }
+      ],
+      "delveGrowthRule": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+      "finalGameIdentity": "감정 기반 만족도 엔진과 동선 최적화 시스템으로 구성된 전략 경영 게임. 손님의 감정 상태 유도와 이동 흐름 최적화는 놀이공원의 수용 능력과 수익성에 직접적인 영향을 미칩니다."
+    },
+    "local_authoring_parts::cdc7f21decac2d048d3753234faa93feb6dea057d3924700abccdf50cb2993f7:creativeGrammar": {
+      "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
+      "a": {
+        "system": "감정 기반 만족도 엔진",
+        "material": "손님의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정",
+        "materialDomain": "예술·철학·역사",
+        "stateChange": "손님의 감정 상태 긍정적으로 유도됨."
+      },
+      "b": {
+        "system": "동선 최적화 시스템",
+        "material": "길의 너비, 놀이기구 입구 위치, 휴식 공간의 배치",
+        "materialDomain": "지능·과학·기술",
+        "stateChange": "손님의 이동 흐름 최적화됨, 공원 전체 수용 능력 증대됨."
+      },
+      "abCausality": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성 변화의 양방향 실제 상태 교환됨.",
+      "abEvolution": {
+        "aChangesB": "감정 상태 긍정 유도 → 수익 증가 및 시설 업그레이드",
+        "bChangesA": "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임",
+        "lateGameChange": "공원 전체 수용 능력과 수익성의 양방향 실제 상태 교환"
+      },
+      "materialFusion": {
+        "contrast": "예술·철학·역사로 구성된 감정 기반 만족도 엔진과 지능·과학·기술로 구성된 동선 최적화 시스템",
+        "causalBridge": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환",
+        "removalConsequence": "감정 시스템 제거 시 이동 흐름 및 수익 성장 패턴 파괴됨"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어의 놀이기구 배치와 동선 설계 결정",
+        "characterConflict": "손님의 만족도와 수익 사이의 갈등 발생",
+        "playerChoice": "감정 상태 유도, 이동 흐름 최적화 선택",
+        "worldChange": "공원 수용 능력 및 수익성 증대, 플레이어 역할 확장",
+        "nextEvent": "수익 재투자 및 새로운 구역 개방으로 인한 세계 진보"
+      },
+      "cThemes": [
+        {
+          "name": "감정 기반 만족도",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 감정 상태 유도로 손님의 만족도 증대"
+        },
+        {
+          "name": "동선 최적화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "손님의 이동 흐름 최적화 및 공원 수용 능력 증가"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략 경영 게임",
+          "gameplayEffect": "플레이어의 놀이기구 배치와 동선 설계에 따라 전략적 결정 요구"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "예술 시뮬레이션",
+          "gameplayEffect": "테마 장식, 음식 가격 책정 등 예술 관련 선택 제공"
+        }
+      ],
+      "cGenreInterlock": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+      "cWorldAndGameplayEffect": "감정 상태 유도 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환으로 세계 진보가 발생한다.",
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어의 놀이기구 배치와 동선 설계 결정",
+          "discovery": "감정 상태 유도, 이동 흐름 최적화 선택",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 사용"
+        },
+        {
+          "clue": "손님의 만족도와 수익 사이의 갈등 발생",
+          "discovery": "감정 상태 긍정 유도, 이동 흐름 최적화 선택",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 활용"
+        },
+        {
+          "clue": "공원 전체 수용 능력과 수익성 증대",
+          "discovery": "감정 상태 유도 → 수익 재투자 및 최적화",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 적용"
+        },
+        {
+          "clue": "수익 재투자 및 새로운 구역 개방",
+          "discovery": "수익 증가 및 시설 업그레이드",
+          "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 통합"
+        }
+      ],
+      "delveGrowthRule": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+      "finalGameIdentity": "감정 기반 만족도 엔진과 동선 최적화 시스템으로 구성된 전략 경영 게임. 손님의 감정 상태 유도와 이동 흐름 최적화는 놀이공원의 수용 능력과 수익성에 직접적인 영향을 미칩니다."
+    },
+    "local_authoring_parts::aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
+        "a": {
+          "system": "감정 기반 만족도 엔진",
+          "material": "손님의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정",
+          "materialDomain": "예술·철학·역사",
+          "stateChange": "손님의 감정 상태 긍정적으로 유도됨."
+        },
+        "b": {
+          "system": "동선 최적화 시스템",
+          "material": "길의 너비, 놀이기구 입구 위치, 휴식 공간의 배치",
+          "materialDomain": "지능·과학·기술",
+          "stateChange": "손님의 이동 흐름 최적화됨, 공원 전체 수용 능력 증대됨."
+        },
+        "abCausality": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성 변화의 양방향 실제 상태 교환됨.",
+        "abEvolution": {
+          "aChangesB": "감정 상태 긍정 유도 → 수익 증가 및 시설 업그레이드",
+          "bChangesA": "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임",
+          "lateGameChange": "공원 전체 수용 능력과 수익성의 양방향 실제 상태 교환"
+        },
+        "materialFusion": {
+          "contrast": "예술·철학·역사로 구성된 감정 기반 만족도 엔진과 지능·과학·기술로 구성된 동선 최적화 시스템",
+          "causalBridge": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환",
+          "removalConsequence": "감정 시스템 제거 시 이동 흐름 및 수익 성장 패턴 파괴됨"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 놀이기구 배치와 동선 설계 결정",
+          "characterConflict": "손님의 만족도와 수익 사이의 갈등 발생",
+          "playerChoice": "감정 상태 유도, 이동 흐름 최적화 선택",
+          "worldChange": "공원 수용 능력 및 수익성 증대, 플레이어 역할 확장",
+          "nextEvent": "수익 재투자 및 새로운 구역 개방으로 인한 세계 진보"
+        },
+        "cThemes": [
+          {
+            "name": "감정 기반 만족도",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어의 감정 상태 유도로 손님의 만족도 증대"
+          },
+          {
+            "name": "동선 최적화",
+            "kind": "MATERIAL",
+            "gameplayEffect": "손님의 이동 흐름 최적화 및 공원 수용 능력 증가"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전략 경영 게임",
+            "gameplayEffect": "플레이어의 놀이기구 배치와 동선 설계에 따라 전략적 결정 요구"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "예술 시뮬레이션",
+            "gameplayEffect": "테마 장식, 음식 가격 책정 등 예술 관련 선택 제공"
+          }
+        ],
+        "cGenreInterlock": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+        "cWorldAndGameplayEffect": "감정 상태 유도 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환으로 세계 진보가 발생한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어의 놀이기구 배치와 동선 설계 결정",
+            "discovery": "감정 상태 유도, 이동 흐름 최적화 선택",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 사용"
+          },
+          {
+            "clue": "손님의 만족도와 수익 사이의 갈등 발생",
+            "discovery": "감정 상태 긍정 유도, 이동 흐름 최적화 선택",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 활용"
+          },
+          {
+            "clue": "공원 전체 수용 능력과 수익성 증대",
+            "discovery": "감정 상태 유도 → 수익 재투자 및 최적화",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 적용"
+          },
+          {
+            "clue": "수익 재투자 및 새로운 구역 개방",
+            "discovery": "수익 증가 및 시설 업그레이드",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 통합"
+          }
+        ],
+        "delveGrowthRule": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+        "finalGameIdentity": "감정 기반 만족도 엔진과 동선 최적화 시스템으로 구성된 전략 경영 게임. 손님의 감정 상태 유도와 이동 흐름 최적화는 놀이공원의 수용 능력과 수익성에 직접적인 영향을 미칩니다."
+      }
+    },
+    "local_authoring_parts::f69d140ab6fa7ef054cf920b6575ecb855330d79d6d53b065b4cd990254c44f8:identity,creativeGrammar": {
+      "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다. 핵심 루프와 시그니처 시스템은 단순히 건물을 짓는 행위에 그치지 않고, 손님의 만족도와 수익이라는 두 가지 상충하는 지표 사이에서 매 순간 최적의 선택을 강제하며, 이 선택이 놀이공원의 전체적인 흐름과 수익성에 즉각적인 변화를 가져오도록 설계되었습니다.",
+      "creativeGrammar": {
+        "mainIdentity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이기구의 배치와 동선 설계를 통해 손님의 감정 상태를 실시간으로 조율하는 3D 전략 경영 게임입니다.",
+        "a": {
+          "system": "감정 기반 만족도 엔진",
+          "material": "손님의 스릴 강도 조절, 테마 장식 추가, 음식 가격 책정",
+          "materialDomain": "예술·철학·역사",
+          "stateChange": "손님의 감정 상태 긍정적으로 유도됨."
+        },
+        "b": {
+          "system": "동선 최적화 시스템",
+          "material": "길의 너비, 놀이기구 입구 위치, 휴식 공간의 배치",
+          "materialDomain": "지능·과학·기술",
+          "stateChange": "손님의 이동 흐름 최적화됨, 공원 전체 수용 능력 증대됨."
+        },
+        "abCausality": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성 변화의 양방향 실제 상태 교환됨.",
+        "abEvolution": {
+          "aChangesB": "감정 상태 긍정 유도 → 수익 증가 및 시설 업그레이드",
+          "bChangesA": "이동 흐름 최적화 → 공원 수용 능력 확대 및 수익성 높임",
+          "lateGameChange": "공원 전체 수용 능력과 수익성의 양방향 실제 상태 교환"
+        },
+        "materialFusion": {
+          "contrast": "예술·철학·역사로 구성된 감정 기반 만족도 엔진과 지능·과학·기술로 구성된 동선 최적화 시스템",
+          "causalBridge": "감정 상태 변화 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환",
+          "removalConsequence": "감정 시스템 제거 시 이동 흐름 및 수익 성장 패턴 파괴됨"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 놀이기구 배치와 동선 설계 결정",
+          "characterConflict": "손님의 만족도와 수익 사이의 갈등 발생",
+          "playerChoice": "감정 상태 유도, 이동 흐름 최적화 선택",
+          "worldChange": "공원 수용 능력 및 수익성 증대, 플레이어 역할 확장",
+          "nextEvent": "수익 재투자 및 새로운 구역 개방으로 인한 세계 진보"
+        },
+        "cThemes": [
+          {
+            "name": "감정 기반 만족도",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어의 감정 상태 유도로 손님의 만족도 증대"
+          },
+          {
+            "name": "동선 최적화",
+            "kind": "MATERIAL",
+            "gameplayEffect": "손님의 이동 흐름 최적화 및 공원 수용 능력 증가"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전략 경영 게임",
+            "gameplayEffect": "플레이어의 놀이기구 배치와 동선 설계에 따라 전략적 결정 요구"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "예술 시뮬레이션",
+            "gameplayEffect": "테마 장식, 음식 가격 책정 등 예술 관련 선택 제공"
+          }
+        ],
+        "cGenreInterlock": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+        "cWorldAndGameplayEffect": "감정 상태 유도 → 수익 재투자 및 최적화 → 공원 수용 능력과 수익성의 양방향 실제 상태 교환으로 세계 진보가 발생한다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어의 놀이기구 배치와 동선 설계 결정",
+            "discovery": "감정 상태 유도, 이동 흐름 최적화 선택",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 사용"
+          },
+          {
+            "clue": "손님의 만족도와 수익 사이의 갈등 발생",
+            "discovery": "감정 상태 긍정 유도, 이동 흐름 최적화 선택",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 활용"
+          },
+          {
+            "clue": "공원 전체 수용 능력과 수익성 증대",
+            "discovery": "감정 상태 유도 → 수익 재투자 및 최적화",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 적용"
+          },
+          {
+            "clue": "수익 재투자 및 새로운 구역 개방",
+            "discovery": "수익 증가 및 시설 업그레이드",
+            "newChoice": "감정 기반 만족도 엔진 및 동선 최적화 시스템 통합"
+          }
+        ],
+        "delveGrowthRule": "감정 기반 만족도 엔진과 동선 최적화 시스템은 서로 다른 주제/소재를 융합하여 플레이어의 선택을 제어하고, 이 선택이 공원의 전체적인 흐름과 수익성에 즉각적인 변화를 초래한다.",
+        "finalGameIdentity": "감정 기반 만족도 엔진과 동선 최적화 시스템으로 구성된 전략 경영 게임. 손님의 감정 상태 유도와 이동 흐름 최적화는 놀이공원의 수용 능력과 수익성에 직접적인 영향을 미칩니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 7,
+      "successes": 5,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 744256,
-      "lastMs": 95178,
+      "totalMs": 1136409,
+      "lastMs": 152954,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:58:51.041Z"
+      "updatedAt": "2026-10-10T11:05:23.200Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:46:26.756Z",
-  "updatedAt": "2026-10-10T10:58:51.041Z",
+  "updatedAt": "2026-10-10T11:05:23.208Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1326,7 +1738,7 @@
     "f69d140ab6fa7ef054cf920b6575ecb855330d79d6d53b065b4cd990254c44f8": true,
     "aff1424636959a5b17eb85d60987b64f479fe99dc0705c5945d586dc56b3cbf6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:58:51.041Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:05:23.208Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
