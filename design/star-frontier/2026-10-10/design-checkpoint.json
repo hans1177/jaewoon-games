@@ -405,25 +405,40 @@
       "name": "별길 개척자",
       "purpose": "플레이어 선택에 따른 세계 상태 변화와 인과적 연관성의 핵심 루프를 생성",
       "playerChoice": "플레이어의 선택은 A 시스템의 결과를 결정하며, 이는 B 시스템의 결과와 인과적으로 연결된다। 주제와 인과적 연관성을 가진다。실제 세계의 변화가 플레이어의 선택과 양방향으로 연결되어야 하며, 기존 규칙과 일치해야 한다。주제와 인과적 연관성이 있는 방식으로 새로운 선택이 유도되며, 이는 실제 세계의 변화와 인과적으로 연결된다。"
+    },
+    "local_authoring_parts::c3216ff948abccd83dec550b40ead86ed79ce42d38cc80239af1c3824b1be744:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "PLAYER_CHOICE",
+        "REAL_WORLD_CHANGE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "SYSTEM_INTERACTION"
+      ],
+      "name": "별길 개척자",
+      "purpose": "플레이어 선택에 따른 실제 세계 상태 변화와 인과적 연관성 있는 결과 생성 및 시스템 간 상호작용 구현",
+      "playerChoice": "플레이어의 선택은 실제 세계 상태 변화를 결정하며, 이는 기존 규칙과 인과적으로 일치해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 772203,
-      "lastMs": 22076,
+      "totalMs": 840050,
+      "lastMs": 67847,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:56:54.834Z"
+      "updatedAt": "2026-10-10T00:58:02.682Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:09:19.145Z",
-  "updatedAt": "2026-10-10T00:56:54.834Z",
+  "updatedAt": "2026-10-10T00:58:02.682Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1937,15 +1952,6 @@
           "signatureSystems"
         ]
       }
-    ],
-    "local_authoring_parts::c3216ff948abccd83dec550b40ead86ed79ce42d38cc80239af1c3824b1be744:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "signatureSystems[0]"
-        ]
-      }
     ]
   },
   "sliceRepairAttempts": {
@@ -2053,7 +2059,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:56:54.834Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:58:02.682Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
