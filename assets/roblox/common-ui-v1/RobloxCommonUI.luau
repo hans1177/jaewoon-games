@@ -1750,23 +1750,102 @@ function RobloxCommonUI.CreatePauseMenu(options)
   return root,buttons
 end
 
+-- 환경설정: 게임이 허용한 선택지만 표시하고 변경 요청 후 게임 스냅샷으로 갱신한다.
 function RobloxCommonUI.CreateSettingsPanel(options)
   options=options or {}
   local theme=cloneTheme(options.theme)
   local root,body=surfaceShell(options,"SETTINGS_PANEL","SETTINGS_PANEL")
   local categories=options.categories or {"게임","그래픽","오디오","조작","접근성"}
-  local nav=RobloxCommonUI.CreateSideNavigation({name="SettingsCategories",items=categories,selectedIndex=options.selectedIndex or 1,size=UDim2.new(0.28,-8,1,0),theme=theme})
+  local nav,navButtons=RobloxCommonUI.CreateFilterBar({
+    filters=categories,selectedIndex=tonumber(options.selectedIndex)or 1,
+    name="SettingsCategories",size=UDim2.new(1,0,0,54),theme=theme
+  })
   nav.Parent=body
-  local content=Instance.new("Frame"); content.Name="SettingsContent"; content.Position=UDim2.new(0.28,8,0,0); content.Size=UDim2.new(0.72,-8,1,0); content.BackgroundColor3=theme.PanelInset; content.BorderSizePixel=0; content.Parent=body; corner(content,theme.Corner)
-  local rows=options.rows or {"화면","텍스트 크기","UI 크기","카메라 흔들림","색상 보조","입력 방식"}
-  local list=Instance.new("Frame");list.Name="Rows";list.Position=UDim2.fromOffset(14,14);list.Size=UDim2.new(1,-28,1,-28);list.BackgroundTransparency=1;list.Parent=content;commonList(list,false,8)
-  for i,label in ipairs(rows) do
-    local row=Instance.new("Frame");row.Name="Setting"..i;row.Size=UDim2.new(1,0,0,54);row.BackgroundColor3=theme.Panel;row.BorderSizePixel=0;row.LayoutOrder=i;row.Parent=list;corner(row,10)
-    commonText(row,"Label",label,UDim2.fromOffset(12,0),UDim2.new(0.62,-12,1,0),theme.Text,14,i==1)
-    local value=commonText(row,"Value","조정",UDim2.new(0.62,0,0,0),UDim2.new(0.38,-12,1,0),theme.Accent,13,true);value.TextXAlignment=Enum.TextXAlignment.Right
+  local content=Instance.new("ScrollingFrame")
+  content.Name="SettingsContent"
+  content.Position=UDim2.fromOffset(0,62)
+  content.Size=UDim2.new(1,0,1,-62)
+  content.BackgroundColor3=theme.PanelInset;content.BorderSizePixel=0;content.ScrollBarThickness=4
+  content.AutomaticCanvasSize=Enum.AutomaticSize.Y;content.ScrollingDirection=Enum.ScrollingDirection.Y
+  content.CanvasSize=UDim2.fromOffset(0,0);content.Active=true;content.Parent=body
+  corner(content,theme.Corner)
+  local list=Instance.new("Frame")
+  list.Name="Rows";list.Position=UDim2.fromOffset(8,8);list.Size=UDim2.new(1,-16,0,0)
+  list.AutomaticSize=Enum.AutomaticSize.Y;list.BackgroundTransparency=1;list.Parent=content
+  local layout=commonList(list,false,8)
+  layout.VerticalAlignment=Enum.VerticalAlignment.Top
+  local rows=options.rows or {}
+  local selected=math.clamp(tonumber(options.selectedIndex)or 1,1,math.max(1,#categories))
+  local controls={}
+  local revision=""
+  local function sync(state)
+    state=type(state)=="table"and state or {}
+    if state.selectedIndex~=nil then selected=math.clamp(tonumber(state.selectedIndex)or selected,1,math.max(1,#categories))end
+    rows=type(state.rows)=="table"and state.rows or rows
+    revision=tostring(state.revision or revision)
+    for i,row in ipairs(rows)do
+      if not controls[i]then
+        local panel=Instance.new("Frame")
+        panel.Name="Setting"..i;panel.Size=UDim2.new(1,-4,0,64);panel.BackgroundColor3=theme.Panel
+        panel.BorderSizePixel=0;panel.LayoutOrder=i;panel.Parent=list;corner(panel,10)
+        local label=commonText(panel,"Label","",UDim2.fromOffset(12,0),UDim2.new(0.52,-12,1,0),theme.Text,14,false)
+        local value=RobloxCommonUI.CreatePrimaryButton({name="Choice",text="",size=UDim2.new(0.48,-12,0,48),theme=theme,textSize=13})
+        value.AnchorPoint=Vector2.new(1,0.5);value.Position=UDim2.new(1,-8,0.5,0);value.Parent=panel
+        local index=i
+        value.Activated:Connect(function()
+          local current=rows[index]
+          if type(current)~="table"or type(options.onChange)~="function"or current.editable~=true then return end
+          local choices=type(current.allowedValues)=="table"and current.allowedValues or {}
+          if #choices<2 then return end
+          local valueNow=current.value
+          local found=0
+          for choiceIndex,choice in ipairs(choices)do
+            local candidate=type(choice)=="table"and choice.value or choice
+            if candidate==valueNow then found=choiceIndex;break end
+          end
+          local nextChoice=choices[found%#choices+1]
+          local nextValue=type(nextChoice)=="table"and nextChoice.value or nextChoice
+          if nextValue~=nil then options.onChange(current.id,nextValue,revision)end
+        end)
+        controls[i]={panel=panel,label=label,value=value}
+      end
+      local control=controls[i]
+      local item=type(row)=="table"and row or {label=tostring(row),editable=false}
+      local choices=type(item.allowedValues)=="table"and item.allowedValues or {}
+      local editable=item.editable==true and item.id~=nil and #choices>1 and type(options.onChange)=="function"
+      control.panel.Visible=true
+      control.label.Text=tostring(item.label or item.id or "")
+      control.value.Text=tostring(item.valueText or item.value or (editable and "선택"or "게임 설정"))
+      control.value.Selectable=editable;control.value.Active=editable
+      control.value.AutoButtonColor=editable
+      control.value:SetAttribute("BoundSettingId",tostring(item.id or ""))
+      control.value:SetAttribute("GameReportedEditable",editable)
+      control.value.BackgroundColor3=editable and theme.Primary or theme.PanelRaised
+    end
+    for i=#rows+1,#controls do controls[i].panel.Visible=false end
+    for i,button in ipairs(navButtons)do
+      button.BackgroundColor3=i==selected and theme.Primary or theme.PanelRaised
+      button.Selectable=type(options.onCategorySelect)=="function"
+      button.Active=button.Selectable
+      local underline=button:FindFirstChild("SelectedUnderline")
+      if underline then underline.Visible=i==selected end
+    end
+    root:SetAttribute("GameSnapshotRevision",revision)
+    root:SetAttribute("SelectedSettingsCategory",selected)
   end
+  for i,button in ipairs(navButtons)do
+    local index=i
+    button.Activated:Connect(function()
+      if index~=selected and type(options.onCategorySelect)=="function"then
+        options.onCategorySelect(index,categories[index],revision)
+      end
+    end)
+  end
+  sync(options.state or {rows=rows,selectedIndex=selected})
   root:SetAttribute("OwnsSettingsPersistence",false)
-  return root,content
+  root:SetAttribute("OwnsGameplayAuthority",false)
+  root:SetAttribute("OwnsSaveAuthority",false)
+  return root,content,{Sync=sync,categories=nav}
 end
 
 function RobloxCommonUI.CreateSearchField(options)
