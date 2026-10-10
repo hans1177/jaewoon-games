@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-soq3ug",
-      "worker": "vibe2",
-      "taskId": "tower-choice-rpg-studio-evolution-roblox-usability-v1",
-      "gameId": "tower-choice-rpg",
-      "files": [
-        "roblox-games/tower-choice-rpg/client/Game.client.luau",
-        "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-        "roblox-games/tower-choice-rpg/server/Game.server.luau"
-      ],
-      "baseSha": "5dffbe11a1238f15713fee57f2a0323349e0e1a4",
-      "runId": "38079686072",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-10T20:19:22.631Z",
-      "expiresAt": "2026-10-10T21:04:22.631Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:tower-choice-rpg-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1yufsmd",
       "worker": "vibe2",
       "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
@@ -575,6 +554,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-gumiho-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-dbskjo",
+      "worker": "vibe2",
+      "taskId": "internal-motion-shui-gui-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/shui-gui/init.luau"
+      ],
+      "baseSha": "f261153066e8680af03d2937df9224b7d5f488d7",
+      "runId": "38081239582",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-10T21:05:21.008Z",
+      "expiresAt": "2026-10-10T21:50:21.008Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-shui-gui-walk-v1"
       ]
     }
   ]
