@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 웨이브의 위협을 읽고 숙련하며, 방어 전략을 선택해 새로운 환경과 적의 관계를 재구성하는 과정에서 진보하게 된다.",
       "coreFun": "{\"identity\": \"wave defense readability, meaningful placement choices, enemy-type counterplay\", \"a\": {\"system\": \"strategy\", \"material\": \"enemy type counterplay\", \"stateChange\": \"defender position adjustment\"}, \"b\": {\"system\": \"adventure\", \"material\": \"environmental interaction\", \"stateChange\": \"resource allocation and risk assessment\"}, \"abCausality\": \"defender position → resource allocation → environmental interaction → enemy-type counterplay\", \"abEvolution\": {\"aChangesB\": \"increased defensive priority in high-risk zones\", \"bChangesA\": \"reduced resource usage in low-threat environments\", \"lateGameChange\": \"dynamic environment adaptation based on player behavior\"}, \"materialFusion\": {\"contrast\": \"enemy-type vs. environmental interaction\", \"causalBridge\": \"defensive strategy evolution through adaptive positioning\", \"removalConsequence\": \"loss of traditional combat mechanics\"}, \"storyCausal"
+    },
+    "local_authoring_parts::b8d6404ffc1f4d047908df4b31387f2f3349a9c0781d224df98c65d577ed9724:coreLoop": {
+      "coreLoop": [
+        "INPUT: incoming wave pattern analysis",
+        "STATE CHANGE: defender position adjustment",
+        "OUTPUT: adaptive defensive strategy development"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 467703,
-      "lastMs": 63293,
+      "totalMs": 558108,
+      "lastMs": 90405,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T04:51:05.902Z"
+      "updatedAt": "2026-10-10T04:52:36.310Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:43:17.949Z",
-  "updatedAt": "2026-10-10T04:51:05.903Z",
+  "updatedAt": "2026-10-10T04:52:36.310Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1887,7 +1894,7 @@
   "localAuthoringSplits": {
     "c0e0cdfd426b704ec88818203285d976fb1c4b8d134b9b490fe6bfab7890f597": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T04:51:05.903Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:52:36.310Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
