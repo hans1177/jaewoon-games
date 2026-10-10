@@ -15,324 +15,340 @@
     "state": "DESIGN_CANDIDATE",
     "codeGenerationAuthorized": false,
     "requiredGate": "DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE",
-    "identity": "곤충 디펜스 - 게임 정체성",
+    "identity": "곤충 디펜스",
     "creativeGrammar": {
       "mainIdentity": "wave defense readability, meaningful placement choices, enemy-type counterplay",
       "a": {
-        "system": "insect wave",
-        "material": "readable and strategic placement of defenders",
-        "materialDomain": "strategy and gameplay mechanics",
-        "stateChange": "defenders are placed in optimal positions to counter the threat pattern"
+        "system": "enemy_behavior",
+        "material": "insect_wave_pattern",
+        "materialDomain": "threat_pattern_analysis",
+        "stateChange": "defender_placement_adjustment"
       },
       "b": {
-        "system": "enemy behavior",
-        "material": "counterplay against different insect types",
-        "materialDomain": "gameplay strategy and interaction",
-        "stateChange": "defenders adapt their positioning based on observed enemy patterns"
+        "system": "resource_allocation",
+        "material": "critical_resource",
+        "materialDomain": "economic_value_assessment",
+        "stateChange": "limited_resource_spending"
       },
-      "abCausality": "defender position changes based on real-time enemy behavior and threat assessment",
+      "abCausality": "defender_placement_adjustment → resource_allocation_state_change → next_defense_decision_making",
       "abEvolution": {
-        "aChangesB": "defenders shift positions to maximize defensive effectiveness against varying threats",
-        "bChangesA": "defenses become more adaptive as enemies evolve their tactics",
-        "lateGameChange": "defensive strategies incorporate new enemy behaviors and environmental factors"
+        "aChangesB": "defender_placement_adjustment → resource_allocation_state_change",
+        "bChangesA": "resource_allocation_state_change → defender_placement_adjustment",
+        "lateGameChange": "resource_allocation_state_change → new_defensive_strategy"
       },
       "materialFusion": {
-        "contrast": "defenders learn from past losses and use rewards to refine future strategies",
-        "causalBridge": "adaptive defenses emerge through a combination of experience, resource allocation, and risk-reward analysis",
-        "removalConsequence": "defensive structures evolve by incorporating new enemy behaviors and game dynamics"
+        "contrast": "insect_wave_pattern vs. critical_resource",
+        "causalBridge": "defender_placement_adjustment → economic_value_assessment",
+        "removalConsequence": "loss_of_defender_placement → increased_resource_spend"
       },
       "storyCausalChain": {
-        "cause": "player input and observation of enemy behavior",
-        "characterConflict": "defenders must balance survival with strategic adaptation",
-        "playerChoice": "defenders choose where to place troops based on threat assessments",
-        "worldChange": "defensive structures evolve in response to changing enemy tactics and environmental conditions",
-        "nextEvent": "new defensive strategies are developed based on observed patterns and rewarded outcomes"
+        "cause": "incoming_insect_wave",
+        "characterConflict": "enemy_behavior_analysis",
+        "playerChoice": "defender_placement_adjustment",
+        "worldChange": "resource_allocation_state_change",
+        "nextEvent": "new_defensive_strategy"
       },
       "cThemes": [
         {
-          "name": "strategy",
+          "name": "wave_pattern",
           "kind": "MATERIAL",
-          "gameplayEffect": "adaptive defense"
+          "gameplayEffect": "threat_prediction"
         },
         {
-          "name": "environment",
+          "name": "critical_resource",
           "kind": "MATERIAL",
-          "gameplayEffect": "dynamic positioning"
+          "gameplayEffect": "economic_value_estimation"
         }
       ],
       "cGenres": [
         {
           "role": "PRIMARY",
-          "name": "wave defense strategy",
-          "gameplayEffect": "adaptive placement and counterplay"
+          "name": "enemy_behavior_analysis",
+          "gameplayEffect": "behavior_counterplay"
         },
         {
           "role": "SECONDARY",
-          "name": "enemy behavior adaptation",
-          "gameplayEffect": "increased defensive effectiveness"
+          "name": "resource_allocation_state_change",
+          "gameplayEffect": "economical_decision_making"
         }
       ],
-      "cGenreInterlock": "defenses become more adaptive as enemies change their tactics, leading to new defensive strategies and gameplay mechanics",
-      "cWorldAndGameplayEffect": "defensive systems evolve through a combination of experience, resource allocation, and risk-reward analysis, resulting in more complex and adaptive gameplay mechanics",
+      "cGenreInterlock": "enemy_behavior_analysis ↔ resource_allocation_state_change",
+      "cWorldAndGameplayEffect": "threat_prediction vs. economical_decision_making",
       "delveDiscoveries": [
         {
-          "clue": "player input and observation of enemy behavior",
-          "discovery": "defenders adapt their positions based on real-time threat assessments",
-          "newChoice": "new defensive strategies emerge from observed patterns"
+          "clue": "insect_wave_pattern",
+          "discovery": "defender_placement_adjustment",
+          "newChoice": "economic_value_estimation"
         },
         {
-          "clue": "resource allocation and risk-reward analysis",
-          "discovery": "defensive structures evolve with increasing complexity",
-          "newChoice": "more sophisticated strategic placements are developed"
+          "clue": "critical_resource",
+          "discovery": "resource_allocation_state_change",
+          "newChoice": "new_defensive_strategy"
         },
         {
-          "clue": "environmental changes and dynamic positioning",
-          "discovery": "defensive systems incorporate new environmental factors",
-          "newChoice": "defenses become more adaptable to changing conditions"
+          "clue": "enemy_behavior_analysis",
+          "discovery": "defender_placement_adjustment",
+          "newChoice": "economical_decision_making"
         },
         {
-          "clue": "experience and reward feedback",
-          "discovery": "defensive strategies improve over time",
-          "newChoice": "players develop better understanding of optimal defense positions"
+          "clue": "wave_pattern",
+          "discovery": "resource_allocation_state_change",
+          "newChoice": "new_defensive_strategy"
         }
       ],
-      "delveGrowthRule": "defensive systems grow by incorporating new enemy behaviors, environmental factors, and adaptive strategies, leading to more complex and evolving gameplay mechanics",
-      "finalGameIdentity": "wave defense strategy - adaptive placement, enemy behavior counterplay, and evolving defensive systems"
+      "delveGrowthRule": "defender_placement_adjustment → economic_value_estimation → new_defensive_strategy",
+      "finalGameIdentity": "wave_pattern_vs_critical_resource"
     },
-    "coreFun": "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 실제 플레이 단계 최소 3개",
+    "coreFun": "defender_placement_adjustment → resource_allocation_state_change → new_defensive_strategy",
     "coreLoop": [
-      "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결",
-      "defenders are placed in optimal positions to counter the threat pattern",
-      "resource allocation and risk-reward analysis drive adaptive defense strategies"
+      "입력: 곤충 웨이브 및 위협 패턴 읽기",
+      "선택: 방어선 재배치 및 최대한 경제적 가치에 맞춘 자원 배분",
+      "상태변화: 방어선 위치 변경, 자원 소비 증가",
+      "보상/위험: 성공 또는 실패, 다음 선택 기반의 전략 결정"
     ],
     "signatureSystems": [
       {
-        "id": "main_abc",
+        "id": "main_roadmap",
         "grammarRole": "MAIN",
         "stateInputs": [
           "incoming_insect_wave_pattern",
-          "defender_positioning_strategy"
+          "resource_allocation_state"
         ],
         "stateOutputs": [
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
-        "name": "Main Defensive Strategy",
-        "purpose": "Player-controlled defense mechanism that evolves based on real-time enemy behavior and threat assessment.",
-        "playerChoice": "Choose optimal defensive positioning and resource allocation to survive the wave and prepare for next-level strategy."
+        "name": "Main Roadmap",
+        "purpose": "Establish the core gameplay strategy for defending against insect waves, with a focus on adaptive resource allocation and strategic placement of defenders.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
       },
       {
-        "id": "a_main",
+        "id": "a_main_roadmap",
         "grammarRole": "A",
         "stateInputs": [
           "incoming_insect_wave_pattern",
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "resource_allocation_state",
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
         "stateOutputs": [
-          "defender_positioning_strategy",
-          "incoming_insect_wave_pattern"
+          "defender_placement_adjustment",
+          "next_defense_decision_making",
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state"
         ],
-        "name": "Game Designer AI",
-        "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
-        "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern."
+        "name": "After Play Flow",
+        "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
       },
       {
-        "id": "b_main",
+        "id": "b_defense_adaptation",
         "grammarRole": "B",
         "stateInputs": [
-          "defender_positioning_strategy",
-          "incoming_insect_wave_pattern"
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state"
         ],
         "stateOutputs": [
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
-        "name": "Adaptive Defensive Tactics",
-        "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
-        "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern and adapt to evolving enemy tactics."
+        "name": "Defense Adaptation",
+        "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation and decision-making.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift, prioritizing high-value countermeasures and survival strategies."
       },
       {
-        "id": "delve_abc",
+        "id": "delve_roadmap",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state",
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
         "stateOutputs": [
-          "defender_positioning_strategy",
-          "incoming_insect_wave_pattern"
+          "defender_placement_adjustment",
+          "next_defense_decision_making",
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state"
         ],
-        "name": "Delve into Adaptive Defensive Mechanics",
-        "purpose": "Players engage in real-time defensive decision-making by adapting to enemy behavior and resource constraints, leading to evolving strategies and gameplay mechanics.",
-        "playerChoice": "Optimize defender positioning based on incoming insect wave patterns while balancing resource allocation for maximum effectiveness against dynamic threats."
+        "name": "Defense Adaptation",
+        "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
       }
     ],
-    "multiplayerMode": "HYBRID",
+    "multiplayerMode": "COOP",
     "targetPlatform": "UNITY"
   },
-  "fingerprint": "454e735b92926cd434d322e881ab588fb20f6dd511e4819a74345ebaf8053c99",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
-  "contentDigest": "b78ee0211f35bed5919c4ef3ef127110078f0bb763b8af288c0060f49c0f6234",
+  "fingerprint": "cff1b38da47bf0af1a49c041a77704d53ac214b83654ca28a85f5e01a075539c",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
+  "contentDigest": "86437e72e92b9534a9cc5377e5e6ecd6a16955a0dc37a5854dcf28fc78204811",
   "externalSeedRequired": false,
   "designPass": false,
   "runtimePass": false,
   "content": {
-    "identity": "곤충 디펜스 - 게임 정체성",
+    "identity": "곤충 디펜스",
     "creativeGrammar": {
       "mainIdentity": "wave defense readability, meaningful placement choices, enemy-type counterplay",
       "a": {
-        "system": "insect wave",
-        "material": "readable and strategic placement of defenders",
-        "materialDomain": "strategy and gameplay mechanics",
-        "stateChange": "defenders are placed in optimal positions to counter the threat pattern"
+        "system": "enemy_behavior",
+        "material": "insect_wave_pattern",
+        "materialDomain": "threat_pattern_analysis",
+        "stateChange": "defender_placement_adjustment"
       },
       "b": {
-        "system": "enemy behavior",
-        "material": "counterplay against different insect types",
-        "materialDomain": "gameplay strategy and interaction",
-        "stateChange": "defenders adapt their positioning based on observed enemy patterns"
+        "system": "resource_allocation",
+        "material": "critical_resource",
+        "materialDomain": "economic_value_assessment",
+        "stateChange": "limited_resource_spending"
       },
-      "abCausality": "defender position changes based on real-time enemy behavior and threat assessment",
+      "abCausality": "defender_placement_adjustment → resource_allocation_state_change → next_defense_decision_making",
       "abEvolution": {
-        "aChangesB": "defenders shift positions to maximize defensive effectiveness against varying threats",
-        "bChangesA": "defenses become more adaptive as enemies evolve their tactics",
-        "lateGameChange": "defensive strategies incorporate new enemy behaviors and environmental factors"
+        "aChangesB": "defender_placement_adjustment → resource_allocation_state_change",
+        "bChangesA": "resource_allocation_state_change → defender_placement_adjustment",
+        "lateGameChange": "resource_allocation_state_change → new_defensive_strategy"
       },
       "materialFusion": {
-        "contrast": "defenders learn from past losses and use rewards to refine future strategies",
-        "causalBridge": "adaptive defenses emerge through a combination of experience, resource allocation, and risk-reward analysis",
-        "removalConsequence": "defensive structures evolve by incorporating new enemy behaviors and game dynamics"
+        "contrast": "insect_wave_pattern vs. critical_resource",
+        "causalBridge": "defender_placement_adjustment → economic_value_assessment",
+        "removalConsequence": "loss_of_defender_placement → increased_resource_spend"
       },
       "storyCausalChain": {
-        "cause": "player input and observation of enemy behavior",
-        "characterConflict": "defenders must balance survival with strategic adaptation",
-        "playerChoice": "defenders choose where to place troops based on threat assessments",
-        "worldChange": "defensive structures evolve in response to changing enemy tactics and environmental conditions",
-        "nextEvent": "new defensive strategies are developed based on observed patterns and rewarded outcomes"
+        "cause": "incoming_insect_wave",
+        "characterConflict": "enemy_behavior_analysis",
+        "playerChoice": "defender_placement_adjustment",
+        "worldChange": "resource_allocation_state_change",
+        "nextEvent": "new_defensive_strategy"
       },
       "cThemes": [
         {
-          "name": "strategy",
+          "name": "wave_pattern",
           "kind": "MATERIAL",
-          "gameplayEffect": "adaptive defense"
+          "gameplayEffect": "threat_prediction"
         },
         {
-          "name": "environment",
+          "name": "critical_resource",
           "kind": "MATERIAL",
-          "gameplayEffect": "dynamic positioning"
+          "gameplayEffect": "economic_value_estimation"
         }
       ],
       "cGenres": [
         {
           "role": "PRIMARY",
-          "name": "wave defense strategy",
-          "gameplayEffect": "adaptive placement and counterplay"
+          "name": "enemy_behavior_analysis",
+          "gameplayEffect": "behavior_counterplay"
         },
         {
           "role": "SECONDARY",
-          "name": "enemy behavior adaptation",
-          "gameplayEffect": "increased defensive effectiveness"
+          "name": "resource_allocation_state_change",
+          "gameplayEffect": "economical_decision_making"
         }
       ],
-      "cGenreInterlock": "defenses become more adaptive as enemies change their tactics, leading to new defensive strategies and gameplay mechanics",
-      "cWorldAndGameplayEffect": "defensive systems evolve through a combination of experience, resource allocation, and risk-reward analysis, resulting in more complex and adaptive gameplay mechanics",
+      "cGenreInterlock": "enemy_behavior_analysis ↔ resource_allocation_state_change",
+      "cWorldAndGameplayEffect": "threat_prediction vs. economical_decision_making",
       "delveDiscoveries": [
         {
-          "clue": "player input and observation of enemy behavior",
-          "discovery": "defenders adapt their positions based on real-time threat assessments",
-          "newChoice": "new defensive strategies emerge from observed patterns"
+          "clue": "insect_wave_pattern",
+          "discovery": "defender_placement_adjustment",
+          "newChoice": "economic_value_estimation"
         },
         {
-          "clue": "resource allocation and risk-reward analysis",
-          "discovery": "defensive structures evolve with increasing complexity",
-          "newChoice": "more sophisticated strategic placements are developed"
+          "clue": "critical_resource",
+          "discovery": "resource_allocation_state_change",
+          "newChoice": "new_defensive_strategy"
         },
         {
-          "clue": "environmental changes and dynamic positioning",
-          "discovery": "defensive systems incorporate new environmental factors",
-          "newChoice": "defenses become more adaptable to changing conditions"
+          "clue": "enemy_behavior_analysis",
+          "discovery": "defender_placement_adjustment",
+          "newChoice": "economical_decision_making"
         },
         {
-          "clue": "experience and reward feedback",
-          "discovery": "defensive strategies improve over time",
-          "newChoice": "players develop better understanding of optimal defense positions"
+          "clue": "wave_pattern",
+          "discovery": "resource_allocation_state_change",
+          "newChoice": "new_defensive_strategy"
         }
       ],
-      "delveGrowthRule": "defensive systems grow by incorporating new enemy behaviors, environmental factors, and adaptive strategies, leading to more complex and evolving gameplay mechanics",
-      "finalGameIdentity": "wave defense strategy - adaptive placement, enemy behavior counterplay, and evolving defensive systems"
+      "delveGrowthRule": "defender_placement_adjustment → economic_value_estimation → new_defensive_strategy",
+      "finalGameIdentity": "wave_pattern_vs_critical_resource"
     },
-    "playerFantasy": "플레이어는 곤충의 위협을 읽고 그에 맞는 전략과 위치를 선택하며, 보상은 다음 전략의 틀을 바꾸는 데 사용된다. 게임은 변화하는 적의 행동과 환경에서 지속적으로 발전한다.",
-    "coreFun": "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 실제 플레이 단계 최소 3개",
+    "playerFantasy": "플레이어는 곤충의 웨이브를 읽고, 위협을 예측하며, 방어선을 조정하고, 경제적 가치에 따라 다음 전략을 선택하는 게임입니다.",
+    "coreFun": "defender_placement_adjustment → resource_allocation_state_change → new_defensive_strategy",
     "coreLoop": [
-      "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결",
-      "defenders are placed in optimal positions to counter the threat pattern",
-      "resource allocation and risk-reward analysis drive adaptive defense strategies"
+      "입력: 곤충 웨이브 및 위협 패턴 읽기",
+      "선택: 방어선 재배치 및 최대한 경제적 가치에 맞춘 자원 배분",
+      "상태변화: 방어선 위치 변경, 자원 소비 증가",
+      "보상/위험: 성공 또는 실패, 다음 선택 기반의 전략 결정"
     ],
     "signatureSystems": [
       {
-        "id": "main_abc",
+        "id": "main_roadmap",
         "grammarRole": "MAIN",
         "stateInputs": [
           "incoming_insect_wave_pattern",
-          "defender_positioning_strategy"
+          "resource_allocation_state"
         ],
         "stateOutputs": [
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
-        "name": "Main Defensive Strategy",
-        "purpose": "Player-controlled defense mechanism that evolves based on real-time enemy behavior and threat assessment.",
-        "playerChoice": "Choose optimal defensive positioning and resource allocation to survive the wave and prepare for next-level strategy."
+        "name": "Main Roadmap",
+        "purpose": "Establish the core gameplay strategy for defending against insect waves, with a focus on adaptive resource allocation and strategic placement of defenders.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
       },
       {
-        "id": "a_main",
+        "id": "a_main_roadmap",
         "grammarRole": "A",
         "stateInputs": [
           "incoming_insect_wave_pattern",
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "resource_allocation_state",
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
         "stateOutputs": [
-          "defender_positioning_strategy",
-          "incoming_insect_wave_pattern"
+          "defender_placement_adjustment",
+          "next_defense_decision_making",
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state"
         ],
-        "name": "Game Designer AI",
-        "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
-        "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern."
+        "name": "After Play Flow",
+        "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
       },
       {
-        "id": "b_main",
+        "id": "b_defense_adaptation",
         "grammarRole": "B",
         "stateInputs": [
-          "defender_positioning_strategy",
-          "incoming_insect_wave_pattern"
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state"
         ],
         "stateOutputs": [
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
-        "name": "Adaptive Defensive Tactics",
-        "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
-        "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern and adapt to evolving enemy tactics."
+        "name": "Defense Adaptation",
+        "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation and decision-making.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift, prioritizing high-value countermeasures and survival strategies."
       },
       {
-        "id": "delve_abc",
+        "id": "delve_roadmap",
         "grammarRole": "DELVE",
         "stateInputs": [
-          "adaptive_defensive_tactics",
-          "resource_allocation_optimization"
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state",
+          "defender_placement_adjustment",
+          "next_defense_decision_making"
         ],
         "stateOutputs": [
-          "defender_positioning_strategy",
-          "incoming_insect_wave_pattern"
+          "defender_placement_adjustment",
+          "next_defense_decision_making",
+          "incoming_insect_wave_pattern",
+          "resource_allocation_state"
         ],
-        "name": "Delve into Adaptive Defensive Mechanics",
-        "purpose": "Players engage in real-time defensive decision-making by adapting to enemy behavior and resource constraints, leading to evolving strategies and gameplay mechanics.",
-        "playerChoice": "Optimize defender positioning based on incoming insect wave patterns while balancing resource allocation for maximum effectiveness against dynamic threats."
+        "name": "Defense Adaptation",
+        "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation.",
+        "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
       }
     ],
-    "multiplayerMode": "HYBRID"
+    "multiplayerMode": "COOP"
   },
-  "updatedAt": "2026-10-10T09:49:56.245Z"
+  "updatedAt": "2026-10-10T10:43:09.321Z"
 }
