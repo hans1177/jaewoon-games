@@ -24,6 +24,10 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'assets/vibe-studio-asset-universe.js'
+      # Re-enter the existing planner when platform-neutral native master/source or
+      # company asset registrations change; do not create a new authoring queue.
+      - 'assets/shared/**'
+      - 'company-asset-library.json'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
