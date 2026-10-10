@@ -503,33 +503,54 @@ export function canonicalizeGameRecord(game={}){
   };
 }
 
+// 홈페이지 검증: 실제 웹 플레이 영상과 같은 게임·버전의 프레임만 슬라이드에 표시한다.
 export function validatedHomepageMedia(id,entry,{filesystem=fs,root='.'}={}){
   if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||entry?.gameId!==id||!clean(entry.titleEn)||!clean(entry.titleKo))return null;
-  const validFile=(row,prefix,maxBytes)=>{
-    if(!row||typeof row.src!=='string'||!prefix.test(row.src)||!/^[a-f0-9]{64}$/.test(String(row.sha256||'')))return false;
-    try{const bytes=filesystem.readFileSync(root+'/'+row.src);return bytes.length>0&&bytes.length<=maxBytes&&bytes.length===row.bytes&&crypto.createHash('sha256').update(bytes).digest('hex')===row.sha256;}catch{return false;}
+  const validFile=(row,expected,maxBytes,jpeg=false)=>{
+    if(!row||row.src!==expected||!/^[a-f0-9]{64}$/.test(String(row.sha256||'')))return false;
+    try{
+      const bytes=filesystem.readFileSync(root+'/'+row.src);
+      if(!bytes.length||bytes.length>maxBytes||bytes.length!==row.bytes)return false;
+      if(jpeg&&(bytes.length<4||bytes[0]!==0xff||bytes[1]!==0xd8||bytes[bytes.length-2]!==0xff||bytes[bytes.length-1]!==0xd9))return false;
+      return crypto.createHash('sha256').update(bytes).digest('hex')===row.sha256;
+    }catch{return false;}
   };
-  if(!validFile(entry.cover,new RegExp('^assets/homepage-covers/'+id+'\\.webp$'),143360)||!validFile(entry.small,new RegExp('^assets/homepage-covers/'+id+'-480\\.webp$'),49152))return null;
-  const result={gameId:id,titleEn:clean(entry.titleEn),titleKo:clean(entry.titleKo),cover:entry.cover,small:entry.small,kind:'MARKETING_ARTWORK',style:entry.style,typography:clean(entry.typography)};
+  if(!validFile(entry.cover,'assets/homepage-covers/'+id+'.webp',143360)
+    ||!validFile(entry.small,'assets/homepage-covers/'+id+'-480.webp',49152))return null;
+  const result={gameId:id,titleEn:clean(entry.titleEn),titleKo:clean(entry.titleKo),
+    cover:entry.cover,small:entry.small,kind:'MARKETING_ARTWORK',style:entry.style,typography:clean(entry.typography)};
   const v=entry.video;
-  if(v&&v.gameId===id&&['WEB','UNITY_WEB','UNITY'].includes(v.platform)&&/^[a-f0-9]{40}$/.test(v.sourceRevision||'')&&/^[a-f0-9]{64}$/.test(v.artifactIdentity||'')&&Number.isFinite(Date.parse(v.capturedAt))&&v.runtimeVerification?.pass===true&&v.runtimeVerification?.inputEvents>0&&v.runtimeVerification?.visualChangeObserved===true&&validFile(v,new RegExp('^assets/homepage-media/'+id+'\\.mp4$'),3145728)){
-    let current=false;
-    try{current=['WEB','UNITY_WEB'].includes(v.platform)&&webTreeFingerprint(filesystem,root+'/web-games/'+id)===v.artifactIdentity;}catch{}
-    if(current&&Array.isArray(v.dependencies)&&v.dependencies.length>0&&v.dependencies.every(dep=>{
-      if(!/^(web-games|assets)\/[a-zA-Z0-9_./-]+$/.test(dep.path||'')||dep.path.split('/').includes('..'))return false;
+  if(!v||v.gameId!==id||!['WEB','UNITY_WEB','UNITY'].includes(v.platform)
+    ||!/^[a-f0-9]{40}$/.test(v.sourceRevision||'')
+    ||!/^[a-f0-9]{64}$/.test(v.artifactIdentity||'')
+    ||!Number.isFinite(Date.parse(v.capturedAt))
+    ||v.runtimeVerification?.pass!==true||v.runtimeVerification?.inputEvents<=0
+    ||v.runtimeVerification?.visualChangeObserved!==true
+    ||!validFile(v,'assets/homepage-media/'+id+'.mp4',3145728))return result;
+  let current=false;
+  try{
+    current=['WEB','UNITY_WEB'].includes(v.platform)
+      &&webTreeFingerprint(filesystem,root+'/web-games/'+id)===v.artifactIdentity;
+  }catch{}
+  if(!current||!Array.isArray(v.dependencies)||!v.dependencies.length
+    ||!v.dependencies.every(dep=>{
+      if(!/^(web-games|assets)\/[a-zA-Z0-9_./-]+$/.test(dep.path||'')
+        ||dep.path.split('/').includes('..'))return false;
       try{return crypto.createHash('sha256').update(filesystem.readFileSync(root+'/'+dep.path)).digest('hex')===dep.sha256;}catch{return false;}
-    })){
-      result.video=v;
-      // 실제 플레이 영상에서 추출한 동일 버전·동일 플랫폼의 16:9 화면만 노출한다.
-      const screenshots=Array.isArray(entry.screenshots)?entry.screenshots:[];
-      if(screenshots.length>=1&&screenshots.length<=3&&screenshots.every((frame,index)=>
-        frame?.gameId===id&&frame.platform===v.platform
-        &&frame.artifactIdentity===v.artifactIdentity&&frame.sourceRevision===v.sourceRevision
-        &&frame.source==='ACTUAL_GAMEPLAY_VIDEO_FRAME'
-        &&frame.width===1920&&frame.height===1080
-        &&Number.isFinite(frame.second)&&frame.second>=0&&frame.second<=v.seconds
-        &&frame.src==='assets/homepage-media/'+id+'-'+(index+1)+'.jpg'
-        &&validFile(frame,new RegExp('^assets/homepage-media/'+id+'-[1-3]\\.jpg
+    }))return result;
+  result.video=v;
+  // 1920×1080 사진은 검증된 촬영 영상에서 추출한 JPG만 허용한다.
+  const screenshots=Array.isArray(entry.screenshots)?entry.screenshots:[];
+  if(screenshots.length>=1&&screenshots.length<=3&&screenshots.every((frame,index)=>
+    frame?.gameId===id&&frame.platform===v.platform
+    &&frame.artifactIdentity===v.artifactIdentity&&frame.sourceRevision===v.sourceRevision
+    &&frame.capturedAt===v.capturedAt&&frame.source==='ACTUAL_GAMEPLAY_VIDEO_FRAME'
+    &&frame.width===1920&&frame.height===1080
+    &&Number.isFinite(frame.second)&&frame.second>=0&&frame.second<=v.seconds
+    &&validFile(frame,'assets/homepage-media/'+id+'-'+(index+1)+'.jpg',1048576,true)
+  ))result.screenshots=screenshots;
+  return result;
+}
 
 export function normalizeCatalog(catalog={}){
   if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
