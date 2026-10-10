@@ -340,30 +340,30 @@ function pickModes(seed,items,min=2,max=3){const count=Math.min(items.length,min
 
 const SYSTEM_ASSET_ROLE_MAP=Object.freeze({
   SURVIVAL_VITALS:[['UI','STATUS']],
-  STATUS_HUD:[['UI','HUD'],['UI','STATUS']],
-  SETTINGS_ACCESSIBILITY:[['UI','SETTINGS'],['UI','INPUT_HINT']],
+  STATUS_HUD:[['UI','GAME_WINDOW_LAYOUT'],['UI','STATUS_OVERVIEW'],['UI','HUD'],['UI','STATUS']],
+  SETTINGS_ACCESSIBILITY:[['UI','SETTINGS_PANEL'],['UI','INPUT_HINT']],
   PLAYER_TRADE_ESCROW:[['UI','TRADE_ESCROW_REVIEW'],['UI','INVENTORY'],['AUDIO','UI']],
   SKILL_TREE:[['UI','SKILL_TREE_SCREEN'],['SKILL','VFX'],['UI','ICON']],
   JOURNAL_CHRONICLE:[['UI','JOURNAL_TIMELINE'],['UI','CODEX']],
   WORLD_EVENT_DIRECTOR:[['UI','WORLD_EVENT_TIMELINE'],['VFX','ENVIRONMENT'],['AUDIO','UI']],
   CINEMATIC_PRESENTATION:[['UI','EVENT_CINEMATIC_CARD'],['VFX','BOSS'],['AUDIO','BOSS']],
   GATHERING_RESOURCE:[['PROP','RESOURCE'],['MOTION','SURVIVAL_CRAFTING'],['UI','ICON']],
-  INVENTORY_EQUIPMENT:[['UI','INVENTORY'],['UI','ICON'],['CHARACTER','ACCESSORY']],
+  INVENTORY_EQUIPMENT:[['UI','INVENTORY_FULL_SCREEN'],['UI','EQUIPMENT_FULL_SCREEN'],['UI','INVENTORY'],['UI','ICON'],['CHARACTER','ACCESSORY']],
   ITEM_LOOT:[['PROP','RESOURCE'],['UI','ICON']],
-  CRAFTING:[['PROP','CRAFTING'],['MOTION','SURVIVAL_CRAFTING'],['UI','INVENTORY']],
+  CRAFTING:[['PROP','CRAFTING'],['MOTION','SURVIVAL_CRAFTING'],['UI','CRAFTING_FULL_SCREEN'],['UI','INVENTORY']],
   HOUSING_BUILDING:[['BUILDING','MODULAR_EXTERIOR'],['BUILDING','INTERIOR'],['PROP','FURNITURE'],['UI','ICON']],
   WEATHER_ENVIRONMENT:[['ENVIRONMENT','WEATHER'],['VFX','WEATHER'],['AUDIO','WEATHER']],
-  EXPLORATION_REGION:[['ENVIRONMENT','BIOME'],['ENVIRONMENT','LANDMARK'],['UI','MAP']],
+  EXPLORATION_REGION:[['ENVIRONMENT','BIOME'],['ENVIRONMENT','LANDMARK'],['UI','MAP_FULL_SCREEN'],['UI','MAP']],
   THREAT_ECOLOGY:[['CREATURE','SPECIES'],['MOTION','COMBAT'],['AUDIO','CREATURE_VOCAL']],
   TARGETING_COMBAT:[['MOTION','COMBAT'],['VFX','IMPACT'],['AUDIO','HIT'],['UI','STATUS']],
   SKILL_BUILD:[['SKILL','VFX'],['MOTION','SKILL'],['UI','ICON']],
-  ECONOMY_SHOP:[['UI','FRAME'],['UI','ICON']],
-  QUEST_DIALOGUE:[['UI','FRAME'],['UI','ICON']],
+  ECONOMY_SHOP:[['UI','SHOP_FULL_SCREEN'],['UI','BUY_SELL_PANEL'],['UI','FRAME'],['UI','ICON']],
+  QUEST_DIALOGUE:[['UI','QUEST_LOG'],['UI','DIALOGUE_PANEL'],['UI','FRAME'],['UI','ICON']],
   NPC_INTERACTION:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME']],
-  COMPANION_PARTY:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','FRAME']],
+  COMPANION_PARTY:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','PARTY_ROLE_OVERVIEW'],['UI','FRAME']],
   SOCIAL_RELATIONSHIP:[['CHARACTER','BODY'],['MOTION','ACTING'],['UI','STATUS']],
   FACTION_WORLD_STATE:[['CHARACTER','ACCESSORY'],['UI','STATUS'],['ENVIRONMENT','LANDMARK']],
-  CODEX_COLLECTION:[['UI','FRAME'],['UI','ICON']],
+  CODEX_COLLECTION:[['UI','CODEX_SCREEN'],['UI','FRAME'],['UI','ICON']],
   WAVE_ENCOUNTER:[['CREATURE','BODY_PLAN'],['UI','HUD'],['VFX','STATUS']],
   DEFENSE_PLACEMENT:[['PROP','INTERACTIVE'],['UI','HUD']],
   RESEARCH_TECH:[['UI','FRAME'],['UI','ICON']],
@@ -374,6 +374,43 @@ const SYSTEM_ASSET_ROLE_MAP=Object.freeze({
   TRAVERSAL_CHECKPOINT:[['MOTION','TRAVERSAL'],['UI','STATUS']],
   TERRITORY_OBJECTIVE:[['UI','MAP'],['ENVIRONMENT','LANDMARK'],['VFX','STATUS']],
 });
+
+// 설계에서 선택한 내부 게임 도구를 기존 설계→자산→구현 경로와 같은 계약으로 동기화한다.
+function buildDesignToolSynchronization({systemBlueprint={},assetRequirements=[],genre=''}={}){
+  const required=Array.isArray(systemBlueprint.requiredSystems)?systemBlueprint.requiredSystems:[];
+  const optional=Array.isArray(systemBlueprint.expansionSystems)?systemBlueprint.expansionSystems:[];
+  const systemIds=rows=>uniq(rows.map(row=>row?.id));
+  const libraryHints=rows=>uniq(rows.flatMap(row=>row?.reusableLibraryHints||[]));
+  const uiRoles=rows=>uniq(rows.flatMap(row=>(SYSTEM_ASSET_ROLE_MAP[row?.id]||[])
+    .filter(([family])=>family==='UI').map(([,role])=>role)));
+  const requiredUi=uiRoles(required);
+  const optionalUi=uiRoles(optional).filter(role=>!requiredUi.includes(role));
+  const planned=(assetRequirements||[]).filter(row=>row?.family&&row?.subfamily);
+  return Object.freeze({
+    version:1,
+    phase:'DESIGN',
+    designGenre:clean(genre).toUpperCase(),
+    source:'CANONICAL_GAME_FLOW_SYSTEM_BLUEPRINT',
+    requiredSystems:Object.freeze(systemIds(required)),
+    optionalSystems:Object.freeze(systemIds(optional).filter(id=>!systemIds(required).includes(id))),
+    requiredUiRoles:Object.freeze(requiredUi),
+    optionalUiRoles:Object.freeze(optionalUi),
+    requiredNativeLibraryHints:Object.freeze(libraryHints(required)),
+    optionalNativeLibraryHints:Object.freeze(libraryHints(optional).filter(path=>!libraryHints(required).includes(path))),
+    assetRequirements:Object.freeze(planned),
+    assetSelection:'EXISTING_COMPATIBLE_COMPANY_LIBRARY_FIRST_AT_EXECUTION',
+    librarySnapshotMustMatchSourceRevision:true,
+    conditionalSystemsRequireActualGameDesignAndImplementation:true,
+    menuVisibility:'AUTHORITATIVE_GAME_CAPABILITIES_ONLY',
+    runtimeAssetBindingVerified:false,
+    noFeatureAutoEnableFromUiCatalog:true,
+    platformNativeImplementationRequired:true,
+    noDirectExternalSourceRuntime:true,
+    noShadowPipeline:true,
+    gameSaveEconomyCombatAndNetworkAuthorityUnchanged:true,
+    stageFlow:Object.freeze(['GAME_DESIGN','CANONICAL_TOOL_ROLE_SELECTION','EXISTING_LIBRARY_LOOKUP','NATIVE_RESPONSIBLE_SOURCE_BINDING','INDEPENDENT_RUNTIME_QA'])
+  });
+}
 
 const FLOW_ASSET_ROLE_MAP=Object.freeze({
   HUB_AND_SPOKE:[['ENVIRONMENT','LANDMARK'],['UI','MAP'],['PROP','INTERACTIVE']],
@@ -521,7 +558,15 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
     const systemBlueprint=base.systemBlueprint||buildConceptSystemBlueprint({genre,baseline,architecture:base});
     const enriched={...base,systemBlueprint};
     const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
-    return{...enriched,assetFlow:base.assetFlow||{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:enriched,genre,baseline})};
+    const previousRequirements=Array.isArray(base.assetFlow?.requirements)?base.assetFlow.requirements:[];
+    const mergedRequirements=[...previousRequirements];
+    const known=new Set(mergedRequirements.map(row=>clean(row?.family).toUpperCase()+':'+clean(row?.subfamily).toUpperCase()));
+    for(const row of assetRequirements){
+      const key=row.family+':'+row.subfamily;
+      if(!known.has(key)){mergedRequirements.push(row);known.add(key);}
+    }
+    const designToolSync=buildDesignToolSynchronization({systemBlueprint,assetRequirements:mergedRequirements,genre});
+    return{...enriched,assetFlow:{...base.assetFlow,version:Math.max(1,Number(base.assetFlow?.version||1)),mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:mergedRequirements},designToolSync,qualityGrowthContract:base.qualityGrowthContract||buildQualityGrowthContract({architecture:enriched,genre,baseline})};
   }
   // 설계용 inventory는 기존 플로우 선택 규칙을 유지한다. 실제 파일 검색 결과는 빌드업 증거에서 별도 처리한다.
   const seed=stableInt(`${gameId}|${genre}|${(inventory||[]).map(x=>`${x?.path||''}:${x?.label||''}`).join('|')}`),flowDNA=chooseFlowDNA({gameId,genre,baseline});
@@ -562,7 +607,8 @@ export function buildGameFlowArchitecture({gameId='',genre='',baseline={},invent
   const systemBlueprint=buildConceptSystemBlueprint({genre,baseline,architecture});
   const enriched={...architecture,systemBlueprint};
   const assetRequirements=buildFlowAssetRequirements({architecture:enriched,genre,baseline});
-  return{...enriched,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},qualityGrowthContract:buildQualityGrowthContract({architecture:enriched,genre,baseline})};
+  const designToolSync=buildDesignToolSynchronization({systemBlueprint,assetRequirements,genre});
+  return{...enriched,assetFlow:{version:1,mode:'FLOW_DRIVEN_LATEST_LIBRARY_RESOLUTION',requirements:assetRequirements},designToolSync,qualityGrowthContract:buildQualityGrowthContract({architecture:enriched,genre,baseline})};
 }
 
 export function evaluateGameFlowArchitecture(architecture={}){
