@@ -3861,3 +3861,39 @@ test('GLB scene geometry identity survives shared mesh reuse and changes on UV o
     assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('existing Blender asset recipe optionally renders H264 cinematic with source-bound storyboard',()=>{
+  const task={gameId:'cinematic-engine-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 시네마틱 영상 렌더링 환경 배경 소품',
+    assetCinematic:{enabled:true,quality:'HIGH'}};
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const dcc=plan.nativeAuthoringExecution.dcc;
+  const recipe=dcc.executionRecipes.find(row=>row.script==='assets/native-authoring/build-game-visual.py');
+  assert.ok(recipe,'canonical Blender authoring recipe required');
+  assert.equal(recipe.safe,true);
+  assert.equal(recipe.cinematic,true);
+  assert.equal(dcc.cinematicVideo.requested,true);
+  assert.equal(dcc.cinematicVideo.encoder,'BLENDER_FFMPEG_H264');
+  assert.equal(dcc.cinematicVideo.gameplayMutationAllowed,false);
+  assert.equal(dcc.cinematicVideo.nativeRuntimeVerifiedByDccRender,false);
+  assert.ok(recipe.args.includes('--cinematic'));
+  assert.ok(recipe.args.includes('24'));
+  assert.ok(recipe.args.includes('960'));
+  assert.equal(recipe.cinematicOutput,'assets/generated/roblox/cinematic-engine-demo/background/cinematic.mp4');
+  assert.equal(recipe.shotlistOutput,'assets/generated/roblox/cinematic-engine-demo/background/shotlist.json');
+  assert.ok(recipe.outputs.includes(recipe.cinematicOutput));
+  assert.ok(recipe.outputs.includes(recipe.shotlistOutput));
+  const silent=buildVibeAssetProductionPlan({
+    target:'roblox',task:{gameId:'cinematic-engine-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 환경 배경 소품'},
+    manifest:{assets:[]},presetCatalog:{presets:[]}
+  });
+  assert.equal(silent.nativeAuthoringExecution.dcc.cinematicVideo.requested,false);
+  assert.ok(silent.nativeAuthoringExecution.dcc.executionRecipes.every(row=>row.cinematic!==true));
+  assert.ok(silent.nativeAuthoringExecution.dcc.executionRecipes.every(row=>!row.outputs.some(output=>output.endsWith('/cinematic.mp4'))));
+});
+
+test('Blender cinematic path is syntax-valid and never claims platform runtime completion',()=>{
+  const script=new URL('../assets/native-authoring/build-game-visual.py',import.meta.url);
+  execFileSync('python3',['-c','import pathlib; compile(pathlib.Path(r"'+decodeURIComponent(script.pathname).replaceAll('\\','\\\\')+'").read_text(), "build-game-visual.py", "exec")']);
+  const source=fs.readFileSync(script,'utf8');
+  for(const token of ['--cinematic','cinematic.mp4','shotlist.json',"'H264'",'BLENDER_VIDEO_RENDERED_NATIVE_RUNTIME_PENDING','nativeRuntimeVerified'])assert.ok(source.includes(token),token);
+});
