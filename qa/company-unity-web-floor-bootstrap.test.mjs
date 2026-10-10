@@ -581,6 +581,9 @@ test('Unity Web admits current design independently of Roblox F0 and promotes bo
   assert.match(bootstrap,/source\.identity!==identity/);
   assert.match(bootstrap,/JSON\.stringify\(source\.unityPlatformProfile\)!==JSON\.stringify\(design\.platformProfiles\?\.UNITY\)/);
   assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_PENDING_SOURCE_REUSED/);
+  assert.match(bootstrap,/process\.exit\(77\)/);
+  assert.match(bootstrap,/validation_rc != 0 && validation_rc != 77/);
+  assert.match(bootstrap,/origin\/main:unity-games\/\$GAME_ID/);
   assert.match(bootstrap,/node tools\/company-unity-web-first-stage\.mjs/);
   assert.match(bootstrap,/gh pr merge "\$PR_URL" --repo "\$GITHUB_REPOSITORY" --squash --delete-branch/);
   assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=NOT_YET_VERIFIED/);
