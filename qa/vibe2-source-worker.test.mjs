@@ -134,7 +134,7 @@ test('compact Roblox coding preserves same-game Unity Web source fingerprint and
   assert.ok(!safe.includes('unity-games/other-game/../../'));
   // 같은 게임의 네이티브 소스만 사용한다. ../ 경로로 다른 게임 소스를 참조할 수 없다.
   const bound=lines.replace('directiveId=roblox-sync',
-    'directiveId=roblox-sync\\ndesignCodePlatform=ROBLOX;source=roblox-games/roblox-sync;mode=COOP');
+    'directiveId=roblox-sync\ndesignCodePlatform=ROBLOX;source=roblox-games/roblox-sync;mode=COOP');
   const wrongGame=reference(1).replace('unity-games/roblox-sync/', 'unity-games/other-game/');
   const traversed=reference(2).replace('Assets/Scripts/Game2.cs', 'Assets/Scripts/../../other-game/Bad.cs');
   const wrong=compact(bound.replace(reference(1),wrongGame).replace(reference(2),traversed),
