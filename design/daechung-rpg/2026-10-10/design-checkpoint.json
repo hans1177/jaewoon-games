@@ -134,21 +134,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 436580,
-      "lastMs": 40286,
+      "totalMs": 474421,
+      "lastMs": 37841,
       "lastError": null,
-      "updatedAt": "2026-10-10T04:50:14.986Z"
+      "updatedAt": "2026-10-10T04:50:52.828Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:42:58.038Z",
-  "updatedAt": "2026-10-10T04:50:14.986Z",
+  "updatedAt": "2026-10-10T04:50:52.829Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1151,29 +1151,32 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:1:df760a8d58d408f5": [
+    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:2:69980e6c560e5b40": [
       {
         "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
+        "grammarRole": "B",
         "previousRuleIds": [
-          "main_arena"
+          "main_arena",
+          "a_arena"
         ]
       },
       {
         "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
+        "grammarRole": "B",
         "previousRuleIds": [
-          "main_arena"
+          "main_arena",
+          "a_arena"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:1:df760a8d58d408f5": 1
+    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:1:df760a8d58d408f5": 1,
+    "local_authoring_parts::2b0aba79776ea329bd7925f2ad02ffd69ecfe64f0e0be59ca20c1c3f6ed5253d:signatureSystems:2:69980e6c560e5b40": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T04:50:14.986Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T04:50:52.828Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:B",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
