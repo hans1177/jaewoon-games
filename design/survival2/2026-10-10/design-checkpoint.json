@@ -187,25 +187,32 @@
       },
       "playerFantasy": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임에서 플레이어는 동료들과 함께 자연 환경을 탐험하며 자원을 수집하고 위협을 관리해야 한다. 이 과정에서는 전투 전략, 이동 경로, 자원 소비 방식 등 다양한 요소가 실질적으로 영향을 미친다.",
       "coreFun": "플레이어 위치 변경 → 자원 소비율 증가 → 자연 요 element 영향"
+    },
+    "local_authoring_parts::6dfc418db85878a7cf989dbd5e2332c73d938dbc1c9bcd6df1cc3415f81cb79c:coreLoop": {
+      "coreLoop": [
+        "플레이어 위치 변경 → 자원 소비율 증가 → 자연 요소 영향",
+        "전투 승패 결정 → 보호 구조 조정 → 적 행동 예측",
+        "생태학적 지식 활용 → 전투 전략 혁신 → 생존자 역할 다양화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 730844,
-      "lastMs": 238325,
+      "totalMs": 824298,
+      "lastMs": 93454,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:08:31.587Z"
+      "updatedAt": "2026-10-10T10:10:05.044Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:56:20.720Z",
-  "updatedAt": "2026-10-10T10:08:31.588Z",
+  "updatedAt": "2026-10-10T10:10:05.053Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "312e8db95d8bd81f62cd929a7701d9177a0b9f8ef20de2f7a7fefa70ac9bb8a3": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:08:31.588Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:10:05.044Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
