@@ -107,25 +107,41 @@
         "PRIMARY_SYSTEM_PRIMARY_ROLE\": \"Survival/Action\",\n\"SECONDARY_SYSTEM_SECONDARY_ROLE\": \"Roguelike\"},\n\n",
         "CAUSAL_DNA\": \"Positioning → Wave Survival → Boss Confrontation;\nReward Collection → Strategy Synthesis → Playstyle Shift;\nBuild Combination → Boss Confrontation → Next Progression Choice\"}"
       ]
+    },
+    "local_authoring_parts::02222f8ff8acb6e18b44d656a3fb7138d2533c8160716628c2512b4d6f12e6a3:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player Positioning",
+        "Enemy Pressure"
+      ],
+      "stateOutputs": [
+        "Wave Survival",
+        "Boss Confrontation",
+        "Next Progression Choice"
+      ],
+      "name": "Survival/Action - Roguelike",
+      "purpose": "Define core gameplay mechanics and system interactions",
+      "playerChoice": "Build Combination and Playstyle Shift"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 177753,
-      "lastMs": 31326,
+      "totalMs": 213789,
+      "lastMs": 36036,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:48:09.912Z"
+      "updatedAt": "2026-10-10T01:48:45.950Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:45:12.145Z",
-  "updatedAt": "2026-10-10T01:48:09.912Z",
+  "updatedAt": "2026-10-10T01:48:45.950Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1835,7 +1851,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:48:09.912Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:48:45.950Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
