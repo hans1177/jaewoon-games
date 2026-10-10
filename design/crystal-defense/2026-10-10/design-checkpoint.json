@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 방어 전략을 선택하며, 이 선택은 실제 세계 상태에 영향을 미친다. 선택은 세계를 변환하고, 세계는 선택을 결정하게 된다.",
       "coreFun": "플레이어는 주요 플레이어 역할 및 선택 결과 판타지를 통해 방어 정체성과 주제 기반 게임을 형성한다. 선택은 세계를 변환하고, 세계는 선택을 결정하게 된다."
+    },
+    "local_authoring_parts::10191ec067d5cea9d15f22e02cca133d4c4abb7028026bb5a8b7b6d13b630e22:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어 선택",
+        " 상태변화: 방어 전략 적용 및 세계 상태 변환",
+        "보상/위험: 새로운 선택 가능성 제공, 게임 진행 방향 결정"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 602229,
-      "lastMs": 67605,
+      "totalMs": 664695,
+      "lastMs": 62466,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:57:40.559Z"
+      "updatedAt": "2026-10-10T05:58:43.028Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:47:38.137Z",
-  "updatedAt": "2026-10-10T05:57:40.561Z",
+  "updatedAt": "2026-10-10T05:58:43.028Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1916,7 +1923,7 @@
   "localAuthoringSplits": {
     "bfd973430fcafc5e7c4c0e65ae7a104f5871971047a55be32c2ef3e9a13ab04b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:57:40.561Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:58:43.028Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
