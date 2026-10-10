@@ -779,25 +779,32 @@
           "systemImpact": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
         }
       ]
+    },
+    "local_authoring_parts::28e1532b7e15b26648e0a46dda3817c3738fde48f37da6724de1bbbfd2d4b660:failureStates": {
+      "failureStates": [
+        "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행",
+        "감염 상태 전환 후 정화 공격 재발",
+        "인물/몬스터 선택 기회 제공"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 46,
-      "successes": 46,
+      "calls": 47,
+      "successes": 47,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1200906,
-      "lastMs": 34425,
+      "totalMs": 1235952,
+      "lastMs": 35046,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:54:22.205Z"
+      "updatedAt": "2026-10-10T09:54:57.254Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:54:22.207Z",
+  "updatedAt": "2026-10-10T09:54:57.254Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2129,7 +2136,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:54:22.207Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:54:57.254Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
