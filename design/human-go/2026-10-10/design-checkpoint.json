@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 단순한 입력(예: 한 손가락 터치 또는 스ワイ프)으로 세계를 탐험하며, 이는 게임의 핵심 메인 장르입니다. 플레이어는 행동을 통해 관계를 형성하고, 이를 바탕으로 새로운 선택과 경로를 개척합니다.",
       "coreFun": "입력 → 상태변화 → 보상/위험/다음 선택의 연결을 포함하는 실제 게임 플레이 단계 최소 3개. 주제/소재 선택에 따른 새로운 플레이 스타일 생성 및 실질적 세계 상태 변화가 발생해야 합니다."
+    },
+    "local_authoring_parts::0fd8c48cff4a845f8b0f386a7ead32ca09ccfdd34188707d1070fd1b4a24dc53:coreLoop": {
+      "coreLoop": [
+        "입력 → 상태변화 → 보상/위험/다음 선택",
+        "문화적 발견 및 성장 → 관계 형성 및 갈등 → 행동 실질적 영향",
+        "주제/소재 선택에 따른 새로운 플레이 스타일 생성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1088368,
-      "lastMs": 66705,
+      "totalMs": 1147787,
+      "lastMs": 59419,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:51:24.776Z"
+      "updatedAt": "2026-10-10T08:52:24.198Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:33:16.266Z",
-  "updatedAt": "2026-10-10T08:51:24.777Z",
+  "updatedAt": "2026-10-10T08:52:24.208Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2076,8 +2083,8 @@
     "bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753": true,
     "f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:51:24.777Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:52:24.198Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
