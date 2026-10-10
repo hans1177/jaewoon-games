@@ -1169,6 +1169,74 @@ export const COMMON_MONSTER_ACTION_SPECIES=Object.freeze({
   DEMON_LORD:monsterMotionSpecies('BOSS_BIPED','HORNS CLAWS FISTS','DEMON_BOSS_INTRO DEMON_BOSS_TURN DEMON_BOSS_CHARGE','DEMON_CLAW_CHAIN DEMON_GROUND_FISSURE DEMON_AERIAL_SMASH','DEMON_GUARD_BREAK_RESPONSE','DEMON_SUMMON:SUMMON DEMON_PHASE_BURST:ULTIMATE','DEMON_PHASE_CHANGE_POSE DEMON_ENRAGE_POSE DEMON_BOSS_DEATH','HORN_MASS ARMS WINGS_SPARE SPINE FEET')
 });
 
+// 공용 몬스터 관절·신체 변형 시드: 종족과 공격 유형마다 다른 움직임을 생성한다.
+// 물리 루트·충돌·히트 판정의 주도권은 항상 게임 로직에 둔다.
+const monsterJointPose=(counterPart,supportPart,coil,hit,counterWeight,groundWeight)=>Object.freeze({
+  counterPart:upper(counterPart),supportPart:upper(supportPart),
+  coil:freezeList(coil).map(Number),hit:freezeList(hit).map(Number),
+  counterWeight:Number(counterWeight),groundWeight:Number(groundWeight)
+});
+export const COMMON_MONSTER_SPECIES_JOINT_POSES=Object.freeze({
+  WOLF:monsterJointPose('SPINE','FORELEGS',[-.18,.12,-.08],[.41,-.13,.08],.78,.72),
+  FOX:monsterJointPose('TAIL','HINDLEGS',[-.23,.18,.11],[.38,.25,-.13],1.10,.53),
+  BEAR:monsterJointPose('SHOULDERS','FORELEGS',[-.35,-.05,.06],[.68,.12,-.11],.58,1.28),
+  BOAR:monsterJointPose('NECK','HINDLEGS',[-.25,.06,.03],[.50,-.12,.12],.72,1.19),
+  SPIDER:monsterJointPose('ABDOMEN','EIGHT_LEGS',[-.16,.21,-.13],[.47,-.30,.15],.91,.88),
+  SCORPION:monsterJointPose('TAIL_STINGER','EIGHT_LEGS',[.41,-.17,.03],[-.72,.30,-.08],.81,.94),
+  ANT:monsterJointPose('THORAX','SIX_LEGS',[-.17,.24,-.04],[.35,-.28,.07],.57,.64),
+  BEETLE:monsterJointPose('ELYTRA','SIX_LEGS',[-.37,.05,.05],[.56,-.08,.15],.72,1.12),
+  MANTIS:monsterJointPose('NECK','SCYTHE_ARMS',[-.15,.29,.12],[.58,-.34,-.18],.69,.51),
+  SERPENT:monsterJointPose('SPINE_CHAIN','TAIL',[-.30,.35,.17],[.50,-.47,-.15],1.35,.44),
+  WYVERN:monsterJointPose('WINGS','TAIL',[-.35,.27,.09],[.63,-.31,-.15],1.22,.63),
+  BAT:monsterJointPose('WINGS','NECK',[-.39,-.22,.14],[.55,.37,-.16],1.41,.31),
+  SHARK:monsterJointPose('TAIL','FINS',[-.25,.33,-.07],[.40,-.51,.14],1.20,.22),
+  GOLEM:monsterJointPose('SHOULDERS','FEET',[-.41,.03,.05],[.73,-.09,-.05],.46,1.47),
+  SLIME:monsterJointPose('LOBES','CORE',[-.50,.08,.14],[.76,-.10,-.12],1.32,.36),
+  GHOST:monsterJointPose('VEIL','BODY_MIST',[-.37,.16,.19],[.61,-.27,-.11],1.42,.04),
+  CENTAUR:monsterJointPose('HUMAN_SPINE','FOUR_LEGS',[-.26,.28,-.07],[.46,-.32,.12],.88,1.03),
+  TENTACLE_BEAST:monsterJointPose('TENTACLES','ANCHORS',[-.46,.37,.21],[.67,-.42,-.15],1.35,.42),
+  SWARM:monsterJointPose('FORMATION_VOLUME','MEMBERS',[-.19,.43,-.12],[.36,-.55,.26],1.54,.07),
+  DEMON_LORD:monsterJointPose('SPINE','FEET',[-.40,.24,.13],[.72,-.36,-.18],.90,1.45)
+});
+const COMMON_MONSTER_ATTACK_MOTIFS=Object.freeze({
+  BITE:Object.freeze({before:[-.12,.05,0],contact:[.25,-.11,0]}),
+  POUNCE:Object.freeze({before:[-.23,-.09,.06],contact:[.31,.14,-.13]}),
+  CHARGE:Object.freeze({before:[-.27,0,.04],contact:[.39,-.08,-.11]}),
+  SWIPE:Object.freeze({before:[.07,.24,-.17],contact:[-.16,-.38,.22]}),
+  STING:Object.freeze({before:[.25,-.14,.07],contact:[-.49,.19,-.09]}),
+  PROJECTILE:Object.freeze({before:[-.14,.06,.18],contact:[.20,-.10,-.24]}),
+  GRAB:Object.freeze({before:[.14,-.25,.06],contact:[-.29,.37,-.08]}),
+  SLAM:Object.freeze({before:[-.37,.03,.07],contact:[.52,-.02,-.17]}),
+  STRIKE:Object.freeze({before:[-.09,.16,.03],contact:[.26,-.22,-.12]})
+});
+function monsterAttackMotif(name=''){
+  const id=upper(name);
+  if(/BITE|FANG|JAWS|MAW/.test(id))return 'BITE';
+  if(/POUNCE|DIVE|LEAP|LUNGE|JUMP/.test(id))return 'POUNCE';
+  if(/CHARGE|RUSH|RAM|BASH/.test(id))return 'CHARGE';
+  if(/SWEEP|SWIPE|CLAW|CUT|WHIP/.test(id))return 'SWIPE';
+  if(/STING|VENOM|SPIKE|HORN/.test(id))return 'STING';
+  if(/WEB|PROJECTILE|SHOT|SPIT|BLAST/.test(id))return 'PROJECTILE';
+  if(/GRAB|PIN|WRAP|ENGULF/.test(id))return 'GRAB';
+  if(/SLAM|SMASH|BREAK|CRUSH|STOMP|BURST/.test(id))return 'SLAM';
+  return 'STRIKE';
+}
+function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
+  const frame=(phase,angle)=>Object.freeze({
+    phase:Number(phase.toFixed(5)),
+    rotation:Object.freeze(angle.map(v=>Number(v.toFixed(5))))
+  });
+  const settle=poseAfter.map(v=>-v*.12);
+  return Object.freeze({
+    part:upper(part),
+    frames:Object.freeze([
+      frame(0,[0,0,0]),frame(wind,poseBefore),
+      frame(contact,poseAfter),frame(Math.min(.95,contact+.18),settle),
+      frame(1,[0,0,0])
+    ]),
+    rigJointBindingRequired:true,semanticChannelsOnly:true
+  });
+}
 export function createCommonMonsterActionLoadout({
   speciesId='WOLF',genre='ACTION_RPG',platform='SHARED',bodyPlan='',
   rigProfile='',styleFamily='STYLIZED_FANTASY'
@@ -1197,14 +1265,38 @@ export function createCommonMonsterActionLoadout({
   const cues=Object.freeze(species.skills.map(value=>commonSkillMotionCue(value,{
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,platform:platformId
   })));
+  const kinematic=COMMON_MONSTER_SPECIES_JOINT_POSES[id];
+  if(!kinematic||kinematic.coil.length!==3||kinematic.hit.length!==3)
+    throw Error('COMMON_MONSTER_JOINT_PROFILE_MISSING:'+id);
+  if(!species.specialParts.includes(kinematic.counterPart)||!species.specialParts.includes(kinematic.supportPart))
+    throw Error('COMMON_MONSTER_JOINT_PROFILE_ANATOMY_MISMATCH:'+id);
   const choreography=Object.freeze(species.attacks.map((id,index)=>{
+    const motif=monsterAttackMotif(id),shape=COMMON_MONSTER_ATTACK_MOTIFS[motif];
     const heavy=/SLAM|CRUSH|OVERHEAD|BREAK|CHARGE|RAM|BURST/.test(id);
+    const phaseTimes=heavy?[0,.15,.40,.63,.84,1]:[0,.12,.29,.46,.75,1];
+    const wind=phaseTimes[2],contact=phaseTimes[3];
+    const primaryPart=species.contactLimbs[index%species.contactLimbs.length];
+    const before=kinematic.coil.map((v,i)=>v+shape.before[i]);
+    const after=kinematic.hit.map((v,i)=>v+shape.contact[i]);
+    const joints=[
+      monsterPoseFrames(primaryPart,wind,contact,before,after),
+      monsterPoseFrames(kinematic.counterPart,wind,contact,
+        before.map(v=>-v*kinematic.counterWeight),
+        after.map(v=>-v*kinematic.counterWeight)),
+      monsterPoseFrames(kinematic.supportPart,wind,contact,
+        before.map(v=>v*kinematic.groundWeight*.52),
+        after.map(v=>-v*kinematic.groundWeight*.31))
+    ];
     return Object.freeze({
-      id,grammar:MOTION_GRAMMARS.attack,
-      poseKeyTimes:Object.freeze(heavy?[0,.15,.40,.63,.84,1]:[0,.12,.29,.46,.75,1]),
+      id,grammar:MOTION_GRAMMARS.attack,motif,
+      poseKeyTimes:Object.freeze(phaseTimes),
       weightTransfer:detail.presentationVariation.limbPhase,
-      primaryContactLimb:species.contactLimbs[index%species.contactLimbs.length],
+      primaryContactLimb:primaryPart,
       secondaryRigParts:species.specialParts,
+      jointTracks:Object.freeze(joints),
+      animationChannelsContainDistinctArticulatedCurves:true,
+      sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
+      authoritativeRootMovement:false,
       handoffToGameplayContactMarker:true,authoritativeHitboxAndMovementUnchanged:true,
       rigSpecificCurvesAndContactsRequired:true,verified:false
     });
