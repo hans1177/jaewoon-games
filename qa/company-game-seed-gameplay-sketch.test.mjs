@@ -398,3 +398,46 @@ test('Vibe native composer computes schema-valid MAIN A B C delve seeds without 
     assert.deepEqual(computeVibeSeedProposal(target),proposal,'identical inputs must produce identical design proposals');
   }
 });
+
+
+test('native causal grammar preserves owner game identity and calculates distinct A B C themes',()=>{
+  const target={
+    requestId:'school-owner-grammar',category:'TYCOON',platform:'ROBLOX',
+    gameName:'학교 타이쿤',
+    ownerBrief:'학교를 건축하고 로마 신전 의례에 따라 괴물을 상대하는 액션. 철학과 엽기 코믹의 장르 반작용을 설계한다.',
+    materials:[]
+  };
+  const result=computeVibeSeedProposal(target);
+  const grammar=result.gameplaySketch.novelGameGrammar;
+  const fusion=grammar.gameplaySystemFusion;
+  assert.equal(result.gameName,'학교 타이쿤');
+  assert.equal(fusion.main.name,'학교 타이쿤');
+  assert.match(result.distinctIdentity,/학교 타이쿤/);
+  assert.match(fusion.majorAxes[0].systemFamily,/학교 시설 건축/);
+  assert.match(fusion.majorAxes[1].systemFamily,/괴물 대응 액션/);
+  assert.notEqual(fusion.majorAxes[0].sourceMaterial,fusion.majorAxes[1].sourceMaterial);
+  assert.match(fusion.majorAxes[0].sourceMaterial,/의례/);
+  assert.match(fusion.majorAxes[1].sourceMaterial,/금기/);
+  assert.match(fusion.themeFusion.themes[0].name,/철학/);
+  assert.match(fusion.themeFusion.themes[1].name,/희극/);
+  assert.deepEqual(fusion.themeFusion.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+  assert.equal(fusion.themeFusion.genres[0].name,'경영');
+  assert.equal(fusion.themeFusion.genres[1].name,'코믹');
+  assert.equal(grammar.delveLayer.elements.length,4);
+  assert.equal(new Set(grammar.delveLayer.elements.map(row=>row.name)).size,4);
+  assert.equal(grammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
+  assert.deepEqual(computeVibeSeedProposal(target),result,'same owner input must reproduce same native calculation');
+});
+
+test('native repair variants vary derived materials without overwriting explicitly selected source DNA',()=>{
+  const plain={requestId:'unique-grammar',category:'RACING',gameName:'나선 경주',platform:'ROBLOX',materials:[]};
+  const first=computeVibeSeedProposal({...plain,variant:0});
+  const changed=computeVibeSeedProposal({...plain,variant:1});
+  const ids=row=>row.gameplaySketch.novelGameGrammar.causalDNAs.map(dna=>dna.id);
+  assert.notDeepEqual(ids(first),ids(changed),'a new computation must offer a distinct causal material candidate');
+  const explicit={...plain,materials:[{causalDNA:['OATH_CONTRACT','RITUAL_RECIPROCITY']}]};
+  const pinned=computeVibeSeedProposal({...explicit,variant:3});
+  assert.deepEqual(ids(pinned).slice(0,2),['OATH_CONTRACT','RITUAL_RECIPROCITY']);
+  assert.equal(first.gameName,'나선 경주');
+  assert.equal(changed.gameName,'나선 경주');
+});
