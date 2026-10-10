@@ -1367,7 +1367,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const previousRead=previousRule?.stateOutputs||[];
           const previousWrite=previousRule?.stateInputs||[];
           const originalSystemHint=grammarRole?(typeof seed!=='undefined'?seed?.originalDesignContext?.content?.signatureSystems?.[index]||null:null):null;
-          const availableOriginalSystems=grammarRole?(sourceOriginal.signatureSystems||[])
+          const availableOriginalSystems=grammarRole?(Array.isArray(sourceOriginal.signatureSystems)?sourceOriginal.signatureSystems:[])
             .filter(row=>row?.name&&!rows.some(other=>clean(other.name)===clean(row.name)))
             .slice(0,8).map(row=>({name:row.name,purpose:String(row.purpose||'').slice(0,120)})):[];
           for(let roleAttempt=0;;roleAttempt++){
