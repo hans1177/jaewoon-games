@@ -532,25 +532,47 @@
       },
       "playerFantasy": "플레이어는 선택형 생존 게임에서 세계 상태를 직접 변환하는 창작 소재로, 이 선택은 보상/위험/다음 선택으로 이어지는 과정을 거쳐야 한다.",
       "coreFun": "{\"system\":\"선택형 스토리\",\"material\":\"플레이어의 선택이 세계 상태를 직접 변환하는 창작 소재\",\"materialDomain\":\"플레이어의 선택·규칙·사건\",\"stateChange\":\"플레이어 선택 -> 세계 상태 변화 -> 보상/위험/다음 선택\"}"
+    },
+    "local_authoring_parts::95c960df65bd1ad004c9c9fc65a9ac03be3fd26311ecd9278cf85e34c71cac95:coreLoop": {
+      "coreLoop": [
+        "입력(플레이어 선택) -> 상태변화(세계 상태 변환) -> 보상/위험/다음 선택",
+        "전략 선택 -> 전략 상태 변화 -> 보상/위험/다음 선택",
+        "게임 상태와 플레이어 선택 양방향 인과 연결"
+      ]
+    },
+    "local_authoring_parts::b50d011eed15360ddc8e807ac89fd505bdadd43e220673ac2d7b8c053ee1be25:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력(플레이어 선택)",
+        "전략 선택"
+      ],
+      "stateOutputs": [
+        "세계 상태 변환",
+        "전략 상태 변화"
+      ],
+      "name": "선택형 스토리 - 주제 중심 메인 장르",
+      "purpose": "플레이어가 세계 상태를 직접 변환하는 창작 소재로, 이 선택은 보상/위험/다음 선택으로 이어지는 과정을 거쳐야 한다.",
+      "playerChoice": "플레이어는 선택으로 세계 상태를 변환하며, 이 선택은 보상/위험/다음 선택으로 이어지는 과정을 거쳐야 하며, 이는 주제 중심의 메인 장르와 실질적 인과 변화를 유발해야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 13,
+      "successes": 11,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1474702,
-      "lastMs": 96765,
+      "totalMs": 1937411,
+      "lastMs": 38626,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:23:14.348Z"
+      "updatedAt": "2026-10-10T07:30:57.070Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:58:39.606Z",
-  "updatedAt": "2026-10-10T07:23:14.350Z",
+  "updatedAt": "2026-10-10T07:30:57.071Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2263,15 +2285,34 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::b50d011eed15360ddc8e807ac89fd505bdadd43e220673ac2d7b8c053ee1be25:signatureSystems:1:c6d7785356f23a51": [
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_essential"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_essential"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::b50d011eed15360ddc8e807ac89fd505bdadd43e220673ac2d7b8c053ee1be25:signatureSystems:1:c6d7785356f23a51": 3
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true,
     "45be2d758cc0b05d7bc126e7969cb9cc558554456017c03e8982f0d03c622f1e": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:23:14.350Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T07:30:57.070Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
