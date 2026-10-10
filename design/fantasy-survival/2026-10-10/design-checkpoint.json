@@ -80,25 +80,53 @@
         "worldChange": "플레이어 선택에 따른 세계 상태 변화 및 다음 사건 발생으로 인해 양방향 실제 상태 교환이 이루어진다。",
         "nextEvent": "새로운 플레이 옵션 생성 및 다음 질문으로 이어지는 게임 진행"
       }
+    },
+    "local_authoring_parts::d7127ab18c220a35cb298fd7e9d0b9b188d976946d7a6ba2a0b100cd036b392d:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "흑색 빙하",
+          "kind": "GENRE",
+          "gameplayEffect": "게임 세계의 주요 배경 및 플레이어의 활동 공간"
+        },
+        {
+          "name": "화산",
+          "kind": "GENRE",
+          "gameplayEffect": "적의 압박 증가, 캐릭터 움직임 및 전략 선택의 핵심 요소"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "실시간 생존 게임의 틀에 맞춘 구조와 기능"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "캐릭터 성장, 스토리 진행 및 장비 제작의 인과 변화"
+        }
+      ],
+      "cGenreInterlock": "주요 시스템(생존·전투)과 보조 시스템(제작·연구소) 간의 상호 작용은 플레이어 선택에 따라 달라지며, 이는 캐릭터 움직임, 적의 압박, 그리고 세계 상태 변화를 통해 표현된다.",
+      "cWorldAndGameplayEffect": "플레이어 선택이 다른 시스템과 연결되어 진다는 것을 나타내며, 이는 주요 선택 → 부수적 선택 → 주요 선택 재정립 → 세계 상태 변화 → 다음 사건 발생으로 인해 양방향 실제 상태 교환을 실현한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1028179,
-      "lastMs": 132751,
+      "totalMs": 1150831,
+      "lastMs": 122652,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:09:07.804Z"
+      "updatedAt": "2026-10-10T02:11:10.460Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:51:59.599Z",
-  "updatedAt": "2026-10-10T02:09:07.805Z",
+  "updatedAt": "2026-10-10T02:11:10.460Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1812,7 +1840,7 @@
     "271d072a82ddae35e1db6f383331e5ac2cf26d5ab1bfba7a853709177da2b91d": true,
     "412f1c8b6734bf9edd83a4de81d3b66b1d5112c9446230a6767fc8856c3f10ba": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:09:07.805Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:11:10.460Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
