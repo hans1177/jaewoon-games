@@ -150,25 +150,175 @@
       "name": "디지털 직조",
       "purpose": "플레이어가 디지털 시스템에 직접 참여하여 세계의 구조를 변형하며, 역사적 사건을 재해석함으로써 새로운 의미와 선택을 창출",
       "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+    },
+    "local_authoring_parts::d6eafee2873cf51ca26c23b7b5aa21c25c3c9bbdf2c6a0106e5e821f3ca7a3ae:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "디지털 시스템 투입",
+        "역사적 사건 재해석"
+      ],
+      "stateOutputs": [
+        "신규 진입 절차 생성",
+        "보상 체계 구성"
+      ],
+      "name": "진입 절차와 보상 체계의 형성",
+      "purpose": "플레이어가 디지털 공간에 직접 참여하여 세계의 구조를 변형하고, 역사적 사건을 재해석하며 새로운 역할과 상태 변화를 유도함으로써 게임의 정체성을 형성하는 핵심 과정",
+      "playerChoice": "디지털 시스템의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+    },
+    "local_authoring_parts::e1ae675fdb8da2fa79a61ebf14b2e5ea50f6c29aa63b5ddcbcea4d9566501d5b:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력/선택",
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "상태변화",
+            "보상/위험/다음 선택"
+          ],
+          "name": "디지털 직조",
+          "purpose": "플레이어가 디지털 시스템에 직접 참여하여 세계의 구조를 변형",
+          "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "신규 진입 절차 생성",
+            "보상 체계 구성"
+          ],
+          "name": "디지털 직조",
+          "purpose": "플레이어가 디지털 공간에 직접 참여하여 세계의 구조를 변형하고, 이는 역사적 사건을 재해석하며 새로운 의미를 창출함으로써, 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다.",
+          "playerChoice": "디지털 시스템의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 세계의 관문과 플레이어의 선택을 형성하는 핸들링 방식이 결정됨."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "신규 진입 절차 생성",
+            "보상 체계 구성"
+          ],
+          "name": "디지털 직조",
+          "purpose": "플레이어가 디지털 시스템에 직접 참여하여 세계의 구조를 변형하며, 역사적 사건을 재해석함으로써 새로운 의미와 선택을 창출",
+          "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "신규 진입 절차 생성",
+            "보상 체계 구성"
+          ],
+          "name": "진입 절차와 보상 체계의 형성",
+          "purpose": "플레이어가 디지털 공간에 직접 참여하여 세계의 구조를 변형하고, 역사적 사건을 재해석하며 새로운 역할과 상태 변화를 유도함으로써 게임의 정체성을 형성하는 핵심 과정",
+          "playerChoice": "디지털 시스템의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+        }
+      ]
+    },
+    "local_authoring_parts::171c4b5776eb28add35b3b47adae780bca53a63c0d0bd8795b82a834962cd8b0:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "디지털 시스템 투입과 역사적 사건 재해석 사이에서 새로운 진입 절차 및 보상 체계가 생성됨",
+        "플레이어의 선택에 따라 세계의 관문과 플레이어의 선택이 재정의되고, 이는 게임의 정체성 형성이 이루어짐"
+      ],
+      "signatureSystems": [
+        {
+          "id": "MAIN",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "입력/선택",
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "상태변화",
+            "보상/위험/다음 선택"
+          ],
+          "name": "디지털 직조",
+          "purpose": "플레이어가 디지털 시스템에 직접 참여하여 세계의 구조를 변형",
+          "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+        },
+        {
+          "id": "A",
+          "grammarRole": "A",
+          "stateInputs": [
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "신규 진입 절차 생성",
+            "보상 체계 구성"
+          ],
+          "name": "디지털 직조",
+          "purpose": "플레이어가 디지털 공간에 직접 참여하여 세계의 구조를 변형하고, 이는 역사적 사건을 재해석하며 새로운 의미를 창출함으로써, 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다.",
+          "playerChoice": "디지털 시스템의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차와 보상 체계를 설계함으로써, 세계의 관문과 플레이어의 선택을 형성하는 핸들링 방식이 결정됨."
+        },
+        {
+          "id": "B",
+          "grammarRole": "B",
+          "stateInputs": [
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "신규 진입 절차 생성",
+            "보상 체계 구성"
+          ],
+          "name": "디지털 직조",
+          "purpose": "플레이어가 디지털 시스템에 직접 참여하여 세계의 구조를 변형하며, 역사적 사건을 재해석함으로써 새로운 의미와 선택을 창출",
+          "playerChoice": "디지털 공간의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+        },
+        {
+          "id": "DELVE",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "디지털 시스템 투입",
+            "역사적 사건 재해석"
+          ],
+          "stateOutputs": [
+            "신규 진입 절차 생성",
+            "보상 체계 구성"
+          ],
+          "name": "진입 절차와 보상 체계의 형성",
+          "purpose": "플레이어가 디지털 공간에 직접 참여하여 세계의 구조를 변형하고, 역사적 사건을 재해석하며 새로운 역할과 상태 변화를 유도함으로써 게임의 정체성을 형성하는 핵심 과정",
+          "playerChoice": "디지털 시스템의 투입과 역사적 사건의 재해석 사이에서 새로운 진입 절차 및 보상 체계를 설계함으로써, 이는 세계의 관문과 플레이어의 선택을 형성하는 핵심 요소이다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 441233,
-      "lastMs": 40961,
+      "totalMs": 482873,
+      "lastMs": 41640,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:51:20.677Z"
+      "updatedAt": "2026-10-10T01:52:02.319Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:43:59.422Z",
-  "updatedAt": "2026-10-10T01:51:20.677Z",
+  "updatedAt": "2026-10-10T01:52:02.321Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1642,23 +1792,12 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::d6eafee2873cf51ca26c23b7b5aa21c25c3c9bbdf2c6a0106e5e821f3ca7a3ae:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "MAIN",
-          "A"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::d6eafee2873cf51ca26c23b7b5aa21c25c3c9bbdf2c6a0106e5e821f3ca7a3ae:signatureSystems:2": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:51:20.677Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:52:02.321Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
