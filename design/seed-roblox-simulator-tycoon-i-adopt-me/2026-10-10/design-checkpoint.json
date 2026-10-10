@@ -95,25 +95,117 @@
         "delveGrowthRule": "{\"fromId\": \"enemy_behavior\", \"toId\": \"resource_management\", \"outputToInputStateKeys\": [{\"key\":\"adaptation_to_enemy_types\",\"value\":\"dynamic_defense_strategy\"},{\"key\":\"resource_allocation\",\"value\":\"tactical_placement\"}]}",
         "finalGameIdentity": "Pocket Foundry - Adaptive Defensive Strategy with Dynamic Resource Management"
       }
+    },
+    "local_authoring_parts::0bfdcd16d488084664bda2bc198bbabdcb3c5278032eb0b81f1861472e590522:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 전략적 선택을 통해 적의 웨이브에 맞서 빠르게 변하는 방식으로 게임을 진행하며, 자원 수집과 전략적 배치가 중요한 요소로 작용합니다.",
+      "coreFun": "{\"identity\": \"Pocket Foundry - Adaptive Defensive Strategy with Dynamic Resource Management\", \"creativeGrammar\": {\"mainIdentity\": \"Single-Player Tower Defense with Wave Pressure and Adaptive Defense\", \"a\": {\"system\": \"Enemy Behavior\", \"material\": \"Dynamic Enemy Types and Wave Composition\", \"materialDomain\": \"Strategy, Placement, Counterplay\", \"stateChange\": \"Adaptation to Enemy Types\"}, \"b\": {\"system\": \"Resource Management\", \"material\": \"Defensive Upgrades and Strategic Placements\", \"materialDomain\": \"Economy, Tactical Choices\", \"stateChange\": \"Resource Allocation Before Pressure Increase\"}, \"abCausality\": \"{\\\"fromId\\\": \\\"enemy_behavior\\\", \\\"toId\\\": \\\"resource_management\\\", \\\"outputToInputStateKeys\\\": [{\\\"key\\\": \\\"adaptation_to_enemy_types\\\", \\\"value\\\": \\\"dynamic_defense_strategy\\\"\"}, {\\\"key\\\": \\\"resource_allocation\\\", \\\"value\\\": \\\"tactical_placement\\\"}]}\", \"abEvolution\": {\\\"aChangesB\\\":"
+    },
+    "local_authoring_parts::5ceb0f1c4c7fb9f2636d34a2a853cc4136e934e1728e27511412c6005e6fe432:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "Pocket Foundry - Core Defense Strategy Evolution",
+      "creativeGrammar": {
+        "mainIdentity": "Single-Player Tower Defense with Wave Pressure and Adaptive Defense",
+        "a": {
+          "system": "Enemy Behavior",
+          "material": "Dynamic Enemy Types and Wave Composition",
+          "materialDomain": "Strategy, Placement, Counterplay",
+          "stateChange": "Adaptation to Enemy Types"
+        },
+        "b": {
+          "system": "Resource Management",
+          "material": "Defensive Upgrades and Strategic Placements",
+          "materialDomain": "Economy, Tactical Choices",
+          "stateChange": "Resource Allocation Before Pressure Increase"
+        },
+        "abCausality": "{\"fromId\": \"enemy_behavior\", \"toId\": \"resource_management\", \"outputToInputStateKeys\": [{\"key\":\"adaptation_to_enemy_types\",\"value\":\"dynamic_defense_strategy\"},{\"key\":\"resource_allocation\",\"value\":\"tactical_placement\"}]}",
+        "abEvolution": {
+          "aChangesB": "Enemy Type -> Resource Allocation",
+          "bChangesA": "Resource Allocation -> Defensive Strategy Adaptation",
+          "lateGameChange": "Resource Management System Reconfiguration"
+        },
+        "materialFusion": {
+          "contrast": "Enemy Behavior vs. Resource Management",
+          "causalBridge": "Adaptive Defense Strategy",
+          "removalConsequence": "Loss of Dynamic Enemy Behavior in Core Gameplay"
+        },
+        "storyCausalChain": {
+          "cause": "Player Action - Enemy Wave Composition",
+          "characterConflict": "Defense Strategy Evolution",
+          "playerChoice": "Adaptation to Enemy Types",
+          "worldChange": "Dynamic Resource Allocation Before Pressure Increase",
+          "nextEvent": "Tactical Placement and Strategic Defense Adjustment"
+        },
+        "cThemes": [
+          {
+            "name": "Enemy Behavior",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Strategy, Placement, Counterplay"
+          },
+          {
+            "name": "Resource Management",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Economy, Tactical Choices"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Enemy Behavior & Adaptive Strategy",
+            "gameplayEffect": "Strategy, Placement, Counterplay"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Resource Management & Defensive Upgrades",
+            "gameplayEffect": "Economy, Tactical Choices"
+          }
+        ],
+        "cGenreInterlock": "{\"enemy_behavior\": \"dynamic_defense_strategy\", \"resource_management\": \"tactical_placement\"}",
+        "cWorldAndGameplayEffect": "{ \"enemy_behavior\": \"adaptive_defensive_strategy\", \"resource_management\": \"tactical_placement_and_resource_allocation\" }",
+        "delveDiscoveries": [
+          {
+            "clue": "Player Action - Enemy Wave Composition",
+            "discovery": "Adaptive Defense Strategy",
+            "newChoice": "Dynamic Resource Allocation"
+          },
+          {
+            "clue": "Enemy Type Adaptation",
+            "discovery": "Tactical Placement and Strategic Defense Adjustment",
+            "newChoice": "Resource Management System Reconfiguration"
+          },
+          {
+            "clue": "Resource Allocation Before Pressure Increase",
+            "discovery": "Defensive Upgrades and Strategic Placements",
+            "newChoice": "Enemy Behavior Evolution"
+          },
+          {
+            "clue": "Core Gameplay Effect",
+            "discovery": "Strategy, Placement, Counterplay",
+            "newChoice": "Resource Management Integration"
+          }
+        ],
+        "delveGrowthRule": "{\"fromId\": \"enemy_behavior\", \"toId\": \"resource_management\", \"outputToInputStateKeys\": [{\"key\":\"adaptation_to_enemy_types\",\"value\":\"dynamic_defense_strategy\"},{\"key\":\"resource_allocation\",\"value\":\"tactical_placement\"}]}",
+        "finalGameIdentity": "Pocket Foundry - Adaptive Defensive Strategy with Dynamic Resource Management"
+      },
+      "playerFantasy": "플레이어는 전략적 선택을 통해 적의 웨이브에 맞서 빠르게 변하는 방식으로 게임을 진행하며, 자원 수집과 전략적 배치가 중요한 요소로 작용합니다.",
+      "coreFun": "{\"identity\": \"Pocket Foundry - Adaptive Defensive Strategy with Dynamic Resource Management\", \"creativeGrammar\": {\"mainIdentity\": \"Single-Player Tower Defense with Wave Pressure and Adaptive Defense\", \"a\": {\"system\": \"Enemy Behavior\", \"material\": \"Dynamic Enemy Types and Wave Composition\", \"materialDomain\": \"Strategy, Placement, Counterplay\", \"stateChange\": \"Adaptation to Enemy Types\"}, \"b\": {\"system\": \"Resource Management\", \"material\": \"Defensive Upgrades and Strategic Placements\", \"materialDomain\": \"Economy, Tactical Choices\", \"stateChange\": \"Resource Allocation Before Pressure Increase\"}, \"abCausality\": \"{\\\"fromId\\\": \\\"enemy_behavior\\\", \\\"toId\\\": \\\"resource_management\\\", \\\"outputToInputStateKeys\\\": [{\\\"key\\\": \\\"adaptation_to_enemy_types\\\", \\\"value\\\": \\\"dynamic_defense_strategy\\\"\"}, {\\\"key\\\": \\\"resource_allocation\\\", \\\"value\\\": \\\"tactical_placement\\\"}]}\", \"abEvolution\": {\\\"aChangesB\\\":"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 440780,
-      "lastMs": 140678,
+      "totalMs": 516387,
+      "lastMs": 75607,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:57:55.129Z"
+      "updatedAt": "2026-10-10T09:59:10.737Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:50:34.321Z",
-  "updatedAt": "2026-10-10T09:57:55.129Z",
+  "updatedAt": "2026-10-10T09:59:10.738Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1837,7 +1929,7 @@
   "localAuthoringSplits": {
     "0bfdcd16d488084664bda2bc198bbabdcb3c5278032eb0b81f1861472e590522": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:57:55.129Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:59:10.738Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
