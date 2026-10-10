@@ -574,6 +574,55 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           if(!fs.existsSync(file))throw new Error('NATIVE_DCC_EVIDENCE_MISSING:'+evidenceJson);
           evidence=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
         }
+        // 이미지 기반 메쉬의 픽셀 입력·라이선스·실제 추론·다각도 렌더를 독립 검증한다.
+        // Blender가 만든 메타데이터만으로 생성 성공이나 게임 런타임 PASS를 선언하지 않는다.
+        const imageArgs=Array.isArray(recipe?.args)?recipe.args:[];
+        const imageFlag=imageArgs.indexOf('--source-image');
+        if(recipe?.imageToMesh===true||imageFlag>=0){
+          if(imageFlag<0||!imageArgs[imageFlag+1])throw new Error('IMAGE_TO_MESH_INPUT_ARGUMENT_REQUIRED');
+          const imagePath=dccRepoPath(imageArgs[imageFlag+1]);
+          if(!imagePath.startsWith('assets/')||!(/\.(?:png|jpe?g|webp)$/i.test(imagePath)))
+            throw new Error('IMAGE_TO_MESH_INPUT_SCOPE_FORBIDDEN:'+imagePath);
+          const imageFile=path.resolve(cwd,imagePath);
+          if(!fs.existsSync(imageFile)||!fs.statSync(imageFile).isFile())
+            throw new Error('IMAGE_TO_MESH_INPUT_MISSING:'+imagePath);
+          const imageRoot=fs.realpathSync(path.join(cwd,'assets'));
+          const actualImage=fs.realpathSync(imageFile);
+          if(!actualImage.startsWith(imageRoot+path.sep)||fs.lstatSync(imageFile).isSymbolicLink())
+            throw new Error('IMAGE_TO_MESH_LOCAL_SOURCE_SCOPE_INVALID:'+imagePath);
+          const input=sha256File(imageFile),provenance=evidence?.imageToMesh;
+          const modelEngines=new Map([
+            ['VAST-AI-Research/TripoSR','stabilityai/TripoSR'],
+            ['microsoft/TRELLIS.2','microsoft/TRELLIS.2-4B']
+          ]);
+          if(!provenance||!modelEngines.has(provenance.engine)
+            ||provenance.model!==modelEngines.get(provenance.engine)
+            ||provenance.engineLicense!=='MIT'||provenance.offlineInference!==true
+            ||provenance.inputPath!==imagePath||provenance.inputSha256!==input
+            ||provenance.generatedGeometry!==true||provenance.originalImageImmutable!==true
+            ||provenance.runtimeVerified!==false||provenance.rigged!==false
+            ||!['HIGH_FIDELITY','BASELINE'].includes(provenance.modelTier)
+            ||(provenance.engine==='microsoft/TRELLIS.2')!==(provenance.modelTier==='HIGH_FIDELITY')
+            ||!/^[a-f0-9]{64}$/.test(clean(provenance.modelWeightSha256))
+            ||!/^[a-f0-9]{64}$/.test(clean(provenance.engineSourceSha256))
+            ||!['project-original','cc0','cc-by'].includes(clean(provenance.sourceLicense).toLowerCase())
+            ||clean(evidence?.license).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()
+            ||(clean(provenance.sourceLicense).toLowerCase()==='cc-by'&&!clean(provenance.sourceCredit))
+            ||(recipe?.sourceLicense&&clean(recipe.sourceLicense).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()))
+            throw new Error('IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID:'+clean(recipe?.id));
+          const explicitlyRequested=imageArgs.indexOf('--mesh-model');
+          if(explicitlyRequested>=0){
+            const expected=clean(imageArgs[explicitlyRequested+1]).toLowerCase();
+            if((expected==='trellis2'&&provenance.engine!=='microsoft/TRELLIS.2')
+              ||(expected==='triposr'&&provenance.engine!=='VAST-AI-Research/TripoSR'))
+              throw new Error('IMAGE_TO_MESH_SELECTED_ENGINE_MISMATCH:'+clean(recipe?.id));
+          }
+          const angles=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
+          if(!Array.isArray(evidence?.multiViewPreview)
+            ||angles.some(name=>!evidence.multiViewPreview.includes(name)
+              ||!generated.some(row=>row.path===posix(path.join(path.dirname(evidenceJson),name)))))
+            throw new Error('IMAGE_TO_MESH_MULTIVIEW_RENDER_REQUIRED:'+clean(recipe?.id));
+        }
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
         const declaredMasterGlb=recipe?.masterGlbOutput?dccRepoPath(recipe.masterGlbOutput):null;
@@ -592,6 +641,106 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         }
         const glbInspection=/\.glb$/i.test(nativeArtifact.path)?masterGlbQa?.inspection||inspectVibeSourceGlb({repoRoot:cwd,source:{path:nativeArtifact.path,sourceHash:nativeArtifact.sha256}}):null;
         if(glbInspection&&glbInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT')throw new Error('NATIVE_GLB_DATA_QA_FAILED:'+clean(recipe?.id)+':'+(glbInspection.issues||[]).join(','));
+        // 공용 오픈소스 모델·의류·게임 오브젝트·설계·비식별 의료·애니·영상의 실제 출력 증거 검증.
+        const moduleName=clean(recipe?.module||'auto').toLowerCase();
+        if(moduleName!=='auto'){
+          const proof=evidence?.openSourceModule;
+          const validKinds=['mesh-ai','human','clothing','object','design','medical','animation','video'];
+          if(!validKinds.includes(moduleName)||proof?.kind!==moduleName
+            ||proof.runtimeVerified!==false||typeof proof.source?.source!=='string'
+            ||proof.source.source.length<10||proof.source.license===undefined){
+            throw new Error('NATIVE_OPEN_SOURCE_MODULE_PROVENANCE_INVALID:'+clean(recipe?.id));
+          }
+          const previewNames=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
+          if(!Array.isArray(evidence?.multiViewPreview)
+            ||previewNames.some(name=>!evidence.multiViewPreview.includes(name)
+              ||!generated.some(row=>row.path===posix(path.join(path.dirname(evidenceJson),name))))){
+            throw new Error('NATIVE_OPEN_SOURCE_MULTIVIEW_MISSING:'+clean(recipe?.id));
+          }
+          const originalModelPath=clean(recipe?.sourceModel);
+          if(originalModelPath){
+            const modelPath=dccRepoPath(originalModelPath),full=path.resolve(cwd,modelPath);
+            if(!fs.existsSync(full)||!fs.statSync(full).isFile())
+              throw new Error('NATIVE_OPEN_SOURCE_IMPORTED_MODEL_UNVERIFIED:'+modelPath);
+            const modelRoot=fs.realpathSync(path.join(cwd,'assets'));
+            const actualModel=fs.realpathSync(full);
+            if(!actualModel.startsWith(modelRoot+path.sep)||fs.lstatSync(full).isSymbolicLink())
+              throw new Error('NATIVE_OPEN_SOURCE_SOURCE_MODEL_SCOPE_INVALID:'+modelPath);
+            const provenance=evidence?.sourceMesh;
+            if(!modelPath.startsWith('assets/')||!fs.existsSync(full)||!fs.statSync(full).isFile()
+              ||provenance?.sourcePath!==modelPath||provenance.sourceSha256!==sha256File(full)
+              ||provenance.sourceFileImmutable!==true
+              ||(moduleName==='medical'&&(provenance.sanitizedAsserted!==true||proof.clinicalDiagnosisAllowed!==false))
+              ||(recipe.sourceLicense&&clean(provenance.license).toLowerCase()!==clean(recipe.sourceLicense).toLowerCase())){
+              throw new Error('NATIVE_OPEN_SOURCE_IMPORTED_MODEL_UNVERIFIED:'+clean(recipe?.id));
+            }
+          }
+          if(moduleName==='human'&&(!(glbInspection?.inventory?.skins||[]).length
+            ||!(glbInspection?.inventory?.animations||[]).length
+            ||!(glbInspection?.inventory?.meshSkinBindingCount>0))){
+            throw new Error('HUMAN_NATIVE_SKIN_AND_ANIMATION_REQUIRED:'+clean(recipe?.id));
+          }
+          if(moduleName==='animation'||moduleName==='video'){
+            const videoProof=evidence?.videoExport;
+            const videoPath=posix(path.join(path.dirname(evidenceJson),'preview-motion.mp4'));
+            const videoFile=path.resolve(cwd,videoPath);
+            const shotPlan=evidence?.videoExport?.shotPlan;
+            const quality=clean(evidence?.videoExport?.cinematicQuality);
+            const resolution=quality==='high'?640:quality==='preview'?320:0;
+            if(!['studio','dramatic'].includes(clean(evidence?.videoExport?.cinematicStyle))
+              ||!Array.isArray(evidence?.videoExport?.resolution)
+              ||evidence.videoExport.resolution.length!==2
+              ||evidence.videoExport.resolution.some(n=>n!==resolution)
+              ||!Array.isArray(shotPlan)||shotPlan.length!==3
+              ||shotPlan.some((row,index)=>row?.name!==['ESTABLISHING','ACTION_REVEAL','SIGNATURE_CLOSEUP'][index]
+                ||row.frameStart!==index*8||row.frameEnd!==index*8+7
+                ||row.focalLengthMm!==[38,56,76][index]))
+              throw new Error('NATIVE_OPEN_SOURCE_CINEMATIC_SHOT_EVIDENCE_INVALID:'+clean(recipe?.id));
+            const styleFlag=(recipe?.args||[]).indexOf('--cinematic-style');
+            const qualityFlag=(recipe?.args||[]).indexOf('--cinematic-quality');
+            if(styleFlag>=0&&clean(recipe.args[styleFlag+1])!==evidence.videoExport.cinematicStyle
+              ||qualityFlag>=0&&clean(recipe.args[qualityFlag+1])!==quality)
+              throw new Error('NATIVE_OPEN_SOURCE_CINEMATIC_REQUEST_MISMATCH:'+clean(recipe?.id));
+            const glbClips=glbInspection?.inventory?.animations||[];
+            if(!glbClips.length||!(evidence?.motionClips||[]).length
+              ||!videoProof||videoProof.path!=='preview-motion.mp4'
+              ||videoProof.actualFramesRendered!==true||videoProof.runtimeVerified!==false
+              ||videoProof.frames!==24||videoProof.fps!==12
+              ||videoProof.codec!=='MPEG4'||videoProof.format!=='MP4'
+              ||videoProof.sourceGlbSha256!==nativeArtifact.sha256
+              ||!fs.existsSync(videoFile)||fs.statSync(videoFile).size<1024
+              ||videoProof.sha256!==sha256File(videoFile)
+              ||!generated.some(row=>row.path===videoPath&&row.sha256===videoProof.sha256)){
+              throw new Error('NATIVE_OPEN_SOURCE_ANIMATION_VIDEO_OUTPUT_UNVERIFIED:'+clean(recipe?.id));
+            }
+            const header=fs.readFileSync(videoFile).subarray(0,12);
+            if(header.length<12||header.toString('ascii',4,8)!=='ftyp')
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID:'+clean(recipe?.id));
+            // [VIDEO QA] Container header and file hash are insufficient: decode real frames.
+            let videoProbe;
+            try{
+              videoProbe=JSON.parse(execFileSync(clean(process.env.VIBE2_FFPROBE_BINARY)||'ffprobe',[
+                '-v','error','-count_frames',
+                '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+                '-of','json','-i',videoFile
+              ],{cwd,encoding:'utf8',timeout:60000,maxBuffer:1024*1024,stdio:['ignore','pipe','pipe']}));
+            }catch(error){
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_FFPROBE_REQUIRED:'+clean(recipe?.id)+':'+clean(error?.code||'DECODE_FAILED'));
+            }
+            const streams=Array.isArray(videoProbe?.streams)?videoProbe.streams:[];
+            const stream=streams.find(row=>row.codec_type==='video');
+            const rate=clean(stream?.r_frame_rate).split('/').map(Number);
+            const decodedFps=rate.length===2&&rate[1]>0?rate[0]/rate[1]:0;
+            const decodedDuration=Number(videoProbe?.format?.duration);
+            if(streams.length!==1||stream?.codec_name!=='mpeg4'
+              ||stream?.width!==resolution||stream?.height!==resolution
+              ||Number(stream?.nb_read_frames)!==24||Math.abs(decodedFps-12)>0.001
+              ||!Number.isFinite(decodedDuration)||Math.abs(decodedDuration-2)>0.1){
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_FRAME_DECODE_INVALID:'+clean(recipe?.id));
+            }
+          }
+        }
+
         const applicationOutput=generated.find(row=>row.path.endsWith('/application.json'));
         let platformApplication=null;
         if(applicationOutput){

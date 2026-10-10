@@ -1838,6 +1838,181 @@ test('generic environment and prop authoring declares task-specific Blender outp
   assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
 });
 
+test('licensed single image enters existing Blender TripoSR DCC recipe with genuine multiview render outputs',()=>{
+  const task={
+    gameId:'image-mesh-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 게임 환경 배경 소품 3D',
+    imageToAsset:true,referenceImages:[{
+      sourceId:'owned-prop-ref',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+      path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'
+    }]
+  };
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+    assert.ok(recipes.length>0,target);
+    for(const recipe of recipes){
+      assert.equal(recipe.imageToMesh,true);
+      assert.equal(recipe.sourceImage,'assets/roblox/world-ghosts/dokkaebi.png');
+      assert.equal(recipe.sourceLicense,'project-original');
+      assert.equal(recipe.runMode,'VERIFY_ONLY');
+      assert.equal(recipe.runtimeVerificationRequired,true);
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.ok(recipe.args.includes('--source-image'));
+      assert.equal(recipe.args[recipe.args.indexOf('--source-image')+1],recipe.sourceImage);
+      assert.ok(recipe.args.includes('--source-license'));
+      assert.ok(recipe.outputs.some(name=>name.endsWith('/preview.png')));
+      for(const angle of ['000','090','180','270']){
+        assert.ok(recipe.outputs.some(name=>name.endsWith('/preview-angle-'+angle+'.png')),angle);
+      }
+    }
+  }
+  const ccby={...task,referenceImages:[{
+    path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY',credit:'Creator, source, CC-BY'
+  }]};
+  const byPlan=buildVibeAssetProductionPlan({target:'roblox',task:ccby,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(byPlan.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.license==='CC-BY'));
+  const invalid={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:invalid,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
+  const traversal={...task,referenceImages:[{path:'../private.png',license:'project-original'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:traversal,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED/);
+  const noCredit={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:noCredit,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_ATTRIBUTION_REQUIRED/);
+});
+
+test('image mesh reconstruction requires real local open-source weights and cannot silently substitute primitives',()=>{
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED/);
+  assert.match(py,/IMAGE_TO_MESH_GENERATED_GEOMETRY_INVALID/);
+  assert.match(py,/IMAGE_TO_MESH_VIEW_RENDER_MISSING/);
+  assert.match(py,/STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING/);
+  const executor=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(executor,/IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID/);
+  assert.match(executor,/IMAGE_TO_MESH_MULTIVIEW_RENDER_REQUIRED/);
+  assert.match(executor,/sha256File\(imageFile\)/);
+});
+
+test('Vibe built-in open-source authoring plans preserve human, clothing, objects and medical rights gates',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  for(const module of ['mesh-ai','human','clothing','object','design','medical','animation','video']){
+    assert.ok(source.includes(module),'native planner must list '+module);
+    assert.ok(py.includes("'"+module+"'"),'Blender native authoring must list '+module);
+  }
+  for(const role of ['chair','table','door','tree','machine','weapon','lamp']){
+    assert.ok(py.includes("'"+role+"'"),role);
+  }
+  assert.match(py,/HUMAN_MPFB_ADDON_NOT_INSTALLED/);
+  assert.match(py,/HUMAN_MPFB_WEIGHT_BINDING_REQUIRED/);
+  assert.match(py,/HUMAN_IMPORTED_RIG_AND_WEIGHTS_REQUIRED/);
+  assert.match(py,/MEDICAL_SOURCE_SANITIZED_CONFIRMATION_REQUIRED/);
+  assert.match(py,/OPEN_SOURCE_SURFACE_RIGHTS_REQUIRED/);
+  assert.match(py,/clinicalUseApproved':False/);
+  assert.match(py,/bpy\.ops\.export_scene\.gltf/);
+  assert.match(py,/if not ASSET_ARMATURES and not MOTION_CLIPS/);
+  assert.match(py,/image_mesh_asset\(\)/);
+});
+
+test('animation and video select a real existing Blender DCC authoring recipe with MP4 evidence',()=>{
+  const base={target:'roblox',manifest:{assets:[]},presetCatalog:{presets:[]}};
+  for(const module of ['animation','video']){
+    const plan=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'oss-motion-'+module,
+      goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 및 배경 애니메이션 렌더링',
+      assetAuthoring:{module,motionKind:'turntable'}
+    }});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+    assert.ok(recipes.length>0,module);
+    assert.ok(recipes.some(recipe=>recipe.module===module),module);
+    for(const recipe of recipes.filter(recipe=>recipe.module===module)){
+      assert.ok(recipe.args.includes('--module'));
+      assert.ok(recipe.args.includes('--motion-kind'));
+      assert.ok(recipe.args.includes('turntable'));
+      assert.equal(recipe.runtimeVerificationRequired,true);
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/preview-motion.mp4')));
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/asset.glb')));
+      for(const angle of ['000','090','180','270']){
+        assert.ok(recipe.outputs.some(name=>name.endsWith('/preview-angle-'+angle+'.png')),angle);
+      }
+    }
+  }
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/def human_motion\(/);
+  assert.match(py,/MOTION_CLIPS\.append\('SHOWCASE'\)/);
+  assert.match(py,/VIDEO_FFMPEG_ENCODER_EXECUTION_FAILED/);
+  assert.match(py,/ffmpeg\.org/);
+  assert.match(py,/'-c:v','mpeg4'/);
+  assert.match(py,/actualFramesRendered':True/);
+  const exec=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(exec,/NATIVE_OPEN_SOURCE_ANIMATION_VIDEO_OUTPUT_UNVERIFIED/);
+  assert.match(exec,/NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID/);
+  assert.match(exec,/videoProof\.sourceGlbSha256!==nativeArtifact\.sha256/);
+  assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
+});
+
+test('high-quality TRELLIS.2 offline image-to-3D is selectable without enabling paid remote AI',()=>{
+  const task={gameId:'high-fidelity-scene',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
+    imageToAsset:true,assetAuthoring:{meshModel:'trellis2'},
+    referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'}]};
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+  assert.ok(recipes.length>0);
+  for(const recipe of recipes){
+    assert.equal(recipe.meshModel,'trellis2');
+    assert.equal(recipe.imageToMesh,true);
+    assert.equal(recipe.args[recipe.args.indexOf('--mesh-model')+1],'trellis2');
+    assert.equal(recipe.runtimeVerificationRequired,true);
+    assert.equal(recipe.companyPromotionAllowed,false);
+  }
+  const autoPlan=buildVibeAssetProductionPlan({
+    target:'unity',task:{...task,assetAuthoring:{meshModel:'auto'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(autoPlan.nativeAuthoringExecution.dcc.executionRecipes.every(row=>row.meshModel==='auto'));
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{meshModel:'unknown-provider'}},manifest:{assets:[]},presetCatalog:{presets:[]}}),
+  /IMAGE_TO_MESH_MODEL_UNSUPPORTED/);
+  const source=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(source,/VIBE_TRELLIS2_EXPECTED_SOURCE_SHA256/);
+  assert.match(source,/VIBE_TRELLIS2_EXPECTED_WEIGHTS_SHA256/);
+  assert.match(source,/IMAGE_TO_MESH_TRELLIS2_WEIGHTS_HASH_MISMATCH/);
+  assert.match(source,/TRELLIS2_24G_GPU_REQUIRED/);
+  assert.match(source,/HF_HUB_OFFLINE/);
+  assert.match(source,/decimation_target=180000/);
+  assert.match(source,/TripoSR/);
+  const qa=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(qa,/IMAGE_TO_MESH_SELECTED_ENGINE_MISMATCH/);
+  assert.match(qa,/microsoft\/TRELLIS\.2-4B/);
+});
+
+test('Blender and FFmpeg video uses verifiable three-shot cinematography without changing gameplay',()=>{
+  const task={gameId:'cinematic-demo',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 환경 소품 3D 애니메이션 영상 제작',
+    assetAuthoring:{module:'video',motionKind:'turntable',cinematicStyle:'dramatic',cinematicQuality:'high'}};
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(plan.nativeAuthoringExecution.dcc.executionRecipes.length);
+  for(const recipe of plan.nativeAuthoringExecution.dcc.executionRecipes){
+    assert.equal(recipe.module,'video');
+    assert.equal(recipe.cinematicStyle,'dramatic');
+    assert.equal(recipe.cinematicQuality,'high');
+    assert.equal(recipe.args[recipe.args.indexOf('--cinematic-style')+1],'dramatic');
+    assert.equal(recipe.args[recipe.args.indexOf('--cinematic-quality')+1],'high');
+    assert.ok(recipe.outputs.some(output=>output.endsWith('/preview-motion.mp4')));
+  }
+  const source=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  for(const marker of ['ESTABLISHING','ACTION_REVEAL','SIGNATURE_CLOSEUP']){
+    assert.ok(source.includes(marker));
+  }
+  assert.match(source,/video_resolution=640 if shot_quality=='high' else 320/);
+  assert.match(source,/SCENE\.render\.filepath=str\(frames_dir/);
+  assert.match(source,/cinematicStyle':video_style/);
+  const verification=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(verification,/NATIVE_OPEN_SOURCE_CINEMATIC_SHOT_EVIDENCE_INVALID/);
+  assert.match(verification,/NATIVE_OPEN_SOURCE_CINEMATIC_REQUEST_MISMATCH/);
+});
+ 
 test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
   const threeD=buildVibeAssetProductionPlan({
     target:'web',
@@ -3860,4 +4035,50 @@ test('GLB scene geometry identity survives shared mesh reuse and changes on UV o
     const changed=writeInspectionTriangle(root,(d,b)=>{d.nodes.push({mesh:0,translation:[3,0,0]});d.scenes[0].nodes.push(2);b.writeFloatLE(.25,72);});
     assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('open-source Blender cinematic must decode the exact original GLB animation movie',
+  {skip:!process.env.VIBE2_BLENDER_BINARY,timeout:240000},()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-open-source-cinematic-'));
+  try{
+    const args=['--background','--threads','2','--python-exit-code','1',
+      '--python','assets/native-authoring/build-game-visual.py','--',
+      '--output',root,'--asset-id','video-qa','--profile','prop','--subject','crate',
+      '--target','web','--module','video','--motion-kind','turntable',
+      '--cinematic-style','dramatic','--cinematic-quality','preview'];
+    execFileSync(process.env.VIBE2_BLENDER_BINARY,args,
+      {timeout:200000,encoding:'utf8',maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
+    const file=path.join(root,'preview-motion.mp4');
+    const asset=path.join(root,'asset.glb');
+    const evidence=JSON.parse(fs.readFileSync(path.join(root,'evidence.json'),'utf8'));
+    assert.ok(fs.statSync(file).size>1024);
+    assert.equal(evidence.videoExport.actualFramesRendered,true);
+    assert.equal(evidence.videoExport.sourceGlbSha256,createHash('sha256').update(fs.readFileSync(asset)).digest('hex'));
+    assert.equal(evidence.videoExport.sha256,createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+    assert.equal(evidence.productionVerified,false);
+    assert.equal(evidence.videoExport.runtimeVerified,false);
+    const probe=JSON.parse(execFileSync(process.env.VIBE2_FFPROBE_BINARY||'ffprobe',[
+      '-v','error','-count_frames',
+      '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+      '-of','json','-i',file
+    ],{timeout:30000,encoding:'utf8'}));
+    const v=probe.streams.find(row=>row.codec_type==='video');
+    assert.equal(probe.streams.length,1);
+    assert.equal(v.codec_name,'mpeg4');
+    assert.equal(v.width,320);
+    assert.equal(v.height,320);
+    assert.equal(Number(v.nb_read_frames),24);
+    assert.equal(v.r_frame_rate,'12/1');
+    assert.equal(Number(probe.format.duration),2);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('source worker validates decoded cinematic frames rather than accepting MP4 metadata alone',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(worker,/NATIVE_OPEN_SOURCE_VIDEO_FFPROBE_REQUIRED/);
+  assert.match(worker,/NATIVE_OPEN_SOURCE_VIDEO_FRAME_DECODE_INVALID/);
+  assert.match(worker,/nb_read_frames/);
+  assert.match(worker,/stream\?\.codec_name!=='mpeg4'/);
+  assert.match(worker,/sourceGlbSha256!==nativeArtifact\.sha256/);
 });
