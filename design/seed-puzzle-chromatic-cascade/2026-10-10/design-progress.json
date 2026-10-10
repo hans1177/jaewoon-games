@@ -14,7 +14,19 @@
   "failedTask": null,
   "lastError": null,
   "designerSeed": null,
-  "modelHealth": {},
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 2,
+      "jsonFailures": 0,
+      "totalMs": 600203,
+      "lastMs": 300101,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T02:55:22.215Z"
+    }
+  },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T02:45:22.005Z"
+  "updatedAt": "2026-10-10T02:55:22.215Z"
 }
