@@ -196,25 +196,40 @@
         "INPUT: 거점 선택 → STATE: 점령 상태 변경 → OUTPUT: 자원 확보",
         "INPUT: 협동 지원 → STATE: 기지 공격 대응 → OUTPUT: 강력한 기지 생성"
       ]
+    },
+    "local_authoring_parts::f189b5747df419413f322705de55102391ebcfd04f630f965cb00d6d587434cf:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road_to_military_auto",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Player taps the tree to collect wood and food.",
+        "System assigns a worker to farm job for automation."
+      ],
+      "stateOutputs": [
+        "Wood and food collected in world node.",
+        "Worker assigned to farm, increasing production efficiency."
+      ],
+      "name": "Road to Military Automation",
+      "purpose": "Players gather resources and assign workers to automate production.",
+      "playerChoice": "Tap or swipe to collect resources and assign workers for automation."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 723136,
-      "lastMs": 9266,
+      "totalMs": 755964,
+      "lastMs": 32828,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:23:33.566Z"
+      "updatedAt": "2026-10-10T09:24:06.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:11:30.090Z",
-  "updatedAt": "2026-10-10T09:23:33.567Z",
+  "updatedAt": "2026-10-10T09:24:06.396Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1287,8 +1302,8 @@
   "localAuthoringSplits": {
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:23:33.566Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:24:06.396Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
