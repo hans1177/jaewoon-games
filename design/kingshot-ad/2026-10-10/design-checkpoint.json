@@ -3,216 +3,18 @@
   "gameId": "kingshot-ad",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-KINGSHOT-AD-20260917",
-  "fingerprint": "bda746cc2cfacc06f5da1651383bd298f5caf8b31fd243052c76378ffb3d0532",
+  "fingerprint": "5b5d5479e9573aa177f5b8f78023522ec0b29dc86e5525ab6b77498957227877",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::ccb705763921ace2664b624009490827e1020ed290272d15190b22b6beee5283:identity,creativeGrammar": {
-      "identity": "킹샷 광고풍 - 진보적 전략 디펜스 게임",
-      "creativeGrammar": {
-        "mainIdentity": "기본 게임 주제: 전략적 팀전투, 단일 방어 시스템",
-        "a": {
-          "system": "전략",
-          "material": "전략적 루프 및 선택",
-          "materialDomain": "전략적 대응과 위협 유형",
-          "stateChange": "플레이어의 전략적 선택 → 상태 변화 → 보상/위험 발생"
-        },
-        "b": {
-          "system": "방어",
-          "material": "방어 구조와 위치 재배치",
-          "materialDomain": "방어 전략의 상호작용 및 자원 배분",
-          "stateChange": "방어 구조 변경 → 새로운 전략 경로 열림"
-        },
-        "abCausality": "전략적 선택이 방어 구조를 재설계하고, 방어 전략이 새로운 전략적 선택을 생성하며, 두 시스템 간의 관계가 실제 상태 교환으로 나타나는 조건이 충족됨",
-        "abEvolution": {
-          "aChangesB": "전략적 선택이 방어 구조에 영향을 미치며, 방어 전략이 새로운 선택을 생성함",
-          "bChangesA": "방어 구조의 변경이 전략적 선택에 영향을 주고, 전략적 선택이 방어 구조에 새로운 가능성 제공함",
-          "lateGameChange": "중후반에는 전략과 방어 사이의 관계가 양방향으로 진화하여, 플레이어의 선택이 게임 세계 상태에 직접적인 영향을 줌"
-        },
-        "materialFusion": {
-          "contrast": "전략 vs. 방어: 단일 전략 vs. 다층 방어 구조",
-          "causalBridge": "전략적 선택은 방어 구조의 변화를 유도하고, 방어 전략은 새로운 전략적 선택을 생성함",
-          "removalConsequence": "전략적 선택이 방어 구조의 재설계를 촉진하며, 방어 전략이 새로운 선택을 제시함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전략적 선택 → 상태 변화 → 보상/위험 발생",
-          "characterConflict": "전략적 선택과 방어 구조 갈등 → 새로운 전략적 선택 제안",
-          "playerChoice": "플레이어는 전략적 선택을 실행하고, 방어 구조를 재설계하게 됨",
-          "worldChange": "전략적 선택 및 방어 구조 변경이 게임 세계 상태를 바꾸고, 중후반에는 두 시스템 간 관계가 진화하여 플레이어의 선택에 영향을 줌",
-          "nextEvent": "중후반에서는 전략과 방어 사이의 관계가 양방향으로 진화하여, 플레이어의 선택이 더 깊게 영향을 주며, 새로운 규칙 조합이 요구됨"
-        },
-        "cThemes": [
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전략적 선택과 위협 유형의 상호작용"
-          },
-          {
-            "name": "방어",
-            "kind": "MATERIAL",
-            "gameplayEffect": "방어 구조와 자원 배분의 상호작용"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략적 디펜스",
-            "gameplayEffect": "전략적 루프 및 선택의 적용과 변화"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "방어 구조 재설계",
-            "gameplayEffect": "방어 전략의 변화와 자원 배분의 실질적 인과 변화"
-          }
-        ],
-        "cGenreInterlock": "전략 vs. 방어: 단일 전략 vs. 다층 방어 구조 → 두 시스템 간의 상호작용은 보조 장르 제거 시 바뀌는 플레이로 나타남",
-        "cWorldAndGameplayEffect": "전략적 선택과 방어 구조 변경이 게임 세계 상태를 바꾸고, 중후반에는 두 시스템 간 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어의 전략적 선택",
-            "discovery": "전략적 선택이 방어 구조에 영향을 미치며, 방어 전략이 새로운 선택을 생성함",
-            "newChoice": "새로운 전략적 선택이 제공되고, 방어 구조가 재설계됨"
-          },
-          {
-            "clue": "중후반의 전략-방어 관계 진화",
-            "discovery": "전략과 방어 사이의 관계가 양방향으로 진화하며, 플레이어의 선택이 더 깊게 영향을 주고, 새로운 규칙 조합이 요구됨",
-            "newChoice": "전략과 방어 사이의 상호작용이 진보하고, 새로운 규칙이 제시됨"
-          },
-          {
-            "clue": "전략적 루프 및 선택의 적용",
-            "discovery": "전략적 루프와 선택이 게임 세계 상태를 바꾸고, 중후반에는 두 시스템 간 관계가 진화하여, 새로운 규칙 조합이 요구됨",
-            "newChoice": "전략적 루프와 선택이 적용되며, 새로운 규칙이 제시됨"
-          },
-          {
-            "clue": "방어 구조의 변화와 자원 배분",
-            "discovery": "방어 구조의 변화가 전략적 선택에 영향을 미치고, 전략적 선택이 방어 구조에 새로운 가능성 제공함",
-            "newChoice": "방어 구조의 변화가 발생되고, 전략적 선택이 재설계됨"
-          }
-        ],
-        "delveGrowthRule": "플레이어는 전략적 선택을 실행하며, 방어 구조를 재설계하게 되고, 중후반에서는 전략과 방어 사이의 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨",
-        "finalGameIdentity": "전략적 루프와 방어 구조 변경이 게임 세계 상태를 바꾸고, 중후반에서는 두 시스템 간 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨"
-      }
-    },
-    "local_authoring_parts::ccb705763921ace2664b624009490827e1020ed290272d15190b22b6beee5283:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 전략적 선택을 실행하며, 방어 구조를 재설계하게 되고, 중후반에는 전략과 방어 사이의 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨",
-      "coreFun": "{\"identity\": \"킹샷 광고풍 - 진보적 전략 디펜스 게임\", \"creativeGrammar\": {\"mainIdentity\": \"기본 게임 주제: 전략적 팀전투, 단일 방어 시스템\", \"a\": {\"system\": \"전략\", \"material\": \"전략적 루프 및 선택\", \"materialDomain\": \"전략적 대응과 위협 유형\", \"stateChange\": \"플레이어의 전략적 선택 → 상태 변화 → 보상/위험 발생\"}, \"b\": {\"system\": \"방어\", \"material\": \"방어 구조와 위치 재배치\", \"materialDomain\": \"방어 전략의 상호작용 및 자원 배분\", \"stateChange\": \"방어 구조 변경 → 새로운 전략 경로 열림\"}, \"abCausality\": \"전략적 선택이 방어 구조를 재설계하고, 방어 전략이 새로운 전략적 선택을 생성하며, 두 시스템 간의 관계가 실제 상태 교환으로 나타나는 조건이 충족됨\", \"abEvolution\": {\"aChangesB\": \"전략적 선택이 방어 구조에 영향을 미치며, 방어 전략이 새로운 선택을 생성함\", \"bChangesA\": \"방어 구조의 변경이 전략적 선택에 영향을 주고, 전략적 선택이 방어 구조에 새로운 가능성 제공함\", \"lateGameChange\": \"중후반에는 전략과 방어 사이의 관계가 양방향으로 진화하여, 플레이어의 선택이 게임 세계 상태에 직접적인 영향을 줌\"}}, \"materialFusion\": {\"contrast\": \"전략 vs. 방어: 단일 전략 vs. 다층 방어 구조\", \"causalBridge\": \"전략적 선택은 방해 구조의 변화를 유도하고, 방어 전략은 새로운 전략적 선택을 생성함\", \"removalConsequence\": \"전략적 선택이 방어 구조의 재설계를 촉진하며, 방어 전략이 새롭"
-    },
-    "local_authoring_parts::70a9cf596a00295920de6b55b2c5b54cb9ae263028268816c140220c8ffc09b7:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "킹샷 광고풍 - 진보적 전략 디펜스 게임",
-      "creativeGrammar": {
-        "mainIdentity": "기본 게임 주제: 전략적 팀전투, 단일 방어 시스템",
-        "a": {
-          "system": "전략",
-          "material": "전략적 루프 및 선택",
-          "materialDomain": "전략적 대응과 위협 유형",
-          "stateChange": "플레이어의 전략적 선택 → 상태 변화 → 보상/위험 발생"
-        },
-        "b": {
-          "system": "방어",
-          "material": "방어 구조와 위치 재배치",
-          "materialDomain": "방어 전략의 상호작용 및 자원 배분",
-          "stateChange": "방어 구조 변경 → 새로운 전략 경로 열림"
-        },
-        "abCausality": "전략적 선택이 방어 구조를 재설계하고, 방어 전략이 새로운 전략적 선택을 생성하며, 두 시스템 간의 관계가 실제 상태 교환으로 나타나는 조건이 충족됨",
-        "abEvolution": {
-          "aChangesB": "전략적 선택이 방어 구조에 영향을 미치며, 방어 전략이 새로운 선택을 생성함",
-          "bChangesA": "방어 구조의 변경이 전략적 선택에 영향을 주고, 전략적 선택이 방어 구조에 새로운 가능성 제공함",
-          "lateGameChange": "중후반에는 전략과 방어 사이의 관계가 양방향으로 진화하여, 플레이어의 선택이 게임 세계 상태에 직접적인 영향을 줌"
-        },
-        "materialFusion": {
-          "contrast": "전략 vs. 방어: 단일 전략 vs. 다층 방어 구조",
-          "causalBridge": "전략적 선택은 방어 구조의 변화를 유도하고, 방어 전략은 새로운 전략적 선택을 생성함",
-          "removalConsequence": "전략적 선택이 방어 구조의 재설계를 촉진하며, 방어 전략이 새로운 선택을 제시함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전략적 선택 → 상태 변화 → 보상/위험 발생",
-          "characterConflict": "전략적 선택과 방어 구조 갈등 → 새로운 전략적 선택 제안",
-          "playerChoice": "플레이어는 전략적 선택을 실행하고, 방어 구조를 재설계하게 됨",
-          "worldChange": "전략적 선택 및 방어 구조 변경이 게임 세계 상태를 바꾸고, 중후반에는 두 시스템 간 관계가 진화하여 플레이어의 선택에 영향을 줌",
-          "nextEvent": "중후반에서는 전략과 방어 사이의 관계가 양방향으로 진화하여, 플레이어의 선택이 더 깊게 영향을 주며, 새로운 규칙 조합이 요구됨"
-        },
-        "cThemes": [
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전략적 선택과 위협 유형의 상호작용"
-          },
-          {
-            "name": "방어",
-            "kind": "MATERIAL",
-            "gameplayEffect": "방어 구조와 자원 배분의 상호작용"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략적 디펜스",
-            "gameplayEffect": "전략적 루프 및 선택의 적용과 변화"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "방어 구조 재설계",
-            "gameplayEffect": "방어 전략의 변화와 자원 배분의 실질적 인과 변화"
-          }
-        ],
-        "cGenreInterlock": "전략 vs. 방어: 단일 전략 vs. 다층 방어 구조 → 두 시스템 간의 상호작용은 보조 장르 제거 시 바뀌는 플레이로 나타남",
-        "cWorldAndGameplayEffect": "전략적 선택과 방어 구조 변경이 게임 세계 상태를 바꾸고, 중후반에는 두 시스템 간 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어의 전략적 선택",
-            "discovery": "전략적 선택이 방어 구조에 영향을 미치며, 방어 전략이 새로운 선택을 생성함",
-            "newChoice": "새로운 전략적 선택이 제공되고, 방어 구조가 재설계됨"
-          },
-          {
-            "clue": "중후반의 전략-방어 관계 진화",
-            "discovery": "전략과 방어 사이의 관계가 양방향으로 진화하며, 플레이어의 선택이 더 깊게 영향을 주고, 새로운 규칙 조합이 요구됨",
-            "newChoice": "전략과 방어 사이의 상호작용이 진보하고, 새로운 규칙이 제시됨"
-          },
-          {
-            "clue": "전략적 루프 및 선택의 적용",
-            "discovery": "전략적 루프와 선택이 게임 세계 상태를 바꾸고, 중후반에는 두 시스템 간 관계가 진화하여, 새로운 규칙 조합이 요구됨",
-            "newChoice": "전략적 루프와 선택이 적용되며, 새로운 규칙이 제시됨"
-          },
-          {
-            "clue": "방어 구조의 변화와 자원 배분",
-            "discovery": "방어 구조의 변화가 전략적 선택에 영향을 미치고, 전략적 선택이 방어 구조에 새로운 가능성 제공함",
-            "newChoice": "방어 구조의 변화가 발생되고, 전략적 선택이 재설계됨"
-          }
-        ],
-        "delveGrowthRule": "플레이어는 전략적 선택을 실행하며, 방어 구조를 재설계하게 되고, 중후반에서는 전략과 방어 사이의 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨",
-        "finalGameIdentity": "전략적 루프와 방어 구조 변경이 게임 세계 상태를 바꾸고, 중후반에서는 두 시스템 간 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨"
-      },
-      "playerFantasy": "플레이어는 전략적 선택을 실행하며, 방어 구조를 재설계하게 되고, 중후반에는 전략과 방어 사이의 관계가 양방향으로 진화하여, 새로운 규칙 조합이 요구됨",
-      "coreFun": "{\"identity\": \"킹샷 광고풍 - 진보적 전략 디펜스 게임\", \"creativeGrammar\": {\"mainIdentity\": \"기본 게임 주제: 전략적 팀전투, 단일 방어 시스템\", \"a\": {\"system\": \"전략\", \"material\": \"전략적 루프 및 선택\", \"materialDomain\": \"전략적 대응과 위협 유형\", \"stateChange\": \"플레이어의 전략적 선택 → 상태 변화 → 보상/위험 발생\"}, \"b\": {\"system\": \"방어\", \"material\": \"방어 구조와 위치 재배치\", \"materialDomain\": \"방어 전략의 상호작용 및 자원 배분\", \"stateChange\": \"방어 구조 변경 → 새로운 전략 경로 열림\"}, \"abCausality\": \"전략적 선택이 방어 구조를 재설계하고, 방어 전략이 새로운 전략적 선택을 생성하며, 두 시스템 간의 관계가 실제 상태 교환으로 나타나는 조건이 충족됨\", \"abEvolution\": {\"aChangesB\": \"전략적 선택이 방어 구조에 영향을 미치며, 방어 전략이 새로운 선택을 생성함\", \"bChangesA\": \"방어 구조의 변경이 전략적 선택에 영향을 주고, 전략적 선택이 방어 구조에 새로운 가능성 제공함\", \"lateGameChange\": \"중후반에는 전략과 방어 사이의 관계가 양방향으로 진화하여, 플레이어의 선택이 게임 세계 상태에 직접적인 영향을 줌\"}}, \"materialFusion\": {\"contrast\": \"전략 vs. 방어: 단일 전략 vs. 다층 방어 구조\", \"causalBridge\": \"전략적 선택은 방해 구조의 변화를 유도하고, 방어 전략은 새로운 전략적 선택을 생성함\", \"removalConsequence\": \"전략적 선택이 방어 구조의 재설계를 촉진하며, 방어 전략이 새롭"
-    },
-    "local_authoring_parts::04a9f9fc76f93170948a5ee6258c8bb69dc9fdd090a42993b6472d5d8ac10d31:coreLoop": {
-      "coreLoop": [
-        "입력: 플레이어의 전략적 선택",
-        "선택: 방해 구조 재설계 및 새로운 전략 경로 열림",
-        "보상/위험: 전략적 루프의 진화와 새로운 규칙 조합 발생"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 727520,
-      "lastMs": 93499,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:54:01.018Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T08:41:53.470Z",
-  "updatedAt": "2026-10-10T09:36:54.617Z",
+  "createdAt": "2026-10-10T10:01:46.879Z",
+  "updatedAt": "2026-10-10T10:01:46.893Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1928,16 +1730,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "ccb705763921ace2664b624009490827e1020ed290272d15190b22b6beee5283": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:54:01.018Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
