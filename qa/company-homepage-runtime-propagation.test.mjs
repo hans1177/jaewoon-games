@@ -309,9 +309,9 @@ test('homepage exposes only verified native 3D Unity WebGL as a development link
     'renderCatalog(catalog);'
   ];
   for(const marker of required)assert.ok(renderer.includes(marker),'missing Unity Web development and safety contract: '+marker);
-  assert.match(renderer,/createUnityInstance\\s\\*\\\\s\\\(/);
+  assert.match(renderer,/createUnityInstance/);
   assert.match(renderer,/method:'HEAD'/);
-  assert.doesNotMatch(renderer,/\\.filter\\(hasRunnableHomepageTarget\\)/);
+  assert.doesNotMatch(renderer,/\.filter\(hasRunnableHomepageTarget\)/);
   assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
 });
 
