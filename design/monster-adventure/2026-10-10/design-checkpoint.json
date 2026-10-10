@@ -539,25 +539,40 @@
         "상태변화: 플레이어는 전투 중에 철학적인 선택을 하게 됩니다.",
         "보상/위험: 전투 결과로 얻은 경험치와 재료를 사용하여 몬스터를 레벨업하거나 진화시켜 다음 도전을 준비"
       ]
+    },
+    "local_authoring_parts::cb719fd037fb993eb774de0ef0aa3e7741deaa0910e963f982d12fc36d04b98e:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential_rule",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 몬스터의 속성을 파악하여 자신의 팀 중 가장 유리한 속성의 몬스터를 교체하거나 특정 스킬을 사용하여 전투의 흐름을 바꿀 수 있습니다.",
+        "몬스터 진화 트리를 통해 플레이어는 장기적인 성장 목표와 다양한 육성 경로를 선택할 수 있습니다."
+      ],
+      "stateOutputs": [
+        "전투 시나리오에 따라 적의 속성이 변환되어 새로운 전략적 선택이 가능해집니다.",
+        "진화 트리에서 선호하는 특성에 맞춘 몬스터 형태가 생성되며, 이는 다음 단계의 탐험이나 전투에 영향을 미칩니다."
+      ],
+      "name": "속성 상성 전투 및 진화 트리 선택 시스템",
+      "purpose": "타운하우스 역사를 통한 전투 철학을 구현하며, 플레이어의 선택과 세계 상태 변화 사이의 깊은 인과 관계를 형성합니다.",
+      "playerChoice": "몬스터의 속성 조합을 재설정하고, 진화 트리의 레벨별 진화 방향을 선택해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1072123,
-      "lastMs": 7857,
+      "totalMs": 1117450,
+      "lastMs": 45327,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:36:33.326Z"
+      "updatedAt": "2026-10-10T10:37:18.654Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:40.867Z",
-  "updatedAt": "2026-10-10T10:36:33.326Z",
+  "updatedAt": "2026-10-10T10:37:18.654Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2096,8 +2111,8 @@
     "82830b2ba94e226a987ad9ed48e97be91250974bf7c5b21dc2e26af03f5071e0": true,
     "e7c304687e1453a0506ab056c588b7cfe21ec5d66e2921866ec31f77f7097ef5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:36:33.326Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T10:37:18.654Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
