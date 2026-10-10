@@ -872,9 +872,28 @@ export function buildDesignToPlatformCodingTrace({
     const anchors=(inspected?.sourceAnchors||[]).filter(row=>clean(row?.file).startsWith(scriptsRoot+'/')
       &&clean(row?.file).toLowerCase().endsWith('.cs')
       &&['METHOD','FUNCTION'].includes(row?.kind))
-      .slice(0,16).map(row=>Object.freeze({
-        file:posix(row.file),line:Number(row.line)||0,symbol:clean(row.symbol),signature:clean(row.context).slice(0,180)
-      }));
+      .slice(0,16).map(row=>{
+        // 선택된 같은 게임의 C# 함수 실행부만 짧게 관측한다. 문자열·주석은 동기화 지시가 아니다.
+        // 심볼릭 링크·다른 게임 경로·과도한 원본 파일은 그대로 제외한다.
+        let stateChangeSource='';
+        try{
+          const file=path.resolve(rootReal,posix(row.file));
+          const allowed=fs.realpathSync(path.resolve(rootReal,scriptsRoot));
+          const real=fs.realpathSync(file);
+          if(real.startsWith(allowed+path.sep)&&fs.statSync(real).isFile()
+            &&fs.statSync(real).size<=1024*1024){
+            const lines=fs.readFileSync(real,'utf8').split('\n');
+            stateChangeSource=lines.slice(Math.max(0,Number(row.line||1)-1),Number(row.line||1)+6).join('\n')
+              .replace(/\/\/[^\n]*/g,'')
+              .replace(/"(?:\\.|[^"\\])*"/g,'""')
+              .slice(0,360).trim();
+          }
+        }catch{}
+        return Object.freeze({
+          file:posix(row.file),line:Number(row.line)||0,symbol:clean(row.symbol),
+          signature:clean(row.context).slice(0,180),stateChangeSource
+        });
+      });
     const available=Number(inspected?.fileCount||0)>0&&candidates.length>0;
     return Object.freeze({
       version:1,kind:'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC',
