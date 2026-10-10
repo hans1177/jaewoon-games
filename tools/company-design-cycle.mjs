@@ -1402,7 +1402,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value?.[key])===clean(row[key])).length>=2))
               roleIssues.push('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED');
             if([...inputKeys,...outputKeys].some(key=>!new RegExp(stateKeyPattern,'u').test(clean(key))
-              ||/→|->|\\b(?:INPUT|SELECT|OUTPUT|STATE)\\s*:/i.test(clean(key))))
+              ||/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
               roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
             if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
             if(roleHandoff&&!inputKeys.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key)))

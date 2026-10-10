@@ -210,6 +210,11 @@ const noSharedStateRules=['MAIN','A','B','DELVE'].map((grammarRole,index)=>({
 const noHandoffReview=validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']});
 assert.ok(noHandoffReview.some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
 const sharedStateRules=noSharedStateRules.map(row=>({...row,stateInputs:['SharedWorldState'],stateOutputs:['SharedWorldState']}));
+const proseKeyV5=sharedStateRules.map(row=>({...row}));
+proseKeyV5[0]={...proseKeyV5[0],stateInputs:['incoming wave pattern analysis']};
+assert.ok(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:proseKeyV5},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_STATE_KEY_IS_INSTRUCTION'));
+
 assert.equal(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:sharedStateRules},fields:['signatureSystems']})
   .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
 const oneWayRules=sharedStateRules.map(row=>({...row}));
