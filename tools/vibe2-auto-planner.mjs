@@ -22,6 +22,7 @@ import { latestMinimumDesign } from './company-minimum-design-contract.mjs';
 import { robloxDesignProfileFromBaseline } from './company-development-roblox-gameplay-product-readiness.mjs';
 import { readUpperPlatformReadiness, nativeUpperPlatformAlreadyStarted } from './company-upper-platform-admission.mjs';
 import { buildGameSpecificBuildUpDirective, directivePrompt, inspectGameSources } from './company-build-up-directive.mjs';
+import { buildInterfaceBlueprintContract, INTERFACE_EXTERNAL_ALGORITHMS } from './company-roblox-production-plan.mjs';
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
 import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
@@ -1241,7 +1242,7 @@ function findWebAssessmentTask(project,repoRoot,queue){
   out.speculativeEligible=false;
   out=attachGameSpecificBuildUpDirective(out,project,repoRoot,queue);
   if(clean(out?.buildUpDirective?.primaryFocus).toUpperCase()==='PRESENTATION'){
-    out=applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION');
+    out=applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION',repoRoot);
   }
   return out;
 }
@@ -1443,7 +1444,44 @@ const MENU_EXPERIENCE_PATTERN_FAMILIES=Object.freeze({
   RESULT_UI:Object.freeze(['RUN_SUMMARY','REWARD_BREAKDOWN','NEXT_OBJECTIVE','PROJECT_SPECIFIC_HYBRID'])
 });
 
-function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTATION'){
+function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTATION',repoRoot=process.cwd()){
+  // 기존 게임 소스에 있는 UI 동작만 외부 UX 원칙 및 내부 라이브러리와 선택적으로 매칭한다.
+  const gameRoot=posix(project.projectPath);
+  const uiSources=presentationSourcesForProject(project,repoRoot)
+    .filter(file=>gameRoot&&file.startsWith(gameRoot+'/')&&!file.split('/').includes('..'))
+    .map(file=>{
+      const content=readText(sourceFile(repoRoot,file)).slice(0,64000);
+      const hits=content.split(/\r?\n/).filter(line=>{
+        const v=line.trim();
+        return v&&!/^(?:\/\/|--|#|\/\*)/.test(v)
+          &&/(?:ScreenGui|ScrollingFrame|TextButton|ImageButton|Button|UI|HUD|Menu|Inventory|Craft|Shop|Quest|Panel|Canvas|GUILayout|UIDocument|VisualElement|SetActive|addEventListener|onclick|Activated|OnClick|메뉴|인벤|제작|퀘스트|상점|장비)/i.test(v);
+      }).slice(0,42);
+      const actionable=hits.some(row=>/(?:\(|=>|=|<button|ScreenGui|Canvas|GUILayout|VisualElement|SetActive|addEventListener|onclick|Activated)/i.test(row));
+      return{file,context:actionable?hits.join(' ').slice(0,8000):'',sourceHash:stableHash(content)};
+    }).filter(row=>row.context);
+  const nativeUI=clean(project.engine).toLowerCase()==='unity'?(studioQualityLane(project)==='unity-web'?'UNITY_WEB':'UNITY_APP'):clean(project.engine).toUpperCase();
+  const uiContract=uiSources.length?buildInterfaceBlueprintContract({
+    design:{identity:project.name||project.gameId,genre:project.genre||project.category||project.gameCategory||''},
+    source:{sourceAnchors:uiSources.map(row=>({file:row.file,symbol:row.file.split('/').at(-1),context:row.context}))},
+    files:uiSources.map(row=>row.file),mode:'EXISTING_PLAY_PRESENTATION',focus:'PRESENTATION',enabled:true,platform:nativeUI
+  }):null;
+  const algorithms=(uiContract?.externalAlgorithms||[]).filter(row=>row.matchEvidence?.sourceAnchor).map(row=>({
+    id:row.id,principle:row.principle,sourceUrl:row.sourceUrl,
+    sourceFiles:uiSources.filter(source=>INTERFACE_EXTERNAL_ALGORITHMS.some(candidate=>candidate.id===row.id&&candidate.match.test(source.context))).map(source=>source.file),
+    optional:true,runtimeVerified:false
+  }));
+  const internalTools=(uiContract?.internalToolMatches||[]).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED').map(row=>({
+    id:row.id,library:row.library,screens:row.screens,integration:row.integration,optional:true,automaticImport:false,runtimeVerified:false
+  }));
+  const existingGameInterfaceSync=Object.freeze({
+    version:1,mode:'OPTIONAL_EXISTING_GAME_INTERFACE_AUTO_MATCH',sourceFingerprint:stableHash(uiSources.map(row=>row.file+':'+row.sourceHash).join('|')),
+    sourceFiles:uiSources.map(row=>row.file),platformBinding:menuPlatformBindingProfile(project),
+    externalAlgorithms:algorithms,internalToolMatches:internalTools,
+    status:algorithms.length||internalTools.length?'SOURCE_MATCH_CANDIDATES_NOT_APPLIED':'NO_SOURCE_MATCH',
+    optional:true,designMutation:false,noNewGameplaySystem:true,noShadowUiPipeline:true,nativeUiOnly:true,runtimeVerified:false,
+    applicationRule:'APPLY_ONLY_ON_CONFIRMED_EXISTING_UI_FRICTION_AND_OWNED_HANDLER'
+  });
+
   const platformLane=studioQualityLane(project);
   const platform=buildUpPlatformToken(project,platformLane);
   const activeMenuBindingProfile=menuPlatformBindingProfile(project,platformLane);
@@ -1470,6 +1508,7 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
     reuseModes:ADAPTIVE_GRAPHICS_REUSE_MODES,
     menuDiversity:Object.freeze({
       version:4,
+      existingGameInterfaceSync,
       executionBoundary:'EXISTING_GAME_UI_AND_MISSING_ENTRY_FLOW_BUILD_UP',
       unityWebIsUnityBuildTargetNotIndependentPlatform:true,
       activePlatformBindingProfile:activeMenuBindingProfile,
@@ -1561,23 +1600,26 @@ function adaptiveGraphicsReplacementSupported(project={}){
   return ['web','roblox','unity'].includes(clean(project?.engine).toLowerCase());
 }
 
-function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION'){
+function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_ADAPTATION',repoRoot=process.cwd()){
   if(!taskInput)return taskInput;
   if(!adaptiveGraphicsReplacementSupported(project))return taskInput;
   const normalizedPass=clean(pass).toUpperCase()||'ASSET_ADAPTATION';
   const existingEvidence=new Set((taskInput.evidence||[]).map(clean));
+  const contract=buildAdaptiveGraphicsReplacementContract(project,normalizedPass,repoRoot);
+  const sync=contract.menuDiversity.existingGameInterfaceSync;
+  const matched=[...sync.externalAlgorithms.map(row=>row.id),...sync.internalToolMatches.map(row=>row.id)];
+  const marker='[EXISTING_GAME_INTERFACE_AUTO_MATCH]';
+  const hint=matched.length?'\n'+marker+'\n현재 게임 UI 소스 '+sync.sourceFiles.join(', ')+'에서 외부 UX 및 내부 라이브러리 후보 '+matched.join(', ')+'를 자동 매칭했다. 실제 불편이 확인되고 현 작업의 기존 UI 핸들러에 적용 가능할 때만 직접 개선하며 관련 없으면 건너뛴다. 설계·저장·경제·전투·권한은 유지하고 Unity WebGL은 Unity C# UI를 공유한다. 후보만으로 적용/검증 완료라 표시하지 않는다.\n[/EXISTING_GAME_INTERFACE_AUTO_MATCH]':'';
   if(taskInput.graphicsReplacementContract&&existingEvidence.has('adaptive-graphics-replacement:v1')){
+    const old=taskInput.graphicsReplacementContract;
     return{
       ...taskInput,
+      goal:hint&&!String(taskInput.goal||'').includes(marker)?clean(taskInput.goal)+hint:taskInput.goal,
+      graphicsReplacementContract:{...old,menuDiversity:{...old.menuDiversity,existingGameInterfaceSync:sync}},
       presentationPass:normalizedPass,
-      evidence:[...new Set([
-        ...(taskInput.evidence||[]),
-        'presentation-quality-pipeline:v1',
-        'presentation-pass:'+normalizedPass
-      ])]
+      evidence:[...new Set([...(taskInput.evidence||[]),'presentation-quality-pipeline:v1','presentation-pass:'+normalizedPass,'existing-game-interface-auto-match:v1'])]
     };
   }
-  const contract=buildAdaptiveGraphicsReplacementContract(project,normalizedPass);
   const guidance=[
     '',
     '[ADAPTIVE_GRAPHICS_REPLACEMENT_CONTRACT]',
@@ -1600,7 +1642,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
   ].join('\n');
   return{
     ...taskInput,
-    goal:clean(taskInput.goal)+guidance,
+    goal:clean(taskInput.goal)+guidance+hint,
     presentationPass:normalizedPass,
     graphicsReplacementContract:contract,
     completionCriteria:[...new Set([
@@ -1637,6 +1679,7 @@ function applyAdaptiveGraphicsReplacementContract(taskInput,project,pass='ASSET_
       'adaptive-graphics-replacement-surfaces:'+ADAPTIVE_GRAPHICS_REPLACEMENT_SURFACES.join(','),
       'adaptive-graphics-reuse-modes:'+ADAPTIVE_GRAPHICS_REUSE_MODES.join(','),
       'menu-experience-diversity:v1',
+      'existing-game-interface-auto-match:v1',
       'menu-platform-binding:v1',
       'menu-active-platform-binding:'+contract.menuDiversity.activePlatformBindingProfile,
       'unity-web-menu-source:SAME_CANONICAL_UNITY_PROJECT',
@@ -1991,7 +2034,7 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
     out.graphicsEvolutionDecision={loop:['OBSERVE','SCORE','CHOOSE','IMPROVE','COMPARE','LEARN','REPLAN'],alternativesRequired,minimumAlternatives:alternativesRequired?2:1,history:{...signal.history},releaseAuthority:false};
     if(signal.source==='OWNER_CHANGE_REQUEST')out.ownerDirective=true;
     out.evidence=[...new Set([...(out.evidence||[]),'atomic-neuron-stream:presentation','atomic-neuron-micro-fanin:per-task','graphics-atomic-candidate-isolation-required'])];
-    return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass);
+    return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass,repoRoot);
   }
   return null;
 }
@@ -2158,7 +2201,7 @@ local STUDIO_ASSET_BINDING_VERSION = 2, STUDIO_ASSET_SELECTION, STUDIO_ASSET_FAM
     'atomic-neuron-micro-fanin:per-task',
     'graphics-atomic-candidate-isolation-required'
   ])];
-  return applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION');
+  return applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION',repoRoot);
 }
 
 export function findPresentationQualityTask(project,repoRoot,queue){
@@ -2210,7 +2253,7 @@ export function findPresentationQualityTask(project,repoRoot,queue){
       'atomic-neuron-micro-fanin:per-task',
       'graphics-atomic-candidate-isolation-required'
     ])];
-    return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass);
+    return applyAdaptiveGraphicsReplacementContract(out,project,stage.pass,repoRoot);
   }
   return nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages);
 }
@@ -3055,7 +3098,7 @@ ${expectationInstruction}
     nextCycleRequired:true
   };
   const presentationBound=focusPillar==='PRESENTATION'
-    ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION')
+    ?applyAdaptiveGraphicsReplacementContract(out,project,'ASSET_ADAPTATION',repoRoot)
     :out;
   return attachGameSpecificBuildUpDirective(applyWorldLobbyFirst(presentationBound,project,repoRoot),project,repoRoot,queue,designContext);
 }
@@ -3344,7 +3387,7 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       ||!candidateEvidence.includes('presentation-pass:ASSET_ADAPTATION')
     );
     if(webPresentationContractIncomplete){
-      const graphicsBound=applyAdaptiveGraphicsReplacementContract(candidate,project,'ASSET_ADAPTATION');
+      const graphicsBound=applyAdaptiveGraphicsReplacementContract(candidate,project,'ASSET_ADAPTATION',repoRoot);
       candidate={
         ...graphicsBound,
         assetProductionLane:true,
@@ -3362,6 +3405,15 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         :freshness;
     }
 
+    // 기존 대기 작업도 별도 단계 없이 최신 UI 매칭 증거를 받는다.
+    if(candidate?.graphicsReplacementContract&&candidate?.assetProductionLane===true
+      &&['web','roblox','unity'].includes(clean(project.engine).toLowerCase())){
+      const refreshed=applyAdaptiveGraphicsReplacementContract(candidate,project,candidate.presentationPass||'ASSET_ADAPTATION',repoRoot);
+      if(JSON.stringify(refreshed.graphicsReplacementContract?.menuDiversity?.existingGameInterfaceSync)
+        !==JSON.stringify(candidate.graphicsReplacementContract?.menuDiversity?.existingGameInterfaceSync)){
+        candidate=refreshed;changed+=1;
+      }
+    }
     const checkedCandidate={
       ...candidate,
       evidence:[...new Set([
