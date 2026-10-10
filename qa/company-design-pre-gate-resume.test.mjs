@@ -1609,3 +1609,33 @@ test('authored MAIN A B C delve grammar is carried into downstream checkpoint an
   assert.ok(writer.includes('SHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}'));
   assert.match(design,/identity:content\.identity,creativeGrammar:content\.creativeGrammar,coreFun:content\.coreFun/);
 });
+
+test('V5 resumes valid authored states but reauthors stale natural-language role keys',()=>{
+  const start=design.indexOf('const invalidRoleStateTasks=');
+  const end=design.indexOf("if(priorCheckpointStatus==='PRE_GATE_BLOCKED'",start);
+  assert.ok(start>=0&&end>start,'canonical checkpoint cleanup must exist');
+  const fake={
+    tasks:{
+      'local_authoring_parts::x:signatureSystems:0:source':{
+        grammarRole:'MAIN',stateInputs:['incoming wave pattern analysis'],stateOutputs:['WorldState']},
+      'local_authoring_parts::x:signatureSystems:1:source':{
+        grammarRole:'A',stateInputs:['WorldState'],stateOutputs:['RiskState']},
+      'local_authoring_parts::x:signatureSystems:2:source':{
+        grammarRole:'B',stateInputs:['OUTPUT: vague prose → result'],stateOutputs:['RiskState']},
+      'unrelated-work':{status:'VERIFIED'}
+    },
+    sliceRepairFeedback:{'local_authoring_parts::x:signatureSystems:0:source':[{'code':'OLD_FAILURE'}]},
+    sliceRepairAttempts:{'local_authoring_parts::x:signatureSystems:0:source':166}
+  };
+  const writes=[],logs=[];
+  const ctx={designCheckpoint:fake,checkpointPath:'checkpoint.json',
+    writeJson:(p,record)=>writes.push(p),console:{log:line=>logs.push(line)}};
+  const result=runInNewContext(design.slice(start,end)+'\ninvalidRoleStateTasks',ctx);
+  assert.equal(result.length,2);
+  assert.equal(Object.keys(fake.tasks).length,2);
+  assert.ok(Object.hasOwn(fake.tasks,'local_authoring_parts::x:signatureSystems:1:source'));
+  assert.ok(Object.hasOwn(fake.tasks,'unrelated-work'));
+  assert.equal(fake.sliceRepairAttempts['local_authoring_parts::x:signatureSystems:0:source'],undefined);
+  assert.deepEqual(writes,['checkpoint.json']);
+  assert.ok(logs.some(row=>row.includes('DESIGN_INVALID_STALE_ROLE_STATE_KEYS_REAUTHOR=2')));
+});
