@@ -1625,7 +1625,7 @@ test('continuous reserve reuses exact-sha Core QA or fail-closes on the same fan
   assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
   assert.match(preflightBlock,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
   assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
-  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION/);
   assert.match(preflightBlock,/node --test --test-concurrency=4/);
   assert.match(preflightBlock,/contract_regression_passed=true/);
   assert.match(preflightBlock,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
@@ -1902,7 +1902,7 @@ test('continuous core keeps pending neuron callbacks light and blocks broken con
   assert.match(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=PASS/);
   assert.match(workflow,/VIBE2_RESERVE_CORE_QA_REUSE_OBSERVATION=FAIL_LOCAL_REGRESSION/);
   assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
-  assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION/);
   assert.match(workflow,/contract_regression_passed: \$\{\{ steps\.preflight\.outputs\.contract_regression_passed \}\}/);
   assert.match(workflow,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
   assert.doesNotMatch(workflow,/VIBE2_NEURON_REFILL_PLANNER_SYNC=PASS/);
