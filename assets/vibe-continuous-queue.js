@@ -373,6 +373,22 @@ function normalizeTask(input = {}, index = 0) {
     runtimeEvidenceCandidate,
     buildUpDirective: normalizeBuildUpDirective(input.buildUpDirective),
     assetRequirements: normalizeAssetRequirements(input.assetRequirements),
+    // 이미 존재하는 큐에 설계 도구 계약의 작은 식별 정보만 보존한다.
+    // 도구 사용 가능성이 제작/실행 검증 통과를 의미하지 않으며, 자산 요구는 위 단일 필드를 쓴다.
+    designToolSync: input.designToolSync&&typeof input.designToolSync==='object'&&!Array.isArray(input.designToolSync)
+      ?freeze({
+        version:1,
+        phase:clean(input.designToolSync.phase)||'DESIGN',
+        requiredSystems:freezeList(input.designToolSync.requiredSystems||[]),
+        optionalSystems:freezeList(input.designToolSync.optionalSystems||[]),
+        requiredUiRoles:freezeList(input.designToolSync.requiredUiRoles||[]),
+        optionalUiRoles:freezeList(input.designToolSync.optionalUiRoles||[]),
+        repositoryPresentLibraries:freezeList(input.designToolSync.repositoryPresentLibraries||[]),
+        repositoryMissingLibraries:freezeList(input.designToolSync.repositoryMissingLibraries||[]),
+        nativeRuntimeVerified:false,
+        gameCapabilitiesOnly:true,
+        noShadowPipeline:true
+      }):null,
     buildUpDirectiveId: clean(input.buildUpDirectiveId||input.buildUpDirective?.directiveId) || null,
     buildUpGeneration: clampInt(input.buildUpGeneration??input.buildUpDirective?.generation??0,0,1000000),
     buildUpGoal: clean(input.buildUpGoal||input.buildUpDirective?.thisLoopPrimaryGoal) || null,
