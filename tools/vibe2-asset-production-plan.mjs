@@ -2316,7 +2316,15 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     'body':'human','humanoid':'human','character':'human',
     'animate':'animation','keyframes':'animation','motion-preview':'animation',
     'render-video':'video','movie':'video','cinematic':'video'};
-  const selected=aliases[taskModule]||taskModule;
+  const intentText=clean(task.goal||task.request).toLowerCase();
+  const selectedExplicit=aliases[taskModule]||taskModule;
+  const inferred=!selectedExplicit&&task.assetAuthoring?.automaticModuleSelection!==false
+    ?(/영상.?연출|시네마틱|cinematic|video.?render|영상.?렌더/i.test(intentText)?'video'
+      :/애니메이션.?제작|모션.?제작|animate.?model/i.test(intentText)?'animation'
+      :/의류.?제작|옷.?모델|garment/i.test(intentText)?'clothing'
+      :/오브젝트.?제작|3d.?object/i.test(intentText)?'object':null)
+    :null;
+  const selected=selectedExplicit||inferred||'';
   if(selected&&selected!=='auto'&&!Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,selected))
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
