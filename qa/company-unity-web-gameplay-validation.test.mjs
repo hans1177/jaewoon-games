@@ -413,3 +413,45 @@ test('실제 Unity 메시·원근·3축 깊이 검증식이 2D/2.5D와 평면 �
   assert.match(source,/pass:!performanceBlocked&&!visualBlocked&&!renderBudgetExceeded/);
   assert.match(source,/libraryAssetPromotionGranted:false/);
 });
+
+
+test('monster adventure uses the existing original 3D library as native Unity meshes, not gameplay primitives',()=>{
+  const editor=fs.readFileSync(new URL('../unity-games/monster-adventure/Assets/Editor/UnityWebFloorBuild.cs',import.meta.url),'utf8');
+  const runtime=fs.readFileSync(new URL('../unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs',import.meta.url),'utf8');
+  const artRoot=new URL('../unity-games/monster-adventure/Assets/Art/',import.meta.url);
+  const monsterModels=['flamefox','leafturtle','waterotter','boar','bat','bird','hornbull','rockgator','stormeagle'];
+  const environmentModels=['road_dirt','foundation_rect','chest','rock_medium','tree_trunk_thick','tree_crown_round','lamp'];
+  assert.match(editor,/BindLibraryAssets\(scene\);/);
+  assert.match(editor,/mesh\.SetTriangles\(partFaces\[i\],i\)/);
+  assert.match(editor,/mesh\.RecalculateNormals\(\)/);
+  assert.match(editor,/renderer\.sharedMaterials=assetMaterials/);
+  assert.match(editor,/UNITY_LIBRARY_MESH_NOT_VOLUMETRIC/);
+  assert.match(runtime,/UNITY_NATIVE_LIBRARY_MESH_UNBOUND/);
+  assert.match(runtime,/UNITY_NATIVE_LIBRARY_MATERIAL_MISSING/);
+  assert.match(runtime,/source=CANONICAL_IMPORTED_UNITY_MESH/);
+  assert.match(runtime,/source=CANONICAL_IMPORTED_UNITY_MESH models=/);
+  assert.match(runtime,/private const string SavePrefix = "monster_adventure_webfloor_"/);
+  assert.match(runtime,/BOOTSTRAP_ONLY_GAMEPLAY_NOT_IMPLEMENTED/);
+  assert.doesNotMatch(runtime,/GameObject\.CreatePrimitive\(/,'primitive world actors are not native library assets');
+  assert.doesNotMatch(runtime,/domain=(?:character|enemy|environment|equipment) status=PASS/,'studio asset quality needs browser proof');
+  for(const [paletteName,models] of [['monster-adventure',monsterModels],['survival-core-world',environmentModels]]){
+    const palette=fs.readFileSync(new URL(paletteName+'.mtl',artRoot),'utf8');
+    const materials=new Set([...palette.matchAll(/^newmtl\s+([A-Za-z0-9_]+)\s*$/gm)].map(x=>x[1]));
+    assert.ok(materials.size>=7,'native material palette must have meaningful source colors');
+    for(const model of models){
+      const src=fs.readFileSync(new URL(model+'.obj',artRoot),'utf8');
+      assert.match(src,/^mtllib\s+/m,'mesh must retain original library material lineage');
+      const vertexRows=[...src.matchAll(/^v\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/gm)];
+      const used=[...src.matchAll(/^usemtl\s+(\S+)/gm)].map(x=>x[1]);
+      const faces=[...src.matchAll(/^f\s+.+$/gm)];
+      assert.ok(vertexRows.length>=16&&faces.length>=16,'real mesh density required: '+model);
+      assert.ok(used.length>0&&used.every(name=>materials.has(name)),'the imported model has a real per-part palette: '+model);
+      for(let axis=0;axis<3;axis++){
+        const extrema=vertexRows.map(x=>Number(x[axis+1]));
+        const size=Math.max(...extrema)-Math.min(...extrema);
+        assert.ok(Number.isFinite(size)&&size>0.05,'nonplanar native asset required: '+model+' axis='+axis);
+      }
+      assert.ok(editor.includes('"'+model+'"'),'asset source must be used by the existing canonical scene generator: '+model);
+    }
+  }
+});
