@@ -30,9 +30,18 @@ const quaternion=(x,y,z)=>{
  const a=Math.cos(x/2),b=Math.sin(x/2),c=Math.cos(y/2),d=Math.sin(y/2),e=Math.cos(z/2),f=Math.sin(z/2);
  return [b*c*e-a*d*f,a*d*e+b*c*f,a*c*f-b*d*e,a*c*e+b*d*f];
 };
-export function buildSharedCreature(species='wolf',{extended=false}={}){
+// 일반/정예/보스는 다른 관절 연출을 쓰되 모든 전투 판정과 게임 규칙을 변경하지 않는다.
+export const SHARED_CREATURE_TIER_ACTIONS=Object.freeze({
+  NORMAL:Object.freeze([]),
+  ELITE:Object.freeze(['ELITE_THREAT','ELITE_BRACE','ELITE_ATTACK_READ','ELITE_COUNTER_LEAD']),
+  BOSS:Object.freeze(['BOSS_INTRO_POSE','BOSS_PHASE_POSE','BOSS_EXHAUSTED_POSE','BOSS_SIGNATURE_TELL','BOSS_RECOVERY_SIGNATURE'])
+});
+export function buildSharedCreature(species='wolf',{extended=false,tier='NORMAL'}={}){
  const id=String(species).toLowerCase(),cfg=SHARED_CREATURE_SPECIES[id];
  if(!cfg)throw Error('UNKNOWN_SHARED_CREATURE:'+id);
+ const selectedTier=String(tier||'NORMAL').toUpperCase();
+ if(!SHARED_CREATURE_TIER_ACTIONS[selectedTier])throw Error('UNKNOWN_SHARED_CREATURE_TIER:'+selectedTier);
+ if(selectedTier!=='NORMAL'&&!extended)throw Error('TIER_AUTHORING_REQUIRES_BASE_ACTIONS');
  const joints=[],world=[],addJoint=(name,parent,position)=>{
    const k=joints.length;joints.push({name,parent,position});
    world.push(parent<0?position:add(world[parent],position));return k;
@@ -119,7 +128,8 @@ export function buildSharedCreature(species='wolf',{extended=false}={}){
    }else pipe(i%2?1:0,k,center,add(center,[0,0,.31]),Math.max(.04,.29-i*.017),Math.max(.03,.27-i*.018),12);
  }
  const extraClips=extended?SHARED_CREATURE_ACTION_LIBRARY[id]:[];
- const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature,...extraClips];
+ const tierClips=SHARED_CREATURE_TIER_ACTIONS[selectedTier].map(role=>id.toUpperCase()+'_'+role);
+ const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature,...extraClips,...tierClips];
  function pose(clip,t){
    const a=t*Math.PI*2,locomotion=clip==='WALK'||clip==='RUN',fast=clip==='RUN';
    const wind=pulse(t,.26,.18),contact=pulse(t,.57,.17),rebound=pulse(t,.78,.15);
@@ -250,6 +260,46 @@ export function buildSharedCreature(species='wolf',{extended=false}={}){
      if(id==='serpent')angles[tail][1]+=.47*side*act;
      if(id==='spider')angles[head][1]+=.23*side*act;
    }
+   // 체형 공용 기본모션→종족 특유 관절→정예·보스 위협·페이즈 연출을 같은 스킨에 굽는다.
+   const tierMode=tierClips.indexOf(clip);
+   if(tierMode>=0){
+     const boss=selectedTier==='BOSS',side=tierMode%2===0?1:-1,
+       read=pulse(t,boss?.32:.23,.18),act=pulse(t,boss?.63:.56,.19),hold=Math.sin(Math.PI*t),
+       release=pulse(t,.82,.16),a2=Math.sin(a*1.6);
+     const profiles=boss?[
+       [-.59,.23,-.48,.36,.15],[-.43,.56,-.28,.49,.34],
+       [.30,-.22,-.21,.15,-.28],[-.54,.65,-.58,.72,.51],
+       [.26,-.30,.31,-.21,-.36]
+     ]:[
+       [-.28,.41,-.37,.36,.27],[-.37,.18,-.29,.24,-.32],
+       [-.46,.54,-.25,.62,.44],[-.19,.46,-.34,.57,-.26]
+     ];
+     const profile=profiles[tierMode],weight=boss?1.2:1;
+     angles[torso]=[weight*(profile[0]*read+profile[1]*act),side*(.29*read-.21*act),side*(.17*hold-.13*release)];
+     angles[head]=[weight*(profile[2]*read+profile[3]*act),side*.16*a2,-side*.11*read];
+     angles[jaw]=[-.31*read+.58*act,0,side*.11*act];
+     angles[tail]=[profile[4]*hold,.39*side*(hold-act),.07*a2];
+     if(tierMode===0||tierMode===1){angles[torso][0]-=.25*hold;angles[head][0]-=.22*hold;}
+     if(tierMode===2){angles[torso][0]+=.31*release;angles[head][0]+=.24*release;}
+     for(const leg of legs){
+       const phase=pulse(t,.50+leg.p*.022,.19),front=leg.p===0?1:.62;
+       angles[leg.hip]=[-.29*read*front+.42*act*front,side*leg.side*(.18*read-.24*act),.12*leg.side*hold];
+       angles[leg.knee]=[.15*hold+.35*phase*front,0,0];
+       angles[leg.foot]=[-.13*act,.07*a2,.06*side*leg.side*act];
+       if(boss&&tierMode===1){angles[leg.hip][0]-=.22*read;angles[leg.knee][0]+=.18*act;}
+     }
+     for(let index=0;index<extras.length;index++){
+       const limb=extras[index],phase=pulse(t,.56+index*.023,.17),sign=index%2===0?1:-1;
+       angles[limb]=[-.29*read+.53*phase*sign,.31*side*hold-.24*act,.12*Math.sin(a-index*.28)];
+       if(id==='serpent')angles[limb]=[.09*Math.sin(a-index*.24),.34*Math.sin(a*1.4-index*.46)+side*.22*act,.12*Math.sin(a-index*.3)];
+       if(id==='golem')angles[limb]=[-.46*read+.55*act,sign*(.20*read-.24*act),sign*.14*hold];
+     }
+     if(id==='wolf')angles[head][0]-=.25*read;
+     if(id==='spider')angles[tail][0]+=.22*act;
+     if(id==='beetle')angles[jaw][0]-=.39*read;
+     if(id==='golem')angles[torso][0]+=.30*act;
+     if(id==='serpent')angles[tail][1]+=.43*side*act;
+   }
    return angles;
  }
  const doc={asset:{version:'2.0',generator:'Jaewoon shared GRAPHICS_PRODUCTION creature'},
@@ -318,11 +368,15 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   const wanted=arg?arg.slice(10).split(',').map(x=>x.trim()).filter(Boolean):Object.keys(SHARED_CREATURE_SPECIES);
   const targetArg=process.argv.slice(2).find(x=>!x.startsWith('--'));
   const targetDir=path.resolve(targetArg||'assets/shared');
-  const extended=process.argv.includes('--extended-actions');
+  const tierArg=process.argv.find(x=>x.startsWith('--tier='));
+  const tier=tierArg?tierArg.slice(7).toUpperCase():'NORMAL';
+  const extended=process.argv.includes('--extended-actions')||tier!=='NORMAL';
   if(!wanted.length)throw Error('NO_CREATURE_SPECIES_REQUESTED');
   fs.mkdirSync(targetDir,{recursive:true});
   for(const id of new Set(wanted)){
-    const actor=buildSharedCreature(id,{extended}),file=path.join(targetDir,'creature-'+id+(extended?'-actions':'')+'.glb');
+    const actor=buildSharedCreature(id,{extended,tier}),
+      suffix=tier!=='NORMAL'?'-'+tier.toLowerCase()+'-actions':extended?'-actions':'',
+      file=path.join(targetDir,'creature-'+id+suffix+'.glb');
     fs.writeFileSync(file,actor.bytes);
     console.log(JSON.stringify({file,bodyPlan:actor.bodyPlan,triangles:actor.triangles,skinnedJoints:actor.jointCount,clips:actor.clipNames,nativeRuntimeVerified:false}));
   }
