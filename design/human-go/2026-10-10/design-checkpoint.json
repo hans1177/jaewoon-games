@@ -3,246 +3,31 @@
   "gameId": "human-go",
   "date": "2026-10-10",
   "seedId": "OWNER-FULL-REBUILD-HUMAN-GO-20260916",
-  "fingerprint": "bbb13b63fb0797f272515755e4e22b87738dffc057371828cec31f857f360b8b",
+  "fingerprint": "d55c2e28e25bd9550eb38526f578596724bb1dfc1f847ccd7ac29d05e680ac99",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441:identity,creativeGrammar": {
-      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Explore a compact activity space and discover a person, task or collectible opportunity.",
-        "a": {
-          "system": "Social Interaction",
-          "material": "A mysterious figure with an unknown purpose appears in the forest at dawn.",
-          "materialDomain": "Person",
-          "stateChange": "Player discovers a hidden room behind the tree."
-        },
-        "b": {
-          "system": "Resource Management",
-          "material": "A glowing crystal emits light when touched.",
-          "materialDomain": "Collectible",
-          "stateChange": "Player gains access to a secret map of the world."
-        },
-        "abCausality": "The figure's presence changes the environment, affecting resource availability and social interactions.",
-        "abEvolution": {
-          "aChangesB": "The figure becomes more elusive as the player progresses.",
-          "bChangesA": "The crystal starts to glow brighter when the player makes a choice.",
-          "lateGameChange": "The figure transforms into a guardian that must be confronted for survival."
-        },
-        "materialFusion": {
-          "contrast": "The figure is both a guide and a threat, influencing the player's decisions and environment.",
-          "causalBridge": "The figure's actions create new opportunities and risks, altering the game state dynamically.",
-          "removalConsequence": "If the figure is removed, the player loses access to critical information and resources."
-        },
-        "storyCausalChain": {
-          "cause": "Player discovers the figure in the forest at dawn.",
-          "characterConflict": "The figure seems to know something about the player’s intentions.",
-          "playerChoice": "Player decides whether to follow the figure or leave it behind.",
-          "worldChange": "The figure disappears, leaving behind a mysterious map of the world with hidden paths and dangers.",
-          "nextEvent": "Player must navigate the map while avoiding traps and confronting guardians."
-        },
-        "cThemes": [
-          {
-            "name": "Mystery",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player gains insight into the nature of reality."
-          },
-          {
-            "name": "Survival",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player learns how to survive in an unpredictable world."
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Social Interaction",
-            "gameplayEffect": "Player forms relationships that influence the environment."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Resource Management",
-            "gameplayEffect": "Player manages limited resources as they progress through the game."
-          }
-        ],
-        "cGenreInterlock": "The social interactions and resource management create new opportunities for exploration and conflict, altering the gameplay dynamically.",
-        "cWorldAndGameplayEffect": "The game state changes based on the player's choices, creating a dynamic and evolving experience.",
-        "delveDiscoveries": [
-          {
-            "clue": "A glowing crystal emits light when touched.",
-            "discovery": "Player gains access to a secret map of the world with hidden paths and dangers.",
-            "newChoice": "Player decides whether to follow the figure or leave it behind."
-          },
-          {
-            "clue": "The figure seems to know something about the player’s intentions.",
-            "discovery": "Player discovers the nature of reality and the rules governing the world.",
-            "newChoice": "Player chooses to either trust the figure or seek knowledge alone."
-          },
-          {
-            "clue": "The figure disappears after the player makes a choice.",
-            "discovery": "Player learns how to survive in an unpredictable world.",
-            "newChoice": "Player must navigate the map while avoiding traps and confronting guardians."
-          },
-          {
-            "clue": "The figure transforms into a guardian that must be confronted for survival.",
-            "discovery": "Player understands the true nature of the world and its inhabitants.",
-            "newChoice": "Player faces the guardian and must choose between survival or enlightenment."
-          }
-        ],
-        "delveGrowthRule": "Each discovery adds new opportunities, risks, and choices, shaping the game state dynamically.",
-        "finalGameIdentity": "A dynamic and evolving experience where players discover their place in a mysterious world filled with challenges and relationships."
-      }
-    },
-    "local_authoring_parts::5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 가벼운 사회적 상호작용과 수집을 통해 자연 속에서 단순한 활동 공간을 탐험하며, 그 주변에 숨겨진 기회와 의미를 발견하는 과정을 거쳐 성장합니다.",
-      "coreFun": "{\"identity\": \"사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.\", \"creativeGrammar\": {\"mainIdentity\": \"Explore a compact activity space and discover a person, task or collectible opportunity.\"}, \"a\": {\"system\": \"Social Interaction\", \"material\": \"A mysterious figure with an unknown purpose appears in the forest at dawn.\", \"materialDomain\": \"Person\", \"stateChange\": \"Player discovers a hidden room behind the tree.\"}, \"b\": {\"system\": \"Resource Management\", \"material\": \"A glowing crystal emits light when touched.\", \"materialDomain\": \"Collectible\", \"stateChange\": \"Player gains access to a secret map of the world.\"}, \"abCausality\": \"The figure's presence changes the environment, affecting resource availability and social interactions.\", \"abEvolution\": {\"aChangesB\": \"The figure becomes more elusive as the player progresses.\", \"bChangesA\": \"The crystal starts to glow brighter whenthe"
-    },
-    "local_authoring_parts::a183d8a6cde61e93c20ddab101434d4536bb26a13caa444cef3639060f3ca34c:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Explore a compact activity space and discover a person, task or collectible opportunity.",
-        "a": {
-          "system": "Social Interaction",
-          "material": "A mysterious figure with an unknown purpose appears in the forest at dawn.",
-          "materialDomain": "Person",
-          "stateChange": "Player discovers a hidden room behind the tree."
-        },
-        "b": {
-          "system": "Resource Management",
-          "material": "A glowing crystal emits light when touched.",
-          "materialDomain": "Collectible",
-          "stateChange": "Player gains access to a secret map of the world."
-        },
-        "abCausality": "The figure's presence changes the environment, affecting resource availability and social interactions.",
-        "abEvolution": {
-          "aChangesB": "The figure becomes more elusive as the player progresses.",
-          "bChangesA": "The crystal starts to glow brighter when the player makes a choice.",
-          "lateGameChange": "The figure transforms into a guardian that must be confronted for survival."
-        },
-        "materialFusion": {
-          "contrast": "The figure is both a guide and a threat, influencing the player's decisions and environment.",
-          "causalBridge": "The figure's actions create new opportunities and risks, altering the game state dynamically.",
-          "removalConsequence": "If the figure is removed, the player loses access to critical information and resources."
-        },
-        "storyCausalChain": {
-          "cause": "Player discovers the figure in the forest at dawn.",
-          "characterConflict": "The figure seems to know something about the player’s intentions.",
-          "playerChoice": "Player decides whether to follow the figure or leave it behind.",
-          "worldChange": "The figure disappears, leaving behind a mysterious map of the world with hidden paths and dangers.",
-          "nextEvent": "Player must navigate the map while avoiding traps and confronting guardians."
-        },
-        "cThemes": [
-          {
-            "name": "Mystery",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player gains insight into the nature of reality."
-          },
-          {
-            "name": "Survival",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player learns how to survive in an unpredictable world."
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Social Interaction",
-            "gameplayEffect": "Player forms relationships that influence the environment."
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Resource Management",
-            "gameplayEffect": "Player manages limited resources as they progress through the game."
-          }
-        ],
-        "cGenreInterlock": "The social interactions and resource management create new opportunities for exploration and conflict, altering the gameplay dynamically.",
-        "cWorldAndGameplayEffect": "The game state changes based on the player's choices, creating a dynamic and evolving experience.",
-        "delveDiscoveries": [
-          {
-            "clue": "A glowing crystal emits light when touched.",
-            "discovery": "Player gains access to a secret map of the world with hidden paths and dangers.",
-            "newChoice": "Player decides whether to follow the figure or leave it behind."
-          },
-          {
-            "clue": "The figure seems to know something about the player’s intentions.",
-            "discovery": "Player discovers the nature of reality and the rules governing the world.",
-            "newChoice": "Player chooses to either trust the figure or seek knowledge alone."
-          },
-          {
-            "clue": "The figure disappears after the player makes a choice.",
-            "discovery": "Player learns how to survive in an unpredictable world.",
-            "newChoice": "Player must navigate the map while avoiding traps and confronting guardians."
-          },
-          {
-            "clue": "The figure transforms into a guardian that must be confronted for survival.",
-            "discovery": "Player understands the true nature of the world and its inhabitants.",
-            "newChoice": "Player faces the guardian and must choose between survival or enlightenment."
-          }
-        ],
-        "delveGrowthRule": "Each discovery adds new opportunities, risks, and choices, shaping the game state dynamically.",
-        "finalGameIdentity": "A dynamic and evolving experience where players discover their place in a mysterious world filled with challenges and relationships."
-      },
-      "playerFantasy": "플레이어는 가벼운 사회적 상호작용과 수집을 통해 자연 속에서 단순한 활동 공간을 탐험하며, 그 주변에 숨겨진 기회와 의미를 발견하는 과정을 거쳐 성장합니다.",
-      "coreFun": "{\"identity\": \"사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.\", \"creativeGrammar\": {\"mainIdentity\": \"Explore a compact activity space and discover a person, task or collectible opportunity.\"}, \"a\": {\"system\": \"Social Interaction\", \"material\": \"A mysterious figure with an unknown purpose appears in the forest at dawn.\", \"materialDomain\": \"Person\", \"stateChange\": \"Player discovers a hidden room behind the tree.\"}, \"b\": {\"system\": \"Resource Management\", \"material\": \"A glowing crystal emits light when touched.\", \"materialDomain\": \"Collectible\", \"stateChange\": \"Player gains access to a secret map of the world.\"}, \"abCausality\": \"The figure's presence changes the environment, affecting resource availability and social interactions.\", \"abEvolution\": {\"aChangesB\": \"The figure becomes more elusive as the player progresses.\", \"bChangesA\": \"The crystal starts to glow brighter whenthe"
-    },
-    "local_authoring_parts::86a0088b83775b257ed9887777a34d51ccd949abcae12fb7c83ed1b669658516:coreLoop": {
-      "coreLoop": [
-        "INPUT -> STATE CHANGE -> REWARD/RISE/NEXT CHOICE",
-        "PLAYER DISCOVERS FIGURE IN FOREST AT DAWN",
-        "FIGURE'S PRESENCE CHANGES ENVIRONMENT, AFFECTING RESOURCE AVAILABILITY AND SOCIAL INTERACTIONS",
-        "PLAYER GAINS ACCESS TO SECRET MAP OF THE WORLD WITH HIDDEN PATHS AND DANGERS",
-        "MAP TAKES FORM AS PLAYER PROGRESSES, NEW OPPORTUNITIES AND RISKS APPEAR"
-      ]
-    },
-    "local_authoring_parts::686f603973e7e25bb9d16e3a92d2bb4f61e42450493420d04f6cd7444cbb2831:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "PLAYER DISCOVERS FIGURE IN FOREST AT DAWN",
-        "FIGURE'S PRESENCE CHANGES ENVIRONMENT, AFFECTING RESOURCE AVAILABILITY AND SOCIO"
-      ],
-      "stateOutputs": [
-        "PLAYER GAINS ACCESS TO SECRET MAP OF THE WORLD WITH HIDDEN PATHS AND DANGERS",
-        "MAP TAKES FORM AS PLAYER PROGRESSES, NEW OPPORTUNITIES AND RISKS APPEAR"
-      ],
-      "name": "Essential Discovery Loop",
-      "purpose": "A dynamic and evolving experience where players discover their place in a mysterious world filled with challenges and relationships.",
-      "playerChoice": "Player decides whether to follow the figure or leave it behind."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 105,
-      "successes": 104,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2612790,
-      "lastMs": 16697,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:36:49.208Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T05:53:16.163Z",
-  "updatedAt": "2026-10-10T06:36:49.210Z",
+  "createdAt": "2026-10-10T08:33:16.266Z",
+  "updatedAt": "2026-10-10T08:33:16.374Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -283,10 +68,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -678,14 +465,13 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-codex-screen",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "new",
-                "complete"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -720,8 +506,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -762,10 +548,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1157,14 +945,13 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-codex-screen",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "new",
-                "complete"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1199,8 +986,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1241,10 +1028,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1636,14 +1425,13 @@
           {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-codex-screen",
+            "assetId": "roblox-common-ui-character-detail-screen",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "new",
-                "complete"
+                "progress"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1700,18 +1488,17 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-codex-screen": {
+      "roblox-common-ui-character-detail-screen": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "new",
-            "complete"
+            "progress"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "CODEX_SCREEN",
+        "role": "CHARACTER_DETAIL_SCREEN",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1744,35 +1531,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::686f603973e7e25bb9d16e3a92d2bb4f61e42450493420d04f6cd7444cbb2831:signatureSystems:1:68dcbad06aa63cfa": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::686f603973e7e25bb9d16e3a92d2bb4f61e42450493420d04f6cd7444cbb2831:signatureSystems:1:68dcbad06aa63cfa": 100
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:36:49.208Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
