@@ -595,26 +595,34 @@
       "fromSystem": "로드",
       "toSystem": "감염 전환 시스템",
       "trigger": "인간4/몬스터4 배정 및 빈자리 AI 충원 -> 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
-      "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공"
+      "stateChange": "인간4/몬스터4 배정 및 빈자리 AI 충원 시 감염 공격 실행, 감염 상태 전환 후 정화 공격 재발, 인물/몬스터 선택 기회 제공",
+      "fromId": "main_road",
+      "toId": "delve_road",
+      "stateKeys": [
+        "폐놀이공원"
+      ]
+    },
+    "local_authoring_parts::a0c658c2b1eece34ff5265559cf2cb70e9237af51e73d5d1416b992a2b574fe3:fromSystem": {
+      "fromSystem": "로드 전환 시스템"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 29,
+      "calls": 30,
+      "successes": 30,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 554902,
-      "lastMs": 10615,
+      "totalMs": 587458,
+      "lastMs": 32556,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:43:36.172Z"
+      "updatedAt": "2026-10-10T09:44:08.730Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:43:36.173Z",
+  "updatedAt": "2026-10-10T09:44:08.730Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1946,7 +1954,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:43:36.173Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:44:08.730Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
