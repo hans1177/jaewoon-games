@@ -194,25 +194,40 @@
         "DEFENDER POSITION → ENEMY THREAT → ADAPTIVE RESPONSE → NEW DEFENSE DECISION",
         "TACTICAL FLEXIBILITY → WORLD STATE EVOLUTION → PLAYSTYLE SHIFT"
       ]
+    },
+    "local_authoring_parts::3d6f1da39a5b9b4586106faa5fe1b9752f8084e557fd637bf9accad3c4248672:signatureSystems:0": {
+      "id": "defender_position_to_enemy_threat",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "incoming wave threat",
+        "defender position"
+      ],
+      "stateOutputs": [
+        "adaptive defensive posture adjustment",
+        "new defensive strategy implementation"
+      ],
+      "name": "Defender Position → Enemy Threat",
+      "purpose": "Establish the causal link between defender positioning and enemy behavior adaptation",
+      "playerChoice": "Implement new defensive strategy based on adaptive response to evolving threats"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 553339,
-      "lastMs": 56800,
+      "totalMs": 652022,
+      "lastMs": 98683,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:25:37.814Z"
+      "updatedAt": "2026-10-10T02:27:16.500Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:16:24.448Z",
-  "updatedAt": "2026-10-10T02:25:37.814Z",
+  "updatedAt": "2026-10-10T02:27:16.500Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1888,7 +1903,7 @@
   "localAuthoringSplits": {
     "c91068217ffdac6acace458dfcb753805539a5fabd5efc1dea48c05e38a4be3d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:25:37.814Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:27:16.500Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
