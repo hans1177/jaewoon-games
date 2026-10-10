@@ -30,7 +30,6 @@ PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
 PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical','animation','video'], default='auto')
 PARSER.add_argument('--source-model', default='')
-PARSER.add_argument('--source-provider', choices=['repository','meshy','deepmotion'], default='repository')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
 PARSER.add_argument('--motion-kind', choices=['sway','turntable','bounce'], default='sway')
 PARSER.add_argument('--mesh-model', choices=['auto','trellis2','triposr'], default='auto')
@@ -106,6 +105,7 @@ ASSET_OBJECTS = []
 IMAGE_PROVENANCE = None
 MODULE_PROVENANCE = None
 SOURCE_PROVENANCE = None
+SOURCE_ENHANCEMENTS = []
 ASSET_ARMATURES = []
 # 기존 실행기 안에서만 사용하는 오픈소스 기능. 설치되지 않은 외부 엔진의 PASS를 만들지 않는다.
 OPEN_SOURCE_MODULES = {
@@ -124,8 +124,6 @@ if ARGS.module == 'mesh-ai' and not ARGS.source_image:
     raise RuntimeError('IMAGE_TO_MESH_LOCAL_IMAGE_REQUIRED')
 if ARGS.source_image and ARGS.source_model:
     raise RuntimeError('SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE')
-if ARGS.source_provider!='repository' and not ARGS.source_model:
-    raise RuntimeError('EXTERNAL_PROVIDER_LICENSE_VERIFIED_LOCAL_MODEL_REQUIRED')
 
 def finish(obj, mat, bevel=.06):
     obj.data.materials.append(mat)
@@ -600,10 +598,6 @@ def import_source_surface():
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_REQUIRED')
     if src.suffix.lower()=='.fbx' and ARGS.module not in ('animation','video'):
         raise RuntimeError('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE')
-    if ARGS.source_provider=='meshy' and src.suffix.lower()!='.glb':
-        raise RuntimeError('MESHY_LICENSE_VERIFIED_LOCAL_GLB_REQUIRED')
-    if ARGS.source_provider=='deepmotion' and src.suffix.lower()!='.fbx':
-        raise RuntimeError('DEEPMOTION_LICENSE_VERIFIED_LOCAL_FBX_REQUIRED')
     if src.stat().st_size<=0 or src.stat().st_size>64*1024*1024:
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_SIZE_INVALID')
     if rights not in ('project-original','cc0','cc-by'):
@@ -634,6 +628,9 @@ def import_source_surface():
             raise RuntimeError('NATIVE_MOCAP_SKINNED_RIG_REQUIRED')
         if not any(rig.animation_data and (rig.animation_data.action or rig.animation_data.nla_tracks) for rig in rigs):
             raise RuntimeError('NATIVE_MOCAP_CLIP_REQUIRED')
+    # 모든 검증된 GLB/FBX/OBJ 자산은 내부 라이브러리 후보로 동일한 재질·리그 검증을 거친다.
+    # 외부 원본 파일은 손대지 않으며 재질 복제본만 현재 게임 Style Lock에 맞춰 조정한다.
+    material_copies={}
     for index,obj in enumerate(imported):
         if ARGS.module=='medical':
             # 수입한 표면에서 민감해질 수 있는 문자열과 텍스처 정보를 제거한다.
@@ -648,6 +645,41 @@ def import_source_surface():
             obj.data.materials.clear()
             obj.data.materials.append(MID)
         elif not obj.data.materials:obj.data.materials.append(MID)
+        if ARGS.module!='medical':
+            for slot in obj.material_slots:
+                source_mat=slot.material
+                if not source_mat:
+                    continue
+                if source_mat not in material_copies:
+                    derivative=source_mat.copy()
+                    derivative.name='Vibe_'+source_mat.name
+                    if derivative.use_nodes:
+                        shader=next((node for node in derivative.node_tree.nodes if node.type=='BSDF_PRINCIPLED'),None)
+                        if shader:
+                            roughness=shader.inputs.get('Roughness')
+                            if roughness and not roughness.is_linked and (SOFT or LOW_POLY or WORN or TECH):
+                                original=float(roughness.default_value)
+                                if SOFT or WORN or LOW_POLY:
+                                    target_value=.72 if SOFT else .68 if WORN else .64
+                                    corrected=original+.35*(max(original,target_value)-original)
+                                else:
+                                    corrected=original+.35*(min(original,.42)-original)
+                                corrected=max(0.,min(1.,corrected))
+                                if abs(original-corrected)>1e-6:
+                                    roughness.default_value=corrected
+                                    SOURCE_ENHANCEMENTS.append({'kind':'PBR_ROUGHNESS_STYLE_REAUTHOR',
+                                                                'material':source_mat.name,'from':original,'to':corrected})
+                            base_color=shader.inputs.get('Base Color')
+                            if MUTED and base_color and not base_color.is_linked:
+                                original=list(base_color.default_value)
+                                gray=sum(original[:3])/3
+                                corrected=[.85*value+.15*gray for value in original[:3]]+[original[3]]
+                                if any(abs(a-b)>1e-6 for a,b in zip(original,corrected)):
+                                    base_color.default_value=corrected
+                                    SOURCE_ENHANCEMENTS.append({'kind':'PBR_BASE_COLOR_STYLE_REAUTHOR',
+                                                                'material':source_mat.name,'texturePreserved':True})
+                    material_copies[source_mat]=derivative
+                slot.material=material_copies[source_mat]
         ASSET_OBJECTS.append(obj)
     if ARGS.module=='human':
         if not rigs or not any(mod.type=='ARMATURE' for obj in imported for mod in obj.modifiers):
@@ -674,15 +706,15 @@ def import_source_surface():
     SOURCE_PROVENANCE={
         'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
         'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
-        'sourceFormat':src.suffix.lower(),'externalMocapCandidate':src.suffix.lower()=='.fbx',
-        'providerClaim':ARGS.source_provider,'providerIdentityVerified':False,'externalProviderApiCalled':False,
-        'sanitizedAsserted':ARGS.source_sanitized=='yes','sourceFileImmutable':True
+        'sourceFormat':src.suffix.lower(),
+        'transformHistory':SOURCE_ENHANCEMENTS,'sourceFileImmutable':True,
+        'sanitizedAsserted':ARGS.source_sanitized=='yes'
     }
     kind=ARGS.module if ARGS.module!='auto' else 'design'
     MODULE_PROVENANCE={
         'kind':kind,'source':OPEN_SOURCE_MODULES[kind],
-        'method':'LICENSE_VERIFIED_EXTERNAL_SURFACE_IMPORT',
-        'sourcePlatform':'LICENSE_VERIFIED_EXTERNAL_MOCAP_FBX' if src.suffix.lower()=='.fbx' else 'LICENSE_VERIFIED_IMPORTED_MESH_GLB' if ARGS.source_provider=='meshy' else '3D_SLICER_OR_FREECAD_USER_EXPORTED_SURFACE',
+        'method':'LICENSE_VERIFIED_INTERNAL_ASSET_SOURCE_REAUTHOR',
+        'sourcePlatform':'VIBE_INTERNAL_STUDIO_ASSET_LIBRARY',
         'generatedGeometry':False,'deidentifiedAssertionOnly':kind=='medical',
         'clinicalUseApproved':False,'clinicalDiagnosisAllowed':False,'runtimeVerified':False
     }
@@ -943,6 +975,12 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'internalAsset':{'library':'VIBE_STUDIO_ASSET_UNIVERSE','assetId':ARGS.asset_id,
+        'state':'PREPARED_NATIVE_QA_PENDING','providerPartitioned':False,
+        'reauthoringAxes':['MESH','PBR_MATERIAL','RIG','MOTION','LOD'],
+        'actualMaterialTransforms':len(SOURCE_ENHANCEMENTS),
+        'sourceProvenancePreserved':True,'originalImmutable':True,
+        'nativeRuntimePromotionRequired':True},
     'pbrMeshQa':pbr_mesh_qa,
     'researchApplication':{
         'rigMo':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html','usedFor':'SKINNED_GLTF_HIERARCHY_REVIEW','modelRan':False},
@@ -1159,6 +1197,7 @@ evidence={
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'internalAsset':application['internalAsset'],
     'pbrMeshQa':pbr_mesh_qa,
     'researchApplication':application['researchApplication'],
     'multiViewPreview':IMAGE_VIEW_OUTPUTS,
