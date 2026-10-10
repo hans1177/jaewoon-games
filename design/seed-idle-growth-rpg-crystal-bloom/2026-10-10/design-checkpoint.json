@@ -1275,25 +1275,28 @@
         "GAME_WORLD",
         "EVENT"
       ]
+    },
+    "local_authoring_parts::1de31ee67d4df5b4e83e128166b37d74ccd728ad2199fbd588382b5d7f9219e1:fromSystem": {
+      "fromSystem": "시스템 연결 루프"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 93,
-      "successes": 92,
+      "calls": 94,
+      "successes": 93,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 5578258,
-      "lastMs": 33247,
+      "totalMs": 5608693,
+      "lastMs": 30435,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:09:24.268Z"
+      "updatedAt": "2026-10-10T01:09:54.704Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:27:10.771Z",
-  "updatedAt": "2026-10-10T01:09:24.268Z",
+  "updatedAt": "2026-10-10T01:09:54.704Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -3324,7 +3327,7 @@
   "localAuthoringSplits": {
     "e46a86a051b7b57c14c9c67911ac6cdebaa7fb3d4b912f5d68c1ebef1884f549": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:09:24.268Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:09:54.704Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
