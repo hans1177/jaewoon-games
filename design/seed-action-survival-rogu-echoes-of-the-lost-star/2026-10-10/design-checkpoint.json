@@ -194,25 +194,38 @@
         "INPUT: ENTROPY_LEVEL_DISTRIBUTION → STATE_CHANGE: RISK_VERSUS_SAFETY_DECISION → REWARD: ENERGY_CONSUMPTION_OPTIMIZATION",
         "INPUT: MEAR_FRAGMENT_COLLECTION → STATE_CHANGE: REAL_TIME_ATTACK_DEFENSE_EFFECTS → REWARD: GAME_IDENTITY_DERIVED_FROM_CORE_LOOP_AND_SIGNATURE_SYSTEMS"
       ]
+    },
+    "local_authoring_parts::fb8ca0603350a9278f46d583dc44db2c0527bf37710aef071567800ff1d30fd5:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "MEAR_FRAGMENT_COLLECTION"
+      ],
+      "stateOutputs": [
+        "ENERGY_CONSUMPTION_OPTIMIZATION"
+      ],
+      "name": "메아리 공명 시스템",
+      "purpose": "전투 중 실시간으로 플레이어의 공격 방식과 유틸리티 능력을 변화시켜 매번 다른 전투 경험을 제공하기 위함입니다.",
+      "playerChoice": "플레이어는 획득한 파편을 사용하여 공격 속도 증가, 투사체 분열, 광역 피해 등 다양한 메아리 효과 중 하나를 선택하여 자신의 빌드를 최적화합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 574659,
-      "lastMs": 22836,
+      "totalMs": 616933,
+      "lastMs": 42274,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:48:40.230Z"
+      "updatedAt": "2026-10-10T09:49:22.505Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:39:05.544Z",
-  "updatedAt": "2026-10-10T09:48:40.230Z",
+  "updatedAt": "2026-10-10T09:49:22.505Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1555,8 +1568,8 @@
   "localAuthoringSplits": {
     "039d0e54e3b3f93c27c2b1eb7a19d10e66ae69e36161373c0dcb804ed3d38ee5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:48:40.230Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:49:22.505Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
