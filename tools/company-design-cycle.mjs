@@ -1443,8 +1443,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             // 반복해서 완전히 동일한 무효 응답을 생성하면 현재 호출만 중단하고 체크포인트를 보존한다.
             // 정식 다음 실행에서 재시도하므로 장기 반복 설계 횟수에는 제한을 두지 않는다.
             const failedContent=createHash('sha256').update(JSON.stringify({
-              name:value.name,purpose:value.purpose,playerChoice:value.playerChoice,
-              stateInputs:value.stateInputs,stateOutputs:value.stateOutputs,issues:roleIssues
+              grammarRole,unresolvedIssues:[...new Set(roleIssues)].sort()
             })).digest('hex');
             repeatedFailedRoleContent=failedContent===lastFailedRoleContent?repeatedFailedRoleContent+1:1;
             lastFailedRoleContent=failedContent;

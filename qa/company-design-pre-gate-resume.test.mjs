@@ -1397,6 +1397,40 @@ test('V5 focused handoff repair keeps unique authored role states',async()=>{
 });
 
 // 메인: V5 시스템은 기존 상태를 연결하고 자체 상태를 추가할 수 있어야 한다.
+// 검증: 문장만 달라지고 동일한 V5 역할 실패가 세 번 계속되면 현재 실행을 닫고 다음 체크포인트에서 다시 시도한다.
+test('V5 no-progress stops repeated invalid role replies',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const checkpoint={tasks:{}},calls=[];
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:['MAIN','A','B','DELVE']},
+    name:{type:'string'},purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},
+    stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
+  const author=runInNewContext(taskSource+'\n'+source+'\ncallLocalDesignerModel',{
+    seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
+    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    gameId:'no-progress',game:{name:'무한 반복 회귀'},
+    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'원본 인과 규칙',CORE_LOOP:['행동','변화','선택'],OWNER_LATEST_DESIGN_REQUEST:'원본 보존'},
+    clip:(v,n)=>String(typeof v==='string'?v:JSON.stringify(v)??'').slice(0,n),
+    designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:v=>String(v??'').trim(),
+    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
+    recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(_, {schema:s})=>{
+      const role=s.properties.grammarRole.enum[0],index=calls.length+1;calls.push(role);
+      return JSON.stringify({id:'main_unique_rule',grammarRole:role,name:'Repeated '+index,
+        purpose:'원본 게임의 상태 전이가 아니라 문장을 반복 '+index,
+        playerChoice:'상태 이름을 다시 설명하는 잘못된 응답 '+index,
+        stateInputs:['incoming wave pattern analysis'],stateOutputs:['unbound response state']});
+    }
+  });
+  await assert.rejects(()=>author('designer','원본 실제 상태',schema,{predict:900,includeAssetContext:false}),/DESIGN_GRAMMAR_NO_PROGRESS/);
+  assert.deepEqual(calls,['MAIN','MAIN','MAIN']);
+  assert.equal(Object.keys(checkpoint.tasks).length,0);
+});
+
 test('V5 designer state handoffs are schema-constrained and require distinct authored roles',()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   assert.match(source,/if\(roleHandoff\)\{/);
