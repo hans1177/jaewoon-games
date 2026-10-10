@@ -233,21 +233,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 53,
-      "successes": 52,
+      "calls": 54,
+      "successes": 53,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2445795,
-      "lastMs": 36551,
+      "totalMs": 2485266,
+      "lastMs": 39471,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:29:25.694Z"
+      "updatedAt": "2026-10-10T07:30:05.167Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:39.762Z",
-  "updatedAt": "2026-10-10T07:29:25.695Z",
+  "updatedAt": "2026-10-10T07:30:05.168Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1969,19 +1969,35 @@
           "main_arena_selection",
           "a_arena_selection"
         ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "main_arena_selection",
+          "a_arena_selection"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
+        "grammarRole": "B",
+        "previousRuleIds": [
+          "main_arena_selection",
+          "a_arena_selection"
+        ]
       }
     ]
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:1:4b01cbb8a2321b0c": 45,
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:2:27369c5e19983ada": 2
+    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:2:27369c5e19983ada": 3
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "e68b4731f3164c5a3800ddc406571b231f647df7075f420e6fce77e4f5099dd1": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:29:25.694Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:30:05.167Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
