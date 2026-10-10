@@ -187,25 +187,33 @@
       },
       "playerFantasy": "퇴마 사무소 - 진보적 게임 정체성",
       "coreFun": "게임 시스템 + 주제 창작 소재"
+    },
+    "local_authoring_parts::cbde0490a141326e1fb4ff4d3a67b50d5c4fe7d1e9c7a05fbe96f993a9ae9d4d:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "게임 정체성 확립: 게임 시스템 + 주제 창작 소재",
+        "플레이어 역할 명확화: 진보적 게임 정체성 및 발전적인 선택",
+        "실질적 인과 변화 유도: 단서·발견·선택으로 인한 세계 상태 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 525145,
-      "lastMs": 51570,
+      "totalMs": 589308,
+      "lastMs": 64163,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:05:43.159Z"
+      "updatedAt": "2026-10-10T09:06:47.327Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:56:57.992Z",
-  "updatedAt": "2026-10-10T09:05:43.163Z",
+  "updatedAt": "2026-10-10T09:06:47.335Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1697,8 +1705,8 @@
   "localAuthoringSplits": {
     "828c22cc26e5b71b3cfdb0218aa542ee7fc28f1f125301b75c4b0233b22c8331": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:05:43.163Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:06:47.327Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
