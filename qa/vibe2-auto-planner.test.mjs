@@ -1628,6 +1628,57 @@ test('web presentation planner discovers a real non-index game entry file',()=>{
   assert.ok(task.responsibleFiles.includes(`web-games/${gameId}/legacy_entry_web-28.html`));
 });
 
+test('existing Web game presentation automatically selects optional UX and built-in tool candidates',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='old-survival-interface',dir=path.join(root,'web-games',gameId),file=path.join(dir,'index.html');
+    fs.mkdirSync(dir,{recursive:true});
+    const existing='<html><body><button onclick="openInventory()">장비</button><script>function openInventory(){inventoryPanel.hidden=false;} const craftRecipes=[];</script></body></html>';
+    fs.writeFileSync(file,existing);
+    const project={gameId,engine:'web',genre:'SURVIVAL',releaseState:'development-confirmed',projectPath:'web-games/'+gameId};
+    const task=findWebPresentationQualityTask(project,root,{tasks:[]});
+    assert.ok(task);
+    const sync=task.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync;
+    assert.equal(sync.status,'SOURCE_MATCH_CANDIDATES_NOT_APPLIED');
+    assert.deepEqual(sync.sourceFiles,['web-games/'+gameId+'/index.html']);
+    assert.ok(sync.externalAlgorithms.some(row=>row.id==='RECOGNITION_OVER_RECALL'));
+    assert.ok(sync.internalToolMatches.some(row=>row.id==='INVENTORY_EQUIPMENT'));
+    assert.ok(sync.internalToolMatches.some(row=>row.id==='CRAFTING'));
+    assert.ok(sync.internalToolMatches.every(row=>row.optional&&!row.automaticImport&&!row.runtimeVerified));
+    assert.equal(sync.designMutation,false);assert.equal(sync.runtimeVerified,false);
+    assert.match(task.goal,/EXISTING_GAME_INTERFACE_AUTO_MATCH/);
+    assert.equal(fs.readFileSync(file,'utf8'),existing);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('existing Unity WebGL and Unity app match the same existing C# interface source',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    policy.assetProductionParallelContract={enabled:true};fs.writeFileSync(policyPath,JSON.stringify(policy));
+    fs.writeFileSync(path.join(root,'unity-games/demo/Assets/Scripts/UIController.cs'),'using UnityEngine.UI; public class UIController { void OpenInventory(){ inventoryPanel.SetActive(true); } }');
+    const project={gameId:'demo',name:'Unity Demo',engine:'unity',genre:'RPG',target:'unity',releaseState:'development-confirmed',projectPath:'unity-games/demo'};
+    const web=findPresentationQualityTask({...project,firstStageUnityWeb:true},root,{tasks:[]});
+    const app=findPresentationQualityTask({...project,firstStageUnityWeb:false},root,{tasks:[]});
+    assert.ok(web&&app);
+    const w=web.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync;
+    const a=app.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync;
+    assert.equal(w.platformBinding,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
+    assert.equal(a.platformBinding,'UNITY_APP_SAME_CANONICAL_UNITY_PROJECT_WITH_WEBGL');
+    assert.deepEqual(w.externalAlgorithms.map(row=>row.id),a.externalAlgorithms.map(row=>row.id));
+    assert.deepEqual(w.internalToolMatches.map(row=>row.id),a.internalToolMatches.map(row=>row.id));
+    assert.ok(w.sourceFiles.includes('unity-games/demo/Assets/Scripts/UIController.cs'));
+    assert.ok(w.internalToolMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
+    assert.equal(w.designMutation,false);assert.equal(w.noShadowUiPipeline,true);
+    const id='no-interface-genre',dir=path.join(root,'web-games',id);
+    fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),'<html><body><canvas id="game"></canvas></body></html>');
+    const noUi=findWebPresentationQualityTask({gameId:id,engine:'web',genre:'RPG',releaseState:'development-confirmed',projectPath:'web-games/'+id},root,{tasks:[]});
+    assert.ok(noUi);
+    assert.equal(noUi.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync.status,'NO_SOURCE_MATCH');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('presentation quality passes are queued in canonical order',()=>{
   const root=tempRepo();
   const gameId='presentation-web';
