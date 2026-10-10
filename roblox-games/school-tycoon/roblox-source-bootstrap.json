@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "gameId": "school-tycoon",
+  "gameName": "학교 타이쿤",
+  "platform": "ROBLOX",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "sourcePath": "roblox-games/school-tycoon",
+  "generationMode": "OWNER_DIRECT_NEW_GAME_SOURCE",
+  "existingSourcePreserved": true,
+  "sourceValidationPassed": false,
+  "runtimePassed": false,
+  "independentQaPassed": false,
+  "regressionPassed": false,
+  "releaseClaim": false,
+  "modelUsed": false,
+  "saveEnabled": true,
+  "mobileFirst": true,
+  "coreLoop": [
+    "학교 부지에서 복도·시설 건설",
+    "교사 고용과 교실 증설",
+    "학교 개교 후 학생 등교",
+    "만족도와 수익 관찰",
+    "시설 업그레이드·확장"
+  ],
+  "releaseRequirements": [
+    "EXACT_SOURCE_ROJO_PACKAGE",
+    "REAL_ROBLOX_RUNTIME",
+    "MOBILE_QA",
+    "SAVE_REJOIN",
+    "INDEPENDENT_QA",
+    "SECURITY_GATE",
+    "EXTERNAL_PUBLIC_RELEASE_GATE"
+  ],
+  "createdAt": "2026-10-10"
+}
