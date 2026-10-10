@@ -297,11 +297,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_85db81b69282663e194c1627",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
-      "phase4PairId": "phase4-pair-1lle0xc",
+      "phase4PairId": "phase4-pair-1ubkapc",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "cozy-island",
+      "holdoutGameId": "cat-step",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1mde55i",
+      "unseenProblemFingerprint": "phase4-unseen-1kem1li",
       "mayPromoteGeneralization": false
     },
     {
@@ -316,11 +316,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_85db81b69282663e194c1627",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_85db81b69282663e194c1627",
-      "phase4PairId": "phase4-pair-1lle0xc",
+      "phase4PairId": "phase4-pair-1ubkapc",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "cozy-island",
+      "holdoutGameId": "cat-step",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1mde55i",
+      "unseenProblemFingerprint": "phase4-unseen-1kem1li",
       "mayPromoteGeneralization": false
     },
     {
@@ -335,11 +335,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
-      "phase4PairId": "phase4-pair-qbo3q8",
+      "phase4PairId": "phase4-pair-1xkdyu8",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "cozy-island",
+      "holdoutGameId": "cat-step",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-skuxie",
+      "unseenProblemFingerprint": "phase4-unseen-czmt46",
       "mayPromoteGeneralization": false
     },
     {
@@ -354,11 +354,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_41147755bdb5947f1fd1278f",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_41147755bdb5947f1fd1278f",
-      "phase4PairId": "phase4-pair-qbo3q8",
+      "phase4PairId": "phase4-pair-1xkdyu8",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "cozy-island",
+      "holdoutGameId": "cat-step",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-skuxie",
+      "unseenProblemFingerprint": "phase4-unseen-czmt46",
       "mayPromoteGeneralization": false
     },
     {
@@ -373,11 +373,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
-      "phase4PairId": "phase4-pair-65e2gu",
+      "phase4PairId": "phase4-pair-6ghymb",
       "phase4Role": "CONTROL",
-      "holdoutGameId": "amusement-tycoon",
+      "holdoutGameId": "cat-step",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1hf16g8",
+      "unseenProblemFingerprint": "phase4-unseen-4rt1l9",
       "mayPromoteGeneralization": false
     },
     {
@@ -392,11 +392,11 @@
       "phase4Benchmark": true,
       "phase4CapabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
       "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
-      "phase4PairId": "phase4-pair-65e2gu",
+      "phase4PairId": "phase4-pair-6ghymb",
       "phase4Role": "CHALLENGER",
-      "holdoutGameId": "amusement-tycoon",
+      "holdoutGameId": "cat-step",
       "targetEngine": "web",
-      "unseenProblemFingerprint": "phase4-unseen-1hf16g8",
+      "unseenProblemFingerprint": "phase4-unseen-4rt1l9",
       "mayPromoteGeneralization": false
     },
     {
@@ -724,6 +724,40 @@
         "UI_STATE",
         "INPUT_OWNERSHIP",
         "MENU_NAVIGATION"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-web-startup-budget",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-web-startup-budget",
+      "platformProfile": "unity",
+      "level": "복합",
+      "sourceFailure": "UNITY_WEB_STARTUP_ASSET_BUDGET",
+      "domains": [
+        "WEB_RUNTIME",
+        "UNITY_RUNTIME",
+        "PERFORMANCE",
+        "ASSET_ADAPTATION"
+      ],
+      "priority": "high",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false
+    },
+    {
+      "id": "unity-android-thermal-quality",
+      "kind": "PLATFORM_CODE_REPAIR",
+      "codingPracticeDrill": "unity-android-thermal-quality",
+      "platformProfile": "unity",
+      "level": "복합",
+      "sourceFailure": "ANDROID_THERMAL_QUALITY_CONTROL",
+      "domains": [
+        "UNITY_RUNTIME",
+        "PERFORMANCE",
+        "MOBILE_INPUT",
+        "STATE_MACHINE"
       ],
       "priority": "high",
       "productionPreemptible": true,
