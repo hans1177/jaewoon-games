@@ -187,25 +187,32 @@
       },
       "playerFantasy": "타이쿤은 지역 관리와 경영 관리를 통합하여 실제 플레이어 역할로서 길의 확장과 손님 만족도 향상을 통해 세계 상태 변화를 이끌며, 자원 배분과 비용 절감에 대한 선택을 통해 효율적인 운영을 실현합니다.",
       "coreFun": "{identity}길의 길이 증가 -> 속도 향상 및 보상 획득 -> 손님 수 증가 -> 보상 획득 -> 경영 관리 시스템 활성화 -> 자원 사용량 감소 -> 비용 절감 -> 보상 획득 -> 세계 상태 변화"
+    },
+    "local_authoring_parts::2110b759b8ccc624b188dd01f4d8f20e303e13935ef0dfcb5cfaa52541c06870:coreLoop": {
+      "coreLoop": [
+        "입력: 길의 확장 선택 → 상태변화: 길 길이 증가 → 보상: 점수 획득",
+        "입력: 자원 배분 선택 → 상태변화: 자원 사용량 감소 → 보상: 점수 증가",
+        "입력: 속도 향상 선택 → 상태변화: 손님 수 증가 → 보상: 점수 획득"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 642148,
-      "lastMs": 102039,
+      "totalMs": 740310,
+      "lastMs": 98162,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:10:45.963Z"
+      "updatedAt": "2026-10-10T03:12:24.129Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:00:03.792Z",
-  "updatedAt": "2026-10-10T03:10:45.965Z",
+  "updatedAt": "2026-10-10T03:12:24.129Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1685,7 +1692,7 @@
   "localAuthoringSplits": {
     "ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:10:45.965Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:12:24.129Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
