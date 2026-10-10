@@ -23,7 +23,7 @@ const authoredHandoffSource=design.slice(design.indexOf('function authoredStateH
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
 // 메인: 새 게임 디자이너 접수는 임시 스케치를 지운 뒤 참조하지 않고 V5 문법으로 시작한다.
-test('new designer auto-intake does not dereference deleted sketch and starts at canonical V5',()=>{
+test('new designer intake preserves un-authored V5 sketch and cannot fall back to legacy V1 grammar',()=>{
   const start=design.indexOf('function resolveDesignerSeedInput(');
   const end=design.indexOf('\nconst gameId=',start);
   assert.ok(start>=0&&end>start);
@@ -37,7 +37,10 @@ test('new designer auto-intake does not dereference deleted sketch and starts at
       novelGrammarBackfill:{authoringPending:true}
     }),
     latestUsableDesign:()=>null,
-    validateGameSeed:()=>({pass:true,errors:[]})
+    validateGameSeed:input=>{
+      if(!input.GAMEPLAY_SKETCH)input.GAMEPLAY_SKETCH={version:1,source:'LEGACY_COMPATIBILITY_DOWNGRADE'};
+      return{pass:true,errors:[]};
+    }
   });
   const state={seeds:[]};
   const {seed,created}=resolve({
@@ -45,7 +48,10 @@ test('new designer auto-intake does not dereference deleted sketch and starts at
     catalog:{games:[{id:'design-auto-test',name:'설계 자동 접수',lifecycleState:'ACTIVE'}]}
   });
   assert.equal(created,true);
-  assert.equal(seed.GAMEPLAY_SKETCH,undefined);
+  assert.equal(seed.GAMEPLAY_SKETCH.version,5);
+  assert.equal(seed.GAMEPLAY_SKETCH.source,'DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN');
+  assert.equal(seed.novelGrammarBackfill.authoringPending,true);
+  assert.doesNotMatch(design.slice(start,end),/delete input\.GAMEPLAY_SKETCH/);
   assert.equal(seed.seedAuthoring.stage,'identity-core');
   assert.equal(state.seeds.length,1);
   assert.match(design,/seedGameplaySketch\?\.version\|\|5/);
