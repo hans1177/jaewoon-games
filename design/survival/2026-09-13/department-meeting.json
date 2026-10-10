@@ -22,65 +22,62 @@
   "representatives": {
     "planning": {
       "keep": [
-        "지정된 담당 부서만 검토하라."
+        "gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET, ownerResetRevision: OWNER-RESET-20260913-1, GAME_CATEGORY: ACT"
       ],
       "fix": [
-        "지정된 담당 부서만 검토하라."
+        "keep"
       ],
       "add": [
-        "지정된 담당 부서만 검토하라."
+        "gameId: survival, gameName: 나의 생존기, status: ACTIVE, generation: OWNER_REDESIGN_RESET"
       ],
       "risks": [
-        "지정된 담당 부서만 검토하라."
+        "keep"
       ],
       "evidence": [
-        "지정된 담당 부서만 검토하라."
+        "keep"
       ],
       "questions": [
-        "지정된 담당 부서만 검토하라."
+        "keep"
       ]
     },
     "graphics": {
-      "keep": [],
+      "keep": [
+        "visual_style=readable survival needs"
+      ],
       "fix": [
-        "llama3.2:1b",
-        "fix: 'Survival' - 'Survival' is required for this review."
+        "resource_to_crafting decisions"
       ],
       "add": [
-        "llama3.2:1b",
-        "add: 'Survival' - 'Survival' is required for this review."
+        "exploration risk and recovery"
       ],
       "risks": [
-        "llama3.2:1b",
-        "risks: 'Survival' - 'Survival' is required for this review."
+        "exploration risk and recovery"
       ],
       "evidence": [
-        "llama3.2:1b",
-        "evidence: 'Survival' - 'Survival' is required for this review."
+        "Survivor.io"
       ],
       "questions": [
-        "llama3.2:1b",
-        "questions: 'Survival' - 'Survival' is required for this review."
+        "How does the game's exploration work?"
       ]
     },
     "development": {
       "keep": [
-        "Survival"
+        "game-seed"
       ],
       "fix": [
-        "Survival"
+        "game-seed"
       ],
       "add": [
-        "Survival"
+        "game-seed"
       ],
       "risks": [
-        "Survival"
+        "game-seed"
       ],
       "evidence": [
-        "Survival"
+        "game-seed"
       ],
       "questions": [
-        "Survival"
+        "game-seed"
       ]
     },
     "qa": {
@@ -105,22 +102,22 @@
     },
     "balance": {
       "keep": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "fix": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "add": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "risks": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "evidence": [
-        "Survival"
+        "Survival Mechanics"
       ],
       "questions": [
-        "Survival"
+        "Survival Mechanics"
       ]
     }
   },
@@ -131,48 +128,36 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "지정된 담당 부서만 검토하라.",
+      "reason": "The main points are kept as they are. The key elements are preserved for clarity and completeness.",
       "departments": [
-        "keep: '지정된 담당 부서만 검토하라.'",
-        "fix: 'llama3.2:1b'",
-        "add: 'llama3.2:1b'",
-        "risks: 'llama3.2:1b'",
-        "evidence: 'llama3.2:1b'"
+        "planning",
+        "graphics",
+        "development",
+        "qa"
       ]
     },
     {
       "topic": "graphics",
       "status": "CONSENSUS",
-      "reason": "The 'Survival' feature is critical for the functionality of the llama3.2 model. It is essential to prioritize this feature in the review process.",
+      "reason": "Survival Mechanics",
       "departments": [
-        "keep: 'llama3.2:1b'",
-        "fix: 'Survival' - 'Survival' is required",
-        "add: 'Survival' - 'Survival' is required",
-        "risks: 'Survival' - 'Survival' is reque"
+        "graphics"
       ]
     },
     {
       "topic": "development",
       "status": "CONSENSUS",
-      "reason": "Survival",
+      "reason": "Survival Mechanics",
       "departments": [
-        "keep: 'Survival'",
-        "fix: 'Survival'",
-        "add: 'Survival'",
-        "risks: 'Survival'",
-        "evidence: 'Survival'"
+        "development"
       ]
     },
     {
       "topic": "qa",
       "status": "CONSENSUS",
-      "reason": "qa 부서의 의견을 수용합니다.",
+      "reason": "qa 부서는 모든 요청에 대해 적절한 답변을 제공하고, 다른 네 부서의 의견을 수용하고 수정하는 데 적합하다.",
       "departments": [
-        "keep: 'qa'",
-        "fix: 'qa'",
-        "add: 'qa'",
-        "risks: 'qa'",
-        "evidence: 'qa'"
+        "qa"
       ]
     }
   ],
