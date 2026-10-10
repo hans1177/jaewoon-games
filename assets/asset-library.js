@@ -218,6 +218,18 @@ async function refresh(force=false){
   const nextRegistrySignature=nextRegistry===registry?registryViewSignature:registrySignature(nextRegistry);
   const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryViewSignature!==nextRegistrySignature;
   manifest=nextManifest;registry=nextRegistry;registryViewSignature=nextRegistrySignature;syncFeaturedButtons();
+  // 공용 외부 모델은 실제 게임 자산이 아니라 출처·라이선스 검증 후보로 분리해 표시한다.
+  const meshySources=Array.isArray(registry.externalSources)?registry.externalSources.filter(source=>source.source==='Meshy Community'&&source.license==='CC0-1.0'):[];
+  $('meshySourceCount').textContent=meshySources.length.toLocaleString('ko-KR');
+  const meshyList=$('meshySourceList');meshyList.replaceChildren();
+  for(const source of meshySources){
+   if(typeof source.sourceUrl!=='string'||!/^https:\/\/www\.meshy\.ai\/3d-models\/[A-Za-z0-9-]+$/.test(source.sourceUrl))continue;
+   const link=document.createElement('a');link.href=source.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';
+   const name=document.createElement('strong');name.textContent=source.name||source.id;
+   const category=document.createElement('small');
+   category.textContent=[categoryLabels[source.category]||source.category,'CC0 출처 확인',source.assetBinaryAcquired?'원본 확보':'원본 미확보','재질 수정만'].filter(Boolean).join(' · ');
+   link.append(name,category);meshyList.append(link);
+  }
   $('assetCount').textContent=registry.assets.length.toLocaleString('ko-KR');
   // 등록 경로 수는 파일 존재 또는 실제 제작 검증 수와 같지 않다.
   $('sourcePathCount').textContent=new Set(registry.assets.map(asset=>String(asset?.sourcePath||asset?.path||'').trim()).filter(Boolean)).size.toLocaleString('ko-KR');
