@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::2127637d6f7a83d7f7dc5a02a0a73f5a78a5c9944401b43c34c1376249304cb9:identity": {
       "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.\n\n플레이어는 동료들과 함께 숲속에서 자원을 수집하며, 위협과 리스크를 읽고 선택하는 경험을 반복한다.\n\n주요 행동: '산책하면서 자원을 찾고, 위험을 읽으며 선택' → 상태 변화: '위험 농도 증가', 보상: '새로운 장비/선택 가능성' → 다음 선택: '더 복잡한 전략 또는 새로운 경로 탐색'\n\n게임 정체성: '생존, 동료', 플레이어 역할: '생존자', 대표 행동: '자원 수집 및 위험 판단', 시그니처 세계 규칙: '자연적 위험과 조건적 선택'"
+    },
+    "local_authoring_parts::785a53f8b1e66b941908c94d890a3fe994038313225a8a25de56b590f1dfb58d:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "생존, 동료, 자원 수집 및 위험 판단",
+      "a": {
+        "system": "환경 시스템",
+        "material": "자연적 위험",
+        "materialDomain": "생태학",
+        "stateChange": "위험 농도 증가(0-100%)로 상태 전환"
+      },
+      "b": {
+        "system": "전략 시스템",
+        "material": "선택 가능성",
+        "materialDomain": "게임 메타데이터",
+        "stateChange": "새로운 장비/선택 가능성이 추가됨(기존: 없음)"
+      },
+      "abCausality": "위험 농도 상승 → 선택 가능성 확대 → 새로운 전략 경로 탐색(양방향)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 660327,
-      "lastMs": 60141,
+      "totalMs": 724236,
+      "lastMs": 63909,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:40:00.912Z"
+      "updatedAt": "2026-10-10T08:41:04.823Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:29:00.323Z",
-  "updatedAt": "2026-10-10T08:40:00.912Z",
+  "updatedAt": "2026-10-10T08:41:04.823Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1759,7 +1775,7 @@
     "8d1400d7007c78eaea4288dad042a8899b877b73238f6fb8a77088cf407da541": true,
     "2127637d6f7a83d7f7dc5a02a0a73f5a78a5c9944401b43c34c1376249304cb9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:40:00.912Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:41:04.823Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
