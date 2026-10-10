@@ -16,17 +16,17 @@
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300100,
-      "lastMs": 300100,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:54:58.654Z"
+      "totalMs": 562415,
+      "lastMs": 262315,
+      "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
+      "updatedAt": "2026-10-10T09:59:20.970Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T09:54:58.654Z"
+  "updatedAt": "2026-10-10T09:59:20.971Z"
 }
