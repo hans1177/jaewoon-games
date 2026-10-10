@@ -3365,8 +3365,72 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     ...(contract.flowSelections||[]).flatMap(row=>row.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).flatMap(row=>[...(row.sourceFiles||[]),row.path])
   ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort()).filter(file=>/\.(?:lua|luau|js|mjs|cs)$/i.test(file));
-  if(!allSelectedPaths.length)return context;
-  const apiIndex=buildInternalAssetApiIndex({cwd,paths:allSelectedPaths});
+  const apiIndex=allSelectedPaths.length
+    ?buildInternalAssetApiIndex({cwd,paths:allSelectedPaths})
+    :{text:'',representedSourceCount:0,availableSourceCount:0,unavailableSourceCount:0,signatureCount:0,allSelectedSourcesRepresented:true};
+
+  // 코딩 구현에서만 기존 게임 소스와 승인된 작업 내용을 기준으로 바이브 도구를 동적 매칭한다.
+  // 설계 단계와 실행 스케줄은 건드리지 않으며, 라이브러리 수정본은 다음 작업부터 새 해시로 재탐색한다.
+  const target=clean(order?.target||contract?.target).toLowerCase();
+  const existingSource=context.files.filter(row=>row?.editable!==false).map(row=>String(row?.content||'')).join('\n');
+  const taskRequest=clean(order?.goal||order?.selectedTask?.goal);
+  const signalRules=[
+    ['SAVE',/save|loadgame|loadstate|persist|datastore|checkpoint|serializ|storage|세이브|저장|불러오기/i,/save|persist|datastore|checkpoint|serializ|storage|backup|migration/i],
+    ['COMBAT',/combat|attack|damage|hitbox|health|cooldown|battle|피격|공격|전투|체력|데미지|전투판정/i,/combat|attack|damage|hitbox|health|cooldown|battle|fight|skill/i],
+    ['INVENTORY',/inventory|equipment|item|craft|loot|인벤토리|장비|아이템|제작/i,/inventory|equipment|item|craft|loot/i],
+    ['INPUT',/joystick|touch|input|controller|gesture|pointer|조이스틱|터치|조작/i,/input|controller|touch|joystick|gesture/i],
+    ['INTERFACE',/interface|menu|hud|ui|canvas|screen|layout|button|메뉴|화면|버튼|인터페이스/i,/interface|menu|hud|ui|screen|layout|workbench|presentation/i],
+    ['MOTION',/motion|animat|rig|locomotion|retarget|모션|애니|움직임/i,/motion|animat|rig|retarget|skeleton|locomotion/i],
+    ['WORLD',/world|terrain|environment|biome|scene|map|월드|맵|지형/i,/world|terrain|environment|biome|scene|map/i],
+    ['AUDIO',/audio|sound|music|bgm|오디오|사운드|음악/i,/audio|sound|music|bgm/i],
+    ['ASSET',/asset|mesh|material|render|visual|shader|에셋|메쉬|그래픽/i,/asset|mesh|material|render|visual|shader/i],
+    ['NETWORK',/multiplayer|network|replicat|remoteevent|socket|멀티|네트워크/i,/multiplayer|network|replicat|socket|remote/i],
+    ['PERFORMANCE',/performance|optimi|fps|pooling|성능|최적화/i,/performance|optimi|pooling|profiler/i]
+  ];
+  const sourceSignals=signalRules.filter(([,sourcePattern])=>sourcePattern.test(existingSource)||sourcePattern.test(taskRequest));
+  const toolMatches=[];
+  let scannedTools=0;
+  for(const folder of ['assets','tools']){
+    const directory=path.join(cwd,folder);
+    if(!fs.existsSync(directory)||!fs.statSync(directory).isDirectory())continue;
+    for(const entry of fs.readdirSync(directory,{withFileTypes:true}).filter(row=>row.isFile()&&/\.m?js$/i.test(row.name)).sort((a,b)=>a.name.localeCompare(b.name))){
+      const name=entry.name.toLowerCase();
+      if(folder==='tools'&&name==='vibe2-source-worker.mjs')continue;
+      if(/(?:^|[-_.])(?:design|artbook|seed-author)(?:[-_.]|$)/i.test(name))continue;
+      scannedTools++;
+      const platformName=/(?:^|[-_.])(roblox|unity|godot|unreal)(?:[-_.]|$)/i.exec(name)?.[1]?.toLowerCase();
+      if(platformName&&platformName!==target)continue;
+      const relative=folder+'/'+entry.name,absolute=path.join(directory,entry.name);
+      const raw=fs.readFileSync(absolute,'utf8');
+      const exported=[...raw.matchAll(/^\s*export\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let)\s+([A-Za-z_$][\w$]*)/gm)].map(row=>row[1]);
+      const apiNames=unique(exported).sort();
+      if(!apiNames.length)continue;
+      const searchText=name+' '+apiNames.join(' ');
+      const matchedSignals=sourceSignals.filter(([, ,toolPattern])=>toolPattern.test(searchText)).map(row=>row[0]);
+      const coreTool=/^(?:vibe-(?:workbench|engine-adapter|core-runtime)|game-kit|company-vibe2-(?:coding-architecture|expert-development)|vibe2-(?:incremental-qa|learning-motor))\.(?:m?js)$/i.test(name);
+      if(!matchedSignals.length&&!coreTool)continue;
+      const sha256=crypto.createHash('sha256').update(raw).digest('hex');
+      toolMatches.push(Object.freeze({
+        path:relative,kind:folder==='tools'?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY',
+        signals:Object.freeze(matchedSignals),sha256,
+        exports:Object.freeze(apiNames)
+      }));
+    }
+  }
+  const toolMatchFingerprint=crypto.createHash('sha256').update(JSON.stringify({
+    target,sourceSignals:sourceSignals.map(row=>row[0]),
+    matches:toolMatches.map(row=>[row.path,row.sha256,row.signals])
+  })).digest('hex');
+  const vibeDynamicToolMatch=Object.freeze({
+    target,scannedTools,matchedCount:toolMatches.length,
+    sourceSignals:Object.freeze(sourceSignals.map(row=>row[0])),
+    fingerprint:toolMatchFingerprint,
+    matches:Object.freeze(toolMatches),
+    saveAndCombatAuthority:'EXISTING_GAME_SOURCE_ONLY',
+    newGameplaySystemsAuthorized:false,
+    sourceMutationPerformed:false,
+    runtimeVerified:false
+  });
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
   const start=((generation-1)*batchSize)%allSelectedPaths.length;
@@ -3385,7 +3449,7 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     remaining-=bytes;
     apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
   }
-  if(!apiFiles.length&&!apiIndex.text)return context;
+  if(!apiFiles.length&&!apiIndex.text&&!vibeDynamicToolMatch.matchedCount)return context;
   return{
     ...context,
     files:[...context.files,...apiFiles],
@@ -3402,18 +3466,32 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     internalAssetApiIndexAvailableSourceCount:apiIndex.availableSourceCount,
     internalAssetApiIndexUnavailableSourceCount:apiIndex.unavailableSourceCount,
     internalAssetApiIndexSignatureCount:apiIndex.signatureCount,
-    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:apiIndex.allSelectedSourcesRepresented===true
+    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:apiIndex.allSelectedSourcesRepresented===true,
+    vibeDynamicToolMatch
   };
 }
 
 function internalAssetApiIndexGuidance(context={}){
   const index=String(context?.internalAssetApiIndex||'').trim();
-  if(!index)return'';
+  const tools=context?.vibeDynamicToolMatch||{};
+  if(!index&&!tools.matchedCount)return'';
   return [
-    '[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]',
-    'Every selected internal source is represented here on every BUILD_UP. Detailed source excerpts still rotate by generation for compactness; rotation changes implementation detail context only and never removes a family, source, or compatible asset from current BUILD_UP eligibility.',
-    index,
-    '[END INTERNAL ASSET API INDEX]'
+    ...(index?[
+      '[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]',
+      'Every selected internal source is represented here on every BUILD_UP. Detailed source excerpts rotate by generation only and never remove eligibility.',
+      index,
+      '[END INTERNAL ASSET API INDEX]'
+    ]:[]),
+    ...(tools.matchedCount?[
+      '[VIBE LIBRARY AND DEVELOPMENT TOOL DYNAMIC MATCH - CODING ONLY]',
+      'target='+tools.target+'; scanned='+tools.scannedTools+'; matched='+tools.matchedCount+'; fingerprint='+tools.fingerprint,
+      'Source/applicable signals='+tools.sourceSignals.join('|'),
+      ...tools.matches.map(row=>row.path+' ['+row.kind+'] signals='+row.signals.join('|')+' sha256='+row.sha256+' exports='+row.exports.slice(0,16).join('|')+' exportedCount='+row.exports.length),
+      'These are updated, read-only API references, not code to copy blindly. Inspect matching existing implementation and use only verified-compatible functions in the current responsible source. Development tools are NOT game runtime imports and cannot grant new source mutation, release, save, economy, combat or network authority.',
+      'Apply relevant reusable implementation during this authorized coding task; retain each existing game save key, schema, migration requirement, HP, damage, hitbox, cooldown, drop, reward, AI and combat rules. Reuse safe algorithms without rewriting their gameplay meaning. No gameplay/save/combat system is invented solely because a tool matches.',
+      'Each coding cycle rematches updated library/tool exports and content hashes. Reuse unchanged correct bindings; modify only affected responsible code when a compatible update improves it. Design stage, existing BUILD_UP/F0-F9 chain and QA/runtime authority remain unchanged.',
+      '[END VIBE LIBRARY AND DEVELOPMENT TOOL DYNAMIC MATCH]'
+    ]:[])
   ].join('\n');
 }
 
@@ -6866,6 +6944,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetApiIndexUnavailableSourceCount:Number(context.internalAssetApiIndexUnavailableSourceCount||0),
     internalAssetApiIndexSignatureCount:Number(context.internalAssetApiIndexSignatureCount||0),
     internalAssetApiIndexAllSelectedSourcesEveryBuildUp:context.internalAssetApiIndexAllSelectedSourcesEveryBuildUp===true,
+    vibeDynamicToolMatchFingerprint:context.vibeDynamicToolMatch?.fingerprint||null,
+    vibeDynamicToolMatchCount:Number(context.vibeDynamicToolMatch?.matchedCount||0),
+    vibeDynamicToolScanCount:Number(context.vibeDynamicToolMatch?.scannedTools||0),
+    vibeDynamicToolMatchedSaveAndCombat:Object.freeze((context.vibeDynamicToolMatch?.sourceSignals||[]).filter(signal=>signal==='SAVE'||signal==='COMBAT')),
+    vibeDynamicToolRuntimeVerified:false,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',

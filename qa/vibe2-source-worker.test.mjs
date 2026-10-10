@@ -1134,6 +1134,41 @@ test('Roblox internal asset family binding requires actual family use and reject
   assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
 });
 
+test('Vibe libraries and development tools rematch updated APIs for existing save and combat source without changing rules or design',()=>{
+  const cwd=tempRoot();
+  const gameSource='function SaveGame(state) { return state; }\nfunction ApplyDamage(target, damage) { return target.hp - damage; }\n';
+  write(path.join(cwd,'assets/vibe-save-kit.js'),'export function saveSnapshot(data) { return data; }\n');
+  write(path.join(cwd,'tools/vibe-combat-quality.mjs'),'export function inspectCombatRules(source) { return source; }\n');
+  write(path.join(cwd,'tools/vibe-unity-combat.mjs'),'export function inspectCombatRules(source) { return source; }\n');
+  write(path.join(cwd,'tools/company-design-combat.mjs'),'export function inspectCombatRules(source) { return source; }\n');
+  const input={files:[{path:'server/Game.server.luau',editable:true,content:gameSource}],bytes:Buffer.byteLength(gameSource)};
+  const contract={target:'roblox',selectedSourcePaths:[],synchronization:{}};
+  const args={cwd,contract,order:{target:'roblox',goal:'Preserve existing save and combat rules',gameId:'old-game'}};
+  const first=attachSelectedInternalAssetApiContext(input,args);
+  const initial=first.vibeDynamicToolMatch;
+  assert.equal(initial.target,'roblox');
+  assert.ok(initial.sourceSignals.includes('SAVE'));
+  assert.ok(initial.sourceSignals.includes('COMBAT'));
+  assert.ok(initial.matches.some(row=>row.path==='assets/vibe-save-kit.js'&&row.kind==='LIBRARY_REFERENCE_READ_ONLY'));
+  assert.ok(initial.matches.some(row=>row.path==='tools/vibe-combat-quality.mjs'&&row.kind==='DEVELOPMENT_TOOL_READ_ONLY'));
+  assert.ok(!initial.matches.some(row=>row.path==='tools/vibe-unity-combat.mjs'));
+  assert.ok(!initial.matches.some(row=>row.path==='tools/company-design-combat.mjs'));
+  assert.equal(input.files[0].content,gameSource);
+  assert.equal(initial.runtimeVerified,false);
+  assert.equal(initial.sourceMutationPerformed,false);
+  assert.ok(initial.matches.every(row=>/^[a-f0-9]{64}$/.test(row.sha256)));
+  write(path.join(cwd,'tools/vibe-combat-quality.mjs'),'export function inspectCombatRules(source) { return source; }\nexport function inspectAttackEvents(source) { return source; }\n');
+  const second=attachSelectedInternalAssetApiContext(input,args);
+  assert.notEqual(second.vibeDynamicToolMatch.fingerprint,initial.fingerprint);
+  assert.ok(second.vibeDynamicToolMatch.matches.find(row=>row.path==='tools/vibe-combat-quality.mjs').exports.includes('inspectAttackEvents'));
+  assert.equal(input.files[0].content,gameSource);
+  const unrelated=attachSelectedInternalAssetApiContext(
+    {files:[{path:'client/Game.client.luau',editable:true,content:'local tickCount = 1'}],bytes:20},
+    {cwd,contract,order:{target:'roblox',goal:'Keep current timer'}}
+  );
+  assert.ok(!unrelated.vibeDynamicToolMatch||!unrelated.vibeDynamicToolMatch.matches.some(row=>row.path==='tools/vibe-combat-quality.mjs'));
+});
+
 test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{
   const cwd=tempRoot();
   const sourcePaths=[];
