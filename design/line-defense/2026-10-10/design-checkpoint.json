@@ -194,25 +194,40 @@
         "적의 침공 경로 관찰 및 유닛 구성 확인 → 아군 유닛 배치 → 자원 획득 및 업그레이드 투자",
         "웨이브 클리어 후 전리품 수집 → 군단 영구 특성 강화 → 높은 난이도 도전"
       ]
+    },
+    "local_authoring_parts::574ae831d334429d2ff76f63ef68f793df5971fa41ebab886c5f3569443cc83b:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road_synergy",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "골목길 시너지 배치 시스템에서 유닛 밀집 선택",
+        "실시간 재화 순환 엔진에 자원 수집/소비 타이밍 조절"
+      ],
+      "stateOutputs": [
+        "시너지 효과로 인해 유닛 위치가 집중됨",
+        "재화 가치 변동으로 인해 자원 소모 전략 변경"
+      ],
+      "name": "골목길 시너지 배치 시스템",
+      "purpose": "유닛 밀집으로 인한 시너지 효과를 통해 공간 배치 기반의 전략적 선택 제공",
+      "playerChoice": "강한 유닛 배치 또는 시너지 효과 극대화 선택"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 733737,
-      "lastMs": 12109,
+      "totalMs": 769079,
+      "lastMs": 35342,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:21:27.002Z"
+      "updatedAt": "2026-10-10T09:22:02.345Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:09:13.164Z",
-  "updatedAt": "2026-10-10T09:21:27.002Z",
+  "updatedAt": "2026-10-10T09:22:02.345Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1555,8 +1570,8 @@
   "localAuthoringSplits": {
     "333ca0c9839305fb97839b60369f99b2e0c7112dd244a573a9c36f4e5b705bc3": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:21:27.002Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:22:02.345Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
