@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 게임의 진입 절차에서 목표 설정, 한 번의 선택, 즉각적 결과를 경험하며, 선택의 결과가 다음 선택을 바꾼다. 주요 선택은 새로운 경로를 연다. 새로운 경로는 주요 선택을 연다.",
       "coreFun": "진입 단계, 선택, 결과 연결 루프 - 플레이어 선택으로 인한 실제 세계 상태 변화와 다음 선택의 인과적 교환"
+    },
+    "local_authoring_parts::642df36956900c98c8d32df33d71a22ddd0ee92185e06b6327a47081db90f9f1:coreLoop": {
+      "coreLoop": [
+        "플레이어는 진입 절차에서 목표 설정, 한 번의 선택, 즉각적 결과를 경험하며, 선택의 결과가 다음 선택을 바꾼다.",
+        "주요 선택은 새로운 경로를 연다. 새로운 경로는 주요 선택을 연다.",
+        "선택의 결과가 다음 선택을 바꾼다. 주요 선택은 새로운 경로를 연다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 159180,
-      "lastMs": 159180,
+      "totalMs": 188492,
+      "lastMs": 29312,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:11:56.995Z"
+      "updatedAt": "2026-10-10T09:12:26.308Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:09:17.573Z",
-  "updatedAt": "2026-10-10T09:11:56.995Z",
+  "updatedAt": "2026-10-10T09:12:26.315Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1612,8 +1619,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:11:56.995Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:12:26.309Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
