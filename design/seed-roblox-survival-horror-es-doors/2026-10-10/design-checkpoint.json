@@ -152,25 +152,182 @@
       "name": "Last Lantern - Player's Journey Through a Living Board Game",
       "purpose": "A dynamic risk-reward system that evolves as players progress.",
       "playerChoice": "Players choose new strategies to navigate the evolving environment and manage risks effectively."
+    },
+    "local_authoring_parts::5aff463b74b588564e69356fbb60ffe8a9c3d013a971e673519ca8d06f81a1e5:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "playerStartsWithClearGoal",
+        "limitedMovesAndObstaclesOnBoardOrGrid"
+      ],
+      "stateOutputs": [
+        "deliberateMatchesCreated",
+        "combosGenerated",
+        "immediateFeedbackReceived"
+      ],
+      "name": "Last Lantern - Player's Journey Through a Living Board Game",
+      "purpose": "A dynamic system where players' decisions influence both the game's progression and the environment they interact with.",
+      "playerChoice": "Players choose new strategies, alter the board layout, and unlock new objectives based on their choices and the evolving game state."
+    },
+    "local_authoring_parts::8afd22cd4874a42f8129ce81556fdab3fd9c178c854b30e8dbad0a0b29b6ed30:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "A dynamic board game where each decision creates an immediate consequence that affects future actions and goals.",
+          "playerChoice": "Players choose new strategies, face new risks, and unlock new levels based on their choices."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "Define the core gameplay mechanics and their causal relationships.",
+          "playerChoice": "Players make deliberate matches, create combos, and receive immediate feedback for each action."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "A dynamic risk-reward system that evolves as players progress.",
+          "playerChoice": "Players choose new strategies to navigate the evolving environment and manage risks effectively."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "A dynamic system where players' decisions influence both the game's progression and the environment they interact with.",
+          "playerChoice": "Players choose new strategies, alter the board layout, and unlock new objectives based on their choices and the evolving game state."
+        }
+      ]
+    },
+    "local_authoring_parts::9cd8d105619b17ba0ecb9e16c8ca8726da30f6623c79f5272488432ee54948e4:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Player begins with a clear goal, limited moves, and obstacles on a board or grid.",
+        "Makes deliberate matches, creates combos, and receives immediate feedback for each action.",
+        "Clears the level goal to earn rewards or unlock new stages, then faces a new pattern or obstacle combination."
+      ],
+      "signatureSystems": [
+        {
+          "id": "identity-core",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "A dynamic board game where each decision creates an immediate consequence that affects future actions and goals.",
+          "playerChoice": "Players choose new strategies, face new risks, and unlock new levels based on their choices."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "Define the core gameplay mechanics and their causal relationships.",
+          "playerChoice": "Players make deliberate matches, create combos, and receive immediate feedback for each action."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "A dynamic risk-reward system that evolves as players progress.",
+          "playerChoice": "Players choose new strategies to navigate the evolving environment and manage risks effectively."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "playerStartsWithClearGoal",
+            "limitedMovesAndObstaclesOnBoardOrGrid"
+          ],
+          "stateOutputs": [
+            "deliberateMatchesCreated",
+            "combosGenerated",
+            "immediateFeedbackReceived"
+          ],
+          "name": "Last Lantern - Player's Journey Through a Living Board Game",
+          "purpose": "A dynamic system where players' decisions influence both the game's progression and the environment they interact with.",
+          "playerChoice": "Players choose new strategies, alter the board layout, and unlock new objectives based on their choices and the evolving game state."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 336266,
-      "lastMs": 35626,
+      "totalMs": 373048,
+      "lastMs": 36782,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:25:53.105Z"
+      "updatedAt": "2026-10-10T02:26:29.888Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:20:16.789Z",
-  "updatedAt": "2026-10-10T02:25:53.105Z",
+  "updatedAt": "2026-10-10T02:26:29.890Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,7 +1917,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:25:53.105Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:26:29.890Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
