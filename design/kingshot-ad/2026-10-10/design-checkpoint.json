@@ -95,25 +95,125 @@
         "delveGrowthRule": "adaptive defense system → economic warfare → dynamic battlefield evolution",
         "finalGameIdentity": "adaptive defense system evolving into an economic warfare mechanism"
       }
+    },
+    "local_authoring_parts::549c0283e9358353ce2af4968bf8ab2321e28d15b68f2ff26fa768a3fbf6f3fd:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 전투에서 즉각적인 결과를 얻기 위해 적의 웨이브를 읽고, 방어 시스템을 조절하여 위험에 노출되는 경로를 막아야 한다. 이 과정에서 자원을 수집하고, 그 가치가 높은 선택을 하여 다음 단계의 전략적 결정을 내린다.",
+      "coreFun": "{\"identity\": \"Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\", \"creativeGrammar\": {\"mainIdentity\": \"Defensive adaptation → Economic trade-off → Strategic path change\", \"a\": {\"system\": \"Defense strategy\", \"material\": \"Enemy type, wave composition, defensive placement\", \"stateChange\": \"Defensive configuration changes based on enemy behavior\"}, \"b\": {\"system\": \"Economy system\", \"material\": \"Resource gain from defeated enemies, upgrade costs, strategic trade-offs\", \"stateChange\": \"Resource allocation decisions affecting future gameplay\"}, \"abCausality\": \"Defensive adaptation → Economic trade-off → Strategic path change\", \"abEvolution\": {\"aChangesB\": \"Increase defense complexity with new enemy types\", \"bChangesA\": \"Modify resource priorities in response to changing threats\", \"lateGameChange\": \"Introduce dynamic economy where资源获得是与"
+    },
+    "local_authoring_parts::b93c93de67cb28d1969ab3ee6f3bab7ba4608ba88b46809c165c3e4ccea037dc:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "킹샷 광고풍",
+      "creativeGrammar": {
+        "mainIdentity": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "a": {
+          "system": "defense strategy",
+          "material": "enemy type, wave composition, defensive placement",
+          "materialDomain": "battlefield terrain, resource distribution, tactical positioning",
+          "stateChange": "defensive configuration changes based on enemy behavior"
+        },
+        "b": {
+          "system": "economy system",
+          "material": "resource gain from defeated enemies, upgrade costs, strategic trade-offs",
+          "materialDomain": "economic value of resources, cost-benefit analysis, tactical decision-making",
+          "stateChange": "resource allocation decisions affecting future gameplay"
+        },
+        "abCausality": "defensive adaptation → economic trade-off → strategic path change",
+        "abEvolution": {
+          "aChangesB": "increase defense complexity with new enemy types",
+          "bChangesA": "modify resource priorities in response to changing threats",
+          "lateGameChange": "introduce dynamic economy where resource gains are tied to battlefield outcomes"
+        },
+        "materialFusion": {
+          "contrast": "enemy adaptability vs. player mastery",
+          "causalBridge": "adaptive defense becomes a key economic factor",
+          "removalConsequence": "defense strategy evolves into an economic force"
+        },
+        "storyCausalChain": {
+          "cause": "player's initial defensive setup",
+          "characterConflict": "increasing threat level forces adaptive responses",
+          "playerChoice": "strategic trade-offs between defense and resource acquisition",
+          "worldChange": "dynamic economy where resource gains influence future battlefields",
+          "nextEvent": "new enemy wave introduces more complex defensive requirements"
+        },
+        "cThemes": [
+          {
+            "name": "battlefield adaptability",
+            "kind": "MATERIAL",
+            "gameplayEffect": "dynamic defense system"
+          },
+          {
+            "name": "economy of war",
+            "kind": "MATERIAL",
+            "gameplayEffect": "resource allocation decisions"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "defensive adaptation",
+            "gameplayEffect": "changing battlefield dynamics"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "economic warfare",
+            "gameplayEffect": "resource-based strategic choices"
+          }
+        ],
+        "cGenreInterlock": "defensive adaptation → economic warfare → dynamic battlefield evolution",
+        "cWorldAndGameplayEffect": "adaptive defense becomes a key economic factor, influencing future battlefields",
+        "delveDiscoveries": [
+          {
+            "clue": "enemy adaptability",
+            "discovery": "defense strategy evolves into an economic force",
+            "newChoice": "modify resource priorities in response to changing threats"
+          },
+          {
+            "clue": "increasing threat level",
+            "discovery": "strategic trade-offs between defense and resource acquisition",
+            "newChoice": "increase defense complexity with new enemy types"
+          },
+          {
+            "clue": "dynamic economy",
+            "discovery": "resource gains influence future battlefields",
+            "newChoice": "introduce dynamic economy where resource gains are tied to battlefield outcomes"
+          },
+          {
+            "clue": "player mastery",
+            "discovery": "adaptive defense becomes a key economic factor",
+            "newChoice": "modify defensive strategies based on player experience"
+          }
+        ],
+        "delveGrowthRule": "adaptive defense system → economic warfare → dynamic battlefield evolution",
+        "finalGameIdentity": "adaptive defense system evolving into an economic warfare mechanism"
+      },
+      "playerFantasy": "플레이어는 전투에서 즉각적인 결과를 얻기 위해 적의 웨이브를 읽고, 방어 시스템을 조절하여 위험에 노출되는 경로를 막아야 한다. 이 과정에서 자원을 수집하고, 그 가치가 높은 선택을 하여 다음 단계의 전략적 결정을 내린다.",
+      "coreFun": "{\"identity\": \"Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\", \"creativeGrammar\": {\"mainIdentity\": \"Defensive adaptation → Economic trade-off → Strategic path change\", \"a\": {\"system\": \"Defense strategy\", \"material\": \"Enemy type, wave composition, defensive placement\", \"stateChange\": \"Defensive configuration changes based on enemy behavior\"}, \"b\": {\"system\": \"Economy system\", \"material\": \"Resource gain from defeated enemies, upgrade costs, strategic trade-offs\", \"stateChange\": \"Resource allocation decisions affecting future gameplay\"}, \"abCausality\": \"Defensive adaptation → Economic trade-off → Strategic path change\", \"abEvolution\": {\"aChangesB\": \"Increase defense complexity with new enemy types\", \"bChangesA\": \"Modify resource priorities in response to changing threats\", \"lateGameChange\": \"Introduce dynamic economy where资源获得是与"
+    },
+    "local_authoring_parts::05b22d4a75aa5e8ed58201b5c08afc1952520c57960097f77281ddd79fd7290c:coreLoop": {
+      "coreLoop": [
+        "입력: 적 웨이브 읽기, 방어 시스템 조절",
+        " 상태변화: 방어 구성 변경",
+        "보상/위험: 자원 수집 및 전략적 선택",
+        " 다음선택: 방어 복잡도 증가 또는 자원 우선순위 재설정"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 543825,
-      "lastMs": 243723,
+      "totalMs": 709992,
+      "lastMs": 55356,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:19:43.245Z"
+      "updatedAt": "2026-10-10T06:22:29.418Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:10:39.226Z",
-  "updatedAt": "2026-10-10T06:19:43.245Z",
+  "updatedAt": "2026-10-10T06:22:29.418Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1828,7 +1928,7 @@
   "localAuthoringSplits": {
     "549c0283e9358353ce2af4968bf8ab2321e28d15b68f2ff26fa768a3fbf6f3fd": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:19:43.245Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:22:29.418Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
