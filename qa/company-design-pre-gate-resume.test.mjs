@@ -449,10 +449,12 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
   savedRoles.find(row=>row.grammarRole==='c').stateInputs=['INPUT: 채집 → STATE: 나무 증가'];
   const previousCalls=calls.length;
   const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
-  assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['A','B','c']);
+  assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['A','c'],'malformed cached reference IDs are normalized while invalid content remains repairable');
   assert.equal(new Set(repaired.signatureSystems.map(row=>row.id)).size,5);
   assert.deepEqual(JSON.parse(JSON.stringify(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs)),['WoodCount']);
   assert.equal(Object.keys(checkpoint.tasks).length,5,'valid roles stay in the original checkpoint');
+  assert.ok(repaired.signatureSystems.every(row=>row.id.startsWith(row.grammarRole.toLowerCase()+'_')));
+  assert.ok(logs.some(row=>row.includes('DESIGN_GRAMMAR_REFERENCE_ID_REPAIRED=')));
 });
 
 // 검증: 이름만 바꾼 MAIN/A/B/c/@ 복제는 설계 품질 통과가 아니다.
