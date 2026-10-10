@@ -130,25 +130,38 @@
       "name": "DESIGN_ASSET_REVIEW",
       "purpose": "Reviews game assets to ensure consistency with existing rules and maintains original intent.",
       "playerChoice": "Selects an asset to review for compliance with established design principles and gameplay mechanics."
+    },
+    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": {
+      "id": "b_design_asset_review",
+      "grammarRole": "B",
+      "stateInputs": [
+        "TERRAIN_CHANGE"
+      ],
+      "stateOutputs": [
+        "MONSTER_ATTRIBUTION"
+      ],
+      "name": "DESIGN_ASSET_REVIEW",
+      "purpose": "Reviews game assets to ensure consistency with existing rules and maintains original intent.",
+      "playerChoice": "Selects an asset to review for compliance with established design principles and gameplay mechanics."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 420505,
-      "lastMs": 12033,
+      "totalMs": 463394,
+      "lastMs": 42889,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:23:58.420Z"
+      "updatedAt": "2026-10-10T09:24:41.311Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:16:57.887Z",
-  "updatedAt": "2026-10-10T09:23:58.421Z",
+  "updatedAt": "2026-10-10T09:24:41.312Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1686,8 +1699,8 @@
     "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:23:58.420Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:24:41.311Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
