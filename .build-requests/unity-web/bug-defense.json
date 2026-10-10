@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-deploy-unity-web-bug-defense-20261010",
+  "requestId": "owner-bug-defense-rebuild-after-unity-qa-policy-path-20261010",
   "gameId": "bug-defense",
   "projectPath": "unity-games/bug-defense",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
@@ -12,5 +12,6 @@
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
-  "homepageCardVisibleRegardlessOfBuildResult": true
+  "homepageCardVisibleRegardlessOfBuildResult": true,
+  "repairCause": "WEBGL_BROWSER_VALIDATOR_USED_CWD_FOR_CENTRAL_POLICY"
 }
