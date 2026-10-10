@@ -328,7 +328,7 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='LOCAL',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
@@ -338,6 +338,15 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const seasonKey=String(season).toUpperCase();
   if(!['ANNUAL','SPRING','SUMMER','AUTUMN','WINTER'].includes(seasonKey))
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['SEASON_INVALID']),...noMutation});
+  const eraKey=String(era).toUpperCase(),waterKey=String(waterMode).toUpperCase();
+  const supportedEras=['LOCAL','ANCIENT','MEDIEVAL','MODERN','FUTURE','HYBRID'];
+  const supportedWaters=['AUTO','OCEAN','COASTAL','ISLAND','ARCHIPELAGO','LAKES'];
+  if(!supportedEras.includes(eraKey)||!supportedWaters.includes(waterKey)||
+    !eraByZone||typeof eraByZone!=='object'||Array.isArray(eraByZone)||
+    Object.entries(eraByZone).some(([key,value])=>!['RESIDENTIAL','COMMERCIAL','WORKSHOP'].includes(key)||!supportedEras.includes(String(value).toUpperCase()))||
+    !Array.isArray(ecologyActors)||!Array.isArray(authoredDungeonSites)){
+    return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['ERA_WATER_OR_ACTOR_INPUT_INVALID']),...noMutation});
+  }
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
   const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
   // 공용 자산은 게임에 통째로 복사하지 않는다. 실제 3D 원본+권리 확인 후보만 구조물에 매핑한다.
@@ -392,7 +401,21 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const regionalBiome=String(biome).toUpperCase(),wet=/WET|SWAMP|JUNGLE|RAIN/.test(regionalBiome+' '+climate),dry=/DESERT|ARID|DRY/.test(regionalBiome+' '+climate),mountain=/MOUNTAIN|ALPINE|RIDGE/.test(regionalBiome);
     const elevation=Math.max(.05,Math.min(.95,.48+.5*octave(nx*4,nz*4,0x22bb)+.16*ridge+(mountain?.12:0)));
     const moisture=Math.max(0,Math.min(1,.52+.58*octave(nx*3+11,nz*3-7,0x397a)+(wet?.2:0)-(dry?.25:0)));
-    const type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    let type=elevation<(dry?.25:mountain?.31:.38)?'WATER':elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    // 해양·섬·호수는 승인된 맵에서만 생성하며, 기본 AUTO는 과거 지형을 그대로 보존한다.
+    if(waterKey!=='AUTO'){
+      const sx=(x+.5)/w,sz=(z+.5)/h,radial=Math.hypot((sx-.5)*1.32,(sz-.5)*1.32);
+      const coastNoise=octave(sx*5,sz*5,0xc0a57)*.13;
+      const sea=waterKey==='COASTAL'?(sx<.27+coastNoise)
+        :waterKey==='OCEAN'?(sx<.43+coastNoise)
+        :waterKey==='ISLAND'?(radial>.54+coastNoise)
+        :waterKey==='ARCHIPELAGO'?(Math.min(Math.hypot(sx-.36,sz-.42),Math.hypot(sx-.69,sz-.6))>.2+coastNoise*.35)
+        :false;
+      const lake=waterKey==='LAKES'&&(Math.hypot((sx-.73)*1.5,(sz-.32)*1.5)<.115+coastNoise*.1);
+      if(sea||lake)type='WATER';
+      else if(waterKey==='LAKES'||waterKey==='OCEAN'||waterKey==='COASTAL'||waterKey==='ISLAND'||waterKey==='ARCHIPELAGO')
+        type=elevation>(mountain?.66:.68)?'RIDGE':moisture>.66?'FOREST':moisture<.28?'DRY':'PLAIN';
+    }
     terrain.push({x,z,elevation:+elevation.toFixed(4),moisture:+moisture.toFixed(4),biome:type});
   }
   for(const tile of terrain){
@@ -401,6 +424,45 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     tile.slopeDegrees=+(Math.atan2(rise,cellSize)*180/Math.PI).toFixed(2);
     const lower=diffs.map(([a,b])=>terrain[at(a,b)]).filter(t=>t.elevation<tile.elevation).sort((a,b)=>a.elevation-b.elevation||a.z-b.z||a.x-b.x)[0];
     tile.drainageTo=lower?{x:lower.x,z:lower.z}:null;
+  }
+  // 수체 연결요소: 가장자리 바다와 내륙 호수를 별도 분류하고 염분·연안 생태계를 구분한다.
+  const waterComponents=[],waterComponentByCell=new Int32Array(w*h).fill(-1),visitWater=new Uint8Array(w*h);
+  for(const tile of terrain){
+    const start=at(tile.x,tile.z);
+    if(tile.biome!=='WATER'||visitWater[start])continue;
+    const queue=[start],cells=[];visitWater[start]=1;let touchesBoundary=false;
+    for(let i=0;i<queue.length;i++){
+      const id=queue[i],x=id%w,z=Math.floor(id/w);cells.push(id);
+      if(x===0||z===0||x===w-1||z===h-1)touchesBoundary=true;
+      for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+        const xx=x+dx,zz=z+dz;if(!within(xx,zz))continue;
+        const ni=at(xx,zz);
+        if(visitWater[ni]||terrain[ni].biome!=='WATER')continue;
+        visitWater[ni]=1;queue.push(ni);
+      }
+    }
+    const type=touchesBoundary?'OCEAN':'LAKE';
+    const index=waterComponents.length;
+    for(const id of cells)waterComponentByCell[id]=index;
+    waterComponents.push(Object.freeze({id:'WATER_BODY_'+index,kind:type,cellCount:cells.length,
+      salinityPpt:type==='OCEAN'?35:0,source:'SEEDED_WATER_BODY_CONNECTED_COMPONENT',
+      nativeWaterShaderVerified:false,gameplaySwimmingRulesChanged:false}));
+  }
+  const coastDistance=new Int16Array(w*h).fill(32767),coastQueue=[];
+  for(const tile of terrain){
+    const id=at(tile.x,tile.z);
+    const isWater=tile.biome==='WATER';
+    const adjacent=[[-1,0],[1,0],[0,-1],[0,1]].some(([dx,dz])=>within(tile.x+dx,tile.z+dz)&&
+      (terrain[at(tile.x+dx,tile.z+dz)].biome==='WATER')!==isWater);
+    if(adjacent){coastDistance[id]=0;coastQueue.push(id);}
+  }
+  for(let i=0;i<coastQueue.length;i++){
+    const id=coastQueue[i],x=id%w,z=Math.floor(id/w);
+    for(const [dx,dz] of [[-1,0],[1,0],[0,-1],[0,1]]){
+      const xx=x+dx,zz=z+dz;if(!within(xx,zz))continue;
+      const ni=at(xx,zz);
+      if(coastDistance[ni]>coastDistance[id]+1){coastDistance[ni]=coastDistance[id]+1;coastQueue.push(ni);}
+    }
   }
   // 유역 유출량은 높은 셀부터 하류로 누적한다. 높이·충돌·하천 연결은 바꾸지 않는다.
   const runoff=Float64Array.from(terrain,tile=>.15+tile.moisture*.85);
