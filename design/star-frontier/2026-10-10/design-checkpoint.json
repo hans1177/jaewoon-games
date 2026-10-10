@@ -187,25 +187,32 @@
       },
       "playerFantasy": "별길 개척자의 진보형 플레이어 역할은 전략적 결정과 위험에 대한 인식 변화를 통해 세계를 재구성하는 과정에서 중요한 선택을 내리는 것이 목적입니다. 이는 역사와 철학의 소재로 가득 차 있으며, 새로운 상태 변화와 대응 방식을 결정하는 데 기여합니다.",
       "coreFun": "{\"system\":\"전략적 빌드\",\"material\":\"플레이어의 선택과 위험에 대한 인식 변화\",\"materialDomain\":\"역사와 철학\",\"stateChange\":\"선택 -> 위험 증가 -> 새로운 전략 경로 생성\"}"
+    },
+    "local_authoring_parts::786636f39c04be070c03d18afe0fbb53d5b688920ece9f8dda0d39fe918d2b58:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어의 전략적 결정과 위험 인식 변화를 통해 세계 재구성",
+        "역사와 철학 소재로 가득 차 있는 전략적 빌드에서의 새로운 전략 경로 생성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 639034,
-      "lastMs": 69628,
+      "totalMs": 702125,
+      "lastMs": 63091,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:04:47.887Z"
+      "updatedAt": "2026-10-10T03:05:50.981Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:08.629Z",
-  "updatedAt": "2026-10-10T03:04:47.889Z",
+  "updatedAt": "2026-10-10T03:05:50.981Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1693,7 +1700,7 @@
   "localAuthoringSplits": {
     "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:04:47.889Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:05:50.981Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
