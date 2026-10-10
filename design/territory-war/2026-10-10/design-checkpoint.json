@@ -211,25 +211,40 @@
       "name": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
       "purpose": "전선 변화 대응 전략 구축, 자원 배분 방식과 군사 구조 관계 형성",
       "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 전략 수립"
+    },
+    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": {
+      "id": "a_unity_web_validation_surface",
+      "grammarRole": "A",
+      "stateInputs": [
+        "identity-core: 영토 확장 전략 시스템 - 주요 지역 및 자원 우선순위 결정",
+        "coreLoop: 전선 변화 대응 전략 실행, 자원 분배 계획 확정"
+      ],
+      "stateOutputs": [
+        "identity-core: 지역 경계 힘 강도 증가, 자원 배분 방식 변경",
+        "coreFun: 입력: 주요 지역 전략 선택, 자원 분배 계획 결정"
+      ],
+      "name": "지역 경계 힘 vs. 군사 전술 강도, 자원 배분 방식 vs. 군사 구조 구성",
+      "purpose": "주요 지역 전략 선택과 자원 분배 계획 결정에 기반한 상태 교환",
+      "playerChoice": "주요 지역 전략 선택, 자원 분배 계획 결정, 전선 변화 대응 전략 수립의 순차적 실천을 통해 실제 세계 상태를 변하게 된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 23,
-      "successes": 22,
+      "calls": 27,
+      "successes": 26,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1515841,
-      "lastMs": 26071,
+      "totalMs": 1609852,
+      "lastMs": 24341,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:41:49.308Z"
+      "updatedAt": "2026-10-10T06:43:23.329Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:33.400Z",
-  "updatedAt": "2026-10-10T06:41:49.309Z",
+  "updatedAt": "2026-10-10T06:43:23.330Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1786,14 +1801,14 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": 18
+    "local_authoring_parts::ab7386cb9401526a020a25a43d7316c7aac310bb8ac1bbaf140725eba80ba68a:signatureSystems:1:5c0b169181030099": 21
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:41:49.308Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T06:43:23.329Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
