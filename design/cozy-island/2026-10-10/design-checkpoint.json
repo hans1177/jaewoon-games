@@ -540,25 +540,43 @@
         "병력 전환 → 지역 기지 확보",
         "고급 병종 확보 → 해전 · 공성 정복 순서로 진행됨"
       ]
+    },
+    "local_authoring_parts::5ca6cadd964a242b36b91aa0d558ce1bf5efdf42f2610c4429346d5d68ae0af7:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "직접 채집 → 주민 자동화: 나무/식량 획득 → 주민 생산 → 병력 전환 → 지역 기지 확보 → 고급 병종 확보 → 해전 · 공성 정복 순서로 "
+      ],
+      "stateOutputs": [
+        "나무/식량 획득 시 주민 고용 증가",
+        "주민 생산 직업 배치 후 노동율 증가",
+        "병력 전환 시 전투력 향상",
+        "지역 기지 확보 시 거점 점령 승리",
+        "고급 병종 확보 시 전략적 지위 상승",
+        "해전 또는 공성 정복 시 스테이지 이동 및 점령 성공"
+      ],
+      "name": "ROAD_TO_STRATEGIC_CONTROL",
+      "purpose": "주민 자동화와 병영 성장의 단계별 진입과 점령을 통해 5개 전략 거점을 차례로 점령하는 게임 로드를 구축한다.",
+      "playerChoice": "각 단계에서 직접 채집, 주민 자동화 선택 및 병력 전환 결정으로 인한 상태 변화를 관찰할 수 있다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 9,
+      "calls": 12,
+      "successes": 10,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1578553,
-      "lastMs": 12202,
+      "totalMs": 1644136,
+      "lastMs": 65583,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:11:27.418Z"
+      "updatedAt": "2026-10-10T10:12:33.003Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:45:08.683Z",
-  "updatedAt": "2026-10-10T10:11:27.419Z",
+  "updatedAt": "2026-10-10T10:12:33.003Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1632,8 +1650,8 @@
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true,
     "eb01898a3b729b92d8d3856ec1406e7d6425ed9eff6547af95b6d21ef1ccb5d6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:11:27.418Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T10:12:33.003Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
