@@ -326,10 +326,14 @@ export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},
     const id=clean(row.id);
     if(!id)continue;
     const specificTokens=id.toLowerCase().split(/[-_.]+/).filter(token=>token.length>=4
-      &&!GENERIC_LIBRARY_NAME_TOKENS.has(token)&&token!==category.toLowerCase());
+      &&!GENERIC_LIBRARY_NAME_TOKENS.has(token)&&!token.startsWith(category.toLowerCase()));
     const specific=anchors.filter(anchor=>specificTokens.some(token=>anchorText(anchor).toLowerCase().includes(token)));
-    const pack=/-v\d+$/i.test(id)||/^(?:roblox-common-|shared-humanoid-motion-)/i.test(id)&&/-v\d+$/i.test(id);
-    if(!pack&&!specific.length)continue;
+    // 'shared-quest-v1' 같은 특정 기능 팩을 UI라는 이유만으로 전체 게임에 추천하지 않는다.
+    // 순수 공용 카테고리 팩만 추가 기능 요구 없이 카테고리 소스 근거로 후보를 낸다.
+    const pack=/-v\d+$/i.test(id);
+    const generalPack=pack&&(specificTokens.length===0
+      ||(category==='MOTION'&&specificTokens.length===1&&specificTokens[0]==='humanoid'));
+    if(!generalPack&&!specific.length)continue;
     const referenceOnly=['SHARED_REFERENCE','WEB_REFERENCE'].includes(clean(row.platform).toUpperCase())
       ||list(roles.references).length>0&&!list(roles.models).length&&!list(roles.runtimeCode).length;
     safeAssets.push({
@@ -342,7 +346,7 @@ export function buildUnifiedLibraryMatchContract({gameId='',design={},source={},
       verifiedCompanyReusable:row.verifiedCompanyReusable===true,productionVerified:row.productionVerified===true,
       optional:true,firstParty:true,automaticImport:false,newGameplayAuthority:false,runtimeVerified:false,
       integration:referenceOnly?'REFERENCE_ONLY':target==='WEB'?'REUSE_ONLY_WHEN_COMPATIBLE_WITH_EXISTING_SOURCE':'NATIVE_ASSET_IMPORT_IN_EXISTING_PROJECT_AFTER_LICENSE_AND_RUNTIME_QA',
-      score:(pack?4:0)+(specific.length?6:0)+(row.verifiedCompanyReusable===true?1:0)
+      score:(generalPack?4:0)+(specific.length?6:0)+(row.verifiedCompanyReusable===true?1:0)
     });
   }
   const familyCounts=new Map(),assetCandidates=[];
