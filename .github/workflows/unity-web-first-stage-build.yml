@@ -549,10 +549,23 @@ jobs:
           import fs from 'node:fs';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
-          const play=JSON.parse(fs.readFileSync(root+'/unity-web-gameplay-validation.json','utf8'));
-          const independent=JSON.parse(fs.readFileSync(root+'/unity-web-independent-qa.json','utf8'));
-          const regression=JSON.parse(fs.readFileSync(root+'/unity-web-regression.json','utf8'));
-          const checks=[play,independent,regression];
+          const scenarios=[
+            ['actual-play','unity-web-gameplay-validation.json'],
+            ['independent-qa','unity-web-independent-qa.json'],
+            ['regression','unity-web-regression.json']
+          ];
+          const checks=scenarios.map(([scenario,file])=>{
+            const evidencePath=root+'/'+file;
+            if(!fs.existsSync(evidencePath))throw new Error('UNITY_WEB_QA_EVIDENCE_MISSING:'+scenario);
+            return JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+          });
+          const observedFailure=checks.find(e=>e?.observedRuntimeFailure===true);
+          if(observedFailure){
+            const signature=String(observedFailure.failureSignature||'UNKNOWN').slice(0,800);
+            console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+observedFailure.scenarioId+':'+signature);
+            throw new Error('UNITY_WEB_QA_REPAIR_REQUIRED:'+observedFailure.scenarioId+':'+signature);
+          }
+          const [play,independent,regression]=checks;
           // 3회 실제 브라우저 부팅 증거가 없는 경우 다른 성공 표식으로 대체하지 않는다.
           if(checks.some(e=>e.playableBrowserTest!==true||e.boot?.pass!==true))
             throw new Error('UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED');

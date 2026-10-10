@@ -552,3 +552,16 @@ test('24H pre-plan production dispatch observes runner pressure without suppress
   assert.match(step,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);
 });
+
+
+test('existing Vibe2 GAME_PRIMARY executor uses all 128 fixed repeat-development slots',()=>{
+  const fixed=roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots;
+  assert.equal(fixed,128);
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'"));
+  assert.ok(runner.includes('VIBE2_GAME_PRIMARY_REFILL_TARGET=128'));
+  assert.ok(runner.includes('"execution_lane":"game-primary","lane_max":"128"'));
+  assert.match(runner,/execution_lane: game-primary\s*\n\s*lane_max: '128'/);
+  assert.ok(core.includes("== 'game-primary' && '128'"));
+  assert.ok(!core.includes("== 'game-primary' && '64'"));
+  assert.ok(runner.includes("VIBE2_ASSET_DEVELOPMENT_MAX: '63'"));
+});

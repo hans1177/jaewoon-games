@@ -96,7 +96,7 @@ env:
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
   VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
   VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary' }}
-  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '63') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && '64') || inputs.lane_max || '64' }}
+  VIBE2_LANE_MAX: ${{ (inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'learning-idle' && '1' || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'asset-development' && '63') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'recovery-fast' && '5') || ((inputs.execution_lane || github.event.client_payload.execution_lane || 'game-primary') == 'game-primary' && '128') || inputs.lane_max || '64' }}
 
 jobs:
   reserve:

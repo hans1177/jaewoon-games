@@ -543,3 +543,22 @@ test('monster adventure uses the existing original 3D library as native Unity me
     }
   }
 });
+
+
+test('failed Unity Web browser runs persist observed negative evidence without bypassing QA',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(source,/observedRuntimeFailure:true/);
+  assert.match(source,/playableBrowserTest:false/);
+  assert.match(source,/UNITY_WEB_QA_CAUSAL_FAILURE/);
+  assert.match(source,/throw error;/);
+  assert.match(workflow,/UNITY_WEB_QA_EVIDENCE_MISSING:/);
+  assert.match(workflow,/UNITY_WEB_QA_REPAIR_REQUIRED:/);
+  assert.match(workflow,/if\(!playable\)throw new Error\('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED'\)/);
+});
+
+test('monster adventure Unity raycasts compile with the native physics module',()=>{
+  const game=fs.readFileSync(new URL('../unity-games/monster-adventure/Assets/Scripts/UnityWebFloorGame.cs',import.meta.url),'utf8');
+  const manifest=JSON.parse(fs.readFileSync(new URL('../unity-games/monster-adventure/Packages/manifest.json',import.meta.url),'utf8'));
+  assert.match(game,/Physics\.Raycast\(/);
+  assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
+});
