@@ -95,25 +95,117 @@
         "delveGrowthRule": "단서·발견·선택으로 인한 실제 세계 상태 변화와 다음 사건의 연관성을 명시한다",
         "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성"
       }
+    },
+    "local_authoring_parts::828c22cc26e5b71b3cfdb0218aa542ee7fc28f1f125301b75c4b0233b22c8331:playerFantasy,coreFun": {
+      "playerFantasy": "퇴마 사무소 - 진보적 게임 정체성",
+      "coreFun": "게임 시스템 + 주제 창작 소재"
+    },
+    "local_authoring_parts::a92f90e90a350affaeef53a41f9d5220b1c95bf1486f69bf433c9bdb5487a6a9:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "퇴마 사무소 - 진보적 게임 정체성",
+      "creativeGrammar": {
+        "mainIdentity": "게임 시스템 + 주제 창작 소재",
+        "a": {
+          "system": "주요 시스템",
+          "material": "창작 소재",
+          "materialDomain": "주제/예술/역사/철학/과학/무협/엽기",
+          "stateChange": "관찰 가능한 상태 변화 및 즉각적 결과"
+        },
+        "b": {
+          "system": "다른 시스템",
+          "material": "창작 소재",
+          "materialDomain": "주제/예술/역사/철학/과학/무협/엽기",
+          "stateChange": "관찰 가능한 상태 변화 및 즉각적 결과"
+        },
+        "abCausality": "양방향 실제 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다",
+        "abEvolution": {
+          "aChangesB": "A→B, B→A 양방향 실현 조건과 피드백을 명시한다",
+          "bChangesA": "B→A, A→B 양방향 실현 조건과 피드백을 명시한다",
+          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다"
+        },
+        "materialFusion": {
+          "contrast": "서로 다른 단서·발견·새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지)",
+          "causalBridge": "인과적으로 연결되는 플레이를 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고",
+          "removalConsequence": "보조 장르 제거 시 바뀌는 플레이를 명시한다,"
+        },
+        "storyCausalChain": {
+          "cause": "게임 규칙 및 인과적 상태 입력/출력",
+          "characterConflict": "인물 갈등 및 플레이어 선택의 실제 세계 상태 변화",
+          "playerChoice": "플레이어 선택의 결과와 다음 사건의 연관성을 명시한다",
+          "worldChange": "실제 세계 상태 변화와 다음 사건의 연관성을 명시한다",
+          "nextEvent": "다음 사건의 예측 및 구체화를 포함한다"
+        },
+        "cThemes": [
+          {
+            "name": "문화·역사",
+            "kind": "MATERIAL",
+            "gameplayEffect": "문화·역사 관련 단서·발견·선택으로 인한 세계 상태 변화"
+          },
+          {
+            "name": "철학·과학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "철학·과학 관련 단서·발견·선택으로 인한 세계 상태 변화"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "문화·역사",
+            "gameplayEffect": "문화·역사 관련 단서·발견·선택으로 인한 세계 상태 변화"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "철학·과학",
+            "gameplayEffect": "철학·과학 관련 단서·발견·선택으로 인한 세계 상태 변화"
+          }
+        ],
+        "cGenreInterlock": "두 장르의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다",
+        "cWorldAndGameplayEffect": "단서·발견·선택으로 인한 실제 세계 상태 변화 및 다음 사건의 연관성을 명시한다",
+        "delveDiscoveries": [
+          {
+            "clue": "문화·역사 단서 및 발견",
+            "discovery": "문화·역사 관련 단서·발견·선택으로 인한 세계 상태 변화",
+            "newChoice": "새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지)"
+          },
+          {
+            "clue": "철학·과학 단서 및 발견",
+            "discovery": "철학·과학 관련 단서·발견·선택으로 인한 세계 상태 변화",
+            "newChoice": "새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지)"
+          },
+          {
+            "clue": "다른 주제/소재 단서 및 발견",
+            "discovery": "다른 주제/소재 관련 단서·발견·선택으로 인한 세계 상태 변화",
+            "newChoice": "새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지)"
+          },
+          {
+            "clue": "실질적 인과 변화의 단서 및 발견",
+            "discovery": "실질적 인과 변화를 유도하는 단서·발现·선택으로 인한 세계 상태 변화",
+            "newChoice": "새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지)"
+          }
+        ],
+        "delveGrowthRule": "단서·발견·선택으로 인한 실제 세계 상태 변화와 다음 사건의 연관성을 명시한다",
+        "finalGameIdentity": "모든 축을 인과적으로 결합한 새 정체성"
+      },
+      "playerFantasy": "퇴마 사무소 - 진보적 게임 정체성",
+      "coreFun": "게임 시스템 + 주제 창작 소재"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 473575,
-      "lastMs": 173473,
+      "totalMs": 525145,
+      "lastMs": 51570,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:04:51.587Z"
+      "updatedAt": "2026-10-10T09:05:43.159Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:56:57.992Z",
-  "updatedAt": "2026-10-10T09:04:51.588Z",
+  "updatedAt": "2026-10-10T09:05:43.163Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1605,7 +1697,7 @@
   "localAuthoringSplits": {
     "828c22cc26e5b71b3cfdb0218aa542ee7fc28f1f125301b75c4b0233b22c8331": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:04:51.587Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:05:43.163Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
