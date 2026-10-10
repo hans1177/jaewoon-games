@@ -1016,7 +1016,7 @@ export const COMMON_CLASS_FAMILY_TREES=Object.freeze({
   SWORD:{base:'SWORD_TRAINEE',modules:['BLADE'],weapon:'ONE_HAND_SWORD',paths:{SAMURAI:{classes:['SWORD_TRAINEE','SAMURAI','KENSEI'],modules:['IAI','KENSEI'],weapon:'KATANA'},KNIGHT:{classes:['SWORD_TRAINEE','KNIGHT','ROYAL_GUARD'],modules:['SHIELD','COMMAND']},DUELIST:{classes:['SWORD_TRAINEE','DUELIST','BLADE_MASTER'],modules:['DUEL','KENSEI']}}},
   FIGHTER:{base:'FIGHTER_TRAINEE',modules:['BRUISER'],weapon:'UNARMED',paths:{BERSERKER:{classes:['FIGHTER_TRAINEE','BERSERKER','WARLORD'],modules:['RAGE','COMMAND']},MARTIAL_ARTIST:{classes:['FIGHTER_TRAINEE','MARTIAL_ARTIST','GRANDMASTER'],modules:['MARTIAL','KENSEI']},GUARDIAN:{classes:['FIGHTER_TRAINEE','GUARDIAN','FORTRESS_GUARD'],modules:['SHIELD','COMMAND']}}},
   POLEARM:{base:'SPEAR_TRAINEE',modules:['SPEAR'],weapon:'SPEAR',paths:{LANCER:{classes:['SPEAR_TRAINEE','LANCER','PIKE_MASTER'],modules:['DRAGOON','TACTICS']},DRAGOON:{classes:['SPEAR_TRAINEE','DRAGOON','SKY_LANCER'],modules:['DRAGOON','KENSEI']}}},
-  RANGED:{base:'RANGED_TRAINEE',modules:['BOW'],weapon:'BOW',paths:{ARCHER:{classes:['RANGED_TRAINEE','ARCHER','MARKSMAN'],modules:['HUNT','TACTICS']},GUNSLINGER:{classes:['RANGED_TRAINEE','GUNSLINGER','GUNMASTER'],modules:['GUN','TACTICS'],weapon:'FIREARM'},HUNTER:{classes:['RANGED_TRAINEE','HUNTER','BEAST_RANGER'],modules:['HUNT','BEAST']}}},
+  RANGED:{base:'RANGED_TRAINEE',modules:['BOW'],weapon:'BOW',paths:{ARCHER:{classes:['RANGED_TRAINEE','ARCHER','MARKSMAN'],modules:['HUNT','TACTICS']},GUNSLINGER:{classes:['RANGED_TRAINEE','GUNSLINGER','GUNMASTER'],modules:['GUN','TACTICS'],replaceBaseModules:['GUN'],weapon:'FIREARM'},HUNTER:{classes:['RANGED_TRAINEE','HUNTER','BEAST_RANGER'],modules:['HUNT','BEAST']}}},
   ROGUE:{base:'ROGUE_TRAINEE',modules:['STEALTH'],weapon:'DAGGER',paths:{ASSASSIN:{classes:['ROGUE_TRAINEE','ASSASSIN','SHADOW_MASTER'],modules:['NINJA','KENSEI']},NINJA:{classes:['ROGUE_TRAINEE','NINJA','SHINOBI_MASTER'],modules:['NINJA','IAI']},SCOUT:{classes:['ROGUE_TRAINEE','SCOUT','INFILTRATOR'],modules:['HUNT','TACTICS']}}},
   MAGIC:{base:'MAGIC_APPRENTICE',modules:['ELEMENT'],weapon:'STAFF_OR_WAND',paths:{ELEMENTALIST:{classes:['MAGIC_APPRENTICE','ELEMENTALIST','ARCHMAGE'],modules:['ELEMENT','KENSEI']},SUMMONER:{classes:['MAGIC_APPRENTICE','SUMMONER','GRAND_SUMMONER'],modules:['SUMMON','BEAST']},NECROMANCER:{classes:['MAGIC_APPRENTICE','NECROMANCER','SOUL_WEAVER'],modules:['CURSE','SUMMON']}}},
   SUPPORT:{base:'SUPPORT_APPRENTICE',modules:['HEAL'],weapon:'STAFF_OR_WAND',paths:{CLERIC:{classes:['SUPPORT_APPRENTICE','CLERIC','SAINT'],modules:['HEAL','BARD']},PALADIN:{classes:['SUPPORT_APPRENTICE','PALADIN','HOLY_GUARDIAN'],modules:['SHIELD','BLADE'],weapon:'ONE_HAND_SWORD'},BARD:{classes:['SUPPORT_APPRENTICE','BARD','MAESTRO'],modules:['BARD','DIPLOMACY']}}},
@@ -1032,17 +1032,47 @@ export const COMMON_CLASS_FAMILY_TREES=Object.freeze({
 
 export const COMMON_CLASS_GENRE_BINDINGS=Object.freeze({
   ACTION_RPG:{focus:['stance','move','attack','defense','skill'],motionStyle:'COMBAT_READABILITY'},
+  SOULS_LIKE:{focus:['stance','attack','defense','move'],motionStyle:'WEIGHTED_TELEGRAPH_AND_RECOVERY'},
+  MMO_RPG:{focus:['stance','move','attack','skill','interaction'],motionStyle:'PARTY_READABLE_ROLE_PRESENTATION'},
+  TURN_BASED_RPG:{focus:['stance','attack','skill','defense'],motionStyle:'CLEAR_DISTINCT_TURN_INTENTS'},
+  DUNGEON_CRAWLER:{focus:['move','attack','defense','skill'],motionStyle:'CLOSE_QUARTERS_COMBAT'},
+  ROGUELIKE:{focus:['move','attack','skill','defense'],motionStyle:'FAST_RECOVERABLE_ACTIONS'},
+  ACTION_ADVENTURE:{focus:['move','attack','interaction','skill'],motionStyle:'TRAVERSAL_OBJECT_COMBAT'},
   OPEN_WORLD_SURVIVAL:{focus:['move','interaction','defense','skill'],motionStyle:'GROUND_AND_TOOL_CONTACT'},
+  STEALTH_ACTION:{focus:['stance','move','defense','interaction','attack'],motionStyle:'CAUTIOUS_SILHOUETTE_AND_SOFT_CONTACT'},
+  SHOOTER_FPS:{focus:['stance','move','attack','defense'],motionStyle:'AIM_RELOAD_RECOIL_AND_LOWER_BODY'},
+  SHOOTER_TPS:{focus:['stance','move','attack','defense'],motionStyle:'VISIBLE_TORSO_AIM_AND_RECOIL'},
+  PLATFORMER:{focus:['move','attack','interaction'],motionStyle:'AIRBORNE_SILHOUETTE_AND_LANDING'},
   TACTICAL_STRATEGY:{focus:['stance','skill','interaction'],motionStyle:'SQUAD_ROLE_SILHOUETTE'},
+  REALTIME_STRATEGY:{focus:['stance','move','skill','interaction'],motionStyle:'UNIT_COMMAND_AND_WORKER_READABILITY'},
+  TOWER_DEFENSE:{focus:['stance','attack','skill','interaction'],motionStyle:'DEFENSE_ROLE_AND_SKILL_TELEGRAPH'},
+  MOBA:{focus:['stance','move','attack','skill'],motionStyle:'ABILITY_TELEGRAPH_AND_TEAM_READABILITY'},
   CITY_BUILDER:{focus:['move','interaction','skill'],motionStyle:'WORKER_ACTIVITY_AND_CONSTRUCTION'},
   TYCOON:{focus:['stance','interaction','skill'],motionStyle:'STAFF_AND_CUSTOMER_READABILITY'},
+  MANAGEMENT_SIM:{focus:['stance','interaction','skill'],motionStyle:'NPC_JOB_TASK_AND_SERVICE_READABILITY'},
   FARMING_SIM:{focus:['move','interaction','skill'],motionStyle:'FARMING_TOOL_AND_CREATURE_CONTACT'},
+  COZY_LIFE_SIM:{focus:['stance','move','interaction'],motionStyle:'EVERYDAY_GESTURES_AND_CARE'},
   HORROR:{focus:['stance','move','defense','interaction'],motionStyle:'ALERTNESS_STEALTH_AND_REACTION'},
   PUZZLE_ADVENTURE:{focus:['interaction','move','skill'],motionStyle:'OBJECT_MANIPULATION_AND_CUES'},
   RACING:{focus:['stance','move','interaction'],motionStyle:'VEHICLE_DRIVER_AND_PIT_CREW'},
   SOCIAL_SIM:{focus:['stance','interaction','skill'],motionStyle:'NPC_WORK_DIALOGUE_AND_GESTURE'},
-  TOWER_DEFENSE:{focus:['stance','attack','skill','interaction'],motionStyle:'DEFENSE_ROLE_AND_SKILL_TELEGRAPH'},
+  RHYTHM:{focus:['stance','interaction','skill'],motionStyle:'BEAT_ALIGNED_BODY_GESTURES'},
+  SPORTS:{focus:['stance','move','interaction','skill'],motionStyle:'WEIGHT_TRANSFER_AND_TEAM_GESTURES'},
+  STORY_ADVENTURE:{focus:['stance','interaction','move'],motionStyle:'CONTEXTUAL_ACTING_AND_EMOTION'},
+  IDLE_GROWTH:{focus:['stance','skill','interaction'],motionStyle:'LOW_COST_IDLE_AND_REWARD_PRESENTATION'},
   SANDBOX:{focus:['move','interaction','skill'],motionStyle:'GENERIC_CREATION_AND_INTERACTION'}
+});
+
+export const COMMON_SKILL_PRESENTATION_GRAMMAR=Object.freeze({
+  STRIKE:Object.freeze({phaseRoles:['PREPARE','STARTUP','RELEASE','CONTACT_RESPONSE','RECOVERY'],contact:'LIMB_OR_WEAPON',effect:'CONTACT_TRAIL',audio:'WEAPON_WHOOSH_ON_REAL_SWEEP',camera:'SUBTLE_IMPACT'}),
+  PROJECTILE:Object.freeze({phaseRoles:['PREPARE','AIM','HOLD','RELEASE','RECOVERY'],contact:'RELEASE_SOCKET',effect:'PROJECTILE_TRAIL',audio:'RELEASE_ON_GESTURE',camera:'AIM_REFOCUS'}),
+  SPELL:Object.freeze({phaseRoles:['PREPARE','CHARGE','CHANNEL','RELEASE','RECOVERY'],contact:'HAND_OR_FOCUS',effect:'CAST_GLYPH',audio:'CAST_RELEASE_SYNC',camera:'SPELL_FOCUS'}),
+  SUMMON:Object.freeze({phaseRoles:['PREPARE','CHARGE','PORTAL_OPEN','RELEASE','RECOVERY'],contact:'GROUND_OR_SUMMON_SOCKET',effect:'SUMMON_CIRCLE',audio:'SUMMON_ON_AUTHORITATIVE_EVENT',camera:'SUMMON_REVEAL'}),
+  HEAL:Object.freeze({phaseRoles:['PREPARE','CHANNEL','TEND','RELEASE','RECOVERY'],contact:'HEAL_TARGET_HAND',effect:'HEAL_RUNE',audio:'HEAL_EVENT_SYNC',camera:'NONE'}),
+  STEALTH:Object.freeze({phaseRoles:['PREPARE','EVADE','REPOSITION','RELEASE','RECOVERY'],contact:'FOOT_AND_SHADOW',effect:'SHADOW_FADE',audio:'LOW_NOISE_CUE',camera:'NONE'}),
+  COMMAND:Object.freeze({phaseRoles:['PREPARE','INDICATE','SIGNAL','RELEASE','RECOVERY'],contact:'HAND_SIGNAL',effect:'COMMAND_MARKER',audio:'VOICE_CUE_ON_GAME_EVENT',camera:'NONE'}),
+  CRAFT:Object.freeze({phaseRoles:['PREPARE','TOOL_CONTACT','WORK','PRESENT','RECOVERY'],contact:'TOOL_AND_WORKPIECE',effect:'CRAFT_SPARK',audio:'SURFACE_CONTACT',camera:'WORK_ITEM_FOCUS'}),
+  INTERACTION:Object.freeze({phaseRoles:['PREPARE','REACH','HANDLE','PRESENT','RECOVERY'],contact:'HAND_AND_PROP',effect:'SOFT_FEEDBACK',audio:'ACTION_CUE',camera:'NONE'})
 });
 
 export const COMMON_CLASS_AUTHORING_CLIPS=Object.freeze({
@@ -1054,7 +1084,15 @@ export const COMMON_CLASS_AUTHORING_CLIPS=Object.freeze({
   ROGUE_BACKSTAB:'common_rogue_backstab_hq',
   ELEMENT_CHANNEL:'common_caster_channel_hq',
   HEAL_RITUAL:'common_healer_ritual_hq',
-  SUMMON_INVOCATION:'common_summon_call_hq'
+  SUMMON_INVOCATION:'common_summon_call_hq',
+  HAMMER_FORGE:'common_forge_hammer_hq',
+  PLACE_FRAME:'common_build_place_hq',
+  HARVEST:'common_farm_harvest_hq',
+  RALLY_COMMAND:'common_command_rally_hq',
+  HANDOVER_ITEM:'common_merchant_trade_hq',
+  STEER:'common_vehicle_steer_hq',
+  FISH_CAST:'common_fishing_cast_hq',
+  MIX_POTION:'common_potion_mix_hq'
 });
 
 export function createCommonClassMotionLoadout({
@@ -1067,7 +1105,7 @@ export function createCommonClassMotionLoadout({
   const rigCompatible=['HUMANOID','HUMANOID_UNDEAD','SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER'].includes(body);
   if(!tree||!lineage||!genreProfile||!validTier||!rigCompatible)
     return Object.freeze({valid:false,reason:!tree?'UNKNOWN_CLASS_FAMILY':!lineage?'UNKNOWN_CLASS_PATH':!genreProfile?'UNKNOWN_GAME_GENRE':!validTier?'INVALID_CLASS_TIER':'INCOMPATIBLE_BODY_PLAN',productionVerified:false,gameplayAuthority:false});
-  const modules=unique([...tree.modules,...lineage.modules.slice(0,tier)]);
+  const modules=unique([...(tier>0&&lineage.replaceBaseModules?lineage.replaceBaseModules:tree.modules),...lineage.modules.slice(0,tier)]);
   const names=['stance','move','attack','defense','skill','interaction','vfx'];
   const groups=Object.freeze(Object.fromEntries(names.map(group=>[group,freezeList(unique(modules.flatMap(id=>COMMON_CLASS_ACTION_MODULES[id]?.[group]||[])))])));
   const sourceClipBindings=Object.freeze(Object.entries(COMMON_CLASS_AUTHORING_CLIPS)
@@ -1076,11 +1114,40 @@ export function createCommonClassMotionLoadout({
       motionId,clipId,source:'assets/shared/humanoid-motion-v1/author-motion.py',
       authoringState:'DEFINED_NOT_BAKED',nativeRuntimeVerified:false
     })));
-  const skills=Object.freeze(groups.skill.map(id=>Object.freeze({
-    id,kind:'PRESENTATION_INTENT',motionRole:id,sequence:buildSkillMotionSequence(),
-    visualRoles:groups.vfx,actualEffectRequiresGameBinding:true,
-    damageAuthority:false,cooldownAuthority:false,gameplayAuthority:false
-  })));
+  const genreActions=Object.freeze(Object.fromEntries(genreProfile.focus.map(group=>[
+    group,Object.freeze([...(groups[group]||[])])
+  ])));
+  const activeRoles=freezeList(unique(Object.values(genreActions).flat()));
+  const classifySkill=id=>{
+    const val=upper(id);
+    if(/SUMMON|BEAST_COMMAND|HERD_CALL/.test(val))return 'SUMMON';
+    if(/HEAL|REVIVE|REMEDY/.test(val))return 'HEAL';
+    if(/SPELL|ELEMENT|CURSE|ALCHEMY|RUNE|MAGIC|ARCANE|CHANNEL/.test(val))return 'SPELL';
+    if(/BOW|SHOT|ARROW|GUN|PROJECTILE/.test(val))return 'PROJECTILE';
+    if(/SHADOW|STEALTH|NINJA|EVADE|DODGE/.test(val))return 'STEALTH';
+    if(/COMMAND|RALLY|FORMATION|LEADERSHIP|TACTIC|SIGNAL|ADDRESS|DIPLOMACY/.test(val))return 'COMMAND';
+    if(/CRAFT|FORGE|BUILD|CONSTRUCTION|CARPENTER|FARM|FISH|BOTANICAL|CHEF|MIX|DEPLOY|DEVICE/.test(val))return 'CRAFT';
+    if(/ATTACK|BLADE|SPEAR|DUEL|MARTIAL|BERSERK|PARRY|FINISHER|GUARD|SMASH|DRAGOON/.test(val))return 'STRIKE';
+    return 'INTERACTION';
+  };
+  const skillBindings=Object.entries(COMMON_CLASS_AUTHORING_CLIPS);
+  const skills=Object.freeze(groups.skill.map(id=>{
+    const mode=classifySkill(id),grammar=COMMON_SKILL_PRESENTATION_GRAMMAR[mode];
+    const applicable=skillBindings
+      .filter(([action])=>activeRoles.includes(action)||groups.attack.includes(action)||groups.interaction.includes(action))
+      .map(([action,clipId])=>Object.freeze({action,clipId,runtimeVerified:false}));
+    return Object.freeze({
+      id,kind:'PRESENTATION_INTENT',motionRole:id,skillFamily:mode,
+      sequence:buildSkillMotionSequence({hold:['SPELL','SUMMON','HEAL'].includes(mode)?'HOLD':null}),
+      visualPhases:grammar.phaseRoles,contactSocket:grammar.contact,
+      vfxCue:grammar.effect,audioCue:grammar.audio,cameraCue:grammar.camera,
+      genrePreferred:genreProfile.focus.includes('skill'),
+      sourcePoseCandidates:Object.freeze(applicable),
+      visualRoles:groups.vfx,actualEffectRequiresGameBinding:true,
+      nativeRuntimeVerificationRequired:true,productionVerified:false,
+      damageAuthority:false,cooldownAuthority:false,gameplayAuthority:false
+    });
+  }));
   const weapon=upper(lineage.weapon||tree.weapon||'');
   return Object.freeze({
     valid:true,version:1,family:familyKey,path:pathKey,tier,
@@ -1089,7 +1156,8 @@ export function createCommonClassMotionLoadout({
     genre:genreKey,genreBinding:Object.freeze({...genreProfile,focus:freezeList(genreProfile.focus)}),
     compatibleAcrossGenres:true,bodyPlan:body,rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     platform:upper(platform),weaponFamily:weapon||null,
-    groups,skills,combatLoadout:weapon?createDuelCombatMotionLoadout({weaponFamily:weapon,platform}):null,
+    groups,genreActions,activeGenreRoles:activeRoles,skills,
+    combatLoadout:weapon?createDuelCombatMotionLoadout({weaponFamily:weapon,platform}):null,
     sourceClipBindings,sourceOnly:true,productionVerified:false,
     nativeRuntimeVerificationRequired:true,platformNativeRetargetRequired:true,
     directCrossPlatformBinaryReuseForbidden:true,gameOwnsClassProgression:true,
