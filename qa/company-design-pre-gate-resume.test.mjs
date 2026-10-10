@@ -476,6 +476,35 @@ test('MAIN A B c DELVE authoring gate rejects copied rule meaning with distinct 
   assert.equal(JSON.stringify(copied),before,'invalid design content must not be silently rewritten or accepted');
 });
 
+test('local designer authors connected state handoff fields in one cohesive model request',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const properties={
+    fromId:{type:'string'},toId:{type:'string'},
+    stateKeys:{type:'array',minItems:1,items:{type:'string'}},
+    fromSystem:{type:'string'},toSystem:{type:'string'},trigger:{type:'string'},stateChange:{type:'string'}
+  };
+  const schema={type:'object',required:Object.keys(properties),properties,additionalProperties:false};
+  const expected={fromId:'main_rule',toId:'a_rule',stateKeys:['Resource'],fromSystem:'main process',toSystem:'secondary process',trigger:'resource shared',stateChange:'shared resource consumed'};
+  const calls=[],checkpoint={tasks:{}};
+  const author=runInNewContext(source+'\ncallLocalDesignerModel',{
+    createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
+    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    designCheckpoint:checkpoint,modelCallStats:[],console:{log(){}},clean:String,
+    parseJsonObject:JSON.parse,normalizeSchemaValue:value=>value,assertSchemaValue:assertDesignSchema,
+    recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
+      calls.push(Object.keys(contract.properties));
+      return JSON.stringify(expected);
+    }
+  });
+  const result=await author('designer','original design state handoff',schema,{predict:1400,includeAssetContext:false});
+  assert.deepEqual(JSON.parse(JSON.stringify(result)),expected);
+  assert.equal(calls.length,1,'seven causally connected properties must be generated atomically');
+  assert.deepEqual(calls[0],Object.keys(properties));
+  assert.equal(Object.keys(checkpoint.tasks).length,0,'healthy handoff never spawns partial requests');
+});
+
+
 test('truncated local output splits required fields and resumes only the unfinished part',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
@@ -1010,7 +1039,7 @@ test('historical three-platform checkpoint migration stays SHA-bound while only 
 
 test('transport repair reuses previous drafts only when every original input still matches',()=>{
   const source=design.slice(design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='),design.indexOf('if(!checkpointReusable'));
-  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4']){
+  for(const oldEngine of ['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4','90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71']){
   const checkpointInputContext={gameId:'g',date:'d',seed:{seedId:'s'},evidence:{librarySha:'unchanged'},policyDigest:'p',engineDigest:'new-engine'};
   const fingerprint=createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:oldEngine})).digest('hex');
   const cp={contractVersion:4,gameId:'g',date:'d',seedId:'s',policyDigest:'p',engineDigest:oldEngine,fingerprint,phases:{},tasks:{identity:'authored'},modelHealth:{}};

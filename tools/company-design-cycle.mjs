@@ -344,7 +344,8 @@ const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVe
   &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
   &&clean(designCheckpoint?.policyDigest)===policyDigest
   &&(checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
-    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest))
+    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4',
+      '90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71'].includes(clean(designCheckpoint?.engineDigest))
       &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:designCheckpoint.engineDigest})).digest('hex')))
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
@@ -1258,11 +1259,13 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const grammarObject=Boolean(schema.properties?.grammarRole?.enum?.length);
   const oversizedTextGroup=!grammarObject&&fields.length>1&&fields.every(key=>schema.properties[key].type==='string')
     &&fields.reduce((sum,key)=>sum+Number(schema.properties[key].maxLength||0),0)>predict;
+  // 상태 연결의 양 끝·공유 상태 키는 한 번에 생성해야 서로 모순되지 않는다.
+  const cohesiveHandoff=fields.includes('fromId')&&fields.includes('toId')&&fields.includes('stateKeys');
   let directCall=true;
   let requestStarted=started;
   try{
     let raw;
-    let splitRequired=canSplit&&((isolateFields&&!grammarObject)||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!grammarObject)||oversizedTextGroup||objectChild||arrayChild||fields.includes('signatureSystems'));
+    let splitRequired=canSplit&&((isolateFields&&!grammarObject&&!cohesiveHandoff)||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!grammarObject&&!cohesiveHandoff)||oversizedTextGroup||objectChild||arrayChild||fields.includes('signatureSystems'));
     if(!splitRequired){
       const requestPrompt=prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': '');
       try{
