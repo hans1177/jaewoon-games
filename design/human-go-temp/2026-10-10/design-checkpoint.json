@@ -249,21 +249,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1297906,
-      "lastMs": 101976,
+      "totalMs": 1397716,
+      "lastMs": 99810,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:37:59.335Z"
+      "updatedAt": "2026-10-10T06:39:39.147Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:21.375Z",
-  "updatedAt": "2026-10-10T06:37:59.336Z",
+  "updatedAt": "2026-10-10T06:39:39.150Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1979,7 +1979,16 @@
   "sliceRepairFeedback": {
     "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:3:55f86f9fcfca244f": [
       {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
+        "grammarRole": "DELVE",
+        "previousRuleIds": [
+          "main_arena_survival_roguelite",
+          "a_arena_survival_roguelite",
+          "b_arena_survival_roguelite"
+        ]
+      },
+      {
+        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
         "grammarRole": "DELVE",
         "previousRuleIds": [
           "main_arena_survival_roguelite",
@@ -1991,14 +2000,14 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:2:cba953f9fdc43719": 4,
-    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:3:55f86f9fcfca244f": 1
+    "local_authoring_parts::b58a01250052b11dda27771ed098a1c76a2b51888d8cb1b7be40d25d5978e483:signatureSystems:3:55f86f9fcfca244f": 2
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "1a0f8c21398ea31b10d7bc2fbf71f4648cfa8d30a34879fac9826f3b8c9e162a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:37:59.335Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:39:39.147Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:DELVE",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
