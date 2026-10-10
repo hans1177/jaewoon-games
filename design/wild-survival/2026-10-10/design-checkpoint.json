@@ -28,25 +28,77 @@
         "stateChange": "선택 -> 업그레이드 적용 -> 새로운 월드 상태 변화 -> 보상/위험/다음 선택 발생"
       },
       "abCausality": "플레이어 선택 → 월드 상태 변화 → 보상/위험/다음 선택의 양방향 실제 상태 교환은 상황에 따라 달라짐을 확인함으로써 게임 루프가 유지됨."
+    },
+    "local_authoring_parts::77e9f91691ae7423468cbe4e54af259a4ecd150f6882fdcab7a051eec2275915:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "플레이어 선택 -> 업그레이드 적용 -> 새로운 월드 상태 변화",
+        "bChangesA": "선택 -> 월드 상태 변환 -> 보상/위험/다음 선택 발생",
+        "lateGameChange": "게임 루프가 유지됨을 확인함으로써 양방향 실제 상태 교환이 가능"
+      },
+      "materialFusion": {
+        "contrast": "야생 환경 및 동물 행동 vs 업그레이드 조합 및 전투 전략",
+        "causalBridge": "플레이어 선택 → 월드 상태 변화 → 보상/위험/다음 선택의 양방향 실제 상태 교환",
+        "removalConsequence": "보조 장르 제거 시 플레이 규칙, 위험, 정보, 선택이 바뀜"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 선택과 월드 상태 변화의 인과적 연결",
+        "characterConflict": "실제 세계 상태 변화와 다음 사건 간의 갈등",
+        "playerChoice": "월드 상태 변화를 통해 생성된 보상/위험/다음 선택",
+        "worldChange": "플레이어 선택에 따른 월드 상태 변화 및 그 결과",
+        "nextEvent": "플레이어 선택에 기반한 새로운 사건 발생"
+      }
+    },
+    "local_authoring_parts::a874fca2e50329461690927d542f1dd0ccd39a6616a100d3875ddff6385d6319:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "야생 생존의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프, 모바일에서도 즉시 이해되는 입력/피드백/실패/재도전 흐름",
+      "a": {
+        "system": "생존 시스템",
+        "material": "야생 환경 및 동물 행동",
+        "materialDomain": "실제 야생 환경과 동물 행동",
+        "stateChange": "플레이어 선택 -> 월드 상태 변환 -> 보상/위험/목표 결과 생성"
+      },
+      "b": {
+        "system": "게임 메커니즘",
+        "material": "업그레이드와 전투 시스템",
+        "materialDomain": "업그레이드 조합 및 전투 전략",
+        "stateChange": "선택 -> 업그레이드 적용 -> 새로운 월드 상태 변화 -> 보상/위험/다음 선택 발생"
+      },
+      "abCausality": "플레이어 선택 → 월드 상태 변화 → 보상/위험/다음 선택의 양방향 실제 상태 교환은 상황에 따라 달라짐을 확인함으로써 게임 루프가 유지됨.",
+      "abEvolution": {
+        "aChangesB": "플레이어 선택 -> 업그레이드 적용 -> 새로운 월드 상태 변화",
+        "bChangesA": "선택 -> 월드 상태 변환 -> 보상/위험/다음 선택 발생",
+        "lateGameChange": "게임 루프가 유지됨을 확인함으로써 양방향 실제 상태 교환이 가능"
+      },
+      "materialFusion": {
+        "contrast": "야생 환경 및 동물 행동 vs 업그레이드 조합 및 전투 전략",
+        "causalBridge": "플레이어 선택 → 월드 상태 변화 → 보상/위험/다음 선택의 양방향 실제 상태 교환",
+        "removalConsequence": "보조 장르 제거 시 플레이 규칙, 위험, 정보, 선택이 바뀜"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 선택과 월드 상태 변화의 인과적 연결",
+        "characterConflict": "실제 세계 상태 변화와 다음 사건 간의 갈등",
+        "playerChoice": "월드 상태 변화를 통해 생성된 보상/위험/다음 선택",
+        "worldChange": "플레이어 선택에 따른 월드 상태 변화 및 그 결과",
+        "nextEvent": "플레이어 선택에 기반한 새로운 사건 발생"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 751105,
-      "lastMs": 84799,
+      "totalMs": 835222,
+      "lastMs": 84117,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:02:50.111Z"
+      "updatedAt": "2026-10-10T10:04:14.229Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:50:18.979Z",
-  "updatedAt": "2026-10-10T10:02:50.111Z",
+  "updatedAt": "2026-10-10T10:04:14.231Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1775,7 +1827,7 @@
     "feb46a73ae59a3cf381758992a4737692078d608e7f98eca176718207fe3c264": true,
     "a6af4c0805531270c19f079e5c0e954c97253f3e39f2269c54a7e803ad821453": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:02:50.111Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:04:14.231Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
