@@ -441,3 +441,26 @@ test('native repair variants vary derived materials without overwriting explicit
   assert.equal(first.gameName,'나선 경주');
   assert.equal(changed.gameName,'나선 경주');
 });
+
+
+test('new game design seed selects internal tool UI roles before source generation and designer keeps the same contract',()=>{
+  const seed=computeVibeSeedProposal({
+    requestId:'seed-game-tools-sync',category:'STORY_COMPLETE_RPG',platform:'ROBLOX',
+    gameName:'내부 도구 설계 검증',ownerBrief:'상태창 장비 파티 스킬트리 퀘스트 저널 도감 거래 월드 이벤트',
+    materials:[]
+  });
+  const architecture=seed.gameplaySketch.flowArchitecture;
+  assert.equal(architecture.designToolSync.phase,'DESIGN');
+  assert.equal(architecture.designToolSync.runtimeAssetBindingVerified,false);
+  assert.equal(architecture.designToolSync.noFeatureAutoEnableFromUiCatalog,true);
+  assert.ok(architecture.designToolSync.requiredUiRoles.includes('GAME_WINDOW_LAYOUT'));
+  assert.ok(architecture.designToolSync.requiredUiRoles.includes('STATUS_OVERVIEW'));
+  assert.ok(architecture.assetFlow.requirements.some(row=>row.family==='UI'&&row.subfamily==='SETTINGS_PANEL'));
+  assert.ok(architecture.assetFlow.requirements.some(row=>row.family==='UI'&&row.subfamily==='INVENTORY_FULL_SCREEN'));
+  const designer=fs.readFileSync(new URL('../tools/company-design-cycle.mjs',import.meta.url),'utf8');
+  assert.ok(designer.includes('buildGameFlowArchitecture({'));
+  assert.ok(designer.includes('!pendingSeedGrammarNotAuthored'));
+  assert.ok(designer.includes('designToolSync:seedFlowArchitecture.designToolSync?{'));
+  assert.ok(designer.includes('runtimeAssetBindingVerified:false'));
+  assert.ok(designer.includes("menuVisibility:'AUTHORITATIVE_GAME_CAPABILITIES_ONLY'"));
+});
