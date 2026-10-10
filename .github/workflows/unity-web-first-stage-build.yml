@@ -279,6 +279,7 @@ jobs:
 
       - name: Restore installed Unity WebGL editor
         id: editor_cache
+        continue-on-error: true
         uses: actions/cache/restore@v4
         with:
           path: /opt/unity/editors
@@ -336,11 +337,26 @@ jobs:
       # Save immediately after installation: browser QA/release failures must not erase the
       # reusable editor. A successful build remains subject to every existing quality gate.
       - name: Retain installed Unity WebGL editor for future builds
+        id: editor_save
         if: steps.editor_cache.outputs.cache-hit != 'true'
+        continue-on-error: true
         uses: actions/cache/save@v4
         with:
           path: /opt/unity/editors
           key: unity-webgl-editor-v1-${{ runner.os }}-${{ steps.request.outputs.unity_version }}-${{ steps.request.outputs.unity_revision }}
+
+      - name: Record retained Unity editor state
+        shell: bash
+        env:
+          CACHE_HIT: ${{ steps.editor_cache.outputs.cache-hit }}
+          CACHE_SAVED: ${{ steps.editor_save.outcome }}
+        run: |
+          echo "UNITY_WEB_EDITOR_CACHE_HIT=${CACHE_HIT:-false}"
+          if [[ "$CACHE_HIT" == 'true' || "$CACHE_SAVED" == 'success' ]]; then
+            echo 'UNITY_WEB_EDITOR_CACHE_RETAINED=YES'
+          else
+            echo 'UNITY_WEB_EDITOR_CACHE_RETAINED=UNVERIFIED_RETRY_NEXT_BUILD'
+          fi
 
       - name: Activate Unity Personal
         id: license
