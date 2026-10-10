@@ -1726,3 +1726,44 @@ test('species-specific skill defense reaction acting and death key poses vary by
     wolf.expressiveChoreography.find(row=>row.group==='deaths').jointTracks[0].frames);
   assert.equal(spider.productionVerified,false);
 });
+
+
+test('2026 paper-grounded optional rig physics samples are measured instead of self-certified',()=>{
+  const base={
+    footSlideNormalized:0.01,footPlantDriftNormalized:0.01,
+    handWeaponOffsetNormalized:0.01,attackContactOffsetNormalized:0.01,
+    pairContactOffsetNormalized:0.01,impactEventNormalizedTimeOffset:0.01,
+    groundPenetration:false,meshIntersection:false
+  };
+  const measured={balanceOutsideSupportNormalized:0.001,jointJerkNormalized:2,
+    skinWeightSumError:0.00001,boneLengthDriftNormalized:0.001,
+    restPoseAlignmentErrorNormalized:0.001};
+  const pass=auditMotionContact({...base,rigPhysics:measured});
+  assert.equal(pass.verdict,'PASS');
+  assert.equal(pass.rigPhysics.runtimeVerified,false);
+  for(const [field,value,expected] of [
+    ['balanceOutsideSupportNormalized',0.1,'CENTER_OF_MASS_OUTSIDE_SUPPORT'],
+    ['jointJerkNormalized',55,'POSE_JERK_EXCESS'],
+    ['skinWeightSumError',0.01,'SKIN_WEIGHT_NOT_NORMALIZED'],
+    ['boneLengthDriftNormalized',0.07,'BONE_LENGTH_DRIFT'],
+    ['restPoseAlignmentErrorNormalized',0.2,'RETARGET_REST_POSE_MISMATCH']
+  ]){
+    const result=auditMotionContact({...base,rigPhysics:{...measured,[field]:value}});
+    assert.equal(result.verdict,'FAIL',field);
+    assert.ok(result.failures.includes(expected));
+    assert.equal(result.blocksVerifiedPromotion,true);
+  }
+  for(const value of [undefined,NaN,Infinity,-1,'0']){
+    const input={...measured,balanceOutsideSupportNormalized:value};
+    const result=auditMotionContact({...base,rigPhysics:input});
+    assert.equal(result.verdict,'UNVERIFIED');
+    assert.ok(result.missingMeasurements.some(key=>key.includes('balanceOutsideSupportNormalized')));
+    assert.equal(result.score,null);
+  }
+  assert.equal(auditMotionContact(base).verdict,'PASS','legacy QA must remain compatible');
+  const plan=createMotionDirectorPlan();
+  assert.equal(plan.researchAlgorithmSources.modelInferenceRan,false);
+  for(const key of ['rigAndMotion','neuralSkinning','composableAction','physicsTrace','pbrMaterial'])
+    assert.match(plan.researchAlgorithmSources[key],/^https:\/\//);
+  assert.equal(plan.gameplayAuthority,false);
+});
