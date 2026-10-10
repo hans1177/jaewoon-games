@@ -4874,6 +4874,17 @@ test('studio build-up task carries concept-matched survival systems and reusable
   assert.doesNotMatch(task.goal,/동일 이름이어도 자동으로 덮어쓴다/);
   assert.match(task.goal,/생존은 채집→제작→하우징\/장비→탐험\/위험/);
   assert.ok(task.evidence.includes('flow-system-blueprint:v1'));
+  assert.equal(task.designToolSync?.phase,'DESIGN');
+  assert.equal(task.designToolSync?.nativeRuntimeVerified,false);
+  assert.equal(task.designToolSync?.menuVisibility,'AUTHORITATIVE_GAME_CAPABILITIES_ONLY');
+  assert.equal(task.designToolSync?.F0F9Unchanged,true);
+  assert.ok(task.designToolSync.requiredUiRoles.includes('GAME_WINDOW_LAYOUT'));
+  assert.ok(task.designToolSync.requiredUiRoles.includes('STATUS_OVERVIEW'));
+  assert.ok(task.designToolSync.requiredUiRoles.includes('CRAFTING_FULL_SCREEN'));
+  assert.ok(task.designToolSync.repositoryPresentLibraries.includes('assets/inventory-equipment.js'));
+  assert.ok(task.designToolSync.repositoryPresentLibraries.includes('assets/crafting-recipes.js'));
+  assert.match(task.goal,/DESIGN_TOOL_SYNC=/);
+  assert.ok(task.assetRequirements.some(row=>row.family==='UI'&&row.subfamily==='GAME_WINDOW_LAYOUT'));
   assert.equal(task.studioQualityEvolution.flowSystemProfile,'ACTION_SURVIVAL_ROGUELITE');
   assert.ok(task.studioQualityEvolution.flowRequiredSystemCount>=8);
   assert.equal(task.studioQualityEvolution.flowSystemExistingLibraryFirst,true);
