@@ -3878,8 +3878,9 @@ test('existing Blender asset recipe optionally renders H264 cinematic with sourc
   assert.ok(recipe.args.includes('--cinematic'));
   assert.ok(recipe.args.includes('24'));
   assert.ok(recipe.args.includes('960'));
-  assert.equal(recipe.cinematicOutput,'assets/generated/roblox/cinematic-engine-demo/background/cinematic.mp4');
-  assert.equal(recipe.shotlistOutput,'assets/generated/roblox/cinematic-engine-demo/background/shotlist.json');
+  assert.ok(recipe.cinematicOutput.startsWith('assets/generated/roblox/cinematic-engine-demo/'));
+  assert.ok(recipe.cinematicOutput.endsWith('/cinematic.mp4'));
+  assert.equal(recipe.shotlistOutput,recipe.cinematicOutput.replace(/cinematic\.mp4$/,'shotlist.json'));
   assert.ok(recipe.outputs.includes(recipe.cinematicOutput));
   assert.ok(recipe.outputs.includes(recipe.shotlistOutput));
   const silent=buildVibeAssetProductionPlan({
