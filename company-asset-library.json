@@ -1,5 +1,5 @@
 {
-  "version": 127,
+  "version": 128,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-10",
@@ -74574,7 +74574,7 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "281b7f1fd8f3729b09f9654151146a4c671fd40f",
+        "derivedBinaryGitBlobSha": "7939de74e3bac94abb0675f927c6a1ed26b571d6",
         "projectOriginal": true,
         "platformNeutralOriginal": true
       },
@@ -74591,7 +74591,7 @@
       "vertices": 1052,
       "triangleCount": 1592,
       "boneAnimationChannels": true,
-      "animationClipCount": 15,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74607,7 +74607,17 @@
         "DODGE_EVADE",
         "GUARD_BRACE",
         "WOLF_PACK_POUNCE",
-        "WOLF_FLANK_BITE"
+        "WOLF_FLANK_BITE",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "WOLF_PACK_CIRCLE",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "WOLF_PACK_HOWL",
       "motionPresentationOnly": true,
@@ -74627,7 +74637,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-spider",
@@ -74662,7 +74678,7 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "c865b6a2d5b98fcc6797812bc558bfaab64e9098",
+        "derivedBinaryGitBlobSha": "f0bccdf10dc19f64584d666a4167e1865683a7f5",
         "projectOriginal": true,
         "platformNeutralOriginal": true
       },
@@ -74679,7 +74695,7 @@
       "vertices": 1789,
       "triangleCount": 2692,
       "boneAnimationChannels": true,
-      "animationClipCount": 15,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74695,7 +74711,17 @@
         "DODGE_EVADE",
         "GUARD_BRACE",
         "SPIDER_WEB_CAST",
-        "SPIDER_EIGHT_LEG_STAB"
+        "SPIDER_EIGHT_LEG_STAB",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "SPIDER_WEB_SIDESTEP",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "SPIDER_WEB_THREAT",
       "motionPresentationOnly": true,
@@ -74715,7 +74741,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-beetle",
@@ -74750,7 +74782,7 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "5f398d40feeccd1ac5694962326d3d531cfecc2d",
+        "derivedBinaryGitBlobSha": "8276f7d5e554163791b53724fe2517b826ff3713",
         "projectOriginal": true,
         "platformNeutralOriginal": true
       },
@@ -74767,7 +74799,7 @@
       "vertices": 1503,
       "triangleCount": 2292,
       "boneAnimationChannels": true,
-      "animationClipCount": 15,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74783,7 +74815,17 @@
         "DODGE_EVADE",
         "GUARD_BRACE",
         "BEETLE_HORN_DASH",
-        "BEETLE_SHELL_GUARD"
+        "BEETLE_SHELL_GUARD",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "BEETLE_TRIPOD_SHIFT",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "BEETLE_HORN_CHARGE",
       "motionPresentationOnly": true,
@@ -74803,7 +74845,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-golem",
@@ -74838,7 +74886,7 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "3ea26fb6c442a2015ecea375f26d3c4eb4d6a613",
+        "derivedBinaryGitBlobSha": "6a74739b84db7d72009fe5b0c8ad3eb001b87e32",
         "projectOriginal": true,
         "platformNeutralOriginal": true
       },
@@ -74855,7 +74903,7 @@
       "vertices": 1249,
       "triangleCount": 1988,
       "boneAnimationChannels": true,
-      "animationClipCount": 15,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74871,7 +74919,17 @@
         "DODGE_EVADE",
         "GUARD_BRACE",
         "GOLEM_FIST_SMASH",
-        "GOLEM_GROUND_STOMP"
+        "GOLEM_GROUND_STOMP",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "GOLEM_WEIGHT_BRACE",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "GOLEM_CORE_PULSE",
       "motionPresentationOnly": true,
@@ -74891,7 +74949,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     },
     {
       "id": "shared-creature-serpent",
@@ -74926,7 +74990,7 @@
       ],
       "sourceProvenance": {
         "generator": "assets/native-authoring/build-shared-creature.mjs",
-        "derivedBinaryGitBlobSha": "3fcd0cbaffbeb8e602973ddd72a3c63997260ea9",
+        "derivedBinaryGitBlobSha": "770736854f9a976201a8d536ab615690065fd649",
         "projectOriginal": true,
         "platformNeutralOriginal": true
       },
@@ -74943,7 +75007,7 @@
       "vertices": 915,
       "triangleCount": 1328,
       "boneAnimationChannels": true,
-      "animationClipCount": 15,
+      "animationClipCount": 25,
       "animationClips": [
         "IDLE_BREATH",
         "WALK",
@@ -74959,7 +75023,17 @@
         "DODGE_EVADE",
         "GUARD_BRACE",
         "SERPENT_VENOM_SPIT",
-        "SERPENT_COIL_LUNGE"
+        "SERPENT_COIL_LUNGE",
+        "STALK_APPROACH",
+        "HIT_SIDE",
+        "KNOCKDOWN",
+        "RECOVER_STAND",
+        "SERPENT_COIL_SLITHER",
+        "ELITE_INTIMIDATE",
+        "ELITE_COUNTER_STEP",
+        "BOSS_TELEGRAPH",
+        "BOSS_PHASE_SHIFT",
+        "BOSS_RECOVERY"
       ],
       "signatureClip": "SERPENT_COIL_STRIKE",
       "motionPresentationOnly": true,
@@ -74979,7 +75053,13 @@
       ],
       "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
       "existingNativeDccExecutorUnchanged": true,
-      "requiresNativeAuthoringForTargetPlatform": true
+      "requiresNativeAuthoringForTargetPlatform": true,
+      "sourceHierarchyLevelNames": [
+        "COMMON_BASE",
+        "BODY_PLAN",
+        "SPECIES",
+        "NORMAL_ELITE_BOSS"
+      ]
     }
   ],
   "research": [
