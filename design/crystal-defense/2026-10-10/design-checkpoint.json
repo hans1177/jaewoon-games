@@ -97,25 +97,33 @@
       },
       "playerFantasy": "플레이어는 방어 시스템의 위치, 진동, 업그레이드를 선택하며, 이 선택은 다음 공격 패턴에 따라 적의 반응을 준비한다. 숙련과 성장은 단순한 수치 변화보다 새로운 행동 조합·경로·대응법으로 이루어진다.",
       "coreFun": "방어 위치 결정 및 적 반응 전략 설계: 사용자 입력 후 즉각적 결과와 상태 변화가 발생하고, 이는 다음 선택에 영향을 미친다. 주요 행동은 '방어 위치'이며, 그 선택은 '적 반응 전략'으로 이어지며, 이는 '숙련된 방어 전략'으로 발전한다."
+    },
+    "local_authoring_parts::7203fba9d50e878fd9fc08aa0bf165afee520ed0b01027eec9573e433555b5fb:coreLoop": {
+      "coreLoop": [
+        "INPUT: 방어 위치 선택",
+        "STATE CHANGE: 방어 진동 및 업그레이드 상태 변화",
+        "OUTPUT: 적 반응 전략 결정",
+        "ACTION: 숙련된 방어 전략 발전"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 268821,
-      "lastMs": 268821,
+      "totalMs": 312561,
+      "lastMs": 43740,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:24:30.574Z"
+      "updatedAt": "2026-10-10T09:25:14.316Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:20:01.733Z",
-  "updatedAt": "2026-10-10T09:24:30.574Z",
+  "updatedAt": "2026-10-10T09:25:14.324Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,8 +1840,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:24:30.574Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:25:14.316Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
