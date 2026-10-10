@@ -360,7 +360,7 @@ test('preservation design rejects action descriptions in input and output state 
 });
 
 // 메인: MAIN/A/B/c/@ 실제 역할을 원본 디자이너가 각각 작성·복구하는지 검증한다.
-test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid checkpoint entries',async()=>{
+test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verified siblings',async()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   const taskSource=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
   const roles=['MAIN','A','B','c','DELVE'];
@@ -380,9 +380,9 @@ test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid ch
     assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
     requestLocalDesignerRaw:async(prompt,{schema:contract})=>{
       const role=contract.properties.grammarRole.enum[0];
-      calls.push({role,prompt});
+      calls.push({role,prompt,idPattern:contract.properties.id?.pattern});
       const attempt=calls.filter(row=>row.role===role).length;
-      const cloned=role==='A'&&attempt===1;
+      const cloned=role==='A'&&attempt<=2;
       const id=cloned?'RULE_MAIN':'RULE_'+role;
       return JSON.stringify({
         id,grammarRole:role,name:cloned?'주요 자원 규칙':'원본 '+role+' 규칙',
@@ -397,10 +397,12 @@ test('cloned MAIN A B c DELVE rules repair only invalid role and retain valid ch
   const rows=JSON.parse(JSON.stringify(result.signatureSystems));
   assert.deepEqual(rows.map(row=>row.grammarRole),roles);
   assert.equal(new Set(rows.map(row=>row.id)).size,5,'rules must not share the same game identity as their ID');
-  assert.deepEqual(calls.map(row=>row.role),['MAIN','A','A','B','c','c','DELVE']);
+  assert.deepEqual(calls.map(row=>row.role),['MAIN','A','A','A','B','c','c','DELVE']);
+  assert.ok(calls.every(row=>row.idPattern===`^${row.role.toLowerCase()}_[a-z][a-z0-9_-]{2,69}$`),
+    'role-scoped model schema keeps local rule IDs distinct without changing gameplay state');
   assert.equal(Object.keys(checkpoint.tasks).length,5,'successful siblings are persisted for resume');
   assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_RULE_ID_REUSED'));
-  assert.ok(calls[5].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
+  assert.ok(calls[6].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
   assert.ok(calls.every(row=>!row.prompt.includes('INPUT: 직접 채집 → STATE: 나무·식량 수집 상태')),'do not feed a cloned prose state trace as a rule key');
   assert.ok(logs.some(line=>line.includes('DESIGN_GRAMMAR_ROLE_REPAIR=A|')));
   const before=calls.length;

@@ -1308,6 +1308,14 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const grammarRole=field==='signatureSystems'?(seedGameplaySketchVersion>=5?['MAIN','A','B','DELVE']:['MAIN','A','B','c','DELVE'])[index]:null;
           const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
+          if(grammarRole&&itemSchema.properties?.id){
+            // 설계 규칙 ID는 저장/게임플레이 키가 아닌 설계 내부 참조다.
+            // 서로 다른 MAIN/A/B/@ 역할에서 작은 모델이 같은 ID를 재사용하지 않도록 출력 단계부터 구분한다.
+            const rolePrefix=grammarRole.toLowerCase();
+            itemSchema={...itemSchema,properties:{...itemSchema.properties,
+              id:{...itemSchema.properties.id,pattern:`^${rolePrefix}_[a-z][a-z0-9_-]{2,69}$`}
+            }};
+          }
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/C/@ 역할별 원본 설계 검사
           const itemKey=`${identity}:${field}:${index}`;
@@ -1316,7 +1324,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             const roleIssues=[];
@@ -1344,7 +1352,8 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             designCheckpoint.lastError=`DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED ${roleIssues.join(',')}`;
             persistDesignCheckpoint();
             console.log(`DESIGN_GRAMMAR_ROLE_REPAIR=${grammarRole}|${roleIssues.join(',')}|attempt=${designCheckpoint.sliceRepairAttempts[itemTaskKey]}`);
-            if(roleAttempt>=1)throw new Error(designCheckpoint.lastError);
+            // 수정 가능한 설계 실패는 동일한 역할의 오답만 재작성한다.
+            // 고정 시도 횟수로 전체 설계를 폐기하지 않으며 실행기 시간/중단 시 체크포인트를 보존한다.
           }
         }
         merged[field]=rows;
