@@ -277,7 +277,9 @@ test('Unity Web bootstrap promotes only verified same-scope PR and wakes the exa
   assert.match(workflow,/node tools\/company-unity-web-first-stage\.mjs/);
   assert.ok(workflow.includes('--validate-only=true'));
   assert.ok(workflow.includes('git cat-file -e "origin/main:unity-games/$GAME_ID"'));
-  assert.ok(workflow.includes('pr_game_tree" = "$staged_game_tree"'));
+  assert.ok(workflow.includes('pr_game_tree" != "$staged_game_tree"'));
+  assert.ok(workflow.includes('git diff --name-only "$staged_game_tree" "$pr_game_tree"'));
+  assert.ok(workflow.includes("jq -Sc 'del(.generatedAt)'"));
   assert.ok(workflow.includes('.author.login=="github-actions[bot]"'));
   assert.ok(workflow.includes('gh pr merge'));
   assert.ok(workflow.includes('--match-head-commit'));
@@ -291,7 +293,7 @@ test('Unity Web bootstrap promotes only verified same-scope PR and wakes the exa
 
 test('Unity Web source bootstrap uses slim control capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
-  assert.match(workflow,/\n  bootstrap:\n\s+runs-on:\s*ubuntu-slim/);
+  assert.match(workflow,/\n  bootstrap:\n\s+concurrency:\n\s+group: unity-web-bootstrap-source-\$\{\{ inputs\.game_id \}\}\n\s+cancel-in-progress: false\n\s+runs-on: ubuntu-slim/);
   assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
 });
 
@@ -586,4 +588,24 @@ test('approved procedural Unity bootstrap never overwrites an existing gameplay 
     process.chdir(original);
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+
+test('Unity Web design admission is independent of native F0 and duplicate source reuse is evidence-safe',()=>{
+  const planner=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const bootstrap=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  assert.match(planner,/item\.minimumDesignContract\?\.pass===true&&[\s\S]*?item\.concurrentTargetPlatforms\.includes\('UNITY'\)/);
+  assert.match(planner,/const nativeAdmitted=platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
+  assert.match(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
+  assert.match(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
+  assert.match(bootstrap,/node tools\/company-shared-context\.mjs --output=\/tmp\/unity-web-bootstrap-context\.json/);
+  assert.match(bootstrap,/group: unity-web-bootstrap-source-/);
+  assert.match(bootstrap,/git diff --name-only "\$staged_game_tree" "\$pr_game_tree"/);
+  assert.match(bootstrap,/changed_files" != "unity-web-floor-source.json"/);
+  assert.match(bootstrap,/jq -Sc 'del\(\.generatedAt\)'/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_PR_DESIGN_OR_LEARNING_DIFFERS/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_PR_TIMESTAMP_ONLY_REUSE/);
+  assert.match(bootstrap,/--match-head-commit/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED/);
+  assert.doesNotMatch(bootstrap,/git push origin HEAD:main/);
 });
