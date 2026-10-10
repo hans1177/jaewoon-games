@@ -195,25 +195,40 @@
         " 보상/위험: 자원 수집, 세계 상태 변화",
         " 다음선택: 새로운 전략 도출"
       ]
+    },
+    "local_authoring_parts::6600e67beb15703c30b8e3c08096fc198ef3b67d9fc54cd95218b19e9a01e6de:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_abc",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 적 대응에 따라 세계 상태를 변화시킨다.",
+        "적 선택에 따른 전략적 변환을 수행하여 다음 사건을 유도한다."
+      ],
+      "stateOutputs": [
+        "세계 상태에서 스타트 라인을 벗어나게 되며, 플레이어의 행동 방향성을 정해준다.",
+        "전투 결과와 관련된 새로운 장소 또는 자원을 획득하게 된다."
+      ],
+      "name": "주요 선택 및 인과 관계",
+      "purpose": "플레이어의 대표적인 행동과 그로 인한 세계 상태 변화를 기록하며, 게임 진행의 핵심 로직을 구현한다.",
+      "playerChoice": "플레이어는 적 상황에 맞서 전술적 선택을 하여 세계 상태를 바꾼다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 831557,
-      "lastMs": 9996,
+      "totalMs": 872236,
+      "lastMs": 40679,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:08:44.142Z"
+      "updatedAt": "2026-10-10T09:09:24.823Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:54:52.556Z",
-  "updatedAt": "2026-10-10T09:08:44.143Z",
+  "updatedAt": "2026-10-10T09:09:24.823Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1951,8 +1966,8 @@
   "localAuthoringSplits": {
     "ce308c6d2d1b22510cc71453a0aca4b506a1b6897cce39e88967bcf7cbce89f9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:08:44.142Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:09:24.823Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
