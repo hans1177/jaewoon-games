@@ -1246,3 +1246,64 @@ test('platform views derive from the authored original without changing rules or
   normalizeWebCanonicalAndExpansionPolicy(fixture.design,fixture.seed,fixture.design.multiplayerMode,[]);
   assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
 });
+
+
+test('the designer uses a short owner-grounded prompt for recursive local authoring',async()=>{
+  const src=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const seen=[];
+  const author=runInNewContext(src+'\ncallLocalDesignerModel',{
+    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'test',designerRoute:{id:'test'},
+    seed:{gameId:'daechung-rpg',gameName:'대충 RPG',CORE_LOOP:['마을 준비','포탈 전투','보스 동료 영입'],
+      originalDesignContext:{content:{signatureSystems:[{name:'파티 구성',purpose:'AI 동료 편성'}]}}},
+    designAssetLibraryContext:{status:'UNAVAILABLE'},designCheckpoint:{},modelCallStats:[],
+    console:{log(){}},recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async prompt=>{seen.push(prompt);return '{"identity":"원본의 포탈과 동료 전투를 새 규칙으로 연결한다"}';},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue(){},
+  });
+  const user='긴 전체 설계 컨텍스트 '.repeat(1800)+'\nLOCAL_OUTPUT_PATH=identity\n대충 RPG 원본';
+  const value=await author('설계 전반 지시 '.repeat(900),user,{type:'object',required:['identity'],properties:{identity:{type:'string'}},additionalProperties:false},{includeAssetContext:false});
+  assert.match(value.identity,/포탈/);
+  assert.ok(seen[0].length<15000,'nested design role input must remain bounded');
+  assert.match(seen[0],/OWNER_ORIGINAL=.*daechung-rpg/);
+  assert.match(seen[0],/LOCAL_OUTPUT_PATH=identity/);
+});
+
+test('system interconnection children can use only causal edges from designer-authored state handoffs',async()=>{
+  const src=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const edgeItem={type:'object',required:['fromId','toId','stateKeys','fromSystem','toSystem','trigger','stateChange'],properties:{
+    fromId:{type:'string'},toId:{type:'string'},stateKeys:{type:'array',minItems:1,items:{type:'string'}},
+    fromSystem:{type:'string'},toSystem:{type:'string'},trigger:{type:'string'},stateChange:{type:'string'}
+  },additionalProperties:false};
+  const schema={type:'object',required:['systemInterconnections'],properties:{systemInterconnections:{type:'array',minItems:5,maxItems:5,items:edgeItem}},additionalProperties:false};
+  const authoredRoles={MAIN:'main_route',A:'a_supply',B:'b_combat',DELVE:'delve_secret'};
+  const edges=[
+    {fromId:'main_route',toId:'a_supply',stateKeys:['PortalUnlocked']},
+    {fromId:'a_supply',toId:'b_combat',stateKeys:['EquipmentReady']},
+    {fromId:'b_combat',toId:'a_supply',stateKeys:['FightReward']},
+    {fromId:'main_route',toId:'delve_secret',stateKeys:['BossDiscovered']},
+    {fromId:'delve_secret',toId:'main_route',stateKeys:['SecretRevealed']}
+  ];
+  const modelValue=schema=>{
+    if(Array.isArray(schema.enum))return schema.enum[0];
+    if(schema.type==='object')return Object.fromEntries((schema.required||[]).map(key=>[key,modelValue(schema.properties[key])]));
+    if(schema.type==='array')return Array.from({length:schema.minItems||1},()=>modelValue(schema.items));
+    if(schema.type==='string')return '원본 규칙에 연결되는 실제 전투 행동과 상태 변화';
+    throw Error('unhandled test schema '+schema.type);
+  };
+  const seen=[];
+  const author=runInNewContext(src+'\ncallLocalDesignerModel',{
+    createHash,localDesignerFallbackReady:true,localDesignerCallTimeoutMs:300000,localDesignerModel:'test',designerRoute:{id:'test'},
+    designCheckpoint:{tasks:{}},designAssetLibraryContext:{status:'UNAVAILABLE'},modelCallStats:[],
+    console:{log(){}},recordModelHealth(){},persistDesignCheckpoint(){},
+    runCheckpointTask:async(_phase,_key,work)=>await work(),
+    requestLocalDesignerRaw:async(_prompt,options)=>{seen.push(options.schema);return JSON.stringify(modelValue(options.schema));},
+    parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
+  });
+  const result=await author('같은 게임 디자이너','원본 포탈과 AI 동료를 연결한다',schema,{
+    authoredHandoffs:edges,authoredRoles,predict:900,includeAssetContext:false
+  });
+  const rows=JSON.parse(JSON.stringify(result.systemInterconnections));
+  assert.equal(rows.length,5);
+  assert.deepEqual(rows.map(row=>({fromId:row.fromId,toId:row.toId,stateKeys:row.stateKeys})),edges);
+  assert.ok(seen.length>=5,'every edge still has designer-authored action and state explanation');
+});
