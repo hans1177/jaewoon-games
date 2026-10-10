@@ -75,8 +75,141 @@ import {
   createStudioMotionActionProfile,
   createRobloxCharacterMotionPlan,
   auditRobloxCharacterMotionEvidence,
-  createMotionDirectorPlan
+  createMotionDirectorPlan,
+  COMMON_CLASS_ACTION_MODULES,
+  COMMON_CLASS_FAMILY_TREES,
+  COMMON_CLASS_GENRE_BINDINGS,
+  COMMON_CLASS_AUTHORING_CLIPS,
+  COMMON_SKILL_PRESENTATION_GRAMMAR,
+  createCommonClassMotionLoadout,
+  createReusableCreatureMotionPack,
+  createCreatureMotionActionRecipe
 } from '../assets/vibe-motion-director.js';
+import {createVibeCommonSkillFxSource,VIBE_COMMON_SKILL_FX_FORMS} from '../assets/vibe-motion-effects-director.js';
+
+
+test('cross-genre career families compose reusable actions, skill phases and genre selection',()=>{
+  assert.ok(Object.keys(COMMON_CLASS_ACTION_MODULES).length>=35);
+  assert.ok(Object.keys(COMMON_CLASS_FAMILY_TREES).length>=15);
+  assert.ok(Object.keys(COMMON_CLASS_GENRE_BINDINGS).length>=25);
+  assert.ok(Object.keys(COMMON_CLASS_AUTHORING_CLIPS).length>=17);
+  assert.ok(Object.keys(COMMON_SKILL_PRESENTATION_GRAMMAR).length>=8);
+  const paths=Object.entries(COMMON_CLASS_FAMILY_TREES).flatMap(([family,tree])=>
+    Object.keys(tree.paths).map(path=>[family,path]));
+  assert.ok(paths.length>=40);
+  for(const [family,path] of paths){
+    const entry=createCommonClassMotionLoadout({family,path,tier:0,genre:'ACTION_RPG'});
+    const veteran=createCommonClassMotionLoadout({family,path,tier:2,genre:'ACTION_RPG'});
+    assert.equal(entry.valid,true,family+'/'+path+': entry');
+    assert.equal(veteran.valid,true,family+'/'+path+': veteran');
+    assert.equal(entry.lineage.length,1);
+    assert.equal(veteran.lineage.length,3);
+    assert.ok(veteran.inheritedModules.length>=entry.inheritedModules.length);
+    assert.ok(Object.values(veteran.groups).flat().length>=5);
+    assert.ok(veteran.skills.length>=1);
+    assert.equal(veteran.productionVerified,false);
+    assert.equal(veteran.gameOwnsClassProgression,true);
+    assert.equal(veteran.gameOwnsSkillBehavior,true);
+    assert.equal(veteran.gameplayAuthority,false);
+  }
+  const samurai=createCommonClassMotionLoadout({family:'SWORD',path:'SAMURAI',tier:2,genre:'ACTION_RPG'});
+  assert.deepEqual(samurai.lineage,['SWORD_TRAINEE','SAMURAI','KENSEI']);
+  assert.ok(samurai.inheritedModules.includes('IAI'));
+  assert.ok(samurai.groups.attack.includes('IAI_DRAW_SLASH'));
+  assert.ok(samurai.sourceClipBindings.some(x=>x.motionId==='IAI_DRAW_SLASH'&&x.clipId==='common_samurai_iaido_hq'));
+  assert.ok(samurai.skills.some(x=>x.visualPhases.includes('RECOVERY')&&!x.productionVerified));
+  const farm=createCommonClassMotionLoadout({family:'AGRICULTURE',path:'FARMER',tier:1,genre:'FARMING_SIM'});
+  assert.ok(farm.genreActions.interaction.includes('HARVEST'));
+  assert.ok(farm.sourceClipBindings.some(x=>x.clipId==='common_farm_harvest_hq'));
+  const merchant=createCommonClassMotionLoadout({family:'SOCIETY',path:'MERCHANT',tier:1,genre:'TYCOON'});
+  assert.ok(merchant.genreActions.interaction.includes('HANDOVER_ITEM'));
+  const pilot=createCommonClassMotionLoadout({family:'TECHNOLOGY',path:'PILOT',tier:1,genre:'RACING'});
+  assert.ok(pilot.genreActions.interaction.includes('STEER'));
+  const gunslinger=createCommonClassMotionLoadout({family:'RANGED',path:'GUNSLINGER',tier:1,genre:'SHOOTER_TPS'});
+  assert.ok(gunslinger.groups.attack.includes('GUN_SHOOT'));
+  assert.ok(!gunslinger.groups.attack.includes('BOW_DRAW'));
+  const sameCareerInDifferentGenres=['ACTION_RPG','TYCOON','HORROR','CITY_BUILDER','FARMING_SIM'].map(genre=>
+    createCommonClassMotionLoadout({family:'SWORD',path:'SAMURAI',tier:1,genre}));
+  assert.ok(sameCareerInDifferentGenres.every(x=>x.valid&&x.currentClass==='SAMURAI'&&!x.productionVerified));
+  assert.notDeepEqual(sameCareerInDifferentGenres[0].activeGenreRoles,sameCareerInDifferentGenres[1].activeGenreRoles);
+  for(const genre of Object.keys(COMMON_CLASS_GENRE_BINDINGS)){
+    const career=createCommonClassMotionLoadout({family:'SURVIVOR',path:'TRACKER',tier:1,genre});
+    assert.equal(career.valid,true,genre);
+    assert.ok(career.activeGenreRoles.length>0,genre);
+  }
+  for(const bad of [{family:'INVALID'},{family:'SWORD',path:'INVALID'},{tier:5},{genre:'INVALID'},{bodyPlan:'ARACHNID'}])
+    assert.equal(createCommonClassMotionLoadout(bad).valid,false);
+});
+
+
+test('common skill source has independently sampled class and monster VFX without game-rule mutation',()=>{
+  const examples=[
+    ['IAI_FOCUS_BURST','STRIKE','HUMANOID','CONTACT_ARC'],
+    ['BOW_POWER_SHOT','PROJECTILE','HUMANOID','PROJECTILE_RELEASE_TRAIL'],
+    ['ELEMENT_RELEASE','SPELL','HUMANOID','CHANNEL_RUNE'],
+    ['SUMMON_INVOCATION','SUMMON','HUMANOID','SUMMON_GATE'],
+    ['HEAL_RITUAL','HEAL','HUMANOID','HEAL_ORBIT'],
+    ['SHADOW_STEP','STEALTH','HUMANOID','SHADOW_EDGE'],
+    ['RALLY_COMMAND','COMMAND','HUMANOID','SIGNAL_RING'],
+    ['CRAFT_FOCUS','CRAFT','HUMANOID','TOOL_CONTACT_SPARKS'],
+    ['BARGAIN_GESTURE','INTERACTION','HUMANOID','SUBTLE_ACTION_GLOW'],
+    ['WEB_CAST','PROJECTILE','ARACHNID','WEB_SILK_RIBBONS'],
+    ['VENOM_STING','PROJECTILE','ARACHNID_SCORPION','VENOM_TIP_SPARK'],
+    ['PHEROMONE_SIGNAL','SPELL','HEXAPOD_INSECT','PHEROMONE_RADIAL_PARTICLES'],
+    ['BREATH_RELEASE','SPELL','DRACONIC_WINGED','BREATH_CONE_OR_BEAM']
+  ];
+  assert.equal(Object.keys(VIBE_COMMON_SKILL_FX_FORMS).length,9);
+  for(const [id,skillFamily,bodyPlan,shape] of examples){
+    const fx=createVibeCommonSkillFxSource({id,skillFamily,bodyPlan,mobile:true,enemyCount:24});
+    assert.equal(fx.valid,true,id);
+    assert.equal(fx.shape,shape,id);
+    assert.equal(fx.frames.length,6);
+    assert.equal(fx.frames[0].normalizedTime,0);
+    assert.equal(fx.frames[5].normalizedTime,1);
+    assert.ok(fx.frames.some(x=>x.emission>.7));
+    assert.ok(fx.frames.every(x=>x.particleBudget<=fx.particleMaxPerImpact));
+    assert.equal(fx.runtimeVerified,false);
+    assert.equal(fx.productionVerified,false);
+    assert.equal(fx.gameplayMutationAllowed,false);
+    assert.equal(fx.gameplayAuthority,false);
+  }
+  assert.equal(createVibeCommonSkillFxSource({id:'',skillFamily:'SPELL'}).valid,false);
+  assert.equal(createVibeCommonSkillFxSource({id:'SPELL',skillFamily:'UNKNOWN'}).valid,false);
+});
+
+test('creature packs provide distinctive motion action intent, phased skills and articulated pose recipes',()=>{
+  for(const [bodyPlan,motionId] of [
+    ['QUADRUPED_FELINE','POUNCE'],['HOOFED_QUADRUPED','HORN_CHARGE'],
+    ['AVIAN_GROUNDED','BEAK_PECK'],['CRUSTACEAN','CLAW_PINCH'],
+    ['DRACONIC_WINGED','BREATH_RELEASE'],['ARACHNID','EIGHT_LEG_CROSS_STAB'],
+    ['ARACHNID_SCORPION','TAIL_STING_COMBO'],['HEXAPOD_INSECT','TRIPOD_CHARGE'],
+    ['FLYING','SKY_DIVE_GRAB'],['AQUATIC','WHIRLPOOL_CHANNEL'],
+    ['BOSS_BIPED','TRIPLE_STRIKE_CHAIN'],['SWARM','SWARM_RING_DIVE']
+  ]){
+    const pack=createReusableCreatureMotionPack({bodyPlan,genre:'ACTION_RPG',platform:'SHARED_SOURCE'});
+    assert.equal(pack.valid,true,bodyPlan);
+    assert.equal(pack.productionVerified,false);
+    assert.equal(pack.coverage.productionVerified,false);
+    assert.ok(pack.profile.motionIds.includes(motionId),bodyPlan+' missing '+motionId);
+    assert.ok(pack.skillMotion.length>=2);
+    assert.equal(pack.candidates.length,pack.profile.motionIds.length);
+    const found=Object.entries(pack.profile.groups).find(([,ids])=>ids.includes(motionId));
+    const recipe=createCreatureMotionActionRecipe({bodyPlan,group:found[0],motionId});
+    assert.equal(recipe.valid,true,bodyPlan);
+    assert.equal(recipe.clipBaked,false);
+    assert.ok(recipe.keyPoses.length>=4);
+    assert.ok(recipe.keyPoses.some(p=>Math.abs(p.channels.primaryLimbSweep)>0.05));
+    assert.ok(recipe.keyPoses.every(p=>p.channels.rootLocalTranslation.every(v=>v===0)));
+    assert.equal(recipe.gameplayRootMovementAndHitAuthority,false);
+  }
+  const spider=createCreatureMotionActionRecipe({bodyPlan:'ARACHNID',group:'attacks',motionId:'EIGHT_LEG_CROSS_STAB'});
+  const wolf=createCreatureMotionActionRecipe({bodyPlan:'QUADRUPED_CANINE',group:'attacks',motionId:'CANINE_BITE'});
+  assert.notEqual(spider.limbPhase,wolf.limbPhase);
+  assert.notEqual(spider.visualLimbCount,wolf.visualLimbCount);
+  assert.equal(createReusableCreatureMotionPack({bodyPlan:'UNKNOWN'}).valid,false);
+  assert.equal(createReusableCreatureMotionPack({bodyPlan:'ARACHNID',genre:'UNLISTED'}).valid,false);
+  assert.equal(createCreatureMotionActionRecipe({bodyPlan:'ARACHNID',group:'attacks',motionId:'HUMAN_JAB'}).valid,false);
+});
 
 const studioReviewFixture=()=>({
   sourceRevision:'a'.repeat(40),clipVersion:'clip-v1',referenceCapture:'fixture/reference.mp4',candidateCapture:'fixture/candidate.mp4',

@@ -4,6 +4,7 @@
 
 // 임포트: 자산과 모션이 같은 스타일 원본을 사용한다.
 import {ASSET_STYLE_PROFILES,createStyleBible} from './vibe-studio-asset-universe.js';
+import {createVibeCommonSkillFxSource} from './vibe-motion-effects-director.js';
 
 const freezeList = value => Object.freeze([...(Array.isArray(value) ? value : [])]);
 const text = value => String(value ?? '').trim();
@@ -963,6 +964,209 @@ export function createDuelCombatMotionLoadout({
   });
 }
 
+
+// 공용 캐릭터 계층: 역할-전문직-상위직이 같은 모션/스킬 연출 부품을 상속한다.
+// 전직 조건, 능력치, 판정, 체력, 보상, 저장, 쿨다운은 각 게임의 책임이다.
+export const COMMON_CLASS_ACTION_MODULES=Object.freeze({
+  BLADE:{stance:['SWORD_READY'],move:['SWORD_STEP','SWORD_STRAFE'],attack:['SWORD_SLASH_R','SWORD_SLASH_L','SWORD_THRUST'],defense:['SWORD_PARRY'],skill:['BLADE_ARC'],interaction:['DRAW_SWORD','SHEATHE_SWORD'],vfx:['BLADE_TRAIL']},
+  IAI:{stance:['IAI_SHEATH_READY'],move:['IAI_DRAW_STEP'],attack:['IAI_DRAW_SLASH','IAI_REVERSE_CUT'],defense:['IAI_COUNTER_PARRY'],skill:['IAI_FOCUS_BURST'],interaction:['SHEATHE_CLEAN'],vfx:['IAI_SLASH_TRAIL']},
+  KENSEI:{stance:['KENSEI_BREATH'],move:['KENSEI_FLOW_STEP'],attack:['KENSEI_CROSS_CUT'],defense:['KENSEI_DEFLECT'],skill:['KENSEI_FINAL_DRAW'],vfx:['KENSEI_ARC']},
+  SHIELD:{stance:['SHIELD_READY'],move:['SHIELD_BRACE_STEP'],attack:['SHIELD_BASH'],defense:['HIGH_GUARD','LOW_GUARD'],skill:['GUARD_PULSE'],interaction:['EQUIP_SHIELD'],vfx:['GUARD_IMPACT']},
+  DUEL:{stance:['DUEL_SIDE_STANCE'],move:['DUEL_CIRCLE'],attack:['DUEL_THRUST','DUEL_RIPOSTE'],defense:['DUEL_EVADE'],skill:['DUEL_FINISHER'],vfx:['RIPOSTE_SPARK']},
+  BRUISER:{stance:['BRAWLER_GUARD'],move:['HEAVY_STEP'],attack:['HOOK','UPPERCUT','KNEE'],defense:['BODY_BLOCK'],skill:['GROUND_IMPACT'],vfx:['FIST_IMPACT']},
+  RAGE:{stance:['RAGE_THREAT'],attack:['RAGE_SMASH','RAGE_SWEEP'],skill:['BERSERK_ROAR'],vfx:['RAGE_AURA']},
+  MARTIAL:{stance:['MARTIAL_READY'],move:['MARTIAL_PIVOT'],attack:['PALM_STRIKE','FRONT_KICK'],defense:['HAND_DEFLECT'],skill:['MARTIAL_COMBO'],vfx:['PALM_WAVE']},
+  SPEAR:{stance:['SPEAR_READY'],move:['SPEAR_PIVOT'],attack:['SPEAR_LUNGE','SPEAR_SWEEP'],defense:['SPEAR_DEFLECT'],skill:['SPEAR_DRIVE'],vfx:['SPEAR_TIP_TRAIL']},
+  DRAGOON:{move:['DRAGOON_LEAP'],attack:['DRAGOON_FALLING_THRUST'],skill:['DRAGOON_DIVE'],vfx:['LANDING_RIPPLE']},
+  BOW:{stance:['BOW_READY'],move:['BOW_STRAFE'],attack:['BOW_DRAW','BOW_RELEASE'],defense:['ARCHER_DODGE'],skill:['BOW_POWER_SHOT'],interaction:['QUIVER_REACH'],vfx:['ARROW_TRAIL']},
+  GUN:{stance:['GUN_READY'],move:['GUN_STRAFE'],attack:['GUN_AIM','GUN_SHOOT','GUN_RELOAD'],defense:['GUN_DODGE'],skill:['PRECISION_SHOT'],vfx:['MUZZLE_FLASH']},
+  STEALTH:{stance:['STEALTH_CROUCH'],move:['STEALTH_STEP','STEALTH_ROLL'],attack:['DAGGER_STRIKE','ROGUE_BACKSTAB'],defense:['SIDE_EVADE'],skill:['SHADOW_STEP'],interaction:['PICK_LOCK'],vfx:['SHADOW_TRAIL']},
+  NINJA:{move:['NINJA_WALL_STEP'],attack:['NINJA_SPIN_STRIKE'],skill:['NINJA_SMOKE_ESCAPE'],vfx:['SMOKE_BURST']},
+  ELEMENT:{stance:['SPELL_READY'],move:['CASTER_STRAFE'],attack:['STAFF_STRIKE'],defense:['SPELL_WARD'],skill:['ELEMENT_CHANNEL','ELEMENT_RELEASE'],vfx:['ELEMENT_CHARGE','ELEMENT_BURST']},
+  SUMMON:{stance:['SUMMON_FOCUS'],skill:['SUMMON_INVOCATION','SUMMON_RELEASE'],interaction:['SUMMON_COMMAND'],vfx:['SUMMON_CIRCLE']},
+  CURSE:{stance:['CURSE_WHISPER'],skill:['CURSE_CHANNEL','CURSE_RELEASE'],vfx:['CURSE_SIGIL']},
+  HEAL:{stance:['HEAL_READY'],skill:['HEAL_RITUAL','REVIVE_GESTURE'],interaction:['TEND_WOUND'],vfx:['HEAL_RUNE']},
+  BARD:{stance:['PERFORM_READY'],skill:['BARD_CHANT'],interaction:['PLAY_INSTRUMENT','BOW_TO_CROWD'],vfx:['RHYTHM_NOTES']},
+  MACHINE:{stance:['TOOL_READY'],move:['ENGINEER_CARRY'],attack:['TOOL_SWING'],skill:['DEPLOY_DEVICE'],interaction:['REPAIR_MACHINE','OPERATE_CONSOLE'],vfx:['DEVICE_SPARK']},
+  VEHICLE:{stance:['DRIVER_READY'],move:['MOUNT_VEHICLE'],skill:['VEHICLE_CONTROL_GESTURE'],interaction:['STEER','BRAKE_GESTURE','DISMOUNT_VEHICLE'],vfx:['DUST_TRAIL']},
+  CRAFT:{stance:['CRAFT_IDLE'],interaction:['HAMMER_FORGE','CRAFT_ASSEMBLE','POLISH','INSPECT_ITEM'],skill:['CRAFT_FOCUS'],vfx:['FORGE_SPARK']},
+  ALCHEMY:{stance:['ALCHEMY_READY'],interaction:['MIX_POTION','POUR_FLASK'],skill:['ALCHEMY_MIX'],vfx:['BUBBLE_EFFECT']},
+  COOK:{interaction:['CHOP_FOOD','STIR_POT','PLATE_FOOD'],skill:['CHEF_PRESENTATION'],vfx:['COOK_STEAM']},
+  HUNT:{stance:['TRACKER_ALERT'],move:['TRACKER_STALK'],attack:['HUNTING_STRIKE'],skill:['TRACKING_FOCUS'],interaction:['READ_TRACKS','HARVEST_PREY'],vfx:['TRACK_HIGHLIGHT']},
+  TRAP:{stance:['TRAPPER_KNEEL'],skill:['TRAP_DEPLOY_GESTURE'],interaction:['SET_TRAP','INSPECT_TRAP'],vfx:['TRAP_MARK']},
+  BEAST:{stance:['TAMER_CALM'],skill:['BEAST_COMMAND_GESTURE'],interaction:['PET_COMPANION','FEED_COMPANION'],vfx:['BOND_PULSE']},
+  BUILD:{stance:['BUILD_READY'],move:['CARRY_MATERIAL'],interaction:['PLACE_FRAME','HAMMER_BUILD','INSPECT_PLAN','REPAIR_STRUCTURE'],skill:['CONSTRUCTION_FOCUS'],vfx:['BUILD_DUST']},
+  CARPENTRY:{interaction:['SAW_PLANK','PLANE_WOOD','JOIN_WOOD'],skill:['CARPENTER_FINISH'],vfx:['WOOD_SHAVINGS']},
+  FARM:{stance:['FARM_REST'],move:['CARRY_HARVEST'],interaction:['SOW','WATER','HARVEST','TILL_SOIL'],skill:['FARMING_FOCUS'],vfx:['SOIL_PARTICLES']},
+  HERD:{stance:['HERDER_READY'],skill:['HERD_CALL'],interaction:['FEED_LIVESTOCK','BRUSH_ANIMAL'],vfx:['HERD_PULSE']},
+  HERBAL:{stance:['HERBALIST_SEARCH'],interaction:['PICK_HERBS','SORT_HERBS','DRY_HERBS'],skill:['BOTANICAL_FOCUS'],vfx:['LEAF_PARTICLES']},
+  TRADE:{stance:['MERCHANT_WELCOME'],interaction:['HANDOVER_ITEM','COUNT_COINS','DISPLAY_GOODS'],skill:['BARGAIN_GESTURE'],vfx:['TRADE_GLEAM']},
+  DIPLOMACY:{stance:['DIPLOMAT_READY'],interaction:['GREET_FORMAL','NEGOTIATE_GESTURE','SIGN_AGREEMENT'],skill:['DIPLOMACY_ADDRESS'],vfx:['SPEECH_ACCENT']},
+  SCHOLAR:{stance:['SCHOLAR_IDLE'],interaction:['READ_BOOK','WRITE_NOTES','INSPECT_ARTIFACT'],skill:['ANALYSIS_FOCUS'],vfx:['KNOWLEDGE_GLYPH']},
+  COMMAND:{stance:['COMMANDER_READY'],move:['MARCH'],skill:['RALLY_COMMAND'],interaction:['POINT_DIRECTION','SALUTE'],vfx:['COMMAND_SIGNAL']},
+  TACTICS:{stance:['TACTICIAN_OBSERVE'],interaction:['MARK_MAP','ISSUE_ORDER'],skill:['FORMATION_SIGNAL'],vfx:['TACTIC_MARK']},
+  RULER:{stance:['ROYAL_PRESENCE'],interaction:['PUBLIC_ADDRESS','CEREMONY_GESTURE'],skill:['LEADERSHIP_PRESENCE'],vfx:['ROYAL_EMBLEM']},
+  SAIL:{stance:['DECK_BALANCE'],move:['SHIP_ROLL_STEP'],interaction:['PULL_ROPE','RAISE_SAIL','USE_COMPASS'],skill:['NAVIGATION_SIGNAL'],vfx:['WIND_TRAIL']},
+  FISH:{stance:['FISHERMAN_READY'],interaction:['FISH_CAST','REEL_IN','NET_THROW'],skill:['FISHING_FOCUS'],vfx:['WATER_SPLASH']},
+  PIRATE:{stance:['PIRATE_READY'],attack:['CUTLASS_SLASH'],skill:['BOARDING_SHOUT'],interaction:['BOARD_SHIP'],vfx:['BOARDING_DUST']}
+});
+
+// 동일한 직업을 액션RPG·생존·경영·농장·전략 등에서 재사용하며,
+// 장르별 차이는 표현 강조점만 바꾼다. 직업명만 늘리는 구조가 아니다.
+export const COMMON_CLASS_FAMILY_TREES=Object.freeze({
+  SWORD:{base:'SWORD_TRAINEE',modules:['BLADE'],weapon:'ONE_HAND_SWORD',paths:{SAMURAI:{classes:['SWORD_TRAINEE','SAMURAI','KENSEI'],modules:['IAI','KENSEI'],weapon:'KATANA'},KNIGHT:{classes:['SWORD_TRAINEE','KNIGHT','ROYAL_GUARD'],modules:['SHIELD','COMMAND']},DUELIST:{classes:['SWORD_TRAINEE','DUELIST','BLADE_MASTER'],modules:['DUEL','KENSEI']}}},
+  FIGHTER:{base:'FIGHTER_TRAINEE',modules:['BRUISER'],weapon:'UNARMED',paths:{BERSERKER:{classes:['FIGHTER_TRAINEE','BERSERKER','WARLORD'],modules:['RAGE','COMMAND']},MARTIAL_ARTIST:{classes:['FIGHTER_TRAINEE','MARTIAL_ARTIST','GRANDMASTER'],modules:['MARTIAL','KENSEI']},GUARDIAN:{classes:['FIGHTER_TRAINEE','GUARDIAN','FORTRESS_GUARD'],modules:['SHIELD','COMMAND']}}},
+  POLEARM:{base:'SPEAR_TRAINEE',modules:['SPEAR'],weapon:'SPEAR',paths:{LANCER:{classes:['SPEAR_TRAINEE','LANCER','PIKE_MASTER'],modules:['DRAGOON','TACTICS']},DRAGOON:{classes:['SPEAR_TRAINEE','DRAGOON','SKY_LANCER'],modules:['DRAGOON','KENSEI']}}},
+  RANGED:{base:'RANGED_TRAINEE',modules:['BOW'],weapon:'BOW',paths:{ARCHER:{classes:['RANGED_TRAINEE','ARCHER','MARKSMAN'],modules:['HUNT','TACTICS']},GUNSLINGER:{classes:['RANGED_TRAINEE','GUNSLINGER','GUNMASTER'],modules:['GUN','TACTICS'],replaceBaseModules:['GUN'],weapon:'FIREARM'},HUNTER:{classes:['RANGED_TRAINEE','HUNTER','BEAST_RANGER'],modules:['HUNT','BEAST']}}},
+  ROGUE:{base:'ROGUE_TRAINEE',modules:['STEALTH'],weapon:'DAGGER',paths:{ASSASSIN:{classes:['ROGUE_TRAINEE','ASSASSIN','SHADOW_MASTER'],modules:['NINJA','KENSEI']},NINJA:{classes:['ROGUE_TRAINEE','NINJA','SHINOBI_MASTER'],modules:['NINJA','IAI']},SCOUT:{classes:['ROGUE_TRAINEE','SCOUT','INFILTRATOR'],modules:['HUNT','TACTICS']}}},
+  MAGIC:{base:'MAGIC_APPRENTICE',modules:['ELEMENT'],weapon:'STAFF_OR_WAND',paths:{ELEMENTALIST:{classes:['MAGIC_APPRENTICE','ELEMENTALIST','ARCHMAGE'],modules:['ELEMENT','KENSEI']},SUMMONER:{classes:['MAGIC_APPRENTICE','SUMMONER','GRAND_SUMMONER'],modules:['SUMMON','BEAST']},NECROMANCER:{classes:['MAGIC_APPRENTICE','NECROMANCER','SOUL_WEAVER'],modules:['CURSE','SUMMON']}}},
+  SUPPORT:{base:'SUPPORT_APPRENTICE',modules:['HEAL'],weapon:'STAFF_OR_WAND',paths:{CLERIC:{classes:['SUPPORT_APPRENTICE','CLERIC','SAINT'],modules:['HEAL','BARD']},PALADIN:{classes:['SUPPORT_APPRENTICE','PALADIN','HOLY_GUARDIAN'],modules:['SHIELD','BLADE'],weapon:'ONE_HAND_SWORD'},BARD:{classes:['SUPPORT_APPRENTICE','BARD','MAESTRO'],modules:['BARD','DIPLOMACY']}}},
+  TECHNOLOGY:{base:'TECH_TRAINEE',modules:['MACHINE'],paths:{MECHANIC:{classes:['TECH_TRAINEE','MECHANIC','MASTER_ENGINEER'],modules:['CRAFT','BUILD']},GADGETEER:{classes:['TECH_TRAINEE','GADGETEER','DEVICE_MASTER'],modules:['TRAP','ALCHEMY']},PILOT:{classes:['TECH_TRAINEE','PILOT','ACE_PILOT'],modules:['VEHICLE','TACTICS']}}},
+  CRAFTSMAN:{base:'CRAFT_APPRENTICE',modules:['CRAFT'],paths:{BLACKSMITH:{classes:['CRAFT_APPRENTICE','BLACKSMITH','MASTER_SMITH'],modules:['MACHINE','BUILD']},ALCHEMIST:{classes:['CRAFT_APPRENTICE','ALCHEMIST','MASTER_ALCHEMIST'],modules:['ALCHEMY','HERBAL']},CHEF:{classes:['CRAFT_APPRENTICE','CHEF','MASTER_CHEF'],modules:['COOK','TRADE']}}},
+  SURVIVOR:{base:'SURVIVAL_NOVICE',modules:['HUNT'],paths:{TRACKER:{classes:['SURVIVAL_NOVICE','TRACKER','MASTER_TRACKER'],modules:['HUNT','TACTICS']},TRAPPER:{classes:['SURVIVAL_NOVICE','TRAPPER','WILDERNESS_EXPERT'],modules:['TRAP','HERBAL']},TAMER:{classes:['SURVIVAL_NOVICE','TAMER','BEAST_MASTER'],modules:['BEAST','HERD']}}},
+  BUILDER:{base:'BUILD_TRAINEE',modules:['BUILD'],paths:{ARCHITECT:{classes:['BUILD_TRAINEE','ARCHITECT','CITY_PLANNER'],modules:['SCHOLAR','TACTICS']},CARPENTER:{classes:['BUILD_TRAINEE','CARPENTER','MASTER_CARPENTER'],modules:['CARPENTRY','CRAFT']},CONTRACTOR:{classes:['BUILD_TRAINEE','CONTRACTOR','BUILDING_MASTER'],modules:['MACHINE','COMMAND']}}},
+  AGRICULTURE:{base:'FARM_TRAINEE',modules:['FARM'],paths:{FARMER:{classes:['FARM_TRAINEE','FARMER','AGRONOMIST'],modules:['HERBAL','SCHOLAR']},RANCHER:{classes:['FARM_TRAINEE','RANCHER','LIVESTOCK_MASTER'],modules:['HERD','BEAST']},HERBALIST:{classes:['FARM_TRAINEE','HERBALIST','BOTANIST'],modules:['HERBAL','ALCHEMY']}}},
+  SOCIETY:{base:'CITIZEN',modules:['TRADE'],paths:{MERCHANT:{classes:['CITIZEN','MERCHANT','GUILD_MASTER'],modules:['TRADE','DIPLOMACY']},DIPLOMAT:{classes:['CITIZEN','DIPLOMAT','AMBASSADOR'],modules:['DIPLOMACY','COMMAND']},SCHOLAR:{classes:['CITIZEN','SCHOLAR','RESEARCH_MASTER'],modules:['SCHOLAR','ALCHEMY']}}},
+  LEADERSHIP:{base:'SQUAD_MEMBER',modules:['COMMAND'],paths:{CAPTAIN:{classes:['SQUAD_MEMBER','CAPTAIN','GENERAL'],modules:['TACTICS','RULER']},TACTICIAN:{classes:['SQUAD_MEMBER','TACTICIAN','STRATEGIST'],modules:['TACTICS','SCHOLAR']},RULER:{classes:['SQUAD_MEMBER','RULER','SOVEREIGN'],modules:['RULER','DIPLOMACY']}}},
+  SEAFARING:{base:'DECKHAND',modules:['SAIL'],paths:{NAVIGATOR:{classes:['DECKHAND','NAVIGATOR','FLEET_CAPTAIN'],modules:['TACTICS','COMMAND']},FISHERMAN:{classes:['DECKHAND','FISHERMAN','MASTER_ANGLER'],modules:['FISH','TRADE']},PIRATE:{classes:['DECKHAND','PIRATE','PIRATE_CAPTAIN'],modules:['PIRATE','COMMAND']}}}
+});
+
+export const COMMON_CLASS_GENRE_BINDINGS=Object.freeze({
+  ACTION_RPG:{focus:['stance','move','attack','defense','skill'],motionStyle:'COMBAT_READABILITY'},
+  SOULS_LIKE:{focus:['stance','attack','defense','move'],motionStyle:'WEIGHTED_TELEGRAPH_AND_RECOVERY'},
+  MMO_RPG:{focus:['stance','move','attack','skill','interaction'],motionStyle:'PARTY_READABLE_ROLE_PRESENTATION'},
+  TURN_BASED_RPG:{focus:['stance','attack','skill','defense'],motionStyle:'CLEAR_DISTINCT_TURN_INTENTS'},
+  DUNGEON_CRAWLER:{focus:['move','attack','defense','skill'],motionStyle:'CLOSE_QUARTERS_COMBAT'},
+  ROGUELIKE:{focus:['move','attack','skill','defense'],motionStyle:'FAST_RECOVERABLE_ACTIONS'},
+  ACTION_ADVENTURE:{focus:['move','attack','interaction','skill'],motionStyle:'TRAVERSAL_OBJECT_COMBAT'},
+  OPEN_WORLD_SURVIVAL:{focus:['move','interaction','defense','skill'],motionStyle:'GROUND_AND_TOOL_CONTACT'},
+  STEALTH_ACTION:{focus:['stance','move','defense','interaction','attack'],motionStyle:'CAUTIOUS_SILHOUETTE_AND_SOFT_CONTACT'},
+  SHOOTER_FPS:{focus:['stance','move','attack','defense'],motionStyle:'AIM_RELOAD_RECOIL_AND_LOWER_BODY'},
+  SHOOTER_TPS:{focus:['stance','move','attack','defense'],motionStyle:'VISIBLE_TORSO_AIM_AND_RECOIL'},
+  PLATFORMER:{focus:['move','attack','interaction'],motionStyle:'AIRBORNE_SILHOUETTE_AND_LANDING'},
+  TACTICAL_STRATEGY:{focus:['stance','skill','interaction'],motionStyle:'SQUAD_ROLE_SILHOUETTE'},
+  REALTIME_STRATEGY:{focus:['stance','move','skill','interaction'],motionStyle:'UNIT_COMMAND_AND_WORKER_READABILITY'},
+  TOWER_DEFENSE:{focus:['stance','attack','skill','interaction'],motionStyle:'DEFENSE_ROLE_AND_SKILL_TELEGRAPH'},
+  MOBA:{focus:['stance','move','attack','skill'],motionStyle:'ABILITY_TELEGRAPH_AND_TEAM_READABILITY'},
+  CITY_BUILDER:{focus:['move','interaction','skill'],motionStyle:'WORKER_ACTIVITY_AND_CONSTRUCTION'},
+  TYCOON:{focus:['stance','interaction','skill'],motionStyle:'STAFF_AND_CUSTOMER_READABILITY'},
+  MANAGEMENT_SIM:{focus:['stance','interaction','skill'],motionStyle:'NPC_JOB_TASK_AND_SERVICE_READABILITY'},
+  FARMING_SIM:{focus:['move','interaction','skill'],motionStyle:'FARMING_TOOL_AND_CREATURE_CONTACT'},
+  COZY_LIFE_SIM:{focus:['stance','move','interaction'],motionStyle:'EVERYDAY_GESTURES_AND_CARE'},
+  HORROR:{focus:['stance','move','defense','interaction'],motionStyle:'ALERTNESS_STEALTH_AND_REACTION'},
+  PUZZLE_ADVENTURE:{focus:['interaction','move','skill'],motionStyle:'OBJECT_MANIPULATION_AND_CUES'},
+  RACING:{focus:['stance','move','interaction'],motionStyle:'VEHICLE_DRIVER_AND_PIT_CREW'},
+  SOCIAL_SIM:{focus:['stance','interaction','skill'],motionStyle:'NPC_WORK_DIALOGUE_AND_GESTURE'},
+  RHYTHM:{focus:['stance','interaction','skill'],motionStyle:'BEAT_ALIGNED_BODY_GESTURES'},
+  SPORTS:{focus:['stance','move','interaction','skill'],motionStyle:'WEIGHT_TRANSFER_AND_TEAM_GESTURES'},
+  STORY_ADVENTURE:{focus:['stance','interaction','move'],motionStyle:'CONTEXTUAL_ACTING_AND_EMOTION'},
+  IDLE_GROWTH:{focus:['stance','skill','interaction'],motionStyle:'LOW_COST_IDLE_AND_REWARD_PRESENTATION'},
+  SANDBOX:{focus:['move','interaction','skill'],motionStyle:'GENERIC_CREATION_AND_INTERACTION'}
+});
+
+export const COMMON_SKILL_PRESENTATION_GRAMMAR=Object.freeze({
+  STRIKE:Object.freeze({phaseRoles:['PREPARE','STARTUP','RELEASE','CONTACT_RESPONSE','RECOVERY'],contact:'LIMB_OR_WEAPON',effect:'CONTACT_TRAIL',audio:'WEAPON_WHOOSH_ON_REAL_SWEEP',camera:'SUBTLE_IMPACT'}),
+  PROJECTILE:Object.freeze({phaseRoles:['PREPARE','AIM','HOLD','RELEASE','RECOVERY'],contact:'RELEASE_SOCKET',effect:'PROJECTILE_TRAIL',audio:'RELEASE_ON_GESTURE',camera:'AIM_REFOCUS'}),
+  SPELL:Object.freeze({phaseRoles:['PREPARE','CHARGE','CHANNEL','RELEASE','RECOVERY'],contact:'HAND_OR_FOCUS',effect:'CAST_GLYPH',audio:'CAST_RELEASE_SYNC',camera:'SPELL_FOCUS'}),
+  SUMMON:Object.freeze({phaseRoles:['PREPARE','CHARGE','PORTAL_OPEN','RELEASE','RECOVERY'],contact:'GROUND_OR_SUMMON_SOCKET',effect:'SUMMON_CIRCLE',audio:'SUMMON_ON_AUTHORITATIVE_EVENT',camera:'SUMMON_REVEAL'}),
+  HEAL:Object.freeze({phaseRoles:['PREPARE','CHANNEL','TEND','RELEASE','RECOVERY'],contact:'HEAL_TARGET_HAND',effect:'HEAL_RUNE',audio:'HEAL_EVENT_SYNC',camera:'NONE'}),
+  STEALTH:Object.freeze({phaseRoles:['PREPARE','EVADE','REPOSITION','RELEASE','RECOVERY'],contact:'FOOT_AND_SHADOW',effect:'SHADOW_FADE',audio:'LOW_NOISE_CUE',camera:'NONE'}),
+  COMMAND:Object.freeze({phaseRoles:['PREPARE','INDICATE','SIGNAL','RELEASE','RECOVERY'],contact:'HAND_SIGNAL',effect:'COMMAND_MARKER',audio:'VOICE_CUE_ON_GAME_EVENT',camera:'NONE'}),
+  CRAFT:Object.freeze({phaseRoles:['PREPARE','TOOL_CONTACT','WORK','PRESENT','RECOVERY'],contact:'TOOL_AND_WORKPIECE',effect:'CRAFT_SPARK',audio:'SURFACE_CONTACT',camera:'WORK_ITEM_FOCUS'}),
+  INTERACTION:Object.freeze({phaseRoles:['PREPARE','REACH','HANDLE','PRESENT','RECOVERY'],contact:'HAND_AND_PROP',effect:'SOFT_FEEDBACK',audio:'ACTION_CUE',camera:'NONE'})
+});
+
+export const COMMON_CLASS_AUTHORING_CLIPS=Object.freeze({
+  IAI_DRAW_SLASH:'common_samurai_iaido_hq',
+  IAI_COUNTER_PARRY:'common_samurai_parry_hq',
+  SPEAR_LUNGE:'common_spear_lunge_hq',
+  BOW_DRAW:'common_bow_draw_hq',
+  BOW_RELEASE:'common_bow_release_hq',
+  ROGUE_BACKSTAB:'common_rogue_backstab_hq',
+  ELEMENT_CHANNEL:'common_caster_channel_hq',
+  HEAL_RITUAL:'common_healer_ritual_hq',
+  SUMMON_INVOCATION:'common_summon_call_hq',
+  HAMMER_FORGE:'common_forge_hammer_hq',
+  PLACE_FRAME:'common_build_place_hq',
+  HARVEST:'common_farm_harvest_hq',
+  RALLY_COMMAND:'common_command_rally_hq',
+  HANDOVER_ITEM:'common_merchant_trade_hq',
+  STEER:'common_vehicle_steer_hq',
+  FISH_CAST:'common_fishing_cast_hq',
+  MIX_POTION:'common_potion_mix_hq'
+});
+
+export function createCommonClassMotionLoadout({
+  family='SWORD',path='SAMURAI',tier=1,genre='ACTION_RPG',
+  platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY'
+}={}){
+  const familyKey=upper(family),pathKey=upper(path),genreKey=upper(genre),body=upper(bodyPlan);
+  const tree=COMMON_CLASS_FAMILY_TREES[familyKey],lineage=tree?.paths?.[pathKey],genreProfile=COMMON_CLASS_GENRE_BINDINGS[genreKey];
+  const validTier=Number.isInteger(tier)&&tier>=0&&tier<=2;
+  const rigCompatible=['HUMANOID','HUMANOID_UNDEAD','SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER'].includes(body);
+  if(!tree||!lineage||!genreProfile||!validTier||!rigCompatible)
+    return Object.freeze({valid:false,reason:!tree?'UNKNOWN_CLASS_FAMILY':!lineage?'UNKNOWN_CLASS_PATH':!genreProfile?'UNKNOWN_GAME_GENRE':!validTier?'INVALID_CLASS_TIER':'INCOMPATIBLE_BODY_PLAN',productionVerified:false,gameplayAuthority:false});
+  const modules=unique([...(tier>0&&lineage.replaceBaseModules?lineage.replaceBaseModules:tree.modules),...lineage.modules.slice(0,tier)]);
+  const names=['stance','move','attack','defense','skill','interaction','vfx'];
+  const groups=Object.freeze(Object.fromEntries(names.map(group=>[group,freezeList(unique(modules.flatMap(id=>COMMON_CLASS_ACTION_MODULES[id]?.[group]||[])))])));
+  const sourceClipBindings=Object.freeze(Object.entries(COMMON_CLASS_AUTHORING_CLIPS)
+    .filter(([motionId])=>Object.values(groups).some(ids=>ids.includes(motionId)))
+    .map(([motionId,clipId])=>Object.freeze({
+      motionId,clipId,source:'assets/shared/humanoid-motion-v1/author-motion.py',
+      authoringState:'DEFINED_NOT_BAKED',nativeRuntimeVerified:false
+    })));
+  const genreActions=Object.freeze(Object.fromEntries(genreProfile.focus.map(group=>[
+    group,Object.freeze([...(groups[group]||[])])
+  ])));
+  const activeRoles=freezeList(unique(Object.values(genreActions).flat()));
+  const classifySkill=id=>{
+    const val=upper(id);
+    if(/SUMMON|BEAST_COMMAND|HERD_CALL/.test(val))return 'SUMMON';
+    if(/HEAL|REVIVE|REMEDY/.test(val))return 'HEAL';
+    if(/SPELL|ELEMENT|CURSE|ALCHEMY|RUNE|MAGIC|ARCANE|CHANNEL/.test(val))return 'SPELL';
+    if(/BOW|SHOT|ARROW|GUN|PROJECTILE/.test(val))return 'PROJECTILE';
+    if(/SHADOW|STEALTH|NINJA|EVADE|DODGE/.test(val))return 'STEALTH';
+    if(/COMMAND|RALLY|FORMATION|LEADERSHIP|TACTIC|SIGNAL|ADDRESS|DIPLOMACY/.test(val))return 'COMMAND';
+    if(/CRAFT|FORGE|BUILD|CONSTRUCTION|CARPENTER|FARM|FISH|BOTANICAL|CHEF|MIX|DEPLOY|DEVICE/.test(val))return 'CRAFT';
+    if(/ATTACK|BLADE|SPEAR|DUEL|MARTIAL|BERSERK|PARRY|FINISHER|GUARD|SMASH|DRAGOON/.test(val))return 'STRIKE';
+    return 'INTERACTION';
+  };
+  const skillBindings=Object.entries(COMMON_CLASS_AUTHORING_CLIPS);
+  const skills=Object.freeze(groups.skill.map(id=>{
+    const mode=classifySkill(id),grammar=COMMON_SKILL_PRESENTATION_GRAMMAR[mode];
+    const applicable=skillBindings
+      .filter(([action])=>activeRoles.includes(action)||groups.attack.includes(action)||groups.interaction.includes(action))
+      .map(([action,clipId])=>Object.freeze({action,clipId,runtimeVerified:false}));
+    return Object.freeze({
+      id,kind:'PRESENTATION_INTENT',motionRole:id,skillFamily:mode,
+      sequence:buildSkillMotionSequence({hold:['SPELL','SUMMON','HEAL'].includes(mode)?'HOLD':null}),
+      visualPhases:grammar.phaseRoles,contactSocket:grammar.contact,
+      vfxCue:grammar.effect,audioCue:grammar.audio,cameraCue:grammar.camera,
+      genrePreferred:genreProfile.focus.includes('skill'),
+      sourcePoseCandidates:Object.freeze(applicable),
+      fxSource:createVibeCommonSkillFxSource({id,skillFamily:mode,bodyPlan:body,genre:genreKey,styleFamily,contact:grammar.contact}),
+      visualRoles:groups.vfx,actualEffectRequiresGameBinding:true,
+      nativeRuntimeVerificationRequired:true,productionVerified:false,
+      damageAuthority:false,cooldownAuthority:false,gameplayAuthority:false
+    });
+  }));
+  const weapon=upper(lineage.weapon||tree.weapon||'');
+  return Object.freeze({
+    valid:true,version:1,family:familyKey,path:pathKey,tier,
+    entryClass:tree.base,currentClass:lineage.classes[tier],
+    lineage:freezeList(lineage.classes.slice(0,tier+1)),inheritedModules:freezeList(modules),
+    genre:genreKey,genreBinding:Object.freeze({...genreProfile,focus:freezeList(genreProfile.focus)}),
+    compatibleAcrossGenres:true,bodyPlan:body,rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
+    platform:upper(platform),weaponFamily:weapon||null,
+    groups,genreActions,activeGenreRoles:activeRoles,skills,
+    combatLoadout:weapon?createDuelCombatMotionLoadout({weaponFamily:weapon,platform}):null,
+    sourceClipBindings,sourceOnly:true,productionVerified:false,
+    nativeRuntimeVerificationRequired:true,platformNativeRetargetRequired:true,
+    directCrossPlatformBinaryReuseForbidden:true,gameOwnsClassProgression:true,
+    gameOwnsSkillBehavior:true,gameplayAuthority:false
+  });
+}
+
 export function createMotionDNA(input={}) {
   const dna={
     MOTION_ID:text(input.MOTION_ID||input.motionId||input.id),
@@ -1271,12 +1475,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1,strideScale:1,torsoLean:1,anticipationPoseScale:1,recoilPoseScale:1,recoveryPoseScale:1,limbPhase:'BIPED_OPPOSED',visualLimbCount:4,tailFollow:0,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['IDLE_BREATH','LIMP_IDLE','WALK','RUN','START','STOP','TURN_L','TURN_R']),
-      attacks:Object.freeze(['LIGHT_ATTACK_A','LIGHT_ATTACK_B','LIGHT_ATTACK_C','HEAVY_ATTACK','SHOVE']),
+      attacks:Object.freeze(['LIGHT_ATTACK_A','LIGHT_ATTACK_B','LIGHT_ATTACK_C','HEAVY_ATTACK','SHOVE','BONE_GRAB','LUNGE_BITE','GRAVE_UPPERCUT']),
       defense:Object.freeze(['GUARD','DODGE_L','DODGE_R']),
-      reactions:Object.freeze(['HIT_FRONT','HIT_BACK','HIT_LEFT','HIT_RIGHT','STAGGER','KNOCKDOWN','GET_UP']),
-      acting:Object.freeze(['BREATH_IDLE','ALERT','THREAT_DISPLAY','SEARCH']),
+      reactions:Object.freeze(['HIT_FRONT','HIT_BACK','HIT_LEFT','HIT_RIGHT','STAGGER','KNOCKDOWN','GET_UP','LIMB_DETACH_RECOIL']),
+      acting:Object.freeze(['BREATH_IDLE','ALERT','THREAT_DISPLAY','SEARCH','JAW_CHATTER']),
       deaths:Object.freeze(['DEATH_FRONT','DEATH_BACK','DEATH_SIDE']),
-      skill:Object.freeze(['SKILL_PREPARE','SKILL_RELEASE','SKILL_RECOVERY']),
+      skill:Object.freeze(['SKILL_PREPARE','SKILL_RELEASE','SKILL_RECOVERY','GRAVE_CALL','CURSE_BURST']),
       signature:Object.freeze(['IDLE_SIGNATURE','ATTACK_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1287,12 +1491,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1.45,strideScale:.9,torsoLean:.8,anticipationPoseScale:1.25,recoilPoseScale:1.3,recoveryPoseScale:1.35,limbPhase:'HEAVY_BIPED_OPPOSED',visualLimbCount:4,tailFollow:0,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['HEAVY_IDLE','HEAVY_WALK','HEAVY_RUN','HEAVY_START','HEAVY_STOP','HEAVY_TURN_L','HEAVY_TURN_R','HEAVY_RECOVERY']),
-      attacks:Object.freeze(['OVERHEAD_SLAM','SWEEP_ATTACK','DOUBLE_HAND_SMASH','CHARGE_ATTACK','BODY_SHOVE']),
-      defense:Object.freeze(['HEAVY_GUARD','BRACE','SIDESTEP']),
+      attacks:Object.freeze(['OVERHEAD_SLAM','SWEEP_ATTACK','DOUBLE_HAND_SMASH','CHARGE_ATTACK','BODY_SHOVE','DOUBLE_STOMP','SHOULDER_CHARGE','GRAB_SLAM']),
+      defense:Object.freeze(['HEAVY_GUARD','BRACE','SIDESTEP','HEAVY_COUNTER_BRACE']),
       reactions:Object.freeze(['HEAVY_HIT','HIT_SIDE','STAGGER','KNOCKDOWN','GET_UP']),
       acting:Object.freeze(['HEAVY_BREATH','THREAT_DISPLAY','ROAR']),
       deaths:Object.freeze(['HEAVY_DEATH_FRONT','HEAVY_DEATH_SIDE','HEAVY_COLLAPSE']),
-      skill:Object.freeze(['SKILL_PREPARE','GROUND_SLAM_RELEASE','SKILL_RECOVERY']),
+      skill:Object.freeze(['SKILL_PREPARE','GROUND_SLAM_RELEASE','SKILL_RECOVERY','RAGE_ROAR','GROUND_CRACK_RELEASE']),
       signature:Object.freeze(['IDLE_SIGNATURE','LOCOMOTION_SIGNATURE','ATTACK_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1303,12 +1507,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1.5,strideScale:1,torsoLean:1.05,anticipationPoseScale:1.4,recoilPoseScale:1.35,recoveryPoseScale:1.45,limbPhase:'BOSS_BIPED_WEIGHTED',visualLimbCount:4,tailFollow:.25,wingFollow:.25,tentacleFollow:.25}),
     roles:Object.freeze({
       locomotion:Object.freeze(['BOSS_IDLE','BOSS_WALK','BOSS_RUN','BOSS_START','BOSS_STOP','BOSS_TURN_L','BOSS_TURN_R']),
-      attacks:Object.freeze(['LIGHT_ATTACK_A','LIGHT_ATTACK_B','HEAVY_ATTACK_A','GAP_CLOSER','AOE_ATTACK','SIGNATURE_ATTACK']),
+      attacks:Object.freeze(['LIGHT_ATTACK_A','LIGHT_ATTACK_B','HEAVY_ATTACK_A','GAP_CLOSER','AOE_ATTACK','SIGNATURE_ATTACK','TRIPLE_STRIKE_CHAIN','FAKEOUT_SWEEP','LEAP_SLAM','SPIN_FINISHER']),
       defense:Object.freeze(['BOSS_GUARD','BOSS_DODGE','BOSS_REVERSAL']),
       reactions:Object.freeze(['BOSS_HIT_LIGHT','BOSS_HIT_HEAVY','BOSS_STAGGER','BOSS_KNOCKDOWN','BOSS_GET_UP']),
-      acting:Object.freeze(['INTRO','TAUNT','PHASE_CHANGE','ENRAGE','FAILED_ATTACK_RECOVERY']),
+      acting:Object.freeze(['INTRO','TAUNT','PHASE_CHANGE','ENRAGE','FAILED_ATTACK_RECOVERY','TARGET_POINT','KNEEL_PHASE_TRANSITION']),
       deaths:Object.freeze(['BOSS_DEATH_SEQUENCE','BOSS_DEATH_ALTERNATE']),
-      skill:Object.freeze(['SKILL_PREPARE','SKILL_RELEASE','ULTIMATE','SKILL_RECOVERY']),
+      skill:Object.freeze(['SKILL_PREPARE','SKILL_RELEASE','ULTIMATE','SKILL_RECOVERY','CHARGED_ULTIMATE','SUMMON_COMMAND','PHASE_SIGNATURE_SKILL']),
       signature:Object.freeze(['INTRO_SIGNATURE','PHASE_SIGNATURE','ENRAGE_SIGNATURE','ATTACK_SIGNATURE','HIT_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1319,12 +1523,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1.75,strideScale:.75,torsoLean:.55,anticipationPoseScale:1.3,recoilPoseScale:1.5,recoveryPoseScale:1.55,limbPhase:'RIGID_MASS_DELAYED',visualLimbCount:4,tailFollow:0,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['GOLEM_IDLE','GOLEM_WALK','GOLEM_RUN','HEAVY_START','HEAVY_STOP','HEAVY_TURN_L','HEAVY_TURN_R','HEAVY_RECOVERY']),
-      attacks:Object.freeze(['GOLEM_OVERHEAD_SLAM','GOLEM_SWEEP','GOLEM_DOUBLE_SMASH','GOLEM_CHARGE','GOLEM_STOMP']),
+      attacks:Object.freeze(['GOLEM_OVERHEAD_SLAM','GOLEM_SWEEP','GOLEM_DOUBLE_SMASH','GOLEM_CHARGE','GOLEM_STOMP','GOLEM_ROCK_THROW','GOLEM_CRUSH_GRAB','GOLEM_SHOCKWAVE_STOMP']),
       defense:Object.freeze(['GOLEM_BRACE','GOLEM_GUARD','GOLEM_DEFLECT']),
-      reactions:Object.freeze(['GOLEM_HIT','GOLEM_CRACK_RECOIL','GOLEM_STAGGER','GOLEM_KNEEL','GOLEM_RECOVER']),
+      reactions:Object.freeze(['GOLEM_HIT','GOLEM_CRACK_RECOIL','GOLEM_STAGGER','GOLEM_KNEEL','GOLEM_RECOVER','ARM_CRACK_RECOIL']),
       acting:Object.freeze(['GOLEM_POWER_IDLE','GOLEM_THREAT','GOLEM_CORE_PULSE']),
       deaths:Object.freeze(['GOLEM_COLLAPSE','GOLEM_SHATTER','GOLEM_KNEEL_DEATH']),
-      skill:Object.freeze(['GOLEM_SKILL_PREPARE','GOLEM_AOE_RELEASE','GOLEM_SKILL_RECOVERY']),
+      skill:Object.freeze(['GOLEM_SKILL_PREPARE','GOLEM_AOE_RELEASE','GOLEM_SKILL_RECOVERY','CORE_BEAM_CHARGE','CORE_BEAM_RELEASE','SHIELD_DEPLOY']),
       signature:Object.freeze(['IDLE_SIGNATURE','STOMP_SIGNATURE','CORE_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1335,12 +1539,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.9,strideScale:1.2,torsoLean:1.15,anticipationPoseScale:1.1,recoilPoseScale:.9,recoveryPoseScale:.9,limbPhase:'QUADRUPED_TROT_GALLOP',visualLimbCount:4,tailFollow:1,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['CANINE_IDLE','CANINE_WALK','CANINE_TROT','CANINE_RUN','CANINE_SPRINT','CANINE_STALK','CANINE_TURN_L','CANINE_TURN_R','CANINE_STOP']),
-      attacks:Object.freeze(['CANINE_BITE','CANINE_LUNGE_BITE','CANINE_SIDE_BITE','CANINE_POUNCE']),
-      defense:Object.freeze(['CANINE_DODGE_SIDE','CANINE_BACKSTEP']),
+      attacks:Object.freeze(['CANINE_BITE','CANINE_LUNGE_BITE','CANINE_SIDE_BITE','CANINE_POUNCE','CANINE_LEAP_BITE','CANINE_CIRCLE_AMBUSH','CANINE_LEG_SWIPE']),
+      defense:Object.freeze(['CANINE_DODGE_SIDE','CANINE_BACKSTEP','CANINE_DUCK']),
       reactions:Object.freeze(['CANINE_HIT_FRONT','CANINE_HIT_SIDE','CANINE_STAGGER','CANINE_KNOCKDOWN','CANINE_GET_UP']),
-      acting:Object.freeze(['CANINE_SNIFF','CANINE_ALERT','CANINE_GROWL','CANINE_HOWL_OR_BARK']),
+      acting:Object.freeze(['CANINE_SNIFF','CANINE_ALERT','CANINE_GROWL','CANINE_HOWL_OR_BARK','CANINE_PACK_SIGNAL']),
       deaths:Object.freeze(['CANINE_DEATH_SIDE','CANINE_DEATH_FORWARD']),
-      skill:Object.freeze(['CANINE_SKILL_PREPARE','CANINE_SKILL_RELEASE']),
+      skill:Object.freeze(['CANINE_SKILL_PREPARE','CANINE_SKILL_RELEASE','CANINE_PACK_HOWL','CANINE_FEINT_RUSH']),
       signature:Object.freeze(['STALK_SIGNATURE','POUNCE_SIGNATURE','HOWL_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1351,12 +1555,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1.4,strideScale:.9,torsoLean:.8,anticipationPoseScale:1.25,recoilPoseScale:1.25,recoveryPoseScale:1.3,limbPhase:'QUADRUPED_HEAVY_WALK_GALLOP',visualLimbCount:4,tailFollow:.65,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['HEAVY_QUAD_IDLE','HEAVY_QUAD_WALK','HEAVY_QUAD_TROT','HEAVY_QUAD_RUN','HEAVY_QUAD_CHARGE','HEAVY_TURN_L','HEAVY_TURN_R','HEAVY_QUAD_STOP']),
-      attacks:Object.freeze(['HEAVY_QUAD_BITE','HEAVY_QUAD_SWIPE','HEAVY_QUAD_RAM','HEAVY_QUAD_BODY_SLAM','HEAVY_QUAD_CHARGE_ATTACK']),
-      defense:Object.freeze(['HEAVY_QUAD_BRACE','HEAVY_QUAD_EVADE']),
+      attacks:Object.freeze(['HEAVY_QUAD_BITE','HEAVY_QUAD_SWIPE','HEAVY_QUAD_RAM','HEAVY_QUAD_BODY_SLAM','HEAVY_QUAD_CHARGE_ATTACK','REAR_KICK','TUSK_COMBO','STOMP_QUAKE']),
+      defense:Object.freeze(['HEAVY_QUAD_BRACE','HEAVY_QUAD_EVADE','ROLL_BRACE']),
       reactions:Object.freeze(['HEAVY_QUAD_HIT_FRONT','HEAVY_QUAD_HIT_SIDE','HEAVY_QUAD_STAGGER','HEAVY_QUAD_KNOCKDOWN','HEAVY_QUAD_GET_UP']),
-      acting:Object.freeze(['HEAVY_QUAD_SNIFF','HEAVY_QUAD_ALERT','HEAVY_QUAD_THREAT','HEAVY_QUAD_ROAR']),
+      acting:Object.freeze(['HEAVY_QUAD_SNIFF','HEAVY_QUAD_ALERT','HEAVY_QUAD_THREAT','HEAVY_QUAD_ROAR','GROUND_SCRAPE']),
       deaths:Object.freeze(['HEAVY_QUAD_DEATH_FRONT','HEAVY_QUAD_DEATH_SIDE','HEAVY_QUAD_COLLAPSE']),
-      skill:Object.freeze(['HEAVY_QUAD_SKILL_PREPARE','HEAVY_QUAD_SKILL_RELEASE']),
+      skill:Object.freeze(['HEAVY_QUAD_SKILL_PREPARE','HEAVY_QUAD_SKILL_RELEASE','INTIMIDATE_ROAR','CHARGE_TELEGRAPH']),
       signature:Object.freeze(['LOCOMOTION_SIGNATURE','ROAR_SIGNATURE','ATTACK_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1367,12 +1571,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.75,strideScale:1.15,torsoLean:.25,anticipationPoseScale:1.05,recoilPoseScale:.85,recoveryPoseScale:.8,limbPhase:'EIGHT_LEG_ALTERNATING_WAVE',visualLimbCount:8,tailFollow:0,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['IDLE_LEG_SHIFT','CRAWL','RUN','STRAFE_L','STRAFE_R','WALL_CRAWL','CEILING_CRAWL','TURN']),
-      attacks:Object.freeze(['FANG_BITE','FRONT_LEG_STAB','POUNCE_ATTACK','WEB_OR_BODY_ATTACK']),
-      defense:Object.freeze(['LEG_BRACE','SIDE_SCUTTLE','BACKSTEP']),
+      attacks:Object.freeze(['FANG_BITE','FRONT_LEG_STAB','POUNCE_ATTACK','WEB_OR_BODY_ATTACK','FANG_DOUBLE_BITE','EIGHT_LEG_CROSS_STAB','CEILING_DROP_AMBUSH','WEB_WRAP_GRAB']),
+      defense:Object.freeze(['LEG_BRACE','SIDE_SCUTTLE','BACKSTEP','BACK_LEG_SHIELD']),
       reactions:Object.freeze(['HIT_FRONT','HIT_SIDE','LEG_STAGGER','KNOCKDOWN']),
-      acting:Object.freeze(['PEDIPALP_TWITCH','THREAT_RAISE','SEARCH_LEG_TAP']),
+      acting:Object.freeze(['PEDIPALP_TWITCH','THREAT_RAISE','SEARCH_LEG_TAP','SPINNERET_PRIME']),
       deaths:Object.freeze(['LEGS_CURL_DEATH','FLIP_COLLAPSE_DEATH']),
-      skill:Object.freeze(['BURROW_PREPARE','BURROW_EMERGE','WEB_CAST']),
+      skill:Object.freeze(['BURROW_PREPARE','BURROW_EMERGE','WEB_CAST','WEB_NET_CAST','WEB_ANCHOR_PULL','VENOM_FANG_CHANNEL']),
       signature:Object.freeze(['LEG_SHIFT_SIGNATURE','WALL_CRAWL_SIGNATURE','POUNCE_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1383,12 +1587,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.9,strideScale:1,torsoLean:.2,anticipationPoseScale:1.15,recoilPoseScale:1,recoveryPoseScale:.95,limbPhase:'EIGHT_LEG_SCORPION_ALTERNATING',visualLimbCount:8,tailFollow:1.4,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['SCORPION_IDLE','SCORPION_CRAWL','SCORPION_RUN','SCORPION_STRAFE_L','SCORPION_STRAFE_R','SCORPION_TURN_L','SCORPION_TURN_R','SCORPION_BURROW_MOVE']),
-      attacks:Object.freeze(['CLAW_PINCH','DOUBLE_CLAW','TAIL_STING','TAIL_SWEEP','POUNCE_STING']),
+      attacks:Object.freeze(['CLAW_PINCH','DOUBLE_CLAW','TAIL_STING','TAIL_SWEEP','POUNCE_STING','DOUBLE_PINCER_GRAB','TAIL_STING_COMBO','STING_FEINT']),
       defense:Object.freeze(['CLAW_GUARD','SIDE_SCUTTLE','TAIL_GUARD']),
       reactions:Object.freeze(['HIT_FRONT','HIT_SIDE','TAIL_RECOIL','STAGGER']),
-      acting:Object.freeze(['TAIL_AIM_IDLE','CLAW_THREAT','SAND_PROBE']),
+      acting:Object.freeze(['TAIL_AIM_IDLE','CLAW_THREAT','SAND_PROBE','TAIL_RATTLE']),
       deaths:Object.freeze(['SCORPION_LEGS_CURL_DEATH','SCORPION_TAIL_COLLAPSE_DEATH']),
-      skill:Object.freeze(['BURROW','BURROW_EMERGE','VENOM_STING_SKILL']),
+      skill:Object.freeze(['BURROW','BURROW_EMERGE','VENOM_STING_SKILL','VENOM_POOL_RELEASE','SAND_BURROW_AMBUSH']),
       signature:Object.freeze(['TAIL_SIGNATURE','BURROW_SIGNATURE','STING_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1399,12 +1603,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.6,strideScale:1.1,torsoLean:.2,anticipationPoseScale:1,recoilPoseScale:.75,recoveryPoseScale:.8,limbPhase:'SIX_LEG_TRIPOD_GAIT',visualLimbCount:6,tailFollow:.2,wingFollow:.8,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['INSECT_IDLE','SIX_LEG_WALK','SIX_LEG_RUN','INSECT_TURN_L','INSECT_TURN_R','INSECT_SCUTTLE','WING_TAKEOFF','WING_LAND']),
-      attacks:Object.freeze(['MANDIBLE_BITE','HORN_RAM','FORELEG_STRIKE','FLYING_DIVE']),
-      defense:Object.freeze(['SHELL_BRACE','SIDE_SCUTTLE','WING_EVADE']),
+      attacks:Object.freeze(['MANDIBLE_BITE','HORN_RAM','FORELEG_STRIKE','FLYING_DIVE','TRIPOD_CHARGE','MANDIBLE_LATCH','WING_BUZZ_RUSH','HORN_LIFT_THROW']),
+      defense:Object.freeze(['SHELL_BRACE','SIDE_SCUTTLE','WING_EVADE','SIX_LEG_PLANT_GUARD']),
       reactions:Object.freeze(['INSECT_HIT','SHELL_RECOIL','FLIP_OVER','FLIP_RECOVER']),
-      acting:Object.freeze(['ANTENNA_SCAN','WING_FLUTTER','MANDIBLE_CLICK','THREAT_DISPLAY']),
+      acting:Object.freeze(['ANTENNA_SCAN','WING_FLUTTER','MANDIBLE_CLICK','THREAT_DISPLAY','ANTENNA_SIGNAL']),
       deaths:Object.freeze(['INSECT_COLLAPSE','INSECT_FLIP_DEATH']),
-      skill:Object.freeze(['WING_CHARGE','BURST_RELEASE','SKILL_RECOVERY']),
+      skill:Object.freeze(['WING_CHARGE','BURST_RELEASE','SKILL_RECOVERY','PHEROMONE_SIGNAL','SHELL_HARDEN_POSE','ACID_SPIT_WINDUP']),
       signature:Object.freeze(['ANTENNA_SIGNATURE','WING_SIGNATURE','HORN_OR_MANDIBLE_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1415,12 +1619,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.8,strideScale:1,torsoLean:0,anticipationPoseScale:1.1,recoilPoseScale:.9,recoveryPoseScale:.9,limbPhase:'BODY_WAVE_TRAVEL',visualLimbCount:0,tailFollow:1.5,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['IDLE_COIL','SLITHER_SLOW','SLITHER_FAST','TURN_COIL','RAISE_HEAD','LOWER_HEAD']),
-      attacks:Object.freeze(['BITE','COIL_GRAB','TAIL_WHIP','VENOM_SPIT']),
-      defense:Object.freeze(['COIL_GUARD','SLITHER_EVADE']),
+      attacks:Object.freeze(['BITE','COIL_GRAB','TAIL_WHIP','VENOM_SPIT','DOUBLE_FANG_SNAP','COIL_CONSTRICT','TAIL_OVERHEAD_STRIKE']),
+      defense:Object.freeze(['COIL_GUARD','SLITHER_EVADE','HEAD_FAKE_EVADE']),
       reactions:Object.freeze(['HEAD_RECOIL','BODY_WAVE_HIT','KNOCKBACK_COIL','RECOVER_COIL']),
       acting:Object.freeze(['TONGUE_FLICK','HEAD_TRACK','THREAT_COIL']),
       deaths:Object.freeze(['SERPENT_TWIST_DEATH','SERPENT_UNCOIL_DEATH']),
-      skill:Object.freeze(['VENOM_PREPARE','VENOM_RELEASE','VENOM_RECOVERY']),
+      skill:Object.freeze(['VENOM_PREPARE','VENOM_RELEASE','VENOM_RECOVERY','VENOM_MIST_CHARGE','SCALE_SHIMMER']),
       signature:Object.freeze(['COIL_SIGNATURE','SLITHER_SIGNATURE','BITE_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1431,12 +1635,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.7,strideScale:1.25,torsoLean:1.1,anticipationPoseScale:1,recoilPoseScale:.8,recoveryPoseScale:.85,limbPhase:'WING_BEAT_WITH_BODY_LAG',visualLimbCount:2,tailFollow:.7,wingFollow:1.5,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['PERCH_IDLE','TAKEOFF','FLY','FAST_FLY','BANK_L','BANK_R','HOVER','LAND_FROM_FLIGHT']),
-      attacks:Object.freeze(['DIVE_ATTACK','CLAW_STRIKE','BEAK_OR_BITE_ATTACK','AIR_PROJECTILE_ATTACK']),
-      defense:Object.freeze(['AIR_DODGE_L','AIR_DODGE_R','WING_GUARD']),
+      attacks:Object.freeze(['DIVE_ATTACK','CLAW_STRIKE','BEAK_OR_BITE_ATTACK','AIR_PROJECTILE_ATTACK','DOUBLE_TALON_SWEEP','SKY_DIVE_GRAB','HOVER_PROJECTILE_BURST','WING_GUST_SLAM']),
+      defense:Object.freeze(['AIR_DODGE_L','AIR_DODGE_R','WING_GUARD','BARREL_ROLL_EVADE']),
       reactions:Object.freeze(['AIR_HIT','WING_STAGGER','SPIN_RECOVER','GROUND_HIT']),
       acting:Object.freeze(['WING_ADJUST','AIR_ALERT','CALL_DISPLAY']),
       deaths:Object.freeze(['FALL_DEATH','WING_COLLAPSE_DEATH']),
-      skill:Object.freeze(['SKILL_HOVER_PREPARE','SKILL_DIVE_RELEASE','SKILL_AIR_RECOVERY']),
+      skill:Object.freeze(['SKILL_HOVER_PREPARE','SKILL_DIVE_RELEASE','SKILL_AIR_RECOVERY','WIND_CYCLONE_CAST','AERIAL_SCREECH','FEATHER_STORM']),
       signature:Object.freeze(['TAKEOFF_SIGNATURE','HOVER_SIGNATURE','DIVE_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1447,12 +1651,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.8,strideScale:1.2,torsoLean:.9,anticipationPoseScale:1,recoilPoseScale:.8,recoveryPoseScale:.75,limbPhase:'AQUATIC_BODY_WAVE',visualLimbCount:0,tailFollow:1.6,wingFollow:.5,tentacleFollow:.4}),
     roles:Object.freeze({
       locomotion:Object.freeze(['AQUATIC_IDLE','CRUISE','FAST_SWIM','TURN_SWIM','ASCEND','DIVE','BRAKE_SWIM','SURFACE_OR_BOTTOM_TRANSITION']),
-      attacks:Object.freeze(['AQUATIC_BITE','AQUATIC_CHARGE','TAIL_STRIKE','AQUATIC_LUNGE']),
-      defense:Object.freeze(['DIVE_EVADE','ROLL_EVADE','FIN_GUARD']),
+      attacks:Object.freeze(['AQUATIC_BITE','AQUATIC_CHARGE','TAIL_STRIKE','AQUATIC_LUNGE','UNDERWATER_SPIRAL_BITE','UPWARD_LUNGE','FIN_EDGE_STRIKE']),
+      defense:Object.freeze(['DIVE_EVADE','ROLL_EVADE','FIN_GUARD','DEPTH_EVADE']),
       reactions:Object.freeze(['AQUATIC_HIT','BODY_RECOIL','SPIN_STAGGER','RECOVER_SWIM']),
       acting:Object.freeze(['FIN_IDLE','SCAN_SWIM','THREAT_DISPLAY']),
       deaths:Object.freeze(['SINK_DEATH','FLOAT_DEATH']),
-      skill:Object.freeze(['AQUATIC_SKILL_PREPARE','AQUATIC_SKILL_RELEASE','AQUATIC_SKILL_RECOVERY']),
+      skill:Object.freeze(['AQUATIC_SKILL_PREPARE','AQUATIC_SKILL_RELEASE','AQUATIC_SKILL_RECOVERY','BUBBLE_BEAM_RELEASE','WHIRLPOOL_CHANNEL']),
       signature:Object.freeze(['SWIM_SIGNATURE','TAIL_SIGNATURE','ATTACK_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1463,12 +1667,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.65,strideScale:.8,torsoLean:0,anticipationPoseScale:1.2,recoilPoseScale:1.4,recoveryPoseScale:1.2,limbPhase:'VOLUME_DEFORMATION',visualLimbCount:0,tailFollow:0,wingFollow:0,tentacleFollow:.5}),
     roles:Object.freeze({
       locomotion:Object.freeze(['AMORPHOUS_IDLE','STRETCH_MOVE','HOP_MOVE','SQUASH_STOP','TURN_FLOW','SLIDE_MOVE']),
-      attacks:Object.freeze(['BODY_SLAM','STRETCH_STRIKE','ENGULF_ATTACK','SPLASH_ATTACK']),
-      defense:Object.freeze(['SQUASH_DODGE','SPLIT_EVADE','HARDEN_GUARD']),
+      attacks:Object.freeze(['BODY_SLAM','STRETCH_STRIKE','ENGULF_ATTACK','SPLASH_ATTACK','ELASTIC_HAMMER','TENDRIL_SHOT','MULTI_GLOB_STRIKE']),
+      defense:Object.freeze(['SQUASH_DODGE','SPLIT_EVADE','HARDEN_GUARD','LIQUID_PHASE_EVADE']),
       reactions:Object.freeze(['SQUASH_HIT','STRETCH_RECOIL','SPLIT_REACTION','RECOMBINE']),
       acting:Object.freeze(['BUBBLE_IDLE','PULSE_ALERT','WOBBLE_THREAT']),
       deaths:Object.freeze(['MELT_DEATH','BURST_DEATH']),
-      skill:Object.freeze(['SPLIT_PREPARE','SPLIT_RELEASE','ABSORB','RECOMBINE']),
+      skill:Object.freeze(['SPLIT_PREPARE','SPLIT_RELEASE','ABSORB','RECOMBINE','FRAGMENT_SWARM','ABSORPTION_CHANNEL']),
       signature:Object.freeze(['WOBBLE_SIGNATURE','SPLIT_SIGNATURE','ENGULF_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1479,12 +1683,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.35,strideScale:1.15,torsoLean:.5,anticipationPoseScale:1.1,recoilPoseScale:.9,recoveryPoseScale:.7,limbPhase:'FLOATING_TRAIL_LAG',visualLimbCount:2,tailFollow:.8,wingFollow:0,tentacleFollow:.7}),
     roles:Object.freeze({
       locomotion:Object.freeze(['FLOAT_IDLE','FLOAT_MOVE','FLOAT_FAST','FLOAT_TURN','FLOAT_ASCEND','FLOAT_DESCEND','FLOAT_STOP']),
-      attacks:Object.freeze(['REACH_ATTACK','DASH_ATTACK','SCREAM_ATTACK','ETHEREAL_SWIPE']),
-      defense:Object.freeze(['PHASE_EVADE','FLOAT_DODGE','DISPERSE_GUARD']),
+      attacks:Object.freeze(['REACH_ATTACK','DASH_ATTACK','SCREAM_ATTACK','ETHEREAL_SWIPE','PHASE_CLAW_COMBO','SHADOW_LUNGE','POSSESSION_REACH']),
+      defense:Object.freeze(['PHASE_EVADE','FLOAT_DODGE','DISPERSE_GUARD','INTANGIBLE_PHASE']),
       reactions:Object.freeze(['DISTORT_HIT','PHASE_RECOIL','DISPERSE_HIT','REFORM']),
       acting:Object.freeze(['HOVER_SWAY','STARE','WHISPER','THREAT_FLOAT']),
       deaths:Object.freeze(['DISSOLVE_DEATH','DISPERSE_DEATH']),
-      skill:Object.freeze(['TELEPORT_TELEGRAPH','TELEPORT_OUT','TELEPORT_RETURN','CURSE_CAST']),
+      skill:Object.freeze(['TELEPORT_TELEGRAPH','TELEPORT_OUT','TELEPORT_RETURN','CURSE_CAST','ILLUSION_DECOY','SCREAM_CHANNEL']),
       signature:Object.freeze(['FLOAT_SIGNATURE','TELEPORT_SIGNATURE','SCREAM_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1495,12 +1699,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1.2,strideScale:1.2,torsoLean:1,anticipationPoseScale:1.15,recoilPoseScale:1.05,recoveryPoseScale:1.1,limbPhase:'QUADRUPED_LOWER_HUMANOID_UPPER',visualLimbCount:6,tailFollow:1,wingFollow:0,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['CENTAUR_IDLE','CENTAUR_WALK','CENTAUR_TROT','CENTAUR_GALLOP','CENTAUR_START','CENTAUR_STOP','CENTAUR_TURN_L','CENTAUR_TURN_R']),
-      attacks:Object.freeze(['UPPER_BODY_SLASH','UPPER_BODY_THRUST','RUN_ATTACK','REAR_KICK','TURN_SWEEP_ATTACK']),
-      defense:Object.freeze(['UPPER_BODY_GUARD','SIDESTEP','REAR_BACKSTEP']),
+      attacks:Object.freeze(['UPPER_BODY_SLASH','UPPER_BODY_THRUST','RUN_ATTACK','REAR_KICK','TURN_SWEEP_ATTACK','SPEAR_GALLOP_LUNGE','REAR_DOUBLE_KICK','UPPER_BOW_RELEASE']),
+      defense:Object.freeze(['UPPER_BODY_GUARD','SIDESTEP','REAR_BACKSTEP','REAR_HOOF_BRACE']),
       reactions:Object.freeze(['UPPER_HIT','LOWER_HIT','STAGGER','KNOCKDOWN','GET_UP']),
       acting:Object.freeze(['HORSE_SHIFT','UPPER_ALERT','THREAT_DISPLAY']),
       deaths:Object.freeze(['CENTAUR_COLLAPSE','CENTAUR_SIDE_DEATH']),
-      skill:Object.freeze(['CHARGE_PREPARE','CHARGE_RELEASE','CHARGE_RECOVERY']),
+      skill:Object.freeze(['CHARGE_PREPARE','CHARGE_RELEASE','CHARGE_RECOVERY','HORSE_CHARGE_RALLY','CENTAUR_TRAMPLE_WAVE']),
       signature:Object.freeze(['GALLOP_SIGNATURE','RUN_ATTACK_SIGNATURE','TURN_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1511,12 +1715,12 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:1.1,strideScale:.7,torsoLean:.45,anticipationPoseScale:1.25,recoilPoseScale:1.1,recoveryPoseScale:1.2,limbPhase:'TENTACLE_CASCADE',visualLimbCount:8,tailFollow:.5,wingFollow:0,tentacleFollow:1.7}),
     roles:Object.freeze({
       locomotion:Object.freeze(['TENTACLE_IDLE','BODY_CRAWL','BODY_GLIDE','TURN_BODY','ANCHOR_SHIFT','TENTACLE_DRAG_MOVE']),
-      attacks:Object.freeze(['TENTACLE_SWIPE','TENTACLE_STAB','MULTI_STRIKE','GRAB','SLAM_GRAB','RANGED_TENTACLE_STRIKE']),
-      defense:Object.freeze(['TENTACLE_SHIELD','RETRACT_EVADE','ANCHOR_BRACE']),
+      attacks:Object.freeze(['TENTACLE_SWIPE','TENTACLE_STAB','MULTI_STRIKE','GRAB','SLAM_GRAB','RANGED_TENTACLE_STRIKE','TENTACLE_CROSS_WHIP','MULTI_ARM_STAB_CHAIN','GRAB_PULL_SLAM']),
+      defense:Object.freeze(['TENTACLE_SHIELD','RETRACT_EVADE','ANCHOR_BRACE','TENTACLE_CAGE_BLOCK']),
       reactions:Object.freeze(['BODY_HIT','TENTACLE_HIT','TENTACLE_RECOIL','STAGGER','RECOVER']),
       acting:Object.freeze(['TENTACLE_SEARCH','TENTACLE_TASTE_AIR','THREAT_SPREAD','FOCUS_TARGET']),
       deaths:Object.freeze(['TENTACLE_COLLAPSE_DEATH','TENTACLE_WITHER_DEATH']),
-      skill:Object.freeze(['MULTI_ATTACK_PREPARE','MULTI_ATTACK_RELEASE','GRAB_SKILL','SKILL_RECOVERY']),
+      skill:Object.freeze(['MULTI_ATTACK_PREPARE','MULTI_ATTACK_RELEASE','GRAB_SKILL','SKILL_RECOVERY','GRASP_FIELD_CHANNEL','TENTACLE_WALL_RELEASE']),
       signature:Object.freeze(['TENTACLE_SEARCH_SIGNATURE','MULTI_STRIKE_SIGNATURE','GRAB_SIGNATURE','BODY_WAVE_SIGNATURE','DEATH_SIGNATURE'])
     })
   }),
@@ -1527,15 +1731,96 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
     presentationVariation:Object.freeze({weightScale:.25,strideScale:1.4,torsoLean:0,anticipationPoseScale:1,recoilPoseScale:1.25,recoveryPoseScale:.8,limbPhase:'SWARM_PHASE_OFFSET',visualLimbCount:0,tailFollow:0,wingFollow:1,tentacleFollow:0}),
     roles:Object.freeze({
       locomotion:Object.freeze(['SWARM_IDLE','SWARM_DRIFT','SWARM_FAST_MOVE','SWARM_TURN','EXPAND','CONTRACT','REGROUP']),
-      attacks:Object.freeze(['SWARM_DIVE','SWARM_SURROUND','SWARM_BURST_ATTACK','SWARM_FOCUS_ATTACK']),
-      defense:Object.freeze(['SWARM_SCATTER','SWARM_SPLIT','SWARM_EVADE']),
+      attacks:Object.freeze(['SWARM_DIVE','SWARM_SURROUND','SWARM_BURST_ATTACK','SWARM_FOCUS_ATTACK','SWARM_RING_DIVE','SWARM_PINCER_FORMATION','SWARM_SCATTER_BURST']),
+      defense:Object.freeze(['SWARM_SCATTER','SWARM_SPLIT','SWARM_EVADE','FORMATION_SHIFT_EVADE']),
       reactions:Object.freeze(['SWARM_HIT_SCATTER','SWARM_HOLE_REACTION','SWARM_DISPERSE','REGROUP']),
       acting:Object.freeze(['SWARM_ORBIT','SWARM_ALERT','SWARM_THREAT']),
       deaths:Object.freeze(['SWARM_DISPERSE_DEATH','SWARM_COLLAPSE_DEATH']),
-      skill:Object.freeze(['SURROUND','SWARM_CHARGE','SWARM_RELEASE','REGROUP']),
+      skill:Object.freeze(['SURROUND','SWARM_CHARGE','SWARM_RELEASE','REGROUP','SWARM_CLONE_SPLIT','SWARM_FOCUS_BEAM']),
       signature:Object.freeze(['FORMATION_SIGNATURE','SURROUND_SIGNATURE','BURST_SIGNATURE','DEATH_SIGNATURE'])
     })
-  })
+  }),
+  QUADRUPED_FELINE:Object.freeze({
+    aliases:Object.freeze(['FELINE','CATLIKE','BIG_CAT']),
+    coverage:Object.freeze({locomotion:8,attacks:5,defense:3,reactions:4,acting:4,deaths:2,skill:3,signature:4}),
+    requiredRoles:Object.freeze(['CROUCH_STALK','POUNCE','SILENT_LAND','GET_UP']),
+    presentationVariation:Object.freeze({weightScale:.82,strideScale:1.3,torsoLean:.88,anticipationPoseScale:.72,recoilPoseScale:.82,recoveryPoseScale:.74,limbPhase:'FELINE_FLEX_SPINE_GALLOP',visualLimbCount:4,tailFollow:1.1,wingFollow:0,tentacleFollow:0}),
+    roles:Object.freeze({
+      locomotion:Object.freeze(['FELINE_IDLE','FELINE_WALK','CROUCH_STALK','FELINE_TROT','FELINE_SPRINT','FELINE_TURN_L','FELINE_TURN_R','SILENT_LAND']),
+      attacks:Object.freeze(['PAW_SWIPE','DOUBLE_CLAW','NECK_BITE','POUNCE','AIR_CLAW_STRIKE','TAIL_FEINT']),
+      defense:Object.freeze(['CAT_SIDE_LEAP','CAT_DUCK','FELINE_BACKSTEP']),
+      reactions:Object.freeze(['PAW_RECOIL','CAT_BODY_HIT','ROLL_HIT','GET_UP']),
+      acting:Object.freeze(['TAIL_FLICK','EAR_TWITCH','FELINE_GROWL','PREDATOR_SCAN']),
+      deaths:Object.freeze(['FELINE_SIDE_DEATH','FELINE_COLLAPSE_DEATH']),
+      skill:Object.freeze(['AMBUSH_PREPARE','PREDATOR_BURST','CAT_ROAR']),
+      signature:Object.freeze(['STALK_SIGNATURE','POUNCE_SIGNATURE','TAIL_SIGNATURE','DEATH_SIGNATURE'])
+    })
+  }),
+  HOOFED_QUADRUPED:Object.freeze({
+    aliases:Object.freeze(['DEER','GOAT','HOOFED','UNGULATE']),
+    coverage:Object.freeze({locomotion:8,attacks:5,defense:3,reactions:4,acting:4,deaths:2,skill:3,signature:4}),
+    requiredRoles:Object.freeze(['HOOF_PLANT','GALLOP','HORN_CHARGE','BRAKE']),
+    presentationVariation:Object.freeze({weightScale:1.1,strideScale:1.15,torsoLean:.76,anticipationPoseScale:1.12,recoilPoseScale:1,recoveryPoseScale:1,limbPhase:'UNGULATE_DIAGONAL_TROT_GALLOP',visualLimbCount:4,tailFollow:.45,wingFollow:0,tentacleFollow:0}),
+    roles:Object.freeze({
+      locomotion:Object.freeze(['HOOFED_IDLE','HOOFED_WALK','HOOF_PLANT','HOOFED_TROT','GALLOP','HOOFED_TURN_L','HOOFED_TURN_R','BRAKE']),
+      attacks:Object.freeze(['HORN_CHARGE','HORN_SWEEP','FRONT_HOOF_KICK','REAR_HOOF_KICK','TUSK_RAM']),
+      defense:Object.freeze(['HOOF_SIDESTEP','BACKSTEP','HOOF_BRACE']),
+      reactions:Object.freeze(['HOOF_STUMBLE','HORN_RECOIL','BODY_REAR','RECOVER_STANCE']),
+      acting:Object.freeze(['GRAZE','EAR_SCAN','ALERT_HEAD_RAISE','HOOF_STAMP']),
+      deaths:Object.freeze(['HOOFED_KNEEL_DEATH','HOOFED_SIDE_COLLAPSE']),
+      skill:Object.freeze(['HORN_CHARGE_PREPARE','STAMPEDE_SIGNAL','HOOF_QUAKE_RELEASE']),
+      signature:Object.freeze(['GALLOP_SIGNATURE','HORN_SIGNATURE','HOOF_SIGNATURE','DEATH_SIGNATURE'])
+    })
+  }),
+  AVIAN_GROUNDED:Object.freeze({
+    aliases:Object.freeze(['GROUND_BIRD','RAPTOR_BIRD']),
+    coverage:Object.freeze({locomotion:7,attacks:5,defense:3,reactions:4,acting:4,deaths:2,skill:3,signature:4}),
+    requiredRoles:Object.freeze(['HOP_TURN','WING_FLAP','BEAK_PECK','PERCH']),
+    presentationVariation:Object.freeze({weightScale:.6,strideScale:.75,torsoLean:1.22,anticipationPoseScale:.9,recoilPoseScale:.8,recoveryPoseScale:.85,limbPhase:'BIRD_DOUBLE_HOP_PERCH',visualLimbCount:2,tailFollow:.6,wingFollow:1.2,tentacleFollow:0}),
+    roles:Object.freeze({
+      locomotion:Object.freeze(['BIRD_IDLE','BIRD_WALK','BIRD_HOP','HOP_TURN','SHORT_FLIGHT','PERCH','WING_FLAP']),
+      attacks:Object.freeze(['BEAK_PECK','BEAK_DOUBLE_PECK','TALON_SCRATCH','JUMP_TALON','WING_SLAP']),
+      defense:Object.freeze(['WING_SHIELD','HOP_DODGE','BEAK_PARRY']),
+      reactions:Object.freeze(['FEATHER_RECOIL','WING_STAGGER','FALL_RECOVER','HOP_RECOVER']),
+      acting:Object.freeze(['FEATHER_RUFFLE','HEAD_BOB','BIRD_CALL','GROUND_SCAN']),
+      deaths:Object.freeze(['BIRD_FEATHER_COLLAPSE','BIRD_SIDE_DEATH']),
+      skill:Object.freeze(['SCREECH_CHARGE','FLURRY_PECK','WING_GUST']),
+      signature:Object.freeze(['HOP_SIGNATURE','BEAK_SIGNATURE','WING_SIGNATURE','DEATH_SIGNATURE'])
+    })
+  }),
+  CRUSTACEAN:Object.freeze({
+    aliases:Object.freeze(['CRAB','LOBSTER']),
+    coverage:Object.freeze({locomotion:8,attacks:5,defense:3,reactions:4,acting:3,deaths:2,skill:3,signature:4}),
+    requiredRoles:Object.freeze(['SIDE_SCUTTLE','CLAW_PINCH','SHELL_BRACE']),
+    presentationVariation:Object.freeze({weightScale:1.35,strideScale:.7,torsoLean:.3,anticipationPoseScale:1.1,recoilPoseScale:1.2,recoveryPoseScale:1.1,limbPhase:'CRUSTACEAN_LATERAL_TRIPOD',visualLimbCount:8,tailFollow:.35,wingFollow:0,tentacleFollow:0}),
+    roles:Object.freeze({
+      locomotion:Object.freeze(['CRAB_IDLE','SIDE_SCUTTLE','CRAB_RUN','CRAB_TURN_L','CRAB_TURN_R','CRAB_BACKSTEP','CRAB_START','CRAB_STOP']),
+      attacks:Object.freeze(['CLAW_PINCH','DOUBLE_CLAW_SLAM','CLAW_UPPERCUT','SIDE_PINCH','SHELL_BODY_RAM']),
+      defense:Object.freeze(['SHELL_BRACE','DOUBLE_CLAW_GUARD','SIDE_DODGE']),
+      reactions:Object.freeze(['SHELL_RECOIL','CLAW_HIT','SIDE_STAGGER','FLIP_RECOVER']),
+      acting:Object.freeze(['CLAWS_DISPLAY','EYESTALK_SCAN','SAND_SCRAPE']),
+      deaths:Object.freeze(['CRAB_FLIP_DEATH','CRAB_LEG_COLLAPSE']),
+      skill:Object.freeze(['SAND_CLOUD_RELEASE','CLAW_SNARE_PREPARE','SHELL_SHOCK']),
+      signature:Object.freeze(['SIDESTEP_SIGNATURE','CLAW_SIGNATURE','SHELL_SIGNATURE','DEATH_SIGNATURE'])
+    })
+  }),
+  DRACONIC_WINGED:Object.freeze({
+    aliases:Object.freeze(['DRAGON','WYVERN','WINGED_DRAGON']),
+    coverage:Object.freeze({locomotion:9,attacks:6,defense:3,reactions:5,acting:5,deaths:3,skill:5,signature:5}),
+    requiredRoles:Object.freeze(['FOUR_LEG_TAKEOFF','FLIGHT_BANK','BREATH_CHARGE','WING_LAND']),
+    presentationVariation:Object.freeze({weightScale:1.8,strideScale:1.1,torsoLean:.9,anticipationPoseScale:1.4,recoilPoseScale:1.5,recoveryPoseScale:1.5,limbPhase:'DRAGON_FOUR_LEG_WING_PHASE',visualLimbCount:4,tailFollow:1.2,wingFollow:1.5,tentacleFollow:0}),
+    roles:Object.freeze({
+      locomotion:Object.freeze(['DRAGON_IDLE','DRAGON_WALK','DRAGON_RUN','FOUR_LEG_TAKEOFF','FLY','FLIGHT_BANK','HOVER','WING_LAND','TAIL_TURN']),
+      attacks:Object.freeze(['DRAGON_BITE','DRAGON_CLAW','DRAGON_TAIL_SWEEP','WING_BUFFET','DIVE_CLAW','AIR_BODY_SLAM']),
+      defense:Object.freeze(['WING_SHIELD','AIR_DODGE','TAIL_BRACE']),
+      reactions:Object.freeze(['HEAD_HIT','WING_HIT','TAIL_RECOIL','SKY_STAGGER','LAND_RECOVER']),
+      acting:Object.freeze(['DRAGON_ROAR','WING_STRETCH','HORN_THREAT','GROUND_SCRAPE','BREATH_IDLE']),
+      deaths:Object.freeze(['DRAGON_GROUND_COLLAPSE','DRAGON_FALL_DEATH','DRAGON_FINAL_BREATH']),
+      skill:Object.freeze(['BREATH_CHARGE','BREATH_RELEASE','WING_STORM','ELEMENT_CORE_CHARGE','ULTIMATE_AIR_RELEASE']),
+      signature:Object.freeze(['TAKEOFF_SIGNATURE','BREATH_SIGNATURE','TAIL_SIGNATURE','ROAR_SIGNATURE','DEATH_SIGNATURE'])
+    })
+  }),
+
 });
 
 const MONSTER_BODY_PLAN_ALIAS=Object.freeze(Object.fromEntries(
@@ -1623,6 +1908,117 @@ export function createCreatureMotionSetProfile({
     verificationState:upper(verificationState),
     productionVerified:upper(verificationState)==='VERIFIED_RUNTIME',
     gameplayAuthority:false
+  });
+}
+
+
+// 엔진 독립 몬스터 동작 원본. 종족별 몸 구조·관절 의도·시전 순서를 결합한다.
+export function createReusableCreatureMotionPack({
+  bodyPlan='QUADRUPED_CANINE',archetype='CREATURE',rigProfile='CUSTOM_CREATURE',
+  styleFamily='STYLIZED_FANTASY',genre='ACTION_RPG',platform='SHARED_SOURCE'
+}={}){
+  const requested=upper(bodyPlan),detail=resolveMonsterBodyPlanMotionDetail(requested);
+  if(!detail)return Object.freeze({valid:false,reason:'UNKNOWN_BODY_PLAN',productionVerified:false,gameplayAuthority:false});
+  if(!COMMON_CLASS_GENRE_BINDINGS[upper(genre)])
+    return Object.freeze({valid:false,reason:'UNKNOWN_GAME_GENRE',productionVerified:false,gameplayAuthority:false});
+  const canonical=MONSTER_BODY_PLAN_ALIAS[requested]||requested;
+  const profile=createCreatureMotionSetProfile({
+    id:'shared-'+canonical.toLowerCase(),archetype,bodyPlan:canonical,rigProfile,
+    ...Object.fromEntries(Object.entries(detail.roles).map(([group,roles])=>[group,roles])),
+    compatibleStyles:[styleFamily],verificationState:'PREPARED_SEMANTIC'
+  });
+  const procedural=createProceduralMotionProfile({
+    limbCount:detail.presentationVariation.visualLimbCount,
+    tailBalance:detail.presentationVariation.tailFollow>0,
+    wingBalance:detail.presentationVariation.wingFollow>0
+  });
+  return Object.freeze({
+    valid:true,profile,genre:upper(genre),platform:upper(platform),
+    candidates:motionSetToCandidates(profile,platform,styleFamily),
+    skillMotion:Object.freeze(profile.groups.skill.map(id=>{
+      const kind=upper(id);
+      const skillFamily=/SUMMON|SPLIT|RECOMBINE|SWARM_CLONE|EGG_SAC/.test(kind)?'SUMMON'
+        :/HEAL|REVIVE/.test(kind)?'HEAL'
+        :/PHASE|TELEPORT|BURROW|AMBUSH/.test(kind)?'STEALTH'
+        :/HOWL|ROAR|RAGE|PHEROMONE|STAMPEDE|RALLY/.test(kind)?'COMMAND'
+        :/SLAM|STOMP|CHARGE_ATTACK|SWIPE|GRAB/.test(kind)?'STRIKE'
+        :/WEB|VENOM|ACID|PROJECTILE|BREATH|BEAM|WING|STORM/.test(kind)?'PROJECTILE'
+        :'SPELL';
+      return Object.freeze({
+        id,sequence:buildSkillMotionSequence({hold:['SPELL','SUMMON','PROJECTILE'].includes(skillFamily)?'HOLD':null}),
+        bodyPlan:canonical,skillFamily,
+        fxSource:createVibeCommonSkillFxSource({id,skillFamily,bodyPlan:canonical,genre,styleFamily}),
+        specialBodyPartContactRequired:true,rigAndEffectBindingRequired:true,
+        gameplayAuthority:false
+      });
+    })),
+    procedural,bodyPlanSpecificMotion:true,
+    motionDNA:Object.freeze({
+      bodyPlan:canonical,rigProfile:upper(rigProfile),archetype:upper(archetype),
+      limbPhase:detail.presentationVariation.limbPhase,
+      visualLimbCount:detail.presentationVariation.visualLimbCount,
+      secondaryPartResponse:Object.freeze({
+        tail:detail.presentationVariation.tailFollow,
+        wings:detail.presentationVariation.wingFollow,
+        tentacles:detail.presentationVariation.tentacleFollow
+      })
+    }),
+    requiredRoles:detail.requiredRoles,coverage:auditMotionCoverage(profile),
+    nativeRigRetargetRequired:true,preparedSourceOnly:true,productionVerified:false,
+    gameOwnsAttackAndSkillDecisions:true,gameplayAuthority:false
+  });
+}
+
+// 타격/시전/이동의 실제 시간별 포즈 샘플을 종족별로 작성할 수 있는 공용 저작 레시피.
+// 샘플은 추상 관절 의도이며 실제 본 리타게팅과 원본 GLB 베이크/QA를 대체하지 않는다.
+export function createCreatureMotionActionRecipe({
+  bodyPlan='QUADRUPED_CANINE',group='attacks',motionId='',
+  platform='SHARED_SOURCE',rigProfile='CUSTOM_CREATURE'
+}={}){
+  const detail=resolveMonsterBodyPlanMotionDetail(bodyPlan),role=upper(motionId),category=text(group);
+  if(!detail||!detail.roles?.[category]?.includes(role))
+    return Object.freeze({valid:false,reason:'UNSUPPORTED_BODY_PLAN_OR_MOTION',runtimeVerified:false});
+  const p=detail.presentationVariation;
+  const attack=category==='attacks',move=category==='locomotion',skill=category==='skill';
+  const reaction=category==='reactions',death=category==='deaths';
+  const contact=/(FANG|BITE|BEAK|MANDIBLE)/.test(role)?'HEAD_OR_JAW'
+    :/(TAIL|STING)/.test(role)?'TAIL'
+    :/(WING|FLIGHT|FEATHER)/.test(role)?'WING'
+    :/(WEB|SPINNERET)/.test(role)?'SPINNERET'
+    :/(HOOF|STOMP|KICK)/.test(role)?'FOOT'
+    :/(TENTACLE|GRAB|CLAW|PINCH|PAW)/.test(role)?'SPECIAL_LIMB'
+    :/(BREATH|BEAM|PROJECTILE|VENOM)/.test(role)?'MOUTH_OR_CORE'
+    :'BODY_OR_PRIMARY_LIMB';
+  const phases=death
+    ?[['NEUTRAL',0],['BALANCE_LOSS',.22],['COLLAPSE',.68],['SETTLE',1]]
+    :move
+      ?[['CONTACT_A',0],['TRANSFER_A',.25],['CONTACT_B',.5],['TRANSFER_B',.75],['CONTACT_A',1]]
+      :reaction
+        ?[['NEUTRAL',0],['RECOIL',.2],['BALANCE',.6],['RECOVERY',1]]
+        :[['NEUTRAL',0],['ANTICIPATION',.2],[skill?'CHARGE':'STARTUP',.38],['RELEASE',.54],['RECOIL',.73],['RECOVERY',1]];
+  const gait=move?p.strideScale:0;
+  const keyPoses=Object.freeze(phases.map(([phase,t],i)=>Object.freeze({
+    phase,timeNormalized:t,
+    channels:Object.freeze({
+      rootLocalTranslation:[0,0,0],
+      pelvisPitch:Math.round(1000*((attack?.19:skill?.13:move?.08:death?.22:.04)*p.weightScale*Math.sin(t*Math.PI)))/1000,
+      spineTwist:Math.round(1000*(attack?.35:skill?.22:move?.12:death?.10:.16)*p.torsoLean*Math.sin(t*Math.PI*2))/1000,
+      primaryLimbSweep:Math.round(1000*(attack?.9:skill?.75:move?.4:reaction?.25:.2)*Math.sin(t*Math.PI*2))/1000,
+      alternateLimbPhase:Math.round(1000*gait*Math.cos(t*Math.PI*2))/1000,
+      headAim:Math.round(1000*(attack?.35:skill?.4:.12)*Math.sin(t*Math.PI))/1000,
+      tailFollow:Math.round(1000*p.tailFollow*Math.sin(t*Math.PI*2-.25))/1000,
+      wingFollow:Math.round(1000*p.wingFollow*Math.sin(t*Math.PI*2-.45))/1000,
+      extraLimbFollow:Math.round(1000*(p.visualLimbCount>4?.32:.06)*Math.sin(t*Math.PI*2-.4))/1000,
+      bodyCompression:Math.round(1000*(death?1:attack?.35:move?.12:.18)*Math.sin(t*Math.PI))/1000
+    })
+  })));
+  return Object.freeze({
+    valid:true,bodyPlan:upper(bodyPlan),motionId:role,group:category,
+    contactLimb:contact,limbPhase:p.limbPhase,visualLimbCount:p.visualLimbCount,
+    rigProfile:upper(rigProfile),platform:upper(platform),keyPoses,
+    referenceMotionRequired:true,contactMarkersRequireGameBinding:true,
+    jointNamesMustBindToActualRig:true,clipBaked:false,runtimeVerified:false,
+    gameplayRootMovementAndHitAuthority:false,productionVerified:false
   });
 }
 
@@ -2970,7 +3366,8 @@ export function createMotionDirectorPlan({
   platform='UNITY',bodyPlan='HUMANOID',rigProfile='HUMANOID',styleFamily='STYLIZED_FANTASY',
   motionCandidates=[],context={},layers={},skill={},pair=null,reaction={},recentMotionIds=[],
   transition=null,contactQa=null,gameplayEvent=null,procedural=null,group=null,multiActor=null,
-  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null
+  emotion=null,lod=null,lineage=null,runtimeSignals=[],robloxCharacterMotion=null,combat=null,studio={},styles=[],styleModifiers={},continuityTrace=null,
+  classRole=null,genre='ACTION_RPG'
 }={}){
   const selector=selectContextMotion({
     candidates:motionCandidates,
@@ -3007,6 +3404,7 @@ export function createMotionDirectorPlan({
       measuredTransitionQa:transition?evaluateMotionTransition(transition).verdict:'UNVERIFIED',
       runtimeVerified:false
     }),
+    classLoadout:classRole?createCommonClassMotionLoadout({platform,genre,bodyPlan,rigProfile,styleFamily,...classRole}):null,
     skillSequence:buildSkillMotionSequence(skill),
     reaction:createReactionMatch(reaction),
     pairMotion:pair?createPairMotionContract(pair):null,
