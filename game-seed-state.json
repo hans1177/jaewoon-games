@@ -12719,9 +12719,9 @@
         "genre-appropriate sound music and feedback",
         "zero blocking runtime console or invalid-resource errors"
       ],
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/human-go",
@@ -14150,7 +14150,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-09T16:57:34.175Z",
+      "updatedAt": "2026-10-10T10:29:36.205Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -14189,7 +14189,49 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-10T10:19:10.214Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-10T10:19:10.214Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "minimumDesignContract": {
+        "version": 1,
+        "pass": true,
+        "source": "design/human-go/2026-10-10/design-revised.json",
+        "date": "2026-10-10"
+      },
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/human-go/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/human-go/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "ROBLOX",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/human-go",
+          "UNITY": "unity-games/human-go"
+        },
+        "designBaselineSource": "design/human-go/2026-10-10/design-revised.json",
+        "designDate": "2026-10-10",
+        "strictDesignReviewRequiredForAdmission": false,
+        "strictDesignReviewContinuesInParallel": true,
+        "promotedAt": "2026-10-10T10:29:36.205Z"
+      }
     },
     {
       "version": 1,
@@ -38195,7 +38237,7 @@
         "strictDesignReviewContinuesInParallel": true,
         "promotedAt": "2026-10-10T09:45:02.101Z"
       },
-      "updatedAt": "2026-10-10T10:28:49.372Z",
+      "updatedAt": "2026-10-10T10:29:36.205Z",
       "strictDesignReviewRefreshRequired": true,
       "novelGrammarBackfill": {
         "version": 5,
@@ -90546,7 +90588,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-10T10:18:12.668Z",
+  "updatedAt": "2026-10-10T10:29:36.205Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -90695,6 +90737,5 @@
       "tower-choice-rpg",
       "zombie-survival"
     ]
-  },
-  "policyDocument": "company-learning/platform-release-roadmap.json"
+  }
 }

@@ -268,12 +268,12 @@
       "id": "P0005",
       "slug": "human-go",
       "name": "휴먼 GO",
-      "sourcePath": "web-games/human-go",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "sourcePath": "roblox-games/human-go",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "ROBLOX_UNITY",
       "developmentFocus": {
         "scores": {
           "playability": 1,
@@ -291,7 +291,28 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": false
+      "targetPlatformReady": false,
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/human-go",
+        "UNITY": "unity-games/human-go"
+      },
+      "designBaselineSource": "design/human-go/2026-10-10/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/human-go/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/human-go/2026-10-10/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-10T10:29:36.205Z"
     },
     {
       "id": "P0006",
@@ -486,7 +507,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-10T10:18:12.668Z"
+      "updatedAt": "2026-10-10T10:29:36.205Z"
     }
   ],
   "productionClassState": {
@@ -692,5 +713,5 @@
       }
     ]
   },
-  "updatedAt": "2026-10-10T10:18:12.668Z"
+  "updatedAt": "2026-10-10T10:29:36.205Z"
 }

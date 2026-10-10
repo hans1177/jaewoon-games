@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-10T10:26:42.881Z",
+  "generatedAt": "2026-10-10T10:29:36.480Z",
   "games": [
     {
       "gameId": "horror-escape-room",
@@ -122,7 +122,123 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-10T10:18:12.668Z"
+      "updatedAt": "2026-10-10T10:29:36.205Z"
+    },
+    {
+      "gameId": "human-go",
+      "gameName": "휴먼 GO",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-10T10:29:36.205Z"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "version": 32,
-  "updatedAt": "2026-10-10T10:18:12.668Z",
+  "updatedAt": "2026-10-10T10:29:36.205Z",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -261,7 +261,7 @@
       "soloPlayable": true,
       "ownerDirectDevelopment": true,
       "catalogOrder": 2,
-      "updatedAt": "2026-10-10T10:18:12.668Z",
+      "updatedAt": "2026-10-10T10:29:36.205Z",
       "ownerPrimaryDevelopment": true,
       "ownerPrimaryRank": 3,
       "robloxSourceCommit": "6d8a3363f60011b22e2e4634eefc3d6f878940e6",
@@ -4643,17 +4643,17 @@
       "featured": false,
       "selectedPlatform": "ROBLOX",
       "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionTarget": "ROBLOX_UNITY",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "최소 설계 계약 완료 · 네이티브 두 플랫폼 동시 진행",
       "homepageInfo": {
         "authority": "company-runtime",
         "platform": "ROBLOX",
@@ -4776,7 +4776,19 @@
         }
       },
       "catalogOrder": 22,
-      "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID"
+      "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/human-go",
+        "UNITY": "unity-games/human-go"
+      },
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "updatedAt": "2026-10-10T10:29:36.205Z"
     },
     {
       "id": "human-go-temp",
