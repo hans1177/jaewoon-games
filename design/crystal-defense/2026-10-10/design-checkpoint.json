@@ -400,25 +400,40 @@
       "name": "방해받는 공간의 방어 전략 선택",
       "purpose": "플레이어가 선호하는 공간 활용 패턴에 기반하여 방어 전략을 진화시키며, 이를 통해 실제 세계 상태 변화와 전투 상황 유사성에 대한 이해를 형성합니다.",
       "playerChoice": "배치 위치 및 전투 주제의 관계 변화로 인한 방어 효과 재설계를 선택합니다."
+    },
+    "local_authoring_parts::1a0b85a4eeab9483697d398faa7ddeab8bd1dd3d133ed2bb3cba42401a872503:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "배치 위치",
+        "전투 주제"
+      ],
+      "stateOutputs": [
+        "방어 효과",
+        "전투 장면"
+      ],
+      "name": "방해받는 공간의 방어 전략 선택",
+      "purpose": "플레이어가 경험한 전투 상황의 유사성에 따른 방어 효과 반복 및 변동",
+      "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과 재설계 및 새로운 전투 장면 경험 구축"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 14,
+      "calls": 15,
+      "successes": 15,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1159908,
-      "lastMs": 71705,
+      "totalMs": 1229728,
+      "lastMs": 69820,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:23:08.554Z"
+      "updatedAt": "2026-10-10T00:24:18.376Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-10T00:23:08.554Z",
+  "updatedAt": "2026-10-10T00:24:18.376Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2149,15 +2164,6 @@
           "signatureSystems"
         ]
       }
-    ],
-    "local_authoring_parts::1a0b85a4eeab9483697d398faa7ddeab8bd1dd3d133ed2bb3cba42401a872503:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "MAIN"
-        ]
-      }
     ]
   },
   "sliceRepairAttempts": {
@@ -2262,7 +2268,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:23:08.554Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:24:18.376Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
