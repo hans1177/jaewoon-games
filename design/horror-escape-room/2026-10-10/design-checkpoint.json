@@ -127,28 +127,41 @@
       "stateOutputs": [
         "학교"
       ],
-      "name": "로드",
-      "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+      "name": "감염 전환 시스템",
+      "purpose": "게임 내 인물/몬스터의 감염 상태 관리 및 전환 로직 구현",
+      "playerChoice": "학교 → 폐놀이공원"
+    },
+    "local_authoring_parts::5d3fa2c583cc686160a437d47ea10da8b782226433c7c080bef1e6ec48b98404:signatureSystems:2:de062b9cca1dd550": {
+      "id": "b_road",
+      "grammarRole": "B",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "name": "로드 전환 시스템",
+      "purpose": "감염 상태 변화에 따라 인물/몬스터가 라운드에서 전환하는 기본 경로 관리",
       "playerChoice": "학교 → 폐놀이공원"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 4,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 221219,
-      "lastMs": 8512,
+      "totalMs": 246008,
+      "lastMs": 19091,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:38:02.437Z"
+      "updatedAt": "2026-10-10T09:38:27.229Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:38:02.438Z",
+  "updatedAt": "2026-10-10T09:38:27.229Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1478,7 +1491,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:38:02.438Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:38:27.229Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
