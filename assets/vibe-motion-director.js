@@ -1032,6 +1032,25 @@ export const COMMON_CAREER_MOTION_HIERARCHY=Object.freeze({
   SAILOR:careerMotionNode('ADVENTURER','TOOL ONE_HAND_SWORD','SAILOR_ROPE_READY','SAILOR_DECK_BALANCE','SAILOR_CUTLASS_SWING','SAILOR_ROLL','ANCHOR_PULL:INTERACT SAIL_SIGNAL:COMMAND','ROPE_PULL OAR_ROW','SAILOR_DECK_WEIGHT_SHIFT')
 });
 
+// 공용 캐릭터 계층이 실제 3D 스킨 마스터를 빌려 쓰는 경로. 게임별 외형/장비 적응 필요.
+export const COMMON_CAREER_VISUAL_MASTERS=Object.freeze({
+ ADVENTURER:'traveler',MARTIAL:'guardian',SWORDSMAN:'samurai',SAMURAI:'samurai',
+ KNIGHT:'guardian',PALADIN:'guardian',BERSERKER:'guardian',LANCER:'lancer',
+ RANGED:'archer',ARCHER:'archer',RANGER:'archer',SNIPER:'archer',GUNSLINGER:'rogue',
+ STEALTH:'rogue',ROGUE:'rogue',ASSASSIN:'rogue',NINJA:'rogue',
+ ARCANE:'mage',MAGE:'mage',ELEMENTALIST:'mage',SUMMONER:'mage',NECROMANCER:'mage',
+ FAITH:'mage',CLERIC:'mage',PRIEST:'mage',NATURE:'archer',DRUID:'mage',BEASTMASTER:'archer',
+ ENGINEERING:'blacksmith',MECHANIST:'blacksmith',ALCHEMIST:'mage',
+ ARTISAN:'blacksmith',BLACKSMITH:'blacksmith',BUILDER:'blacksmith',FARMER:'traveler',CHEF:'blacksmith',
+ MERCHANT:'traveler',PERFORMER:'traveler',BARD:'traveler',DANCER:'traveler',
+ COMMAND:'guardian',COMMANDER:'guardian',TACTICIAN:'guardian',SAILOR:'traveler'
+});
+export const COMMON_CAREER_NATIVE_SOURCE_ACTION=Object.freeze({
+ samurai:'SAMURAI_IAI_DRAW',archer:'ARCHER_DRAW_RELEASE',
+ mage:'MAGE_AREA_CAST',rogue:'ROGUE_BACKSTEP_CUT',
+ lancer:'LANCER_SPEAR_THRUST',blacksmith:'BLACKSMITH_FORGE_HAMMER'
+});
+
 export const COMMON_GENRE_MOTION_CONTEXTS=Object.freeze({
   ACTION_RPG:freezeList(['stance','locomotion','attacks','defense','skills','signature']),
   MMORPG:freezeList(['stance','locomotion','attacks','defense','skills','interactions','signature']),
@@ -1143,8 +1162,20 @@ export function createCommonCareerMotionLoadout({
       preparedSemanticOnly:true
     }));
   }));
+  const masterFamily=[...ancestors].reverse().map(name=>COMMON_CAREER_VISUAL_MASTERS[name]).find(Boolean)||'traveler';
+  const master=Object.freeze({
+    assetId:'shared-humanoid-'+masterFamily,
+    path:'assets/shared/humanoid-'+masterFamily+'.glb',
+    rig:'SHARED_HUMANOID_SKINNED_19',
+    sourceRoleActionClip:COMMON_CAREER_NATIVE_SOURCE_ACTION[masterFamily]||null,
+    sourceHasActualSkinnedMesh:true,
+    gameSpecificRigAndStyleAdaptationRequired:true,
+    sourceStructureIsNotNativeRuntimeVerification:true,
+    runtimeVerified:false,productionVerified:false
+  });
   return Object.freeze({
     id,careerPath:freezeList(ancestors),genre:requestedGenre,platform:platformId,
+    master,
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
     groups,skills,genreGroups:requiredGroups,roleRequests,
