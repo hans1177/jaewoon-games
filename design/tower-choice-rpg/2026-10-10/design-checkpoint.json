@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::973d0ab6a24e801efa966ae6377bbce592288cd084037b38720932207be79796:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "10층 탑 RPG - 진입 시점, 선택적 전략, 위험/보상 연결 루프",
+      "creativeGrammar": {
+        "mainIdentity": "ACTION_SURVIVAL_ROGUELITE",
+        "a": {
+          "system": "REAL_TIME_SURVIVAL",
+          "material": "HORDE_PRESSURE_AND_UPGRADE_SELECTION",
+          "materialDomain": "ACTION_AND_BUILD_COMBINATION",
+          "stateChange": "STATE_CHANGE_1_TO_2_OR_MORE"
+        },
+        "b": {
+          "system": "MOBILE_TOUCH_READABLE",
+          "material": "SHORT_RUN_WITH_WAVE_PRESSURE",
+          "materialDomain": "ITEM_CHOICE_AND_BUILDER_COMBINATIONS",
+          "stateChange": "STATE_CHANGE_3_TO_4_OR_MORE"
+        },
+        "abCausality": "AB_CROSS_SYSTEM_INTERACTION_AND_ACTION_SEQUENCE",
+        "abEvolution": {
+          "aChangesB": "A_TO_B_REVERSE_EFFECT_ON_PLAYER_CHOICE",
+          "bChangesA": "B_TO_A_REVERSE_EFFECT_ON_PLAYER_CHOICE",
+          "lateGameChange": "LATE_GAME_AB_SAME_EFFECT_ON_PLAYSTYLE"
+        },
+        "materialFusion": {
+          "contrast": "ACTION_AND_BUILD_COMBINATION_CONTRAST",
+          "causalBridge": "ACTION_SEQUENCE_BRIDGE_TO_WORLD_STATE",
+          "removalConsequence": "REMOVAL_OF_ACTION_SEQUENCE_RESULTS_IN_NEW_PLAY_STYLE"
+        },
+        "storyCausalChain": {
+          "cause": "PLAYER_INPUT_TRIGGERING_WORLD_STATE_CHANGE",
+          "characterConflict": "ACTION_SEQUENCE_CONFLICT_WITH_ENEMY_PRESSURE",
+          "playerChoice": "PLAYER_CHOICE_RESULTING_IN_WORLD_STATE_CHANGE",
+          "worldChange": "WORLD_STATE_CHANGE_IMAGING_NEXT_ACTION_SEQUENCE",
+          "nextEvent": "NEXT_ACTION_SEQUENCE_GENERATION"
+        },
+        "cThemes": [
+          {
+            "name": "ACTION",
+            "kind": "MATERIAL",
+            "gameplayEffect": "ACTION_SEQUENCE_GENERATED"
+          },
+          {
+            "name": "BUILD",
+            "kind": "MATERIAL",
+            "gameplayEffect": "BUILD_COMBINATION_GENERATED"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "ACTION_SURVIVAL_ROGUELITE",
+            "gameplayEffect": "ACTION_SEQUENCE_GENERATED"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "MOBILE_TOUCH_READABLE",
+            "gameplayEffect": "ITEM_CHOICE_AND_BUILDER_COMBINATIONS"
+          }
+        ],
+        "cGenreInterlock": "ACTION_SEQUENCE_INTERLOCKED_WITH_BUILD_COMBINATION_EFFECTS",
+        "cWorldAndGameplayEffect": "ACTION_SEQUENCE_GENERATES_NEW_PLAY_STYLE_OR_BUILDS_COMBINATION",
+        "delveDiscoveries": [
+          {
+            "clue": "ACTION_SEQUENCE_CLUE_1",
+            "discovery": "ACTION_SEQUENCE_DISCOVERY_1",
+            "newChoice": "NEW_ACTION_SEQUENCE_CHOICE_1"
+          },
+          {
+            "clue": "ACTION_SEQUENCE_CLUE_2",
+            "discovery": "ACTION_SEQUENCE_DISCOVERY_2",
+            "newChoice": "NEW_ACTION_SEQUENCE_CHOICE_2"
+          },
+          {
+            "clue": "ACTION_SEQUENCE_CLUE_3",
+            "discovery": "ACTION_SEQUENCE_DISCOVERY_3",
+            "newChoice": "NEW_ACTION_SEQUENCE_CHOICE_3"
+          },
+          {
+            "clue": "ACTION_SEQUENCE_CLUE_4",
+            "discovery": "ACTION_SEQUENCE_DISCOVERY_4",
+            "newChoice": "NEW_ACTION_SEQUENCE_CHOICE_4"
+          }
+        ],
+        "delveGrowthRule": "ACTION_SEQUENCE_GROWTH_RULE_1",
+        "finalGameIdentity": "ACTION_SEQUENCE_GENERATED_IN_ACTION_SURVIVAL_ROGUELITE"
+      },
+      "playerFantasy": "플레이어는 실시간 생존 게임에서 고난의 허름을 극복하고, 선택과 결과가 서로 연결되는 반복 가능한 루프를 통해 진입 시점, 전략적 선택, 위험/보상 변화를 경험하며, 모바일에서도 즉시 이해할 수 있는 입력과 피드백을 받는다.",
+      "coreFun": "INPUT_TRIGGERING_WORLD_STATE_CHANGE_AND_PLAYER_CHOICE_RESULTING_IN_NEW_ACTION_SEQUENCE_OR_BUILDS_COMBINATION"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 262166,
+      "lastMs": 262166,
+      "lastError": null,
+      "updatedAt": "2026-10-10T08:59:14.438Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:54:52.252Z",
-  "updatedAt": "2026-10-10T08:54:52.266Z",
+  "updatedAt": "2026-10-10T08:59:14.438Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1734,5 +1835,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T08:59:14.438Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
