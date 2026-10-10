@@ -1420,24 +1420,46 @@ function computeVibeNativeDesign(){
   }));
   const phases=playableRequirements.phases||['OPENING','DEVELOPMENT','RESOLUTION'];
   const roundSeconds=Number(playableRequirements.lockedNumbers?.RoundSeconds)||Math.max(180,phases.length*60);
-  const values=(step)=>stateNames.slice(0,Math.min(4,stateNames.length)).map((key,index)=>({key,value:step+index}));
   const phaseSeconds=roundSeconds/phases.length;
-  const playthrough=phases.map((phase,index)=>({
-    phase,
-    entryState:index?`직전 단계 ${phases[index-1]}의 상태 변화에서 이어진다.`:'플레이어가 현재 목표와 경로 상태를 확인한다.',
-    playerChoice:index===0?a.playerChoice:index===phases.length-1?delve[0].discoveryCondition:b.playerChoice,
-    actionAndResponse:index===0?`${a.materialRule} 플레이어 입력의 결과로 B의 대응 가능성이 변한다.`:index===phases.length-1?`${delve[0].gameplayEffect} 앞선 결과를 되돌아보며 최종 목표와 재시작 여부를 결정한다.`:`${b.materialRule} A의 다음 선택 상태가 달라진다.`,
-    exitState:phase===phases.at(-1)?'한 판의 결과와 다음 선택을 기록한다.':`다음 단계 ${phases[index+1]}의 입장 조건과 세계 상태가 결정된다.`,
-    nextDecision:index<phases.length-1?`${phases[index+1]}의 다른 위험·경로·정보 선택으로 진행한다.`:'획득한 정보와 현재 원본 규칙의 실패·복구 경로에서 다음 플레이를 선택한다.',
-    startSeconds:phaseSeconds*index,endSeconds:phaseSeconds*(index+1),
-    timeReason:`${phase}에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.`,
-    before:values(index),after:values(index+1),
-    actions:[{abilityId:index%2?anyB.id:anyA.id,actorId:'PLAYER',targetId:'WORLD',atSeconds:phaseSeconds*(index+0.5),
-      distance:0,energyBefore:10,energyAfter:10-(index%2?anyB.cost:anyA.cost),hit:false,
-      response:index%2?`B의 선택 결과가 다음 A의 위험과 경로에 전달된다.`:`A의 선택 결과가 B의 대응 위험과 비용을 바꾼다.`}],
-    ruleIds:[index%2?roles.B.id:roles.A.id],outcome:index===phases.length-1?'SUCCESS':'ONGOING'
-  }));
-  // 전 단계의 출력과 다음 단계 입력은 문장·정량 계획상 모두 동일 상태를 이어받는다.
+  // 설계 시뮬레이션은 규칙의 출력 상태만 갱신한다. 원본 게임 수치나 런타임 검증으로 위장하지 않는다.
+  // 이전 장면의 출력이 다음 장면의 입력으로 이어지는지 정확히 확인할 수 있게 보존한다.
+  const planState=Object.fromEntries(stateNames.map(key=>[key,0]));
+  const stateSnapshot=()=>stateNames.map(key=>({key,value:planState[key]}));
+  const playthrough=phases.map((phase,index)=>{
+    const phaseRule=index===0?roles.A:index===phases.length-1?roles.DELVE:roles.B;
+    const phaseAbility=abilities.find(row=>row.ruleId===phaseRule.id)||abilities[index%abilities.length];
+    const before=stateSnapshot();
+    const reads=phaseRule.stateInputs.filter(key=>Object.hasOwn(planState,key));
+    const outputs=phaseRule.stateOutputs.filter(key=>Object.hasOwn(planState,key));
+    if(!reads.length||!outputs.length)throw new Error('DESIGN_NATIVE_PLAN_STATE_HANDOFF_MISSING');
+    // 다음 시스템이 소비하는 출력 키가 우선이다. 현재 규칙에 없는 상태는 만들지 않는다.
+    const downstream=handoffs.filter(row=>row.from.id===phaseRule.id).flatMap(row=>row.key);
+    const changed=outputs.filter(key=>downstream.includes(key));
+    const stateChangeKeys=changed.length?changed:outputs;
+    for(const key of stateChangeKeys)planState[key]+=1;
+    const after=stateSnapshot();
+    const entryState=index
+      ?`직전 단계 ${phases[index-1]}의 상태 변화에서 이어진다.`
+      :'플레이어가 현재 목표와 경로 상태를 확인한다.';
+    const playerChoice=index===0?a.playerChoice:index===phases.length-1?delve[0].discoveryCondition:b.playerChoice;
+    const actionAndResponse=`${phaseRule.name}의 ${reads.join('·')} 입력을 확인하고 ${stateChangeKeys.join('·')} 출력만 변경한다. ${index===0?a.materialRule:index===phases.length-1?delve[0].gameplayEffect:b.materialRule}`;
+    const nextDecision=index<phases.length-1
+      ?`${phases[index+1]}에서 변경된 ${stateChangeKeys.join('·')}가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.`
+      :'이전에 변한 세계 상태와 발견 정보를 비교하고 새로운 접근 경로 또는 재시작 방법을 고른다.';
+    const energyBefore=Math.max(10,Number(phaseAbility.cost)||0);
+    return {
+      phase,entryState,playerChoice,actionAndResponse,
+      exitState:index===phases.length-1?'한 판의 결과와 다음 선택을 기록한다.':`다음 단계 ${phases[index+1]}의 입장 조건과 세계 상태가 결정된다.`,
+      nextDecision,startSeconds:phaseSeconds*index,endSeconds:phaseSeconds*(index+1),
+      timeReason:`${phase}에서 ${reads.join('·')} 입력과 ${stateChangeKeys.join('·')} 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.`,
+      before,after,
+      actions:[{abilityId:phaseAbility.id,actorId:'PLAYER',targetId:'WORLD',atSeconds:phaseSeconds*(index+0.5),
+        distance:0,energyBefore,energyAfter:energyBefore-(Number(phaseAbility.cost)||0),hit:false,
+        response:`${phaseRule.name}의 상태 출력 ${stateChangeKeys.join('·')}가 다음 시스템의 선택 조건에 전달된다.`}],
+      ruleIds:[...new Set([phaseRule.id,phaseAbility.ruleId])],
+      outcome:index===phases.length-1?'SUCCESS':'ONGOING'
+    };
+  });
   for(let i=1;i<playthrough.length;i++)playthrough[i].entryState=playthrough[i-1].exitState;
   const assetFamilies=designAssetFamilies.length?designAssetFamilies:['ENVIRONMENT'];
   const assets=Array.isArray(designAssetLibrary?.assets)?designAssetLibrary.assets:[];
