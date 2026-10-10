@@ -24,6 +24,51 @@ function Resolve-Uvx {
     return $null
 }
 
+# Retain Blender in the Windows installation, not in a disposable workflow workspace.
+function Resolve-PersistentBlender {
+    $cmd = Get-Command blender.exe -ErrorAction SilentlyContinue
+    if ($cmd -and (Test-Path -LiteralPath $cmd.Source)) { return $cmd.Source }
+
+    $roots = @(
+        (Join-Path $env:ProgramFiles 'Blender Foundation'),
+        (Join-Path $env:LOCALAPPDATA 'Programs\Blender Foundation')
+    )
+    foreach ($root in $roots) {
+        if (-not (Test-Path -LiteralPath $root)) { continue }
+        foreach ($directory in @(Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending)) {
+            $exe = Join-Path $directory.FullName 'blender.exe'
+            if (Test-Path -LiteralPath $exe) { return $exe }
+        }
+    }
+    return $null
+}
+
+function Ensure-PersistentBlender {
+    $blender = Resolve-PersistentBlender
+    if ($blender) {
+        Write-Host "[PASS] Reusing installed Blender: $blender"
+        return $blender
+    }
+    $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
+    if (-not $winget) {
+        Write-Host '[WARN] Blender not installed; winget unavailable. Blender asset work remains blocked.'
+        return $null
+    }
+    Write-Host '[INFO] Installing Blender once into the persistent Windows program directory.'
+    & $winget.Source install --id BlenderFoundation.Blender --exact --silent --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[WARN] Blender installation failed with exit code $LASTEXITCODE. Unity continues independently."
+        return $null
+    }
+    $blender = Resolve-PersistentBlender
+    if (-not $blender) {
+        Write-Host '[WARN] Blender installation finished but executable verification failed.'
+        return $null
+    }
+    Write-Host "[PASS] Persistent Blender installed: $blender"
+    return $blender
+}
+
 function Test-Port([int]$Port) {
     try {
         return [bool](Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction Stop)
@@ -191,6 +236,15 @@ Write-Host "[INFO] Project: $resolvedProject"
 # Reuse the existing Unity/MCP setup path.
 & $setupScript -ProjectPath $resolvedProject -InstallUv -OpenUnity
 
+# Blender and Unity share the existing local Vibe director environment.
+$blenderExe = Ensure-PersistentBlender
+if ($blenderExe) {
+    $env:VIBE2_BLENDER_BINARY = $blenderExe
+    Write-Host '[PASS] Native Blender authoring is available to Vibe workers.'
+} else {
+    Remove-Item Env:VIBE2_BLENDER_BINARY -ErrorAction SilentlyContinue
+}
+
 $uvx = Resolve-Uvx
 if (-not $uvx) {
     throw 'uvx was not detected after setup. Open a new PowerShell and run: uvx --version'
@@ -234,7 +288,7 @@ if (Test-Port 8080) {
         '--transport', 'http',
         '--http-host', '127.0.0.1',
         '--http-port', '8080',
-        '--default-instance', 'daechung-rpg'
+        '--default-instance', (Split-Path $resolvedProject -Leaf)
     )
 
     $uvxArgs = ($args | ForEach-Object {
