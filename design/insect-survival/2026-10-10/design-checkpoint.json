@@ -636,25 +636,38 @@
       "name": "small-world survival pressure",
       "purpose": "Player's initial interaction with the environment to establish baseline ecological awareness",
       "playerChoice": "Selecting between resource gathering or combat based on environmental context"
+    },
+    "local_authoring_parts::8797402dacdf9443e89b02a7a71049e0310e7f399d65598100fc20b7ae588a30:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "evaluating risk and making strategic decisions"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "evaluate environmental risks and make adaptive strategies",
+      "playerChoice": "select between resource gathering or combat based on new threats"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 25,
-      "successes": 25,
+      "calls": 26,
+      "successes": 26,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 980886,
-      "lastMs": 27041,
+      "totalMs": 1007188,
+      "lastMs": 26302,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:10:25.420Z"
+      "updatedAt": "2026-10-10T00:10:51.724Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-10T00:10:25.420Z",
+  "updatedAt": "2026-10-10T00:10:51.724Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2457,7 +2470,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:10:25.420Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:10:51.724Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
