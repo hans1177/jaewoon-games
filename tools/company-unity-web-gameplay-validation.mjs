@@ -18,7 +18,8 @@ const screenshot=String(args.screenshot||'').trim();
 const port=Number(args.port||4187);
 
 // 메인: 공용 중앙정책과 모든 게임의 실제 Unity 3D 메시 검증을 함께 요구한다.
-const ownerPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+// 중앙정책 경로는 실행 위치(/tmp/unity-web)가 아니라 현재 검증기 원본 위치에서 결정한다.
+const ownerPolicy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const owner3d=ownerPolicy?.ownerUnityWeb3dOnly20261009;
 if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3D'
   ||owner3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
