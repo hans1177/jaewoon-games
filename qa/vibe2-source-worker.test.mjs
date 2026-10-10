@@ -132,6 +132,17 @@ test('compact Roblox coding preserves same-game Unity Web source fingerprint and
   const escaped=lines.replace(reference(1),reference(1).replace('unity-games/roblox-sync/Assets/Scripts/', 'unity-games/other-game/../../'));
   const safe=compact(escaped,{compact:true,responsiblePaths:['server/Game.server.luau']});
   assert.ok(!safe.includes('unity-games/other-game/../../'));
+  // 같은 게임의 네이티브 소스만 사용한다. ../ 경로로 다른 게임 소스를 참조할 수 없다.
+  const bound=lines.replace('directiveId=roblox-sync',
+    'directiveId=roblox-sync\\ndesignCodePlatform=ROBLOX;source=roblox-games/roblox-sync;mode=COOP');
+  const wrongGame=reference(1).replace('unity-games/roblox-sync/', 'unity-games/other-game/');
+  const traversed=reference(2).replace('Assets/Scripts/Game2.cs', 'Assets/Scripts/../../other-game/Bad.cs');
+  const wrong=compact(bound.replace(reference(1),wrongGame).replace(reference(2),traversed),
+    {compact:true,responsiblePaths:['server/Game.server.luau']});
+  assert.ok(!wrong.includes('unity-games/other-game/Assets/Scripts/'));
+  assert.ok(!wrong.includes('Assets/Scripts/../../'));
+  assert.equal((wrong.match(/unityWebSourceReference=/g)||[]).length,1,
+    'correct same-game reference survives while foreign/traversal sources are rejected');
 });
 
 test('Vibe coding method requires native 3D for Unity Web but does not change unrelated platform prompts',()=>{
