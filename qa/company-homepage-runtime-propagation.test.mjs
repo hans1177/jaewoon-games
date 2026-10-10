@@ -13,7 +13,7 @@ test('Unity WebGL 전용: 파일 4종만으로는 노출 불가, 검증된 3D/�
   const manifest={engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,homepageVerified:true,requiredDimension:'3D',canonicalSourceRoot:'unity-games/demo',sourceCommit:'a'.repeat(40),unitySourceTreeSha256:'b'.repeat(64),buildTreeSha256:'c'.repeat(64),requiredGroups:{loader:['Build/demo.loader.js'],data:['Build/demo.data'],framework:['Build/demo.framework.js'],wasm:['Build/demo.wasm']}};
   const build={gameId:'demo',canonicalSourceRoot:'unity-games/demo',sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256,bootSmoke:'PASS',actualBrowserPlay:'PASS',independentQa:'PASS',regression:'PASS',upperPlatformGateCandidate:true};
   const readiness={gameId:'demo',pass:true,state:'UPPER_PLATFORM_DEVELOPMENT_READY',sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256,criteria:{graphics:{native3dVerified:true},qa:{pass:true,multiplayerPass:true}}};
-  const qa={engine:'UNITY_WEB',gameId:'demo',pass:true,playableBrowserTest:true,boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},performance:{pass:true},noCriticalRuntimeError:true,spatialGameplay:{pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',perspectiveCamera:true,depthPass:true,observedMeshCount:2,observedTriangles:20,worldMeshes3d:2,worldDepthCm:55,gameplayActors3d:1,spriteGameplayActors:0},visualQa:{nativeUnityMesh:{pass:true,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'}}};
+  const qa={engine:'UNITY_WEB',gameId:'demo',pass:true,playableBrowserTest:true,boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},performance:{pass:true},noCriticalRuntimeError:true,spatialGameplay:{pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',perspectiveCamera:true,depthPass:true,observedMeshCount:2,observedTriangles:20,worldMeshes3d:2,worldDepthCm:55,gameplayActors3d:1,spriteGameplayActors:0},visualQa:{nativeUnityMesh:{pass:true,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'},renderedScene:{pass:true}}};
   const data={'unity-web-deploy-manifest.json':manifest,'unity-web-build.json':build,'upper-platform-development-readiness.json':readiness,'unity-web-gameplay-validation.json':qa,'unity-web-independent-qa.json':qa,'unity-web-regression.json':qa};
   const scanned=[];
   let verified=true;
@@ -34,6 +34,18 @@ test('Unity WebGL 전용: 파일 4종만으로는 노출 불가, 검증된 3D/�
   assert.equal(first.games[0].unityWebAvailable,true);
   assert.equal(first.games[0].unityWebTestUrl,'/web-games/demo/');
   assert.equal(scanned.filter(url=>url.includes('/Build/demo.')).length,4);
+  assert.equal(first.games[0].unityWebVerified,true);
+  data['unity-web-deploy-manifest.json']={...manifest,homepageVerified:false,homepageDevelopmentTest:true};
+  data['unity-web-build.json']={...build,actualBrowserPlay:'PLAYABLE_TEST_ONLY',independentQa:'REPAIR_REQUIRED',upperPlatformGateCandidate:false};
+  data['upper-platform-development-readiness.json']={...readiness,pass:false,state:'REPAIR_REQUIRED'};
+  data['unity-web-independent-qa.json']={...qa,pass:false,performance:{pass:false}};
+  const dev=await api.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(dev.games[0].unityWebAvailable,true,'real browser-playable development build is exposed');
+  assert.equal(dev.games[0].unityWebVerified,false,'development build never claims strict verified release');
+  data['unity-web-deploy-manifest.json']=manifest;
+  data['unity-web-build.json']=build;
+  data['upper-platform-development-readiness.json']=readiness;
+  data['unity-web-independent-qa.json']=qa;
   verified=false;
   const rejected=await api.bindAvailableUnityWebSurfaces(catalog);
   assert.equal(rejected.games[0].unityWebAvailable,false,'missing manifest approval must block play');
