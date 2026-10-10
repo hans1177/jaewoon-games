@@ -194,40 +194,25 @@
         "입력: 적 웨이브 정보 확인, 선택: 타워 강화 또는 지형 추가 변형, 상태변화: 타워 성능 향상, 보상: 방어 선 구성, 다음 선택: 자원 재배분 전략 수립",
         "입력: 보상 기반의 새로운 타워 기술 연구, 선택: 타워 속성 강화 또는 지형 추가 변형, 상태변化: 전술적 대응 유도, 보상: 게임 진행 단계 전환, 다음 선택: 전략적 판단 및 다음 단계 전략 수립"
       ]
-    },
-    "local_authoring_parts::982104371b5accdbce982d2afcd1274205da05fb06eda0cad41e631ce8033c37:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_road_maneuver",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "지형 변형 시스템 적용: 플레이어가 특정 지역의 지형을 높여 적의 이동 경로를 차단하거나, 낮추어 타워의 사거리 안으로 적을 유인하는 선택",
-        "속성 공명 시스템 작용: 인접한 타워 속성을 조합하여 전략적 효과를 생성"
-      ],
-      "stateOutputs": [
-        "전술적 대응 유도: 적의 경로 예측 및 방어선 구축에 대한 실시간 전략적 결정",
-        "자원 최적화 결과: 타워 배치와 지형 변형에 따른 자원 분배 효율성 증대"
-      ],
-      "name": "주요 전략적 동작",
-      "purpose": "플레이어의 지형 관리와 타워 속성 조합이 전술적 대응과 자원 분배에 영향을 미치는 핵심 루프의 원천",
-      "playerChoice": "지형 변화 → 타워 속성 조합 → 전술적 대응 유도 (양방향 상태 교환)"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 747232,
-      "lastMs": 53270,
+      "totalMs": 765491,
+      "lastMs": 18259,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:03:32.761Z"
+      "updatedAt": "2026-10-10T09:03:51.021Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:51:05.498Z",
-  "updatedAt": "2026-10-10T09:03:32.761Z",
+  "updatedAt": "2026-10-10T09:03:51.022Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1510,14 +1495,14 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::982104371b5accdbce982d2afcd1274205da05fb06eda0cad41e631ce8033c37:signatureSystems:0:4f53cda18c2baa0c": 1
+    "local_authoring_parts::982104371b5accdbce982d2afcd1274205da05fb06eda0cad41e631ce8033c37:signatureSystems:0:4f53cda18c2baa0c": 2
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "d2e965905db4d312da2b7d2f47caad87fa448d69ba5272d75a279300dc5c981a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:03:32.761Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:03:51.021Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
