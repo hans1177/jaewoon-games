@@ -9,7 +9,8 @@ const artbookPipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','u
 const prepareOllama=fs.readFileSync('.github/actions/prepare-ollama/action.yml','utf8');
 
 test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
-  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: false/);
+  assert.match(workflow,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}\s+cancel-in-progress: false/);
+  assert.match(workflow,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
   assert.equal((workflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
   const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
   const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
