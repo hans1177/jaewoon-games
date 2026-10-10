@@ -196,38 +196,40 @@
       ]
     },
     "local_authoring_parts::8d70f743d6fbd9779d9bd1ed3facd8f86cee5989850fdcc0ddeb058ee2a4b8a8:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_roadmap",
+      "id": "main_essential_choice",
       "grammarRole": "MAIN",
       "stateInputs": [
-        "{\"score\": 10, \"distance\": 50, \"session\": \"short\"}",
-        "{\"score\": 20, \"distance\": 75, \"session\": \"medium\"}"
+        "캐릭터 스킬 트리 재구성",
+        "적 방어 체계 무력화",
+        "타운 루프 탐험"
       ],
       "stateOutputs": [
-        "{\"status\": \"completed\", \"progression\": \"skill_tree_rebuilt\", \"reward\": \"exp_gain",
-        "{\"status\": \"in_progress\", \"progression\": \"map_access_expanded\", \"reward\": \"battl"
+        "스킬 속성 시너지 발생",
+        "전투 난이도 증가",
+        "맵 접근성 개선"
       ],
-      "name": "Roadmap of Skill and Terrain Evolution",
-      "purpose": "Player-driven skill attribute synthesis and terrain reconfiguration through strategic resource allocation.",
-      "playerChoice": "Select skill attributes to synthesize combat effectiveness or use relic fragments to expand map access during exploration."
+      "name": "주요 전략적 선택",
+      "purpose": "플레이어의 전술적 의사결정이 자원 관리를 통해 전투 결과와 세계 상태에 즉각적인 영향을 미칩니다.",
+      "playerChoice": "캐릭터의 특정 속성을 우선 사용하거나, 동료와의 속성 연계를 발동하여 전투 텀포 및 피해량 변화를 유발합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 617300,
-      "lastMs": 30443,
+      "totalMs": 662063,
+      "lastMs": 34384,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:20:42.898Z"
+      "updatedAt": "2026-10-10T09:21:27.663Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:10:25.362Z",
-  "updatedAt": "2026-10-10T09:20:42.898Z",
+  "updatedAt": "2026-10-10T09:21:27.663Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1749,13 +1751,23 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::8d70f743d6fbd9779d9bd1ed3facd8f86cee5989850fdcc0ddeb058ee2a4b8a8:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::8d70f743d6fbd9779d9bd1ed3facd8f86cee5989850fdcc0ddeb058ee2a4b8a8:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "a68da76fc36cde2f96c898c6ffc9e8605599d309e121839b285bbb687c6b4151": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:20:42.898Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:21:27.663Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
