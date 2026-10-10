@@ -539,42 +539,25 @@
         "체인이 활성화되어 대규모 연쇄 폭발 발생",
         "연쇄 폭발 강도와 크기 결정 요소로서의 색상 변환 범위와 충전 속도의 상호작용"
       ]
-    },
-    "local_authoring_parts::d8b0e6ade735f74c102a5df4d574e11e1b2a574fb9f31ce4cd2c12e4888a57cc:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_abc",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"node\": \"A\", \"color\": \"red\"}",
-        "{\"node\": \"B\", \"color\": \"blue\"}",
-        "{\"node\": \"C\", \"color\": \"green\"}"
-      ],
-      "stateOutputs": [
-        "{\"node\": \"A\", \"color\": \"yellow\"}",
-        "{\"node\": \"B\", \"color\": \"purple\"}",
-        "{\"node\": \"C\", \"color\": \"orange\"}"
-      ],
-      "name": "색채 주파수 튜너의 전략적 동기화 체인 형성",
-      "purpose": "플레이어는 제한된 튜닝 횟수 내에서 특정 노드의 색상 변환을 전술적으로 결정하여, 인접 노드와의 연쇄적 동기화 경로를 최대한 길고 강력하게 만든다.",
-      "playerChoice": "노드 A에 빨강 → 파랑으로 튜닝하고, 노드 B에 파랑 → 초록으로 튤닝하며, 노드 C에 초록 → 노란색으로 튤닝하는 선택을 하여, 연쇄 반응을 능동적으로 유도한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 8,
+      "calls": 11,
+      "successes": 9,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1385917,
-      "lastMs": 59898,
+      "totalMs": 1406059,
+      "lastMs": 20142,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:55:39.104Z"
+      "updatedAt": "2026-10-10T10:55:59.248Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:32:32.938Z",
-  "updatedAt": "2026-10-10T10:55:39.104Z",
+  "updatedAt": "2026-10-10T10:55:59.248Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1847,15 +1830,25 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::d8b0e6ade735f74c102a5df4d574e11e1b2a574fb9f31ce4cd2c12e4888a57cc:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::d8b0e6ade735f74c102a5df4d574e11e1b2a574fb9f31ce4cd2c12e4888a57cc:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "0261e09bff40c0423ac75a40a4f4a375f6308669b5c590a537a339a8f242f258": true,
     "612beff329ff030ab7247757467ab51b261903290169fb3053cb1733d66d129a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:55:39.104Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:55:59.248Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
