@@ -97,25 +97,32 @@
       },
       "playerFantasy": "A mobile tower-defense game where players learn to adapt their defense strategies based on enemy types, wave compositions, and terrain. The game emphasizes the balance between defensive positioning and resource management, with each decision affecting future gameplay choices and the overall difficulty curve. Players must constantly adjust their defenses while managing limited resources, leading to a dynamic and evolving battle experience.",
       "coreFun": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route. Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases. Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices. Preserve or migrate before swap. Single."
+    },
+    "local_authoring_parts::268a3cba0ae9dfb8d4544130d721316a0a45c6e703291f1a7039721a1776e1db:coreLoop": {
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 289844,
-      "lastMs": 289844,
+      "totalMs": 338340,
+      "lastMs": 48496,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:43:26.171Z"
+      "updatedAt": "2026-10-10T02:44:14.669Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:38:36.139Z",
-  "updatedAt": "2026-10-10T02:43:26.171Z",
+  "updatedAt": "2026-10-10T02:44:14.669Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1821,7 +1828,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:43:26.171Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:44:14.669Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
