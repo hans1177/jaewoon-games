@@ -1141,3 +1141,25 @@ test('native engine fingerprint tracks both causal seed and reusable module gram
   assert.match(design,/strictGateStillAuthoritative:true/);
   assert.match(design,/externalSeedRequired:false,designPass:false,runtimePass:false/);
 });
+
+
+test('native design repairs only failing fields and requires scored improvement without model calls',()=>{
+  const start=design.indexOf('for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++){');
+  const end=design.indexOf('const designSemanticText=',start);
+  assert.ok(start>0&&end>start);
+  const repair=design.slice(start,end);
+  assert.match(repair,/repairFields\(preGate\)/);
+  assert.match(repair,/const packet=repairPacket\(preGate\)/);
+  assert.match(repair,/computeVibeNativeDesign\(\)/);
+  assert.match(repair,/Object\.fromEntries\(fields\.map\(field=>\[field,candidate\[field\]\]\)\)/);
+  assert.match(repair,/deterministicPreGate\(next\)/);
+  assert.match(repair,/scored\.hardFailures/);
+  assert.match(repair,/previousFailures\.has\(code\)/);
+  assert.match(repair,/scored\.totalScore/);
+  assert.match(repair,/finally\{nativeDesignVariation=0;\}/);
+  assert.match(repair,/DESIGN_NATIVE_REPAIR_UNRESOLVED=/);
+  assert.doesNotMatch(repair,/callDesignerModel\(/);
+  assert.match(design,/gameName:clean\(seed\.gameName\|\|game\.name\)/);
+  assert.match(design,/ownerBrief:clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
+  assert.doesNotMatch(design,/KARMA_RETURN','TRICKSTER_REVERSAL','TESTIMONY_CONSENSUS_REALITY','EXILE_RETURN'/);
+});
