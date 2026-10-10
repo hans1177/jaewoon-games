@@ -486,25 +486,38 @@
       "name": "Environmental Pressure",
       "purpose": "Responds to environmental changes by adjusting pathfinding strategies",
       "playerChoice": "Dynamic adaptation through resource allocation and tactical positioning adjustments based on new environments/scenarios"
+    },
+    "local_authoring_parts::14851c42c6c9d1a4980f0861edc6a3ed6515b644dd1b1a4f6c48fbbab56d15d8:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "ENVIRONMENT_CHANGE"
+      ],
+      "stateOutputs": [
+        "NEW_PATHFINDING_STRATEGY"
+      ],
+      "name": "Environmental Pressure",
+      "purpose": "Trigger new objectives and adjust player strategy based on changing environments",
+      "playerChoice": "Strategic adaptation through multi-stage decision making in dynamic scenarios"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 11,
-      "successes": 10,
+      "calls": 12,
+      "successes": 11,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1234988,
-      "lastMs": 96072,
+      "totalMs": 1330937,
+      "lastMs": 95949,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:06:01.908Z"
+      "updatedAt": "2026-10-10T03:07:37.858Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:45:26.864Z",
-  "updatedAt": "2026-10-10T03:06:01.908Z",
+  "updatedAt": "2026-10-10T03:07:37.858Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2347,7 +2360,7 @@
   "localAuthoringSplits": {
     "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:06:01.908Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:07:37.858Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
