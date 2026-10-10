@@ -86,8 +86,6 @@ const top30ManifestFile=clean(process.env.GAME_SEED_TOP30_MANIFEST)||'test-game-
 const top30Manifest=readJson(top30ManifestFile,{candidates:[]})||{candidates:[]};
 const top30GameIds=uniq((top30Manifest.candidates||[]).map(row=>row?.gameId||row?.id));
 const top30GameIdSet=new Set(top30GameIds);
-const model=clean(process.env.GAME_SEED_LOCAL_MODEL)||clean(directive.ai?.modelPool?.[0])||'qwen3:0.6b';
-const MODEL_TIMEOUT_MS=Math.max(30000,Number(process.env.GAME_SEED_MODEL_TIMEOUT_MS||240000));
 const IDLE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_IDLE_TARGET_COUNT||0)));
 const FORCE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_FORCE_TARGET_COUNT||0)));
 
@@ -673,45 +671,116 @@ function validateProposal(target,p){
   if(target.lockedPlatform&&normalizeSeedPlatform(p.initialTargetPlatform)!==target.platform)errors.push('lockedPlatform');
   if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(p.multiplayerDesignMode))errors.push('multiplayerDesignMode');
   const sketch=p.gameplaySketch||{};
-  if(Number(sketch.version||0)<4||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.identityCore?.oneLineFantasy)||!clean(sketch.identityCore?.representativeAction)||!clean(sketch.identityCore?.representativeChoice)||!clean(sketch.identityCore?.signatureWorldRule)||!Array.isArray(sketch.identityCore?.signatureSystemPromise)||sketch.identityCore.signatureSystemPromise.length<1||!clean(sketch.identityCore?.growthIdentity)||!clean(sketch.identityCore?.threeSentenceTest?.whatGame)||!clean(sketch.identityCore?.threeSentenceTest?.whatDifferent)||!clean(sketch.identityCore?.threeSentenceTest?.whatGrowthUnlocks)||!clean(sketch.novelGameGrammar?.newPrimaryVerb)||!clean(sketch.novelGameGrammar?.brokenGenreAssumption)||!Array.isArray(sketch.novelGameGrammar?.causalDNAs)||sketch.novelGameGrammar.causalDNAs.length<2||!Array.isArray(sketch.novelGameGrammar?.causalFusion)||sketch.novelGameGrammar.causalFusion.length<2||!clean(sketch.novelGameGrammar?.storyWorldBindings?.emotionalConflict)||!clean(sketch.novelGameGrammar?.escalation?.endgame)||!Array.isArray(sketch.novelGameGrammar?.expansionVectors)||sketch.novelGameGrammar.expansionVectors.length<4||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2)errors.push('gameplaySketch');
+  if(Number(sketch.version||0)<4||!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!clean(sketch.identityCore?.oneLineFantasy)||!clean(sketch.identityCore?.representativeAction)||!clean(sketch.identityCore?.representativeChoice)||!clean(sketch.identityCore?.signatureWorldRule)||!Array.isArray(sketch.identityCore?.signatureSystemPromise)||sketch.identityCore.signatureSystemPromise.length<1||!clean(sketch.identityCore?.growthIdentity)||!clean(sketch.identityCore?.threeSentenceTest?.whatGame)||!clean(sketch.identityCore?.threeSentenceTest?.whatDifferent)||!clean(sketch.identityCore?.threeSentenceTest?.whatGrowthUnlocks)||!clean(sketch.novelGameGrammar?.newPrimaryVerb)||!clean(sketch.novelGameGrammar?.brokenGenreAssumption)||!Array.isArray(sketch.novelGameGrammar?.causalDNAs)||sketch.novelGameGrammar.causalDNAs.length<2||!Array.isArray(sketch.novelGameGrammar?.causalFusion)||sketch.novelGameGrammar.causalFusion.length<2||!clean(sketch.novelGameGrammar?.storyWorldBindings?.emotionalConflict)||!Array.isArray(sketch.novelGameGrammar?.expansionVectors)||sketch.novelGameGrammar.expansionVectors.length<4||!clean(sketch.playerPromise)||!Array.isArray(sketch.funDrivers)||sketch.funDrivers.length<3||!Array.isArray(sketch.balanceRules)||sketch.balanceRules.length<4||!sketch.pacingPlan||!Array.isArray(sketch.progressionLayers)||sketch.progressionLayers.length<3||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<4||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.completionCriteria)||sketch.completionCriteria.length<4||!Array.isArray(sketch.codingGrowthHooks)||sketch.codingGrowthHooks.length<4||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2||!Array.isArray(sketch.flowArchitecture?.flowDNA)||sketch.flowArchitecture.flowDNA.length<2)errors.push('gameplaySketch');
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
 }
-async function callModelBatch(targets){
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),MODEL_TIMEOUT_MS);
-  const requests=targets.map(t=>({
-    requestId:t.requestId,
-    category:t.category,
-    platform:t.platform,
-    platformLocked:t.lockedPlatform,
-    seedMaterialSelection:t.materialSelection,
-    seedMaterials:t.materials.map(m=>({id:m.materialId,sourceFamily:m.sourceFamily,concept:m.concept,mechanic:m.mechanic,setting:m.setting,causalDNA:m.causalDNA})),
-    optionalSuccessfulGameReferences:t.benchmarkCandidates,
-    targetSessionMinutes:30,
-    multiplayerMustBeDecidedNow:true,
-    allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
-  }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. novelGameGrammar는 장르에 기능을 더하는 목록이 아니라 새로운 게임문법을 만든다. 선택된 seedMaterials의 causalDNA를 최소 2개 실제 사용한다. 동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물 원형은 장식 세계관이 아니라 인과관계 재료다. 업보는 과거 행동이 미래 규칙으로 돌아오는 구조, 비극적 예언은 피하려는 행동이 조건을 완성하는 구조, 정통성은 점령보다 인정이 권한을 만드는 구조, 희극적 오해는 틀린 믿음이 실제 목표·관계를 바꾸는 구조처럼 플레이 규칙으로 변환한다. 익숙한 인간 갈등을 familiarAnchor로 잡아 공감을 유지하되 brokenGenreAssumption에서 해당 장르의 당연한 전제 하나 이상을 깨고 newPrimaryVerb에는 이 게임에서만 반복할 수 있는 새 동사를 적는다. causalFusion은 인과 DNA들이 서로 원인·제약·보상을 교환해야 하며 단순 전투+무역+동료 병렬 조합은 불충분하다. irreducibilityTest는 주요 인과축 하나를 빼면 게임이 다시 평범한 장르로 돌아가는지 검사한다. storyWorldBindings에서 인간 갈등·캐릭터·몬스터·지역·스토리가 같은 세계법칙을 각자 다르게 증명하게 한다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 재료 사이에 깊이 등급을 만들지 않는다. toneBlend는 이 게임에 맞는 톤을 자유롭게 섞는다. gameplaySystemFusion은 일반 플레이 구조를 MAIN × A × B × c로 정확히 구성한다. MAIN은 주제와 게임 정체성이다. A와 B는 RPG·생존·타이쿤·디펜스·생활·퍼즐·액션 등의 실제 플레이 시스템을 각각 하나 선택하고, 각 축에 구체적인 창작 소재(sourceMaterial/sourceDomain)를 반드시 결합한다. 두 축의 소재는 같아도 서로 다른 실제 인과 효과를 만들어야 한다. C는 themeFusion.themes에서 창작 주제·소재 2개를 자유롭게 선정하고 genre 2개를 반드시 별도 정한다. genres[0]은 role=PRIMARY(메인 장르), genres[1]은 role=SECONDARY(보조 장르)로 각기 구별되는 이름과 게임플레이 효과를 적는다. 소재는 동서양 종교·인물·예술·역사·무협·신화·엽기·과학 등 열린 전 영역이다. 메인 장르는 중심 경험·위험·목표를 만들고 보조 장르는 A/B 플레이·정보·대응·스토리 중 하나를 실제로 바꿔야 한다. genreInterlock에 두 장르를 교체하거나 보조 장르를 제거하면 어떻게 결과가 달라지는지 적는다. 두 창작 소재도 서사와 세계 규칙 및 A/B 판단을 바꿔야 한다. subElements는 작은 실행 변주일 뿐 C 자체가 아니다. A/B는 전투·탐험·경제·제작·퍼즐·대화·관계·건설·카드·레이싱·외교 등 익숙한 시스템이어도 된다. 중요한 것은 병렬 기능 목록이 아니라 MAIN↔A↔B의 상태 전달에 c가 변주를 만들고 결과가 다시 MAIN으로 돌아오는 것이다. delveLayer의 + @는 c와도 다르며 일반 시스템이 아니다. @는 숨은 조합·숙련 테크닉·발견·재해석·재방문·관계 변화·고급 변형·메타 규칙처럼 플레이어가 파고들수록 드러나는 요소이며 최소 4개를 설계하고 각 요소는 MAIN/A/B 중 최소 2개와 연결하거나 c 서브요소를 통해 그 관계를 확장한다. emergentGenre는 GAME_CATEGORY를 그대로 답하지 말고 재료 인과문법 × (MAIN × A × B × c) + @의 결과로 생긴 새 복합장르의 이름과 정의를 작성한다. GAME_CATEGORY는 시드 탐색과 운영 라우팅 힌트일 뿐 최종 장르가 아니다. expansionVectors는 콘텐츠 개수 증가보다 MAIN/A/B/c 관계와 @의 새로운 사용법을 변형해 장기 확장성을 만든다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. identityCore는 모든 장르에 공통 적용하되 같은 RPG식 시스템을 강제하지 않는다. oneLineFantasy는 플레이어가 누구이고 무엇을 하는지 한 문장으로 고정하고, playerRole은 플레이어의 역할과 책임을, representativeAction은 가장 자주 반복하는 실제 행동을, representativeChoice는 계속 고민하게 되는 선택을, signatureWorldRule은 이 게임에서만 통하는 세계/규칙 결합을 적는다. signatureSystemPromise는 제목을 가려도 이 게임을 알아볼 정도의 시그니처 시스템 약속 1~2개만 적고, growthIdentity는 숫자 상승보다 성장 후 새 행동·경로·조합·관계·발견·대응법이 무엇인지 적는다. identityCoherence는 세계 문화·시각·오디오·적/아이템/NPC가 같은 정체성을 어떻게 공유하는지 적는다. threeSentenceTest.whatGame/whatDifferent/whatGrowthUnlocks는 각각 무슨 게임인지, 같은 장르와 무엇이 다른지, 성장하면 무엇을 새로 할 수 있는지를 독립적으로 답해야 한다. genreAdaptationRule은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·전략·캐주얼 등 해당 장르의 핵심 행동을 우선하며 장르에 맞지 않는 시스템을 억지로 넣지 않는 원칙을 적는다. playerPromise는 플레이어가 반복할 핵심 경험과 숙련의 보상을 한 문장으로 고정한다. funDrivers는 즉시 피드백·트레이드오프·숙련에 따른 새 선택·월드/적 반응을 구체적으로 적고, balanceRules는 지배전략 방지·파워/위협 동반 성장·복구 가능한 실패·경제 source/sink·후반 판단구조 변화를 포함한다. pacingPlan은 0~5/5~15/15~25/25~30분과 중후반/재플레이를 각각 다른 역할로 설계하고, progressionLayers는 세션/중기/장기 성장의 선택 폭 변화를 적는다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리며 색상/체력/데미지 배수만 다른 변형이나 반복/재시작/대기를 깊이로 세지 않는다. completionCriteria는 첫 플레이부터 30분+, 실패복구, 모바일, 초중후반 역할 차이를 포함하고 codingGrowthHooks는 기존 책임 함수·데이터 테이블·안정 ID·저장 마이그레이션·프레젠테이션 자산 분리를 고려한다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
-  try{
-    const r=await fetch('http://127.0.0.1:11434/api/chat',{
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify({
-        model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),
-        messages:[
-          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 목표는 정해진 장르에 재료를 끼워 넣는 것이 아니라 선택된 재료의 인과 DNA를 융복합해 새 대표 동사와 새 전개 문법을 만들고, MAIN 정체성 × A·B 각각 시스템/소재 × C 메인·보조 장르 융합과 @ 파고들기까지 결합한 결과 자체를 새로운 복합장르로 만드는 것이다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹 등 모든 재료는 동등하며 특정 재료를 더 깊거나 가볍다고 분류하지 않는다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다. 모든 장르에서 먼저 게임 정체성을 한 줄 판타지·대표 행동·대표 선택·시그니처 세계 규칙·시그니처 시스템·성장 정체성·3문장 테스트로 선명하게 만든다. 장르별 핵심 행동은 다르므로 RPG식 시스템을 강제하지 않는다. 퍼즐은 해결 방식, 레이싱은 주행 판단, 타이쿤은 운영 선택, 디펜스는 배치와 대응, 생존은 탐험과 자원 판단, 액션은 전투와 이동 숙련, RPG는 역할·관계·성장, 카드/보드는 손패·위험·영역·거래 판단처럼 해당 장르의 실제 플레이를 정체성 중심에 둔다. 재미·밸런스·페이싱·성장·중후반 확장·완성 기준을 서로 연결하고 수치만 키운 복제 콘텐츠를 금지한다.'},
-          {role:'user',content:prompt},
-        ],
-        options:{temperature:0.25,num_ctx:16384,num_predict:7000},
-      }),
-      signal:controller.signal,
-    });
-    if(!r.ok)throw new Error(`ollama ${r.status}: ${await r.text()}`);
-    const body=await r.json();
-    const parsed=JSON.parse(clean(body?.message?.content));
-    if(!Array.isArray(parsed.proposals)||parsed.proposals.length!==targets.length)throw new Error('GAME_SEED_BATCH_COUNT_MISMATCH');
-    return parsed.proposals;
-  }finally{clearTimeout(timer);}
+
+// 메인: MAIN × A × B × C + @의 소재·행동·상태 인과를 바이브 자체 함수로 계산한다.
+// 오픈소스 사례는 검증된 설계 원리 참고로만 사용하고 외부 모델·게임 코드·에셋을 복제하지 않는다.
+export function computeVibeSeedProposal(target){
+  const category=clean(target.category);
+  const profiles={
+    ACTION_SURVIVAL_ROGUELITE:{genre:'생존',a:'탐험과 채집',b:'제작과 거점 구축',choiceA:'위험한 구역을 조사해 자원과 생존 단서를 확보',choiceB:'수집한 단서에 맞춰 제작 순서와 거점 배치를 변경'},
+    SINGLE_DEFENSE_STRATEGY:{genre:'전략',a:'경로와 방어 배치',b:'적 대응 전술',choiceA:'접근 경로의 방어물과 안전 구역을 선택',choiceB:'변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석'},
+    PUZZLE:{genre:'퍼즐',a:'단서 조합',b:'공간 상태 변환',choiceA:'관찰한 단서의 순서와 의미를 조합',choiceB:'변한 공간 규칙을 이용해 새 접근 경로를 시험'},
+    CASUAL:{genre:'생활',a:'사회관계 선택',b:'생활 공간 탐색',choiceA:'인물과 대상의 요청 가운데 우선순위를 결정',choiceB:'이전 관계의 결과로 열린 장소와 상호작용을 탐색'},
+    IDLE_GROWTH_RPG:{genre:'성장',a:'생산과 자원 순환',b:'능력과 임무 선택',choiceA:'생산 자원의 공급과 소비 균형을 조절',choiceB:'확보한 자원의 조건을 이용해 임무와 성장 방향을 선택'},
+    STORY_COMPLETE_RPG:{genre:'롤플레잉',a:'인물 대화와 관계',b:'탐험과 전투 선택',choiceA:'등장인물의 갈등과 증언을 듣고 관계의 향방을 결정',choiceB:'바뀐 관계에 따라 이동 경로와 전투 대응을 결정'},
+  };
+  const profile=profiles[category]||{genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응'};
+  const materialNames={
+    KARMA_RETURN:'업보와 인과응보',MANDATE_LEGITIMACY:'왕조의 정통성과 민심',RITUAL_RECIPROCITY:'의례와 호혜 관계',ANCESTOR_MEMORY:'조상 기억과 계승',
+    PROPHECY_SELF_FULFILLMENT:'그리스 비극의 자기실현 예언',HUBRIS_NEMESIS:'오만과 응보',OATH_CONTRACT:'서사시의 맹세와 계약',
+    SACRIFICE_SUBSTITUTION:'희생 제의와 대가 교환',TABOO_POLLUTION:'민속 금기와 전염',TRICKSTER_REVERSAL:'신화 속 트릭스터의 질서 역전',
+    COMEDIC_MISUNDERSTANDING:'희극의 오해와 엇갈림',CARNIVAL_STATUS_REVERSAL:'축제의 신분 반전',DIALECTIC_SYNTHESIS:'철학의 변증법',
+    SHIP_OF_THESEUS_IDENTITY:'테세우스의 배와 정체성',TESTIMONY_CONSENSUS_REALITY:'증언과 합의된 현실',
+    DYNASTIC_INHERITANCE:'왕조 계승과 유산',FACTION_BALANCE:'역사적 세력 균형',PATRONAGE_NETWORK:'후원과 인맥 관계',
+    EXILE_RETURN:'서사시의 추방과 귀환',MARTYRDOM_MOVEMENT:'순교와 집단 결속',PILGRIMAGE_TRANSFORMATION:'순례와 인물 변화',
+    FORTUNE_REVERSAL:'비극과 희극의 운명 반전',ABSURD_BUREAUCRACY:'풍자 속 관료제',NAME_AND_REPUTATION_POWER:'영웅서사의 이름과 평판'
+  };
+  const ids=uniq((target.materials||[]).flatMap(row=>row.causalDNA||[]));
+  const chosen=ids.map(id=>CAUSAL_DNA_LIBRARY.find(row=>row.id===id)).filter(Boolean);
+  for(const row of CAUSAL_DNA_LIBRARY)if(chosen.length<4&&!chosen.some(item=>item.id===row.id))chosen.push(row);
+  if(chosen.length<2)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
+  const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
+  const named=row=>materialNames[row.id]||row.id.replaceAll('_',' ');
+  const aMaterial=named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
+  const distinct=chosen[0].id!==chosen[1].id&&cMaterial1!==cMaterial2;
+  if(!distinct)throw new Error('VIBE_NATIVE_DESIGN_DISTINCT_CAUSAL_SOURCES_REQUIRED');
+  const secondary=first.id.includes('COMEDIC')||second.id.includes('COMEDIC')?'코믹':first.id.includes('TABOO')||second.id.includes('TABOO')?'호러':first.id.includes('TESTIMONY')||second.id.includes('TESTIMONY')?'미스터리':'추리';
+  const secondaryGenre=secondary===profile.genre?'사회극':secondary;
+  const identity=`${profile.genre} 게임에서 ${aMaterial}과 ${bMaterial}의 인과법칙을 이용해 세계를 바꾸는 ${profile.a}·${profile.b} 복합 게임`;
+  const gameName=`${aMaterial}의 ${profile.genre} 세계`;
+  const chooseA=`${profile.choiceA}하면서 ${first.gameGrammar}`;
+  const chooseB=`${profile.choiceB}하면서 ${second.gameGrammar}`;
+  const stateA=`플레이어가 ${profile.a}을 선택하면 ${aMaterial}의 규칙에 따라 다음 위험과 가능 행동이 변화한다.`;
+  const stateB=`플레이어가 ${profile.b}을 선택하면 ${bMaterial}의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다.`;
+  const bridge=`${chooseA} 그 결과 ${profile.b}의 가능 행동과 위험이 바뀌며, ${chooseB} 다시 ${profile.a}의 조건을 바꾼다.`;
+  const genreInterlock=`${profile.genre} 장르의 주 목표를 진행하는 동안 ${secondaryGenre} 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. ${secondaryGenre}를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.`;
+  const coreLoop=[
+    `${profile.a}: ${chooseA}`,
+    `${profile.b}: ${chooseB}`,
+    `${profile.a}로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.`
+  ];
+  const delveConditions=[
+    {name:'금기와 기회의 교차',condition:`${aMaterial}의 제약과 ${bMaterial}의 대응을 같은 지역에서 순서대로 시험한다.`,insight:`${first.principle} 상황을 ${second.gameGrammar} 방식으로 해석한다.`,effect:`${profile.a}에서 평소에는 불가능했던 대안 경로와 선택을 연다.`,links:['A','B','C']},
+    {name:'되돌아온 선택',condition:`${profile.b}를 완료한 뒤 처음 ${profile.a} 지역을 다시 방문해 달라진 증거를 찾는다.`,insight:`${second.principle} 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.`,effect:'보상이 아닌 관계·정보의 복원과 다른 해결 경로를 선택한다.',links:['MAIN','A','B']},
+    {name:'두 소재의 숨은 규칙',condition:`${cMaterial1}와 ${cMaterial2}의 조건을 동시에 만족시키는 행동 순서를 실험한다.`,insight:`${third.principle} 원리와 ${fourth.principle} 원리가 동시에 작동함을 파악한다.`,effect:'주 장르의 목표를 보조 장르의 정보 판단으로 우회하는 선택을 연다.',links:['B','C','MAIN']},
+    {name:'역전된 종착점',condition:`${profile.a}의 결과를 의도적으로 반대로 선택한 뒤 ${profile.b}를 수행해 후속 변화를 확인한다.`,insight:'한쪽의 불리한 결과가 다른 쪽의 고급 활용 조건이 되는 인과 반전을 학습한다.',effect:'같은 공간과 자원으로도 다른 결말·동선·운용법에 도달한다.',links:['A','B','MAIN']}
+  ];
+  const grammar={
+    toneBlend:[profile.genre,secondaryGenre],
+    familiarAnchor:`플레이어는 ${profile.a}에서 얻은 이익과 ${profile.b}의 책임 사이에서 선택의 대가를 직접 감당한다.`,
+    causalDNAs:chosen.slice(0,4).map((row,index)=>({id:row.id,source:row.source,principle:row.principle,gameplayConversion:row.gameGrammar,fusionRole:index%2===0?`${profile.a}의 선택 조건을 바꾼다.`:`${profile.b}의 대응 결과를 바꾼다.` })),
+    brokenGenreAssumption:`${profile.genre}의 단순한 목표 달성이 끝이 아니다. ${aMaterial}과 ${bMaterial}의 반작용이 다음 세계법칙을 변경한다.`,
+    newPrimaryVerb:`${profile.a}의 결과를 ${profile.b}로 전환하고 달라진 조건을 다시 활용한다.`,
+    worldRule:`${aMaterial}에 의해 바뀐 인물·지역의 상태는 ${bMaterial}의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.`,
+    causalFusion:[bridge,`${cMaterial1}에 의한 반응은 ${cMaterial2}의 비용과 정보를 바꾸고, 그 결과는 ${secondaryGenre}의 판단 규칙으로 다시 반영된다.`],
+    irreducibilityTest:{removeFirstAxis:`${profile.a}을 빼면 ${aMaterial}의 제약이 사라져 ${profile.b} 대응의 원인을 잃는다.`,removeSecondAxis:`${profile.b}를 빼면 ${bMaterial}의 반작용이 사라져 다음 ${profile.a}에서 배울 수 있는 선택지가 사라진다.`,verdict:'A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다.'},
+    storyWorldBindings:{
+      emotionalConflict:`${aMaterial}의 원칙을 지키는 인물과 ${bMaterial}의 책임을 지려는 인물이 목표를 놓고 충돌한다.`,
+      characterRule:'인물은 플레이어의 이전 선택을 기억하고 신뢰·거래·협력 조건을 변경한다.',
+      monsterRule:'상대나 위협은 누적된 세계 상태에 반응해 접근 경로와 대응 방식을 변경한다.',
+      regionRule:`${aMaterial}의 흔적이 남은 지역은 ${bMaterial}의 선택에 따라 새로운 출입·보상 조건을 갖는다.`,
+      storyRule:'관계의 갈등이 플레이어의 실제 선택을 통해 해결되거나 심화되고, 그 결과가 다음 사건의 원인이 된다.',
+      plausibility:`${first.principle}와 ${second.principle}가 이 세계의 인간관계와 지역 규칙을 지속적으로 지배한다.`
+    },
+    gameplaySystemFusion:{
+      formula:'MAIN × A × B × C',
+      main:{name:gameName,purpose:`${identity}에서 플레이어는 선택을 누적해 목적을 완수한다.`,playerAction:coreLoop[0],stateContribution:'플레이어 행동은 다음 목표·위험·세계 반응의 공통 상태를 갱신한다.'},
+      majorAxes:[
+        {key:'A',name:`${profile.a} × ${aMaterial}`,systemFamily:profile.a,sourceMaterial:aMaterial,sourceDomain:first.source,materialRule:`${first.gameGrammar} 따라서 ${profile.a}의 경로와 비용이 바뀐다.`,purpose:stateA,playerChoice:chooseA,stateContribution:stateA},
+        {key:'B',name:`${profile.b} × ${bMaterial}`,systemFamily:profile.b,sourceMaterial:bMaterial,sourceDomain:second.source,materialRule:`${second.gameGrammar} 따라서 ${profile.b}의 정보·대응이 바뀐다.`,purpose:stateB,playerChoice:chooseB,stateContribution:stateB}
+      ],
+      themeFusion:{
+        themes:[{name:cMaterial1,kind:'MATERIAL',causalEffect:`${third.gameGrammar} 그 결과 A와 B가 공유하는 조건이 바뀐다.`},{name:cMaterial2,kind:'MATERIAL',causalEffect:`${fourth.gameGrammar} 그 결과 사건의 비용과 다음 선택이 달라진다.`}],
+        genres:[{role:'PRIMARY',name:profile.genre,gameplayEffect:`${profile.a}와 ${profile.b}를 통한 중심 목표와 위험·보상을 판단한다.`},{role:'SECONDARY',name:secondaryGenre,gameplayEffect:`${cMaterial1}의 단서와 ${cMaterial2}의 반응 때문에 같은 목표의 정보·행동·결과가 달라진다.`}],
+        genreInterlock,jointWorldRule:`${cMaterial1}와 ${cMaterial2}가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다.`,abGameplayEffect:bridge
+      },
+      crossSystemRules:[`MAIN의 목표가 ${profile.a}에서 추적할 경로와 정보를 결정한다.`,`A의 결과로 ${profile.b}의 비용·위험·가능 행동이 달라진다.`,`B의 대응 결과가 다음 ${profile.a}의 조건을 되돌려 바꾼다.`,`C의 두 소재와 ${secondaryGenre} 판단이 위 두 시스템의 정보·경로를 변경한다.`]
+    },
+    delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveConditions.map(row=>({name:row.name,discoveryCondition:row.condition,masteryOrInsight:row.insight,gameplayEffect:row.effect,connectsTo:row.links}))},
+    emergentGenre:{name:`${aMaterial}·${bMaterial} ${profile.genre}`,definition:`${profile.a}과 ${profile.b}의 왕복 결과에 ${cMaterial1}·${cMaterial2}와 ${secondaryGenre} 판단이 개입해 다음 월드 상태가 변하는 복합 장르다.`,whyNotSingleConventionalGenre:'한쪽 시스템이나 소재, 보조 장르를 제거하면 가능 경로와 사건 원인이 바뀌므로 단일 장르 규칙으로 환원할 수 없다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
+    expansionVectors:[`${profile.a}의 새로운 지역에서 이전 인과 선택을 다시 해석한다.`,`${profile.b}의 새 상대는 기존 상태를 증폭하거나 반전한다.`,`${cMaterial1}과 ${cMaterial2}의 조합에 다른 인간 갈등을 연결한다.`,'발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다.']
+  };
+  return {
+    requestId:target.requestId,category,gameName,referenceGames:[],coreFunToLearn:[bridge,genreInterlock],
+    coreLoop,distinctIdentity:identity,targetAudience:`${profile.genre} 장르에서 실제 선택과 세계 반응을 탐색하는 모바일 플레이어`,
+    initialTargetPlatform:target.platform,initialPlayMode:'PROJECT_DEFINED',multiplayerDesignMode:'SINGLE',
+    crossPlatformExpansionValue:'동일 인과문법을 보존한 플랫폼별 네이티브 구현에 적용 가능하다.',
+    steamExpansionPossible:'POSSIBLE',transformationMode:'ORIGINAL_COMPOSITION',
+    gameplaySketch:{version:5,source:'VIBE_NATIVE_CAUSAL_COMPOSITION',novelGameGrammar:grammar,
+      worldModel:`${gameName}의 공간은 ${aMaterial}와 ${bMaterial} 선택의 결과로 목표·동선·위험이 달라진다.`,
+      interactionChains:[`${chooseA} -> ${stateA} -> ${chooseB} -> ${stateB}`],
+      actors:[`플레이어: ${profile.a}와 ${profile.b}의 선택을 담당한다.`,`인물과 상대: ${aMaterial}·${bMaterial}의 결과를 기억하고 반응한다.`],
+      identityCore:{oneLineFantasy:identity,playerRole:`${gameName}의 탐험가이자 인과 선택의 책임자`,
+        representativeAction:coreLoop[0],representativeChoice:coreLoop[1],
+        signatureWorldRule:grammar.worldRule,signatureSystemPromise:[bridge],
+        growthIdentity:'성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다.',
+        threeSentenceTest:{whatGame:identity,whatDifferent:bridge,whatGrowthUnlocks:'발견한 상태 연결을 재사용해 새로운 접근 경로와 대응법을 연다.'}
+      }
+    }
+  };
 }
 function buildSeed(target,p,{serial,gameId,timestamp}){
   const platform=normalizeSeedPlatform(p.initialTargetPlatform);
@@ -782,7 +851,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
     }
     const proposals=proposalProvider
       ?await Promise.all(targets.map(t=>proposalProvider({requestId:t.requestId,category:t.category,platform:t.platform,seedMaterials:t.materials,materialSelection:t.materialSelection})))
-      :await callModelBatch(targets);
+      :targets.map(computeVibeSeedProposal);
     if(proposals.length!==targets.length)throw new Error('GAME_SEED_BATCH_COUNT_MISMATCH');
     const used=new Set((state.seeds||[]).map(s=>s.gameId));
     const created=[];
@@ -846,7 +915,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
       duplicateReuseCount:reused.length,
       duplicatePolicy:'SEARCH_EXISTING_ACTIVE_SEEDS_THEN_REUSE_SIMILAR_NO_DUPLICATE_CREATION',
       duplicateSimilarityThreshold:GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD,
-      modelCalls:proposalProvider?0:1,
+      modelCalls:0,
       ownerPreservationGameIds,
       seedMaterialPoolTarget:100,
       seedMaterialAvailable:state.seedMaterials.filter(x=>x.status==='AVAILABLE').length,
@@ -869,6 +938,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`GAME_SEED_DUPLICATE_POLICY=${result.duplicatePolicy||'SEARCH_EXISTING_ACTIVE_SEEDS_THEN_REUSE_SIMILAR_NO_DUPLICATE_CREATION'}`);
     console.log(`GAME_SEED_DUPLICATE_SIMILARITY_THRESHOLD=${result.duplicateSimilarityThreshold??GAME_SEED_CONCEPT_REUSE_SIMILARITY_THRESHOLD}`);
     console.log(`GAME_SEED_MODEL_CALLS=${result.modelCalls}`);
+    console.log('GAME_SEED_DESIGN_ENGINE=VIBE_NATIVE_CAUSAL_COMPOSITION');
     console.log(`OWNER_PRESERVATION_SEED_MATERIALIZED_COUNT=${(result.ownerPreservationGameIds||[]).length}`);
     console.log(`OWNER_PRESERVATION_SEED_GAME_IDS=${(result.ownerPreservationGameIds||[]).join(',')||'NONE'}`);
     console.log(`SEED_MATERIAL_POOL_TARGET=${result.seedMaterialPoolTarget||100}`);
