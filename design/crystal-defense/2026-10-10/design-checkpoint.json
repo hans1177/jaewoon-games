@@ -97,25 +97,33 @@
       },
       "playerFantasy": "게임 내에서 플레이어가 실제로 수행하는 행동은 주요 선택, 실질적 세계 상태 변화, 그리고 새로운 경로 개발에 직접적인 영향을 미친다는 점을 명시해야 합니다. 이는 관찰자 설명보다 실제 플레이 내용을 기반으로 작성됩니다.",
       "coreFun": "주요 선택 및 상태 변환, 신뢰도 향상, 위험 관리, 새로운 경로 개발, 게임 규칙과 플레이어 선택의 변화를 모두 포함합니다. 이는 실제 상태 키와 관련하여 설계되며, 모든 역할 사이에서 겹쳐야 합니다. 또한, 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교해야 합니다."
+    },
+    "local_authoring_parts::6fe3c652317f847beaa82926d67d6cc5106d696cf2840c6ee391ebc1b4b0170b:coreLoop": {
+      "coreLoop": [
+        "플레이어의 초기 선택 및 실질적 세계 상태 변화",
+        "방어 전략의 진화 과정에서 신뢰도 향상 및 위험 관리",
+        "중후반 두 시스템 간의 관계 변화 및 피드백 제공",
+        "보조 장르 제거 시 게임 규칙과 플레이어 선택의 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 178950,
-      "lastMs": 178950,
+      "totalMs": 265060,
+      "lastMs": 86110,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:34:19.265Z"
+      "updatedAt": "2026-10-10T10:35:45.377Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:31:20.158Z",
-  "updatedAt": "2026-10-10T10:34:19.265Z",
+  "updatedAt": "2026-10-10T10:35:45.384Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,8 +1840,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:34:19.265Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:35:45.377Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
