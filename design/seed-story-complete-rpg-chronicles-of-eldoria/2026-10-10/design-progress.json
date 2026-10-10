@@ -2,31 +2,31 @@
   "version": 2,
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "date": "2026-10-10",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 7,
-  "lastSuccessfulModelCallAt": "2026-10-10T03:30:54.106Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": null,
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": null,
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 1,
+      "successes": 0,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1451620,
-      "lastMs": 103691,
+      "totalMs": 300101,
+      "lastMs": 300101,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:30:54.106Z"
+      "updatedAt": "2026-10-10T05:33:39.354Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T03:30:54.115Z"
+  "updatedAt": "2026-10-10T05:33:39.355Z"
 }
