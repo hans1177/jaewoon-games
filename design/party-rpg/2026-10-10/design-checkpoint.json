@@ -3,169 +3,31 @@
   "gameId": "party-rpg",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-PARTY-RPG-20260917",
-  "fingerprint": "6506583179f4fe86b99682448027767a1d02e03353a834af83796bc6fe8104b5",
+  "fingerprint": "463f1a13b4e0417ee1648a66051444880ecc262c5ac0852daf6b012ae7fbaa5a",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::a80f3fefcd4a338eb7fa2e9df8dd31c7d7d3c1c8b3390f00125c6a8c9cf89bab:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "파티 RPG - 진입, 선택, 성공, 위험, 복구, 세계 연결",
-      "creativeGrammar": {
-        "mainIdentity": "파티 RPG의 핵심 재미는 입력 후 즉각적인 상태 변화와 피드백을 통해 반복 가능한 루프로 구성된다.",
-        "a": {
-          "system": "게임 시스템 + 축별 창작 소재",
-          "material": "모바일에서 즉시 이해되는 입력 및 피드백 기반의 대화형 행동 패턴",
-          "materialDomain": "주요 장르: 전략적 선택, 보조 장르: 실질적 인과 변화",
-          "stateChange": "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택"
-        },
-        "b": {
-          "system": "다른 시스템 + 축별 창작 소재",
-          "material": "전략적 상호작용과 새로운 경로 연계를 위한 이벤트 또는 공간 규칙",
-          "materialDomain": "보조 장르: 실제 선택과 관련된 조건 및 결과",
-          "stateChange": "플레이어 선택 -> 상태 변화 -> 보상/위험/다음 선택"
-        },
-        "abCausality": "양방향 실제 상태 교환 - 주제/소재 두 개의 인과 연결 - 메인 장르와 보조 장르 간의 상호 작용",
-        "abEvolution": {
-          "aChangesB": "A→B의 상태 교환은 B의 역할에 따라 실제 플레이 스타일이 달라진다.",
-          "bChangesA": "B→A의 상태 교환이 A의 대화형 행동 패턴을 변주한다.",
-          "lateGameChange": "중후반 두 시스템의 관계 변화는 게임 규칙과 실질적인 인과 변화를 요구한다."
-        },
-        "materialFusion": {
-          "contrast": "주제/소재 두 가지의 인과 연결, 메인 장르와 보조 장르 간의 상호작용",
-          "causalBridge": "발견 단서 → 새로운 실제 선택 → 4개 이상 초기 사례 및 무한 발전 규칙",
-          "removalConsequence": "보조 장르 제거 시 세계 연결이 바뀌며, 플레이어 선택이 실제로 영향을 미친다."
-        },
-        "storyCausalChain": {
-          "cause": "플레이어 선택 -> 인물 갈등 -> 플레이어 선택 -> 실제 세계 상태 변화 -> 다음 사건",
-          "characterConflict": "플레이어의 선택은 인물 갈등에 의해 유도되며, 이는 게임 규칙과 직접 연결되어야 한다.",
-          "playerChoice": "플레이어 선택은 게임의 핵심 재미와 반복 가능한 루프에 기여하며, 이는 원본 수치와 일관된다.",
-          "worldChange": "실질적인 인과 변화를 통해 세계 연결이 확대되고, 이는 게임의 정체성과 구축된 상태로 유지된다.",
-          "nextEvent": "플레이어 선택 이후 발생하는 다음 사건은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다."
-        },
-        "cThemes": [
-          {
-            "name": "전략적 선택",
-            "kind": "MATERIAL",
-            "gameplayEffect": "게임 시스템 내 전략적 상호작용"
-          },
-          {
-            "name": "실제 선택",
-            "kind": "MATERIAL",
-            "gameplayEffect": "보조 장르와 실질적 인과 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략적 선택",
-            "gameplayEffect": "게임의 핵심 재미 및 반복 가능한 루프"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "실제 선택",
-            "gameplayEffect": "보조 장르와 실제 인과 변화에 기반한 플레이 스타일"
-          }
-        ],
-        "cGenreInterlock": "주제/소재 두 개의 상호 작용이 보조 장르 제거 시 세계 연결을 바꾸며, 이는 게임의 정체성과 구축된 상태로 유지된다.",
-        "cWorldAndGameplayEffect": "플레이어 선택은 게임의 핵심 재미와 반복 가능한 루프를 형성하며, 이는 원본 수치와 일관되어야 한다.",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어 선택 → 인물 갈등",
-            "discovery": "플레이어 선택은 인물 갈등에 의해 유도되며, 이는 게임 규칙과 직접 연결되어야 한다.",
-            "newChoice": "플레이어 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다."
-          },
-          {
-            "clue": "실제 선택 → 세계 상태 변화",
-            "discovery": "실제 선택은 세계 상태 변화에 기여하며, 이는 게임의 정체성과 구축된 상태로 유지된다.",
-            "newChoice": "실제 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다."
-          },
-          {
-            "clue": "전략적 선택 → 보조 장르 상호작용",
-            "discovery": "전략적 선택은 보조 장르와 실질적 인과 변화를 통해 플레이 스타일을 형성하며, 이는 원본 수치와 일관되어야 한다.",
-            "newChoice": "전략적 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과程에서 중요한 역할을 수행한다."
-          },
-          {
-            "clue": "보조 장르 제거 시 세계 연결 변동",
-            "discovery": "보조 장르 제거 시 세계 연결이 바뀌며, 이는 게임의 정체성과 구축된 상태로 유지된다.",
-            "newChoice": "보조 장르 제거 후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다."
-          }
-        ],
-        "delveGrowthRule": "중후반 두 시스템의 관계 변화는 게임 규칙과 실질적인 인과 변화에 기반한 플레이 스타일을 요구하며, 이는 원본 수치와 일관되어야 한다.",
-        "finalGameIdentity": "플레이어 선택 → 인물 갈등 → 실제 선택 → 세계 상태 변화 → 다음 사건으로 구성된 새 정체성이 형성되며, 이는 게임의 핵심 재미 및 반복 가능한 루프를 포함하고 있다."
-      },
-      "playerFantasy": "플레이어는 입력 후 즉각적인 상태 변화와 피드백을 통해 반복 가능한 루프를 형성하며, 이는 게임의 학문적 가치와 현실적인 상호작용을 결합하여 이루어진다. 주제/소재 두 가지의 인과 연결이 존재하며, 이는 게임의 정체성과 구축된 상태로 유지된다.",
-      "coreFun": "플레이어 선택은 게임의 핵심 재미와 반복 가능한 루프를 형성하며, 이는 원본 수치와 일관되어야 한다. 주제/소재 두 가지의 인과 연결이 존재하며, 이는 게임의 정체성과 구축된 상태로 유지된다. 플레이어 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다."
-    },
-    "local_authoring_parts::020935a620c6cc90adf316d8ed0200efa39874bba929ad432188bf1dc10487e2:coreLoop": {
-      "coreLoop": [
-        "입력 -> 상태 변화 -> 보상/위험/다음 선택",
-        "플레이어 선택 -> 즉각적인 상태 변화 -> 피드백 제공",
-        "실제 선택 -> 세계 상태 변화 -> 다음 사건 발생"
-      ]
-    },
-    "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_entrance",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "player_choice",
-        "game_state"
-      ],
-      "stateOutputs": [
-        "status_change",
-        "feedback_loop"
-      ],
-      "name": "입력 -> 상태 변화 -> 피드백 제공",
-      "purpose": "플레이어 선택 후 즉각적인 상태 변화와 피드백을 통해 반복 가능한 루프 형성",
-      "playerChoice": "플레이어 선택은 게임의 핵심 재미 및 반복 가능한 루프에 기여하며, 이는 원본 수치와 일관되어야 한다। 주제/소재 두 가지의 인과 연결이 존재하며, 이는 게임의 정체성과 구축된 상태로 유지된다。 실제 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다。 전략적 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과程에서 중요한 역할을 수행한다。 보조 장르 제거 후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다。 플레이어 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다。"
-    },
-    "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:1:973b7981543efce4": {
-      "id": "a_entrance",
-      "grammarRole": "A",
-      "stateInputs": [
-        "status_change",
-        "feedback_loop"
-      ],
-      "stateOutputs": [
-        "player_choice",
-        "game_state"
-      ],
-      "name": "입력 -> 상태 변화 -> 피드백 제공",
-      "purpose": "플레이어 선택 후 즉각적인 상태 변화와 피드백 제공을 통해 게임의 학문적 가치와 현실적인 상호작용을 결합하여 이루어진다.",
-      "playerChoice": "플레이어 선택은 게임의 핵심 재미와 반복 가능한 루프를 형성하며, 이는 원본 수치와 일관되어야 한다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 167,
-      "successes": 167,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 2558187,
-      "lastMs": 8411,
-      "lastError": null,
-      "updatedAt": "2026-10-10T07:13:37.953Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:30:59.191Z",
-  "updatedAt": "2026-10-10T07:13:37.954Z",
+  "createdAt": "2026-10-10T09:09:17.573Z",
+  "updatedAt": "2026-10-10T09:09:17.670Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -206,10 +68,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -640,8 +504,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -682,10 +546,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1116,8 +982,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1158,10 +1024,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1638,35 +1506,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:2:bddb7f5e4a4c9ff0": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_entrance",
-          "a_entrance"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_entrance",
-          "a_entrance"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:1:973b7981543efce4": 2,
-    "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:2:bddb7f5e4a4c9ff0": 161
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:13:37.953Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
