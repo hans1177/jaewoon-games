@@ -204,7 +204,15 @@ for(const dir of [
 ])fs.mkdirSync(path.join(output,dir),{recursive:true});
 fs.writeFileSync(path.join(output,'Packages/manifest.json'),JSON.stringify({dependencies:{'com.unity.modules.imgui':'1.0.0','com.unity.modules.physics':'1.0.0','com.unity.modules.animation':'1.0.0','com.unity.modules.audio':'1.0.0','com.unity.modules.jsonserialize':'1.0.0'}},null,2)+'\n');
 fs.writeFileSync(path.join(output,'ProjectSettings/ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\nm_EditorVersionWithRevision: 6000.6.0f1 (f7f8ed4d1e24)\n');
-fs.writeFileSync(path.join(output,'Assets/link.xml'),'<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>\n');
+// Unity 6000.6 WebGL IL2CPP: ContentLoadingSystem.ProcessResults stripping can halt the main loop.
+// Match the existing verified native Unity link.xml contract without changing gameplay.
+fs.writeFileSync(path.join(output,'Assets/link.xml'),`<linker>
+  <assembly fullname="UnityEngine.CoreModule" preserve="all" />
+  <assembly fullname="UnityEngine.ContentLoadModule">
+    <type fullname="Unity.Loading.ContentLoadingSystem" preserve="all" />
+  </assembly>
+</linker>
+`);
 if(worldDataText){
   fs.mkdirSync(path.join(output,'Assets/Resources'),{recursive:true});
   fs.writeFileSync(path.join(output,'Assets/Resources/vibe-world-layout.json'),worldDataText);
