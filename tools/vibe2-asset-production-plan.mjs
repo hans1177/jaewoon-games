@@ -742,7 +742,11 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     };
     return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
   };
-  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)));
+  // 공격과 필살기/특수기는 다른 역할이다. 특수기 이름만으로 기본 공격을 충족시키지 않는다.
+  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some(name=>{
+    if(clip==='ATTACK'&&/(?:^|_)(?:SPECIAL|SKILL|ABILITY|ULTIMATE|FINISHER)(?:_|$)/.test(name))return false;
+    return name===alias||name.includes(alias);
+  }));
   const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!animationMatchesClip(clip));
   const missingCreatureRoleMotionClips=requiredCreatureMotionClips.filter(clip=>!animationMatchesClip(clip));
   const socketMatchers={
