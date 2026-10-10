@@ -3,154 +3,31 @@
   "gameId": "gem-survivor",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-GEM-SURVIVOR-20260917",
-  "fingerprint": "2be99ab23a1cc87fb093e45852a242364af4f5b974dbf9b48f0a1918f0f600cc",
+  "fingerprint": "69e67cfe4f1c4bd95fe9b62ffd40e98476c281534c56e5af053c4a53b67dda8e",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::358a628e47628bd5d6e25d25ec1b1c31c0488c8b4b7024ab3172577022d8ed38:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "보석 생존전",
-      "creativeGrammar": {
-        "mainIdentity": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백",
-        "a": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "사용자 직접 업로드 웹게임",
-          "materialDomain": "생존,액션,수집",
-          "stateChange": "입력→ 상태변화 → 보상/위험 → 다음 선택"
-        },
-        "b": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "사용자 직접 업로드 웹게임",
-          "materialDomain": "생존,액션,수집",
-          "stateChange": "입력→ 상태변화 → 보상/위험 → 다음 선택"
-        },
-        "abCausality": "주제별 인과적 교환, 주제별 상호작용 및 보조 장르 제거 시 바뀌는 플레이",
-        "abEvolution": {
-          "aChangesB": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-          "bChangesA": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
-        },
-        "materialFusion": {
-          "contrast": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-          "causalBridge": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
-          "removalConsequence": "모바일에서도 즉시 이해되는 입력과 피드백을 생성"
-        },
-        "storyCausalChain": {
-          "cause": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-          "characterConflict": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
-          "playerChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택",
-          "worldChange": "주제별 인과적 교환, 주제별 상호작용 및 보조 장르 제거 시 바뀌는 플레이",
-          "nextEvent": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
-        },
-        "cThemes": [
-          {
-            "name": "생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "사용자 직접 업로드 웹게임, 모바일에서도 즉시 이해되는 입력과 피드백"
-          },
-          {
-            "name": "액션",
-            "kind": "MATERIAL",
-            "gameplayEffect": "ACTION_SURVIVAL_ROGUELITE, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "모바일에서도 즉시 이해되는 입력과 피드백"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "SURVIVAL",
-            "gameplayEffect": "진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재"
-          }
-        ],
-        "cGenreInterlock": "주제별 인과적 교환, 주제별 상호작용 및 보조 장르 제거 시 바뀌는 플레이",
-        "cWorldAndGameplayEffect": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "delveDiscoveries": [
-          {
-            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
-            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
-          },
-          {
-            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
-            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
-          },
-          {
-            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 핸드폰 게임",
-            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
-          },
-          {
-            "clue": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의",
-            "discovery": "진행·위험·보상이 서로 연결되는 반복 가능한 모바일 게임",
-            "newChoice": "입력→ 상태변화 → 보상/위험 → 다음 선택"
-          }
-        ],
-        "delveGrowthRule": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
-        "finalGameIdentity": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재, 모바일에서도 즉시 이해되는 입력과 피드백"
-      },
-      "playerFantasy": "사용자 직접 업로드 웹게임, 모바일에서도 즉시 이해되는 입력과 피드백, 진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재",
-      "coreFun": "보석 생존전의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 학문 소재, 모바일에서도 즉시 이해되는 입력과 피드백"
-    },
-    "local_authoring_parts::4d4b6900ba3689147acfead92df9f9bc0121274b04dfdaaad6aaeff5030129cc:coreLoop": {
-      "coreLoop": [
-        "입력→ 상태변화 → 보상/위험 → 다음 선택",
-        "플레이어가 직접 업로드 웹게임에서 사용하는 입력과 피드백을 통해 진행, 위험, 보상을 연결시키며 루프 형성",
-        "보석 생존전의 핵심 재미는 실제 플레이 선택에 의해 재정의되며, 모바일에서도 즉시 이해되는 입력과 피드백을 제공"
-      ]
-    },
-    "local_authoring_parts::26afc10b18a5d97b8df7e736cc9a3f911ec493c6dee19ca5e67b5267ff124271:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_rock_survivor_core_loop",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "입력",
-        "선택"
-      ],
-      "stateOutputs": [
-        "보상",
-        "위험"
-      ],
-      "name": "보석 생존전의 핵심 루프",
-      "purpose": "사용자 직접 업로드 웹게임에서 입력과 피드백을 통해 진행, 위험, 보상을 연결시키며 반복 가능한 학문 소재 형성",
-      "playerChoice": "입력 → 상태변화 → 보상/위험 → 다음 선택"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 287,
-      "successes": 287,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 2586626,
-      "lastMs": 7229,
-      "lastError": null,
-      "updatedAt": "2026-10-10T08:09:42.990Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T07:26:35.578Z",
-  "updatedAt": "2026-10-10T08:09:42.991Z",
+  "createdAt": "2026-10-10T08:35:03.843Z",
+  "updatedAt": "2026-10-10T08:35:03.858Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -187,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -210,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -693,8 +573,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -731,6 +611,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -754,10 +635,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1237,8 +1120,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1275,6 +1158,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1298,10 +1182,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1848,32 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::26afc10b18a5d97b8df7e736cc9a3f911ec493c6dee19ca5e67b5267ff124271:signatureSystems:1:6fe78dd198bc0fa6": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_rock_survivor_core_loop"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_rock_survivor_core_loop"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::26afc10b18a5d97b8df7e736cc9a3f911ec493c6dee19ca5e67b5267ff124271:signatureSystems:1:6fe78dd198bc0fa6": 284
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:09:42.990Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
