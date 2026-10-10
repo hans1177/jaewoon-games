@@ -996,25 +996,40 @@
       "name": "체스 기반 전략적 판타지 게임 - B 시스템",
       "purpose": "AI 전략, 블록체인, 디지털 전투 등 다른 시스템의 도입을 통해 전략적 판단의 확대와 전략적 연결의 강화를 수행하며, 세계에 실질적인 영향을 미친다.",
       "playerChoice": "전략적 선택 및 상황별 위험/보상 갈등에서 실제 선택을 내리는 과정에서, AI 전략과 체스 전략의 조합으로 새로운 전술 경로를 개발해야 한다."
+    },
+    "local_authoring_parts::6c23b63e93fcf406e52b4b43fbc72da2bce277fbb327938a010db42d512dae19:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "{\"key\": \"ACTION\", \"value\": \"체스판 상태 변화\"}",
+        "{\"key\": \"ROLE\", \"value\": \"보조 장르\"}"
+      ],
+      "stateOutputs": [
+        "{\"key\": \"ACTION\", \"value\": \"전략적 판단\"}",
+        "{\"key\": \"ROLE\", \"value\": \"MAIN\"}"
+      ],
+      "name": "체스 기반 전략적 판타지 게임 - DELVE 시스템",
+      "purpose": "플레이어의 실질적인 행동과 결과에 대한 명확한 판타지를 제공하며, 전략적 연결 및 다음 선택 가능성 확률을 바탕으로 새로운 전술 경로를 개발함.",
+      "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 29,
-      "successes": 27,
+      "calls": 30,
+      "successes": 28,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 3140615,
-      "lastMs": 82824,
+      "totalMs": 3218449,
+      "lastMs": 77834,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:06:51.016Z"
+      "updatedAt": "2026-10-10T01:08:08.851Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-10T01:06:51.016Z",
+  "updatedAt": "2026-10-10T01:08:08.859Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2686,7 +2701,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 4
+    "designer_draft_slices::identity-core": 5
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2788,10 +2803,10 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:06:51.016Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T01:08:08.852Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
