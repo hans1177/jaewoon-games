@@ -28,25 +28,77 @@
         "stateChange": "체인이 활성화되어 대규모 연쇄 폭발 발생"
       },
       "abCausality": "색상 변환 범위와 충전 속도의 상호작용이 실제 상태 변화로 나타나며, 연쇄 폭발의 강도와 크기를 결정한다."
+    },
+    "local_authoring_parts::8bd0ce19b06dcd610a0884307ed65181ff22a5fa6eac7561c03dd9cebbddd43d:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "색채 노드 선택에 따른 체인 형성 및 활성화 시 이벤트 발생",
+        "bChangesA": "체인 활성화 시 색상 변환 범위와 충전 속도가 실제 상태로 반영됨",
+        "lateGameChange": "연쇄 폭발 강도와 크기 결정 요소로서의 색상 변환 범위 및 충전 속도의 상호작용"
+      },
+      "materialFusion": {
+        "contrast": "색상 주파수 튜너(게임 내 상태 관리)와 연쇄 기폭 장치(전략적 플레이 조작 시스템)",
+        "causalBridge": "색상 변환 범위와 충전 속도의 상호작용이 실제 상태 변화로 나타나며, 연쇄 폭발의 강도와 크기를 결정함",
+        "removalConsequence": "보조 장르 제거 시 게임 규칙과 위험 패턴이 바뀌어야 하며, 캐릭터·역사·철학 등으로 구성된 소재가 실질적 인과 변화를 줄 수 있음"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 색채 노드 선택 및 체인 활성화",
+        "characterConflict": "연쇄 폭발의 파급 효과와 보상 획득을 통해 플레이어 역할과 세계 상태 변화의 갈등 발생",
+        "playerChoice": "색상 변환 범위와 충전 속도에 대한 전술적 선택",
+        "worldChange": "장애물 제거 및 새로운 색상 주파수와 복합 장애물 패턴의 도입",
+        "nextEvent": "상위 구역 진입 및 더 복잡한 색상 주파수와 장애물 패턴의 등장"
+      }
+    },
+    "local_authoring_parts::a70663b6e174e20edb165838c618951787fd0211c5a82983245facb41690f2d1:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다.",
+      "a": {
+        "system": "색채 주파수 튜너",
+        "material": "보드 위의 색상 노드",
+        "materialDomain": "게임 내 상태 관리",
+        "stateChange": "인접 노드의 색상을 변경하는 선택 행동"
+      },
+      "b": {
+        "system": "연쇄 기폭 장치",
+        "material": "동기화된 색채 체인",
+        "materialDomain": "전략적 플레이 조작 시스템",
+        "stateChange": "체인이 활성화되어 대규모 연쇄 폭발 발생"
+      },
+      "abCausality": "색상 변환 범위와 충전 속도의 상호작용이 실제 상태 변화로 나타나며, 연쇄 폭발의 강도와 크기를 결정한다.",
+      "abEvolution": {
+        "aChangesB": "색채 노드 선택에 따른 체인 형성 및 활성화 시 이벤트 발생",
+        "bChangesA": "체인 활성화 시 색상 변환 범위와 충전 속도가 실제 상태로 반영됨",
+        "lateGameChange": "연쇄 폭발 강도와 크기 결정 요소로서의 색상 변환 범위 및 충전 속도의 상호작용"
+      },
+      "materialFusion": {
+        "contrast": "색상 주파수 튜너(게임 내 상태 관리)와 연쇄 기폭 장치(전략적 플레이 조작 시스템)",
+        "causalBridge": "색상 변환 범위와 충전 속도의 상호작용이 실제 상태 변화로 나타나며, 연쇄 폭발의 강도와 크기를 결정함",
+        "removalConsequence": "보조 장르 제거 시 게임 규칙과 위험 패턴이 바뀌어야 하며, 캐릭터·역사·철학 등으로 구성된 소재가 실질적 인과 변화를 줄 수 있음"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 색채 노드 선택 및 체인 활성화",
+        "characterConflict": "연쇄 폭발의 파급 효과와 보상 획득을 통해 플레이어 역할과 세계 상태 변화의 갈등 발생",
+        "playerChoice": "색상 변환 범위와 충전 속도에 대한 전술적 선택",
+        "worldChange": "장애물 제거 및 새로운 색상 주파수와 복합 장애물 패턴의 도입",
+        "nextEvent": "상위 구역 진입 및 더 복잡한 색상 주파수와 장애물 패턴의 등장"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 726152,
-      "lastMs": 82920,
+      "totalMs": 859587,
+      "lastMs": 133435,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:44:39.313Z"
+      "updatedAt": "2026-10-10T10:46:52.750Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:32:32.938Z",
-  "updatedAt": "2026-10-10T10:44:39.313Z",
+  "updatedAt": "2026-10-10T10:46:52.751Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1326,7 +1378,7 @@
     "0261e09bff40c0423ac75a40a4f4a375f6308669b5c590a537a339a8f242f258": true,
     "612beff329ff030ab7247757467ab51b261903290169fb3053cb1733d66d129a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:44:39.313Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:46:52.751Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
