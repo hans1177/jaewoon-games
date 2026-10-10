@@ -342,7 +342,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const worldWords=String(biome+' '+climate).toUpperCase(),buildingWords=String(buildingStyle).toUpperCase();
   // 사용자가 옵션을 설정할 필요 없이 승인된 세계관·지리·건축 정보를 읽어 자동 선택한다.
   const inferredEra=/HYBRID|MIXED|COMPOSITE|복합/.test(buildingWords)?'HYBRID'
-    :/FUTURE|SCI.?FI|CYBER|SPACE|미래/.test(buildingWords)?'FUTURE'
+    :/FUTURE|FUTURIST|SCI.?FI|CYBER|SPACE|미래/.test(buildingWords)?'FUTURE'
     :/MODERN|URBAN|CONTEMPORARY|현대/.test(buildingWords)?'MODERN'
     :/ANCIENT|ROMAN|GREEK|EGYPT|고대/.test(buildingWords)?'ANCIENT'
     :/MEDIEVAL|CASTLE|FEUDAL|GOTHIC|중세/.test(buildingWords)?'MEDIEVAL':'LOCAL';
