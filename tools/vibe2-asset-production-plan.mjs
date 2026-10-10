@@ -2324,6 +2324,10 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai':modelRequested?'object':'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
+  const cinematicStyle=clean(task.assetAuthoring?.cinematicStyle||'studio').toLowerCase();
+  const cinematicQuality=clean(task.assetAuthoring?.cinematicQuality||'preview').toLowerCase();
+  if(!['studio','dramatic'].includes(cinematicStyle))throw new Error('VIBE_CINEMATIC_STYLE_UNSUPPORTED');
+  if(!['preview','high'].includes(cinematicQuality))throw new Error('VIBE_CINEMATIC_QUALITY_UNSUPPORTED');
   if(!['auto','triposr','trellis2'].includes(meshModel))throw new Error('IMAGE_TO_MESH_MODEL_UNSUPPORTED:'+meshModel);
   if(meshModel!=='auto'&&!imageRequested)throw new Error('IMAGE_TO_MESH_MODEL_REQUIRES_INPUT_IMAGE');
   if(module==='auto'&&!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
@@ -2387,7 +2391,9 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
     family,license:resolvedLicense,module:modelModule,
-    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',sourceImage:imageRequested?sourceImage:null,
+    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',
+    cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
+    cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
     sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,
     sourceLicense:(imageRequested||modelRequested)?sourceLicense:null,sourceCredit,
     executor:'BLENDER_PYTHON',
@@ -2403,7 +2409,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
       ...(module==='object'?['--object-kind',objectKind]:[]),
-      ...(['animation','video'].includes(module)?['--motion-kind',clean(task.assetAuthoring?.motionKind).toLowerCase()||'sway']:[])],
+      ...(['animation','video'].includes(module)?['--motion-kind',clean(task.assetAuthoring?.motionKind).toLowerCase()||'sway',
+        '--cinematic-style',cinematicStyle,'--cinematic-quality',cinematicQuality]:[])],
     outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,
       `${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,
       `${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
