@@ -4475,7 +4475,7 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
   corner(nav,theme.Corner)
   local layout=commonList(nav,true,6)
   local screen=Instance.new("Frame")
-  screen.Name="GameScreenMount";screen.BackgroundTransparency=1;screen.ClipsDescendants=true;screen.Parent=body
+  screen.Name="GameScreenMount";screen.BackgroundTransparency=1;screen.ClipsDescendants=false;screen.Parent=body
   local title=commonText(screen,"EmptyScreen","게임에서 연결한 화면이 없어.",
     UDim2.fromOffset(12,12),UDim2.new(1,-24,0,52),theme.MutedText,14,false)
 
@@ -4554,6 +4554,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
       nav.ScrollingDirection=Enum.ScrollingDirection.X
       nav.AutomaticCanvasSize=Enum.AutomaticSize.X
       layout.FillDirection=Enum.FillDirection.Horizontal
+      layout.VerticalAlignment=Enum.VerticalAlignment.Center
+      layout.HorizontalAlignment=Enum.HorizontalAlignment.Left
       screen.Position=UDim2.fromOffset(0,60);screen.Size=UDim2.new(1,0,1,-142-math.max(0,tonumber(options.safeBottom)or 0))
       for _,button in ipairs(menuButtons)do button.Size=UDim2.fromOffset(116,52)end
     else
@@ -4561,6 +4563,7 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
       nav.ScrollingDirection=Enum.ScrollingDirection.Y
       nav.AutomaticCanvasSize=Enum.AutomaticSize.Y
       layout.FillDirection=Enum.FillDirection.Vertical
+      layout.VerticalAlignment=Enum.VerticalAlignment.Top
       screen.Position=UDim2.fromOffset(214,60);screen.Size=UDim2.new(1,-214,1,-60)
       for _,button in ipairs(menuButtons)do button.Size=UDim2.new(1,-8,0,52)end
     end
