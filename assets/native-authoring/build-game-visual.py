@@ -774,7 +774,7 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'sourceMesh':SOURCE_PROVENANCE,
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
-if not ASSET_ARMATURES:
+if not ASSET_ARMATURES and not MOTION_CLIPS:
     application['optimization']={'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb',
         'originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,
         'deploymentBytes':glb.stat().st_size,'byteMeasurementScope':'SELECTED_GLB_PAYLOAD_ONLY',
@@ -839,7 +839,11 @@ for source,destination in [(master,preview_master),(glb,preview)]:
 before_pixels,after_pixels=rendered_pixels
 if not before_pixels or len(before_pixels)!=len(after_pixels): raise RuntimeError('OPTIMIZATION_RENDER_COMPARISON_MISSING')
 max_pixel_error=max(abs(a-b) for a,b in zip(before_pixels,after_pixels))
-application['optimization']['previewComparison']={'method':'REIMPORTED_GLB_SAME_CAMERA_RGBA','before':'preview-master.png','after':'preview.png','maxPixelError':max_pixel_error,'sampleCount':len(after_pixels)}
+render_comparison={'method':'REIMPORTED_GLB_SAME_CAMERA_RGBA','before':'preview-master.png','after':'preview.png','maxPixelError':max_pixel_error,'sampleCount':len(after_pixels)}
+if 'optimization' in application:
+    application['optimization']['previewComparison']=render_comparison
+else:
+    application['visualComparison']=render_comparison
 if max_pixel_error>1e-5: raise RuntimeError('LOSSLESS_OPTIMIZATION_CHANGED_RENDER')
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
@@ -868,6 +872,56 @@ if MODULE_PROVENANCE:
         for obj in imported:
             bpy.data.objects.remove(obj, do_unlink=True)
 
+# 영상: Blender로 실제 생성한 연속 프레임을 별도 FFmpeg 프로세스로 MP4로 인코딩한다.
+# 영상과 NLA/키프레임은 모두 시각 연출이다. 게임 플랫폼의 런타임 애니 QA로 승격하지 않는다.
+VIDEO_EXPORT = None
+if ARGS.module in ('video','animation'):
+    output_video=ARGS.output/'preview-motion.mp4'
+    old_resolution=(SCENE.render.resolution_x,SCENE.render.resolution_y)
+    old_frame=SCENE.frame_current
+    old_camera=Vector(cam.location)
+    existing=set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    imported=[obj for obj in bpy.data.objects if obj not in existing]
+    try:
+        SCENE.render.resolution_x=320
+        SCENE.render.resolution_y=320
+        with tempfile.TemporaryDirectory(prefix='vibe-video-frames-') as video_work:
+            frames_dir=Path(video_work)
+            for idx in range(24):
+                frame=idx+1
+                SCENE.frame_set(frame)
+                angle=(idx/24)*math.tau
+                cam.location=target+Vector((2.0*math.cos(angle),2.0*math.sin(angle),1.3))*max(BOUNDS_SIZE)
+                cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
+                SCENE.render.filepath=str(frames_dir/f'frame-{idx:03d}.png')
+                bpy.ops.render.render(write_still=True)
+                if not Path(SCENE.render.filepath).is_file():
+                    raise RuntimeError('VIDEO_BLENDER_FRAME_RENDER_MISSING')
+            ffmpeg=os.environ.get('VIBE_FFMPEG_BINARY','ffmpeg')
+            command=[ffmpeg,'-hide_banner','-loglevel','error','-nostdin','-y',
+                     '-framerate','12','-i',str(frames_dir/'frame-%03d.png'),
+                     '-frames:v','24','-c:v','mpeg4','-qscale:v','4',
+                     '-pix_fmt','yuv420p','-movflags','+faststart',str(output_video)]
+            try:
+                subprocess.run(command,check=True,stdout=subprocess.DEVNULL,
+                               stderr=subprocess.PIPE,timeout=45)
+            except (OSError,subprocess.CalledProcessError,subprocess.TimeoutExpired) as exc:
+                raise RuntimeError('VIDEO_FFMPEG_ENCODER_EXECUTION_FAILED') from exc
+        if not output_video.is_file() or output_video.stat().st_size<1024:
+            raise RuntimeError('VIDEO_FFMPEG_MP4_OUTPUT_MISSING')
+        VIDEO_EXPORT={'source':'https://ffmpeg.org','license':'LGPL-2.1-or-later-or-GPL-depending-on-build',
+            'path':'preview-motion.mp4','sha256':hashlib.sha256(output_video.read_bytes()).hexdigest(),
+            'frames':24,'fps':12,'resolution':[320,320],
+            'format':'MP4','codec':'MPEG4','sourceGlbSha256':hashlib.sha256(glb.read_bytes()).hexdigest(),
+            'motionClips':MOTION_CLIPS,'actualFramesRendered':True,'runtimeVerified':False}
+    finally:
+        SCENE.render.resolution_x,SCENE.render.resolution_y=old_resolution
+        SCENE.frame_set(old_frame)
+        cam.location=old_camera
+        cam.rotation_euler=(target-cam.location).to_track_quat('-Z','Y').to_euler()
+        for obj in imported:bpy.data.objects.remove(obj,do_unlink=True)
+
 source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 artifact_hash=hashlib.sha256(glb.read_bytes()).hexdigest()
 preview_hash=hashlib.sha256(preview.read_bytes()).hexdigest()
@@ -894,6 +948,8 @@ evidence={
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
     'multiViewPreview':IMAGE_VIEW_OUTPUTS,
+    'videoExport':VIDEO_EXPORT,
+    'motionClips':MOTION_CLIPS,
     'targetPlatforms':[ARGS.target.upper()],
     'runtimeVerificationState':'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
     'productionVerified':False,
@@ -901,7 +957,7 @@ evidence={
     'meshObjectCount':len(ASSET_OBJECTS),
     'surfaceDistribution':physical_analysis,
     **({'optimization':application['optimization']} if 'optimization' in application else {}),
-    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS]
+    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS,*(['preview-motion.mp4'] if VIDEO_EXPORT else [])]
 }
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('VIBE_NATIVE_GAME_ASSET='+ARGS.asset_id)
