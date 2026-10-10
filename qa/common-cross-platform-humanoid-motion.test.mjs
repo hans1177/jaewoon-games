@@ -259,3 +259,28 @@ test('shared 3D master generator reproduces role models and preserves the origin
     }
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('portable shared actor action masters have real animated joints',()=>{
+ const rootCatalog=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+ const families={humanoid:['traveler','guardian','samurai','archer','mage','rogue','lancer','blacksmith'],creature:['wolf','spider','beetle','golem','serpent']};
+ let newClips=0;
+ for(const [family,roles] of Object.entries(families))for(const role of roles){
+  const file='assets/shared/'+family+'-'+role+'-actions.glb',bytes=fs.readFileSync(path.join(root,file));
+  const original=glbJson(fs.readFileSync(path.join(root,'assets/shared',family+'-'+role+'.glb')));
+  const derived=glbJson(bytes),entry=rootCatalog.assets.find(row=>row.id==='shared-'+family+'-'+role+'-actions');
+  assert.ok(entry,role);
+  assert.equal(derived.animations.length,original.animations.length+8,role);
+  assert.deepEqual(derived.meshes,original.meshes,role);
+  assert.deepEqual(derived.skins,original.skins,role);
+  assert.ok(derived.meshes[0].primitives.some(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined));
+  const joints=new Set(derived.skins[0].joints);
+  for(const clip of derived.animations.slice(-8))
+   assert.ok(clip.channels.filter(ch=>ch.target.path==='rotation'&&joints.has(ch.target.node)).length>=12,clip.name);
+  assert.equal(entry.nativeRuntimeVerified,false,role);
+  assert.equal(entry.productionVerified,false,role);
+  assert.equal(entry.masterGlbStaticQaPass,false,role);
+  assert.equal(createHash('sha1').update('blob '+bytes.length+'\\0').update(bytes).digest('hex'),entry.masterGlbGitBlobSha,role);
+  newClips+=8;
+ }
+ assert.equal(newClips,104);
+});
