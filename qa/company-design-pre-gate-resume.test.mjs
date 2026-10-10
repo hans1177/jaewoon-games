@@ -274,7 +274,9 @@ test('designer starts from owner identity without treating legacy MAIN-only desi
     assert.equal(input.seed.originalDesignContext,undefined,'incomplete legacy creative design must not be copied as canonical');
     assert.notEqual(input.seed.REUSE_PRIOR_DESIGN_BASELINE,true);
     assert.equal(input.seed.MULTIPLAYER_DESIGN_MODE,'SINGLE','intake mode is provisional until source-grounded designer authors multiplayer');
-    assert.equal(input.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
+    assert.equal(input.seed.GAMEPLAY_SKETCH.version,5);
+    assert.ok(input.seed.GAMEPLAY_SKETCH.novelGameGrammar?.gameplaySystemFusion);
+    assert.equal(input.seed.novelGrammarBackfill.authoringPending,true);
     assert.match(input.seed.GAMEPLAY_SKETCH.source,/NOT_AUTHORED_DESIGN/);
     assert.equal(input.seed.seedAuthoring.externalSeedRequired,false);
     assert.equal(resolve({state,gameId:'demo',catalog,root}).created,false);
