@@ -97,25 +97,48 @@
       },
       "playerFantasy": "플레이어는 곤충의 웨이브를 읽고, 위협을 예측하며, 방어선을 조정하고, 경제적 가치에 따라 다음 전략을 선택하는 게임입니다.",
       "coreFun": "defender_placement_adjustment → resource_allocation_state_change → new_defensive_strategy"
+    },
+    "local_authoring_parts::b4e33a56aeaa940e327d36ffcfd228e146f46c46d846ae9947348d01a257be8f:coreLoop": {
+      "coreLoop": [
+        "입력: 곤충 웨이브 및 위협 패턴 읽기",
+        "선택: 방어선 재배치 및 최대한 경제적 가치에 맞춘 자원 배분",
+        "상태변화: 방어선 위치 변경, 자원 소비 증가",
+        "보상/위험: 성공 또는 실패, 다음 선택 기반의 전략 결정"
+      ]
+    },
+    "local_authoring_parts::a2e3aa33d39ed132f78790390d571edb2e60ab6fc88e4b2d07d46b03788fed2e:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "incoming_insect_wave_pattern",
+        "resource_allocation_state"
+      ],
+      "stateOutputs": [
+        "defender_placement_adjustment",
+        "next_defense_decision_making"
+      ],
+      "name": "Main Roadmap",
+      "purpose": "Establish the core gameplay strategy for defending against insect waves, with a focus on adaptive resource allocation and strategic placement of defenders.",
+      "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 135492,
-      "lastMs": 135492,
+      "totalMs": 171896,
+      "lastMs": 12862,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:41:01.250Z"
+      "updatedAt": "2026-10-10T10:41:37.657Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:41:01.250Z",
+  "updatedAt": "2026-10-10T10:41:37.657Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1803,7 +1826,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:41:01.250Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:41:37.657Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
