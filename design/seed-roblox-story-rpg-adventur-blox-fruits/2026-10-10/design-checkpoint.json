@@ -104,25 +104,41 @@
         "Players work together to clear objectives, face hidden threats, and manage resource scarcity through strategic play.",
         "Each player's choice alters the board layout, increases risk, and provides rewards; this changes how subsequent players interact with the environment and make decisions."
       ]
+    },
+    "local_authoring_parts::c5ab5a385f06e526ec1d68db49049b19c91fa32ace413a99807a4f3f6d242fab:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_boards_player_choice",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "player_selection",
+        "board_layout"
+      ],
+      "stateOutputs": [
+        "new_board_pattern",
+        "modified_rules",
+        "rewards_distribution"
+      ],
+      "name": "Board Player Choice System",
+      "purpose": "Enables players to influence the game's progression through strategic decisions.",
+      "playerChoice": "Players select an obstacle pattern, create combos, and receive immediate feedback to solve objectives in a cooperative setting."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 209607,
-      "lastMs": 34741,
+      "totalMs": 246789,
+      "lastMs": 37182,
       "lastError": null,
-      "updatedAt": "2026-10-10T07:14:50.875Z"
+      "updatedAt": "2026-10-10T07:15:28.058Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:11:21.030Z",
-  "updatedAt": "2026-10-10T07:14:50.875Z",
+  "updatedAt": "2026-10-10T07:15:28.058Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1718,7 +1734,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T07:14:50.875Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:15:28.058Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
