@@ -187,25 +187,32 @@
       },
       "playerFantasy": "인간은 감염된 인간으로서, 고유 도구·대시·정화로 생존하며, 몬스터는 명시적 감염 공격으로 인해 전환되는 전쟁 속에서 플레이어 선택에 따라 세계가 변모한다.",
       "coreFun": "감염 공격은 적중되면 인간이 몬스터로 전환되고, 정화는 몬스터를 라운드에서 제거한다. 이 과정에서 AI 충원은 빈자리를 채워 4대4 구조 유지에 필수적이며, 감염된 인간은 그 후에는 고유 감염 스킬로 옛 팀을 추격하는 방식으로 세계가 변모한다."
+    },
+    "local_authoring_parts::c8363ca181a414d87e4f605aa1287ac4d3e4e5460b041133c8cfea6b82677809:coreLoop": {
+      "coreLoop": [
+        "입력: 인물4/몬스터4 배치 및 AI 충원 -> 상태변화: 감염 공격과 전환 발생 -> 보상: 정화와 대시 증대 -> 다음 선택: 인간 또는 몬스터로 선택",
+        "입력: 감염 공격 적중 -> 상태변化: 인간 → 몬스터 전환 -> 보상: 고유 감염 스킬 획득 -> 다음 선택: 고유 스킬 사용",
+        "입력: 빈자리 관리 -> 상태변化: AI 충원 채워 4대4 구조 유지 -> 보상: 감염 전쟁 기반의 새로운 선택 가능 -> 다음 선택: AI 충원 활용"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 760675,
-      "lastMs": 245842,
+      "totalMs": 862714,
+      "lastMs": 102039,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:53:52.814Z"
+      "updatedAt": "2026-10-10T01:55:34.856Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:41:12.115Z",
-  "updatedAt": "2026-10-10T01:53:52.815Z",
+  "updatedAt": "2026-10-10T01:55:34.856Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1810,7 +1817,7 @@
   "localAuthoringSplits": {
     "39611f6de9f13432a720e8014c1730a38b7b91df650874386676992f1292c420": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:53:52.815Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:55:34.856Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
