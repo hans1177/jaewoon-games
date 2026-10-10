@@ -60,7 +60,9 @@ test('Unity Web C# code audit verifies two different authored systems through re
     ' public int RouteState; public int RiskState; public int ResourceState;',
     ' private string _message;',
     ' public void OnGUI(){ if(GUI.Button(new Rect(0,0,64,64),"Explore")) ExecuteAction(); }',
-    ' private void ExecuteAction(){ RiskState=RouteState+1; ResourceState=RiskState+5; _message="Reward acquired"; }',
+    ' private void ExecuteAction(){ RiskState=RouteState+1; ResourceState=RiskState+5; _message="Reward acquired"; '+
+    'Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=native-systems system=SOURCE_MAIN state=RiskState before="); '+
+    'Debug.Log("JAEWOON_UNITY_WEB_QA SYSTEM_STATE game=native-systems system=SOURCE_A state=ResourceState before="); }',
     ' public void Update(){ GUILayout.Label(ResourceState.ToString()); }',
     '}'
   ].join('\n');
@@ -153,6 +155,111 @@ test('Unity Web C# code audit verifies two different authored systems through re
     assert.equal(wrongEdges.pass,false);
     assert.ok(wrongEdges.edges[0].failures.includes('PRODUCER_OUTPUT_NOT_AUTHORED:ResourceState'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 회귀/변이 검증: 각 설계 핵심 시스템의 고유 C# 메서드가 실제 UI 입력에서
+// 호출돼야 하며, 타 시스템의 동일 상태 기록으로 대체되어서는 안 된다.
+// 정적 검증은 독립 브라우저 3회 결과 없이 절대로 최종 PASS가 되지 않는다.
+test('Daechung four design systems each own real C# input-to-state code; disconnect one to fail closed',()=>{
+  const originalRoot=path.resolve(new URL('../',import.meta.url).pathname);
+  const id='daechung-rpg';
+  const design={content:{signatureSystems:[
+    {id:'VIBE_MAIN',grammarRole:'MAIN',stateInputs:['WorldAccessState','IntentState'],
+      stateOutputs:['RouteState','WorldAccessState']},
+    {id:'VIBE_A',grammarRole:'A',stateInputs:['RouteState','RiskState'],
+      stateOutputs:['RiskState','ResourceState']},
+    {id:'VIBE_B',grammarRole:'B',stateInputs:['RiskState','ResourceState'],
+      stateOutputs:['RouteState','RiskState']},
+    {id:'VIBE_DELVE',grammarRole:'DELVE',stateInputs:['RouteState','RiskState'],
+      stateOutputs:['WorldAccessState','IntentState']}
+  ]}};
+  const inspect=root=>auditUnityWebNativeSystems({repoRoot:root,gameId:id,designRecord:design});
+  const source=inspect(originalRoot);
+  assert.equal(source.roles.length,4);
+  assert.equal(source.staticCoverageComplete,true,JSON.stringify(source.roles.map(
+    role=>({id:role.systemId,failures:role.failures,handlers:role.roleBoundNativeMethods}))));
+  assert.equal(source.pass,false,'C# source static coverage alone cannot prove a compiled WebGL playtest');
+  assert.equal(source.runtimeValid,false);
+  for(const role of source.roles){
+    assert.equal(role.staticComplete,true,role.systemId);
+    assert.ok(role.roleBoundNativeMethods.some(method=>method.symbol==='Record'+({
+      VIBE_MAIN:'WorldChoice',VIBE_A:'ConsequenceChoice',
+      VIBE_B:'ExplorationOutcome',VIBE_DELVE:'DelveOutcome'
+    })[role.systemId]),role.systemId);
+  }
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'daechung-system-role-mutation-'));
+  try{
+    const relative='unity-games/'+id+'/Assets/Scripts';
+    const nativeScripts=path.join(originalRoot,relative);
+    const copiedScripts=path.join(root,relative);
+    fs.mkdirSync(path.dirname(copiedScripts),{recursive:true});
+    fs.cpSync(nativeScripts,copiedScripts,{recursive:true});
+    const runtime=path.join(copiedScripts,'RuntimeBootstrap.cs');
+    const original=fs.readFileSync(runtime,'utf8');
+    for(const [role,call] of [
+      ['VIBE_MAIN','_core.RecordWorldChoice();'],
+      ['VIBE_A','_core.RecordConsequenceChoice();'],
+      ['VIBE_B','_core.RecordExplorationOutcome();'],
+      ['VIBE_DELVE','_core.RecordDelveOutcome();']
+    ]){
+      assert.ok(original.includes(call),call);
+      fs.writeFileSync(runtime,original.replace(call,''));
+      const mutated=inspect(root);
+      assert.equal(mutated.staticCoverageComplete,false,'mutation of '+role+' must block static acceptance');
+      assert.equal(mutated.roles.find(row=>row.systemId===role).staticComplete,false);
+      assert.ok(mutated.roles.find(row=>row.systemId===role).failures.some(
+        reason=>reason.startsWith('DESIGN_SYSTEM_OWN_NATIVE_INPUT_STATE_HANDLER_MISSING')
+          ||reason.startsWith('PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE')),
+        role);
+      fs.writeFileSync(runtime,original);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 3D 검증은 출력 문구가 아닌 Unity MeshFilter 및 실제 OBJ 임포트만 대상으로 한다.
+// 이 정적 회귀 테스트 통과만으로 실제 WebGL 장면 검증을 통과 처리하지 않는다.
+test('Daechung Unity Web canonical actors use imported 3D OBJ not active SpriteRenderer gameplay',()=>{
+  const root=path.resolve(new URL('../',import.meta.url).pathname);
+  const models=['torso_cloth','head_canine','shoulder_light','boar',
+    'flamefox','leafturtle','hornbull','rockgator','stormeagle'];
+  const directory=path.join(root,'unity-games/daechung-rpg/Assets/Art/Resources/DaechungModels');
+  for(const model of models){
+    const file=path.join(directory,model+'.obj');
+    assert.ok(fs.existsSync(file),'missing original Unity-importable 3D OBJ: '+model);
+    assert.ok(fs.statSync(file).size>300,'empty or placeholder source mesh: '+model);
+    // 원본 3D 모델을 단순 문자열/평면/가짜 면 데이터로 바꾸면 정적 검사부터 차단한다.
+    const lines=fs.readFileSync(file,'utf8').split(/\r?\n/);
+    const vertices=lines.filter(line=>/^v\s+/.test(line))
+      .map(line=>line.trim().split(/\s+/).slice(1,4).map(Number));
+    const faces=lines.filter(line=>/^f\s+/.test(line));
+    assert.ok(vertices.length>8&&faces.length>8,'missing native mesh geometry: '+model);
+    assert.ok(vertices.every(vertex=>vertex.length===3&&vertex.every(Number.isFinite)),
+      'invalid 3D source vertices: '+model);
+    const bounds=[0,1,2].map(axis=>{
+      const values=vertices.map(vertex=>vertex[axis]);
+      return Math.max(...values)-Math.min(...values);
+    });
+    assert.ok(bounds.every(value=>value>0.02),'flat or degenerate 3D source: '+model);
+    for(const face of faces){
+      const indices=face.trim().split(/\s+/).slice(1).map(value=>Number(value.split('/')[0]));
+      assert.ok(indices.length>=3&&indices.every(index=>Number.isInteger(index)
+        &&index>=1&&index<=vertices.length),'invalid 3D faces: '+model);
+    }
+  }
+  const visual=fs.readFileSync(path.join(root,
+    'unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs'),'utf8');
+  assert.doesNotMatch(visual,/AddComponent<SpriteRenderer>\s*\(/);
+  assert.match(visual,/Resources\.Load<GameObject>\("DaechungModels\/" \+ modelId\)/);
+  assert.match(visual,/GetComponentsInChildren<MeshFilter>/);
+  assert.match(visual,/worldMeshes3d >= 2 && worldDepthCm >= 50/);
+  assert.match(visual,/spriteGameplayActors == 0/);
+  assert.match(visual,/SPATIAL_DEPTH game=daechung-rpg/);
+  assert.match(visual,/NativeMeshReady/);
+  // 원격 픽셀 시트가 로드되더라도 네이티브 3D 임포트 실패가 PASS로 뒤집히면 안 된다.
+  assert.doesNotMatch(visual,/^\s*_ready\s*=\s*true;\s*$/m);
+  assert.match(visual,/if \(!_enemy\.NativeMeshReady\)/);
+  assert.match(visual,/if \(!_ready \|\| !_player\.NativeMeshReady \|\| !_enemy\.NativeMeshReady/);
+  assert.match(visual,/REPAIR_REQUIRED · NATIVE 3D MODEL/);
 });
 
 test('Unity Web full precision gate refuses fake state transitions and requires a distinct replay after reload',()=>{

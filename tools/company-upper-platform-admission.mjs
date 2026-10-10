@@ -302,7 +302,10 @@ export function auditUnityWebNativeSystems({
       if(end<0){problems.push('C_SHARP_UNBALANCED_METHOD_BLOCK:'+file);continue;}
       const body=text.slice(start+1,end);
       const line=1+text.slice(0,start).split('\n').length-1;
-      declarations.push({id:file+'#'+name+'@'+line,file,name,body,line});
+      // 메서드별 원본 리터럴은 설계 역할/상태 증거 바인딩에만 사용한다.
+      // C# 읽기·쓰기 판정은 주석과 문자열을 제거한 body로 유지한다.
+      const rawBody=files.find(row=>row.file===file).text.slice(start+1,end);
+      declarations.push({id:file+'#'+name+'@'+line,file,name,body,rawBody,line});
       bodySpans.push([m.index,end+1]);
     }
     const outside=text.split('');
@@ -359,7 +362,7 @@ export function auditUnityWebNativeSystems({
   const inputEntrypoints=[...clickable].filter(ref=>callbackReachable.has(ref));
   const eventReachable=bfs(inputEntrypoints);
   const callbackMethods=methods.filter(row=>callbackReachable.has(row.id));
-  const outputPat=key=>new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%-]?=(?!=))','g');
+  const outputPat=key=>new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%|&^-]?=(?!=))','g');
   const readPat=key=>new RegExp('\\b'+key+'\\b');
   const noOpAssignment=key=>new RegExp('\\b'+key+'\\s*=\\s*(?:this\\.)?'+key+'\\s*;','g');
   const stateMethods=(key,kind)=>{
@@ -407,9 +410,19 @@ export function auditUnityWebNativeSystems({
     const outputKeys=[...new Set((system.stateOutputs||[]).map(clean).filter(Boolean))];
     const missingDeclaration=[...new Set([...inputKeys,...outputKeys])]
       .filter(key=>!declaredStateNames.has(key));
-    const inputs=inputKeys.map(key=>({key,owners:stateMethods(key,'READ')}));
+    // 각 설계 시스템은 자기 역할의 C# 메서드 안에서 입력 상태를 실제로 읽고
+    // 출력 상태를 실제로 기록해야 한다. 다른 시스템의 우연한 동일 상태 쓰기/로그로
+    // 역할별 구현을 통과시키는 교차 역할 오탐을 금지한다.
+    const roleMethods=methods.filter(method=>eventReachable.has(method.id)
+      &&method.rawBody.includes('JAEWOON_UNITY_WEB_QA SYSTEM_STATE game='+id+' system='+systemId+' state='));
+    const roleMethodIds=new Set(roleMethods.map(method=>method.id));
+    const inputs=inputKeys.map(key=>({key,owners:stateMethods(key,'READ')
+      .filter(owner=>roleMethodIds.has(owner.id))}));
     const outputs=outputKeys.map(key=>({
-      key,writers:stateMethods(key,'WRITE'),
+      key,writers:stateMethods(key,'WRITE').filter(writer=>
+        roleMethodIds.has(writer.id)&&roleMethods.some(method=>
+          method.id===writer.id&&method.rawBody.includes(
+            'JAEWOON_UNITY_WEB_QA SYSTEM_STATE game='+id+' system='+systemId+' state='+key+' before='))),
       runtimeObserved:commonTransitions.includes(systemId+'|'+key)
     }));
     const missingInputReads=inputs.filter(x=>!x.owners.length).map(x=>x.key);
@@ -419,12 +432,13 @@ export function auditUnityWebNativeSystems({
       feedback.has(w.id)||callbackMethods.some(m=>feedback.has(m.id)
         &&new RegExp('\\b'+x.key+'\\b').test(m.body))));
     const authored=Boolean(systemId&&role&&inputKeys.length&&outputKeys.length);
-    const staticComplete=authored&&missingDeclaration.length===0
+    const staticComplete=authored&&roleMethods.length>0&&missingDeclaration.length===0
       &&missingInputReads.length===0&&missingEventDrivenWrites.length===0
       &&hasPlayerFeedback&&inputEntrypoints.length>0;
     const runtimeComplete=staticComplete&&runtimeValid&&missingNativeRuntimeTransitions.length===0;
     const failures=[
       ...(!authored?['DESIGN_ROLE_STATE_CONTRACT_INCOMPLETE']:[]),
+      ...(!roleMethods.length?['DESIGN_SYSTEM_OWN_NATIVE_INPUT_STATE_HANDLER_MISSING']:[]),
       ...missingDeclaration.map(key=>'NATIVE_FIELD_OR_PROPERTY_MISSING:'+key),
       ...missingInputReads.map(key=>'LIVE_CODE_STATE_READ_UNREACHABLE:'+key),
       ...missingEventDrivenWrites.map(key=>'PLAYER_INPUT_TO_STATE_WRITE_UNREACHABLE:'+key),
@@ -435,6 +449,7 @@ export function auditUnityWebNativeSystems({
     ];
     return{
       systemId,role,staticComplete,runtimeComplete,failures,
+      roleBoundNativeMethods:roleMethods.map(({file,name,line})=>({file,symbol:name,line})),
       declaredInputKeys:inputKeys,declaredOutputKeys:outputKeys,
       foundNativeStateDeclarationKeys:[...new Set([...inputKeys,...outputKeys])]
         .filter(key=>declaredStateNames.has(key)),
