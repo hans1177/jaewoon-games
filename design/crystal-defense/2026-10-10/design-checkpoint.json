@@ -195,25 +195,40 @@
         "양방향 실제 상태 교환, 보조 장르 제거 시 플레이 변경",
         "중후반 두 시스템 간 관계 변화가 실제로 일어남"
       ]
+    },
+    "local_authoring_parts::1cd65a45bae56f7b706f1fd00a4a9d98e2791b27195d7a32be3e504f456f56a6:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "입력/선택",
+        "플레이어 선택"
+      ],
+      "stateOutputs": [
+        "세계 상태 변화",
+        "다음 선택"
+      ],
+      "name": "방어 전략 및 배치 시스템",
+      "purpose": "플레이어 선택 → 세계 상태 변화 → 다음 선택의 순환적 연결",
+      "playerChoice": "플레이어 선택은 실제 세계 상태 변화와 직접적으로 연결되어야 함입니다। 이 선택은 방어 전략의 구성 요소로 작용하며, 빌드 선택과 배치 조합에 따라 세계 상태 변화가 발생합니다。 게임 정체성은 주된 방어 전략과 빌드 선택을 통해 구축되고, 보조 장르는 그 선택에 실질적 인과 변화를 줘야 합니다。 중후반 두 시스템 간 관계 변화가 실제로 일어남니다。 모든 플레이어 선택이 순환적 연결을 형성하여 실제 플레이를 바꿉니다。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 669591,
-      "lastMs": 92762,
+      "totalMs": 777571,
+      "lastMs": 107980,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:20:23.944Z"
+      "updatedAt": "2026-10-10T02:22:11.926Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:09:14.328Z",
-  "updatedAt": "2026-10-10T02:20:23.944Z",
+  "updatedAt": "2026-10-10T02:22:11.926Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1918,7 +1933,7 @@
   "localAuthoringSplits": {
     "bfd973430fcafc5e7c4c0e65ae7a104f5871971047a55be32c2ef3e9a13ab04b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:20:23.944Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:22:11.926Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
