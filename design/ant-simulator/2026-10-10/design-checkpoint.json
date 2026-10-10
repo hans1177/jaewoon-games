@@ -3,263 +3,31 @@
   "gameId": "ant-simulator",
   "date": "2026-10-10",
   "seedId": "AUTO-MISSING-DESIGN-ANT-SIMULATOR",
-  "fingerprint": "f19e97c466f79e2cfb479484d429fb3e2e010bcaed05fd2167af5fb84863f1d8",
+  "fingerprint": "73ee7938a7e2fb823f86ef3b1b15d248b3eed33215e40652f2d1f955cfa17d5c",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea:identity,creativeGrammar": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
-      "creativeGrammar": {
-        "mainIdentity": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-        "a": {
-          "system": "OPENWORLD_SIMULATION",
-          "material": "현실적인 월드 상태, 대상/공간 선택, 위험/보상 예측 기반의 실제 입력 및 결과 변환 시스템",
-          "materialDomain": "OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION",
-          "stateChange": "월드 상태, 대상, 자원, 위험, 진행 상태 변화"
-        },
-        "b": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "플레이어의 선택에 따른 반응, 즉각적 결과, 다음 목표 결정, 새로운 전략 생성",
-          "materialDomain": "ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY",
-          "stateChange": "선택, 보상, 위험, 다음 목표, 전략 선택"
-        },
-        "abCausality": "주기적으로 발생하는 플레이어 선택과 월드 상태 변화는 서로 영향을 주며, A→B와 B→A 양방향으로 이어지게 설계됨",
-        "abEvolution": {
-          "aChangesB": "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다",
-          "bChangesA": "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
-          "lateGameChange": "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦"
-        },
-        "materialFusion": {
-          "contrast": "개미 시뮬레이터의 실제 입력은 월드 상태에 직접 반응하며, 결과는 즉각적이고 명확함",
-          "causalBridge": "플레이어의 선택은 월드 상태와 보상/위험 사이에서 일관된 인과 관계를 형성함",
-          "removalConsequence": "플레이어의 선택이 월드 상태 변화를 유도할 때, 다음 선택은 그 변화에 따라 결정되며, 이 과정은 계속적으로 진행됨"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 특정 대상을 선택하는 행위",
-          "characterConflict": "월드 상태 변화에 따른 플레이어-월드 갈등",
-          "playerChoice": "플레이어가 새로운 전략을 선택하는 행동",
-          "worldChange": "월드 상태 변화 및 새로운 목표 생성",
-          "nextEvent": "플레이어가 새 목표를 설정하고, 이를 바탕으로 새로운 상호작용과 전략을 선택하는 과정"
-        },
-        "cThemes": [
-          {
-            "name": "생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 선택에 따른 월드 상태 변화"
-          },
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 선택에 따른 반응과 새로운 전략 생성"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION",
-            "gameplayEffect": "월드 상태와 보상/위험 사이의 인과 관계 형성"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY",
-            "gameplayEffect": "플레이어의 선택에 따른 반응과 다음 선택 결정"
-          }
-        ],
-        "cGenreInterlock": "주기적으로 발생하는 플레이어 선택은 월드 상태 변화에 영향을 미치며, 이는 주제별로 서로 다른 메인 및 보조 장르에서 일관된 인과 관계를 형성함",
-        "cWorldAndGameplayEffect": "플레이어의 선택이 월드 상태를 재구성하여 새로운 게임 루프를 형성하며, 이 과정은 계속적으로 진행됨",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다",
-            "discovery": "플레이어의 선택이 월드 상태 변화에 영향을 미침",
-            "newChoice": "새로운 전략 생성으로 인한 새로운 상호작용"
-          },
-          {
-            "clue": "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
-            "discovery": "플레이어의 선택이 월드 상태 변화에 영향을 미침",
-            "newChoice": "새로운 대상 및 목표 생성으로 인한 새로운 상호작용"
-          },
-          {
-            "clue": "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦",
-            "discovery": "플레이어의 선택이 월드 상태를 재구성함",
-            "newChoice": "새로운 게임 루프 형성이 주된 결과"
-          },
-          {
-            "clue": "플레이어의 선택은 월드 상태와 보상/위험 사이에서 일관된 인과 관계를 형성하며, 이는 계속적으로 진행됨",
-            "discovery": "플레이어의 선택이 월드 상태와 보상/위험 사이의 인과 관계를 형성함",
-            "newChoice": "플레이어의 선택이 월드 상태와 보상/위험 사이의 인과 관계를 형성함"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 선택이 월드 상태를 재구성하여 새로운 게임 루프를 형성하며, 이 과정은 계속적으로 진행됨",
-        "finalGameIdentity": "플레이어의 선택이 월드 상태를 재구성하여 새로운 게임 루프를 형성하는 단순한 시뮬레이션으로 정체화"
-      }
-    },
-    "local_authoring_parts::2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea:playerFantasy,coreFun": {
-      "playerFantasy": "개미 시뮬레이터에서 플레이어는 세 개 미종족 중 하나를 골라, 거대한 정원을 탐험하며 굴을 지켜야 한다. 이는 생존, 전략, 위험의 중심에 위치한 오픈월드 멀티플레이 게임이다.",
-      "coreFun": "{\n \"mainIdentity\": \"개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다\",\n \"a\": {\n \"system\": \"OPENWORLD_SIMULATION\",\n \"material\": \"현실적인 월드 상태, 대상/공간 선택, 위험/보상 예측 기반의 실제 입력 및 결과 변환 시스템\",\n \"materialDomain\": \"OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION\",\n \"stateChange\": \"월드 상태, 대상, 자원, 위험, 진행 상태 변화\"\n },\n \"b\": {\n \"system\": \"ACTION_SURVIVAL_ROGUELITE\",\n \"material\": \"플레이어의 선택에 따른 반응, 즉각적 결과, 다음 목표 결정, 새로운 전략 생성\",\n \"materialDomain\": \"ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY\",\n \"stateChange\": \"선택, 보상, 위험, 다음 목표, 전략 선택\"\n },\n \"abCausality\": \"주기적으로 발생하는 플레이어 선택과 월드 상태 변화는 서로 영향을 주며, A→B와 B→A 양방향으로 이어지게 설계됨\",\n \"abEvolution\": {\n \"aChangesB\": \"플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다\",\n \"bChangesA\": \"플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다\",\n \"lateGameChange\": \"플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦\"\n },\n \"materialFusion\": {\n \""
-    },
-    "local_authoring_parts::82158f68606a3a0ead3aee15222d1fa58e92e6e3fcb09603bf04965055004c37:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
-      "creativeGrammar": {
-        "mainIdentity": "개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-        "a": {
-          "system": "OPENWORLD_SIMULATION",
-          "material": "현실적인 월드 상태, 대상/공간 선택, 위험/보상 예측 기반의 실제 입력 및 결과 변환 시스템",
-          "materialDomain": "OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION",
-          "stateChange": "월드 상태, 대상, 자원, 위험, 진행 상태 변화"
-        },
-        "b": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "플레이어의 선택에 따른 반응, 즉각적 결과, 다음 목표 결정, 새로운 전략 생성",
-          "materialDomain": "ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY",
-          "stateChange": "선택, 보상, 위험, 다음 목표, 전략 선택"
-        },
-        "abCausality": "주기적으로 발생하는 플레이어 선택과 월드 상태 변화는 서로 영향을 주며, A→B와 B→A 양방향으로 이어지게 설계됨",
-        "abEvolution": {
-          "aChangesB": "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다",
-          "bChangesA": "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
-          "lateGameChange": "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦"
-        },
-        "materialFusion": {
-          "contrast": "개미 시뮬레이터의 실제 입력은 월드 상태에 직접 반응하며, 결과는 즉각적이고 명확함",
-          "causalBridge": "플레이어의 선택은 월드 상태와 보상/위험 사이에서 일관된 인과 관계를 형성함",
-          "removalConsequence": "플레이어의 선택이 월드 상태 변화를 유도할 때, 다음 선택은 그 변화에 따라 결정되며, 이 과정은 계속적으로 진행됨"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어가 특정 대상을 선택하는 행위",
-          "characterConflict": "월드 상태 변화에 따른 플레이어-월드 갈등",
-          "playerChoice": "플레이어가 새로운 전략을 선택하는 행동",
-          "worldChange": "월드 상태 변화 및 새로운 목표 생성",
-          "nextEvent": "플레이어가 새 목표를 설정하고, 이를 바탕으로 새로운 상호작용과 전략을 선택하는 과정"
-        },
-        "cThemes": [
-          {
-            "name": "생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 선택에 따른 월드 상태 변화"
-          },
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 선택에 따른 반응과 새로운 전략 생성"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION",
-            "gameplayEffect": "월드 상태와 보상/위험 사이의 인과 관계 형성"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY",
-            "gameplayEffect": "플레이어의 선택에 따른 반응과 다음 선택 결정"
-          }
-        ],
-        "cGenreInterlock": "주기적으로 발생하는 플레이어 선택은 월드 상태 변화에 영향을 미치며, 이는 주제별로 서로 다른 메인 및 보조 장르에서 일관된 인과 관계를 형성함",
-        "cWorldAndGameplayEffect": "플레이어의 선택이 월드 상태를 재구성하여 새로운 게임 루프를 형성하며, 이 과정은 계속적으로 진행됨",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다",
-            "discovery": "플레이어의 선택이 월드 상태 변화에 영향을 미침",
-            "newChoice": "새로운 전략 생성으로 인한 새로운 상호작용"
-          },
-          {
-            "clue": "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
-            "discovery": "플레이어의 선택이 월드 상태 변화에 영향을 미침",
-            "newChoice": "새로운 대상 및 목표 생성으로 인한 새로운 상호작용"
-          },
-          {
-            "clue": "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦",
-            "discovery": "플레이어의 선택이 월드 상태를 재구성함",
-            "newChoice": "새로운 게임 루프 형성이 주된 결과"
-          },
-          {
-            "clue": "플레이어의 선택은 월드 상태와 보상/위험 사이에서 일관된 인과 관계를 형성하며, 이는 계속적으로 진행됨",
-            "discovery": "플레이어의 선택이 월드 상태와 보상/위험 사이의 인과 관계를 형성함",
-            "newChoice": "플레이어의 선택이 월드 상태와 보상/위험 사이의 인과 관계를 형성함"
-          }
-        ],
-        "delveGrowthRule": "플레이어의 선택이 월드 상태를 재구성하여 새로운 게임 루프를 형성하며, 이 과정은 계속적으로 진행됨",
-        "finalGameIdentity": "플레이어의 선택이 월드 상태를 재구성하여 새로운 게임 루프를 형성하는 단순한 시뮬레이션으로 정체화"
-      },
-      "playerFantasy": "개미 시뮬레이터에서 플레이어는 세 개 미종족 중 하나를 골라, 거대한 정원을 탐험하며 굴을 지켜야 한다. 이는 생존, 전략, 위험의 중심에 위치한 오픈월드 멀티플레이 게임이다.",
-      "coreFun": "{\n \"mainIdentity\": \"개미 시뮬레이터의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다\",\n \"a\": {\n \"system\": \"OPENWORLD_SIMULATION\",\n \"material\": \"현실적인 월드 상태, 대상/공간 선택, 위험/보상 예측 기반의 실제 입력 및 결과 변환 시스템\",\n \"materialDomain\": \"OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION\",\n \"stateChange\": \"월드 상태, 대상, 자원, 위험, 진행 상태 변화\"\n },\n \"b\": {\n \"system\": \"ACTION_SURVIVAL_ROGUELITE\",\n \"material\": \"플레이어의 선택에 따른 반응, 즉각적 결과, 다음 목표 결정, 새로운 전략 생성\",\n \"materialDomain\": \"ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY\",\n \"stateChange\": \"선택, 보상, 위험, 다음 목표, 전략 선택\"\n },\n \"abCausality\": \"주기적으로 발생하는 플레이어 선택과 월드 상태 변화는 서로 영향을 주며, A→B와 B→A 양방향으로 이어지게 설계됨\",\n \"abEvolution\": {\n \"aChangesB\": \"플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다\",\n \"bChangesA\": \"플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다\",\n \"lateGameChange\": \"플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦\"\n },\n \"materialFusion\": {\n \""
-    },
-    "local_authoring_parts::e6737ea07cf0d58da690f46f917032e84ffc9b6b578f6e1c02baa0067601cd27:coreLoop": {
-      "coreLoop": [
-        "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다",
-        "플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성된다",
-        "플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듦"
-      ]
-    },
-    "local_authoring_parts::d353cc3cdfd7eb08c97969a954064ee3269b0be1f0bb7054679a0fda03137ff2:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "월드 상태",
-        "대상/공간 선택",
-        "위험/보상 예측"
-      ],
-      "stateOutputs": [
-        "월드 상태 변화",
-        "새로운 목표 결정",
-        "신규 전략 생성"
-      ],
-      "name": "OPENWORLD_ACTION_SELECTION_AND_RESULT_PREDICTION",
-      "purpose": "플레이어의 선택에 따른 월드 상태 변화와 즉각적 결과 변환 시스템",
-      "playerChoice": "특정 대상을 선택하여 월드 상태를 재구성하고, 이로 인해 새로운 목표와 전략이 생겨난다 중에서 하나의 행동을 취함으로써 게임 루프를 형성하게 만듦으로서 플레이어가 실제 수행하는 주체 역할을 정의한다음, 이 과정에서 발생한 상황과 결과를 바탕으로 다음 선택을 결정해야 한다고 명시한다."
-    },
-    "local_authoring_parts::d353cc3cdfd7eb08c97969a954064ee3269b0be1f0bb7054679a0fda03137ff2:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "월드 상태",
-        "대상/공간 선택",
-        "위험/보상 예측"
-      ],
-      "stateOutputs": [
-        "월드 상태 변화",
-        "새로운 목표 결정",
-        "신규 전략 생성"
-      ],
-      "name": "ACTION_SURVIVAL_STRATEGY_GENERATION_AND_REPLAY",
-      "purpose": "플레이어의 선택에 따른 반응, 즉각적 결과, 다음 목표 결정, 새로운 전략 생성",
-      "playerChoice": "플레이어가 특정 대상을 선택하면 월드 상태가 바뀌고, 이로 인해 새로운 목표와 전략이 생겨난다입니다. 플레이어가 새로운 전략을 선택하면 월드 상태가 변하고, 이로 인한 새로운 대상 및 목표가 생성됩니다. 플레이어의 선택이 기존 월드 상태를 재구성하여 새로운 게임 루프를 형성하게 만듭니다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 879864,
-      "lastMs": 45427,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:09:13.066Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:54:33.168Z",
-  "updatedAt": "2026-10-10T03:09:13.074Z",
+  "createdAt": "2026-10-10T06:48:39.762Z",
+  "updatedAt": "2026-10-10T06:48:39.776Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -283,6 +51,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -337,6 +106,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -719,13 +489,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -752,24 +526,34 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "current",
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -786,8 +570,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -811,6 +595,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -865,6 +650,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1247,13 +1033,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1280,24 +1070,34 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "current",
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1314,8 +1114,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1339,6 +1139,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1393,6 +1194,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1775,13 +1577,17 @@
           },
           {
             "family": "MOTION",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-motion-run",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "run"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1808,24 +1614,34 @@
           },
           {
             "family": "UI",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "current",
+                "next",
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "boss"
+              ],
+              "currentSourceBound": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1842,30 +1658,72 @@
         ]
       }
     },
-    "assetFacts": {}
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::d353cc3cdfd7eb08c97969a954064ee3269b0be1f0bb7054679a0fda03137ff2:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
+    "assetFacts": {
+      "roblox-common-motion-run": {
+        "family": "MOTION",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "run"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "RUN",
+        "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-ui-wave-forecast-ribbon": {
+        "family": "UI",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "current",
+            "next",
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "WAVE_FORECAST_RIBBON",
+        "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-vfx-boss-warning-pulse": {
+        "family": "VFX",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "boss"
+          ],
+          "currentSourceBound": false,
+          "verifiedRoleMatch": true
+        },
+        "role": "BOSS",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
       }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::d353cc3cdfd7eb08c97969a954064ee3269b0be1f0bb7054679a0fda03137ff2:signatureSystems:2": 2
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "2aa372b8804625d87f9f75187a955ba02ba47510fcfae7621f70dba12f042fea": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:09:13.066Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
+    }
+  }
 }
