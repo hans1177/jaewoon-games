@@ -1669,7 +1669,7 @@ export const MONSTER_BODY_PLAN_MOTION_DETAILS=Object.freeze({
       skill:Object.freeze(['SURROUND','SWARM_CHARGE','SWARM_RELEASE','REGROUP','SWARM_CLONE_SPLIT','SWARM_FOCUS_BEAM']),
       signature:Object.freeze(['FORMATION_SIGNATURE','SURROUND_SIGNATURE','BURST_SIGNATURE','DEATH_SIGNATURE'])
     })
-  })
+  }),
   QUADRUPED_FELINE:Object.freeze({
     aliases:Object.freeze(['FELINE','CATLIKE','BIG_CAT']),
     coverage:Object.freeze({locomotion:8,attacks:5,defense:3,reactions:4,acting:4,deaths:2,skill:3,signature:4}),
