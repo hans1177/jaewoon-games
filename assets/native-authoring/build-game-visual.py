@@ -7,7 +7,10 @@ import colorsys
 import hashlib
 import json
 import math
+import os
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import bpy
@@ -22,6 +25,9 @@ PARSER.add_argument('--target', choices=['web','roblox','unity'], required=True)
 PARSER.add_argument('--subject', choices=['generic','rock','crate'], default='generic')
 PARSER.add_argument('--style-json', default='{}')
 PARSER.add_argument('--genre', default='')
+PARSER.add_argument('--source-image', default='')
+PARSER.add_argument('--source-license', default='')
+PARSER.add_argument('--source-credit', default='')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
 ARGS.output.mkdir(parents=True, exist_ok=True)
@@ -88,6 +94,7 @@ GLOW_RGB = rgb(accent_hue, .62, 1.0)
 GLOW = material('Game_Glow', tuple(v*.55 for v in GLOW_RGB), .30, .18, GLOW_RGB)
 
 ASSET_OBJECTS = []
+IMAGE_PROVENANCE = None
 
 def finish(obj, mat, bevel=.06):
     obj.data.materials.append(mat)
@@ -211,7 +218,75 @@ def crate_asset():
             box(f'Brace_{side}_{face}',(side*.38,face*.56,.55),(.10,.06,1.15),METAL if TECH else edge,bevel=.01)
     for i in range(5):box(f'Lid_{i}',(-.44+i*.22,0,1.14),(.19,1.08,.08),wood,bevel=.012)
 
-if ARGS.subject=='rock':
+# 메인: 기존 GRAPHICS_PRODUCTION Blender 제작기에 오픈소스 TripoSR 추론을 직접 연결한다.
+# 실제 추론이 불가능하면 기존 형상으로 대체하지 않고 실패 처리한다.
+def image_mesh_asset():
+    global IMAGE_PROVENANCE
+    source = Path(ARGS.source_image).resolve()
+    license_name = ARGS.source_license.strip()
+    if not source.is_file() or source.suffix.lower() not in ('.png', '.jpg', '.jpeg', '.webp'):
+        raise RuntimeError('IMAGE_TO_MESH_LOCAL_IMAGE_REQUIRED')
+    if source.stat().st_size <= 0 or source.stat().st_size > 25 * 1024 * 1024:
+        raise RuntimeError('IMAGE_TO_MESH_IMAGE_SIZE_INVALID')
+    if license_name.lower() not in ('project-original', 'cc0', 'cc-by'):
+        raise RuntimeError('IMAGE_TO_MESH_SOURCE_RIGHTS_REQUIRED')
+    if license_name.lower() == 'cc-by' and not ARGS.source_credit.strip():
+        raise RuntimeError('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED')
+
+    engine_home = Path(os.environ.get('VIBE_TRIPOSR_HOME', '')).expanduser()
+    model_home = Path(os.environ.get('VIBE_TRIPOSR_MODEL_DIR', '')).expanduser()
+    engine_file = engine_home / 'run.py'
+    model_config = model_home / 'config.yaml'
+    model_weights = model_home / 'model.ckpt'
+    if not os.environ.get('VIBE_TRIPOSR_HOME') or not engine_file.is_file():
+        raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED')
+    if not os.environ.get('VIBE_TRIPOSR_MODEL_DIR') or not model_config.is_file() or not model_weights.is_file():
+        raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED')
+    interpreter = os.environ.get('VIBE_TRIPOSR_PYTHON', 'python3')
+    with tempfile.TemporaryDirectory(prefix='vibe-image-mesh-') as work:
+        command = [
+            interpreter, str(engine_file), str(source), '--output-dir', work,
+            '--model-save-format', 'glb', '--mc-resolution', '256',
+            '--pretrained-model-name-or-path', str(model_home),
+        ]
+        try:
+            subprocess.run(command, cwd=str(engine_home), check=True,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=490)
+        except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+            raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED') from exc
+        reconstructed = Path(work) / '0' / 'mesh.glb'
+        if not reconstructed.is_file() or reconstructed.stat().st_size < 1024:
+            raise RuntimeError('IMAGE_TO_MESH_GENERATED_GLB_MISSING')
+        before = set(bpy.data.objects)
+        bpy.ops.import_scene.gltf(filepath=str(reconstructed))
+        imported = [obj for obj in bpy.data.objects if obj not in before and obj.type == 'MESH']
+        triangles = sum(sum(len(face.vertices) - 2 for face in obj.data.polygons) for obj in imported)
+        if not imported or triangles < 8 or triangles > 450000:
+            raise RuntimeError('IMAGE_TO_MESH_GENERATED_GEOMETRY_INVALID')
+        for obj in imported:
+            if not obj.data.materials:
+                obj.data.materials.append(MID)
+            ASSET_OBJECTS.append(obj)
+
+    # 원본 이미지와 가중치는 읽기 전용. 해시와 라이선스만 제작 근거로 보존한다.
+    IMAGE_PROVENANCE = {
+        'engine': 'VAST-AI-Research/TripoSR',
+        'engineLicense': 'MIT',
+        'model': 'stabilityai/TripoSR',
+        'modelWeightSha256': hashlib.sha256(model_weights.read_bytes()).hexdigest(),
+        'inputPath': ARGS.source_image,
+        'inputSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+        'sourceLicense': license_name,
+        'sourceCredit': ARGS.source_credit.strip() or None,
+        'generatedGeometry': True,
+        'rigged': False,
+        'originalImageImmutable': True,
+        'runtimeVerified': False,
+    }
+
+if ARGS.source_image:
+    image_mesh_asset()
+elif ARGS.subject=='rock':
     rock_asset()
 elif ARGS.subject=='crate' or ARGS.profile=='prop' and not TECH:
     crate_asset()
@@ -247,7 +322,10 @@ for obj in ASSET_OBJECTS:
     obj['vibeGenre']=ARGS.genre
     obj['vibeUnit']='meter'
     obj['vibePivot']='ground-centered'
-    obj['vibeProjectOriginal']=True
+    obj['vibeProjectOriginal']=not bool(IMAGE_PROVENANCE) or IMAGE_PROVENANCE['sourceLicense'].lower()=='project-original'
+    if IMAGE_PROVENANCE:
+        obj['vibeSourceImageSha256']=IMAGE_PROVENANCE['inputSha256']
+        obj['vibeSourceLicense']=IMAGE_PROVENANCE['sourceLicense']
 
 # Export only authored asset objects.
 bpy.ops.object.select_all(action='DESELECT')
@@ -344,6 +422,7 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'sourceUnits':'METERS','sourceUp':'Y','boundsSizeMeters':[BOUNDS_SIZE[0],BOUNDS_SIZE[2],BOUNDS_SIZE[1]],
     'pivot':'GROUND_CENTER','surfaceDistribution':physical_analysis,'style':STYLE,'genre':ARGS.genre,'subject':ARGS.subject,'materials':materials,'geometrySurface':geometry_surface,
     'optimization':{'method':'EXACT_MESH_DATA_REUSE','originalFile':'master.glb','originalSha256':hashlib.sha256(master.read_bytes()).hexdigest(),'originalBytes':master.stat().st_size,'deploymentBytes':glb.stat().st_size,'byteMeasurementScope':'SELECTED_GLB_PAYLOAD_ONLY','deploymentBundleBytes':None,'reusedMeshCount':reused_meshes,'runtimeMemoryBytes':None,'loadingTimeMs':None,'drawCalls':None,'runtimeVerified':False},
+    'imageToMesh':IMAGE_PROVENANCE,
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -409,6 +488,31 @@ application['optimization']['previewComparison']={'method':'REIMPORTED_GLB_SAME_
 if max_pixel_error>1e-5: raise RuntimeError('LOSSLESS_OPTIMIZATION_CHANGED_RENDER')
 (ARGS.output/'application.json').write_text(json.dumps(application,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
+# 렌더: 이미지 기반 자산은 실제 GLB의 네 방향을 동일한 조명에서 추가 촬영한다.
+# 이는 Blender 정적 증거이며 플랫폼 런타임 QA로 간주하지 않는다.
+IMAGE_VIEW_OUTPUTS = []
+if IMAGE_PROVENANCE:
+    old_camera = Vector(cam.location)
+    existing = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    imported = [obj for obj in bpy.data.objects if obj not in existing]
+    try:
+        for angle in (0, 90, 180, 270):
+            radians = math.radians(angle)
+            cam.location = target + Vector((1.8 * math.cos(radians), 1.8 * math.sin(radians), 1.20)) * max(BOUNDS_SIZE)
+            cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()
+            destination = ARGS.output / f'preview-angle-{angle:03d}.png'
+            SCENE.render.filepath = str(destination)
+            bpy.ops.render.render(write_still=True)
+            if not destination.is_file() or destination.stat().st_size == 0:
+                raise RuntimeError('IMAGE_TO_MESH_VIEW_RENDER_MISSING')
+            IMAGE_VIEW_OUTPUTS.append(destination.name)
+    finally:
+        cam.location = old_camera
+        cam.rotation_euler = (target - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        for obj in imported:
+            bpy.data.objects.remove(obj, do_unlink=True)
+
 source_hash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 artifact_hash=hashlib.sha256(glb.read_bytes()).hexdigest()
 preview_hash=hashlib.sha256(preview.read_bytes()).hexdigest()
@@ -430,7 +534,9 @@ evidence={
     'sourceHash':source_hash,
     'artifactHash':artifact_hash,
     'previewHash':preview_hash,
-    'license':'project-original',
+    'license':IMAGE_PROVENANCE['sourceLicense'] if IMAGE_PROVENANCE else 'project-original',
+    'imageToMesh':IMAGE_PROVENANCE,
+    'multiViewPreview':IMAGE_VIEW_OUTPUTS,
     'targetPlatforms':[ARGS.target.upper()],
     'runtimeVerificationState':'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
     'productionVerified':False,
@@ -438,7 +544,7 @@ evidence={
     'meshObjectCount':len(ASSET_OBJECTS),
     'surfaceDistribution':physical_analysis,
     'optimization':application['optimization'],
-    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json']
+    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS]
 }
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('VIBE_NATIVE_GAME_ASSET='+ARGS.asset_id)
