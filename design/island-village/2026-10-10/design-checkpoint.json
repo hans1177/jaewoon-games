@@ -3,127 +3,18 @@
   "gameId": "island-village",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
-  "fingerprint": "5329a4dc530f42bc54fcf5a4a363368866ddefe9e0615a11192be81a4014b3c8",
+  "fingerprint": "15dda25d994ec9bc2411a161bfb52f21bdee59e20f0b9c5eec602b7d55108e9d",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::39808dc967949330ea4df94a64db68c9134c31a4bdacfa48b14534e689b9c16f:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
-      "creativeGrammar": {
-        "mainIdentity": "GATHER_RESOURCES",
-        "a": {
-          "system": "ISLAND_RESOURCE_SYSTEM",
-          "material": "FOCUSED_ISLAND_RESOURCES",
-          "materialDomain": "ECONOMY_AND_BUILD",
-          "stateChange": "RESOURCE_COLLECTION_STARTED"
-        },
-        "b": {
-          "system": "GAMEPLAY_CORE_LOOP",
-          "material": "STRATEGY_PATH_SELECTION",
-          "materialDomain": "SOCIAL_OR_QUEST",
-          "stateChange": "PATH_SELECTION_COMPLETED"
-        },
-        "abCausality": "RESOURCE_COLLECTION_START -> RESOURCE_GATHERING_PROGRESS -> PATH_SELECTION_CONFIRMED",
-        "abEvolution": {
-          "aChangesB": "FOCUS_ON_EAST_MOUNTAIN_RESOURCES -> PATH_SELECTION_TO_WEST_REGION",
-          "bChangesA": "ACTION_PLAN_CHANGED_TO_AVOID_RISK -> RESOURCE_COLLECTION_TO_NORTH_FOLK_RESOURCES",
-          "lateGameChange": "RESOURCE_TYPE_CHANGE_TO_TREASURE_LAND_RESOURCES -> PATH_SELECTION_TO_SECRET_CAVE"
-        },
-        "materialFusion": {
-          "contrast": "FOCUS_ON_EAST_MOUNTAIN_RESOURCES vs. ACTION_PLAN_CHANGED_TO_AVOID_RISK",
-          "causalBridge": "RESOURCE_COLLECTION_START -> RESOURCE_GATHERING_PROGRESS -> PATH_SELECTION_CONFIRMED",
-          "removalConsequence": "FOCUS_ON_EAST_MOUNTAIN_RESOURCES -> PATH_SELECTION_TO_WEST_REGION"
-        },
-        "storyCausalChain": {
-          "cause": "PLAYER_ACTION_OF_GATHERING_RESOURCES",
-          "characterConflict": "GAMEPLAY_CORE_LOOP_RELATED_CONFLICT",
-          "playerChoice": "ACTION_PLAN_CHANGED_TO_AVOID_RISK",
-          "worldChange": "RESOURCE_COLLECTION_STARTED -> RESOURCE_GATHERING_PROGRESS -> PATH_SELECTION_COMPLETED",
-          "nextEvent": "PATH_SELECTION_TO_SECRET_CAVE"
-        },
-        "cThemes": [
-          {
-            "name": "ECONOMY_AND_BUILD",
-            "kind": "MATERIAL",
-            "gameplayEffect": "RESOURCE_GATHERING"
-          },
-          {
-            "name": "SOCIAL_OR_QUEST",
-            "kind": "MATERIAL",
-            "gameplayEffect": "STRATEGY_PATH_SELECTION"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ECONOMY_AND_BUILD",
-            "gameplayEffect": "RESOURCE_GATHERING"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "SOCIAL_OR_QUEST",
-            "gameplayEffect": "STRATEGY_PATH_SELECTION"
-          }
-        ],
-        "cGenreInterlock": "ECONOMY_AND_BUILD_SOCIETY_INTERACTION -> SOCIAL_OR_QUEST_STRATEGIC_DECISION_MAKER",
-        "cWorldAndGameplayEffect": "RESOURCE_COLLECTION_START -> RESOURCE_GATHERING_PROGRESS -> PATH_SELECTION_CONFIRMED",
-        "delveDiscoveries": [
-          {
-            "clue": "FOCUS_ON_EAST_MOUNTAIN_RESOURCES",
-            "discovery": "PATH_SELECTION_TO_WEST_REGION",
-            "newChoice": "ACTION_PLAN_CHANGED_TO_AVOID_RISK"
-          },
-          {
-            "clue": "ACTION_PLAN_CHANGED_TO_AVOID_RISK",
-            "discovery": "RESOURCE_COLLECTION_TO_NORTH_FOLK_RESOURCES",
-            "newChoice": "PLAYER_ACTION_OF_GATHERING_RESOURCES"
-          },
-          {
-            "clue": "RESOURCE_TYPE_CHANGE_TO_TREASURE_LAND_RESOURCES",
-            "discovery": "PATH_SELECTION_TO_SECRET_CAVE",
-            "newChoice": "GAMEPLAY_CORE_LOOP_RELATED_CONFLICT"
-          },
-          {
-            "clue": "PLAYER_ACTION_OF_GATHERING_RESOURCES",
-            "discovery": "PATH_SELECTION_COMPLETED",
-            "newChoice": "GAMEPLAY_CORE_LOOP_RELATED_CONFLICT"
-          }
-        ],
-        "delveGrowthRule": "RESOURCE_COLLECTION_START -> RESOURCE_GATHERING_PROGRESS -> PATH_SELECTION_CONFIRMED",
-        "finalGameIdentity": "ECONOMY_AND_BUILD_SOCIAL_OR_QUEST_STRATEGY_PATH_SELECTION_RESOURCE_GATHERING"
-      },
-      "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
-      "coreFun": "플레이어는 무인도 마을에서 자원을 수집하며, 이 과정에서 다양한 전략과 경로를 선택하여 성장의 가능성에 따라 실제 변화를 경험하게 된다."
-    },
-    "local_authoring_parts::142037fa070280485837fa0ac1516cf56fa0f78d81bdf689e6881859ac8100df:coreLoop": {
-      "coreLoop": [
-        "INPUT: PLAYER_ACTION_OF_GATHERING_RESOURCES",
-        "STATE_CHANGE: RESOURCE_COLLECTION_STARTED",
-        "OUTPUT: PATH_SELECTION_TO_SECRET_CAVE",
-        "ACTION: ACTION_PLAN_CHANGED_TO_AVOID_RISK"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 337325,
-      "lastMs": 50569,
-      "lastError": null,
-      "updatedAt": "2026-10-10T08:38:15.252Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T08:32:37.907Z",
-  "updatedAt": "2026-10-10T09:31:08.901Z",
+  "createdAt": "2026-10-10T09:50:35.434Z",
+  "updatedAt": "2026-10-10T09:50:35.451Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1760,13 +1651,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:38:15.252Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
