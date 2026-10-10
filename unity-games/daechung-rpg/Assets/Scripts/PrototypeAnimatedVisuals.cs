@@ -19,7 +19,9 @@ namespace JaewoonGames.DaechungRpg
 
         public static PrototypeAnimatedVisuals Instance { get; private set; }
         public bool Ready => _ready;
-        public string StatusText => !_ready ? "LOADING" : (!string.IsNullOrEmpty(_loadError) ? "READY · LOCAL ART / REMOTE UNAVAILABLE" : "READY · ANIMATED ACTORS AND LOCAL ART");
+        public string StatusText => !_ready
+            ? (!string.IsNullOrEmpty(_loadError) ? "REPAIR_REQUIRED · NATIVE 3D MODEL" : "LOADING")
+            : (!string.IsNullOrEmpty(_loadError) ? "READY · LOCAL ART / REMOTE UNAVAILABLE" : "READY · ANIMATED ACTORS AND LOCAL ART");
 
         private AnimatedActor _player;
         private AnimatedActor _enemy;
@@ -479,6 +481,15 @@ namespace JaewoonGames.DaechungRpg
             _enemyId = string.IsNullOrEmpty(id) ? "skeleton" : id;
             if (_enemy == null) return;
             InstallLocalActor(_enemy, _enemyId);
+            // 메인: 전투 중 교체한 몬스터도 반드시 실제 3D 메시로 검증한다.
+            if (!_enemy.NativeMeshReady)
+            {
+                _ready = false;
+                const string nativeError = "Native 3D OBJ model import missing; gameplay visual QA blocked.";
+                if (_loadError != nativeError)
+                    Debug.LogError("JAEWOON_UNITY_WEB_QA NATIVE_3D_ACTOR_MISSING game=daechung-rpg status=REPAIR_REQUIRED");
+                _loadError = nativeError;
+            }
         }
 
         private void InstallLocalActor(AnimatedActor actor, string id)
@@ -685,8 +696,14 @@ namespace JaewoonGames.DaechungRpg
             yield return LoadActor(_enemy, "skeleton");
             if (!string.IsNullOrEmpty(_loadError)) yield break;
 
-            _ready = true;
+            // 유틸: 원격 2D 애니메이션 로드 성공으로 필수 Unity 3D 메시 검증 실패를 덮지 않는다.
             SetEnemyIdentity(_enemyId);
+            if (!_ready || !_player.NativeMeshReady || !_enemy.NativeMeshReady
+                || !_coopPartner.NativeMeshReady
+                || !_villageResidents.TrueForAll(resident => resident.Actor.NativeMeshReady))
+            {
+                yield break;
+            }
             if (_battleVisible) ResetBattleActors();
             else ShowTown();
         }
