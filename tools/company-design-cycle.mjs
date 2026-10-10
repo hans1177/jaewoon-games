@@ -1308,6 +1308,1323 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const grammarRole=field==='signatureSystems'?(seedGameplaySketchVersion>=5?['MAIN','A','B','DELVE']:['MAIN','A','B','c','DELVE'])[index]:null;
           const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
+          if(grammarRole&&itemSchema.properties?.id){
+            // 설계 규칙 ID는 저장/게임플레이 키가 아닌 설계 내부 참조다.
+            // 서로 다른 MAIN/A/B/@ 역할에서 작은 모델이 같은 ID를 재사용하지 않도록 출력 단계부터 구분한다.
+            const rolePrefix=grammarRole.toLowerCase();
+            itemSchema={...itemSchema,properties:{...itemSchema.properties,
+              id:{...itemSchema.properties.id,pattern:`^${rolePrefix}_[a-z][a-z0-9_-]{2,69}// 파일명: tools/company-design-cycle.mjs
+// 역할: 기존 디자이너의 분할 작성·체크포인트·결정론적 설계 검증을 수행한다.
+// 임포트
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import http from 'node:http';
+import {loadSeedState,saveSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {ownerDesignResetSeedForGame} from './owner-design-reset.mjs';
+import {makeAutoMissingDesignSeed,latestUsableDesign} from './company-all-games-design-reset.mjs';
+import {validateGameSeed} from './company-game-seed-contract.mjs';
+import {repairDesignRequiredFields} from './company-design-prepromotion-repair.mjs';
+import {scoreDesignGateV2,validateDesignAuthoringContent,designPlayabilityRequirements,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
+import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
+import {buildVibeDesignIntelligence,buildDesignEvolutionBrief} from './vibe2-design-intelligence.mjs';
+import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from './vibe2-asset-production-plan.mjs';
+import {GAME_CONVENIENCE_REFERENCES} from './company-roblox-production-plan.mjs';
+
+const ROLES=['planning','graphics','development','qa','audio'];
+const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
+const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
+const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
+const clip=(v,n=14000)=>{const s=typeof v==='string'?v:JSON.stringify(v);return s.length>n?s.slice(0,n):s;};
+const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
+function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
+
+const directive=readJson('company-directive.json',{});
+const localDesignerModel=clean(process.env.COMPANY_VIBE_LOCAL_MODEL||'qwen3:1.7b');
+const localDesignerFallbackReady=clean(process.env.COMPANY_LOCAL_DESIGN_FALLBACK_READY).toLowerCase()==='true';
+// Department evidence is computed from the same deterministic gate; no AI review lanes.
+const leadModels={},departmentReviewModels={};
+const reviewModelCount=0,modelPhaseConcurrency=1,maxLoadedModelLanes=1;
+const phaseConcurrency={};
+const modelKeepAlive='PROVIDER_SPECIFIC';
+// 내부 모델 작성 예산: 준비 단계의 모델 로딩 시간은 제외한다.
+const localDesignerCallTimeoutMs=Math.min(300000,Math.max(30000,Number(process.env.COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS)||300000));
+
+// 접수 기록은 실행 메타데이터다. 창작 시드는 아래 identity-core에서 같은 디자이너가 작성한다.
+function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
+  if(!/^[a-z0-9][a-z0-9-]*$/.test(gameId))throw new Error('DESIGN_GAME_ID_INVALID');
+  if((catalog?.permanentRemovalPolicy?.ids||[]).includes(gameId))throw new Error(`DESIGN_GAME_REMOVED: ${gameId}`);
+  const existing=activeSeedForGame(state,gameId);
+  if(existing){
+    const restoredId=!clean(existing.seedId);
+    if(restoredId)existing.seedId=`DESIGNER-${gameId.toUpperCase()}`;
+    return{seed:existing,created:restoredId};
+  }
+  const ownerInput=ownerDesignResetSeedForGame(gameId,path.join(root,'owner-design-reset-queue.json'));
+  const catalogEntry=(catalog?.games||[]).find(row=>row.id===gameId);
+  if(!ownerInput&&!catalogEntry&&!clean(brief))throw new Error(`DESIGN_BRIEF_OR_ORIGINAL_REQUIRED: ${gameId}`);
+  if(!ownerInput&&catalogEntry&&!['ACTIVE','REBUILD'].includes(clean(catalogEntry.lifecycleState||catalogEntry.canonical?.lifecycle?.state||'ACTIVE').toUpperCase()))throw new Error(`DESIGN_GAME_INACTIVE: ${gameId}`);
+  const input=ownerInput||makeAutoMissingDesignSeed(catalogEntry||{id:gameId,name:gameId,description:brief});
+  if(!ownerInput){
+    const baseline=latestUsableDesign(root,gameId);
+    const original=baseline?.record?.content||baseline?.record||{};
+    const platform=input.INITIAL_TARGET_PLATFORM;
+    input.designInputMode='DESIGNER_SELF_SEED';
+    input.OWNER_LATEST_DESIGN_REQUEST=clean(brief)||clean(catalogEntry?.description)||`기존 ${input.gameName} 원본에서 시드와 상세 설계를 디자이너가 직접 작성한다.`;
+    if(baseline){
+      input.DESIGN_BASELINE_SOURCE=path.relative(root,baseline.file).replaceAll('\\','/');
+      input.originalDesignContext={source:input.DESIGN_BASELINE_SOURCE,version:baseline.record.version||null,content:original,platformProfile:original.platformProfiles?.[platform]||{}};
+      input.REUSE_PRIOR_DESIGN_BASELINE=true;
+      input.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION=true;
+      if(original.identity)input.DISTINCT_IDENTITY=original.identity;
+      if(original.coreFun)input.CORE_FUN_TO_LEARN=[original.coreFun];
+      if(original.coreLoop?.length)input.CORE_LOOP=original.coreLoop;
+      const mode=clean(original.multiplayerMode||original.robloxBuildProfile?.playMode).toUpperCase();
+      if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(mode))input.MULTIPLAYER_DESIGN_MODE=mode;
+    }
+    // 기존 접수 계약은 유지하되 자동 조합 문법을 디자이너의 창작 결과로 넘기지 않는다.
+    delete input.GAMEPLAY_SKETCH;
+    const inputCheck=validateGameSeed(input);
+    if(!inputCheck.pass)input.inputRepairNotes=inputCheck.errors;
+    input.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
+  }
+  input.seedAuthoring={writer:'GAME_DESIGNER_AI',stage:'identity-core',externalSeedRequired:false};
+  state.seeds||=[];
+  state.seeds.push(input);
+  return{seed:input,created:true};
+}
+
+const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
+const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
+if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
+const seedState=loadSeedState();
+const catalog=readJson('game-catalog.json',{games:[]});
+const seedInput=resolveDesignerSeedInput({state:seedState,gameId,catalog,brief:process.env.COMPANY_DESIGN_BRIEF||''});
+const seed=seedInput.seed;
+if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
+const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
+const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
+// 자동 접수 V5의 미완성 임시 문구는 디자이너가 재사용해야 할 확정 창작안이 아니다.
+const intakeFusion=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion;
+const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
+  &&seed?.novelGrammarBackfill?.authoringPending===true
+  &&(!Array.isArray(intakeFusion?.majorAxes)||intakeFusion.majorAxes.length!==2
+    ||intakeFusion.majorAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
+    ||!Array.isArray(intakeFusion?.themeFusion?.themes)||intakeFusion.themeFusion.themes.length!==2
+    ||!Array.isArray(intakeFusion?.themeFusion?.genres)||intakeFusion.themeFusion.genres.length!==2);
+const advancedSeedDesignDepth=seedGameplaySketchVersion>=2;
+const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
+const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
+const seedFlowAssetRequirements=Array.isArray(seedFlowArchitecture?.assetFlow?.requirements)?seedFlowArchitecture.assetFlow.requirements:[];
+const seedDesignDepthContext={
+  source:'GAME_SEED.GAMEPLAY_SKETCH',
+  version:seedGameplaySketchVersion,
+  compatibilityMode:pendingSeedGrammarNotAuthored?'V5_DESIGNER_AUTHORING_PENDING_INPUT':seedGameplaySketchVersion>=5?'V5_OWNER_CREATIVE_GRAMMAR_INPUT':seedGameplaySketchVersion>=4?'V4_CAUSAL_GRAMMAR_INPUT':advancedSeedDesignDepth?'V2_DEPTH_INPUT':'LEGACY_V1_COMPATIBILITY',
+  identityCore:pendingSeedGrammarNotAuthored?null:seedGameplaySketch?.identityCore&&typeof seedGameplaySketch.identityCore==='object'?seedGameplaySketch.identityCore:null,
+  novelGameGrammar:pendingSeedGrammarNotAuthored?null:seedGameplaySketch?.novelGameGrammar&&typeof seedGameplaySketch.novelGameGrammar==='object'?seedGameplaySketch.novelGameGrammar:null,
+  playerPromise:clean(seedGameplaySketch?.playerPromise),
+  funDrivers:Array.isArray(seedGameplaySketch?.funDrivers)?seedGameplaySketch.funDrivers:[],
+  balanceRules:Array.isArray(seedGameplaySketch?.balanceRules)?seedGameplaySketch.balanceRules:[],
+  pacingPlan:seedGameplaySketch?.pacingPlan&&typeof seedGameplaySketch.pacingPlan==='object'?seedGameplaySketch.pacingPlan:null,
+  progressionLayers:Array.isArray(seedGameplaySketch?.progressionLayers)?seedGameplaySketch.progressionLayers:[],
+  expansionPlan:Array.isArray(seedGameplaySketch?.expansionPlan)?seedGameplaySketch.expansionPlan:[],
+  completionCriteria:Array.isArray(seedGameplaySketch?.completionCriteria)?seedGameplaySketch.completionCriteria:[],
+  codingGrowthHooks:Array.isArray(seedGameplaySketch?.codingGrowthHooks)?seedGameplaySketch.codingGrowthHooks:[],
+  flowArchitecture:seedFlowArchitecture?{
+    version:Number(seedFlowArchitecture.version||1),
+    source:clean(seedFlowArchitecture.source),
+    flowDNA:Array.isArray(seedFlowArchitecture.flowDNA)?seedFlowArchitecture.flowDNA:[],
+    phaseArc:Array.isArray(seedFlowArchitecture.phaseArc)?seedFlowArchitecture.phaseArc:[],
+    transitionEvents:Array.isArray(seedFlowArchitecture.transitionEvents)?seedFlowArchitecture.transitionEvents:[],
+    parallelGoals:seedFlowArchitecture.parallelGoals||null,
+    branching:seedFlowArchitecture.branching||null,
+    returnStructure:seedFlowArchitecture.returnStructure||null,
+    failureModel:seedFlowArchitecture.failureModel||null,
+    victoryModel:seedFlowArchitecture.victoryModel||null,
+    worldReactivity:seedFlowArchitecture.worldReactivity||null,
+    riskCurve:seedFlowArchitecture.riskCurve||null,
+    playstyleRoutes:seedFlowArchitecture.playstyleRoutes||null,
+    regionalRuleVariation:seedFlowArchitecture.regionalRuleVariation||null,
+    sessionStructure:seedFlowArchitecture.sessionStructure||null,
+    tensionRhythm:seedFlowArchitecture.tensionRhythm||null,
+    informationProgression:seedFlowArchitecture.informationProgression||null,
+    revisitValue:seedFlowArchitecture.revisitValue||null,
+    endingModel:seedFlowArchitecture.endingModel||null,
+    qualityGrowthContract:seedFlowArchitecture.qualityGrowthContract||null,
+    systemBlueprint:seedFlowSystemBlueprint?{
+      profile:clean(seedFlowSystemBlueprint.profile),
+      target:clean(seedFlowSystemBlueprint.target),
+      requiredSystems:(seedFlowSystemBlueprint.requiredSystems||[]).map(row=>clean(row?.id)).filter(Boolean),
+      expansionSystems:(seedFlowSystemBlueprint.expansionSystems||[]).map(row=>clean(row?.id)).filter(Boolean),
+      phasePlan:seedFlowSystemBlueprint.phasePlan||{},
+      interconnectionChains:Array.isArray(seedFlowSystemBlueprint.interconnectionChains)?seedFlowSystemBlueprint.interconnectionChains:[],
+      novelGrammarContract:pendingSeedGrammarNotAuthored?null:seedFlowSystemBlueprint.novelGrammarContract||null,
+      libraryReusePolicy:seedFlowSystemBlueprint.libraryReusePolicy||null,
+      expansionPolicy:seedFlowSystemBlueprint.expansionPolicy||null
+    }:null,
+    assetFlow:seedFlowArchitecture.assetFlow?{
+      version:Number(seedFlowArchitecture.assetFlow.version||1),
+      mode:clean(seedFlowArchitecture.assetFlow.mode),
+      requirements:seedFlowAssetRequirements.map(row=>({
+        family:clean(row?.family),subfamily:clean(row?.subfamily),required:row?.required!==false,priority:clean(row?.priority),
+        flowRoles:Array.isArray(row?.flowRoles)?row.flowRoles:[],systemRoles:Array.isArray(row?.systemRoles)?row.systemRoles:[],phases:Array.isArray(row?.phases)?row.phases:[],
+        resolution:clean(row?.resolution),allowedReuseModes:Array.isArray(row?.allowedReuseModes)?row.allowedReuseModes:[],
+        assetIdPinned:row?.assetIdPinned===true,gameplayAuthority:row?.gameplayAuthority===true,balanceAuthority:row?.balanceAuthority===true,
+        saveAuthority:row?.saveAuthority===true,networkingAuthority:row?.networkingAuthority===true
+      }))
+    }:null
+  }:null
+};
+// 원본 구현 수치는 현재 설정 파일에서 읽는다. 디자이너의 밸런스 변경 권한은 늘리지 않는다.
+const currentRuleSourcePath=clean(seed.originalDesignContext?.content?.implementationSync?.codePaths?.config);
+const currentRuleSourceAllowed=currentRuleSourcePath.startsWith(`roblox-games/${gameId}/`)&&!currentRuleSourcePath.split('/').includes('..');
+const currentRuleSource=currentRuleSourceAllowed&&fs.existsSync(currentRuleSourcePath)?fs.readFileSync(currentRuleSourcePath,'utf8'):'';
+const playableRequirements=designPlayabilityRequirements(seed,currentRuleSource);
+const currentRuleSourceContext={path:currentRuleSourcePath,sha256:currentRuleSource?createHash('sha256').update(currentRuleSource).digest('hex'):null,
+  lines:currentRuleSource.split('\n').flatMap((line,index)=>/TargetPopulation=|SurvivorDashCooldown=|\b(?:Max|RegenPerSecond|PurifyCost|DashCost|InfectAttackCost|InfectAttackCooldown|AbilityCost|InfectRange)\s*=|\{Id=|^\s*[A-Z][A-Z_]+\s*=\{/.test(line)?[`${index+1}: ${line.trim()}`]:[])
+};
+const ownerPreservationDesign=seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+  &&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
+const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
+const designerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
+const activeDesignerRoute=designerRoute;
+const designerModel=designerRoute.id;
+const coordinatorModel=localDesignerModel;
+console.log('GAME_DESIGNER_PROVIDER=VIBE_LOCAL_OLLAMA');
+console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
+console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
+console.log('DESIGN_AI_REVIEW_LANES=NONE');
+const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
+const designerSeedPath=path.join(base,'design-seed.json');
+const submissionBase=path.join('artbook-submissions',gameId,date);
+const factPack=readJson(path.join(submissionBase,'fact-pack.json'),{});
+// 컨셉 단계에서 현재 보유 자산을 읽는다. 후보 요약은 설계 근거이며 최종 선택/품질 통과가 아니다.
+const designAssetLibraryPath='company-asset-library.json';
+const designAssetLibrary=readJson(designAssetLibraryPath,null);
+const designAssetLibraryContext={
+  source:designAssetLibraryPath,
+  status:Array.isArray(designAssetLibrary?.assets)?'AVAILABLE':'UNAVAILABLE',
+  version:designAssetLibrary?.version??null,
+  sha256:fs.existsSync(designAssetLibraryPath)?createHash('sha256').update(fs.readFileSync(designAssetLibraryPath)).digest('hex'):null,
+  inventoryCount:Array.isArray(designAssetLibrary?.assets)?designAssetLibrary.assets.length:0,
+  candidateSummaryOnly:true,
+  auditScoreIsNotRuntimeQuality:true,
+  productionVerificationGranted:false,
+  platforms:Object.fromEntries(['WEB','UNITY','ROBLOX'].map(target=>{
+    const binding=buildAllGameDynamicLibraryBindingPlan({companyRegistry:designAssetLibrary||{},gameId,target});
+    const eligibleIds=new Set(binding.evaluatedAssets.filter(row=>row.eligibleForRoleEvaluation).map(row=>row.assetId));
+    const assets=(Array.isArray(designAssetLibrary?.assets)?designAssetLibrary.assets:[]).filter(row=>eligibleIds.has(row.id)&&row.catalogActive!==false&&row.rightsPass!==false&&!/STALE|RETIRED|REJECTED/.test((clean(row.catalogState)+' '+clean(row.status)).toUpperCase()));
+    const summary=buildAssetSupplyDecisionSummary({
+      gameId,target,registry:{assets},requirements:seedFlowAssetRequirements,
+      request:[seed.DISTINCT_IDENTITY,seed.CORE_FUN_TO_LEARN,...(Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[])].map(clean).join(' ')
+    });
+    const byId=new Map(assets.map(row=>[row.id,row]));
+    return [target,{
+      evaluatedAssetCount:binding.evaluatedAssetCount,
+      eligibleAssetCount:assets.length,
+      requiredFamilies:summary.requiredFamilies,
+      availableRoles:Object.fromEntries(summary.requiredFamilies.map(family=>[family,uniq(assets.filter(asset=>clean(asset.family||asset.category).toUpperCase()===family).map(asset=>asset.role||asset.subfamily)).sort()])),
+      candidates:(Array.isArray(designAssetLibrary?.assets)?summary.nextActions:[]).map(action=>{
+        const asset=byId.get(action.assetId);
+        return {...action,...(asset?{
+          role:clean(asset.role||asset.subfamily)||null,
+          sourcePath:clean(asset.path||asset.sourceFiles?.[0])||null,
+          platform:clean(asset.platform)||null,
+          license:clean(asset.license)||null,
+          referenceOnly:asset.referenceVisualAudit?.referenceUseOnly===true||asset.platform==='SHARED_REFERENCE',
+          auditScore:Number.isFinite(asset.internalAuditScore)?asset.internalAuditScore:null,
+          auditState:clean(asset.internalAuditState)||'UNKNOWN',
+          qualityGap:clean(asset.internalAuditNextAction)||null,
+          runtimeState:clean(asset.runtimeVerificationState)||'UNVERIFIED',
+          productionVerified:asset.productionVerified===true
+        }:{})};
+      })
+    }];
+  }))
+};
+// 세 플랫폼의 동일 자산 사실은 한 번만 전달하고 적용 방식만 각각 유지한다.
+designAssetLibraryContext.assetFacts=Object.fromEntries(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.candidates.filter(row=>row.assetId).map(({assetId,action,reason,applicationMode,family,...facts})=>[assetId,{family,...facts}])));
+for(const platform of Object.values(designAssetLibraryContext.platforms)){
+  platform.candidates=platform.candidates.map(({family,action,assetId,applicationMode,reason,roleEvidence})=>({family,action,assetId,applicationMode,reason,roleEvidence}));
+}
+const designAssetFamilies=uniq(Object.values(designAssetLibraryContext.platforms).flatMap(platform=>platform.requiredFamilies||[]));
+const designLearningEvents=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
+  .filter(event=>clean(event?.gameId)===gameId&&clean(event?.reviewStage)==='DESIGN_STRICT_REVIEW')
+  .slice(-8);
+const designLearningContext={
+  role:'UNVALIDATED_DESIGN_FEEDBACK_ONLY',
+  successTrainingEligible:false,
+  validatedRuntimeRequiredForPositiveTraining:true,
+  recent:designLearningEvents.map(event=>({
+    verdict:clean(event?.verdict),
+    totalScore:Number.isFinite(Number(event?.totalScore))?Number(event.totalScore):null,
+    previousScore:Number.isFinite(Number(event?.previousScore))?Number(event.previousScore):null,
+    scoreDelta:Number.isFinite(Number(event?.scoreDelta))?Number(event.scoreDelta):null,
+    hardFailures:Array.isArray(event?.hardFailures)?event.hardFailures:[],
+    resolvedHardFailures:Array.isArray(event?.resolvedHardFailures)?event.resolvedHardFailures:[],
+    addedHardFailures:Array.isArray(event?.addedHardFailures)?event.addedHardFailures:[],
+    rejectionReasons:Array.isArray(event?.rejectionReasons)?event.rejectionReasons:[],
+    improvementTargets:Array.isArray(event?.improvementTargets)?event.improvementTargets:[],
+    recordedAt:clean(event?.recordedAt)
+  }))
+};
+const latestDesignFeedbackEvent=designLearningEvents.at(-1)||null;
+const strictDesignerFeedback={
+  source:'PRIOR_STRICT_DESIGN_REVIEW',
+  bypassAllowed:false,
+  verdict:clean(latestDesignFeedbackEvent?.verdict)||null,
+  totalScore:Number.isFinite(Number(latestDesignFeedbackEvent?.totalScore))?Number(latestDesignFeedbackEvent.totalScore):null,
+  hardFailures:Array.isArray(latestDesignFeedbackEvent?.hardFailures)?latestDesignFeedbackEvent.hardFailures.map(clean).filter(Boolean):[],
+  rejectionReasons:Array.isArray(latestDesignFeedbackEvent?.rejectionReasons)?latestDesignFeedbackEvent.rejectionReasons:[],
+  improvementTargets:Array.isArray(latestDesignFeedbackEvent?.improvementTargets)?latestDesignFeedbackEvent.improvementTargets:[],
+  recordedAt:clean(latestDesignFeedbackEvent?.recordedAt)||null
+};
+const designEvolutionBrief=buildDesignEvolutionBrief({
+  game,seed,factPack,priorFeedback:strictDesignerFeedback,
+  ownerSignal:{
+    literal:clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT||''),
+    eventId:clean(seed.ownerRequestInstanceId||seed.ownerDirectiveRevision||seed.ownerResetRevision||'')
+  }
+});
+const unityWebValidationSurfaceContract={role:'UNITY_WEB_VALIDATION_SURFACE_ONLY',separateGameTarget:false,canonicalSource:'SAME_UNITY_PROJECT',outputRoot:'web-games/<gameId>/',nativeGateAuthority:false,designRequirements:['UNITY_PROFILE_MUST_REMAIN_WEBGL_COMPATIBLE_WHEN_BUILDABLE','TOUCH_INPUT_AND_MOBILE_UI_MUST_WORK_IN_BROWSER_VALIDATION','BROWSER_PERFORMANCE_BUDGET_MUST_NOT_REQUIRE_SEPARATE_GAMEPLAY_RULES','WEB_VALIDATION_MAY_NOT_CHANGE_CORE_GAME_RULES_OR_BALANCE']};
+const evidence={game,currentRuleSourceContext,gameSeed:seed,seedDesignDepth:seedDesignDepthContext,factPack,designAssetLibraryContext,designLearningContext,designEvolutionBrief,unityWebValidationSurfaceContract,centralPolicy:CANONICAL_POLICY_PATH};
+const DESIGN_CHECKPOINT_CONTRACT_VERSION=4;
+const checkpointPath=path.join(base,'design-checkpoint.json');
+const progressPath=path.join(base,'design-progress.json');
+const policyDigest=createHash('sha256').update(fs.readFileSync(CANONICAL_POLICY_PATH,'utf8')).digest('hex');
+// 중앙정책 본문 SHA가 정확히 이전/변경 승인 정책일 때만 동일 입력 체크포인트를 승계한다.
+const threePlatformOnlyPolicyRevision=policyDigest==='976fe18afb5cd559146ab42808b3edbd106181d079356a0a22ee3c69d8932c7d'&&(()=>{
+  const roadmap=readJson(CANONICAL_POLICY_PATH,{}),counting=roadmap.directNativeDualPlatformDevelopment?.platformCountingPolicy;
+  return roadmap.version===553&&roadmap.finalDevelopmentLock?.sequenceLock?.status==='LOCKED'
+    &&counting?.targetCount===3&&JSON.stringify(counting.targets)===JSON.stringify(['ROBLOX','UNITY_ANDROID','UNITY_WEB'])
+    &&counting?.noNewAdapterWorkflowOrShadowPipeline===true
+    &&roadmap.changeRecord?.ownerThreePlatformTargets20261009?.targetCount===3;
+})();
+const engineFiles=[
+  'tools/company-design-cycle.mjs',
+  'tools/vibe2-design-intelligence.mjs',
+  'tools/company-design-gate-scoring-v2.mjs',
+  'tools/company-strict-production-review.mjs',
+  'tools/company-design-prepromotion-repair.mjs',
+  'tools/company-baseline-gate.mjs'
+];
+const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
+const checkpointInputContext={
+  contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
+  gameId,date,seed,evidence,strictDesignerFeedback,designerModel,coordinatorModel,
+  reviewModelCount,leadModels,departmentReviewModels,policyDigest,engineDigest,
+  discardPolicy:directive.discardPolicy?.DESIGN_ONLY||null
+};
+const checkpointFingerprint=createHash('sha256').update(JSON.stringify(checkpointInputContext)).digest('hex');
+const previousDesignerSeed=readJson(designerSeedPath,null);
+if(previousDesignerSeed&&(previousDesignerSeed.fingerprint!==checkpointFingerprint||previousDesignerSeed.engineDigest!==engineDigest))fs.rmSync(designerSeedPath,{force:true});
+let designCheckpoint=readJson(checkpointPath,null);
+const priorCheckpointStatus=clean(designCheckpoint?.status).toUpperCase();
+const checkpointReusable=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION&&designCheckpoint?.fingerprint===checkpointFingerprint;
+const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
+  &&clean(designCheckpoint?.gameId)===gameId
+  &&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&clean(designCheckpoint?.policyDigest)===policyDigest
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
+const checkpointCompatibleEngineDigests=new Set([
+  '4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec',
+  '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03',
+  '2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f',
+  '84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf',
+  '9aae351acc02880ef280b371a21ead70b013c820010af4eeb88e23fe059d71b3',
+  '81b77ec5e350f8737109235df27ddb3a375a99cf53bfce58e356fcdea285920b',
+  '4392f6c8aaf3b4a62d3195d1aa9afdb76cd0ba1f633317503035d6af19a057b9'
+]);
+// 기존 책임 함수: 정책상 플랫폼 개수 표시만 변경된 경우, 원본 입력 전체 SHA 일치 시 캐시 보존.
+const checkpointThreePlatformPolicyMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
+  &&threePlatformOnlyPolicyRevision
+  &&clean(designCheckpoint?.policyDigest)==='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade'
+  &&clean(designCheckpoint?.gameId)===gameId&&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&(clean(designCheckpoint?.engineDigest)===engineDigest
+    ||checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
+    ||['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest)))
+  &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,policyDigest:designCheckpoint.policyDigest,engineDigest:designCheckpoint.engineDigest})).digest('hex')
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
+const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
+  &&clean(designCheckpoint?.gameId)===gameId
+  &&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&clean(designCheckpoint?.policyDigest)===policyDigest
+  &&(checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
+    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest))
+      &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:designCheckpoint.engineDigest})).digest('hex')))
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
+if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible||checkpointThreePlatformPolicyMigrationEligible)){
+  const previousContractVersion=Number(designCheckpoint.contractVersion||0);
+  const previousEngineDigest=clean(designCheckpoint.engineDigest);
+  designCheckpoint={
+    ...designCheckpoint,
+    contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
+    fingerprint:checkpointFingerprint,
+    policyDigest,
+    engineDigest,
+    status:'IN_PROGRESS',
+    phases:designCheckpoint.phases,
+    tasks:designCheckpoint.tasks,
+    modelHealth:designCheckpoint.modelHealth,
+    slowPhases:designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{},
+    completedPhases:Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[],
+    checkpointMigration:{
+      fromContractVersion:previousContractVersion,
+      toContractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
+      reason:checkpointThreePlatformPolicyMigrationEligible?'THREE_PLATFORM_COUNT_EXACT_POLICY_IDENTITY_MIGRATION':checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
+      previousEngineDigest,
+      preservedPhaseCount:Object.keys(designCheckpoint.phases).length,
+      preservedTaskCount:Object.keys(designCheckpoint.tasks).length,
+      migratedAt:new Date().toISOString()
+    },
+    updatedAt:new Date().toISOString()
+  };
+  if(checkpointThreePlatformPolicyMigrationEligible||previousEngineDigest==='d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904'){
+    // 작성 응답 조각은 유지하고 기존 완성 단계만 새로운 내용 검사로 재검토한다.
+    delete designCheckpoint.phases.designer_draft;
+    designCheckpoint.completedPhases=designCheckpoint.completedPhases.filter(phase=>phase!=='designer_draft');
+  }
+  writeJson(checkpointPath,designCheckpoint);
+  console.log(`DESIGN_CHECKPOINT_MIGRATED=${previousContractVersion===2?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'}|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
+}else if(!checkpointReusable){
+  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  writeJson(checkpointPath,designCheckpoint);
+  console.log('DESIGN_CHECKPOINT_RESET=YES');
+}else{
+  designCheckpoint.phases=designCheckpoint.phases&&typeof designCheckpoint.phases==='object'?designCheckpoint.phases:{};
+  designCheckpoint.tasks=designCheckpoint.tasks&&typeof designCheckpoint.tasks==='object'?designCheckpoint.tasks:{};
+  designCheckpoint.modelHealth=designCheckpoint.modelHealth&&typeof designCheckpoint.modelHealth==='object'?designCheckpoint.modelHealth:{};
+  designCheckpoint.slowPhases=designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{};
+  designCheckpoint.completedPhases=Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[];
+  designCheckpoint.engineDigest=engineDigest;
+  designCheckpoint.status='IN_PROGRESS';
+  designCheckpoint.updatedAt=new Date().toISOString();
+  writeJson(checkpointPath,designCheckpoint);
+  console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
+}
+if(priorCheckpointStatus==='PRE_GATE_BLOCKED'&&Object.prototype.hasOwnProperty.call(designCheckpoint.phases||{},'designer_draft')){
+  const retryPhases=[
+    'designer_pre_gate_repair_1',
+    'deterministic_pre_gate_after_repair_1',
+    'designer_pre_gate_repair_2',
+    'deterministic_pre_gate_after_repair_2'
+  ];
+  let invalidated=0;
+  for(const phase of retryPhases){
+    if(Object.prototype.hasOwnProperty.call(designCheckpoint.phases,phase)){
+      delete designCheckpoint.phases[phase];
+      invalidated+=1;
+    }
+  }
+  designCheckpoint.completedPhases=(designCheckpoint.completedPhases||[]).filter(phase=>!retryPhases.includes(phase));
+  designCheckpoint.preGateRepairGeneration=Math.max(0,Number(designCheckpoint.preGateRepairGeneration||0))+1;
+  designCheckpoint.failedPhase=null;
+  designCheckpoint.failedTask=null;
+  designCheckpoint.lastError=null;
+  designCheckpoint.currentPhase='PRE_GATE_REPAIR';
+  designCheckpoint.status='IN_PROGRESS';
+  designCheckpoint.updatedAt=new Date().toISOString();
+  writeJson(checkpointPath,designCheckpoint);
+  console.log(`DESIGN_PRE_GATE_REPAIR_RETRY_GENERATION=${designCheckpoint.preGateRepairGeneration}|invalidated=${invalidated}|fullCycleRestart=NO`);
+}
+const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','DESIGNER_REVISION','COMPLETE'];
+function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}){
+  const index=Math.max(0,PROGRESS_STAGE_ORDER.indexOf(stage));
+  const percent=stage==='COMPLETE'?100:Math.round(index/(PROGRESS_STAGE_ORDER.length-1)*100);
+  writeJson(progressPath,{
+    version:2,gameId,date,engineDigest,status:designCheckpoint.status,currentStage:stage,percent,
+    completedPhases:[...designCheckpoint.completedPhases],
+    completedPhaseCount:designCheckpoint.completedPhases.length,
+    cachedTaskCount:Object.keys(designCheckpoint.tasks).length,
+    lastSuccessfulModelCallAt:designCheckpoint.lastSuccessfulModelCallAt||null,
+    failedPhase:designCheckpoint.failedPhase||null,
+    failedTask:designCheckpoint.failedTask||null,
+    lastError:designCheckpoint.lastError||null,
+    designerSeed:designCheckpoint.designerSeed||null,
+    modelHealth:designCheckpoint.modelHealth||{},
+    slowPhases:designCheckpoint.slowPhases||{},
+    updatedAt:new Date().toISOString(),
+    ...extra
+  });
+}
+function persistDesignCheckpoint(){
+  designCheckpoint.assetLibraryContext=designAssetLibraryContext;
+  designCheckpoint.updatedAt=new Date().toISOString();
+  writeJson(checkpointPath,designCheckpoint);
+  writeProgress();
+}
+writeProgress('BOOTSTRAP',{checkpointReusable});
+
+const MEMBER_TEXT={type:'string',maxLength:130};
+const MEMBER_REVIEW={type:'object',required:['keep','fix','add','risks','evidence','questions'],properties:{keep:{type:'array',maxItems:1,items:MEMBER_TEXT},fix:{type:'array',maxItems:1,items:MEMBER_TEXT},add:{type:'array',maxItems:1,items:MEMBER_TEXT},risks:{type:'array',maxItems:1,items:MEMBER_TEXT},evidence:{type:'array',maxItems:1,items:MEMBER_TEXT},questions:{type:'array',maxItems:1,items:MEMBER_TEXT}},additionalProperties:false};
+const SHORT_TEXT={type:'string',maxLength:260};
+const allGamesMultiplayerRequired=readJson(CANONICAL_POLICY_PATH,{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.required===true;
+const originalMultiplayerMode=clean(seed.MULTIPLAYER_DESIGN_MODE||seed.INITIAL_PLAY_MODE).toUpperCase();
+const MULTIPLAYER_MODES=['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?[originalMultiplayerMode]
+  :allGamesMultiplayerRequired?['COOP','COMPETITIVE','HYBRID']:['SINGLE','COOP','COMPETITIVE','HYBRID'];
+// 플레이 근거 스키마: 기존 설계 필드 안에서 규칙·능력·상태·자산을 연결한다.
+const RULE_IDS={type:'array',minItems:1,maxItems:12,items:{type:'string',maxLength:80}};
+const STATE_VALUES={type:'array',minItems:1,maxItems:16,items:{type:'object',required:['key','value'],properties:{key:{type:'string',maxLength:80},value:{type:'number'}},additionalProperties:false}};
+const ABILITY_CONTRACT={type:'object',required:['id','name','kind','ownerId','ruleId','trigger','range','rangeUnit','resource','cost','cooldownSeconds','telegraph','avoidance','effect','stateInputs','stateOutputs','source','rangeKey','costKey','cooldownKey'],properties:{
+  id:{type:'string',maxLength:80},name:{type:'string',maxLength:100},kind:{type:'string',enum:['INFECTION','PURIFICATION','HUMAN','INFECTED','MONSTER','MOVEMENT','INTERACTION']},ownerId:{type:'string',maxLength:80},ruleId:{type:'string',maxLength:80},
+  trigger:{type:'string',maxLength:400},range:{type:'number',minimum:0},rangeUnit:{type:'string',maxLength:40},resource:{type:'string',maxLength:80},cost:{type:'number',minimum:0},cooldownSeconds:{type:'number',minimum:0},
+  telegraph:{type:'string',maxLength:400},avoidance:{type:'string',maxLength:400},effect:{type:'string',maxLength:400},stateInputs:RULE_IDS,stateOutputs:RULE_IDS,source:{type:'string',maxLength:400},rangeKey:{type:'string',maxLength:80},costKey:{type:'string',maxLength:80},cooldownKey:{type:'string',maxLength:80}
+},additionalProperties:false};
+const ROLE_TRANSITION={type:'object',required:['humanId','humanTool','humanAbilityId','infectedAbilityId','retainedState','removedState','changedChoice'],properties:{humanId:{type:'string',maxLength:80},humanTool:{type:'string',maxLength:120},humanAbilityId:{type:'string',maxLength:80},infectedAbilityId:{type:'string',maxLength:80},retainedState:{type:'string',maxLength:320},removedState:{type:'string',maxLength:320},changedChoice:{type:'string',maxLength:420}},additionalProperties:false};
+const STRATEGY_CONTRACT={type:'object',required:['routeEdges','resourceSites','cooperation','advantage','cost','bestSituation'],properties:{
+  routeEdges:{type:'array',minItems:1,maxItems:12,items:{type:'object',required:['from','to'],properties:{from:{type:'string',maxLength:80},to:{type:'string',maxLength:80}},additionalProperties:false}},
+  resourceSites:{type:'array',minItems:1,maxItems:12,items:{type:'object',required:['stateKey','regionId'],properties:{stateKey:{type:'string',maxLength:80},regionId:{type:'string',maxLength:80}},additionalProperties:false}},
+  cooperation:{type:'array',minItems:1,maxItems:12,items:{type:'object',required:['ruleId','regionId','abilityId'],properties:{ruleId:{type:'string',maxLength:80},regionId:{type:'string',maxLength:80},abilityId:{type:'string',maxLength:80}},additionalProperties:false}},
+  advantage:{type:'string',maxLength:400},cost:{type:'string',maxLength:400},bestSituation:{type:'string',maxLength:400}
+},additionalProperties:false};
+const PLAY_ACTION={type:'object',required:['abilityId','actorId','targetId','atSeconds','distance','energyBefore','energyAfter','hit','response'],properties:{abilityId:{type:'string',maxLength:80},actorId:{type:'string',maxLength:80},targetId:{type:'string',maxLength:80},atSeconds:{type:'number',minimum:0},distance:{type:'number',minimum:0},energyBefore:{type:'number',minimum:0},energyAfter:{type:'number',minimum:0},hit:{type:'boolean'},response:{type:'string',maxLength:400}},additionalProperties:false};
+const ASSET_BINDING={type:'object',required:['family','role','bodyPlan','behavior','presentation','ruleIds','useLocation','assetId','decision','selectionReason','improvement','platformAdaptation','validation'],properties:{family:{type:'string',maxLength:80},role:{type:'string',maxLength:100},bodyPlan:{type:'string',maxLength:260},behavior:{type:'string',maxLength:300},presentation:{type:'string',maxLength:300},ruleIds:RULE_IDS,useLocation:{type:'string',maxLength:300},assetId:{type:'string',maxLength:160},decision:{type:'string',enum:['USE','ADAPT','AUTHOR','UNRESOLVED']},selectionReason:{type:'string',maxLength:400},improvement:{type:'string',maxLength:400},platformAdaptation:{type:'string',maxLength:400},validation:{type:'string',maxLength:400}},additionalProperties:false};
+const REVIEW={type:'object',required:['keep','fix','add','risks','evidence','questions'],properties:{keep:{type:'array',maxItems:2,items:SHORT_TEXT},fix:{type:'array',maxItems:2,items:SHORT_TEXT},add:{type:'array',maxItems:2,items:SHORT_TEXT},risks:{type:'array',maxItems:2,items:SHORT_TEXT},evidence:{type:'array',maxItems:2,items:SHORT_TEXT},questions:{type:'array',maxItems:2,items:SHORT_TEXT}},additionalProperties:false};
+const SYSTEM_INTERCONNECTION={type:'object',required:['fromSystem','toSystem','trigger','stateChange','fromId','toId','stateKeys'],properties:{fromId:{type:'string',maxLength:80},toId:{type:'string',maxLength:80},stateKeys:RULE_IDS,fromSystem:{type:'string',maxLength:180},toSystem:{type:'string',maxLength:180},trigger:{type:'string',maxLength:300},stateChange:{type:'string',maxLength:360}},additionalProperties:false};
+const PROGRESSION_ECONOMY_BALANCE={type:'object',required:['progressionLoop','resourceFlow','balanceRules'],properties:{progressionLoop:{type:'string',maxLength:700},resourceFlow:{type:'string',maxLength:700},balanceRules:{type:'string',maxLength:700}},additionalProperties:false};
+const CONTENT_EXPANSION={type:'object',required:['milestone','newGameplay','systemImpact'],properties:{milestone:{type:'string',maxLength:220},newGameplay:{type:'string',maxLength:500},systemImpact:{type:'string',maxLength:500}},additionalProperties:false};
+const FAILURE_RETRY_RISK={type:'object',required:['failureStates','retryFlow','riskPressure','recoveryRules'],properties:{failureStates:{type:'array',minItems:2,maxItems:6,items:{type:'string',maxLength:260}},retryFlow:{type:'string',maxLength:600},riskPressure:{type:'string',maxLength:600},recoveryRules:{type:'string',maxLength:600}},additionalProperties:false};
+const PLATFORM_FIT_PLAN={type:'object',required:['targetPlatform','inputModel','performanceBudget','sessionConstraints'],properties:{targetPlatform:{type:'string',enum:['ROBLOX','UNITY','FORTNITE_UEFN']},inputModel:{type:'string',maxLength:600},performanceBudget:{type:'string',maxLength:600},sessionConstraints:{type:'string',maxLength:600}},additionalProperties:false};
+const PLATFORM_PROFILE={type:'object',required:['platform','inputModel','sessionModel','multiplayerRuntime','performanceBudget','uiUx','saveAndNetwork','platformContentAdaptation','internalReleaseTarget','validationEvidence'],properties:{platform:{type:'string',enum:['ROBLOX','UNITY']},inputModel:{type:'string',maxLength:700},sessionModel:{type:'string',maxLength:700},multiplayerRuntime:{type:'string',maxLength:700},performanceBudget:{type:'string',maxLength:700},uiUx:{type:'string',maxLength:700},saveAndNetwork:{type:'string',maxLength:700},platformContentAdaptation:{type:'string',maxLength:700},internalReleaseTarget:{type:'string',maxLength:700},validationEvidence:{type:'string',maxLength:700}},additionalProperties:false};
+// 유니티 웹 게임은 설계부터 실제 2.5D 이상의 공간 그래픽과 모바일 검증을 정의한다.
+const UNITY_WEB_SPATIAL_PRESENTATION={type:'object',required:['dimension','worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'],properties:{
+  dimension:{type:'string',enum:['2.5D','3D']},
+  worldDepth:{type:'string',maxLength:700},
+  cameraAndOcclusion:{type:'string',maxLength:700},
+  lightingAndMaterials:{type:'string',maxLength:700},
+  mobileWebglEvidence:{type:'string',maxLength:700}
+},additionalProperties:false};
+const PLATFORM_PROFILES={type:'object',required:['ROBLOX','UNITY'],properties:{
+  ROBLOX:{...PLATFORM_PROFILE,properties:{...PLATFORM_PROFILE.properties,platform:{type:'string',enum:['ROBLOX']}}},
+  UNITY:{...PLATFORM_PROFILE,required:[...PLATFORM_PROFILE.required,'unityWebSpatialPresentation'],properties:{...PLATFORM_PROFILE.properties,platform:{type:'string',enum:['UNITY']},unityWebSpatialPresentation:UNITY_WEB_SPATIAL_PRESENTATION}}
+},additionalProperties:false};
+const WEB_CANONICAL_DESIGN={type:'object',required:['role','designAuthority','playerFlow','worldAndTraversal','systemsAndContent','combatAndInteraction','progressionAndEconomy','sessionFailureRecovery','uiMenuAndOnboarding','inputCameraAccessibility','presentationAndAudio','multiplayerPersistence','expansionSpace'],properties:{role:{type:'string',enum:['SHARED_DESIGN_WEB_APPLICATION']},designAuthority:{type:'string',enum:['GAME_DESIGN_REFERENCE_NOT_SOURCE_CODE_AUTHORITY']},playerFlow:{type:'array',minItems:4,maxItems:8,items:{type:'string',maxLength:340}},worldAndTraversal:{type:'string',maxLength:900},systemsAndContent:{type:'string',maxLength:900},combatAndInteraction:{type:'string',maxLength:900},progressionAndEconomy:{type:'string',maxLength:900},sessionFailureRecovery:{type:'string',maxLength:900},uiMenuAndOnboarding:{type:'string',maxLength:900},inputCameraAccessibility:{type:'string',maxLength:900},presentationAndAudio:{type:'string',maxLength:900},multiplayerPersistence:{type:'string',maxLength:900},expansionSpace:{type:'string',maxLength:900}},additionalProperties:false};
+const PLATFORM_EXPANSION_POLICY={type:'object',required:['mode','sharedLargeFrame','expansionLimit','webRule','unityRule','robloxRule'],properties:{mode:{type:'string',enum:['SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION']},sharedLargeFrame:{type:'array',minItems:5,maxItems:5,items:{type:'string',enum:['CORE_IDENTITY','CORE_FUN_AND_REPRESENTATIVE_LOOP','WORLD_AND_PROGRESSION_DIRECTION','SAVE_PERSISTENCE_MEANING','MULTIPLAYER_INTENT']}},expansionLimit:{type:'string',enum:['GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION']},webRule:{type:'string',maxLength:900},unityRule:{type:'string',maxLength:900},robloxRule:{type:'string',maxLength:900}},additionalProperties:false};
+const UX_ACCESSIBILITY_PLAN={type:'object',required:['hudPriorities','touchAndInput','readability','accessibility','menuStructure','convenienceDecisions'],properties:{hudPriorities:{type:'string',maxLength:500},touchAndInput:{type:'string',maxLength:500},readability:{type:'string',maxLength:500},accessibility:{type:'string',maxLength:500},menuStructure:{type:'string',maxLength:800},convenienceDecisions:{type:'string',maxLength:800}},additionalProperties:false};
+const ART_AUDIO_DIRECTION={type:'object',required:['visualIdentity','audioIdentity','gameplayFeedbackSync',...(!ownerPreservationDesign?['assetBindings']:[])],properties:{assetBindings:{type:'array',minItems:Math.max(1,designAssetFamilies.length),maxItems:24,items:ASSET_BINDING},visualIdentity:{type:'string',maxLength:600},audioIdentity:{type:'string',maxLength:600},gameplayFeedbackSync:{type:'string',maxLength:600}},additionalProperties:false};
+const IMPLEMENTATION_TRACE={type:'object',required:['designElement','responsibleSystem','validationEvidence'],properties:{designElement:{type:'string',maxLength:240},responsibleSystem:{type:'string',maxLength:240},validationEvidence:{type:'string',maxLength:420}},additionalProperties:false};
+const PRESERVATION_CONTRACT={type:'object',required:['mode','sourceOfTruth','lockedSemantics','presentationPasses','gameplayRule','targetSessionMinutes'],properties:{mode:{type:'string',enum:['PRESERVATION_PRESENTATION_UPGRADE']},sourceOfTruth:{type:'string',enum:['EXISTING_IMPLEMENTATION_AND_OWNER_SEED']},lockedSemantics:{type:'array',minItems:8,maxItems:12,items:{type:'string',enum:['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE']}},presentationPasses:{type:'array',minItems:7,maxItems:7,items:{type:'string',enum:['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']}},gameplayRule:{type:'string',enum:['NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE']},targetSessionMinutes:{type:'number'}},additionalProperties:false};
+const DESIGN_ALTERNATIVE={type:'object',required:['label','concept','playerFantasy','genreDirection','coreLoopShift','mapTopologyRegionRoles','landmarksTraversal','enemyEcosystemCounterplay','bossSignatureMoments','progressionEconomy','questStoryEventFlow','failureRetryRecovery','platformAdaptation','implementationScope','validationPlan',...(!ownerPreservationDesign?['strategy']:[])],properties:{strategy:STRATEGY_CONTRACT,label:{type:'string',enum:['PLAN_A','PLAN_B','PLAN_C']},concept:{type:'string',maxLength:900},playerFantasy:{type:'string',maxLength:700},genreDirection:{type:'string',maxLength:420},coreLoopShift:{type:'string',maxLength:700},mapTopologyRegionRoles:{type:'string',maxLength:800},landmarksTraversal:{type:'string',maxLength:700},enemyEcosystemCounterplay:{type:'string',maxLength:800},bossSignatureMoments:{type:'string',maxLength:700},progressionEconomy:{type:'string',maxLength:800},questStoryEventFlow:{type:'string',maxLength:800},failureRetryRecovery:{type:'string',maxLength:700},platformAdaptation:{type:'string',maxLength:800},implementationScope:{type:'string',maxLength:800},validationPlan:{type:'string',maxLength:800}},additionalProperties:false};
+const SELECTED_DESIGN_PLAN={type:'object',required:['label','rationale','identityPreserved','creativeDeviation','genreChange','reversibility','playthrough','durationRationale',...(!ownerPreservationDesign?['roundSeconds','sessionSeconds',...(playableRequirements.infection?['participants']:[])]:[])],properties:{participants:{type:'array',minItems:playableRequirements.lockedNumbers.TargetPopulation||1,maxItems:32,items:{type:'object',required:['id','role','classId'],properties:{id:{type:'string',maxLength:80},role:{type:'string',enum:['HUMAN','MONSTER']},classId:{type:'string',maxLength:80}},additionalProperties:false}},roundSeconds:{type:'number',minimum:1},sessionSeconds:{type:'number',minimum:1},label:{type:'string',enum:['PLAN_A','PLAN_B','PLAN_C']},rationale:{type:'string',maxLength:900},identityPreserved:{type:'string',maxLength:600},creativeDeviation:{type:'string',maxLength:600},genreChange:{type:'boolean'},reversibility:{type:'string',maxLength:600},playthrough:{type:'array',minItems:playableRequirements.phases.length,maxItems:playableRequirements.phases.length,items:{type:'object',required:['phase','entryState','playerChoice','actionAndResponse','exitState','nextDecision',...(!ownerPreservationDesign?['startSeconds','endSeconds','timeReason','before','after','actions','ruleIds','outcome']:[])],properties:{startSeconds:{type:'number',minimum:0},endSeconds:{type:'number',minimum:0},timeReason:{type:'string',maxLength:360},before:STATE_VALUES,after:STATE_VALUES,actions:{type:'array',maxItems:16,items:PLAY_ACTION},ruleIds:RULE_IDS,outcome:{type:'string',enum:['ONGOING','HUMAN_WIN','MONSTER_WIN','DRAW','SUCCESS','FAILURE']},phase:{type:'string',enum:playableRequirements.phases},entryState:{type:'string',maxLength:300},playerChoice:{type:'string',maxLength:360},actionAndResponse:{type:'string',maxLength:700},exitState:{type:'string',maxLength:300},nextDecision:{type:'string',maxLength:360}},additionalProperties:false}},durationRationale:{type:'string',maxLength:900}},additionalProperties:false};
+const VARIETY_REGION={type:'object',required:['name','traversal','riskReward','landmark','encounterPattern','resourcePressure','storyContext',...(!ownerPreservationDesign?['id','ruleIds']:[])],properties:{id:{type:'string',maxLength:80},ruleIds:RULE_IDS,name:{type:'string',maxLength:180},traversal:{type:'string',maxLength:420},riskReward:{type:'string',maxLength:420},landmark:{type:'string',maxLength:420},encounterPattern:{type:'string',maxLength:420},resourcePressure:{type:'string',maxLength:420},storyContext:{type:'string',maxLength:420}},additionalProperties:false};
+const VARIETY_ENEMY={type:'object',required:['name','behavior','counterplay','positioning','timing','mobility','groupRole','identity','rewardMeaning'],properties:{name:{type:'string',maxLength:180},behavior:{type:'string',maxLength:420},counterplay:{type:'string',maxLength:420},positioning:{type:'string',maxLength:420},timing:{type:'string',maxLength:420},mobility:{type:'string',maxLength:420},groupRole:{type:'string',maxLength:420},identity:{type:'string',maxLength:420},rewardMeaning:{type:'string',maxLength:420}},additionalProperties:false};
+const CONTENT_VARIETY_PLAN={type:'object',required:['regions','enemiesOrChallenges','objectives','antiMonotonyRule',...(!ownerPreservationDesign?['abilities','roleTransitions']:[])],properties:{abilities:{type:'array',minItems:Math.max(2,playableRequirements.humanRoster.length*2+playableRequirements.monsterRoster.length+(playableRequirements.infection?2:0)),maxItems:64,items:ABILITY_CONTRACT},roleTransitions:{type:'array',minItems:playableRequirements.humanRoster.length,maxItems:32,items:ROLE_TRANSITION},regions:{type:'array',minItems:ownerPreservationDesign?0:2,maxItems:12,items:VARIETY_REGION},enemiesOrChallenges:{type:'array',maxItems:8,items:VARIETY_ENEMY},objectives:{type:'array',maxItems:8,items:{type:'object',required:['role','variation'],properties:{role:{type:'string',maxLength:180},variation:{type:'string',maxLength:420}},additionalProperties:false}},antiMonotonyRule:{type:'string',maxLength:800}},additionalProperties:false};
+const CHARACTER_VOICE_PROFILE={type:'object',required:['character','grammarRegister','vocabularyRhythm','relationshipShift','emotionalRange','knowledgeBoundary','subtextBehavior'],properties:{character:{type:'string',maxLength:180},grammarRegister:{type:'string',maxLength:420},vocabularyRhythm:{type:'string',maxLength:420},relationshipShift:{type:'string',maxLength:420},emotionalRange:{type:'string',maxLength:420},knowledgeBoundary:{type:'string',maxLength:420},subtextBehavior:{type:'string',maxLength:420}},additionalProperties:false};
+const SCENE_BEAT={type:'object',required:['scene','purpose','characterGoals','conflict','informationAsymmetry','reversal','stateChange'],properties:{scene:{type:'string',maxLength:240},purpose:{type:'string',maxLength:420},characterGoals:{type:'string',maxLength:420},conflict:{type:'string',maxLength:420},informationAsymmetry:{type:'string',maxLength:420},reversal:{type:'string',maxLength:420},stateChange:{type:'string',maxLength:420}},additionalProperties:false};
+const NARRATIVE_DIALOGUE_PLAN={type:'object',required:['applicable','worldRules','characterGoals','plotBeats','questStates','foreshadowing','payoffs','twists','dialogueRules','characterVoiceProfiles','sceneBeats'],properties:{applicable:{type:'boolean'},worldRules:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},characterGoals:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},plotBeats:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},questStates:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},foreshadowing:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},payoffs:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},twists:{type:'array',maxItems:4,items:{type:'string',maxLength:500}},dialogueRules:{type:'array',maxItems:8,items:{type:'string',maxLength:420}},characterVoiceProfiles:{type:'array',maxItems:8,items:CHARACTER_VOICE_PROFILE},sceneBeats:{type:'array',maxItems:8,items:SCENE_BEAT}},additionalProperties:false};
+const REFERENCE_HOMAGE_PLAN={type:'object',required:['inspirations','originalityRule'],properties:{inspirations:{type:'array',maxItems:5,items:{type:'object',required:['titleOrTradition','rightsBasis','borrowedTechnique','transformation'],properties:{titleOrTradition:{type:'string',maxLength:220},rightsBasis:{type:'string',enum:['PUBLIC_DOMAIN','ABSTRACT_TECHNIQUE','ORIGINAL']},borrowedTechnique:{type:'string',maxLength:500},transformation:{type:'string',maxLength:600}},additionalProperties:false}},originalityRule:{type:'string',maxLength:800}},additionalProperties:false};
+const DESIGN_INTEGRITY_PLAN={type:'object',required:['movementAndControlReachable','spawnToFirstActionReachable','progressionReachable','questPrerequisitesSatisfiable','sessionEndReachable','failureRecoveryReachable','mapObjectivesReachable','economyFeasible','counterplayFeasible','bossPhaseTransitionsReachable','multiplayerLifecycleFeasible','saveCompatible','narrativeCausalityConsistent','notes',...(!ownerPreservationDesign?['authoringVersion','flowAudit']:[])],properties:{authoringVersion:{type:'number',enum:[2]},flowAudit:{type:'array',minItems:playableRequirements.phases.length,maxItems:playableRequirements.phases.length,items:{type:'object',required:['phase','reachableBy','blockedCase','recovery','nextPhase'],properties:{phase:{type:'string',enum:playableRequirements.phases},reachableBy:RULE_IDS,blockedCase:{type:'string',maxLength:360},recovery:{type:'string',maxLength:360},nextPhase:{type:'string',maxLength:80}},additionalProperties:false}},movementAndControlReachable:{type:'boolean'},spawnToFirstActionReachable:{type:'boolean'},progressionReachable:{type:'boolean'},questPrerequisitesSatisfiable:{type:'boolean'},sessionEndReachable:{type:'boolean'},failureRecoveryReachable:{type:'boolean'},mapObjectivesReachable:{type:'boolean'},economyFeasible:{type:'boolean'},counterplayFeasible:{type:'boolean'},bossPhaseTransitionsReachable:{type:'boolean'},multiplayerLifecycleFeasible:{type:'boolean'},saveCompatible:{type:'boolean'},narrativeCausalityConsistent:{type:'boolean'},notes:{type:'array',minItems:2,maxItems:12,items:{type:'string',maxLength:420}}},additionalProperties:false};
+const STABILITY_PRIORITY_PLAN={type:'object',required:['signals','priorityRule'],properties:{signals:{type:'array',maxItems:10,items:{type:'object',required:['symptom','severity','causeClass','evidence'],properties:{symptom:{type:'string',maxLength:420},severity:{type:'string',enum:['CRITICAL','HIGH','MEDIUM','LOW']},causeClass:{type:'string',enum:['IMPLEMENTATION_RUNTIME_DEFECT','DESIGN_DEFECT','MIXED_DEFECT','UNRESOLVED_CAUSE']},evidence:{type:'string',maxLength:500}},additionalProperties:false}},priorityRule:{type:'string',maxLength:700}},additionalProperties:false};
+
+// MAIN×A×B×C+@는 모든 게임에서 원본 설계로 작성한다. 이전 MAIN-only 설계는 재작성 대상이다.
+const CREATIVE_THEME={type:'object',required:['name','kind','gameplayEffect'],properties:{
+  name:{type:'string',minLength:2,maxLength:160},kind:{type:'string',enum:['GENRE','MATERIAL']},
+  gameplayEffect:{type:'string',minLength:16,maxLength:600}
+},additionalProperties:false};
+const CREATIVE_AXIS={type:'object',required:['system','material','materialDomain','stateChange'],properties:{
+  system:{type:'string',minLength:2,maxLength:180},material:{type:'string',minLength:2,maxLength:180},
+  materialDomain:{type:'string',minLength:2,maxLength:180},stateChange:{type:'string',minLength:20,maxLength:700}
+},additionalProperties:false};
+const CREATIVE_GENRE={type:'object',required:['role','name','gameplayEffect'],properties:{
+  role:{type:'string',enum:['PRIMARY','SECONDARY']},
+  name:{type:'string',minLength:2,maxLength:180},
+  gameplayEffect:{type:'string',minLength:16,maxLength:650}
+},additionalProperties:false};
+const CREATIVE_GRAMMAR={type:'object',required:['mainIdentity','a','b','abCausality','abEvolution','materialFusion','storyCausalChain','cThemes','cGenres','cGenreInterlock','cWorldAndGameplayEffect','delveDiscoveries','delveGrowthRule','finalGameIdentity'],properties:{
+  mainIdentity:{type:'string',minLength:15,maxLength:700},a:CREATIVE_AXIS,b:CREATIVE_AXIS,
+  abCausality:{type:'string',minLength:35,maxLength:900},
+  abEvolution:{type:'object',required:['aChangesB','bChangesA','lateGameChange'],properties:{
+    aChangesB:{type:'string',minLength:25,maxLength:700},
+    bChangesA:{type:'string',minLength:25,maxLength:700},
+    lateGameChange:{type:'string',minLength:25,maxLength:700}
+  },additionalProperties:false},
+  materialFusion:{type:'object',required:['contrast','causalBridge','removalConsequence'],properties:{
+    contrast:{type:'string',minLength:25,maxLength:700},
+    causalBridge:{type:'string',minLength:25,maxLength:700},
+    removalConsequence:{type:'string',minLength:25,maxLength:700}
+  },additionalProperties:false},
+  storyCausalChain:{type:'object',required:['cause','characterConflict','playerChoice','worldChange','nextEvent'],properties:{
+    cause:{type:'string',minLength:20,maxLength:700},
+    characterConflict:{type:'string',minLength:20,maxLength:700},
+    playerChoice:{type:'string',minLength:20,maxLength:700},
+    worldChange:{type:'string',minLength:20,maxLength:700},
+    nextEvent:{type:'string',minLength:20,maxLength:700}
+  },additionalProperties:false},
+  cThemes:{type:'array',minItems:2,maxItems:2,items:CREATIVE_THEME},
+  cGenres:{type:'array',minItems:2,maxItems:2,items:CREATIVE_GENRE},
+  cGenreInterlock:{type:'string',minLength:30,maxLength:900},
+  cWorldAndGameplayEffect:{type:'string',minLength:30,maxLength:900},
+  delveDiscoveries:{type:'array',minItems:4,items:{type:'object',required:['clue','discovery','newChoice'],properties:{clue:{type:'string',minLength:10,maxLength:500},discovery:{type:'string',minLength:10,maxLength:500},newChoice:{type:'string',minLength:15,maxLength:500}},additionalProperties:false}},
+  delveGrowthRule:{type:'string',minLength:25,maxLength:700},
+  finalGameIdentity:{type:'string',minLength:18,maxLength:700}
+},additionalProperties:false};
+const DESIGN={type:'object',required:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],properties:{creativeGrammar:CREATIVE_GRAMMAR,identity:{type:'string',maxLength:1000},playerFantasy:{type:'string',maxLength:900},coreFun:{type:'string',maxLength:900},coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:340}},signatureSystems:{type:'array',minItems:seedGameplaySketchVersion>=5?4:5,maxItems:12,items:{type:'object',required:['name','purpose','playerChoice','id','grammarRole','stateInputs','stateOutputs'],properties:{id:{type:'string',maxLength:80},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},stateInputs:RULE_IDS,stateOutputs:RULE_IDS,name:{type:'string',maxLength:130},purpose:{type:'string',maxLength:440},playerChoice:{type:'string',maxLength:440}},additionalProperties:false}},systemInterconnections:{type:'array',minItems:5,maxItems:24,items:SYSTEM_INTERCONNECTION},progressionDirection:{type:'string',maxLength:900},progressionEconomyBalance:PROGRESSION_ECONOMY_BALANCE,contentExpansionPlan:{type:'array',minItems:3,maxItems:6,items:CONTENT_EXPANSION},failureRetryRisk:FAILURE_RETRY_RISK,platformFitPlan:PLATFORM_FIT_PLAN,platformProfiles:PLATFORM_PROFILES,webCanonicalDesign:WEB_CANONICAL_DESIGN,platformExpansionPolicy:PLATFORM_EXPANSION_POLICY,visualDirection:{type:'string',maxLength:900},mobileUx:{type:'string',maxLength:900},uxAccessibilityPlan:UX_ACCESSIBILITY_PLAN,artAudioDirection:ART_AUDIO_DIRECTION,marketTargetDirection:{type:'string',maxLength:900},steamExpansionDecision:{type:'string',maxLength:500},multiplayerMode:{type:'string',enum:MULTIPLAYER_MODES},multiplayerExpansionDecision:{type:'string',maxLength:500},designAlternatives:{type:'array',minItems:2,maxItems:3,items:DESIGN_ALTERNATIVE},selectedDesignPlan:SELECTED_DESIGN_PLAN,contentVarietyPlan:CONTENT_VARIETY_PLAN,narrativeDialoguePlan:NARRATIVE_DIALOGUE_PLAN,referenceHomagePlan:REFERENCE_HOMAGE_PLAN,designIntegrityPlan:DESIGN_INTEGRITY_PLAN,stabilityPriorityPlan:STABILITY_PRIORITY_PLAN,technicalAssumptions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},validationQuestions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},implementationTraceability:{type:'array',minItems:3,maxItems:8,items:IMPLEMENTATION_TRACE},openQuestions:{type:'array',maxItems:8,items:{type:'string',maxLength:340}},preservationContract:PRESERVATION_CONTRACT},additionalProperties:false};
+function enforceOwnerPreservationDesign(value){
+  if(!ownerPreservationDesign)return value;
+  const existingMode=clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+  // 기존 멀티 규칙은 보존하고 SINGLE 원본에는 디자이너가 고른 2인 이상 설계를 적용한다.
+  const designMode=allGamesMultiplayerRequired&&existingMode==='SINGLE'?clean(value.multiplayerMode).toUpperCase():existingMode;
+  const lockedSemantics=['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE'];
+  const presentationPasses=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE'];
+  return {
+    ...value,
+    identity:'기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.',
+    coreFun:'기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.',
+    coreLoop:Array.isArray(seed.CORE_LOOP)&&seed.CORE_LOOP.length>=3?seed.CORE_LOOP.slice(0,8):value.coreLoop,
+    // 보존형 설계에서도 디자이너가 기존 실제 시스템을 MAIN/A/B/C/@로 작성한다.
+    // 임의로 두 시스템을 만들어 덮지 않으며 기존 수치·저장·보상을 보존한다.
+    signatureSystems:value.signatureSystems,
+    systemInterconnections:value.systemInterconnections,
+    progressionDirection:'기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.',
+    progressionEconomyBalance:{
+      progressionLoop:'기존 구현의 탐험·채집·제작·전투·퀘스트 진행 루프를 그대로 사용하며 표현 패스는 진행 속도와 해금 조건에 관여하지 않는다.',
+      resourceFlow:'기존 재료 획득량·제작 비용·보상·드랍·소비 규칙을 그대로 유지하고 표현 개선은 자원 수치에 영향을 주지 않는다.',
+      balanceRules:'체력·공격력·쿨다운·드랍률·제작 비용·보상·적 수치 등 기존 밸런스 값을 변경하지 않는다.'
+    },
+    contentExpansionPlan:[
+      {milestone:'ASSET_ADAPTATION',newGameplay:'새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.',systemImpact:'원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다.'},
+      {milestone:'LIVING_MOTION_AND_ANIMATION_FEEL',newGameplay:'새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.',systemImpact:'기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다.'},
+      {milestone:'VFX_AUDIO_CAMERA_POLISH_MOBILE',newGameplay:'새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.',systemImpact:'모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다.'}
+    ],
+    failureRetryRisk:{
+      failureStates:['기존 구현에 이미 정의된 전투·생존 실패 상태만 유지한다.','기존 퀘스트 또는 진행에서 이미 정의된 실패·재시도 상태만 유지한다.'],
+      retryFlow:'기존 사망·회복·재시도·귀환 흐름과 저장 결과를 그대로 유지하며 새 자원 손실이나 패널티를 추가하지 않는다.',
+      riskPressure:'기존 지역·적·생존 규칙이 만드는 위험만 사용하고 표현 패스가 난이도나 위험 수치를 변경하지 않는다.',
+      recoveryRules:'기존 회복·부활·재개·세이브 로드 규칙을 그대로 사용하고 새 회복 규칙을 만들지 않는다.'
+    },
+    platformFitPlan:{
+      targetPlatform:clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase(),
+      inputModel:'기존 키보드 및 모바일 터치/조이스틱 입력 체계를 유지하고 표현 효과가 입력 영역이나 반응성을 가리지 않게 한다.',
+      performanceBudget:'가능한 경우 60fps를 목표로 하되 파티클·트레일·보조 모션은 단계적으로 축소 가능하게 하고 게임플레이 판정은 품질 스케일과 무관하게 유지한다.',
+      sessionConstraints:`기존 세션과 진행 의미를 보존하며 설계 검증 기준 TARGET_SESSION_MINUTES=${Number(seed.TARGET_SESSION_MINUTES||30)}을 유지한다. 표현 개선 때문에 세션 길이·진행 속도를 바꾸지 않는다.`
+    },
+    visualDirection:'기존 마력숲의 숲·수정·화산·세계수·연구소 정체성을 유지하면서 팔레트·광원·윤곽·재질 반응·VFX 밀도를 하나의 스타일 락으로 통일한다.',
+    artAudioDirection:{
+      visualIdentity:'기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.',
+      audioIdentity:'기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.',
+      gameplayFeedbackSync:'기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다.'
+    },
+    multiplayerMode:designMode,
+    multiplayerExpansionDecision:allGamesMultiplayerRequired&&existingMode==='SINGLE'
+      ?value.multiplayerExpansionDecision
+      :'기존 멀티플레이 역할·규칙을 보존하고 저장·수치 변경 없이 실제 입장·복귀·동기화를 검증한다.',
+    technicalAssumptions:[
+      `기존 Web 구현 경로 ${clean(seed.EXISTING_WEB_SOURCE_PATH)||'web-games/fantasy-survival'}를 canonical 구현으로 사용하고 기존 책임 함수를 직접 수정한다.`,
+      `기존 SAVE_POLICY=${clean(seed.SAVE_POLICY)||'PRESERVE_EXISTING_SAVE'}를 지키며 저장 키·필드 의미·퀘스트 상태를 변경하지 않는다.`,
+      '그래픽·모션·VFX·오디오·카메라는 게임 로직과 분리된 표현 계층으로 연결하고 wrapper/shadow 파이프라인을 만들지 않는다.'
+    ],
+    validationQuestions:[
+      '표현 전후에 동일 입력으로 체력·데미지·쿨다운·드랍·제작 비용·퀘스트·지역 진행·세이브 결과가 동일한가?',
+      '모바일 터치 중 효과가 입력과 위험 신호를 가리지 않고 프레임 타이밍이 안정적인가?',
+      '기존 저장 데이터를 불러온 뒤 연구소·퀘스트·장비·지역 진행이 그대로 이어지는가?'
+    ],
+    implementationTraceability:[
+      {designElement:'ASSET_ADAPTATION',responsibleSystem:'기존 캐릭터·몬스터·월드 렌더 함수',validationEvidence:'동일 게임 상태에서 표현만 변경되고 충돌·상호작용·자원·세이브 값이 동일함을 비교한다.'},
+      {designElement:'LIVING_MOTION_AND_ANIMATION_FEEL',responsibleSystem:'기존 이동·공격·피격 상태와 렌더 업데이트',validationEvidence:'idle/walk/run/turn/attack 전환 연속성과 기존 적중 이벤트·데미지·쿨다운 불변을 함께 검증한다.'},
+      {designElement:'VFX_AUDIO_CAMERA_POLISH_MOBILE',responsibleSystem:'기존 전투·퀘스트 이벤트와 오디오/카메라 책임 경로',validationEvidence:'적중 순간 동기화, 모바일 가독성, 프레임 안정성, 중복 재생 없음과 게임 상태 불변을 검증한다.'}
+    ],
+    openQuestions:['표현 비용을 가장 많이 유발하는 기존 오브젝트 구간은 어디이며 품질 스케일에서 무엇을 먼저 줄일 것인가?'],
+    preservationContract:{
+      mode:'PRESERVATION_PRESENTATION_UPGRADE',
+      sourceOfTruth:'EXISTING_IMPLEMENTATION_AND_OWNER_SEED',
+      lockedSemantics,
+      presentationPasses,
+      gameplayRule:'NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE',
+      targetSessionMinutes:Number(seed.TARGET_SESSION_MINUTES||30)
+    }
+  };
+}
+const DESIGN_GATE_FIELDS=['systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','uxAccessibilityPlan','artAudioDirection','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','implementationTraceability'];
+const DESIGN_BASE_FIELDS=DESIGN.required.filter(key=>!DESIGN_GATE_FIELDS.includes(key));
+const designSliceSchema=fields=>({type:'object',required:[...fields],properties:Object.fromEntries(fields.map(key=>[key,DESIGN.properties[key]])),additionalProperties:false});
+// 게임별 실제 signatureSystems에 이미 존재하는 규칙 ID와 상태 입출력만 다음 설계 조각에 전달한다.
+function authoredStateHandoffContract(signatureSystems=[]){
+  const systems=Array.isArray(signatureSystems)?signatureSystems.filter(row=>clean(row?.id)&&Array.isArray(row?.stateInputs)&&Array.isArray(row?.stateOutputs)):[];
+  const ruleIds=systems.map(row=>clean(row.id));
+  if(new Set(ruleIds).size!==ruleIds.length)return{ruleIds:[],handoffs:[],stateKeys:[]};
+  const handoffs=[];
+  for(const from of systems)for(const to of systems){
+    if(from.id===to.id)continue;
+    const keys=uniq(from.stateOutputs.filter(key=>to.stateInputs.includes(key)));
+    if(keys.length)handoffs.push({fromId:from.id,toId:to.id,stateKeys:keys});
+  }
+  return{ruleIds,handoffs,stateKeys:uniq(handoffs.flatMap(edge=>edge.stateKeys))};
+}
+function designSliceSchemaWithAuthoredHandoffs(fields,signatureSystems=[]){
+  const schema=designSliceSchema(fields);
+  if(fields.includes('signatureSystems')||!fields.includes('systemInterconnections'))return schema;
+  const contract=authoredStateHandoffContract(signatureSystems);
+  if(contract.ruleIds.length<4||!contract.handoffs.length)return schema;
+  const system=schema.properties.systemInterconnections,items=system.items;
+  const properties={
+    ...items.properties,
+    fromId:{...items.properties.fromId,enum:contract.ruleIds},
+    toId:{...items.properties.toId,enum:contract.ruleIds},
+    stateKeys:{...items.properties.stateKeys,items:{...items.properties.stateKeys.items,enum:contract.stateKeys}}
+  };
+  return{...schema,properties:{...schema.properties,systemInterconnections:{...system,items:{...items,properties}}}};
+}
+const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
+const DESIGN_GATE=designSliceSchema(DESIGN_GATE_FIELDS);
+const DESIGN_AUTHORING_SLICES=Object.freeze([
+  {id:'identity-core',fields:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'],predict:2200},
+  {id:'systems-progression',fields:['systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'],predict:1500},
+  {id:'content-rules',fields:['contentVarietyPlan'],predict:1800},
+  {id:'alternatives',fields:['designAlternatives'],predict:1600},
+  {id:'selection-variety',fields:['selectedDesignPlan'],predict:1800},
+  {id:'platform-profiles',fields:['platformFitPlan','platformProfiles'],predict:1700},
+  {id:'web-canonical',fields:['webCanonicalDesign'],derived:true},
+  {id:'platform-expansion',fields:['platformExpansionPolicy'],derived:true},
+  {id:'ux-presentation',fields:['visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection'],predict:1200},
+  {id:'market-multiplayer',fields:['marketTargetDirection','steamExpansionDecision','multiplayerExpansionDecision'],predict:900},
+  {id:'narrative-homage',fields:['narrativeDialoguePlan','referenceHomagePlan'],predict:1300},
+  {id:'integrity-stability',fields:['designIntegrityPlan','stabilityPriorityPlan'],predict:1300},
+  {id:'traceability',fields:['technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],predict:1100}
+]);
+const DESIGN_AUTHORING_SLICE_FIELDS=DESIGN_AUTHORING_SLICES.flatMap(row=>row.fields);
+if(DESIGN_AUTHORING_SLICE_FIELDS.length!==DESIGN.required.length||new Set(DESIGN_AUTHORING_SLICE_FIELDS).size!==DESIGN.required.length||DESIGN.required.some(field=>!DESIGN_AUTHORING_SLICE_FIELDS.includes(field))){
+  throw new Error('DESIGN_AUTHORING_SLICE_CONTRACT_MISMATCH');
+}
+function persistDesignerSeed(design,phase){
+  const fields=DESIGN_AUTHORING_SLICES.find(row=>row.id==='identity-core').fields;
+  const content=Object.fromEntries(fields.map(field=>[field,design[field]]));
+  assertSchemaValue(content,designSliceSchema(fields));
+  const failures=validateDesignAuthoringContent({design,seed,fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,sourceText:currentRuleSource});
+  if(failures.length)throw new Error(`DESIGNER_SEED_REPAIR_REQUIRED: ${failures.map(row=>row.code).join(',')}`);
+  const authorModel=designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id;
+  const contentDigest=createHash('sha256').update(JSON.stringify(content)).digest('hex');
+  writeJson(designerSeedPath,{
+    version:1,gameId,date,seedId:seed.seedId,
+    authorRole:'GAME_DESIGNER_AI',authorModel,singleAuthor:true,
+    sourceStage:'identity-core',phase,status:'AUTHORED_CANDIDATE',
+    inputSource:'OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS',
+    originalSource:seed.DESIGN_BASELINE_SOURCE||null,
+    fingerprint:checkpointFingerprint,engineDigest,contentDigest,
+    externalSeedRequired:false,designPass:false,runtimePass:false,
+    content,updatedAt:new Date().toISOString()
+  });
+  designCheckpoint.designerSeed={file:designerSeedPath,contentDigest,authorModel,status:'AUTHORED_CANDIDATE'};
+  console.log(`DESIGNER_SEED_AUTHORED=${gameId}|${phase}|${contentDigest}`);
+}
+async function authorDesignInCheckpointedSlices({phase,system,sharedContext,currentDesign={}}){
+  const merged={...currentDesign};
+  // 고정 입력을 앞에 유지해 다음 요청에서도 같은 접두부를 재사용한다.
+  // 오너 원본 모드의 호환용 자동 스케치는 설계 원본 입력이 아니다.
+  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n설계 원본은 게임당 하나다. MAIN/A/B/C/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
+  for(const slice of DESIGN_AUTHORING_SLICES){
+    // 웹 호환 뷰와 플랫폼 적용 정책은 마지막에 같은 원본에서 투영한다.
+    if(slice.derived)continue;
+    const schema=designSliceSchemaWithAuthoredHandoffs(slice.fields,merged.signatureSystems);
+    const existing=Object.fromEntries(slice.fields.filter(field=>Object.prototype.hasOwnProperty.call(merged,field)).map(field=>[field,merged[field]]));
+    const taskKey=`${phase}_slices::${slice.id}`;
+    const priorRules=Object.fromEntries(['identity','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionEconomyBalance','failureRetryRisk','multiplayerMode','contentVarietyPlan','designAlternatives','selectedDesignPlan'].filter(field=>!slice.fields.includes(field)&&merged[field]!==undefined).map(field=>[field,merged[field]]));
+    const dependencyHash=createHash('sha256').update(JSON.stringify(priorRules)).digest('hex');
+    const compactRule=value=>typeof value==='string'?clip(value,180):Array.isArray(value)?value.map(compactRule):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,compactRule(item)])):value;
+    const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='contentVarietyPlan'?{regions:value.regions?.map(({id,name,ruleIds})=>({id,name,ruleIds})),abilities:value.abilities,roleTransitions:value.roleTransitions}:field==='designAlternatives'?value.map(plan=>({label:plan.label,strategy:plan.strategy})):field==='selectedDesignPlan'?value:value])));
+    designCheckpoint.sliceDependencies||={};
+    designCheckpoint.sliceRepairFeedback||={};
+    designCheckpoint.sliceRepairAttempts||={};
+    designCheckpoint.slicePartialResults||={};
+    if(designCheckpoint.sliceDependencies[taskKey]&&designCheckpoint.sliceDependencies[taskKey]!==dependencyHash){
+      delete designCheckpoint.tasks[taskKey];delete designCheckpoint.slicePartialResults[taskKey];
+    }
+    let result,feedback=designCheckpoint.sliceRepairFeedback[taskKey]||[];
+    for(let attempt=0;attempt<2;attempt++){
+      const partial=designCheckpoint.slicePartialResults[taskKey]||{};
+      const pendingFields=slice.fields.filter(field=>!Object.prototype.hasOwnProperty.call(partial,field));
+      const requestedFields=pendingFields.length?pendingFields:slice.fields;
+      const callSchema=designSliceSchemaWithAuthoredHandoffs(requestedFields,merged.signatureSystems);
+      result=await runCheckpointTask(`${phase}_slices`,slice.id,()=>callDesignerModel(
+      system,
+      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nAUTHORED_RULE_IDS_AND_HANDOFFS=${requestedFields.includes('systemInterconnections')?clip(authoredStateHandoffContract(merged.signatureSystems),4000):'NOT_APPLICABLE'}\nSYSTEM_INTERCONNECTION_AUTHORING_RULE=Use actual signatureSystems IDs for fromId/toId and exact overlapping output-to-input state keys; never use coreFun as a rule ID or invent gameplay states.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
+      callSchema,
+      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
+      ));
+      result={...partial,...result};
+      feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
+      try{assertSchemaValue(result,schema);}catch(error){feedback.push({code:'DESIGN_SLICE_SCHEMA_INVALID',fields:slice.fields,requiredAction:clean(error.message)});}
+      if(!feedback.length){designCheckpoint.tasks[taskKey]=result;break;}
+      const affected=new Set(feedback.flatMap(row=>row.fields||[]));
+      const retained={};
+      for(const field of slice.fields){
+        if(affected.has(field)||result[field]===undefined)continue;
+        try{assertSchemaValue({[field]:result[field]},designSliceSchema([field]));retained[field]=result[field];}catch{}
+      }
+      designCheckpoint.slicePartialResults[taskKey]=retained;
+      designCheckpoint.sliceDependencies[taskKey]=dependencyHash;
+      console.log(`DESIGN_SLICE_REPAIR_SCOPE=${slice.id}|retained=${Object.keys(retained).join(',')}|rewrite=${slice.fields.filter(field=>!Object.prototype.hasOwnProperty.call(retained,field)).join(',')}`);
+      delete designCheckpoint.tasks[taskKey];
+      designCheckpoint.sliceRepairFeedback[taskKey]=feedback;
+      // 같은 오류가 반복돼도 실패한 하위 조각 캐시를 다시 쓰지 않는다.
+      designCheckpoint.sliceRepairAttempts[taskKey]=(designCheckpoint.sliceRepairAttempts[taskKey]||0)+1;
+      designCheckpoint.failedPhase=`${phase}_slices`;designCheckpoint.failedTask=slice.id;
+      designCheckpoint.lastError=`DESIGN_CONTENT_REPAIR_REQUIRED ${feedback.map(row=>row.code).join(',')}`;
+      persistDesignCheckpoint();
+      console.log(`DESIGN_SLICE_CONTENT_REPAIR=${slice.id}|${feedback.map(row=>row.code).join(',')}`);
+    }
+    if(feedback.length)throw new Error(designCheckpoint.lastError);
+    delete designCheckpoint.sliceRepairFeedback[taskKey];
+    delete designCheckpoint.slicePartialResults[taskKey];
+    designCheckpoint.sliceDependencies[taskKey]=dependencyHash;
+    Object.assign(merged,result);
+    if(slice.id==='identity-core')persistDesignerSeed(merged,phase);
+    persistDesignCheckpoint();
+    console.log(`DESIGN_SLICE_CONTENT_VALID=${slice.id}`);
+  }
+  const grounded=repairDesignRequiredFields(merged,{seed,factPack,phase:phase.toUpperCase()});
+  const complete=enforceOwnerPreservationDesign(grounded.value);
+  assertSchemaValue(complete,DESIGN);
+  const finalFeedback=validateDesignAuthoringContent({design:complete,seed,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
+  if(finalFeedback.length){
+    for(const slice of DESIGN_AUTHORING_SLICES){
+      const feedback=finalFeedback.filter(row=>row.fields.some(field=>slice.fields.includes(field)));
+      if(!feedback.length)continue;
+      const taskKey=`${phase}_slices::${slice.id}`;
+      delete designCheckpoint.tasks[taskKey];
+      designCheckpoint.sliceRepairFeedback[taskKey]=feedback;
+      designCheckpoint.sliceRepairAttempts[taskKey]=(designCheckpoint.sliceRepairAttempts[taskKey]||0)+1;
+      designCheckpoint.failedPhase=`${phase}_slices`;designCheckpoint.failedTask=slice.id;
+    }
+    designCheckpoint.lastError=`DESIGN_FULL_FLOW_REPAIR_REQUIRED ${finalFeedback.map(row=>row.code).join(',')}`;
+    persistDesignCheckpoint();
+    throw new Error(designCheckpoint.lastError);
+  }
+  console.log('DESIGN_FULL_FLOW_CONTENT_VALID=YES');
+  console.log(`DESIGN_CHECKPOINTED_SLICES_COMPLETE=${phase}|count=${DESIGN_AUTHORING_SLICES.length}`);
+  return complete;
+}
+function mergeDesignerDesign(basePart,gatePart,phase){
+  const grounded=repairDesignRequiredFields({...basePart,...gatePart},{seed,factPack,phase});
+  const merged=enforceOwnerPreservationDesign(grounded.value);
+  assertSchemaValue(merged,DESIGN);
+  if(grounded.repairs?.length)console.log(`DESIGN_MERGE_GROUNDED_REPAIRS=${phase}|${grounded.repairs.map(item=>item.field).join(',')}`);
+  console.log(`DESIGN_SPLIT_SCHEMA_MERGED=${phase}|base=${DESIGN_BASE_FIELDS.length}|gate=${DESIGN_GATE_FIELDS.length}`);
+  return merged;
+}
+const AXIS_FIELDS=Object.freeze({
+  IDEA_AND_DISTINCTNESS:['identity','playerFantasy','coreFun','coreLoop','signatureSystems'],
+  CATEGORY_IDENTITY:['identity','coreLoop','multiplayerMode','multiplayerExpansionDecision'],
+  CORE_LOOP_DESIGN:['coreFun','coreLoop','signatureSystems'],
+  SYSTEM_INTERCONNECTION_DESIGN:['systemInterconnections'],
+  PROGRESSION_ECONOMY_BALANCE_DESIGN:['progressionDirection','progressionEconomyBalance'],
+  CONTENT_EXPANSION_PLAN:['contentExpansionPlan'],
+  FAILURE_RETRY_RISK_DESIGN:['failureRetryRisk'],
+  PLATFORM_FIT_DESIGN:['platformFitPlan','platformProfiles','mobileUx'],
+  UX_AND_ACCESSIBILITY_PLAN:['mobileUx','uxAccessibilityPlan'],
+  ART_AUDIO_DIRECTION:['visualDirection','artAudioDirection'],
+  IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY:['technicalAssumptions','validationQuestions','implementationTraceability']
+});
+const AXIS_ROLES=Object.freeze({
+  IDEA_AND_DISTINCTNESS:['planning'],
+  CATEGORY_IDENTITY:['planning','qa'],
+  CORE_LOOP_DESIGN:['planning','qa'],
+  SYSTEM_INTERCONNECTION_DESIGN:['development','qa'],
+  PROGRESSION_ECONOMY_BALANCE_DESIGN:['planning','qa'],
+  CONTENT_EXPANSION_PLAN:['planning','qa'],
+  FAILURE_RETRY_RISK_DESIGN:['planning','qa'],
+  PLATFORM_FIT_DESIGN:['development','qa'],
+  UX_AND_ACCESSIBILITY_PLAN:['graphics','qa'],
+  ART_AUDIO_DIRECTION:['graphics','audio'],
+  IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY:['development','qa']
+});
+function genreProfileForDesign(design){
+  return classifyRobloxGenre({
+    category:seed.GAME_CATEGORY,
+    identity:clean(design?.identity||seed.DISTINCT_IDENTITY),
+    coreLoop:Array.isArray(design?.coreLoop)?design.coreLoop:(Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[]),
+    designText:JSON.stringify(design||{}),
+    multiplayerMode:clean(design?.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE)
+  });
+}
+function deterministicPreGate(design){
+  return scoreDesignGateV2({
+    seed,
+    multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,
+    assetLibrary:designAssetLibrary,
+    assetFamilies:designAssetFamilies,
+    sourceText:currentRuleSource,
+    designRecord:{sameModelAsDraft:false,content:design},
+    cycleStatus:{status:'IN_PROGRESS'},
+    robloxGenreProfile:genreProfileForDesign(design)
+  });
+}
+function preGatePass(scored){
+  return Number(scored?.totalScore||0)>=DESIGN_GATE_PASS_MINIMUM&&Array.isArray(scored?.hardFailures)&&scored.hardFailures.length===0;
+}
+function repairPacket(scored){
+  const reasons=Array.isArray(scored?.rejectionReasons)?scored.rejectionReasons:[];
+  return {
+    source:'DETERMINISTIC_PRE_GATE_V2',
+    bypassAllowed:false,
+    totalScore:Number(scored?.totalScore||0),
+    passMinimum:DESIGN_GATE_PASS_MINIMUM,
+    hardFailures:Array.isArray(scored?.hardFailures)?scored.hardFailures:[],
+    failedAxes:Array.isArray(scored?.criticalAxisFailures)?scored.criticalAxisFailures:[],
+    reasons:reasons.map(reason=>({
+      code:reason.code,axis:reason.axis,evidenceLevel:reason.evidenceLevel,
+      minimumRequired:reason.minimumRequired,evidence:reason.evidence,
+      requiredAction:reason.requiredAction,fields:reason.fields||[],bypassAllowed:false
+    }))
+  };
+}
+function repairFields(scored){
+  // 검사가 지목한 오류 필드가 있으면 정상인 같은 축까지 다시 쓰지 않는다.
+  const reasons=Array.isArray(scored?.rejectionReasons)?scored.rejectionReasons:[];
+  const explicit=reasons.flatMap(reason=>reason.fields||[]);
+  const axes=uniq([...(scored?.criticalAxisFailures||[]),...reasons.filter(reason=>!reason.fields?.length).map(reason=>reason.axis)]);
+  const derived={webCanonicalDesign:['coreLoop','signatureSystems','contentVarietyPlan','progressionEconomyBalance','failureRetryRisk','uxAccessibilityPlan','artAudioDirection'],platformExpansionPolicy:[]};
+  const fields=uniq([...explicit,...axes.flatMap(axis=>AXIS_FIELDS[axis]||[])].flatMap(field=>Object.prototype.hasOwnProperty.call(derived,field)?derived[field]:[field])).filter(field=>DESIGN.required.includes(field));
+  return fields.length?fields:['identity','coreFun','coreLoop','signatureSystems'];
+}
+
+function repairStructureContract(fields){
+  const rules=[];
+  rules.push('전체 항목 공통: 임시 식별자·같은 문장 반복으로 내용을 채우지 않는다. 앞에서 확정한 중심 행동·두 핵심 축·보조 요소·파고들기·게임 규칙·저장 의미를 유지하고 입력→판정→상태 변화→대응→다음 선택으로 구체화한다.');
+  if(fields.includes('selectedDesignPlan'))rules.push(`selectedDesignPlan.playthrough: ${playableRequirements.phases.join(' → ')} 순서의 ${playableRequirements.phases.length}개 장면. 각 entryState는 직전 exitState를 그대로 이어받는다. playerChoice, actionAndResponse, exitState, nextDecision에 실제 선택·조건·판정·전조·대응·실패 복구를 적는다. durationRationale에는 한 판 길이와 여러 판을 포함한 세션 길이, 초중후반 행동에 필요한 시간 근거와 확인할 가정을 구분한다. 기존 시간 제한이나 밸런스는 오너 승인 없이 변경하지 않는다.`);
+  if(fields.includes('designAlternatives'))rules.push('designAlternatives: 같은 규칙 안에서 루프·동선·적 대응·성장 중 최소 두 항목의 실제 전략이 다른 대안을 작성한다. PLAN_A/PLAN_B 이름이나 수식어만 바꾸지 않는다.');
+  if(fields.includes('platformProfiles'))rules.push('platformProfiles: 공통 규칙은 공유하되 UNITY의 배포/검증에 Roblox Open Cloud/Rojo를 복사하지 않는다. ROBLOX는 Roblox 실행 증거, UNITY는 같은 Unity 프로젝트의 네이티브/WebGL 실행 증거를 사용한다.');
+  if(fields.includes('webCanonicalDesign'))rules.push('webCanonicalDesign은 같은 공통 원본의 호환 뷰다. 별도 게임 규칙을 창작하지 않는다.');
+  if(fields.includes('technicalAssumptions')||fields.includes('implementationTraceability'))rules.push('자산은 요구 역할→사용 장면→후보 ID→선정 근거→개선/제작 필요→플랫폼 적응→실제 확인 방법 순서로 기술한다. ROLE_REQUIREMENT_UNRESOLVED 후보는 사용 확정이나 자산 부재로 간주하지 말고 역할을 먼저 구체화한다. 내부 점수만으로 역할 적합성·런타임 품질을 주장하지 않는다.');
+  if(fields.includes('identity'))rules.push('identity: 공백 포함 최소 60자 이상의 구체적 게임 정체성. 무슨 게임인지와 같은 장르와의 차이를 즉시 읽을 수 있고, 대표 행동·대표 선택·시그니처 세계 규칙이 coreLoop/signatureSystems와 직접 연결되어야 한다.');
+  if(fields.includes('playerFantasy'))rules.push('playerFantasy: 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지. 관찰자 설명이 아니라 플레이어가 실제로 무엇을 하는지 명시.');
+  if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하고 정체성 문장과 같은 플레이 약속을 증명.');
+  if(fields.includes('creativeGrammar'))rules.push('creativeGrammar는 materialFusion에서 A/B 소재가 어떻게 낯설고도 인과적으로 연결되는지·하나를 빼면 사라지는 플레이를 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고, abEvolution에서 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다. creativeGrammar는 MAIN=기본 게임 주제/정체성, A=게임 시스템+해당 축 창작 소재, B=다른 시스템+해당 축 창작 소재, abCausality=양방향 실제 상태 교환, C=cThemes에 인물·예술·역사·종교·철학·과학·무협·엽기 등 아무 주제/소재 두 개를 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 장르 사전은 무제한이다. PRIMARY는 가장 중요한 플레이·갈등·위험을 정의하고 SECONDARY는 그 선택과 A/B 시스템에 실질적 인과 변화를 줘야 한다. cGenreInterlock에 둘의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다, @=발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙, finalGameIdentity=모든 축을 인과적으로 결합한 새 정체성이다. MAIN에만 소재를 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다.');
+  if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B와 DELVE(@)를 기존 원본 규칙·상태 입출력으로 구분한다. 최소 4개 고유 역할로 구성하되 c 보조 시스템은 있을 때만 유지하고 C의 두 창작 소재·메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명한다. 이름·역할·선택을 복제하거나 없는 기능·보상·저장 키를 추가하지 않는다.');
+  if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B/c/DELVE(@) 역할을 각각 포함하는 최소 5개 서로 다른 기존 또는 신규 시스템. 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상.');
+  if(fields.includes('platformProfiles'))rules.push('Unity WebGL은 게임플레이 화면에 2.5D 또는 3D 그래픽을 설계 단계부터 강제한다. platformProfiles.UNITY.unityWebSpatialPresentation.dimension=2.5D 또는 3D를 명시하고 worldDepth에는 전/중/후경 깊이·3D 월드 오브젝트 등 실제 공간 구성, cameraAndOcclusion에는 깊이 카메라와 오브젝트 가림, lightingAndMaterials에는 입체 조명·접지 그림자·재질, mobileWebglEvidence에는 모바일 WebGL 실제 플레이·전후 비교·독립 QA 방법을 구체적으로 적는다. 평면 스프라이트/DOM 카드·CSS 장식·2D 태그만으로 통과할 수 없다. 2D HUD는 허용하고 기존 체력·공격력·경제·세이브는 그대로 유지한다.');
+  if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. JS String.length 기준 각 milestone은 최소 20자, newGameplay/systemImpact는 각각 최소 30자 이상으로 실제 새 플레이와 기존 시스템 영향을 구체적으로 설명.');
+  if(fields.includes('uxAccessibilityPlan'))rules.push('menuStructure: 장르·대표 행동·기기에 맞는 정보 구조를 선택한다. 화면 진입/복귀, 전투 중 빠른 선택, 비교 분할창, 탐색형 목록, 빌드 트리, 상황형 바로가기 중 왜 이 구성이 맞는지 대안을 비교한다. convenienceDecisions: 실제 반복 불편 -> 참고 기능의 작동 원리 -> 우리 게임 적용/기각 이유 -> 상태/비용 보호 -> 검증 경로를 적는다. 프리셋 저장·전환, 조건 필터, 일괄 처리 미리보기, 목표에서 재료/지도 바로가기, 선택·필터·스크롤·미완성 작업 복귀 중 관련 기능을 선택한다. 버튼 크기나 메뉴 개수만으로 편의성 개선이라 하지 않는다. 아래 공식 참고는 관찰일의 설계 자료이며 최신 여부와 우리 게임의 효과는 미검증이다. 검증된 이전 경험과 실패도 함께 비교하고 새 작품/업데이트를 참고했다고 출처 없이 주장하지 않는다. REFERENCES='+JSON.stringify(GAME_CONVENIENCE_REFERENCES.map(({match,...row})=>row)));
+  if(fields.some(field=>['progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'].includes(field)))rules.push('파고들기/보상: 발견 가능한 단서 -> 조합·숙련·탐험 실험 -> 위험·기회비용·대응법 -> 새 행동/공략/경로/세계관계 -> 다음 탐구거리의 인과를 설계한다. 재화·능력치·아이템 개수 증가만으로 깊이를 주장하지 않는다. 보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되 해당 장르와 기존 저장·밸런스를 보존한다. 조합 기록·비교·발견 단서·재도전 준비는 관련 메뉴에 연결하고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다. 구현 전 가설과 실제 플레이 증거를 구분한다.');
+  if(fields.includes('progressionEconomyBalance'))rules.push('재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결한다. 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률·중복 보상의 쓰임·중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다. 보상 중복 수령과 진행 유실은 검증한다. 소확행에 수치/재화 보상을 쓸 수 있으나 그것만으로 깊은 파고들기를 대체하지 않는다. 기존 MAIN/A/B/C/@의 승인된 역할을 편의상 다시 분류하거나 장르에 없는 수집/전투를 강제하지 않는다.');
+  if(fields.some(field=>['signatureSystems','systemInterconnections','contentExpansionPlan'].includes(field)))rules.push('깊이의 기준은 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위다. 쉽게 시작하는 대표 행동에서 출발해 시스템 상호작용, 상황별 예외와 대가, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지게 한다. MAIN/A/B/C 사이의 인과와 상호 의존을 구체화하고 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교한다. 복잡한 용어·기능 개수·끝없는 반복·수치 증가를 깊이로 대체하지 않는다. 단서는 읽을 수 있고 규칙은 일관되어야 하며 보상은 발견과 이해와 숙련에 맞게 약속된다. 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담을 기존 검증에서 확인한다.');
+  if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. JS String.length 기준 각 designElement/responsibleSystem은 최소 20자, validationEvidence는 최소 30자 이상으로 검증 방법까지 구체적으로 작성.');
+  if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
+  if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
+  if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. JS String.length 기준 fromSystem/toSystem은 각각 최소 16자, trigger/stateChange는 각각 최소 24자 이상으로 구체적으로 작성.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('MAIN/A/B/@의 상태 입력과 출력은 실제 게임 상태의 키이며 개별 역할 사이에서 겹쳐야 한다. A→B와 B→A 양방향 경로, MAIN과 모든 역할의 도달 가능한 연결이 있어야 한다. 없는 연결을 뒤 단계에서 가짜 coreFun ID나 임의 상태·보상·저장키로 채우지 말고 지금 역할의 실제 읽기/쓰기 상태를 설계하라.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('signatureSystems의 MAIN/A/B는 각 하나, DELVE(@)는 하나 이상이다. 기존 c 보조 시스템은 선택 사항이며 C를 별도 기계축으로 만들지 말고 A/B의 상태·선택 및 creativeGrammar.cGenres에 연결한다. stateInputs/stateOutputs에는 기존 실제 상태 키만 적고 원본 규칙 ID·저장·경제를 보존한다.');
+  if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('signatureSystems의 id는 고정 규칙 ID다. grammarRole은 MAIN/A/B 각각 하나, c와 DELVE(@)는 하나 이상이다. 각 stateInputs/stateOutputs에는 실제 상태 키만 정의한다. coreLoop 문장, INPUT/SELECT/OUTPUT/STATE 설명, 화살표로 연결한 행동 순서를 상태 키에 넣지 않는다. 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 맵·능력·자산·대안은 이 ID와 상태 키만 참조한다.');
+  if(fields.includes('systemInterconnections'))rules.push('fromId의 stateOutputs와 toId의 stateInputs에 실제로 존재하는 같은 stateKeys를 연결한다. A/B는 양방향으로 값을 주고받고 MAIN/c/DELVE도 연결돼야 한다. fromSystem/toSystem 설명만 같은 것으로 대체하지 않는다.');
+  if(fields.includes('contentVarietyPlan'))rules.push('abilities에는 현재 게임 원본에 실제로 존재하는 능력을 각각 작성한다. 다른 장르의 능력을 추가하지 않는다. id/kind/ownerId/ruleId, trigger, range/rangeUnit, resource/cost, cooldownSeconds, telegraph/avoidance/effect, stateInputs/stateOutputs/source가 필수다. 자원이나 재사용이 없으면 0과 이유를 적는다. 원본 수치가 있는 능력은 rangeKey/costKey/cooldownKey를 원본 technicalAssumptions 키에 연결한다. regions는 공통 id와 ruleIds로 뒤의 전략 비교에 사용한다.');
+  if(fields.includes('contentVarietyPlan')&&playableRequirements.infection)rules.push('감염전 abilities에는 원본의 모든 인간 능력·감염 후 능력·몬스터 능력·기본 감염/정화를 각각 작성한다. roleTransitions는 원본 humanRoster 각 id마다 인간 도구와 능력→원본 이름 그대로의 감염 능력, 유지/제거 상태, 바뀌는 선택을 연결한다.');
+  if(fields.includes('designAlternatives'))rules.push('strategy는 이미 작성한 구역/상태/규칙/능력 ID만 사용한다. routeEdges(from,to), resourceSites(stateKey,regionId), cooperation(ruleId,regionId,abilityId)의 관계 중 두 항목 이상이 실제로 달라야 한다. 수식어·설명·ID 이름 바꾸기는 차이로 인정하지 않는다. advantage/cost/bestSituation에 얻는 것·포기하는 것·선택 상황을 적는다.');
+  if(fields.includes('selectedDesignPlan'))rules.push('before/after는 같은 key/value 상태 목록이며 앞 장면의 after와 다음 before를 동일하게 잇는다. startSeconds/endSeconds를 0부터 연속 배치하고 actions에 실제 능력 ID, actorId/targetId, 시각·거리·사용 전후 자원·성공 여부·대응을 적는다. timeReason은 장면의 실제 행동에 필요한 시간을 설명한다. 마지막 장면은 다음 라운드가 아닌 현재 한 판의 결판이다.');
+  if(fields.includes('selectedDesignPlan')&&playableRequirements.infection)rules.push('participants에 시작 인원 전원의 고정 id/role/classId를 적는다. 감염되면 같은 id의 진영과 사용 능력이 바뀌고 정화되면 이후 행동할 수 없다. 각 장면의 before/after는 같은 key/value 수치 목록이다. 앞 after를 다음 before로 정확히 이어라. startSeconds/endSeconds는 0부터 연속되고 timeReason은 이동·접촉·재사용 대기 등 필요한 시간의 근거다. actions는 능력 ID, actorId/targetId, atSeconds, distance, energyBefore/energyAfter, hit, response를 기록한다. 모든 입력은 비용과 재사용 시간을 지킨다. 감염 적중은 인간 -1/몬스터 +1, 정화 적중은 몬스터 -1/탈락 +1이다. 첫 접촉에서 감염하지 않고 첫 감염 장면에서 정확히 1회 전환, 인원 불균형, 정화 역전 기회, 결판까지 작성한다. 한 진영 0명 즉시 승패 또는 원본 제한시간 무승부로 끝낸다. roundSeconds와 sessionSeconds를 구분하고 기존 제한시간은 유지한다.');
+  if(fields.includes('artAudioDirection'))rules.push('assetBindings마다 필요한 family/role/bodyPlan/behavior/presentation부터 정한 뒤 사용 위치와 ruleIds, 실제 assetId, USE/ADAPT/AUTHOR, selectionReason/improvement/platformAdaptation/validation을 작성한다. 체형이 해당 없는 배경/소리도 공간 형태 또는 음색을 구체화한다. 같은 역할의 재사용 후보가 있으면 기존 자산부터 검토한다. 실제 없는 ID를 만들거나 몬스터 분류만으로 거미를 고르지 않는다. 점수는 역할 적합성 근거가 아니다. AUTHOR는 assetId를 비우고 현재 목록의 정확한 역할 공백과 필요한 제작을 적는다.');
+  if(fields.includes('designIntegrityPlan'))rules.push('authoringVersion=2. flowAudit에서 한 판의 모든 phase를 같은 순서로 재생한다. 각 reachableBy는 실제 능력 ID이며 blockedCase/recovery와 nextPhase(마지막 END)를 적는다. 능력 도달·자원 부족·길 막힘·감염 전환·탈락·종료를 확인하고 미해결 모순을 true 선언으로 숨기지 않는다.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('MAIN은 게임 정체성의 대표 행동, A/B는 소재가 융합된 두 상태 교환축, C는 두 창작 소재 및 주·보조 장르로 인한 실제 선택·세계 변화, @는 발견·숙련으로 구별한다. 별도 c 기능을 억지로 추가하지 않는다. 원본 수치·저장·보상을 변경하지 않는다.');
+  if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담는다. MAIN은 중심 행동, A/B는 독립된 상태를 교환하는 두 대축, c는 이들을 변주하는 보조 요소, @는 발견·숙련·재방문 깊이로 역할을 구분한다. 없는 시스템을 억지로 추가하지 않는다.');
+  if(fields.includes('contentVarietyPlan'))rules.push('지역은 동선·목적·랜드마크·진입/복귀·위험 보상·재방문 이유가 달라야 한다. 적/도전은 행동 신호·조건·패턴·대응·군집 역할·보상·복구를 각각 적는다. 색상·수치·같은 설명의 반복으로 다양성을 주장하지 않는다.');
+  if(fields.includes('progressionEconomyBalance')||fields.includes('failureRetryRisk'))rules.push('자원 획득원·소비처·해금이 새 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것/다음 유효 진입을 명시한다. 기존 수치·보상·저장 의미는 보존한다.');
+  if(fields.includes('uxAccessibilityPlan'))rules.push('필요한 메뉴의 진입/뒤로가기·버튼 위치/역할·잠금/활성·로딩/오류·터치영역·중복입력·중단복귀를 실제 첫 입력/성공/실패/성장에 연결한다. 가독성·카메라·색상 의존·음량·입력 접근성과 모바일 성능을 다룬다.');
+  if(fields.includes('artAudioDirection'))rules.push('아트/오디오는 캐릭터·배경·재질·광원·동작·효과·카메라·메뉴가 같은 세계 정체성을 유지하게 한다. 기존 자산의 용도·역할과 실제 발생 이벤트를 연결하고 스타일·라이선스·플랫폼 호환을 보존한다.');
+  if(fields.includes('narrativeDialoguePlan'))rules.push('서사가 필요하면 사건 원인·선행조건·선택·결과·후속, 캐릭터 욕구/말투/관계/기억/지식범위, 복선·회수·반전을 연결한다. 불필요하면 applicable=false와 빈 배열을 사용한다. 공공영역 원형 또는 추상 기법만 재해석하며 보호된 인물·대사·장면을 복제하지 않는다.');
+  if(fields.includes('designIntegrityPlan'))rules.push('이동·첫 행동·진행·선행조건·종료·복구·경제·보스 전환·멀티 입장/이탈/재입장·저장 호환·서사 인과를 실제 규칙과 대조한다. 확인 안 된 조건을 참으로 쓰지 않고 notes에 정확한 미확정 근거를 남긴다.');
+  if(seedGameplaySketchVersion>=5&&!pendingSeedGrammarNotAuthored&&seedGameplaySketch?.novelGameGrammar)rules.push('GAMEPLAY_SKETCH v5 owner creative grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다. MAIN은 coreFun/coreLoop, A/B 두 대축은 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명한다. C의 두 소재와 주·보조 장르는 creativeGrammar의 실제 인과와 플레이 변화로 입증하고 예전 c 서브요소는 필수로 만들지 않는다. @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. GAME_CATEGORY를 최종 장르로 복사하지 않는다.');
+  return rules;
+}
+function impactedRolesFromScores(...scores){
+  const axes=uniq(scores.flatMap(scored=>[
+    ...(Array.isArray(scored?.criticalAxisFailures)?scored.criticalAxisFailures:[]),
+    ...(Array.isArray(scored?.rejectionReasons)?scored.rejectionReasons.map(reason=>reason?.axis):[])
+  ]));
+  return uniq(axes.flatMap(axis=>AXIS_ROLES[axis]||[]));
+}
+function mergeTargetedPatch(current,patch,phase){
+  const grounded=repairDesignRequiredFields({...current,...patch},{seed,factPack,phase});
+  assertSchemaValue(grounded.value,DESIGN);
+  return grounded.value;
+}
+const reviewsSchemaFor=roles=>({type:'object',required:roles,properties:Object.fromEntries(roles.map(role=>[role,MEMBER_REVIEW])),additionalProperties:false});
+const REBUTTAL={type:'object',required:['accept','challenge','revision','reason'],properties:{accept:{type:'array',maxItems:3,items:SHORT_TEXT},challenge:{type:'array',maxItems:3,items:SHORT_TEXT},revision:{type:'array',maxItems:3,items:SHORT_TEXT},reason:{type:'string',maxLength:550}},additionalProperties:false};
+const MEETING={type:'object',required:['summary','decisions'],properties:{summary:{type:'string',maxLength:800},decisions:{type:'array',maxItems:12,items:{type:'object',required:['topic','status','reason','departments'],properties:{topic:{type:'string',maxLength:190},status:{type:'string',enum:['CONSENSUS','CONFLICT','HOLD']},reason:{type:'string',maxLength:550},departments:{type:'array',maxItems:5,items:{type:'string',maxLength:40}}},additionalProperties:false}}},additionalProperties:false};
+const FATAL_CRITERIA=directive.discardPolicy?.DESIGN_ONLY?.fatalCriteria||[];
+const FATAL_REVIEW={type:'object',required:['recommendedState','fatalCriteria','evidence','reason'],properties:{recommendedState:{type:'string',enum:['ACTIVE','REDESIGN','DISCARD']},fatalCriteria:{type:'array',maxItems:4,items:{type:'string',enum:FATAL_CRITERIA}},evidence:{type:'array',maxItems:4,items:SHORT_TEXT},reason:{type:'string',maxLength:700}},additionalProperties:false};
+const phaseMs={};
+const modelCallStats=[];
+const phaseBudgetMs={
+  designer_draft:180000,
+  designer_draft_base:180000,
+  designer_draft_gate:180000,
+  deterministic_pre_gate:30000,
+  designer_pre_gate_repair_1:180000,
+  designer_pre_gate_repair_2:180000,
+  independent_department_reviews:240000,
+  designer_revision:180000,
+  designer_revision_base:180000,
+  designer_revision_gate:180000,
+  five_lead_reviews:180000
+};
+function stageForPhase(name){
+  if(name.startsWith('designer_draft'))return'DESIGNER_DRAFT';
+  if(name==='deterministic_pre_gate')return'PRE_GATE';
+  if(name.startsWith('designer_pre_gate_repair'))return'PRE_GATE_REPAIR';
+  if(name==='independent_department_reviews')return'DEPARTMENT_REVIEWS';
+  if(name.startsWith('designer_revision'))return'DESIGNER_REVISION';
+  if(name==='five_lead_reviews')return'DEPARTMENT_REVIEWS';
+  return designCheckpoint.currentPhase||'BOOTSTRAP';
+}
+function modelHealthEntry(model){
+  const current=designCheckpoint.modelHealth?.[model]||{};
+  return {
+    calls:Number(current.calls||0),successes:Number(current.successes||0),failures:Number(current.failures||0),
+    timeouts:Number(current.timeouts||0),jsonFailures:Number(current.jsonFailures||0),
+    totalMs:Number(current.totalMs||0),lastMs:Number(current.lastMs||0),lastError:current.lastError||null,
+    updatedAt:current.updatedAt||null
+  };
+}
+function recordModelHealth(model,{success,elapsedMs,error=null}){
+  const row=modelHealthEntry(model);
+  row.calls+=1;row.totalMs+=Math.max(0,Number(elapsedMs||0));row.lastMs=Math.max(0,Number(elapsedMs||0));
+  if(success)row.successes+=1;
+  else{
+    row.failures+=1;
+    const message=clean(error?.message||error);
+    row.lastError=message||null;
+    if(/timeout|timed out|aborted/i.test(message))row.timeouts+=1;
+    if(/json|schema|empty model response/i.test(message))row.jsonFailures+=1;
+  }
+  row.updatedAt=new Date().toISOString();
+  designCheckpoint.modelHealth[model]=row;
+}
+function modelHealthPenalty(model){
+  const row=modelHealthEntry(model);
+  if(!row.calls)return 0;
+  const avg=row.totalMs/Math.max(1,row.calls);
+  return avg+(row.failures*45000)+(row.timeouts*60000)+(row.jsonFailures*25000);
+}
+async function runPhase(name,work){
+  if(Object.prototype.hasOwnProperty.call(designCheckpoint.phases,name)){
+    phaseMs[name]=0;
+    designCheckpoint.currentPhase=stageForPhase(name);
+    persistDesignCheckpoint();
+    console.log(`DESIGN_CHECKPOINT_HIT=${name}`);
+    return designCheckpoint.phases[name];
+  }
+  const started=Date.now();
+  designCheckpoint.currentPhase=stageForPhase(name);
+  persistDesignCheckpoint();
+  try{
+    const result=await work();
+    phaseMs[name]=Date.now()-started;
+    const budget=Number(phaseBudgetMs[name]||0);
+    if(budget>0&&phaseMs[name]>budget){
+      designCheckpoint.slowPhases[name]={elapsedMs:phaseMs[name],budgetMs:budget,recordedAt:new Date().toISOString()};
+      console.log(`DESIGN_PHASE_BUDGET_EXCEEDED=${name}|${phaseMs[name]}/${budget}`);
+    }
+    designCheckpoint.phases[name]=result;
+    if(!designCheckpoint.completedPhases.includes(name))designCheckpoint.completedPhases.push(name);
+    designCheckpoint.failedPhase=null;designCheckpoint.failedTask=null;designCheckpoint.lastError=null;
+    persistDesignCheckpoint();
+    console.log(`DESIGN_PHASE_MS=${name}|${phaseMs[name]}`);
+    console.log(`DESIGN_CHECKPOINT_SAVED=${name}`);
+    return result;
+  }catch(error){
+    phaseMs[name]=Date.now()-started;
+    designCheckpoint.failedPhase=name;
+    designCheckpoint.lastError=clean(error?.message||error);
+    persistDesignCheckpoint();
+    console.log(`DESIGN_CHECKPOINT_FAILED_AT=${name}`);
+    throw error;
+  }
+}
+async function runCheckpointTask(phase,key,work){
+  const taskKey=`${phase}::${key}`;
+  if(Object.prototype.hasOwnProperty.call(designCheckpoint.tasks,taskKey)){
+    console.log(`DESIGN_TASK_CHECKPOINT_HIT=${taskKey}`);
+    return designCheckpoint.tasks[taskKey];
+  }
+  try{
+    const result=await work();
+    designCheckpoint.tasks[taskKey]=result;
+    designCheckpoint.failedPhase=null;designCheckpoint.failedTask=null;designCheckpoint.lastError=null;
+    persistDesignCheckpoint();
+    console.log(`DESIGN_TASK_CHECKPOINT_SAVED=${taskKey}`);
+    return result;
+  }catch(error){
+    designCheckpoint.failedPhase=phase;designCheckpoint.failedTask=key;designCheckpoint.lastError=clean(error?.message||error);
+    persistDesignCheckpoint();
+    console.log(`DESIGN_TASK_CHECKPOINT_FAILED=${taskKey}`);
+    throw error;
+  }
+}
+function isParallelPressure(error){
+  return /(?:timeout|timed out|aborted|out of memory|memory|503|busy|loading model|runner process|connection reset|socket hang up|fetch failed|resource temporarily unavailable)/i.test(clean(error?.message||error));
+}
+async function parallelObject(keys,worker,concurrency=modelPhaseConcurrency){
+  const entries=new Array(keys.length);
+  let nextIndex=0;
+  const workerCount=Math.min(Math.max(1,concurrency),keys.length);
+  await Promise.all(Array.from({length:workerCount},async()=>{
+    while(true){
+      const index=nextIndex++;
+      if(index>=keys.length)break;
+      const key=keys[index];
+      entries[index]=[key,await worker(key)];
+    }
+  }));
+  return Object.fromEntries(entries);
+}
+async function parallelObjectByLane(keys,laneForKey,worker,concurrency=modelPhaseConcurrency,{maxLanes=maxLoadedModelLanes,perLane=2}={}){
+  const entries=new Array(keys.length);
+  const pending=keys.map((key,index)=>({key,index,lane:clean(laneForKey(key))||key}));
+  const active=new Map();
+  const laneCounts=new Map();
+  let token=0;
+  while(pending.length||active.size){
+    while(active.size<Math.max(1,concurrency)){
+      const activeLanes=[...laneCounts.entries()].filter(([,count])=>count>0).map(([lane])=>lane);
+      const pendingIndex=pending.findIndex(item=>{
+        const laneCount=laneCounts.get(item.lane)||0;
+        if(laneCount>0)return laneCount<perLane;
+        return activeLanes.length<Math.max(1,maxLanes);
+      });
+      if(pendingIndex<0)break;
+      const [item]=pending.splice(pendingIndex,1);
+      const taskToken=++token;
+      laneCounts.set(item.lane,(laneCounts.get(item.lane)||0)+1);
+      const promise=(async()=>({taskToken,item,value:await worker(item.key)}))();
+      active.set(taskToken,promise);
+    }
+    if(!active.size)throw new Error('MODEL_LANE_SCHEDULER_STALLED');
+    const {taskToken,item,value}=await Promise.race(active.values());
+    active.delete(taskToken);
+    laneCounts.set(item.lane,Math.max(0,(laneCounts.get(item.lane)||1)-1));
+    entries[item.index]=[item.key,value];
+  }
+  return Object.fromEntries(entries);
+}
+async function adaptiveParallel(label,initialConcurrency,work){
+  let concurrency=Math.max(1,initialConcurrency);
+  while(true){
+    try{
+      console.log(`MODEL_PHASE_CONCURRENCY_START=${label}|${concurrency}`);
+      return await work(concurrency);
+    }catch(error){
+      if(concurrency<=1||!isParallelPressure(error))throw error;
+      const next=Math.max(1,concurrency-1);
+      console.log(`MODEL_PHASE_CONCURRENCY_FALLBACK=${label}|${concurrency}->${next}|reason=${clean(error?.message||error)}`);
+      concurrency=next;
+    }
+  }
+}
+function departmentDesignContext(role,design){
+  const fields={
+    planning:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','contentExpansionPlan','failureRetryRisk','webCanonicalDesign','platformExpansionPolicy','marketTargetDirection','multiplayerMode','multiplayerExpansionDecision','openQuestions'],
+    graphics:['identity','playerFantasy','coreFun','signatureSystems','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','platformFitPlan','webCanonicalDesign','platformExpansionPolicy'],
+    development:['coreLoop','signatureSystems','systemInterconnections','platformFitPlan','webCanonicalDesign','platformExpansionPolicy','technicalAssumptions','implementationTraceability','failureRetryRisk','multiplayerMode'],
+    qa:['coreLoop','systemInterconnections','progressionEconomyBalance','failureRetryRisk','platformFitPlan','webCanonicalDesign','platformExpansionPolicy','uxAccessibilityPlan','validationQuestions','implementationTraceability','multiplayerMode'],
+    audio:['identity','playerFantasy','coreFun','signatureSystems','artAudioDirection','failureRetryRisk','platformFitPlan','webCanonicalDesign','platformExpansionPolicy']
+  }[role]||Object.keys(design||{});
+  return Object.fromEntries(fields.filter(key=>Object.prototype.hasOwnProperty.call(design||{},key)).map(key=>[key,design[key]]));
+}
+function parseJsonObject(text){
+  const raw=String(text??'').trim();
+  if(!raw)throw new Error('empty model response');
+  const unfenced=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+  try{return JSON.parse(unfenced);}catch{}
+  const first=unfenced.indexOf('{');const last=unfenced.lastIndexOf('}');
+  if(first>=0&&last>first)return JSON.parse(unfenced.slice(first,last+1));
+  throw new Error('model response is not a JSON object');
+}
+function assertSchemaValue(value,schema,label='root'){
+  if(!schema||typeof schema!=='object')return;
+  if(schema.enum&&!schema.enum.includes(value))throw new Error(`schema enum mismatch: ${label}`);
+  if(schema.type==='object'){
+    if(!value||Array.isArray(value)||typeof value!=='object')throw new Error(`schema object mismatch: ${label}`);
+    for(const key of schema.required||[])if(!(key in value))throw new Error(`schema required missing: ${label}.${key}`);
+    if(schema.additionalProperties===false)for(const key of Object.keys(value))if(!Object.prototype.hasOwnProperty.call(schema.properties||{},key))throw new Error(`schema additional property: ${label}.${key}`);
+    for(const [key,child] of Object.entries(schema.properties||{}))if(key in value)assertSchemaValue(value[key],child,`${label}.${key}`);
+    return;
+  }
+  if(schema.type==='array'){
+    if(!Array.isArray(value))throw new Error(`schema array mismatch: ${label}`);
+    if(Number.isFinite(schema.minItems)&&value.length<schema.minItems)throw new Error(`schema minItems mismatch: ${label}`);
+    if(Number.isFinite(schema.maxItems)&&value.length>schema.maxItems)throw new Error(`schema maxItems mismatch: ${label}`);
+    for(let i=0;i<value.length;i++)assertSchemaValue(value[i],schema.items,`${label}[${i}]`);
+    return;
+  }
+  if(schema.type==='number'){
+    if(typeof value!=='number'||!Number.isFinite(value))throw new Error(`schema number mismatch: ${label}`);
+    if(Number.isFinite(schema.minimum)&&value<schema.minimum)throw new Error(`schema minimum mismatch: ${label}`);
+    if(Number.isFinite(schema.maximum)&&value>schema.maximum)throw new Error(`schema maximum mismatch: ${label}`);
+  }
+  if(schema.type==='boolean'&&typeof value!=='boolean')throw new Error(`schema boolean mismatch: ${label}`);
+  if(schema.type==='string'){
+    if(typeof value!=='string')throw new Error(`schema string mismatch: ${label}`);
+    if(Number.isFinite(schema.maxLength)&&value.length>schema.maxLength)throw new Error(`schema maxLength mismatch: ${label}`);
+  }
+}
+function normalizeSchemaValue(value,schema,label='root',repairs=[]){
+  if(!schema||typeof schema!=='object')return value;
+  if(schema.type==='object'){
+    if(!value||Array.isArray(value)||typeof value!=='object')return value;
+    const required=schema.required||[];
+    if(required.length===1&&!Object.prototype.hasOwnProperty.call(value,required[0])){
+      const child=schema.properties?.[required[0]];
+      const childKeys=new Set(Object.keys(child?.properties||{}));
+      const valueKeys=Object.keys(value);
+      if(child?.type==='object'&&valueKeys.length>0&&valueKeys.every(key=>childKeys.has(key))){
+        repairs.push(`wrap-required-object:${label}.${required[0]}`);
+        value={[required[0]]:value};
+      }
+    }
+    const normalized={};
+    for(const [key,child] of Object.entries(schema.properties||{})){
+      if(Object.prototype.hasOwnProperty.call(value,key))normalized[key]=normalizeSchemaValue(value[key],child,`${label}.${key}`,repairs);
+      else if((schema.required||[]).includes(key)&&child?.type==='array'&&(!Number.isFinite(child.minItems)||child.minItems===0)){
+        normalized[key]=[];
+        repairs.push(`fill-empty-array:${label}.${key}`);
+      }
+    }
+    if(schema.additionalProperties!==false)for(const [key,childValue] of Object.entries(value))if(!Object.prototype.hasOwnProperty.call(normalized,key))normalized[key]=childValue;
+    else for(const key of Object.keys(value))if(!Object.prototype.hasOwnProperty.call(schema.properties||{},key))repairs.push(`drop-extra:${label}.${key}`);
+    return normalized;
+  }
+  if(schema.type==='array'){
+    if(!Array.isArray(value))return value;
+    let normalized=value.map((item,index)=>normalizeSchemaValue(item,schema.items,`${label}[${index}]`,repairs));
+    if(Number.isFinite(schema.maxItems)&&normalized.length>schema.maxItems){repairs.push(`trim-array:${label}:${normalized.length}->${schema.maxItems}`);normalized=normalized.slice(0,schema.maxItems);}
+    return normalized;
+  }
+  if(schema.type==='string'&&typeof value==='string'&&Number.isFinite(schema.maxLength)&&value.length>schema.maxLength){repairs.push(`trim-string:${label}:${value.length}->${schema.maxLength}`);return value.slice(0,schema.maxLength);}
+  return value;
+}
+
+// 내부 디자이너 요청·실행 시간 로그
+async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=localDesignerCallTimeoutMs,schema=null}={}){
+  const body=JSON.stringify({
+    model:localDesignerModel,
+    prompt,
+    stream:false,
+    think:false,
+    keep_alive:'10m',
+    format:schema||'json',
+    options:{
+      num_predict:Math.min(8192,Math.max(512,Number(predict||1600))),
+      temperature:Number.isFinite(Number(temperature))?Number(temperature):0.1,
+      // 내부 모델의 같은 문장 반복 생성만 억제한다. 구조와 규칙 숫자는 바꾸지 않는다.
+      repeat_penalty:1.15,
+      repeat_last_n:256,
+      num_ctx:Math.min(24576,Math.max(4096,Number(numCtx||8192)))
+    }
+  });
+  return await new Promise((resolve,reject)=>{
+    let settled=false;
+    const finish=(error,value='')=>{
+      if(settled)return;
+      settled=true;
+      clearTimeout(timer);
+      if(req&&!req.destroyed)req.destroy();
+      if(error)reject(error);else resolve(value);
+    };
+    const timer=setTimeout(()=>finish(new Error(`OLLAMA_DESIGN_TIMEOUT ${timeoutMs}ms`)),Math.max(30000,Number(timeoutMs)||localDesignerCallTimeoutMs));
+    const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
+      let data='';
+      res.setEncoding('utf8');
+      res.on('data',chunk=>data+=chunk);
+      res.on('end',()=>{
+        try{
+          if((res.statusCode||0)<200||(res.statusCode||0)>=300)throw new Error(`OLLAMA_DESIGN_HTTP_${res.statusCode} ${clip(data,800)}`);
+          const row=JSON.parse(data);
+          if(row?.error)throw new Error(`OLLAMA_DESIGN_ERROR ${clean(row.error)}`);
+          if(row?.done!==true)throw new Error('OLLAMA_DESIGN_INCOMPLETE_RESPONSE');
+          const raw=clean(row?.response);
+          if(!raw)throw new Error('OLLAMA_DESIGN_EMPTY_RESPONSE');
+          console.log(`DESIGN_LOCAL_TIMING=loadMs:${Math.round(Number(row.load_duration||0)/1e6)}|promptTokens:${Number(row.prompt_eval_count||0)}|promptMs:${Math.round(Number(row.prompt_eval_duration||0)/1e6)}|generatedTokens:${Number(row.eval_count||0)}|generationMs:${Math.round(Number(row.eval_duration||0)/1e6)}`);
+          if(row.done_reason==='length')throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
+          finish(null,raw);
+        }catch(error){finish(error);}
+      });
+      res.on('error',finish);
+    });
+    req.on('error',finish);
+    req.end(body);
+  });
+}
+async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false,includeAssetContext=true}={}){
+  if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
+  const timeoutMs=localDesignerCallTimeoutMs;
+  const started=Date.now();
+  const assetContext=includeAssetContext?`DESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.`:'DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR';
+  const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE\n문자 수 상한은 목표 분량이 아니다. 각 설명은 필요한 조건·행동·상태 변화를 짧고 완결된 문장으로 작성하고 같은 문장을 반복하지 않는다. 필요한 설명을 마치면 문자열과 JSON을 닫는다. 고정 ID·수치·원본 규칙은 보존한다.`;
+  const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
+  predict=Math.min(8192,Math.max(512,Number(predict)||1600,Number(designCheckpoint.localAuthoringBudgets?.[identity])||0));
+  console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
+  const fields=schema?.type==='object'?Object.keys(schema.properties||{}):[];
+  const field=fields.length===1?fields[0]:null;
+  const child=field?schema.properties[field]:null;
+  const objectChild=child?.type==='object'&&Object.keys(child.properties||{}).length>0;
+  const arrayChild=child?.type==='array'&&child.items?.type==='object'&&Number(child.minItems)>0;
+  const canSplit=fields.length>1||objectChild||arrayChild;
+  // 한 규칙의 역할·조건·선택·상태는 같은 모델 응답에서 함께 수정한다.
+  const grammarObject=Boolean(schema.properties?.grammarRole?.enum?.length);
+  const oversizedTextGroup=!grammarObject&&fields.length>1&&fields.every(key=>schema.properties[key].type==='string')
+    &&fields.reduce((sum,key)=>sum+Number(schema.properties[key].maxLength||0),0)>predict;
+  let directCall=true;
+  let requestStarted=started;
+  try{
+    let raw;
+    let splitRequired=canSplit&&((isolateFields&&!grammarObject)||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!grammarObject)||oversizedTextGroup||objectChild||arrayChild||fields.includes('signatureSystems'));
+    if(!splitRequired){
+      const requestPrompt=prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': '');
+      try{
+        raw=await requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema});
+      }catch(error){
+        if(/^OLLAMA_DESIGN_OUTPUT_TRUNCATED/.test(error?.message||'')&&!canSplit&&predict<8192){
+          // 더 쪼갤 수 없는 필드는 내용을 버리거나 같은 작은 예산을 반복하지 않는다.
+          recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
+          const previous=predict;
+          predict=Math.min(8192,predict*2);
+          designCheckpoint.localAuthoringBudgets={...designCheckpoint.localAuthoringBudgets,[identity]:predict};
+          persistDesignCheckpoint();
+          console.log(`DESIGN_LOCAL_OUTPUT_BUDGET_REPAIR=${previous}->${predict}|fields=${fields.join(',')}`);
+          requestStarted=Date.now();
+          raw=await requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema});
+        }else{
+          if(!/^OLLAMA_DESIGN_(?:OUTPUT_TRUNCATED|TIMEOUT(?: |$))/.test(error?.message||'')||!canSplit)throw error;
+          recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
+          designCheckpoint.localAuthoringSplits={...designCheckpoint.localAuthoringSplits,[identity]:true};
+          persistDesignCheckpoint();
+          splitRequired=true;
+        }
+      }
+    }
+    if(splitRequired){
+      directCall=false;
+      // 큰 객체·대안 배열과 반복된 빈 내용을 기존 체크포인트의 작은 조각으로 복구한다.
+      console.log(`DESIGN_LOCAL_SPLIT=${arrayChild?'ARRAY_ITEMS':objectChild?'NESTED_OBJECT':'FIELDS'}|fields=${fields.length}`);
+      let merged={};
+      if(objectChild){
+        merged[field]=await runCheckpointTask('local_authoring_parts',`${identity}:${field}`,()=>callLocalDesignerModel(
+          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields,includeAssetContext}
+        ));
+      }else if(arrayChild){
+        const rows=[];
+        for(let index=0;index<child.minItems;index++){
+          const orderedKey=field==='designAlternatives'?'label':field==='playthrough'?'phase':null;
+          let itemSchema=orderedKey&&child.items.properties?.[orderedKey]?.enum?.[index]
+            ?{...child.items,properties:{...child.items.properties,[orderedKey]:{...child.items.properties[orderedKey],enum:[child.items.properties[orderedKey].enum[index]]}}}
+            :child.items;
+          // 원본 능력의 ID·수치는 생성 대상이 아니다. 현재 소스 사실을 스키마에 고정한다.
+          const fact=field==='abilities'&&typeof playableRequirements!=='undefined'?playableRequirements.abilityFacts[index]:null;
+          const grammarRole=field==='signatureSystems'?(seedGameplaySketchVersion>=5?['MAIN','A','B','DELVE']:['MAIN','A','B','c','DELVE'])[index]:null;
+          const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
+}
+            }};
+          }
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/C/@ 역할별 원본 설계 검사
           const itemKey=`${identity}:${field}:${index}`;
@@ -1316,7 +2633,7 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             const roleIssues=[];
@@ -1344,7 +2661,8 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             designCheckpoint.lastError=`DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED ${roleIssues.join(',')}`;
             persistDesignCheckpoint();
             console.log(`DESIGN_GRAMMAR_ROLE_REPAIR=${grammarRole}|${roleIssues.join(',')}|attempt=${designCheckpoint.sliceRepairAttempts[itemTaskKey]}`);
-            if(roleAttempt>=1)throw new Error(designCheckpoint.lastError);
+            // 수정 가능한 설계 실패는 동일한 역할의 오답만 재작성한다.
+            // 고정 시도 횟수로 전체 설계를 폐기하지 않으며 실행기 시간/중단 시 체크포인트를 보존한다.
           }
         }
         merged[field]=rows;
