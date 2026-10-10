@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "engine": "UNITY_WEB",
+  "gameId": "daechung-rpg",
+  "bundleComplete": true,
+  "requiredGroups": {
+    "loader": [
+      "Build/daechung-rpg.loader.js"
+    ],
+    "data": [
+      "Build/daechung-rpg.data.gz"
+    ],
+    "framework": [
+      "Build/daechung-rpg.framework.js.gz"
+    ],
+    "wasm": [
+      "Build/daechung-rpg.wasm.gz"
+    ]
+  },
+  "files": [
+    {
+      "path": "Build/daechung-rpg.data.gz",
+      "bytes": 1215629
+    },
+    {
+      "path": "Build/daechung-rpg.framework.js.gz",
+      "bytes": 69324
+    },
+    {
+      "path": "Build/daechung-rpg.loader.js",
+      "bytes": 27914
+    },
+    {
+      "path": "Build/daechung-rpg.wasm.gz",
+      "bytes": 5376370
+    }
+  ],
+  "cloudflareSingleAssetMaxBytes": 26214400,
+  "approvedEnvironment": {
+    "required": false
+  },
+  "canonicalSourceRoot": "unity-games/daechung-rpg",
+  "sourceCommit": "bfc137fa5a791c8d23be52509bdddacdaf8c0e7e",
+  "unitySourceTreeSha256": "836bf4cb9f4608c81c11216a6deec9488b7a1e3e1f0fd528ec52daf9a464c085",
+  "buildTreeSha256": "b347ba9b63ceaf9f6e67724e39866c60449e4a28fbd32a692daf54f39426b7eb",
+  "requiredDimension": "3D",
+  "buildUpGrowth": {
+    "status": "RUNTIME_QA_NOT_VERIFIED",
+    "verifiedGrowth": false,
+    "required": false,
+    "previousSourceTreeSha256": null,
+    "sourceTreeSha256": "836bf4cb9f4608c81c11216a6deec9488b7a1e3e1f0fd528ec52daf9a464c085"
+  },
+  "nativeSystemAudit": {
+    "required": true,
+    "pass": false,
+    "staticCoverageComplete": false,
+    "authoredRoles": 4,
+    "verifiedRoles": 0,
+    "sourceTreeSha256": "836bf4cb9f4608c81c11216a6deec9488b7a1e3e1f0fd528ec52daf9a464c085"
+  },
+  "precisionQa": {
+    "required": true,
+    "pass": false,
+    "scenarios": [
+      "actual-play",
+      "independent-qa",
+      "regression"
+    ]
+  },
+  "homepageVerified": false,
+  "homepageDevelopmentTest": true,
+  "browserVerification": {
+    "actualBrowserPlay": false,
+    "independentQa": false,
+    "regression": false,
+    "realMobileTouch": true,
+    "saveRestore": false,
+    "native3d": false,
+    "multiplayer": false,
+    "source": "OFFICIAL_UNITY_WEB_DEVELOPMENT_FLOOR"
+  }
+}
