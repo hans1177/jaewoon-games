@@ -695,25 +695,38 @@
       "toSystem": "a_arena_survival_roguelite",
       "trigger": "Enemy Density Change",
       "stateChange": "Position Shift Implemented in Reaction to Changing Enemy Density"
+    },
+    "local_authoring_parts::8a0b67616b59a6f02b9c45306a32abc3dbd2a23960c9f7d7b09b3edccbb07139:systemInterconnections:3:15b2ebbe04a7add7": {
+      "fromId": "b_arena_survival_roguelite",
+      "toId": "a_arena_survival_roguelite",
+      "stateKeys": [
+        "positionShift",
+        "buildConfiguration",
+        "survivabilityThresholds"
+      ],
+      "fromSystem": "b_arena_survival_roguelite",
+      "toSystem": "a_arena_survival_roguelite",
+      "trigger": "Enemy Density Change",
+      "stateChange": "Position Shift Implemented in Reaction to Changing Enemy Density"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 19,
-      "successes": 18,
+      "calls": 20,
+      "successes": 19,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2108040,
-      "lastMs": 32177,
+      "totalMs": 2203902,
+      "lastMs": 95862,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:51:29.503Z"
+      "updatedAt": "2026-10-10T06:53:05.366Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:16:21.375Z",
-  "updatedAt": "2026-10-10T06:51:29.503Z",
+  "updatedAt": "2026-10-10T06:53:05.366Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2505,7 +2518,7 @@
   "localAuthoringSplits": {
     "1a0f8c21398ea31b10d7bc2fbf71f4648cfa8d30a34879fac9826f3b8c9e162a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:51:29.503Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:53:05.366Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
