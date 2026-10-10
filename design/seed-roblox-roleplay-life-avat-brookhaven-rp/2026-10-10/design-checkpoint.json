@@ -460,25 +460,38 @@
         }
       ],
       "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::14851c42c6c9d1a4980f0861edc6a3ed6515b644dd1b1a4f6c48fbbab56d15d8:signatureSystems:0": {
+      "id": "signatureSystems_0",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "BUILD_UPGRADE"
+      ],
+      "stateOutputs": [
+        "NEW_STRATEGY"
+      ],
+      "name": "Build Progression",
+      "purpose": "Enables strategic adaptation through dynamic build progression",
+      "playerChoice": "Strategic Adaptation through Multiple Build Combinations in Real-Time Survival Contexts"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 8,
+      "calls": 10,
+      "successes": 9,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1042704,
-      "lastMs": 89012,
+      "totalMs": 1138916,
+      "lastMs": 96212,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:02:49.608Z"
+      "updatedAt": "2026-10-10T03:04:25.834Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:45:26.864Z",
-  "updatedAt": "2026-10-10T03:02:49.621Z",
+  "updatedAt": "2026-10-10T03:04:25.834Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2321,10 +2334,10 @@
   "localAuthoringSplits": {
     "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:02:49.612Z",
-  "failedPhase": "designer_draft_slices",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:04:25.834Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
