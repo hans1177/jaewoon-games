@@ -238,7 +238,17 @@ export function validateGameSeed(input) {
   }
   if (seed.INITIAL_PLAY_MODE !== undefined && !isNonEmptyString(seed.INITIAL_PLAY_MODE)) errors.push('INITIAL_PLAY_MODE must be project-defined and non-empty');
 
-  validateGameplaySketch(seed.GAMEPLAY_SKETCH,errors);
+  // 메인: 디자이너가 아직 쓰지 않은 @ 입력을 최종 설계로 가장하지 않는다.
+  // 중앙 시드 백필의 저작 대기 항목만 접수하고, 다른 시드 규칙과 실제 최종 설계 검증은 그대로 유지한다.
+  const provisionalDelve=seed.novelGrammarBackfill?.authoringPending===true
+    &&String(seed.novelGrammarBackfill?.source||'')==='CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009'
+    &&Number(seed.GAMEPLAY_SKETCH?.version||0)>=5;
+  const sketchErrors=[];
+  validateGameplaySketch(seed.GAMEPLAY_SKETCH,sketchErrors);
+  for(const issue of sketchErrors){
+    if(provisionalDelve&&issue==='GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements')continue;
+    errors.push(issue);
+  }
   validateMarketNumericClaims(seed.MARKET_EVIDENCE_SUMMARY, errors);
   if (seed.DIRECT_COPY === true || seed.COPY_SOURCE_CODE === true || seed.COPY_ASSETS === true) errors.push('direct copying of source code or protected expression/assets is forbidden');
 
