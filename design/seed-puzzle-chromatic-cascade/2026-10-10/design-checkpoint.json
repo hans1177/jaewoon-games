@@ -104,40 +104,25 @@
         "색채 주파수 튜너 사용하여 인접 노드 색상을 변경하고 동기화 체인 형성",
         "연쇄 기폭 장치로 체인 활성화하여 연쇄 폭발 및 보상을 획득"
       ]
-    },
-    "local_authoring_parts::f8428e278206ddabc6609a257ccd2e24d802724e5eae00867d6e1c13be1a33c4:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"color_pattern_synthesis\": \"색상 패턴의 합성\"}",
-        "{\"energy_wave_expansion\": \"에너지 파동의 확산\"}"
-      ],
-      "stateOutputs": [
-        "{\"color_chain_puzzle\": \"색채 연쇄 퍼즐 게임 상태\"}",
-        "{\"convergent_effect\": \"연쇄 효과의 집중화\"}"
-      ],
-      "name": "COLOR_CHAIN_PUZZLE_MAIN",
-      "purpose": "플레이어가 색상 주파수 튜너와 연쇄 기폭 장치를 활용하여 색채 체인을 형성하고, 그에 따라 에너지 파동을 확산하며 전략적 선택을 하여 게임 진행을 이끌며, 최종적으로 연쇄 폭발을 일으키는 데 사용된다.",
-      "playerChoice": "플레이어는 특정 노드의 색상을 튜닝하여 동기화된 색채 체인을 형성하거나, 체인이 형성되었을 때 기폭할지를 결정해야 합니다. 이 선택은 색상 패턴의 합성을 통해 강력한 에너지 파동을 생성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 483547,
-      "lastMs": 51965,
+      "totalMs": 497807,
+      "lastMs": 14260,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:46:23.151Z"
+      "updatedAt": "2026-10-10T09:46:37.413Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:38:19.573Z",
-  "updatedAt": "2026-10-10T09:46:23.152Z",
+  "updatedAt": "2026-10-10T09:46:37.420Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1423,8 +1408,8 @@
     "local_authoring_parts::f8428e278206ddabc6609a257ccd2e24d802724e5eae00867d6e1c13be1a33c4:signatureSystems:0:4f53cda18c2baa0c": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:46:23.151Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:46:37.413Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_NO_PROGRESS MAIN DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
