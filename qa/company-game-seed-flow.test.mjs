@@ -248,7 +248,12 @@ test('autonomous runtime pins the engine and designs independent games within ce
   }
   assert.ok(seedWorkflow.includes('git push origin "$runtime_commit:refs/heads/$COMPANY_RUNTIME_BRANCH"'));
   assert.ok(seedWorkflow.includes('GIT_INDEX_FILE="$runtime_index" git read-tree'));
-  assert.ok(seedWorkflow.includes('GAME_SEED_RUNTIME_BASE_CHANGED=RETRY_WITH_FRESH_INTAKE'));
+  assert.ok(seedWorkflow.includes('GAME_SEED_RUNTIME_CONCURRENT_MERGE=NONCONFLICTING_FIELDS_ONLY'));
+  assert.ok(seedWorkflow.includes('GAME_SEED_RUNTIME_CONCURRENT_UPDATE_CONFLICT'));
+  assert.ok(seedWorkflow.includes("key==='seeds'?(row?.seedId||row?.gameId)"));
+  assert.ok(seedWorkflow.includes('node --input-type=module <<\'NODE\''));
+  assert.ok(seedWorkflow.includes("\n          NODE\n              generated_blob="),
+    'embedded merge script must terminate at the block scalar base indent, not within the shell if indentation');
   assert.ok(!seedWorkflow.includes('git checkout -B game-seed-persist'));
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
