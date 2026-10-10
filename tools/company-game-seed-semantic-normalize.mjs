@@ -87,7 +87,17 @@ function normalizeSeed(seed){
 
   const loops=uniq(seed.CORE_LOOP).filter(item=>!businessMeta.test(item));const fallbackLoops=uniq(cfg.minimumCoreLoop);const groups=Array.isArray(cfg.requiredConceptGroups)?cfg.requiredConceptGroups:[];const minimumGroups=Math.max(0,Number(cfg.minimumRequiredConceptGroups||0));
   const weakLoop=loops.length<3||loops.some(item=>item.length<20||weakLoopSuffix.test(item))||(groups.length&&conceptGroupCoverage(loops.join(' '),groups)<minimumGroups);
-  if(weakLoop&&fallbackLoops.length>=3){seed.CORE_LOOP=fallbackLoops.slice(0,8);repaired=true;}else seed.CORE_LOOP=loops.slice(0,8);
+  // Owner and existing-game design anchors outrank market genre examples. Normalize the
+  // designer input without replacing an approved gameplay cycle with an unrelated template.
+  const originalLoops=uniq(seed.originalDesignContext?.content?.coreLoop).filter(item=>!businessMeta.test(item));
+  const preserveOriginal=seed.designInputMode==='OWNER_BRIEF_AND_ORIGINAL_ONLY'
+    ||seed.REUSE_PRIOR_DESIGN_BASELINE===true||seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true;
+  const preservedLoops=preserveOriginal?(originalLoops.length>=3?originalLoops:loops):[];
+  if(preservedLoops.length>=3){
+    seed.CORE_LOOP=preservedLoops.slice(0,8);
+    if(JSON.stringify(seed.CORE_LOOP)!==JSON.stringify(loops.slice(0,8)))repaired=true;
+  }else if(weakLoop&&fallbackLoops.length>=3){seed.CORE_LOOP=fallbackLoops.slice(0,8);repaired=true;}
+  else seed.CORE_LOOP=loops.slice(0,8);
   seed.CORE_FUN_TO_LEARN=uniq(seed.CORE_FUN_TO_LEARN).filter(item=>!businessMeta.test(item)).slice(0,6);
 
   const identity=clean(seed.DISTINCT_IDENTITY);const identityNorm=norm(identity);const identityCopiesReference=/\bbenchmark\b/i.test(identity)||knownPlatformTitles.some(title=>identityNorm.includes(norm(title)));
