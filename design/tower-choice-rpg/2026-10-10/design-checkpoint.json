@@ -97,25 +97,32 @@
       },
       "playerFantasy": "A player who navigates a rapidly evolving battlefield, making strategic decisions that affect the outcome of each wave. The game is about mastering combat while adapting to changing threats and resource constraints.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::5dd7b0e69d6c45528a19f9d54d6e82205a72c7d980e6a37a26dc7fe3f9a0058d:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택에 따른 실제 상태 변화 및 피드백 제공",
+        "주기적인 반복 속도, 위험, 보상의 교차로 통해 핵심 루프 형성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 296134,
-      "lastMs": 296134,
+      "totalMs": 343879,
+      "lastMs": 47745,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:01:03.142Z"
+      "updatedAt": "2026-10-10T03:01:50.888Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:01:03.142Z",
+  "updatedAt": "2026-10-10T03:01:50.888Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1825,7 +1832,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:01:03.142Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:01:50.888Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
