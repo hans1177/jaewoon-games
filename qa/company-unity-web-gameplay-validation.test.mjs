@@ -8,6 +8,13 @@ const source=fs.readFileSync(new URL('../tools/company-unity-web-gameplay-valida
 
 const daechungUnitySource=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/RuntimeBootstrap.cs',import.meta.url),'utf8');
 
+test('browser Unity 3D QA pins the central policy to the validator module even from the WebGL staging directory',()=>{
+  assert.match(source,/readFileSync\(new URL\('\.\.\/company-learning\/platform-release-roadmap\.json',import\.meta\.url\),'utf8'\)/);
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(workflow,/cd \/tmp\/unity-web/);
+  assert.match(workflow,/node "\$GITHUB_WORKSPACE\/tools\/company-unity-web-gameplay-validation\.mjs"/);
+});
+
 test('Daechung Unity Web exposes a genuine initial hunt control before browser QA touches it',()=>{
   const start=daechungUnitySource.indexOf('private void DrawPrimaryCombatActionButton()');
   const end=daechungUnitySource.indexOf('private void DrawTownControls()',start);
