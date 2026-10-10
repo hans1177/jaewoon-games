@@ -80,25 +80,53 @@
         "worldChange": "플레이어의 선택이 마을 재건 시설의 건축 목재와 광석 투자, 인벤토리 슬롯 제한 조정 등 현실 세계의 상태 변화를 유도하며, 이는 다음 게임 세션으로 이어짐",
         "nextEvent": "플레이어의 선택이 다음 세션의 던전 진입 및 자원 채취 결정에 영향을 미침"
       }
+    },
+    "local_authoring_parts::22845a5b8fc55eaa25a572a6ab9693ca6799160d16485c94fbc3d546ba8b6853:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "마을 재건",
+          "kind": "MATERIAL",
+          "gameplayEffect": "게임 상태 변화 및 플레이어 선택에 영향"
+        },
+        {
+          "name": "던전 전투",
+          "kind": "MATERIAL",
+          "gameplayEffect": "전투력 증대, 리스크 관리 조건 설정"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "캐주얼 모바일 액션 롤플레잉 게임",
+          "gameplayEffect": "플레이어의 선택과 현실 세계의 상태 변화 유도"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "액션 전투 시스템",
+          "gameplayEffect": "실시간 회피 및 평타/스킬 연계 기능 구현"
+        }
+      ],
+      "cGenreInterlock": "마을 재건 시설 연동 시스템의 영구적인 스탯 버프는 리스크 배낭 정밀 적재 시스템의 인벤토리 슬롯 제한으로 인해 생성된 상태 변화에 의해 연결됨",
+      "cWorldAndGameplayEffect": "플레이어의 선택이 마을 재건 시설의 건축 목재와 광석 투자, 인벤토리 슬롯 제한 조정 등 현실 세계의 상태 변화를 유도하며, 이는 다음 게임 세션으로 이어짐"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 753985,
-      "lastMs": 104590,
+      "totalMs": 842559,
+      "lastMs": 88574,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:02:32.544Z"
+      "updatedAt": "2026-10-10T10:04:01.121Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:49:58.534Z",
-  "updatedAt": "2026-10-10T10:02:32.546Z",
+  "updatedAt": "2026-10-10T10:04:01.121Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1780,7 +1808,7 @@
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:02:32.546Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:04:01.121Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
