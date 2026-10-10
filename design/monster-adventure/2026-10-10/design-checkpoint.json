@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
-      "timeouts": 1,
+      "failures": 2,
+      "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 300080,
-      "lastMs": 300080,
+      "totalMs": 600181,
+      "lastMs": 300101,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:23:41.217Z"
+      "updatedAt": "2026-10-10T10:28:41.319Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:40.867Z",
-  "updatedAt": "2026-10-10T10:23:41.217Z",
+  "updatedAt": "2026-10-10T10:28:41.319Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1552,6 +1552,7 @@
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
   "localAuthoringSplits": {
-    "82830b2ba94e226a987ad9ed48e97be91250974bf7c5b21dc2e26af03f5071e0": true
+    "82830b2ba94e226a987ad9ed48e97be91250974bf7c5b21dc2e26af03f5071e0": true,
+    "e7c304687e1453a0506ab056c588b7cfe21ec5d66e2921866ec31f77f7097ef5": true
   }
 }
