@@ -115,6 +115,11 @@
         "DEFENSE",
         "TYCOON",
         "HORROR",
+        "ACTION",
+        "PUZZLE",
+        "BUILDING",
+        "IDLE",
+        "SOCIAL",
         "CASUAL"
       ],
       "capabilityFilteredNotInvented": true,
@@ -122,7 +127,9 @@
       "desktopSideNav": true,
       "safeAreaAware": true,
       "focusAndBackStackPreserved": true,
-      "sourceGameControlsMountAndGameRules": true
+      "sourceGameControlsMountAndGameRules": true,
+      "mixedGenreUnionDeduplication": true,
+      "koreanAliases": true
     },
     "skillJournalEventTrade": {
       "prerequisiteDAGCycleFlag": true,
