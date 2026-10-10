@@ -90,7 +90,8 @@ const directiveHomepageMirror=directive.homepageOperations||{};
 const directiveHomepageTestingMirror=directive.homepageTesting||{};
 const directiveDocumentationMirror=directive.documentationSynchronization||{};
 const directiveMirrorMatchesCentral=
-  JSON.stringify(directiveHomepageMirror)===JSON.stringify(homepagePolicy)&&
+  JSON.stringify(Object.fromEntries(Object.entries(directiveHomepageMirror).filter(([key])=>key!=='homepageListingContract')))===JSON.stringify(homepagePolicy)&&
+  JSON.stringify(directiveHomepageMirror.homepageListingContract||{})===JSON.stringify(centralHomepage.homepageListingContract||{})&&
   JSON.stringify(directiveHomepageTestingMirror)===JSON.stringify(homepageTesting)&&
   JSON.stringify(directiveDocumentationMirror)===JSON.stringify(documentationSync);
 const homepagePresentation=roadmap.homepagePresentation||{};
