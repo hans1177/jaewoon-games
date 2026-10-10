@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 폭발하는 전술적 선택을 경험하게 되며, 매칭의 파급 효과를 극대화하는 독창적인 게임 방식을 선호합니다.",
       "coreFun": "플레이어는 제한된 튜닝 횟수 내에서 인접 노드의 색상을 변경하여 가장 길고 강력한 연쇄 동기화 경로를 확보하고, 기폭 장치로 체인을 활성화하여 대규모 폭발과 보상을 획득하며, 즉각적인 시각적 피드백과 전략적 성취감을 느낍니다."
+    },
+    "local_authoring_parts::e0220449600f2463ce293e6714c8c6ca59970ed9b4bf0192248be1bb6608e276:coreLoop": {
+      "coreLoop": [
+        "입력/선택 → 상태변화 → 보상/위험/다음 선택",
+        "색채 주파수 튜너 사용하여 인접 노드 색상을 변경하고 동기화 체인 형성",
+        "연쇄 기폭 장치로 체인 활성화하여 연쇄 폭발 및 보상을 획득"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 243053,
-      "lastMs": 243053,
+      "totalMs": 295436,
+      "lastMs": 52383,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:42:22.645Z"
+      "updatedAt": "2026-10-10T09:43:15.030Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:38:19.573Z",
-  "updatedAt": "2026-10-10T09:42:22.645Z",
+  "updatedAt": "2026-10-10T09:43:15.030Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1391,7 +1398,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:42:22.645Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:43:15.030Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
