@@ -126,7 +126,7 @@ export function evaluateUnityWebBuildUpGrowth({
     const states=lines.filter(line=>line.includes(' STATE '));
     const ids=new Set(),kinds=new Set();
     for(const line of lines){
-      const kind=line.match(/JAEWOON_UNITY_WEB_QA\\s+([A-Z_]+)/)?.[1]||'';
+      const kind=line.match(/JAEWOON_UNITY_WEB_QA\s+([A-Z_]+)/)?.[1]||'';
       if(!['REGION','QUEST','ENCOUNTER','BOSS','SKILL','ITEM','REWARD','PROGRESS','CORE_FUN'].includes(kind))continue;
       kinds.add(kind);
       for(const key of ['region','quest','enemy','boss','skill','item','ability','content','event']){
@@ -175,8 +175,8 @@ export function evaluateUnityWebBuildUpGrowth({
       ||observation.runtime.worldMeshes3d>minValue(previousRuntime.worldMeshes3d)
       ||observation.runtime.gameplayActors3d>minValue(previousRuntime.gameplayActors3d));
   const visiblePresentationChanged=changedKinds.some(kind=>kind==='graphics'||kind==='scripts')
-    &&observation.runtime.sceneCaptureSha256!==previousRuntime.sceneCaptureSha256
-    &&observation.runtime.colorBuckets>=minValue(previousRuntime.colorBuckets)+2;
+    &&qaRuns.every(e=>e.visualQa?.renderedScene?.sceneCaptureSha256!==previousRuntime.sceneCaptureSha256
+      &&minValue(e.visualQa?.renderedScene?.pixels?.distinctColorBuckets)>=minValue(previousRuntime.colorBuckets)+2);
   const measuredOptimization=changedKinds.includes('scripts')
     &&((previousRuntime.p95FrameMs>0&&observation.runtime.p95FrameMs>0
       &&observation.runtime.p95FrameMs<=previousRuntime.p95FrameMs*0.9)
