@@ -104,25 +104,40 @@
         "입력: 전략 재설계 및 장비 조합 선택 → 상태변화: 세계 상태 변화 → 보상/위험: 새로운 전략 이어지는 루프",
         "입력: 전략적 결정 및 상호작용 → 상태변化: 실제 결과로 이어지는 루프"
       ]
+    },
+    "local_authoring_parts::a8a22acb23d7800ad543bce65debccc0620c04aa0b6bd52d430a81917611fa50:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential_loop",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "major_enemy_pattern",
+        "equipment_upgrade_choice"
+      ],
+      "stateOutputs": [
+        "simulated_environment_change",
+        "strategic_decision_result"
+      ],
+      "name": "Essential Loop",
+      "purpose": "Connects major enemy patterns with strategic decisions to drive simulated environment changes and produce meaningful outcomes.",
+      "playerChoice": "Equipment upgrade or strategic reconfiguration selection that directly influences the simulated environment state change and subsequent strategic decision result."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 209836,
-      "lastMs": 37908,
+      "totalMs": 247398,
+      "lastMs": 37562,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:09:13.227Z"
+      "updatedAt": "2026-10-10T06:09:50.791Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:05:43.335Z",
-  "updatedAt": "2026-10-10T06:09:13.227Z",
+  "updatedAt": "2026-10-10T06:09:50.791Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1991,7 +2006,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:09:13.227Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:09:50.791Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
