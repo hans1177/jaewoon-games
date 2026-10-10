@@ -95,25 +95,117 @@
         "delveGrowthRule": "플레이어 선택 → 자원 상태 변화 → 전투 전략 수립 및 보호 구조 조정 → 새로운 전투 패턴 생성",
         "finalGameIdentity": "생태학, 철학, 군사학, 전략의 융합으로 인해 전투 전략 혁신, 자원 수집 효율성 향상, 생존자 역할 다양화된 게임 정체성"
       }
+    },
+    "local_authoring_parts::312e8db95d8bd81f62cd929a7701d9177a0b9f8ef20de2f7a7fefa70ac9bb8a3:playerFantasy,coreFun": {
+      "playerFantasy": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임에서 플레이어는 동료들과 함께 자연 환경을 탐험하며 자원을 수집하고 위협을 관리해야 한다. 이 과정에서는 전투 전략, 이동 경로, 자원 소비 방식 등 다양한 요소가 실질적으로 영향을 미친다.",
+      "coreFun": "플레이어 위치 변경 → 자원 소비율 증가 → 자연 요 element 영향"
+    },
+    "local_authoring_parts::c28adc7834d0da941be5ab60aaf78cceffde024b8c631f162203ce25e33d22bd:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "생존자 역할의 다양성과 동료 협업",
+        "a": {
+          "system": "환경 및 위협 관리 시스템",
+          "material": "지속 가능한 자원 수집, 이동 전략, 위험 평가 기준",
+          "materialDomain": "생태학적 지식, 환경 과학, 식물학, 천문학",
+          "stateChange": "플레이어 위치 변경, 자원 소비율 증가, 자연 요소 영향"
+        },
+        "b": {
+          "system": "전투 및 방어 시스템",
+          "material": "무기 선택, 전술 적용, 적 상대 대응 전략",
+          "materialDomain": "철학, 전략, 군사학, 역사",
+          "stateChange": "전투 승패 결정, 보호 구조 조정, 적 행동 예측"
+        },
+        "abCausality": "주변 환경 변화 → 플레이어 전략 수립 → 새로운 전투 패턴 생성",
+        "abEvolution": {
+          "aChangesB": "자원 수집 효율성 향상, 전투 전략 다양화, 생존자 역할 재설계",
+          "bChangesA": "위협 유형 확장, 이동 경로 최적화, 주변 환경 반영",
+          "lateGameChange": "생태학적 지식 활용으로 전투 전략 혁신, 동료 협업 강화"
+        },
+        "materialFusion": {
+          "contrast": "환경 과학과 철학의 융합, 전략과 군사학의 결합",
+          "causalBridge": "플레이어 선택 → 자연 요소 영향 → 전투 전략 변화",
+          "removalConsequence": "자연 요소 변화에 따른 전투 방침 수정, 자원 소비 관리 개선"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어 위치 및 자원 상태 변화를 기반으로 한 환경 조절",
+          "characterConflict": "자원 부족 시 위협 증가와 플레이어 선택 갈등",
+          "playerChoice": "전투 전략 수립 및 보호 구조 조정 결정",
+          "worldChange": "자연 요소 변화에 따라 전투 패턴 재설계, 생존자 역할 다양화",
+          "nextEvent": "자원 수집 효율성 향상, 전투 전략 확장, 생태학적 지식 활용"
+        },
+        "cThemes": [
+          {
+            "name": "생태학적 지식",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자연 요소 반영, 전투 전략 혁신, 생존자 역할 재설계"
+          },
+          {
+            "name": "철학과 군사학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전술 적용, 적 상대 대응 전략, 주변 환경 반영"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "환경 과학과 철학의 융합",
+            "gameplayEffect": "자연 요소 반영, 전투 전략 혁신, 생존자 역할 재설계"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "전략과 군사학의 결합",
+            "gameplayEffect": "전술 적용, 적 상대 대응 전략, 주변 환경 반영"
+          }
+        ],
+        "cGenreInterlock": "환경 과학과 철학의 융합 → 전략과 군사학의 결합 → 생태학적 지식 활용으로 전투 전략 변화",
+        "cWorldAndGameplayEffect": "플레이어 선택에 따른 자연 요소 변화, 전투 전략 수립 및 보호 구조 조정, 자원 수집 효율성 향상",
+        "delveDiscoveries": [
+          {
+            "clue": "생태학적 지식을 바탕으로 한 새로운 전투 패턴 생성",
+            "discovery": "자연 요소 영향을 고려한 전투 전략 개발",
+            "newChoice": "자원 소비 관리와 전투 전략 동시 적용"
+          },
+          {
+            "clue": "철학과 군사학의 융합으로 인한 전투 전략 혁신",
+            "discovery": "전술 적용과 적 상대 대응 전략 재설계",
+            "newChoice": "주변 환경 반영을 통한 전투 방침 수정"
+          },
+          {
+            "clue": "생존자 역할 다양화를 위한 새로운 전투 패턴 도입",
+            "discovery": "자원 수집 효율성 향상을 통해 생존자 역할 재설계",
+            "newChoice": "환경 과학 기반의 전투 전략 수립"
+          },
+          {
+            "clue": "플레이어 선택에 따른 자연 요소 변화 반영",
+            "discovery": "자연 요소 변화로 인한 전투 전략 조정",
+            "newChoice": "자원 소비 관리를 통한 보호 구조 최적화"
+          }
+        ],
+        "delveGrowthRule": "플레이어 선택 → 자원 상태 변화 → 전투 전략 수립 및 보호 구조 조정 → 새로운 전투 패턴 생성",
+        "finalGameIdentity": "생태학, 철학, 군사학, 전략의 융합으로 인해 전투 전략 혁신, 자원 수집 효율성 향상, 생존자 역할 다양화된 게임 정체성"
+      },
+      "playerFantasy": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임에서 플레이어는 동료들과 함께 자연 환경을 탐험하며 자원을 수집하고 위협을 관리해야 한다. 이 과정에서는 전투 전략, 이동 경로, 자원 소비 방식 등 다양한 요소가 실질적으로 영향을 미친다.",
+      "coreFun": "플레이어 위치 변경 → 자원 소비율 증가 → 자연 요 element 영향"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 492519,
-      "lastMs": 192418,
+      "totalMs": 730844,
+      "lastMs": 238325,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:04:33.261Z"
+      "updatedAt": "2026-10-10T10:08:31.587Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:56:20.720Z",
-  "updatedAt": "2026-10-10T10:04:33.261Z",
+  "updatedAt": "2026-10-10T10:08:31.588Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1841,7 +1933,7 @@
   "localAuthoringSplits": {
     "312e8db95d8bd81f62cd929a7701d9177a0b9f8ef20de2f7a7fefa70ac9bb8a3": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:04:33.261Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:08:31.588Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
