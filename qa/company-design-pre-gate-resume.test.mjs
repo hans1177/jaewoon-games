@@ -29,7 +29,7 @@ test('new designer auto-intake does not dereference deleted sketch and starts at
   assert.ok(start>=0&&end>start);
   const resolve=runInNewContext(design.slice(start,end)+'\nresolveDesignerSeedInput',{
     path,
-    clean:value=>String(value??'').replace(/\\s+/g,' ').trim(),
+    clean:value=>String(value??'').replace(/\s+/g,' ').trim(),
     activeSeedForGame:()=>null,
     ownerDesignResetSeedForGame:()=>null,
     makeAutoMissingDesignSeed:game=>({
@@ -48,10 +48,10 @@ test('new designer auto-intake does not dereference deleted sketch and starts at
   assert.equal(seed.GAMEPLAY_SKETCH,undefined);
   assert.equal(seed.seedAuthoring.stage,'identity-core');
   assert.equal(state.seeds.length,1);
-  assert.match(design,/seedGameplaySketch\\?\\.version\\|\\|5/);
-  assert.match(design,/authoringPending===true\\|\\|!seedGameplaySketch/);
+  assert.match(design,/seedGameplaySketch\?\.version\|\|5/);
+  assert.match(design,/authoringPending===true\|\|!seedGameplaySketch/);
   const gate=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
-  assert.match(gate,/seed\\?\\.GAMEPLAY_SKETCH==null/);
+  assert.match(gate,/seed\?\.GAMEPLAY_SKETCH==null/);
 });
 
 // 메인: 문법 작성 대기와 최종 설계 검증을 혼동해 설계 엔진을 멈추지 않도록 회귀 검사.
