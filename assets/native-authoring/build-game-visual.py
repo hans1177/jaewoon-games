@@ -703,6 +703,13 @@ def import_source_surface():
                     track.strips.new(clip.name,int(clip.frame_range[0]),clip)
                     animation.action=None
                 ASSET_ARMATURES.append(rig)
+    # GLB 자산은 제작 모듈이 'object'여도 이미 있는 스키닝/모션을 없애지 않는다.
+    # 내부 라이브러리 원본의 연결된 리그만 그대로 내보내고 게임 판정은 수정하지 않는다.
+    for rig in rigs:
+        if rig not in ASSET_ARMATURES and any(
+                modifier.type=='ARMATURE' and modifier.object==rig
+                for obj in imported for modifier in obj.modifiers):
+            ASSET_ARMATURES.append(rig)
     SOURCE_PROVENANCE={
         'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
         'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
