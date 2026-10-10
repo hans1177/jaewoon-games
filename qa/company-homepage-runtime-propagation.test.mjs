@@ -10,7 +10,7 @@ import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
-test('Unity WebGL 전용: 파일 4종만으로는 노출 불가, 검증된 3D/저장/터치만 등록',async()=>{
+test('Unity WebGL 실제 번들 확인 시 개발 링크 제공, 정식 검증 표시는 별도 관리',async()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const headless={document:{readyState:'loading',addEventListener(){}},AbortController,setTimeout,clearTimeout};
   const html='<div id="unity-container"></div><script src="Build/demo.loader.js"></script><script>createUnityInstance(canvas, {dataUrl:"Build/demo.data", frameworkUrl:"Build/demo.framework.js", codeUrl:"Build/demo.wasm"});</script>';
@@ -20,14 +20,14 @@ test('Unity WebGL 전용: 파일 4종만으로는 노출 불가, 검증된 3D/�
   const qa={engine:'UNITY_WEB',gameId:'demo',pass:true,playableBrowserTest:true,boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},performance:{pass:true},noCriticalRuntimeError:true,spatialGameplay:{pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',perspectiveCamera:true,depthPass:true,observedMeshCount:2,observedTriangles:20,worldMeshes3d:2,worldDepthCm:55,gameplayActors3d:1,spriteGameplayActors:0},visualQa:{nativeUnityMesh:{pass:true,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'},renderedScene:{pass:true}}};
   const data={'unity-web-deploy-manifest.json':manifest,'unity-web-build.json':build,'upper-platform-development-readiness.json':readiness,'unity-web-gameplay-validation.json':qa,'unity-web-independent-qa.json':qa,'unity-web-regression.json':qa};
   const scanned=[];
-  let verified=true;
+  let verified=true,serveManifest=true;
   const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
     ...headless,fetch:async(url,options={})=>{
       const route=String(url);scanned.push(route);
       if(route.includes('/unity/'))return{ok:false};
       if(route.includes('index.html'))return{ok:true,text:async()=>html};
       const name=Object.keys(data).find(name=>route.includes('/'+name));
-      if(name)return{ok:true,json:async()=>name==='unity-web-deploy-manifest.json'&&verified===false?{...manifest,homepageVerified:false}:data[name]};
+      if(name)return name==='unity-web-deploy-manifest.json'&&!serveManifest?{ok:false}:{ok:true,json:async()=>name==='unity-web-deploy-manifest.json'&&verified===false?{...manifest,homepageVerified:false}:data[name]};
       if(options.method==='HEAD')return{ok:true};
       return{ok:false};
     }
@@ -52,16 +52,22 @@ test('Unity WebGL 전용: 파일 4종만으로는 노출 불가, 검증된 3D/�
   data['unity-web-independent-qa.json']=qa;
   verified=false;
   const rejected=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(rejected.games[0].unityWebAvailable,false,'missing manifest approval must block play');
-  assert.equal(rejected.games[0].unityWebTestUrl,null);
+  assert.equal(rejected.games[0].unityWebAvailable,true,'real deployable Unity WebGL bundle remains owner-playable');
+  assert.equal(rejected.games[0].unityWebVerified,false,'missing formal QA approval cannot be labeled PASS');
   verified=true;
   data['unity-web-independent-qa.json']={...qa,saveRestore:{pass:false}};
   const unsafeSave=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(unsafeSave.games[0].unityWebAvailable,false,'failed save/restore must block play');
+  assert.equal(unsafeSave.games[0].unityWebAvailable,true,'verified bundle remains accessible as a development test');
+  assert.equal(unsafeSave.games[0].unityWebVerified,false,'failed save/restore blocks QA PASS claim');
   data['unity-web-independent-qa.json']=qa;
   data['unity-web-regression.json']={...qa,mobile:{...qa.mobile,realGameTouchHandlerObserved:false}};
   const unsafeMobile=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(unsafeMobile.games[0].unityWebAvailable,false,'missing actual mobile touch must block play');
+  assert.equal(unsafeMobile.games[0].unityWebAvailable,true,'verified bundle remains accessible as a development test');
+  assert.equal(unsafeMobile.games[0].unityWebVerified,false,'missing actual mobile touch blocks QA PASS claim');
+  serveManifest=false;
+  const legacy=await api.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(legacy.games[0].unityWebAvailable,true,'index and four real assets allow legacy Unity WebGL launch');
+  assert.equal(legacy.games[0].unityWebVerified,false,'index-only probe cannot create QA PASS claim');
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
