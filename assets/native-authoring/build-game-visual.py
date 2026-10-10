@@ -105,6 +105,7 @@ ASSET_OBJECTS = []
 IMAGE_PROVENANCE = None
 MODULE_PROVENANCE = None
 SOURCE_PROVENANCE = None
+SOURCE_ENHANCEMENTS = []
 ASSET_ARMATURES = []
 # 기존 실행기 안에서만 사용하는 오픈소스 기능. 설치되지 않은 외부 엔진의 PASS를 만들지 않는다.
 OPEN_SOURCE_MODULES = {
@@ -593,8 +594,10 @@ def import_source_surface():
     global MODULE_PROVENANCE, SOURCE_PROVENANCE
     src=Path(ARGS.source_model).resolve()
     rights=ARGS.source_license.strip().lower()
-    if not src.is_file() or src.suffix.lower() not in ('.obj','.stl','.glb'):
+    if not src.is_file() or src.suffix.lower() not in ('.obj','.stl','.glb','.fbx'):
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_REQUIRED')
+    if src.suffix.lower()=='.fbx' and ARGS.module not in ('animation','video'):
+        raise RuntimeError('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE')
     if src.stat().st_size<=0 or src.stat().st_size>64*1024*1024:
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_SIZE_INVALID')
     if rights not in ('project-original','cc0','cc-by'):
@@ -606,6 +609,8 @@ def import_source_surface():
     before=set(bpy.data.objects)
     if src.suffix.lower()=='.glb':
         bpy.ops.import_scene.gltf(filepath=str(src))
+    elif src.suffix.lower()=='.fbx':
+        bpy.ops.import_scene.fbx(filepath=str(src))
     elif src.suffix.lower()=='.stl':
         if hasattr(bpy.ops.wm,'stl_import'): bpy.ops.wm.stl_import(filepath=str(src))
         else: bpy.ops.import_mesh.stl(filepath=str(src))
@@ -617,6 +622,15 @@ def import_source_surface():
     faces=sum(sum(max(0,len(poly.vertices)-2) for poly in obj.data.polygons) for obj in imported)
     if not imported or not 4<=faces<=450000:
         raise RuntimeError('OPEN_SOURCE_SURFACE_GEOMETRY_INVALID')
+    # 검증된 모캡 FBX는 실제 스키닝과 키를 요구한다. 리그 없는 파일은 모션으로 승격하지 않는다.
+    if src.suffix.lower()=='.fbx':
+        if not rigs or not any(mod.type=='ARMATURE' and mod.object in rigs for obj in imported for mod in obj.modifiers):
+            raise RuntimeError('NATIVE_MOCAP_SKINNED_RIG_REQUIRED')
+        if not any(rig.animation_data and (rig.animation_data.action or rig.animation_data.nla_tracks) for rig in rigs):
+            raise RuntimeError('NATIVE_MOCAP_CLIP_REQUIRED')
+    # 모든 검증된 GLB/FBX/OBJ 자산은 내부 라이브러리 후보로 동일한 재질·리그 검증을 거친다.
+    # 외부 원본 파일은 손대지 않으며 재질 복제본만 현재 게임 Style Lock에 맞춰 조정한다.
+    material_copies={}
     for index,obj in enumerate(imported):
         if ARGS.module=='medical':
             # 수입한 표면에서 민감해질 수 있는 문자열과 텍스처 정보를 제거한다.
@@ -631,6 +645,41 @@ def import_source_surface():
             obj.data.materials.clear()
             obj.data.materials.append(MID)
         elif not obj.data.materials:obj.data.materials.append(MID)
+        if ARGS.module!='medical':
+            for slot in obj.material_slots:
+                source_mat=slot.material
+                if not source_mat:
+                    continue
+                if source_mat not in material_copies:
+                    derivative=source_mat.copy()
+                    derivative.name='Vibe_'+source_mat.name
+                    if derivative.use_nodes:
+                        shader=next((node for node in derivative.node_tree.nodes if node.type=='BSDF_PRINCIPLED'),None)
+                        if shader:
+                            roughness=shader.inputs.get('Roughness')
+                            if roughness and not roughness.is_linked and (SOFT or LOW_POLY or WORN or TECH):
+                                original=float(roughness.default_value)
+                                if SOFT or WORN or LOW_POLY:
+                                    target_value=.72 if SOFT else .68 if WORN else .64
+                                    corrected=original+.35*(max(original,target_value)-original)
+                                else:
+                                    corrected=original+.35*(min(original,.42)-original)
+                                corrected=max(0.,min(1.,corrected))
+                                if abs(original-corrected)>1e-6:
+                                    roughness.default_value=corrected
+                                    SOURCE_ENHANCEMENTS.append({'kind':'PBR_ROUGHNESS_STYLE_REAUTHOR',
+                                                                'material':source_mat.name,'from':original,'to':corrected})
+                            base_color=shader.inputs.get('Base Color')
+                            if MUTED and base_color and not base_color.is_linked:
+                                original=list(base_color.default_value)
+                                gray=sum(original[:3])/3
+                                corrected=[.85*value+.15*gray for value in original[:3]]+[original[3]]
+                                if any(abs(a-b)>1e-6 for a,b in zip(original,corrected)):
+                                    base_color.default_value=corrected
+                                    SOURCE_ENHANCEMENTS.append({'kind':'PBR_BASE_COLOR_STYLE_REAUTHOR',
+                                                                'material':source_mat.name,'texturePreserved':True})
+                    material_copies[source_mat]=derivative
+                slot.material=material_copies[source_mat]
         ASSET_OBJECTS.append(obj)
     if ARGS.module=='human':
         if not rigs or not any(mod.type=='ARMATURE' for obj in imported for mod in obj.modifiers):
@@ -639,16 +688,40 @@ def import_source_surface():
         for rig in rigs:
             if not rig.animation_data or not rig.animation_data.nla_tracks:
                 human_motion(rig)
+    if ARGS.module in ('animation','video') and rigs:
+        if any(mod.type=='ARMATURE' and mod.object in rigs for obj in imported for mod in obj.modifiers):
+            for rig in rigs:
+                animation=rig.animation_data
+                if not animation or (not animation.action and not animation.nla_tracks):
+                    if src.suffix.lower()=='.fbx':
+                        raise RuntimeError('NATIVE_MOCAP_CLIP_REQUIRED')
+                    continue
+                if animation.action and not animation.nla_tracks:
+                    clip=animation.action
+                    track=animation.nla_tracks.new()
+                    track.name='SOURCE_MOCAP'
+                    track.strips.new(clip.name,int(clip.frame_range[0]),clip)
+                    animation.action=None
+                ASSET_ARMATURES.append(rig)
+    # GLB 자산은 제작 모듈이 'object'여도 이미 있는 스키닝/모션을 없애지 않는다.
+    # 내부 라이브러리 원본의 연결된 리그만 그대로 내보내고 게임 판정은 수정하지 않는다.
+    for rig in rigs:
+        if rig not in ASSET_ARMATURES and any(
+                modifier.type=='ARMATURE' and modifier.object==rig
+                for obj in imported for modifier in obj.modifiers):
+            ASSET_ARMATURES.append(rig)
     SOURCE_PROVENANCE={
         'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
         'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
-        'sanitizedAsserted':ARGS.source_sanitized=='yes','sourceFileImmutable':True
+        'sourceFormat':src.suffix.lower(),
+        'transformHistory':SOURCE_ENHANCEMENTS,'sourceFileImmutable':True,
+        'sanitizedAsserted':ARGS.source_sanitized=='yes'
     }
     kind=ARGS.module if ARGS.module!='auto' else 'design'
     MODULE_PROVENANCE={
         'kind':kind,'source':OPEN_SOURCE_MODULES[kind],
-        'method':'LICENSE_VERIFIED_EXTERNAL_SURFACE_IMPORT',
-        'sourcePlatform':'3D_SLICER_OR_FREECAD_USER_EXPORTED_SURFACE',
+        'method':'LICENSE_VERIFIED_INTERNAL_ASSET_SOURCE_REAUTHOR',
+        'sourcePlatform':'VIBE_INTERNAL_STUDIO_ASSET_LIBRARY',
         'generatedGeometry':False,'deidentifiedAssertionOnly':kind=='medical',
         'clinicalUseApproved':False,'clinicalDiagnosisAllowed':False,'runtimeVerified':False
     }
@@ -697,9 +770,16 @@ for obj in ASSET_OBJECTS:
     # 인체 리그 바인딩을 유지하며 기존 정적 메쉬의 모디파이어 처리만 유지한다.
     if not ASSET_ARMATURES:
         for modifier in list(obj.modifiers):bpy.ops.object.modifier_apply(modifier=modifier.name)
-    bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.025)
-    bpy.ops.object.mode_set(mode='OBJECT')
+    # 메시 생성기·외부 FBX/GLB의 원본 텍스처 좌표를 덮어쓰지 않는다.
+    if obj.data.uv_layers:
+        if not all(math.isfinite(v) for layer in obj.data.uv_layers for loop in layer.data for v in loop.uv):
+            raise RuntimeError('NATIVE_SOURCE_UV_INVALID')
+        obj['vibeUvMode']='SOURCE_UV_PRESERVED'
+    else:
+        bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.025)
+        bpy.ops.object.mode_set(mode='OBJECT')
+        obj['vibeUvMode']='GENERATED_SMART_UV'
 bpy.context.view_layer.update()
 # Match the GLB inspector: rotated bounding-box corners are not mesh contact.
 points=[obj.matrix_world@vertex.co for obj in ASSET_OBJECTS for vertex in obj.data.vertices]
@@ -863,11 +943,20 @@ pbr_mesh_qa={
              m.get('pbrMetallicRoughness',{}).get('roughnessFactor',1),
              m.get('pbrMetallicRoughness',{}).get('metallicFactor',1)])
         for m in glb_document.get('materials',[])),
+    'textureIndicesValid':all(isinstance(slot.get('index'),int)
+        and 0<=slot['index']<len(glb_document.get('textures',[]))
+        for m in glb_document.get('materials',[])
+        for slot in (m.get('normalTexture'),m.get('occlusionTexture'),m.get('emissiveTexture'),
+                     m.get('pbrMetallicRoughness',{}).get('baseColorTexture'),
+                     m.get('pbrMetallicRoughness',{}).get('metallicRoughnessTexture')) if slot is not None),
+    'sourceUvPreserved':all(obj.get('vibeUvMode')!='SOURCE_UV_PRESERVED' or bool(obj.data.uv_layers)
+        for obj in ASSET_OBJECTS),
+    'uvModes':{obj.name:obj.get('vibeUvMode') for obj in ASSET_OBJECTS},
     'sourceOriginalPreserved':True,
     'runtimeVerified':False
 }
 pbr_mesh_qa['pass']=pbr_mesh_qa['meshCount']>0 and pbr_mesh_qa['primitiveCount']>0 and all(
-    pbr_mesh_qa[k] for k in ('normalAndUvPresent','materialIndexValid','materialFactorsFinite'))
+    pbr_mesh_qa[k] for k in ('normalAndUvPresent','materialIndexValid','materialFactorsFinite','textureIndicesValid','sourceUvPreserved'))
 if not pbr_mesh_qa['pass']:
     raise RuntimeError('NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID')
 materials=[]
@@ -893,13 +982,22 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'internalAsset':{'library':'VIBE_STUDIO_ASSET_UNIVERSE','assetId':ARGS.asset_id,
+        'state':'PREPARED_NATIVE_QA_PENDING','providerPartitioned':False,
+        'reauthoringAxes':['MESH','PBR_MATERIAL','RIG','MOTION','LOD'],
+        'actualMaterialTransforms':len(SOURCE_ENHANCEMENTS),
+        'sourceProvenancePreserved':True,'originalImmutable':True,
+        'nativeRuntimePromotionRequired':True},
     'pbrMeshQa':pbr_mesh_qa,
     'researchApplication':{
         'rigMo':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html','usedFor':'SKINNED_GLTF_HIERARCHY_REVIEW','modelRan':False},
         'physSkin':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html','usedFor':'RIG_AND_WEIGHT_VALIDATION','modelRan':False},
         'motionMaster':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html','usedFor':'NATIVE_CLIP_INVENTORY_AND_ACTION_SEQUENCE','modelRan':False},
         'phyMotion':{'reference':'https://arxiv.org/abs/2605.14269','usedFor':'SURFACE_PHYSICS_AND_CONTACT_REVIEW','modelRan':False},
-        'hunyuan3d21':{'reference':'https://arxiv.org/abs/2506.15442','usedFor':'GLTF_PBR_MATERIAL_REVIEW_ONLY','modelRan':False,'modelLicenseRegionBlocked':'SOUTH_KOREA'}
+        'hunyuan3d21':{'reference':'https://arxiv.org/abs/2506.15442','usedFor':'GLTF_PBR_MATERIAL_REVIEW_ONLY','modelRan':False,'modelLicenseRegionBlocked':'SOUTH_KOREA'},
+        'trellis2':{'reference':'https://arxiv.org/abs/2512.14692','usedFor':'STRUCTURED_GEOMETRY_PBR_REFERENCE_ONLY','modelRan':False},
+        'kaininja':{'reference':'https://arxiv.org/abs/2609.15659','usedFor':'MESH_PART_AND_RIG_PREPARATION_REFERENCE_ONLY','modelRan':False},
+        'morph':{'reference':'https://openaccess.thecvf.com/content/ICCV2025/html/Li_Morph_A_Motion-free_Physics_Optimization_Framework_for_Human_Motion_Generation_ICCV_2025_paper.html','usedFor':'PHYSICS_CONTACT_QA_REFERENCE_ONLY','modelRan':False}
     },
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
@@ -1106,6 +1204,7 @@ evidence={
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'internalAsset':application['internalAsset'],
     'pbrMeshQa':pbr_mesh_qa,
     'researchApplication':application['researchApplication'],
     'multiViewPreview':IMAGE_VIEW_OUTPUTS,

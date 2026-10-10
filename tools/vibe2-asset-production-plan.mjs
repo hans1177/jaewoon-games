@@ -2240,6 +2240,7 @@ function nativeDccFamilyForTypes(types=[]){
 // 기존 Blender 제작 책임에서 사용하는 로컬 오픈소스 원본과 제작 범위.
 export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
   'mesh-ai':freeze({source:'https://github.com/microsoft/TRELLIS.2',baselineSource:'https://github.com/VAST-AI-Research/TripoSR',license:'MIT',
+    algorithmReferences:freezeList(['https://docs.meshy.ai/en/api/image-to-3d','https://arxiv.org/abs/2512.14692']),
     engine:'PINNED_OFFLINE_TRELLIS2_4B_OR_TRIPOSR_WITH_BLENDER',requiresLocalModel:true,
     // [권리 검증] 모형의 MIT 허가는 Nvidia 렌더링 의존성의 상업 허가를 대신하지 않는다.
     permittedCommercialEngine:'VAST-AI-Research/TripoSR',
@@ -2266,6 +2267,7 @@ export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
     license:'BSD-style',engine:'SLICER_SANITIZED_SURFACE_IN_BLENDER',
     requiresSanitizedSurface:true,clinicalUse:false,types:freezeList(['item','prop'])}),
   animation:freeze({source:'https://github.com/blender/blender',
+    algorithmReferences:freezeList(['https://www.deepmotion.com/animate-3d-api','https://cascadeur.com/help/tools/physics_tools/autophysics']),
     license:'GPL-2.0-or-later',engine:'BLENDER_KEYFRAMES_NLA_AND_GLTF_ANIMATION',
     types:freezeList(['animation','motion','prop','item','weapon','environment','background'])}),
   video:freeze({source:'https://ffmpeg.org',
@@ -2298,6 +2300,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)
     &&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))
     &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel))
+    &&(!/\.fbx$/i.test(sourceModel||'')||['animation','video'].includes(module))
     &&['auto','triposr','trellis2'].includes(meshModel);
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
@@ -2309,6 +2312,8 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
     masterGlbRequired,masterGlbOutput,masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     primitivePartAssemblyPrototypeOnly:masterGlbRequired,
+    internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
+    materialsMeshesRigAndMotionEnhancementOnly:true,
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
 }
@@ -2337,7 +2342,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
   const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
-  const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai':modelRequested?'object':'auto';
+  const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
+    :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
   const cinematicStyle=clean(task.assetAuthoring?.cinematicStyle||'studio').toLowerCase();
   const cinematicQuality=clean(task.assetAuthoring?.cinematicQuality||'preview').toLowerCase();
@@ -2382,8 +2388,10 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     checkSourceLicense();
   }
   if(modelRequested){
-    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl|fbx)$/i.test(sourceModel)
       ||sourceModel.split('/').includes('..'))throw new Error('OPEN_SOURCE_LOCAL_SURFACE_REQUIRED');
+    if(/\.fbx$/i.test(sourceModel)&&!['animation','video'].includes(module))
+      throw new Error('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE');
     checkSourceLicense();
   }
   if(imageRequested&&modelRequested)throw new Error('NATIVE_SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE');
@@ -2410,6 +2418,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
     family,license:resolvedLicense,module:modelModule,
     imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',
+    internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
     sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,

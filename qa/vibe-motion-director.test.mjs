@@ -136,6 +136,37 @@ function continuityFixture(){return{
   frames:Array.from({length:31},(_,index)=>({timeSeconds:index/30,rootPosition:[index/30,0,0],rootYawRadians:0,jointPositions:{hip:[0,1,0],head:[0,1.8,0]},contacts:{leftFoot:{planted:true,worldPosition:[0,0,0]},rightFoot:{planted:false,worldPosition:[index/30,0,0]}}}))
 };}
 
+test('static center-of-mass physics uses measured support contacts without granting gameplay or runtime authority',()=>{
+  const trace=continuityFixture();
+  trace.requiredDetailChannels={staticBalance:true};
+  for(const frame of trace.frames){
+    frame.contacts.rightFoot.planted=true;
+    frame.contacts.rightFoot.worldPosition=[1,0,0];
+    frame.balance={mode:'STATIC_SUPPORT',centerOfMassWorldPosition:[.5,1,0]};
+  }
+  const balanced=auditMotionContinuityTrace(trace);
+  assert.equal(balanced.verdict,'PASS');
+  assert.equal(balanced.metrics.maxStaticBalanceOutsideNormalized,0);
+  assert.equal(balanced.measurementCoverage.staticBalanceMeasured,true);
+  assert.equal(balanced.measurementCoverage.staticBalanceSampleCount,31);
+  assert.equal(balanced.runtimeVerified,false);
+  trace.frames[10].balance.centerOfMassWorldPosition=[1.5,1,0];
+  const offBalance=auditMotionContinuityTrace(trace);
+  assert.equal(offBalance.verdict,'FAIL');
+  const finding=offBalance.violations.find(row=>row.kind==='maxStaticBalanceOutsideNormalized');
+  assert.equal(finding.region,'CENTER_OF_MASS');
+  assert.ok(finding.value>.2);
+  assert.equal(offBalance.blocksVerifiedPromotion,true);
+  trace.frames[10].balance.mode='DYNAMIC';
+  assert.equal(auditMotionContinuityTrace(trace).verdict,'PASS','moving or airborne frames are not falsely judged by static support');
+  delete trace.frames[10].balance;
+  assert.equal(auditMotionContinuityTrace(trace).verdict,'UNVERIFIED');
+  const director=createMotionDirectorPlan({continuityTrace:trace});
+  assert.equal(director.continuityAudit.verdict,'UNVERIFIED');
+  assert.match(director.researchAlgorithmSources.staticBalancePhysics,/ICCV2025/);
+  assert.equal(director.researchAlgorithmSources.modelInferenceRan,false);
+});
+
 test('motion continuity measures smooth traces, angle wrapping, foot drift and localized pose jumps',()=>{
   const input=continuityFixture(),smooth=auditMotionContinuityTrace(input);
   assert.equal(smooth.verdict,'PASS');assert.equal(smooth.runtimeVerified,false);
