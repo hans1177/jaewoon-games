@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-test('central v499 preserves every result artifact while coalescing callback workflows under pressure',()=>{
+test('central policy preserves every result artifact while coalescing callback workflows under pressure',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.equal(policy.version,499);
+  assert.ok(Number(policy.version)>=554);
   const gate=policy.developmentSpeedExecution?.controlPlaneQueueBacklogMitigation||{};
   assert.equal(gate.status,'ENABLED_PRESSURE_COHORT_FANIN');
   assert.equal(gate.neuronCompletionCallback?.resultBearing,true);
@@ -26,17 +26,19 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/github\.event\.action == 'vibe2-fanin-refill' \|\| github\.event\.action == 'vibe2-neuron-complete'/);
   assert.match(workflow,/vibe2-neuron-complete'[\s\S]*'ubuntu-latest'/);
   assert.match(workflow,/fan_in:[\s\S]*runs-on: ubuntu-latest/);
-  assert.match(workflow,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \] && \[ "\$VIBE2_EXECUTION_LANE" != 'asset-development' \]; then/);
+  assert.match(workflow,/if \[ "\$\{queue_pressure:-0\}" -gt 0 \]; then/);
   assert.doesNotMatch(workflow,/queue_pressure:-0\}" -gt 0[^\n]+game_micro_fanin/);
   assert.match(workflow,/VIBE2_ATOMIC_NEURON_COMPLETION_DISPATCH=COALESCED_TO_COHORT_FANIN/);
-  assert.match(workflow,/VIBE2_GAME_MICRO_FANIN=IMMEDIATE_ONLY_WITHOUT_QUEUE_PRESSURE/);
+  assert.match(workflow,/VIBE2_ATOMIC_NEURON_MICRO_FANIN=TASK_MICRO_FANIN_COMPLETE_REFILL_READY/);
   assert.match(workflow,/run-name: Vibe2 Continuous Core · \$\{\{ github\.event\.action \|\| github\.event_name \}\} ·/);
   assert.match(workflow,/runs\?event=repository_dispatch&per_page=100/);
   assert.match(workflow,/VIBE2_EVENT_DRIVEN_REFILL=DEDUPED_ACTIVE_EXACT:/);
   assert.match(workflow,/VIBE2_NEURON_REFILL_DISPATCH=DEDUPED_ACTIVE_EXACT:/);
   assert.match(workflow,/VIBE2_FAN_IN_REGRESSION_REFILL=DEDUPED_ACTIVE_EXACT:/);
   assert.match(workflow,/String\(run\.id\|\|''\)!==String\(process\.env\.CURRENT_RUN\|\|''\)/);
-  assert.match(workflow,/String\(run\.head_sha\|\|''\)===String\(process\.env\.CURRENT_MAIN\|\|''\)/);
+  assert.doesNotMatch(workflow,/String\(run\.head_sha\|\|''\)===String\(process\.env\.CURRENT_MAIN\|\|''\)/);
+  assert.match(workflow,/VIBE2_FANIN_WAKE_REBASED_TO_LATEST=/);
+  assert.doesNotMatch(workflow,/VIBE2_FANIN_WAKE_STALE_DROPPED=/);
   assert.doesNotMatch(workflow,/refill_active="\$\(REFILL_TITLE=[\s\S]{0,300}node - <<'NODE'/);
   assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-neuron-refill-active\.txt/);
   assert.match(workflow,/CURRENT_RUN="\$GITHUB_RUN_ID" node - <<'NODE' > \/tmp\/vibe2-regression-refill-active\.txt/);
@@ -46,3 +48,4 @@ test('continuous core suppresses non-asset callback storms under pressure and pr
   assert.match(workflow,/\n          NODE\n\s+refill_active="\$\(cat \/tmp\/vibe2-fanin-refill-active\.txt\)"/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
+
