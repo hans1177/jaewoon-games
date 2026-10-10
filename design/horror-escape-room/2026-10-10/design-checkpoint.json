@@ -1360,25 +1360,51 @@
       "rangeKey": "OVERLOAD",
       "costKey": "OVERLOAD_COST",
       "cooldownKey": "OVERLOAD_COOLDOWN"
+    },
+    "local_authoring_parts::22e8a9369c8251c0b211f78ed3d1579b757f8b506713122cf8c3d74f6af33b04:id,name,kind,ownerId,ruleId": {
+      "id": "BLACKOUT",
+      "name": "정전",
+      "kind": "INFECTED",
+      "ownerId": "ELECTRICIAN",
+      "ruleId": "BLACKOUT_RU123456789012345678901234567890123456789012345678901234567890123456789"
+    },
+    "local_authoring_parts::22e8a9369c8251c0b211f78ed3d1579b757f8b506713122cf8c3d74f6af33b04:trigger,range,rangeUnit,resource,cost": {
+      "trigger": "정전 실행",
+      "range": 28,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 45
+    },
+    "local_authoring_parts::61d97742a4fbbba106b51c8269cfb18ef471f264350ebd187bd5636bcdb31f12:id,name,kind,ownerId,ruleId,trigger,range,rangeUnit,resource,cost": {
+      "id": "BLACKOUT",
+      "name": "정전",
+      "kind": "INFECTED",
+      "ownerId": "ELECTRICIAN",
+      "ruleId": "BLACKOUT_RU123456789012345678901234567890123456789012345678901234567890123456789",
+      "trigger": "정전 실행",
+      "range": 28,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 45
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 74,
-      "successes": 71,
+      "calls": 76,
+      "successes": 73,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2333201,
-      "lastMs": 10226,
+      "totalMs": 2376344,
+      "lastMs": 8092,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:13:14.573Z"
+      "updatedAt": "2026-10-10T10:13:57.720Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:13:14.575Z",
+  "updatedAt": "2026-10-10T10:13:57.721Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2713,7 +2739,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:13:14.575Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:13:57.721Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
