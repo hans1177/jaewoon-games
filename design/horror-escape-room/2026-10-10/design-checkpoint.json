@@ -604,25 +604,28 @@
     },
     "local_authoring_parts::a0c658c2b1eece34ff5265559cf2cb70e9237af51e73d5d1416b992a2b574fe3:fromSystem": {
       "fromSystem": "로드 전환 시스템"
+    },
+    "local_authoring_parts::a0c658c2b1eece34ff5265559cf2cb70e9237af51e73d5d1416b992a2b574fe3:toSystem": {
+      "toSystem": "로드 전환 시스템"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 30,
-      "successes": 30,
+      "calls": 31,
+      "successes": 31,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 587458,
-      "lastMs": 32556,
+      "totalMs": 620070,
+      "lastMs": 32612,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:44:08.730Z"
+      "updatedAt": "2026-10-10T09:44:41.343Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:44:08.730Z",
+  "updatedAt": "2026-10-10T09:44:41.343Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1954,7 +1957,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:44:08.730Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:44:41.343Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
