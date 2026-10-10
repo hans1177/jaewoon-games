@@ -1459,9 +1459,8 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
       const actionable=hits.some(row=>/(?:\(|=>|=|<button|ScreenGui|Canvas|GUILayout|VisualElement|SetActive|addEventListener|onclick|Activated)/i.test(row));
       return{file,context:actionable?hits.join(' ').slice(0,8000):'',sourceHash:stableHash(content)};
     }).filter(row=>row.context);
-  // 게임의 실제 소스와 현재 1차 라이브러리 인덱스를 기존 매칭 경로에서 직접 사용한다.
-  const observed=gameRoot&&fs.existsSync(sourceFile(repoRoot,gameRoot))
-    ?inspectGameSources({repoRoot,sourceRoots:[gameRoot]}):{};
+  // 현재 UI 책임 소스는 경량 조사한다. 전체 게임 분석은 기존 BUILD_UP 경로만 수행한다.
+  // 반복 화면 작업이 같은 게임의 전체 리소스를 중복 스캔하지 않는다.
   let availableLibraryPaths=[];
   try{
     availableLibraryPaths=fs.readdirSync(sourceFile(repoRoot,'assets'),{withFileTypes:true})
@@ -1469,13 +1468,10 @@ function buildAdaptiveGraphicsReplacementContract(project={},pass='ASSET_ADAPTAT
       .map(row=>'assets/'+row.name).sort();
   }catch{}
   const nativeUI=clean(project.engine).toLowerCase()==='unity'?(studioQualityLane(project)==='unity-web'?'UNITY_WEB':'UNITY_APP'):clean(project.engine).toUpperCase();
-  const uiContract=(uiSources.length||(observed.sourceAnchors||[]).length)?buildInterfaceBlueprintContract({
-    design:{identity:project.name||project.gameId,genre:project.genre||project.category||project.gameCategory||''},
-    source:{
-      sourceAnchors:[...uiSources.map(row=>({file:row.file,symbol:row.file.split('/').at(-1),context:row.context})),...(observed.sourceAnchors||[])],
-      signals:observed.signals||{}
-    },
-    files:[...new Set([...uiSources.map(row=>row.file),...(observed.topFiles||[]).map(row=>row.file)])],
+  const uiContract=uiSources.length?buildInterfaceBlueprintContract({
+    design:{identity:project.name||project.gameId,genre:project.genre||project.category||''},
+    source:{sourceAnchors:uiSources.map(row=>({file:row.file,symbol:row.file.split('/').at(-1),context:row.context}))},
+    files:uiSources.map(row=>row.file),
     mode:'EXISTING_PLAY_PRESENTATION',focus:'PRESENTATION',enabled:true,platform:nativeUI,availableLibraryPaths
   }):null;
   const algorithms=(uiContract?.externalAlgorithms||[])
