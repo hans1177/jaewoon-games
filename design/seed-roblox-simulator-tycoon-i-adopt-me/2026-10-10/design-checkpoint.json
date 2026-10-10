@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 매 순간 진보하는 방어 전략 게임에서 실제 선택을 통해 세계를 바꾸며, 이전의 단순한 방어 시스템보다 더 복잡하고 체험적인 경험을 선사한다.",
       "coreFun": "{\"identity\": \"Strategic Adaptive Defense System - Economically Optimized Resource Distribution Mechanism\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\",\n \\\"a\\\": {\\n \\\"system\\\": \"Enemy Wave Adaptation\",\n \\\"material\\\": \"Dynamic Defensive Strategy Fusion\",\n \\\"materialDomain\\\": \"Adaptive Defense Mechanics\",\n \\\"stateChange\\\": \"Defensive Configuration Adjustment\"\n },\n \\\"b\\\": {\\n \\\"system\\\": \"Resource Allocation System\",\n \\\"material\\\": \"Economic Resource Synergy\",\n \\\"materialDomain\\\": \"Economical Resource Management\",\n \\\"stateChange\\\": \"Resource Distribution Optimization\"\n },\n \\\"abCausality\\\": \"Defensive Configuration ↔ Economic Resource Distribution\",\n \\\"abEvolution\\\": {\\n \\\"aChangesB\\\": \"Resource allocation strategy shifts based on defensive config\",\n\t"
+    },
+    "local_authoring_parts::c216d4a58084e6b9c184d5169f6984b07c5133b8895beb4af0a98ff5cb333f09:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "방어 시스템 진보 -> 자원 배분 최적화 -> 새로운 방어 전략 생성",
+        "플레이어 선택에 따른 세계 변화 -> 다음 방어 전략 결정"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 479568,
-      "lastMs": 69619,
+      "totalMs": 532228,
+      "lastMs": 52660,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:11:45.302Z"
+      "updatedAt": "2026-10-10T03:12:37.965Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:03:45.712Z",
-  "updatedAt": "2026-10-10T03:11:45.303Z",
+  "updatedAt": "2026-10-10T03:12:37.965Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1914,7 +1921,7 @@
   "localAuthoringSplits": {
     "4ce9d12d0af54940f27554d54912002107868427038af7a3d8d7f9858acf8061": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:11:45.303Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:12:37.965Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
