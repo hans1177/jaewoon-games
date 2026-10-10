@@ -80,25 +80,53 @@
         "worldChange": "상태 변화는 A/B의 상태 교환과 C의 실제 선택으로 인해 세계의 구성이 재생되고, 이는 게임의 설계 깊이와 학문적 관계에 따라 다양하게 변형된다.",
         "nextEvent": "다음 사건은 플레이어의 선택과 세계의 변화에 의해 결정되며, 이는 측면·구조·응용 등 다양한 요소에 의해 영향을 받는다."
       }
+    },
+    "local_authoring_parts::5aa8fc5698069b58d4d8c2d39844f85193253f9edd98822372b2aaa65d254114:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "신화",
+          "kind": "MATERIAL",
+          "gameplayEffect": "인물 갈등, 선택, 세계 변화"
+        },
+        {
+          "name": "역사",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어 역할, 단서, 발전, 재생"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "문화적 창작",
+          "gameplayEffect": "주제/소재 융합, 인과적 경로 생성"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "철학적 탐구",
+          "gameplayEffect": "실질적 인과 변화 유도, 측면 및 구조 변형"
+        }
+      ],
+      "cGenreInterlock": "신화와 역사의 상호작용은 플레이어의 선택에 따라 실질적 인과 변화를 일으키며, 주제/소재 두 개의 차이가 반영된 새로운 게임 정체성을 생성한다.",
+      "cWorldAndGameplayEffect": "신화는 인물 갈등을 통해 플레이어의 선택과 세계 변화를 결정하며, 역사는 단서와 실험으로부터 시작하여 발전하고 재생된다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1210388,
-      "lastMs": 172255,
+      "totalMs": 1324584,
+      "lastMs": 114196,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T11:02:58.550Z"
+      "updatedAt": "2026-10-10T11:04:52.749Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:42:48.135Z",
-  "updatedAt": "2026-10-10T11:02:58.552Z",
+  "updatedAt": "2026-10-10T11:04:52.749Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1704,7 +1732,7 @@
     "f6c9c38435b2ffc3036e7336aa8253c01ed7863624e18ec211d44a42c6b392b7": true,
     "8bd29d12365b474d313f8a312def98b718b5aed9ecd2eb518ab165c340d28650": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T11:02:58.552Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:04:52.749Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
