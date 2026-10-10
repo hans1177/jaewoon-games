@@ -4491,9 +4491,33 @@ export function buildVibeAssetProductionPlan({
     seed:task.mapReconstruction.seed||clean(task.gameId),
     gameId:clean(task.gameId),target:resolvedTarget
   }):null;
-  // 승인된 설계·세계관에서 바이옴/시대/수계를 자동 결정한다. 수동 맵 옵션과 별도 플로우는 불필요하다.
+  // 월드 제작 지시는 기존 BUILD_UP의 검증 설계에서 자동 발생한다. 별도 옵션이나 파이프라인이 필요 없다.
+  const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
+    ?task.buildUpDirective?.designImplementationContext||null:null;
+  const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
+    &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
+  const spatialFamilies=new Set(['ENVIRONMENT','BUILDING','PROP','CREATURE','CHARACTER','MATERIAL']);
+  const spatialDemand=(task.assetRequirements||[]).some(item=>spatialFamilies.has(clean(item?.family).toUpperCase()))
+    ||/(?:WORLD|MAP|REGION|BIOME|TERRAIN|ENVIRONMENT|DUNGEON|VILLAGE|SETTLEMENT|CAVE|맵|지형|지역|배경|생태|마을|던전|건축|도시|호수|바다)/i.test(request);
+  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0&&spatialDemand
+    ?{
+      approvedDesign:true,
+      seed:clean(task.gameId)||'world',
+      width:Math.max(12,Math.min(48,Math.trunc(Number(designSpatial.width||designSpatial.mapWidth||24))||24)),
+      height:Math.max(12,Math.min(48,Math.trunc(Number(designSpatial.height||designSpatial.mapHeight||24))||24)),
+      cellSize:Math.max(1,Math.min(12,Number(designSpatial.cellSize)||3)),
+      density:.4,
+      biome:clean(designSpatial.biome||designSpatial.geography||verifiedDesign.selectedDesignPlan?.biome||task.worldDna?.biome||task.biome)||'TEMPERATE',
+      climate:clean(designSpatial.climate||task.worldDna?.climate||task.climate)||'TEMPERATE',
+      buildingStyle:clean(designSpatial.architecture||designSpatial.buildingStyle||task.worldDna?.architecture||task.buildingStyle)||'LOCAL',
+      era:clean(designSpatial.era||task.worldEra)||'AUTO',
+      waterMode:clean(designSpatial.waterMode||task.worldDna?.waterMode)||'AUTO',
+      ecologyActors:Array.isArray(designSpatial.ecologyActors)?designSpatial.ecologyActors:[],
+      authoredDungeonSites:Array.isArray(designSpatial.authoredDungeonSites)?designSpatial.authoredDungeonSites:[],
+      source:'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+    }:null;
   const approvedWorld=task.worldDesign?.approvedDesign===true?task.worldDesign:null;
-  const worldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||null;
+  const worldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
   const proceduralWorldLayout=worldInput&&typeof worldInput==='object'&&!Array.isArray(worldInput)
     ?createVibeProceduralWorldLayout({
       ...worldInput,dimension:'3D',gameId:clean(task.gameId),target:resolvedTarget,
@@ -4922,6 +4946,8 @@ export function buildVibeAssetProductionPlan({
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
     proceduralWorldLayout,
+    autoBiomeSource:worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+      :worldInput?'EXPLICIT_APPROVED_GAME_WORLD':'NO_VERIFIED_SPATIAL_WORLD',
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
       studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
