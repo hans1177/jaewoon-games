@@ -54,7 +54,7 @@ test('new designer intake preserves un-authored V5 sketch and cannot fall back t
   assert.doesNotMatch(design.slice(start,end),/delete input\.GAMEPLAY_SKETCH/);
   assert.equal(seed.seedAuthoring.stage,'identity-core');
   assert.equal(state.seeds.length,1);
-  assert.match(design,/seedGameplaySketch\?\.version\|\|5/);
+  assert.match(design,/seedGameplaySketchVersion=Math\.max\(5,Number\(seed\?\.novelGrammarBackfill\?\.version\|\|0\),inputGameplaySketchVersion\)/);
   assert.match(design,/authoringPending===true\|\|!seedGameplaySketch/);
   const gate=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   assert.match(gate,/seed\?\.GAMEPLAY_SKETCH==null/);
@@ -80,15 +80,19 @@ test('canonical un-authored V5 A/B/C/@ input starts design without weakening com
   assert.ok(untrusted.errors.some(isAuthoredOnly),'unverified flags cannot bypass any grammar requirement');
 });
 
-test('V5 role generation revalidates authored reciprocal handoffs and invalidates stale per-role cache',()=>{
-  assert.match(design,/const previousRule=grammarRole\?rows\.at\(-1\):null/);
-  assert.match(design,/inputKeysFromPreviousOutputs:previousRule\.stateOutputs/);
-  assert.match(design,/outputKeysToPreviousInputs:previousRule\.stateInputs/);
-  assert.match(design,/REQUIRED_ORIGINAL_STATE_HANDOFF=/);
-  assert.match(design,/DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING/);
-  assert.match(design,/DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING/);
-  assert.match(design,/JSON\.stringify\(previousItems\)\)\.digest\('hex'\)/);
-  assert.match(design,/for\(let roleAttempt=0;;roleAttempt\+\+\)/);
+test('V5 role generation rejects broken reciprocal handoffs and invalidates stale rule checkpoints',()=>{
+  assert.match(design,/validateDesignAuthoringContent\(\{design:\{signatureSystems:signature\},seed,fields:\['signatureSystems'\]\}\)/);
+  assert.match(design,/designCheckpoint\.sliceDependencies\[taskKey\]!==dependencyHash/);
+  assert.match(design,/delete designCheckpoint\.tasks\[taskKey\]/);
+  const rows=[
+    {id:'MAIN_RULE',grammarRole:'MAIN',name:'기본 감염 상태',purpose:'현재 감염된 참가자와 해제된 경로를 관리한다',playerChoice:'다음 인원 변화와 남은 복귀 경로를 확인한다',stateInputs:['FlowState'],stateOutputs:['AState']},
+    {id:'ACTION_A',grammarRole:'A',name:'인간 구조 행동',purpose:'인간이 위험 경로와 복구 가능성을 비교한다',playerChoice:'사거리 밖 구조 지점을 먼저 확보한다',stateInputs:['AState'],stateOutputs:['BState']},
+    {id:'ACTION_B',grammarRole:'B',name:'몬스터 압박 행동',purpose:'몬스터가 추격과 감염 타이밍을 조절한다',playerChoice:'인간의 방어 시간과 우회 경로 중 하나를 고른다',stateInputs:['DisconnectedState'],stateOutputs:['ReturnState']},
+    {id:'DISCOVERY_RULE',grammarRole:'DELVE',name:'감염 경로 발견',purpose:'지난 감염 기록에서 추가 역전 경로를 해금한다',playerChoice:'새로 발견한 길과 안전 복귀 길을 비교한다',stateInputs:['ReturnState'],stateOutputs:['FlowState']}
+  ];
+  const result=validateDesignAuthoringContent({design:{signatureSystems:rows},seed:{GAMEPLAY_SKETCH:{version:5}},fields:['signatureSystems']});
+  assert.ok(result.some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),
+    'A와 B 사이의 상태 전달이 끊어지면 작성 시점에서 반드시 차단한다');
   const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   assert.match(scorer,/DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE/);
   assert.match(scorer,/DESIGN_RULE_GRAPH_DISCONNECTED/);
@@ -766,7 +770,18 @@ test('transport repair reuses previous drafts only when every original input sti
 function playableFixture(){
   const seed={INITIAL_PLAY_MODE:'FOUR_VS_FOUR_INFECTION_WITH_AI_FILL',originalDesignContext:{content:{technicalAssumptions:['TargetPopulation=8','SurvivorSlots=4','MonsterSlots=4','RoundSeconds=240','InfectRange=8','InfectAttackCost=30','InfectAttackCooldown=1.2','PurifyDistance=8','PurifyCooldown=5']}}};
   const keys=['HumanCount','MonsterCount','EliminatedCount','Energy'];
-  const signatureSystems=['MAIN','A','B','c','DELVE'].map(grammarRole=>({id:grammarRole,grammarRole,name:`상태 규칙 ${grammarRole}`,purpose:'장면의 선택이 다음 장면의 인원과 자원 상태를 바꾼다',playerChoice:'상대 위치를 확인하고 소비와 이동의 순서를 선택한다',stateInputs:keys,stateOutputs:keys}));
+  // 시뮬레이션 원본의 각 규칙은 독립된 책임과 선택이 있어야 한다. ID만 다른 복제는 설계 오류다.
+  const ruleContracts={
+    MAIN:['진영 인원 총괄','인간·괴물의 현재 인원과 라운드 목표를 연결한다','남은 인원과 탈출 가능성을 보고 다음 목표를 선택한다'],
+    A:['인간 경로 탐색','구조 가능한 복도와 공격 회피 자원 소비를 관리한다','좁은 통로를 피하고 동료 구조 순서를 선택한다'],
+    B:['괴물 감염 추격','감염 사거리와 인간 방어 상태를 확인해 전환을 판정한다','전조를 노출한 추격과 측면 우회를 비교한다'],
+    c:['현장 소음 변주','소음과 시야의 지역적 차이로 양측 접근 정보를 바꾼다','조용한 계단과 열린 운동장 중 노출 위험을 고른다'],
+    DELVE:['역전 경로 발견','지난 라운드의 인원 변화에서 새로운 우회 가능성을 찾는다','발견한 비밀 복도와 기존 복귀 경로 중 선택한다']
+  };
+  const signatureSystems=['MAIN','A','B','c','DELVE'].map(grammarRole=>{
+    const [name,purpose,playerChoice]=ruleContracts[grammarRole];
+    return {id:grammarRole,grammarRole,name,purpose,playerChoice,stateInputs:keys,stateOutputs:keys};
+  });
   const ability=(id,kind,cost,cooldownSeconds)=>({id,name:id,kind,ownerId:'BASE',ruleId:'MAIN',trigger:'현재 진영과 자원 조건을 만족할 때 명시적으로 입력한다',range:8,rangeUnit:'stud',resource:'Energy',cost,cooldownSeconds,telegraph:'공격 방향을 먼저 보고 옆 복도로 진입해 피한다',avoidance:'전조가 보이면 사거리 밖으로 이동하고 대기한다',effect:'서버 적중 판정이 나면 해당 상대의 진영 상태를 바꾼다',stateInputs:keys,stateOutputs:keys,source:'검사 전용 원본 technicalAssumptions의 수치를 사용한다',rangeKey:kind==='INFECTION'?'InfectRange':'PurifyDistance',costKey:kind==='INFECTION'?'InfectAttackCost':'',cooldownKey:kind==='INFECTION'?'InfectAttackCooldown':'PurifyCooldown'});
   const abilities=[ability('infect','INFECTION',30,1.2),ability('purify','PURIFICATION',35,5)];
   const participants=[...Array.from({length:4},(_,i)=>({id:`h${i+1}`,role:'HUMAN',classId:'HUMAN'})),...Array.from({length:4},(_,i)=>({id:`m${i+1}`,role:'MONSTER',classId:'MONSTER'}))];
@@ -1009,18 +1024,22 @@ test('model-authored basic coding specification remains non-authoritative until 
   assert.match(design,/codingBlueprint:\s*\{/);
 });
 
-test('blank or invalid grammar reference IDs are normalized without inventing gameplay rules',()=>{
-  const start=design.indexOf('const authoredId=clean(value?.id);');
-  const end=design.indexOf('const roleIssues=[];',start);
+test('missing role IDs cannot be silently treated as validated source rules',()=>{
+  const start=design.indexOf('const originalRoles=');
+  const end=design.indexOf('const rulePlan=originalRoles?',start);
   assert.ok(start>0&&end>start);
-  const normalize=runInNewContext('(value,rows,grammarRole,index)=>{'+design.slice(start,end)+'return value;}',{
-    clean:value=>String(value??'').trim(),createHash,console:{log(){}}
-  });
-  const invalid={id:'',name:'환경 상성 배치',purpose:'대상 곤충의 이동 경로를 바꾼다',playerChoice:'우회 경로를 선택한다'};
-  assert.match(normalize(invalid,[],'A',1).id,/^a_rule_[a-f0-9]{12}$/);
-  const valid={id:'b_burrow_routes',name:'땅굴 전략',purpose:'지형의 통로를 변화시킨다'};
-  assert.equal(normalize(valid,[],'B',2).id,'b_burrow_routes');
-  assert.match(design,/const roleContext=grammarRole\?/);
+  const source=design.slice(start,end);
+  assert.match(source,/row\.id&&Array\.isArray\(row\.stateInputs\)/);
+  assert.match(source,/validateDesignAuthoringContent\(\{design:\{signatureSystems:signature\}/);
+  const broken=['MAIN','A','B','DELVE'].map(role=>({
+    id:role==='A'?'':'RULE_'+role,grammarRole:role,
+    name:role+' 관련 규칙',purpose:role+'의 고유 선택으로 원본 상태를 유지한다',
+    playerChoice:role+'의 안전 입력과 복구 조건을 구별해 선택한다',
+    stateInputs:['RunState'],stateOutputs:['RunState']
+  }));
+  const failures=validateDesignAuthoringContent({design:{signatureSystems:broken},seed:{GAMEPLAY_SKETCH:{version:5}},fields:['signatureSystems']});
+  assert.ok(failures.some(row=>row.code==='DESIGN_MAIN_A_B_DELVE_REQUIRED'),
+    '빈 역할 ID는 자동으로 정상인 척 채우지 말고 원본 설계 재작성 대상으로 남긴다');
 });
 
 test('current reset priority correctly binds timestamps in both canonical checkpoint selectors',()=>{
@@ -1106,7 +1125,7 @@ test('canonical native writer caches one deterministic design and never calls a 
     computeVibeNativeDesign:()=>{computes++;return structuredClone(authored);},
     designerRoute:{id:'vibe-native:causal-design-v1'},designCheckpoint:checkpoint,
     persistDesignCheckpoint:()=>saves++,console:{log(){}},
-    assertSchemaValue:(candidate,schema)=>{for(const key of schema.required||[])if(!(key in candidate))throw new Error('NATIVE_MISSING_FIELD:'+key);}
+    assertSchemaValue:(candidate,schema)=>{for(const key of schema.required||[])if(!(key in candidate)||candidate[key]===undefined)throw new Error('NATIVE_MISSING_FIELD:'+key);}
   });
   const schema={type:'object',required:['identity','coreLoop'],properties:{identity:{type:'string'},coreLoop:{type:'array'}}};
   const a=await write('unused system','unused user',schema);
@@ -1181,7 +1200,7 @@ test('native design authoring reuses only validated original grammar and causal 
     },
     game:{name:'원본 검증 게임'},gameId:'native-grammar-test',
     seedState:{seedMaterials:[]},seedGameplaySketch:null,pendingSeedGrammarNotAuthored:true,
-    allGamesMultiplayerRequired:false,originalMultiplayerMode:'COOP',
+    allGamesMultiplayerRequired:false,originalMultiplayerMode:'COOP',nativeDesignVariation:0,
     clean:value=>String(value??'').trim(),
     validateDesignAuthoringContent,
     computeVibeSeedProposal:()=>({gameplaySketch:{novelGameGrammar:{
