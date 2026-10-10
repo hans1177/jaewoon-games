@@ -1532,25 +1532,51 @@
       "rangeKey": "IMPACT_BAG",
       "costKey": "IMPACT_BAG_COST",
       "cooldownKey": "IMPACT_BAG_COOLDOWN"
+    },
+    "local_authoring_parts::b328a26bceff4c597ab0db7fddb0d23c367ead625adbea6ea6f9dd07b8277e1e:id,name,kind,ownerId,ruleId": {
+      "id": "RUSH",
+      "name": "돌진",
+      "kind": "INFECTED",
+      "ownerId": "COURIER",
+      "ruleId": "RUSH_RU1234567890123456789012345678901234567890123456789012345678901234567890123"
+    },
+    "local_authoring_parts::b328a26bceff4c597ab0db7fddb0d23c367ead625adbea6ea6f9dd07b8277e1e:trigger,range,rangeUnit,resource,cost": {
+      "trigger": "돌진 실행",
+      "range": 0,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 45
+    },
+    "local_authoring_parts::87f7abbec65a007a14122ad99a1939dca059ecb4efdbb527550fce53e2b05472:id,name,kind,ownerId,ruleId,trigger,range,rangeUnit,resource,cost": {
+      "id": "RUSH",
+      "name": "돌진",
+      "kind": "INFECTED",
+      "ownerId": "COURIER",
+      "ruleId": "RUSH_RU1234567890123456789012345678901234567890123456789012345678901234567890123",
+      "trigger": "돌진 실행",
+      "range": 0,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 45
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 82,
-      "successes": 79,
+      "calls": 84,
+      "successes": 81,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2476955,
-      "lastMs": 10849,
+      "totalMs": 2529159,
+      "lastMs": 8610,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:15:38.353Z"
+      "updatedAt": "2026-10-10T10:16:30.561Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:15:38.355Z",
+  "updatedAt": "2026-10-10T10:16:30.562Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2885,7 +2911,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:15:38.355Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:16:30.562Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
