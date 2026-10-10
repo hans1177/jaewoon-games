@@ -7,193 +7,86 @@
   "tierAlias": 3,
   "tier": 3,
   "status": "COMPLETE",
-  "policyDocument": "COMPANY_FLOW.md",
-  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "flow": "GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE",
   "gameSeed": {
     "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
     "category": "SINGLE_DEFENSE_STRATEGY",
-    "source": "design/bug-defense/2026-10-11/design-seed.json",
-    "inputSource": "game-seed-state.json",
-    "authorRole": "GAME_DESIGNER_AI",
-    "complete": true,
-    "gameplaySketchVersion": 5,
-    "inputGameplaySketchVersion": 5,
-    "advancedDesignDepth": true
+    "source": "game-seed-state.json",
+    "complete": true
   },
   "designer": {
-    "role": "GAME_DESIGNER_AI",
+    "role": "DESIGN_AUTHOR_CHECKPOINT",
     "model": "vibe-native:causal-design-v1",
     "singleAuthor": true,
-    "sameModelRevised": false
+    "sameModelRevised": true
   },
   "departments": {
-    "count": 5,
-    "roles": [
-      "planning",
-      "graphics",
-      "development",
-      "qa",
-      "audio"
-    ],
+    "count": 0,
+    "roles": [],
     "leadModels": {},
-    "resolvedLeadModels": {
-      "planning": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "graphics": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "development": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "qa": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "audio": "DETERMINISTIC_EVIDENCE_ENGINE"
-    },
-    "distinctLeadModels": [
-      "DETERMINISTIC_EVIDENCE_ENGINE"
-    ],
-    "distinctLeadModelCount": 1,
+    "distinctLeadModels": [],
+    "distinctLeadModelCount": 0,
     "leadModelsDistinct": false,
-    "reviewModelCount": 0,
-    "modelAudit": {
-      "planning": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "graphics": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "development": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "qa": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "audio": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      }
-    },
-    "rebuttalRounds": 0,
-    "repeatedFatalReview": false,
+    "modelAudit": {},
+    "reviewMode": "DETERMINISTIC_EVIDENCE",
     "aiReviewRequired": false,
-    "aiReviewUsed": false,
-    "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE"
+    "repeatedFatalReview": false
   },
   "meeting": {
     "required": false,
-    "crossDepartmentMeeting": false,
-    "rebuttalRounds": 0
+    "mode": "DETERMINISTIC_EVIDENCE",
+    "conflictCount": 0,
+    "holdCount": 0,
+    "allResolved": true,
+    "deterministicEvidenceOnly": true
   },
   "disposition": {
     "version": 2,
-    "gameId": "bug-defense",
-    "date": "2026-10-11",
-    "state": "ACTIVE",
+    "state": "DETERMINISTIC_EVIDENCE",
     "sameDesignerRevisionAttempted": false,
-    "fiveDepartmentLeadReviewCompleted": false,
-    "deterministicDepartmentEvidenceCompleted": true,
     "repeatedFiveDepartmentReview": false,
-    "meetingRequired": false,
-    "rebuttalRounds": 0,
-    "automaticDiscardAllowed": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicGateReviewCompleted": true,
+    "unanimousFatalDiscard": false,
     "discardVotes": 0,
     "commonFatalCriteria": [],
-    "unanimousFatalDiscard": false,
-    "strictGateStillAuthoritative": true,
-    "marketMetricAloneUsedForDiscard": false
+    "source": "deterministic_pre_gate"
   },
   "runtimeMetrics": {
-    "phaseMs": {
-      "designer_draft": 106,
-      "deterministic_pre_gate": 11,
-      "deterministic_department_evidence": 2
-    },
-    "phaseBudgetMs": {
-      "designer_draft": 180000,
-      "designer_draft_base": 180000,
-      "designer_draft_gate": 180000,
-      "deterministic_pre_gate": 30000,
-      "designer_pre_gate_repair_1": 180000,
-      "designer_pre_gate_repair_2": 180000,
-      "independent_department_reviews": 240000,
-      "designer_revision": 180000,
-      "designer_revision_base": 180000,
-      "designer_revision_gate": 180000,
-      "five_lead_reviews": 180000
-    },
-    "totalModelCalls": 0,
-    "totalModelCallMs": 0,
-    "modelPhaseConcurrency": 1,
-    "phaseConcurrency": {},
-    "maxLoadedModelLanes": 1,
-    "modelKeepAlive": "NONE",
-    "modelHealth": {},
-    "preGate": {
-      "attempts": 0,
-      "totalScore": 80,
-      "hardFailures": [],
-      "postRevisionScore": 80,
-      "postRevisionHardFailures": []
-    },
-    "checkpoint": {
-      "contractVersion": 4,
-      "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
-      "reused": false,
-      "completedPhases": 3,
-      "cachedTasks": 11
-    },
-    "simplifiedLeadOnlyReview": false,
-    "deterministicDepartmentEvidence": true,
-    "aiMeetingCalls": 0,
-    "rebuttalCalls": 0,
-    "representativeSynthesisCalls": 0,
-    "leadReviewCalls": 0,
-    "departmentScopedContext": true
+    "source": "design-checkpoint.json",
+    "checkpointReused": true,
+    "completedPhases": 3,
+    "deterministicGateScore": 80,
+    "deterministicGatePhase": "deterministic_pre_gate"
   },
   "designLearning": {
     "candidateCount": 8,
     "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
-    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
-    "strictGateHardFailures": [],
     "strictGateBypassAllowed": false
   },
   "artbook": {
     "created": false,
     "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
   },
-  "vibe2Used": true,
+  "vibe2Used": false,
   "vibe2LearningContextUsed": true,
   "paidApi": false,
+  "deterministicRecovery": {
+    "enabled": true,
+    "source": "design-checkpoint.json",
+    "phase": "deterministic_pre_gate",
+    "totalScore": 80,
+    "passMinimum": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "aiReviewUsed": false,
+    "aiVerdictUsed": false,
+    "appliedRepairs": [],
+    "recoveredAt": "2026-10-10T18:04:55.174Z"
+  },
   "baselineGate": {
     "policyDocument": "company-learning/platform-release-roadmap.json",
     "productionClass": "DESIGN_ONLY",
@@ -202,7 +95,7 @@
     "state": "DESIGN_BASELINE_READY",
     "ready": true,
     "blockers": [],
-    "advisoryDisposition": "ACTIVE",
+    "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
     "unanimousFatalDiscard": false,
     "meeting": {
       "conflictCount": 0,
@@ -214,12 +107,8 @@
         "required": true,
         "present": true,
         "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
-        "source": "design/bug-defense/2026-10-11/design-seed.json",
-        "designerSeed": {
-          "source": "design/bug-defense/2026-10-11/design-seed.json",
-          "authorModel": "vibe-native:causal-design-v1",
-          "contentDigest": "c0fbd13d9f97e7b39e474a6f49a0b4273bbb4e158198c3df3e36710a00a6777f"
-        }
+        "source": "game-seed-state.json",
+        "designerSeed": null
       },
       "designMultiplayer": {
         "required": true,
@@ -326,7 +215,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-10-10T17:54:47.098Z"
+    "checkedAt": "2026-10-10T18:04:55.452Z"
   },
   "artbookUi": {
     "status": "WRITING",
