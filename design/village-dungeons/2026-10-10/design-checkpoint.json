@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2:identity": {
       "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다."
+    },
+    "local_authoring_parts::ac94ff2d6fabd44d91853124b284a80d1a4833f321f2d4a362f0fd1700077714:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+      "a": {
+        "system": "마을 재건 시설 연동 시스템",
+        "material": "던전에서 획득한 고유 건축 목재와 광석",
+        "materialDomain": "건축",
+        "stateChange": "던전에서 획득한 고유 건축 목재와 광석을 마을 대장간·주점·연금 공방에 투자하여 영구적인 스탯 버프와 신규 스킬 트리를 해금한다."
+      },
+      "b": {
+        "system": "리스크 배낭 정밀 적재 시스템",
+        "material": "던전 내 인벤토리 슬롯을 극도로 제한하여 플레이어가 매 전투 승리 시마다 리스크와 리턴을 저울질하도록 유도한다.",
+        "materialDomain": "인벤토리",
+        "stateChange": "던전 내 인벤토리 슬롯을 극도로 제한하여 플레이어가 매 전투 승리 시마다 리스크와 리턴을 저울질하도록 유도한다."
+      },
+      "abCausality": "양방향 실제 상태 교환: 마을 재건 시설 연동 시스템의 영구적인 스탯 버프와 신규 스킬 트리는 리스크 배낭 정밀 적재 시스템의 인벤토리 슬롯 제한과 리스크/리턴 저울 조건으로 인해 발생"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 581469,
-      "lastMs": 19054,
+      "totalMs": 649395,
+      "lastMs": 67926,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T09:59:40.025Z"
+      "updatedAt": "2026-10-10T10:00:47.953Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:49:58.534Z",
-  "updatedAt": "2026-10-10T09:59:40.026Z",
+  "updatedAt": "2026-10-10T10:00:47.953Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1712,7 +1728,7 @@
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:59:40.025Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:00:47.953Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
