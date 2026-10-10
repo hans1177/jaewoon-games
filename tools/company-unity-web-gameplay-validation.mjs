@@ -121,6 +121,15 @@ try{
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(4000);
+  // 화면 증거: 부팅 직후 첫 Unity canvas를 저장한다. 이후 플레이가 실패해도 빈 화면 근거는 남는다.
+  const canvas=page.locator('canvas').first();
+  const bootSceneCapture=await canvas.screenshot({scale:'css'});
+  const bootSceneCaptureSha256=crypto.createHash('sha256').update(bootSceneCapture).digest('hex');
+  if(screenshot){
+    const bootScenePath=screenshot.replace(/\.png$/i,'-boot-scene.png');
+    fs.mkdirSync(path.dirname(bootScenePath),{recursive:true});
+    fs.writeFileSync(bootScenePath,bootSceneCapture);
+  }
   const bootMilliseconds=Date.now()-bootStartedAt;
 
   // 바탕화면용 960px 템플릿이 모바일 화면에 축소되어도 터치 로그만으로 통과시키지 않는다.
@@ -155,7 +164,6 @@ try{
   const initialStateLine=markers.slice().reverse().find(x=>x.includes(' STATE '))||'';
   const initialState=parseState(initialStateLine);
 
-  const canvas=page.locator('canvas').first();
   const canvasBox=await canvas.boundingBox();
   if(!canvasBox||canvasBox.width<1||canvasBox.height<1)throw new Error('UNITY_WEB_QA_CANVAS_BOUNDS_MISSING_FOR_TOUCH');
 
@@ -297,6 +305,14 @@ try{
   // 실제 게임 진행 화면의 픽셀을 읽는다. 콘솔 PASS나 단순 스크린샷 파일 존재는 시각 QA가 아니다.
   const liveCapture=await page.screenshot({fullPage:false});
   const liveCaptureSha256=crypto.createHash('sha256').update(liveCapture).digest('hex');
+  // 승인된 Unity 3D 월드는 웹페이지 전체가 아니라 실제 게임 canvas의 픽셀도 따로 캡처한다.
+  const sceneCapture=approvedEnvironment.required===true?await canvas.screenshot({scale:'css'}):null;
+  const sceneCaptureSha256=sceneCapture?crypto.createHash('sha256').update(sceneCapture).digest('hex'):null;
+  if(screenshot&&sceneCapture){
+    const sceneScreenshot=screenshot.replace(/\.png$/i,'-scene.png');
+    fs.mkdirSync(path.dirname(sceneScreenshot),{recursive:true});
+    fs.writeFileSync(sceneScreenshot,sceneCapture);
+  }
   if(screenshot){
     fs.mkdirSync(path.dirname(screenshot),{recursive:true});
     fs.writeFileSync(screenshot,liveCapture);
@@ -326,6 +342,32 @@ try{
       magentaRatio:sampled?magenta/sampled:1,dominantColorRatio:sampled?dominant/sampled:1,
       distinctColorBuckets:histogram.size,source:'REAL_GAMEPLAY_BROWSER_SCREENSHOT'};
   },liveCapture.toString('base64'));
+  // 전경 UI/브라우저 배경이 손상된 재질을 가리지 못하도록 별도의 실제 Unity canvas 픽셀을 분석한다.
+  const scenePixels=sceneCapture?await page.evaluate(async encoded=>{
+    const bytes=Uint8Array.from(atob(encoded),character=>character.charCodeAt(0));
+    const bitmap=await createImageBitmap(new Blob([bytes],{type:'image/png'}));
+    const sampleWidth=96,sampleHeight=Math.max(1,Math.round(sampleWidth*bitmap.height/bitmap.width));
+    const surface=document.createElement('canvas');
+    surface.width=sampleWidth;surface.height=sampleHeight;
+    const context=surface.getContext('2d',{willReadFrequently:true});
+    if(!context)throw new Error('UNITY_WEB_SCENE_PIXEL_READBACK_UNAVAILABLE');
+    context.drawImage(bitmap,0,0,sampleWidth,sampleHeight);
+    bitmap.close();
+    const pixels=context.getImageData(0,0,sampleWidth,sampleHeight).data;
+    const buckets=new Map();let sampled=0,magenta=0;
+    for(let offset=0;offset<pixels.length;offset+=4){
+      const r=pixels[offset],g=pixels[offset+1],b=pixels[offset+2];
+      if(pixels[offset+3]<240)continue;
+      sampled++;
+      if(r>=185&&b>=175&&g<=115&&r>g*1.7&&b>g*1.7)magenta++;
+      const key=((r>>3)<<10)|((g>>3)<<5)|(b>>3);
+      buckets.set(key,(buckets.get(key)||0)+1);
+    }
+    const dominant=Math.max(0,...buckets.values());
+    return {width:sampleWidth,height:sampleHeight,pixelCount:sampled,
+      magentaRatio:sampled?magenta/sampled:1,dominantColorRatio:sampled?dominant/sampled:1,
+      distinctColorBuckets:buckets.size,source:'REAL_UNITY_CANVAS_SCREENSHOT'};
+  },sceneCapture.toString('base64')):null;
   const mobileUiBounds=await page.evaluate(()=>{
     const viewport={width:window.innerWidth,height:window.innerHeight};
     const clipped=[];
@@ -406,10 +448,32 @@ try{
     &&nativeMeshProof.volumetricMeshes<=nativeMeshProof.validMeshes
     &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
   const nativeMeshMissing=!nativeMeshVerified;
+  // 승인된 월드의 실제 메시와 물리 기반 Lit 재질이 실행 중 함께 존재하는지 확인한다.
+  const worldRenderMarker=markers.slice().reverse().find(line=>line.includes('UNITY_WEB_WORLD=RENDER_SURFACE')
+    &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_RUNTIME_LIT_MESH'))||'';
+  const worldRenderMetric=key=>{
+    const token=worldRenderMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return token===undefined?null:Number(token.slice(key.length+1));
+  };
+  const worldRenderProof={
+    meshes:worldRenderMetric('meshes'),normals:worldRenderMetric('normals'),
+    triangles:worldRenderMetric('triangles'),materials:worldRenderMetric('materials'),
+    litMaterials:worldRenderMetric('litMaterials'),
+  };
+  const renderSurfaceVerified=approvedEnvironment.required!==true||(
+    worldRenderMarker.includes('status=PASS')&&Number.isSafeInteger(worldRenderProof.meshes)
+    &&worldRenderProof.meshes>=2&&worldRenderProof.normals===worldRenderProof.meshes
+    &&Number.isSafeInteger(worldRenderProof.triangles)&&worldRenderProof.triangles>0
+    &&Number.isSafeInteger(worldRenderProof.materials)&&worldRenderProof.materials>0
+    &&worldRenderProof.litMaterials===worldRenderProof.materials);
+  const sceneScreenVerified=approvedEnvironment.required!==true||Boolean(scenePixels
+    &&scenePixels.pixelCount>=400&&scenePixels.magentaRatio<.12
+    &&scenePixels.dominantColorRatio<.98&&scenePixels.distinctColorBuckets>=8);
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
   const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
-    ||nativeUiOffscreen||nativeUiOverlap||nativeUiMissing||nativeMeshMissing;
+    ||nativeUiOffscreen||nativeUiOverlap||nativeUiMissing||nativeMeshMissing
+    ||!renderSurfaceVerified||!sceneScreenVerified;
 
   await canvas.focus();
   await page.keyboard.press('KeyR');
@@ -487,6 +551,17 @@ try{
     visualQa:{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
       screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
+      renderedScene:{
+        required:approvedEnvironment.required===true,
+        source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_NATIVE_LIT_MESH_INSPECTION',
+        pass:approvedEnvironment.required===true?renderSurfaceVerified&&sceneScreenVerified:null,
+        bootCaptureSha256:bootSceneCaptureSha256,
+        sceneCaptureSha256,sceneCapturePersisted:Boolean(screenshot&&sceneCapture),
+        pixels:scenePixels,nativeRenderMarker:worldRenderMarker||null,
+        nativeRenderProof:worldRenderMarker?worldRenderProof:null,
+        shaderAndNormalPass:renderSurfaceVerified,visiblePixelPass:sceneScreenVerified,
+        comparedWithLastApprovedGoldenScene:false,realDeviceVerified:false,
+      },
       magentaShaderLikelyMissing:shaderLikelyMissing,
       blankOrFrozenFrame,visualPixels,mobileUiBounds,
       nativeUnityUi:{measurementState:nativeUiMeasured?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED',
@@ -540,7 +615,8 @@ try{
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
     shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
     nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,
-    nativeDepthVerified,nativeDepthProof,visualPixels
+    nativeDepthVerified,nativeDepthProof,visualPixels,
+    renderSurfaceVerified,sceneScreenVerified,worldRenderProof,scenePixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
