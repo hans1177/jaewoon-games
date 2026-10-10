@@ -365,7 +365,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     const catalogGame=catalogById.get(gameId);
     const lifecycle=clean(catalogGame?.canonical?.lifecycle?.state||catalogGame?.lifecycleState||'ACTIVE').toUpperCase();
     if(!['ACTIVE','REBUILD'].includes(lifecycle))continue;
-    const existing=latestMinimumDesign(root,gameId);
+    const existing=latestMinimumDesign(root,gameId,{seed});
     const ownerResetAt=resetIds.has(gameId)?resetAt:0;
     if(existing&&freshAfterOwnerReset(existing,ownerResetAt))continue;
     const result=materializeVibeMinimumDesign({root,seed,catalogGame,ownerResetAt});
@@ -391,7 +391,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     const currentClass=clean(seed?.productionClass).toUpperCase();
     if(currentClass==='RELEASE_CONFIRMED'){skipped.push({gameId,reason:'ALREADY_RELEASED'});continue;}
 
-    const design=latestMinimumDesign(root,gameId);
+    const design=latestMinimumDesign(root,gameId,{seed});
     const resetRequiresFresh=resetIds.has(gameId)&&!freshAfterOwnerReset(design,resetAt);
     if(!design||resetRequiresFresh){
       const reason=resetRequiresFresh?'OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED':'MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY';
