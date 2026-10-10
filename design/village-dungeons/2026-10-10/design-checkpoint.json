@@ -211,25 +211,42 @@
       "name": "마을 던전 RPG",
       "purpose": "탐험, 전투, 퀘스트의 총체적인 인과 연결 및 상태 변화로 구성된 게임 정체성",
       "playerChoice": "플레이어 선택 → 적 행동 변환 → 지역 변경 → 새로운 목표 생성 및 선택 가능성 확대 → 무한 발전 규칙 적용 및 세계 상태 변화 발생"
+    },
+    "local_authoring_parts::be55b41e24158f654b8aab9aa1b88fb4f1f416d8341de31846cfa8d5921af1af:signatureSystems:1": {
+      "id": "A",
+      "grammarRole": "A",
+      "stateInputs": [
+        "플레이어 선택",
+        "보상 변화",
+        "중후반 두 시스템 간 상호 작용"
+      ],
+      "stateOutputs": [
+        "역할별 선택 가능성 확대",
+        "실제 세계 상태 변화",
+        "게임 정체성 확대"
+      ],
+      "name": "마을 던전 RPG",
+      "purpose": "플레이어 선택에 따른 적 행동 변환, 지역 변경 및 게임 정체성 확대의 인과적 연결",
+      "playerChoice": "플레이어 선택 → 실제 세계 상태 변화 → 다음 사건 결정 및 플레이어 선택 기회 제공"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 830456,
-      "lastMs": 107665,
+      "totalMs": 936377,
+      "lastMs": 105921,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:49:21.116Z"
+      "updatedAt": "2026-10-10T02:51:07.039Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:35:30.633Z",
-  "updatedAt": "2026-10-10T02:49:21.116Z",
+  "updatedAt": "2026-10-10T02:51:07.039Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1862,7 +1879,7 @@
   "localAuthoringSplits": {
     "72a5cf325870959ef135b47f4b27145746d8107d3c64d05f8b36d29aff50ffbf": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:49:21.116Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:51:07.039Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
