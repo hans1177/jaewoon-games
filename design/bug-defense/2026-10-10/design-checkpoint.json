@@ -150,25 +150,175 @@
       "name": "Adaptive Defensive Tactics",
       "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
       "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern and adapt to evolving enemy tactics."
+    },
+    "local_authoring_parts::dc86a2543022b72c06bfce4b7216f60ec55b11169175c107b1f05af6ac2db1eb:signatureSystems:3:3cf13d733f3b9995": {
+      "id": "delve_abc",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "adaptive_defensive_tactics",
+        "resource_allocation_optimization"
+      ],
+      "stateOutputs": [
+        "defender_positioning_strategy",
+        "incoming_insect_wave_pattern"
+      ],
+      "name": "Delve into Adaptive Defensive Mechanics",
+      "purpose": "Players engage in real-time defensive decision-making by adapting to enemy behavior and resource constraints, leading to evolving strategies and gameplay mechanics.",
+      "playerChoice": "Optimize defender positioning based on incoming insect wave patterns while balancing resource allocation for maximum effectiveness against dynamic threats."
+    },
+    "local_authoring_parts::1be0849df2442b5f72f693da88ba29d8ba316bfdfcbec1ebf56a5a4076772701:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "main_abc",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "defender_positioning_strategy"
+          ],
+          "stateOutputs": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "name": "Main Defensive Strategy",
+          "purpose": "Player-controlled defense mechanism that evolves based on real-time enemy behavior and threat assessment.",
+          "playerChoice": "Choose optimal defensive positioning and resource allocation to survive the wave and prepare for next-level strategy."
+        },
+        {
+          "id": "a_main",
+          "grammarRole": "A",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "stateOutputs": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "name": "Game Designer AI",
+          "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
+          "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern."
+        },
+        {
+          "id": "b_main",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "stateOutputs": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "name": "Adaptive Defensive Tactics",
+          "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
+          "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern and adapt to evolving enemy tactics."
+        },
+        {
+          "id": "delve_abc",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "stateOutputs": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "name": "Delve into Adaptive Defensive Mechanics",
+          "purpose": "Players engage in real-time defensive decision-making by adapting to enemy behavior and resource constraints, leading to evolving strategies and gameplay mechanics.",
+          "playerChoice": "Optimize defender positioning based on incoming insect wave patterns while balancing resource allocation for maximum effectiveness against dynamic threats."
+        }
+      ]
+    },
+    "local_authoring_parts::8611dc2ab1643ab1ce18a88b1ec6fccae3ced4fe3b09367c58e2cdefb07b89af:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결",
+        "defenders are placed in optimal positions to counter the threat pattern",
+        "resource allocation and risk-reward analysis drive adaptive defense strategies"
+      ],
+      "signatureSystems": [
+        {
+          "id": "main_abc",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "defender_positioning_strategy"
+          ],
+          "stateOutputs": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "name": "Main Defensive Strategy",
+          "purpose": "Player-controlled defense mechanism that evolves based on real-time enemy behavior and threat assessment.",
+          "playerChoice": "Choose optimal defensive positioning and resource allocation to survive the wave and prepare for next-level strategy."
+        },
+        {
+          "id": "a_main",
+          "grammarRole": "A",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "stateOutputs": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "name": "Game Designer AI",
+          "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
+          "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern."
+        },
+        {
+          "id": "b_main",
+          "grammarRole": "B",
+          "stateInputs": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "stateOutputs": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "name": "Adaptive Defensive Tactics",
+          "purpose": "Creates game design assets with preserved original intent, repairing only requested scope.",
+          "playerChoice": "Select optimal defensive positioning and resource allocation to counter the threat pattern and adapt to evolving enemy tactics."
+        },
+        {
+          "id": "delve_abc",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "adaptive_defensive_tactics",
+            "resource_allocation_optimization"
+          ],
+          "stateOutputs": [
+            "defender_positioning_strategy",
+            "incoming_insect_wave_pattern"
+          ],
+          "name": "Delve into Adaptive Defensive Mechanics",
+          "purpose": "Players engage in real-time defensive decision-making by adapting to enemy behavior and resource constraints, leading to evolving strategies and gameplay mechanics.",
+          "playerChoice": "Optimize defender positioning based on incoming insect wave patterns while balancing resource allocation for maximum effectiveness against dynamic threats."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 237549,
-      "lastMs": 16565,
+      "totalMs": 250321,
+      "lastMs": 12772,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:05:01.186Z"
+      "updatedAt": "2026-10-10T09:05:13.960Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:05:01.186Z",
+  "updatedAt": "2026-10-10T09:05:13.962Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1858,7 +2008,7 @@
     "local_authoring_parts::dc86a2543022b72c06bfce4b7216f60ec55b11169175c107b1f05af6ac2db1eb:signatureSystems:0:4f53cda18c2baa0c": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:05:01.186Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:05:13.962Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
