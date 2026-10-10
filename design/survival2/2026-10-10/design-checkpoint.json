@@ -3,156 +3,31 @@
   "gameId": "survival2",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
-  "fingerprint": "9effa555d310fbe82fdae645bddd79da096496baa99c48538ba99f2ee42608b4",
+  "fingerprint": "0c1ecabb635f8e466ab6814f48eff034580e6cdc19103193c77a6f7ec99aded0",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::9277036bbc4f1bcc7c4b4611f11be90b909e447ff10899ff004b46bc30bcd9e3:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "생존자 역할, 자원 수집, 위험 관리",
-        "a": {
-          "system": "지역",
-          "material": "자원 유출 및 가시성 조절",
-          "materialDomain": "환경적 리스크",
-          "stateChange": "자원 위치 변경/가시성 증대/위험 감소"
-        },
-        "b": {
-          "system": "협력",
-          "material": "전략적 선택 및 정보 공유",
-          "materialDomain": "사회적 상호작용",
-          "stateChange": "선택 결과로 인한 사회적 구조 변화/정보 전달"
-        },
-        "abCausality": "자원 위치와 사회적 구조의 변화는 양방향으로 연결되어야 하며, 각각의 상태 변화는 다른 플레이어 행동을 통해 반영된다.",
-        "abEvolution": {
-          "aChangesB": "자원 수집 시기와 협력 전략의 변화를 통합하여 새로운 플레이스타일을 형성한다.",
-          "bChangesA": "사회적 구조 변화에 따른 자원 확보 방식이 변형되면서 새로운 경로를 연다.",
-          "lateGameChange": "플레이어의 숙련된 선택과 지역 규칙의 결합은 새로운 위험 유형과 보상 체계를 생성한다."
-        },
-        "materialFusion": {
-          "contrast": "자연적인 환경 요소와 인간의 사회적 관계가 서로 영향을 미치며, 이는 게임의 메인 장르(생존)와 보조 장르(협력) 간의 상호작용을 강화한다.",
-          "causalBridge": "자원 수집 과정에서 발생하는 위험은 사회적 관계의 변화와 함께 인과적으로 연결되어야 한다.",
-          "removalConsequence": "보조 장르 제거 시 주변 환경의 변화 및 플레이어의 선택 결과가 실제 세계 상태로 반영된다."
-        },
-        "storyCausalChain": {
-          "cause": "자원 위치 변경/가시성 증대/위험 감소",
-          "characterConflict": "협력 전략의 부재 또는 자원 수집의 어려움으로 인한 갈등",
-          "playerChoice": "자원 확보 방식의 변화나 협력 전략의 선택",
-          "worldChange": "자원 위치 변화, 가시성 조절, 위험 감소 등 실제 세계 상태 변화를 포함한다.",
-          "nextEvent": "플레이어의 숙련된 선택이 새로운 경로를 연다."
-        },
-        "cThemes": [
-          {
-            "name": "환경적 리스크",
-            "kind": "GENRE",
-            "gameplayEffect": "자원 수집 시 위험 감소 및 가시성 증대"
-          },
-          {
-            "name": "사회적 상호작용",
-            "kind": "GENRE",
-            "gameplayEffect": "선택 결과로 인한 사회적 구조 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "생존",
-            "gameplayEffect": "자원 수집과 위험 관리의 중심 역할"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "협력",
-            "gameplayEffect": "선택 결과와 정보 공유가 실질적인 인과 변화를 주며, 보상은 플레이어의 숙련된 선택에 기반하여 결정된다. "
-          }
-        ],
-        "cGenreInterlock": "보조 장르 제거 시 주변 환경의 변화 및 플레이어의 선택 결과가 실제 세계 상태로 반영되며, 이는 게임의 메인 장르(생존)와 보조 장르(협력) 간의 상호작용을 강화한다.",
-        "cWorldAndGameplayEffect": "게임의 정체성은 자원 수집과 위험 관리의 중심이며, 보조 장르는 그 선택과 A/B 상태 교환으로 인해 실질적인 인과 변화를 줘야 한다.",
-        "delveDiscoveries": [
-          {
-            "clue": "자원 위치 변경/가시성 증대/위험 감소",
-            "discovery": "플레이어의 숙련된 선택이 새로운 경로를 연다.",
-            "newChoice": "자원 확보 방식이나 협력 전략의 변화"
-          },
-          {
-            "clue": "사회적 구조 변화/정보 공유",
-            "discovery": "선택 결과로 인한 사회적 구조 변화",
-            "newChoice": "자원 확보 방식 또는 협력 전략의 변화"
-          },
-          {
-            "clue": "자원 수집 과정에서 발생하는 위험",
-            "discovery": "플레이어의 숙련된 선택이 새로운 경로를 연다.",
-            "newChoice": "자원 확보 방식 및 협력 전략의 변화"
-          },
-          {
-            "clue": "자연적인 환경 요소와 인간의 관계",
-            "discovery": "플레이어의 숙련된 선택이 새로운 경로를 연다.",
-            "newChoice": "자원 확보 방식과 협력 전략의 변화"
-          }
-        ],
-        "delveGrowthRule": "플레이어는 자신의 숙련된 선택을 통해 새로운 경로를 연다. 이는 게임의 정체성에 실질적인 영향을 미치며, 보상은 발견과 이해에 기반하여 결정된다.",
-        "finalGameIdentity": "자원 수집과 위험 관리의 중심으로서, 플레이어의 숙련된 선택이 새로운 경로를 연다는 게임 정체성이 형성된다."
-      },
-      "playerFantasy": "생존자는 자원을 수집하고 위험을 관리하며, 그 선택은 다른 플레이어에게 정보를 공유하거나 전략적 조건을 제시해야 한다. 이는 사회적 상호작용과 자연환경의 갈등에서 발생한다.",
-      "coreFun": "자원 위치 변경/가시성 증대/위험 감소 → 선택 결과로 인한 사회적 구조 변화/정보 공유 → 플레이어의 숙련된 선택이 새로운 경로를 연다. 이는 생존의 중심 역할이며, 보상은 발견과 이해에 기반하여 결정된다."
-    },
-    "local_authoring_parts::5e0ff9d8ad23565c995973760cde8fd9d26b9fc317ba2f1f2bd09f951b396b81:coreLoop": {
-      "coreLoop": [
-        "입력: 자원 위치 변경/가시성 증대/위험 감소",
-        "선택: 자원 확보 방식 또는 협력 전략의 변화",
-        "상태변화: 사회적 구조 변화 및 정보 전달",
-        "보상: 플레이어의 숙련된 선택에 기반하여 결정되는 새로운 경로"
-      ]
-    },
-    "local_authoring_parts::40d18b53d4a2fd87ae01aad1a1672f370fa4f1530e46d20374f70cf4e6e1d580:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_road",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "resource_position_change",
-        "visibility_increase",
-        "risk_reduction"
-      ],
-      "stateOutputs": [
-        "social_structure_change",
-        "information_exchange"
-      ],
-      "name": "생존자의 선택과 사회적 관계의 변화",
-      "purpose": "자원 수집 과정에서 발생하는 위험 감소 및 가시성 증대가 사회적 구조와 정보 공유에 영향을 미친다.",
-      "playerChoice": "자원 확보 방식 또는 협력 전략의 변화를 선택하여 새로운 경로를 연다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 252,
-      "successes": 252,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 2590090,
-      "lastMs": 9470,
-      "lastError": null,
-      "updatedAt": "2026-10-10T05:36:22.667Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T04:53:11.716Z",
-  "updatedAt": "2026-10-10T05:36:22.667Z",
+  "createdAt": "2026-10-10T08:29:00.323Z",
+  "updatedAt": "2026-10-10T08:29:00.457Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -189,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -212,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -615,13 +493,13 @@
           {
             "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-craft-loop",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "craft"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -652,14 +530,15 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-npc-camp-activity-panel",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "rest",
-                "craft"
+                "current",
+                "next",
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -668,13 +547,13 @@
           {
             "family": "VFX",
             "action": "ADAPT",
-            "assetId": "roblox-common-vfx-craft-sparks",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "craft"
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -694,8 +573,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -732,6 +611,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -755,10 +635,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1158,13 +1040,13 @@
           {
             "family": "MOTION",
             "action": "ADAPT",
-            "assetId": "roblox-common-motion-craft-loop",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "craft"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1195,14 +1077,15 @@
           {
             "family": "UI",
             "action": "ADAPT",
-            "assetId": "roblox-common-ui-npc-camp-activity-panel",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "rest",
-                "craft"
+                "current",
+                "next",
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1211,13 +1094,13 @@
           {
             "family": "VFX",
             "action": "ADAPT",
-            "assetId": "roblox-common-vfx-craft-sparks",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
             "applicationMode": "STYLE_ADAPT",
             "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "craft"
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1237,8 +1120,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1275,6 +1158,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1298,10 +1182,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1701,13 +1587,13 @@
           {
             "family": "MOTION",
             "action": "USE",
-            "assetId": "roblox-common-motion-craft-loop",
+            "assetId": "roblox-common-motion-run",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "craft"
+                "run"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1738,14 +1624,15 @@
           {
             "family": "UI",
             "action": "USE",
-            "assetId": "roblox-common-ui-npc-camp-activity-panel",
+            "assetId": "roblox-common-ui-wave-forecast-ribbon",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "rest",
-                "craft"
+                "current",
+                "next",
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1754,13 +1641,13 @@
           {
             "family": "VFX",
             "action": "USE",
-            "assetId": "roblox-common-vfx-craft-sparks",
+            "assetId": "roblox-common-vfx-boss-warning-pulse",
             "applicationMode": "USE_AS_IS",
             "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [
-                "craft"
+                "boss"
               ],
               "currentSourceBound": false,
               "verifiedRoleMatch": true
@@ -1781,17 +1668,17 @@
       }
     },
     "assetFacts": {
-      "roblox-common-motion-craft-loop": {
+      "roblox-common-motion-run": {
         "family": "MOTION",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "craft"
+            "run"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "CRAFT_LOOP",
+        "role": "RUN",
         "sourcePath": "/assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1802,18 +1689,19 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-ui-npc-camp-activity-panel": {
+      "roblox-common-ui-wave-forecast-ribbon": {
         "family": "UI",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "rest",
-            "craft"
+            "current",
+            "next",
+            "boss"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "NPC_CAMP_ACTIVITY_PANEL",
+        "role": "WAVE_FORECAST_RIBBON",
         "sourcePath": "/assets/roblox/common-ui-v1/RobloxCommonUI.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1824,17 +1712,17 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
-      "roblox-common-vfx-craft-sparks": {
+      "roblox-common-vfx-boss-warning-pulse": {
         "family": "VFX",
         "roleEvidence": {
           "requestedRoles": [],
           "matchedRoles": [
-            "craft"
+            "boss"
           ],
           "currentSourceBound": false,
           "verifiedRoleMatch": true
         },
-        "role": "CRAFT",
+        "role": "BOSS",
         "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
         "platform": "ROBLOX",
         "license": "project-original",
@@ -1846,39 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::40d18b53d4a2fd87ae01aad1a1672f370fa4f1530e46d20374f70cf4e6e1d580:signatureSystems:1:470c9e514823bc9b": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_road"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_road"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_road"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::40d18b53d4a2fd87ae01aad1a1672f370fa4f1530e46d20374f70cf4e6e1d580:signatureSystems:1:470c9e514823bc9b": 249
-  },
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T05:36:22.667Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
