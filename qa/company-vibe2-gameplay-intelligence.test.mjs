@@ -12,7 +12,7 @@ import {
   buildVibeDevelopmentContext,
   clipPreservedSourceForModel,
 } from '../tools/company-vibe2-gameplay-intelligence.mjs';
-import {buildGameFlowArchitecture,evaluateGameFlowArchitecture,FLOW_ARCHETYPES} from '../tools/company-vibe2-game-flow-architect.mjs';
+import {buildGameFlowArchitecture,evaluateGameFlowArchitecture,buildConceptSystemBlueprint,buildFlowAssetRequirements,FLOW_ARCHETYPES} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {buildApprovedScopeGenerationPrompt} from '../tools/company-development-web-bootstrap.mjs';
 import {evaluateDeterministicReplayEvidence} from '../tools/company-web-deterministic-replay.mjs';
 import {
@@ -604,4 +604,39 @@ test('patch plan converts required genre systems into existing-owner implementat
   assert.equal(plan.systemBlueprint.profile,'ACTION_SURVIVAL_ROGUELITE');
   assert.ok(plan.forbidden.includes('DUPLICATE_SHADOW_INVENTORY_CRAFTING_QUEST_ECONOMY_OR_COMPANION_SYSTEM'));
   assert.equal(plan.verificationOrder[2],'CONCEPT_SYSTEM_BUNDLE');
+});
+
+
+test('genre game window binds optional trading skills journal codex events and cinematic systems without inventing default economy rules',()=>{
+  const blueprint=buildConceptSystemBlueprint({
+    genre:'STORY_COMPLETE_RPG',
+    baseline:{content:{
+      identity:'RPG 스킬트리 저널 도감 매매 월드 이벤트 컷신',
+      coreLoop:['NPC 퀘스트','파티','아이템 교환','스킬트리','도감','월드 이벤트'],
+      signatureSystems:[{name:'내부 외부 스킬 트리',purpose:'직업 특성 분기'},{name:'저널',purpose:'퀘스트 발생 기록'}]
+    }}
+  });
+  const ids=new Set(blueprint.requiredSystems.map(row=>row.id));
+  for(const id of ['STATUS_HUD','SETTINGS_ACCESSIBILITY','SKILL_BUILD','SKILL_TREE','PLAYER_TRADE_ESCROW',
+    'JOURNAL_CHRONICLE','WORLD_EVENT_DIRECTOR','CINEMATIC_PRESENTATION','CODEX_COLLECTION']){
+    assert.ok(ids.has(id),id);
+  }
+  assert.ok(blueprint.interconnectionChains.includes('SKILL_BUILD->SKILL_TREE->INVENTORY_EQUIPMENT'));
+  assert.ok(blueprint.interconnectionChains.includes('INVENTORY_EQUIPMENT->PLAYER_TRADE_ESCROW->ECONOMY_SHOP'));
+  assert.equal(blueprint.systemExperienceArchitecture.nativeAuthority,'EXISTING_GAME_SOURCE_PLAYER_ECONOMY_COMBAT_QUEST_SAVE_NETWORK');
+  assert.equal(blueprint.systemExperienceArchitecture.conditionalFeaturesRequireGameEvidence,true);
+  assert.equal(blueprint.libraryReusePolicy.wrapperOrShadowSystemForbidden,true);
+  assert.ok(blueprint.systemExperienceArchitecture.algorithmPatterns.includes('DEPENDENCY_DAG_TOPOLOGICAL_SORT_AND_CYCLE_REJECTION'));
+  const assets=buildFlowAssetRequirements({architecture:{flowDNA:[],systemBlueprint:blueprint},genre:'STORY_COMPLETE_RPG'});
+  for(const subfamily of ['SKILL_TREE_SCREEN','JOURNAL_TIMELINE','TRADE_ESCROW_REVIEW','WORLD_EVENT_TIMELINE','EVENT_CINEMATIC_CARD']){
+    assert.ok(assets.some(row=>row.family==='UI'&&row.subfamily===subfamily),subfamily);
+  }
+  assert.ok(assets.every(row=>row.gameplayAuthority===false&&row.saveAuthority===false));
+  const ordinary=buildConceptSystemBlueprint({genre:'ACTION_SURVIVAL_ROGUELITE',baseline:{content:{identity:'기본 생존'}}});
+  const ordinaryIds=new Set(ordinary.requiredSystems.map(row=>row.id));
+  assert.ok(ordinaryIds.has('STATUS_HUD'));
+  assert.ok(ordinaryIds.has('SETTINGS_ACCESSIBILITY'));
+  for(const id of ['PLAYER_TRADE_ESCROW','JOURNAL_CHRONICLE','WORLD_EVENT_DIRECTOR','CINEMATIC_PRESENTATION']){
+    assert.equal(ordinaryIds.has(id),false,id);
+  }
 });
