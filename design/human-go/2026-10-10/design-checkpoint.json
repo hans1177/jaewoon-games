@@ -28,25 +28,77 @@
         "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
       },
       "abCausality": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 주제/소재가 서로 다른 경우 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다."
+    },
+    "local_authoring_parts::0bbd8ca53939917470a7b28cbd8a9d88d56937d42aa1749ee91eb5e33357584c:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "A→B 상태 교환, B→A 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "bChangesA": "B→A 상태 교환, A→B 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+      },
+      "materialFusion": {
+        "contrast": "C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+        "causalBridge": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+        "removalConsequence": "C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
+      },
+      "storyCausalChain": {
+        "cause": "원인, 인물 갈등, 플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+        "characterConflict": "인물 갈등, 플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+        "playerChoice": "플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+        "worldChange": "실질 세계 상태 변화, 다음 사건, 새로운 규칙 조합",
+        "nextEvent": "새로운 규칙 조합, 다음 사건, 새로운 게임 규칙"
+      }
+    },
+    "local_authoring_parts::7070b0fc8fd408058b1809d7ec2e7aa2fc6abc73f2dbfb9559a0cd3e882d9cd3:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
+      "a": {
+        "system": "게임 시스템",
+        "material": "해당 축 창작 소재",
+        "materialDomain": "게임 메인 장르",
+        "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
+      },
+      "b": {
+        "system": "다른 시스템",
+        "material": "해당 축 창작 소재",
+        "materialDomain": "게임 보조 장르",
+        "stateChange": "입력→ 상태변화 → 보상/위험/다음 선택의 연결"
+      },
+      "abCausality": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 주제/소재가 서로 다른 경우 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다.",
+      "abEvolution": {
+        "aChangesB": "A→B 상태 교환, B→A 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "bChangesA": "B→A 상태 교환, A→B 상태 교환, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+      },
+      "materialFusion": {
+        "contrast": "C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+        "causalBridge": "양방향 실제 상태 교환, C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+        "removalConsequence": "C=주제/소재 두 개를 각각 kind=MATERIAL로 선택하고 cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다."
+      },
+      "storyCausalChain": {
+        "cause": "원인, 인물 갈등, 플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+        "characterConflict": "인물 갈등, 플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+        "playerChoice": "플레이어 선택, 실질 세계 상태 변화, 다음 사건",
+        "worldChange": "실질 세계 상태 변화, 다음 사건, 새로운 규칙 조합",
+        "nextEvent": "새로운 규칙 조합, 다음 사건, 새로운 게임 규칙"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 5,
+      "successes": 3,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 763053,
-      "lastMs": 53625,
+      "totalMs": 847342,
+      "lastMs": 84289,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:45:59.451Z"
+      "updatedAt": "2026-10-10T08:47:23.741Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:33:16.266Z",
-  "updatedAt": "2026-10-10T08:45:59.451Z",
+  "updatedAt": "2026-10-10T08:47:23.742Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1572,7 +1624,7 @@
     "bbf3b3f57790e90f671b699037ce2ef2dc185700a84b9794f6380b8292bda753": true,
     "f1f9747d8429136c5c486d9878c91141e2b853d20b5a667b4a4ded666e663acb": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:45:59.451Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:47:23.742Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
