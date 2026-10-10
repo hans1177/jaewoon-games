@@ -37,9 +37,6 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  COMPANY_MODEL_PHASE_CONCURRENCY: '2'
-  COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'
-  COMPANY_VIBE_LOCAL_MODEL: 'qwen3:1.7b'
 
 jobs:
   # 메인: 대상 선정부터 바로 시작한다. 다른 개발 작업의 관측 결과는 설계 착수 조건이 아니다.
@@ -500,7 +497,7 @@ jobs:
           console.log(`design_evolution_reason=${String(process.env.TARGET_DESIGN_EVOLUTION_REASON||'UNKNOWN')}`);
           console.log(`design_evolution_superseded=${supersededByNewerPass?'true':'false'}`);
           NODE
-      - name: Recover verified deterministic design checkpoint before external model wait
+      - name: Recover verified deterministic design checkpoint before native recomputation
         id: deterministic_recovery
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -514,7 +511,7 @@ jobs:
           set -e
           if [ "$rc" -eq 0 ] && grep -q '^DESIGN_DETERMINISTIC_RECOVERY=PASS$' /tmp/deterministic-design-recovery.txt; then
             echo 'materialized=true' >> "$GITHUB_OUTPUT"
-            echo 'DESIGN_EXTERNAL_MODEL_WAIT_BYPASSED=YES'
+            echo 'DESIGN_NATIVE_RECOMPUTATION_BYPASSED=YES'
             echo 'DESIGN_CHECKPOINT_PRESERVED=YES'
           else
             echo 'materialized=false' >> "$GITHUB_OUTPUT"
@@ -539,98 +536,22 @@ jobs:
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
           // A cycle not recovered above can require a local repair after current-policy validation.
-          const localAuthoringNeeded=true;
-          console.log('DESIGN_PROVIDER_GOVERNOR=READY_LOCAL_ONLY');
+          const localAuthoringNeeded=false;
+          console.log('DESIGN_PROVIDER_GOVERNOR=VIBE_NATIVE_CAUSAL_FUNCTION');
           console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
           console.log('DESIGN_AI_REVIEW_REQUIRED=NO');
           console.log('DESIGN_AI_REVIEW_LANES=NONE');
-          console.log(`DESIGN_LOCAL_AUTHORING_FALLBACK_NEEDED=${localAuthoringNeeded?'YES':'NO'}`);
+          console.log('DESIGN_NATIVE_AUTHORING_REQUIRED=YES');
           console.log(`DESIGN_LOCAL_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
           console.log('DESIGN_LOCAL_FULL_CYCLE_RESTART=NO');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=LOCAL_ONLY\nlocal_fallback_needed=${localAuthoringNeeded?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'run_design_cycle=true\nquota_state=VIBE_NATIVE_FUNCTION\n');
           NODE
-      - name: Restore Vibe local design fallback cache
-        id: design_local_cache
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.local_fallback_needed == 'true'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v3-Linux-qwen3-1.7b
-
-      - name: Prepare Vibe local design fallback
-        id: design_local
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.local_fallback_needed == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
-          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
-          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-            sudo mkdir -p /usr/local/lib/ollama
-            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'DESIGN_LOCAL_RUNTIME_SOURCE=CACHE'
-          else
-            installed=0
-            for attempt in 1 2 3; do
-              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-              sleep $((attempt * 4))
-            done
-            test "$installed" = 1
-            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
-            cp "$(command -v ollama)" "$cached"
-            chmod +x "$cached"
-            runtime_lib=""
-            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
-              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-                runtime_lib="$candidate"
-                break
-              fi
-            done
-            test -n "$runtime_lib"
-            cp -a "$runtime_lib/." "$cached_lib/"
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'DESIGN_LOCAL_RUNTIME_SOURCE=FALLBACK_INSTALL'
-          fi
-          nohup "$cached" serve > /tmp/design-ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat /tmp/design-ollama.log || true; exit 1; fi
-            sleep 2
-          done
-          if "$cached" list | awk 'NR>1 {print $1}' | grep -Fqx "$COMPANY_VIBE_LOCAL_MODEL"; then
-            echo 'DESIGN_LOCAL_MODEL_SOURCE=CACHE'
-          else
-            "$cached" pull "$COMPANY_VIBE_LOCAL_MODEL"
-            echo 'DESIGN_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
-          fi
-          # 모델 로딩은 설계 작성 시간과 분리한다. 준비 응답은 설계 결과로 사용하지 않는다.
-          node --input-type=module <<'NODE'
-          const started=Date.now();
-          const response=await fetch('http://127.0.0.1:11434/api/generate',{
-            method:'POST',
-            headers:{'content-type':'application/json'},
-            body:JSON.stringify({model:process.env.COMPANY_VIBE_LOCAL_MODEL,prompt:'',stream:false,think:false,keep_alive:'10m',options:{num_ctx:8192,num_predict:0}}),
-            signal:AbortSignal.timeout(120000)
-          });
-          if(!response.ok)throw new Error(`DESIGN_LOCAL_WARMUP_HTTP_${response.status}`);
-          const result=await response.json();
-          if(result.error||result.done!==true)throw new Error('DESIGN_LOCAL_WARMUP_FAILED');
-          console.log(`DESIGN_LOCAL_WARMUP=READY|elapsedMs=${Date.now()-started}|loadMs=${Math.round(Number(result.load_duration||0)/1e6)}`);
-          NODE
-          echo 'ready=true' >> "$GITHUB_OUTPUT"
-          echo 'DESIGN_LOCAL_AUTHORING_FALLBACK=READY'
-
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         id: design_pipeline
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.run_design_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
-          COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
