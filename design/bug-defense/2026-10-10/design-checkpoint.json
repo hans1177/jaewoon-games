@@ -95,25 +95,117 @@
         "delveGrowthRule": "defender learns from previous waves, adapts to current threats, evolves with changing enemies",
         "finalGameIdentity": "defender positions based on incoming wave pattern, adapts resource allocation and defensive posture in response to evolving enemy behaviors"
       }
+    },
+    "local_authoring_parts::c91068217ffdac6acace458dfcb753805539a5fabd5efc1dea48c05e38a4be3d:playerFantasy,coreFun": {
+      "playerFantasy": "곤충 디펜스에서 플레이어는 입력 직후 읽을 수 있는 상태 변화와 피드백을 경험하며, 숙련 과정에서 새로운 전략 선택과 경로를 연출해 진보하는 게임 경험을 만든다.",
+      "coreFun": "{\"identity\": \"defender positions based on incoming wave pattern, adapts resource allocation and defensive posture in response to evolving enemy behaviors\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"wave defense readability, meaningful placement choices, enemy-type counterplay\\\",\\n \\\"a\\\": {\\n \\\"system\\\": \"wave defense\\\",\\n \\\"material\\\": \"defender positioning and resource allocation\\\",\\n \\\"materialDomain\\\": \"placement strategy\\\",\\n \\\"stateChange\\\": \"defender repositioning and resource reallocation\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"enemy behavior\\\",\\n \\\"material\\\": \"enemy type and threat pattern\\\",\\n \\\"materialDomain\\\": \"threat recognition\\\",\\n \\\"stateChange\\\": \"adaptive defensive posture adjustment\\\"\n },\\n \\\"abCausality\\\": \"defender position → enemy threat → adaptive response → new defensive decision\\\",\\n \\\"abEvolution\\\": {\\n \\\"aChangesB\\\": \"defender reprim"
+    },
+    "local_authoring_parts::6428505861480b0050496390b4ddc057a12c3a7278e2550bd3d21d7193adec15:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
+      "creativeGrammar": {
+        "mainIdentity": "wave defense readability, meaningful placement choices, enemy-type counterplay",
+        "a": {
+          "system": "wave defense",
+          "material": "defender positioning and resource allocation",
+          "materialDomain": "placement strategy",
+          "stateChange": "defender repositioning and resource reallocation"
+        },
+        "b": {
+          "system": "enemy behavior",
+          "material": "enemy type and threat pattern",
+          "materialDomain": "threat recognition",
+          "stateChange": "adaptive defensive posture adjustment"
+        },
+        "abCausality": "defender position → enemy threat → adaptive response → new defensive decision",
+        "abEvolution": {
+          "aChangesB": "defender repositioning → enemy threat adaptation",
+          "bChangesA": "resource reallocation → defender strategic shift",
+          "lateGameChange": "defender position shift → enemy behavior evolution"
+        },
+        "materialFusion": {
+          "contrast": "wave pressure vs. enemy adaptability",
+          "causalBridge": "defender position change triggers enemy behavior adaptation",
+          "removalConsequence": "defender loses positional advantage but gains tactical flexibility"
+        },
+        "storyCausalChain": {
+          "cause": "incoming wave threat",
+          "characterConflict": "defender's adaptive choice",
+          "playerChoice": "new defensive strategy implementation",
+          "worldChange": "enemy behavior evolution and defender tactical shift",
+          "nextEvent": "enemy reaction to new defense strategy"
+        },
+        "cThemes": [
+          {
+            "name": "wave adaptation",
+            "kind": "MATERIAL",
+            "gameplayEffect": "defender learns from previous threats, adapts positioning and resource allocation"
+          },
+          {
+            "name": "enemy behavior evolution",
+            "kind": "MATERIAL",
+            "gameplayEffect": "enemy reacts to new strategies with evolving threat patterns"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "wave defense strategy",
+            "gameplayEffect": "defender positions based on incoming wave pattern"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "enemy behavior evolution",
+            "gameplayEffect": "enemy adapts its threat pattern in response to new defenses"
+          }
+        ],
+        "cGenreInterlock": "defender position → enemy behavior → adaptive response → new defensive decision",
+        "cWorldAndGameplayEffect": "defender learns from past waves, adapts to current threats, evolves with changing enemies",
+        "delveDiscoveries": [
+          {
+            "clue": "wave pressure adaptability",
+            "discovery": "defender repositions and reallocates resources",
+            "newChoice": "adaptive defensive posture adjustment"
+          },
+          {
+            "clue": "enemy behavior evolution",
+            "discovery": "enemy adapts its threat pattern",
+            "newChoice": "new defensive strategy implementation"
+          },
+          {
+            "clue": "tactical flexibility",
+            "discovery": "defender gains strategic shift",
+            "newChoice": "enemy reaction to new defense strategy"
+          },
+          {
+            "clue": "world state change",
+            "discovery": "enemy behavior evolves",
+            "newChoice": "defender's tactical adaptation"
+          }
+        ],
+        "delveGrowthRule": "defender learns from previous waves, adapts to current threats, evolves with changing enemies",
+        "finalGameIdentity": "defender positions based on incoming wave pattern, adapts resource allocation and defensive posture in response to evolving enemy behaviors"
+      },
+      "playerFantasy": "곤충 디펜스에서 플레이어는 입력 직후 읽을 수 있는 상태 변화와 피드백을 경험하며, 숙련 과정에서 새로운 전략 선택과 경로를 연출해 진보하는 게임 경험을 만든다.",
+      "coreFun": "{\"identity\": \"defender positions based on incoming wave pattern, adapts resource allocation and defensive posture in response to evolving enemy behaviors\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"wave defense readability, meaningful placement choices, enemy-type counterplay\\\",\\n \\\"a\\\": {\\n \\\"system\\\": \"wave defense\\\",\\n \\\"material\\\": \"defender positioning and resource allocation\\\",\\n \\\"materialDomain\\\": \"placement strategy\\\",\\n \\\"stateChange\\\": \"defender repositioning and resource reallocation\\\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"enemy behavior\\\",\\n \\\"material\\\": \"enemy type and threat pattern\\\",\\n \\\"materialDomain\\\": \"threat recognition\\\",\\n \\\"stateChange\\\": \"adaptive defensive posture adjustment\\\"\n },\\n \\\"abCausality\\\": \"defender position → enemy threat → adaptive response → new defensive decision\\\",\\n \\\"abEvolution\\\": {\\n \\\"aChangesB\\\": \"defender reprim"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 414146,
-      "lastMs": 114046,
+      "totalMs": 496539,
+      "lastMs": 82393,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:23:18.617Z"
+      "updatedAt": "2026-10-10T02:24:41.011Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:16:24.448Z",
-  "updatedAt": "2026-10-10T02:23:18.617Z",
+  "updatedAt": "2026-10-10T02:24:41.012Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1789,7 +1881,7 @@
   "localAuthoringSplits": {
     "c91068217ffdac6acace458dfcb753805539a5fabd5efc1dea48c05e38a4be3d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:23:18.617Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:24:41.012Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
