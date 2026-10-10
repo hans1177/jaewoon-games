@@ -1952,39 +1952,54 @@ test('animation and video select a real existing Blender DCC authoring recipe wi
   assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
 });
 
-test('high-quality TRELLIS.2 offline image-to-3D is selectable without enabling paid remote AI',()=>{
-  const task={gameId:'high-fidelity-scene',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
+test('unlicensed TRELLIS.2 dependencies block commercial asset authoring before GPU execution',()=>{
+  const task={gameId:'high-fidelity-scene',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
     imageToAsset:true,assetAuthoring:{meshModel:'trellis2'},
     referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'}]};
-  const plan=buildVibeAssetProductionPlan({
-    target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
-  const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
-  assert.ok(recipes.length>0);
-  for(const recipe of recipes){
-    assert.equal(recipe.meshModel,'trellis2');
-    assert.equal(recipe.imageToMesh,true);
-    assert.equal(recipe.args[recipe.args.indexOf('--mesh-model')+1],'trellis2');
-    assert.equal(recipe.runtimeVerificationRequired,true);
-    assert.equal(recipe.companyPromotionAllowed,false);
+  for(const target of ['roblox','unity','web']){
+    assert.throws(()=>buildVibeAssetProductionPlan({
+      target,task,manifest:{assets:[]},presetCatalog:{presets:[]}
+    }),/IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED/);
   }
   const autoPlan=buildVibeAssetProductionPlan({
     target:'unity',task:{...task,assetAuthoring:{meshModel:'auto'}},
     manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(autoPlan.nativeAuthoringExecution.dcc.executionRecipes.length>0);
   assert.ok(autoPlan.nativeAuthoringExecution.dcc.executionRecipes.every(row=>row.meshModel==='auto'));
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
-    task:{...task,assetAuthoring:{meshModel:'unknown-provider'}},manifest:{assets:[]},presetCatalog:{presets:[]}}),
-  /IMAGE_TO_MESH_MODEL_UNSUPPORTED/);
-  const source=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
-  assert.match(source,/VIBE_TRELLIS2_EXPECTED_SOURCE_SHA256/);
-  assert.match(source,/VIBE_TRELLIS2_EXPECTED_WEIGHTS_SHA256/);
-  assert.match(source,/IMAGE_TO_MESH_TRELLIS2_WEIGHTS_HASH_MISMATCH/);
-  assert.match(source,/TRELLIS2_24G_GPU_REQUIRED/);
-  assert.match(source,/HF_HUB_OFFLINE/);
-  assert.match(source,/decimation_target=180000/);
-  assert.match(source,/TripoSR/);
-  const qa=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(qa,/IMAGE_TO_MESH_SELECTED_ENGINE_MISMATCH/);
-  assert.match(qa,/microsoft\/TRELLIS\.2-4B/);
+    task:{...task,assetAuthoring:{meshModel:'unknown-provider'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_MODEL_UNSUPPORTED/);
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED/);
+  assert.match(py,/trellis_requested = requested == 'trellis2'/);
+  assert.doesNotMatch(py,/requested == 'auto' and any\(os\.environ\.get/);
+  assert.match(py,/VIBE_TRIPOSR_HOME/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_LOCAL_INSTALL_REQUIRED/);
+  assert.match(py,/HF_HUB_OFFLINE/);
+});
+
+test('direct Blender image-mesh production enforces the Nvidia rights gate without loading Blender or GPU',()=>{
+  const python=[
+    'import ast, os, tempfile, hashlib',
+    'from pathlib import Path',
+    'from types import SimpleNamespace',
+    'source = Path("assets/native-authoring/build-game-visual.py").read_text(encoding="utf-8")',
+    'tree = ast.parse(source)',
+    'func = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "image_mesh_asset")',
+    'with tempfile.TemporaryDirectory() as folder:',
+    '    image = Path(folder) / "licensed.png"',
+    '    image.write_bytes(b"valid-source-fixture")',
+    '    scope = {"ARGS": SimpleNamespace(source_image=str(image), source_license="project-original", source_credit="", mesh_model="trellis2"), "Path": Path, "os": os, "hashlib": hashlib}',
+    '    exec(compile(ast.Module(body=[func], type_ignores=[]), "<isolated-image-mesh-source>", "exec"), scope)',
+    '    try:',
+    '        scope["image_mesh_asset"]()',
+    '    except RuntimeError as error:',
+    '        assert str(error) == "IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED", error',
+    '    else:',
+    '        raise AssertionError("Noncommercial Nvidia dependency was allowed to execute")'
+  ].join('\n');
+  execFileSync('python3',['-c',python],{encoding:'utf8',timeout:30000});
 });
 
 test('Blender and FFmpeg video uses verifiable three-shot cinematography without changing gameplay',()=>{
