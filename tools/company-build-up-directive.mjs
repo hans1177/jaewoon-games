@@ -545,6 +545,7 @@ export function extractDesignContext(record={}){
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
     spatialLayout:asObject(d?.spatialLayout),
+    gameFlowArchitecture:asObject(d?.gameFlowArchitecture||d?.GAMEPLAY_SKETCH?.flowArchitecture||d?.gameplaySketch?.flowArchitecture),
     spatialDimension:clean(d?.spatialLayout?.dimension||d?.spatialDimension),
     coreFun:clean(d?.coreFun),
     coreLoop:uniq(d?.coreLoop).slice(0,10),
@@ -2419,12 +2420,14 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
   const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
+  const releasePolicy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{});
   const productionPlan=buildRobloxProductionPlan({
     gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,
-    policy:readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),{})?.robloxStudioProductionFlowContract||{}
+    policy:{...(releasePolicy.robloxStudioProductionFlowContract||{}),
+      genrePresentation:releasePolicy.genrePresentationQualityContract||{}}
   });
   return Object.freeze({
     version:2,
