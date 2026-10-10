@@ -182,6 +182,24 @@ test('Unity Web reviewed promotion binds candidate Unity source and verified Web
   assert.match(section,/VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT/);
 });
 
+test('verified unscoped Unity Web deployment resumes the existing Vibe game cycle only after main publication',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const start=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
+  const end=workflow.indexOf('      - name: Mark Unity Web floor repair requirement',start);
+  assert.ok(start>=0&&end>start);
+  const section=workflow.slice(start,end);
+  assert.match(section,/if \[ -z "\$VIBE2_TASK_ID" \] && \[ "\$READINESS_PASS" = 'true' \]; then/);
+  assert.match(section,/vibe2-fanin-refill/);
+  assert.match(section,/execution_lane:"game-primary"/);
+  assert.match(section,/reason:"unity-web-main-deployed-next-build-up"/);
+  const deploy=section.indexOf('UNITY_WEB_CLOUDFLARE_MAIN=');
+  const settled=section.indexOf('VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT');
+  const next=section.indexOf('UNITY_WEB_POST_DEPLOY_NEXT_BUILD_UP=');
+  assert.ok(deploy>=0&&settled>deploy&&next>settled);
+  assert.doesNotMatch(section,/gh workflow run company-development-confirmed-runtime\.yml/);
+  assert.doesNotMatch(section,/gh workflow run vibe2-24h-runner\.yml/);
+});
+
 test('failed Vibe2 Unity Web execution requeues the exact task instead of claiming PASS',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const start=workflow.indexOf('  settle-vibe2-failure:');
