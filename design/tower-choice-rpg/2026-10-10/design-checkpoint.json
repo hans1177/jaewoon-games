@@ -152,25 +152,182 @@
       "name": "Progressive Risk Engine with Dynamic Threat Matrix",
       "purpose": "Enables dynamic difficulty scaling and adaptive combat logic through player-driven risk management.",
       "playerChoice": "Adaptive Risk Management through Resource Allocation"
+    },
+    "local_authoring_parts::8200cf1ea45145f151bd90da95ed4827eba7c8e645d03913acca240938890eca:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "INPUT/SELECT",
+        "STATE CHANGE",
+        "REWARD/RISK/NEXT CHOICE"
+      ],
+      "stateOutputs": [
+        "PLAYER'S STRATEGIC DECISION",
+        "REAL-TIME COMBAT WITH STRATEGICAL POSITIONING MECHANICS"
+      ],
+      "name": "Dynamic Threat Evolution with Adaptive Combat Logic",
+      "purpose": "Enables player-driven evolution of threat patterns and combat strategies through adaptive decision-making.",
+      "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation in Real-Time Combat Scenarios,"
+    },
+    "local_authoring_parts::5dd7b0e69d6c45528a19f9d54d6e82205a72c7d980e6a37a26dc7fe3f9a0058d:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "SYSTEM INTEGRATION AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Survival Action System Integration with Strategic Positioning Mechanics",
+          "purpose": "Player's strategic decision-making that affects the outcome of each wave, integrating real-time combat and resource management with tactical positioning.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Dynamic Threat Evolution from Base to Boss Tier"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+          "purpose": "Enables adaptive risk management through variable threat scaling and dynamic difficulty adjustment.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation Strategy,"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+          "purpose": "Enables dynamic difficulty scaling and adaptive combat logic through player-driven risk management.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "REAL-TIME COMBAT WITH STRATEGICAL POSITIONING MECHANICS"
+          ],
+          "name": "Dynamic Threat Evolution with Adaptive Combat Logic",
+          "purpose": "Enables player-driven evolution of threat patterns and combat strategies through adaptive decision-making.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation in Real-Time Combat Scenarios,"
+        }
+      ]
+    },
+    "local_authoring_parts::a67ff5b15755ba0c4289fc463b7870695dda249ece982c19aca106205913e583:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어 선택에 따른 실제 상태 변화 및 피드백 제공",
+        "주기적인 반복 속도, 위험, 보상의 교차로 통해 핵심 루프 형성"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "SYSTEM INTEGRATION AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Survival Action System Integration with Strategic Positioning Mechanics",
+          "purpose": "Player's strategic decision-making that affects the outcome of each wave, integrating real-time combat and resource management with tactical positioning.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Dynamic Threat Evolution from Base to Boss Tier"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+          "purpose": "Enables adaptive risk management through variable threat scaling and dynamic difficulty adjustment.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation Strategy,"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "PROGRESSIVE DIFFICULTY SCALING AND ADAPTIVE COMBAT LOGIC UPDATE"
+          ],
+          "name": "Progressive Risk Engine with Dynamic Threat Matrix",
+          "purpose": "Enables dynamic difficulty scaling and adaptive combat logic through player-driven risk management.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "INPUT/SELECT",
+            "STATE CHANGE",
+            "REWARD/RISK/NEXT CHOICE"
+          ],
+          "stateOutputs": [
+            "PLAYER'S STRATEGIC DECISION",
+            "REAL-TIME COMBAT WITH STRATEGICAL POSITIONING MECHANICS"
+          ],
+          "name": "Dynamic Threat Evolution with Adaptive Combat Logic",
+          "purpose": "Enables player-driven evolution of threat patterns and combat strategies through adaptive decision-making.",
+          "playerChoice": "Adaptive Risk Management through Resource Allocation and Environmental Adaptation in Real-Time Combat Scenarios,"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 637387,
-      "lastMs": 70689,
+      "totalMs": 708274,
+      "lastMs": 70887,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:06:44.401Z"
+      "updatedAt": "2026-10-10T03:07:55.289Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:06:44.401Z",
+  "updatedAt": "2026-10-10T03:07:55.291Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1880,7 +2037,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:06:44.401Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:07:55.291Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
