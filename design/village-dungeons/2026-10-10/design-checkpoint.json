@@ -539,25 +539,42 @@
         "5개로 분기된 던전 중 하나를 선택 진입하여 한 손 조작 기반의 실시간 회피 및 평타/스킬 연계로 몬스터를 격퇴한다.",
         "한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관한다."
       ]
+    },
+    "local_authoring_parts::88d086e07f64f228ff03f5d219a02ac7d5b0c6db5a029ebbc1373f9513d7371e:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "적의 공격 궤적 회피",
+        "던전 승리",
+        "마을 복구 시설 기술 트리 확장"
+      ],
+      "stateOutputs": [
+        "무기 제련 성공",
+        "리스크 조절",
+        "보스 전투 도전 결정"
+      ],
+      "name": "주요 플레이어 선택 및 상태 변환 로드맵",
+      "purpose": "플레이어의 대표 행동(적 공격 회피, 던전 승리, 마을 복구 시설 확장)에 따른 관찰 가능한 세계 상태와 인과적 결과를 정확히 반영하여 게임 진행을 구현합니다.",
+      "playerChoice": "적의 공격 궤적 회피 → 무기 제련 성공; 던전 승리 → 리스크 조절; 마을 볡구 시설 확장 → 보스 전투 도전 결정"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 11,
+      "calls": 14,
+      "successes": 12,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1558125,
-      "lastMs": 14711,
+      "totalMs": 1613377,
+      "lastMs": 55252,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:28:27.674Z"
+      "updatedAt": "2026-10-10T09:29:22.928Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:02:29.251Z",
-  "updatedAt": "2026-10-10T09:28:27.674Z",
+  "updatedAt": "2026-10-10T09:29:22.928Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2249,8 +2266,8 @@
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:28:27.674Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:MAIN",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
+  "lastSuccessfulModelCallAt": "2026-10-10T09:29:22.928Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
