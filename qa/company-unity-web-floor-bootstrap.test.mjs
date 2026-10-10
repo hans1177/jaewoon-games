@@ -81,6 +81,8 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.buildUpDirectiveCompletionClaim,false);
     assert.equal(source.buildUpDirectiveId,null);
     assert.equal(source.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.doesNotMatch(build,/VibeWorldSurface/);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals/);
     assert.equal(source.verifiedLearningApplication.mandatoryApplicationCoveragePct,100);
     assert.equal(source.verifiedLearningApplication.allRetrievedVerifiedExternalLearningApplied,true);
     assert.equal(source.verifiedLearningApplication.retrievedCount,2);
@@ -355,11 +357,17 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
-    // Unity Built-in/URP 물리 기반 반사 모델, 표면별 반사 프로파일과 라이팅 법선을 검증한다.
-    assert.match(runtime,/Shader\.Find\("Standard"\)/);
-    assert.match(runtime,/Shader\.Find\("Universal Render Pipeline\/Lit"\)/);
-    assert.doesNotMatch(runtime,/Shader\.Find\("Unlit\/Color"\)/);
-    assert.match(runtime,/WORLD_LIT_SHADER_UNAVAILABLE/);
+    // 외부 공식 문서의 PBR/재질 공유 원리를 승인된 3D 월드 출력에 적용하고 스트리핑을 방지한다.
+    const build=fs.readFileSync(path.join(project,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
+    assert.match(runtime,/Resources\.Load<Material>\("VibeWorldSurface"\)/);
+    assert.match(runtime,/WORLD_LIT_MATERIAL_UNAVAILABLE/);
+    assert.doesNotMatch(runtime,/Shader\.Find\(/);
+    assert.match(build,/Shader\.Find\("Standard"\)/);
+    assert.match(build,/Shader\.Find\("Universal Render Pipeline\/Lit"\)/);
+    assert.match(build,/Assets\/Resources\/VibeWorldSurface\.mat/);
+    assert.match(build,/AssetDatabase\.CreateAsset\(sourceMaterial,materialPath\)/);
+    assert.match(build,/if\(sourceMaterial==null\)/);
+    assert.doesNotMatch(build,/AlwaysIncludedShaders/);
     assert.match(runtime,/material\.SetFloat\("_Metallic",/);
     assert.match(runtime,/material\.SetFloat\("_Smoothness",/);
     assert.match(runtime,/material\.SetFloat\("_Glossiness",/);
@@ -370,6 +378,9 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/var fragmentMaterial=WorldMaterial/);
     assert.match(runtime,/renderer\.sharedMaterial=fragmentMaterial/);
     assert.match(runtime,/WorldMaterial\(shades\[k\],metallicProfiles\[k\],smoothnessProfiles\[k\]\)/);
+    assert.match(runtime,/WorldMaterial\(new Color\(\.35f,\.33f,\.29f\),\.01f,\.18f\)/);
+    assert.match(runtime,/float\[\] metallicProfiles=\{\.02f/);
+    assert.doesNotMatch(runtime,/WorldMaterial\(Color color\)[\s\S]*Unlit\/Color/);
 
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
     assert.match(runtime,/var models=new List<CombineInstance>\[9\]/);
