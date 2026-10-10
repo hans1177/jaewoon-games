@@ -52,10 +52,66 @@ test('shared source is a real animated skinned GLB, not a Roblox-only marker',()
 
 test('shared humanoid authoring source defines distinct motion and combat variants with one object/clip',()=>{
   const clips=catalog.sourceAuthoredClips.map(x=>x.name);
-  assert.equal(clips.length,31);
+  assert.equal(clips.length,45);
   assert.equal(new Set(clips).size,31);
-  assert.equal(catalog.authoring.actionSourceDefinitions,14);
+  assert.equal(catalog.authoring.actionSourceDefinitions,28);
   assert.equal(catalog.authoring.locomotionSourceDefinitions,17);
+});
+
+
+test('shared skinned author directly authors distinct career-specific joint keyframes, not name-only markers',()=>{
+  const expected=[
+    'common_samurai_iai_draw_hq','common_samurai_parry_counter_hq','common_knight_shield_bash_hq',
+    'common_monk_palm_combo_hq','common_archer_draw_release_hq','common_mage_area_cast_hq',
+    'common_assassin_backstep_cut_hq','common_lancer_thrust_hq','common_healer_wave_hq',
+    'common_summoner_ritual_hq','common_blacksmith_hammer_hq','common_bard_performance_hq',
+    'common_mechanist_gadget_hq','common_farmer_harvest_hq'
+  ];
+  const names=new Set(catalog.sourceAuthoredClips.map(x=>x.name));
+  const bound=new Map(catalog.careerMotionBindings.map(x=>[x.clip,x]));
+  for(const name of expected){
+    assert.ok(names.has(name),name);
+    const row=bound.get(name);
+    assert.ok(row?.sourceClipDefinition,row?.clip);
+    assert.equal(row.actualJointPoseDefinition,true);
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.verifiedRuntime,false);
+    assert.equal(row.platformNativeAdaptationRequired,true);
+  }
+  assert.equal(catalog.authoring.careerActionPoseCount,14);
+  assert.equal(catalog.authoring.careerDerivedMotionBakesVerified,false);
+  assert.equal(catalog.authoring.careerGripContactAndStyleRuntimeVerified,false);
+  assert.equal(catalog.sourceAuthoredClips.length,45);
+  assert.equal(catalog.crossGenreReusability.motionProjection,'createCommonCareerMotionLoadout');
+  assert.equal(catalog.crossGenreReusability.gameplayBalanceAuthority,false);
+  assert.equal(catalog.productionVerified,false);
+  assert.equal(catalog.newMotionGlbFilesCommitted,0);
+  assert.match(producer,/CLASS_ACTION_POSES = \{/);
+  assert.match(producer,/CLASS_ACTION_CLIPS = tuple\(CLASS_ACTION_POSES\)/);
+  assert.match(producer,/elif name in CLASS_ACTION_CLIPS:/);
+  assert.match(producer,/rot\('UpperArmL',pose\[6\]/);
+  assert.match(producer,/rot\('UpperArmR',pose\[8\]/);
+  assert.match(producer,/rot\('ThighL',pose\[10\]/);
+  assert.match(producer,/action_pose\(name,t\)/);
+  const program=[
+    'import ast,json,sys',
+    'tree=ast.parse(open(sys.argv[1],encoding="utf-8").read())',
+    'node=next(x for x in tree.body if isinstance(x,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="CLASS_ACTION_POSES" for t in x.targets))',
+    'print(json.dumps(ast.literal_eval(node.value)))'
+  ].join(';');
+  const result=spawnSync('python3',['-c',program,path.join(dir,'author-motion.py')],{encoding:'utf8',timeout:30000});
+  assert.equal(result.status,0,result.stderr||result.stdout);
+  const poses=JSON.parse(result.stdout);
+  assert.deepEqual(Object.keys(poses).sort(),[...expected].sort());
+  assert.equal(new Set(Object.values(poses).map(row=>JSON.stringify([row.anticipation,row.release]))).size,14,'class silhouettes cannot differ by playback speed alone');
+  for(const [name,row] of Object.entries(poses)){
+    assert.ok(row.windup>0&&row.contact>row.windup&&row.contact<.9,name);
+    assert.equal(row.anticipation.length,12,name);
+    assert.equal(row.release.length,12,name);
+    assert.ok(row.anticipation.every(Number.isFinite),name);
+    assert.ok(row.release.every(Number.isFinite),name);
+    assert.ok(Math.abs(row.anticipation[6]-row.release[6])>.12||Math.abs(row.anticipation[8]-row.release[8])>.12,name+' actual striking-arm rotation');
+  }
 });
 
 test('common source has per-motion baked bones, original foot contact QA, and cross-platform pending gates',()=>{
