@@ -1,0 +1,129 @@
+{
+  "version": 5,
+  "gameId": "insect-survival",
+  "date": "2026-10-10",
+  "gameSeedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
+  "productionClass": "DESIGN_ONLY",
+  "authorRole": "VIBE2_MINIMUM_DESIGN_PREPARATION",
+  "status": "MINIMUM_DEVELOPMENT_DESIGN_CANDIDATE",
+  "sourceAuthority": "OWNER_GAME_SEED_AND_EXISTING_GAME_IMPLEMENTATION",
+  "minimumDesignReady": true,
+  "strictDesignReviewed": false,
+  "strictDesignPass": false,
+  "independentQaPass": false,
+  "runtimePass": false,
+  "releasePass": false,
+  "designEvolutionNext": "GAME_DESIGNER_AI_STRICT_REVIEW_PARALLEL",
+  "content": {
+    "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
+    "coreFun": "small-world survival pressure / resource-driven survival choices / creature ecology as gameplay — Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+    "coreLoop": [
+      "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+      "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+      "Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+    ],
+    "signatureSystems": [
+      {
+        "id": "SURVIVAL_VITALS",
+        "name": "SURVIVAL VITALS",
+        "purpose": "bounded health hunger energy temperature or equivalent survival pressure when concept-relevant",
+        "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      },
+      {
+        "id": "GATHERING_RESOURCE",
+        "name": "GATHERING RESOURCE",
+        "purpose": "world resources become real inventory inputs through spatial interaction",
+        "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      },
+      {
+        "id": "INVENTORY_EQUIPMENT",
+        "name": "INVENTORY EQUIPMENT",
+        "purpose": "acquire compare equip replace and persist items without shadow inventory authority",
+        "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      },
+      {
+        "id": "ITEM_LOOT",
+        "name": "ITEM LOOT",
+        "purpose": "drops and rewards have source tables rarity roles and meaningful use",
+        "playerChoice": "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+        "source": "GAME_SEED.GAMEPLAY_SKETCH.flowArchitecture.systemBlueprint.requiredSystems"
+      }
+    ],
+    "progressionDirection": "세션 성장: 현재 플레이에서 자원·위치·장비·전술 선택이 즉시 다음 행동 가능성을 바꾼다 중기 성장: 해금·지역·시스템 연결 또는 빌드 선택이 새로운 전략 경로를 연다 장기 성장: 숙련·월드 상태·수집·관계·메타 목표 중 장르에 맞는 축이 다음 세션의 선택 폭을 넓힌다",
+    "failureRetryRisk": {
+      "failureStates": [
+        "핵심 목표 실패 또는 방어·생존·해결 미달: Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.",
+        "위험·자원 압박으로 계획 변경이나 회복이 필요한 상태: Take a risk to gather or fight, then convert the result into survival tools or a safer route."
+      ],
+      "retryFlow": "실패 사유를 표시하고 원본 게임의 복귀·재시도 규칙에 따라 동일 진행을 회복한다.",
+      "riskPressure": "FAILURE_COSTS_MUST_DIFFER_BY_CONTEXT_AND_PRESERVE_A_REAL_RECOVERY_OR_RETRY_PATH",
+      "recoveryRules": "기존 진행도와 저장 키·경제·전투 규칙을 유지하고, 복구 가능한 상태에서 이어서 진행한다."
+    },
+    "multiplayerMode": "SINGLE",
+    "technicalAssumptions": [
+      "기존 게임 코드와 소유자 GAME_SEED가 권위다. 공격력·체력·웨이브·드랍·보상 수치를 임의로 만들어 변경하지 않는다.",
+      "기존 저장 키와 진행·퀘스트·장비 의미를 보존한다. 구조 변경이 필요할 때만 검증된 마이그레이션을 적용한다.",
+      "최소 설계는 코딩 입력일 뿐 정밀 설계·실기기 실행·멀티·독립 QA 및 출시 PASS 증거가 아니다."
+    ],
+    "playerInput": "실제 입력은 Explore a dangerous small-scale habitat and identify food, material and insect threats. 및 Take a risk to gather or fight, then convert the result into survival tools or a safer route.을 실행할 수 있어야 하며 모바일 터치 UI를 제공한다.",
+    "winLoseOrSessionEnd": "성공·실패·다음 선택은 Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective.의 결과에 연결한다. 원본 목표 세션 30분을 참고하며 게임별 실제 종료 규칙은 원본에 따른다.",
+    "coreNumbersAndBalance": {
+      "authority": "EXISTING_GAME_SOURCE_AND_OWNER_GAME_SEED",
+      "catalogScope": "작은 세계에서 살아남는 생존 게임",
+      "existingBalanceRules": [
+        "하나의 지배 전략이 모든 상황을 해결하지 못하도록 상황별 비용·카운터·기회비용을 둔다",
+        "플레이어 파워 성장과 위협·목표 복잡도 상승을 함께 조정해 성장 체감을 지우지 않는다",
+        "실패는 다음 선택이 가능한 복구 경로를 남기고 반복 손실로 진행을 완전히 봉쇄하지 않는다",
+        "경제·자원은 획득원과 소비처를 함께 두고 무한 무료 루프나 의미 없는 과잉 축적을 막는다"
+      ],
+      "inventedNumericValues": false
+    },
+    "saveMeaning": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
+    "coreContentScope": [
+      "SURVIVAL_VITALS",
+      "GATHERING_RESOURCE",
+      "INVENTORY_EQUIPMENT",
+      "ITEM_LOOT",
+      "CRAFTING",
+      "HOUSING_BUILDING",
+      "EXPLORATION_REGION",
+      "THREAT_ECOLOGY",
+      "NPC_INTERACTION",
+      "QUEST_DIALOGUE",
+      "FACTION_WORLD_STATE",
+      "SOCIAL_RELATIONSHIP",
+      "WEATHER_ENVIRONMENT"
+    ],
+    "platformProfiles": {
+      "ROBLOX": {
+        "platform": "ROBLOX",
+        "inputModel": "Roblox 터치 버튼과 조이스틱, 키보드·게임패드를 원본 행동에 연결한다.",
+        "sessionModel": "Roblox 진입·복귀와 원본 목표 세션 30분을 참고하며 게임별 실제 종료 규칙은 원본에 따른다.",
+        "multiplayerRuntime": "원본 싱글 규칙을 보존하고 멀티 기능을 임의로 추가하지 않는다.",
+        "performanceBudget": "모바일 Roblox에서 로딩·드로우콜·이펙트와 입력 반응을 제한하여 점검한다.",
+        "uiUx": "Roblox 모바일 터치 안전영역과 읽을 수 있는 HUD, 버튼·메뉴를 제공한다.",
+        "saveAndNetwork": "서버 검증 원격 입력과 DataStore 저장으로 PRESERVE_OR_MIGRATE_BEFORE_SWAP 정책을 보존한다.",
+        "platformContentAdaptation": "같은 핵심 루프를 Roblox 원본 네이티브 월드와 UI로 구현한다.",
+        "internalReleaseTarget": "Roblox 비공개 플레이 가능 빌드와 실제 기능 확인을 목표로 한다.",
+        "validationEvidence": "실제 Roblox 실행, 입력·저장·원본 규칙·독립 QA·회귀 증거가 별도로 필요하다."
+      },
+      "UNITY": {
+        "platform": "UNITY",
+        "inputModel": "Unity Input System 터치·드래그·가상 조이스틱과 원본 행동을 연결한다.",
+        "sessionModel": "동일 원본 Unity 프로젝트의 WebGL 실제 브라우저 세션 진입·재시도·저장 복구를 검증한다.",
+        "multiplayerRuntime": "원본 싱글 진행을 유지하고 불필요한 네트워크 플레이를 강제하지 않는다.",
+        "performanceBudget": "Unity WebGL에 실제 3D 메시 월드·캐릭터·깊이·카메라·가림을 유지하고 모바일 브라우저 프레임·메모리를 검증한다.",
+        "uiUx": "화면 크기와 터치 안전영역에 적응하는 Unity 모바일 HUD를 제공한다.",
+        "saveAndNetwork": "버전 있는 저장 구조를 사용하고 PRESERVE_OR_MIGRATE_BEFORE_SWAP 의미를 유지한다.",
+        "platformContentAdaptation": "기존 공통 규칙을 Unity 네이티브 3D 씬·메시·프리팹으로 구현하고 같은 프로젝트에서 WebGL 빌드를 생성한다. 2D·2.5D 월드는 최종 금지다.",
+        "internalReleaseTarget": "Unity WebGL 3D 비공개 브라우저 검증만 진행하며 Unity Android는 오너 홀드를 유지한다.",
+        "validationEvidence": "실제 Unity WebGL 3D 메시·카메라·터치·저장·브라우저 플레이와 독립 QA·회귀 증거가 별도로 필요하다."
+      }
+    }
+  },
+  "createdAt": "2026-10-10T04:50:29.634Z",
+  "updatedAt": "2026-10-10T04:50:29.634Z"
+}
