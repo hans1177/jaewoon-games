@@ -508,8 +508,8 @@ async function refresh(){
     };
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
-    // 게임 카드를 먼저 렌더링한다. 3D WebGL 번들 검증은 플레이 링크에만 적용한다.
-    renderCatalog(catalog);
+    // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
+    if(!lastSignature)renderCatalog(catalog);
     const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
     renderCatalog(boundCatalog);
   }finally{refreshInFlight=false;}
