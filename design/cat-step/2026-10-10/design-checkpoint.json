@@ -97,25 +97,33 @@
       },
       "playerFantasy": "플레이어는 빈 공간에 서서 단순한 퀴즈나 시스템에서 선택하는 대표 행동을 반복하며, 다양한 장르와 관계를 통해 세계를 탐험하고, 진입부터 이탈까지의 전반적인 경험을 제공하는 게임이다. 그 선택은 문화, 역사, 철학, 무협 등 주제로 구성된 새 정체성으로 연결되어야 하며, 중후반 두 시스템의 관계 변화는 플레이어의 선택과 상호작용으로 인해 실질적 세계 상태 변화를 일으켜야 한다.",
       "coreFun": "플레이어가 빈 공간에 서서 단순한 퀴즈나 시스템에서 선택하는 대표 행동을 반복하며, 다양한 장르와 관계를 통해 세계를 탐험하고, 진입부터 이탈까지의 전반적인 경험을 제공하는 게임입니다. 새로운 규칙 생성, 상호작용 가능성을 제공하여, 여러 유효한 해법을 제공하며, 중후반 두 시스템의 관계 변화는 플레이어의 선택과 상호작용으로 인해 실질적 세계 상태 변화를 일으켜야 합니다."
+    },
+    "local_authoring_parts::2df1e6a0994692c6a54687981771274a0aa082ebc1554c60811de42cb4c37faf:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어 선택",
+        " 상태변화: 새로운 세계 상태 생성",
+        "보상/위험: 게임 진행 방향 결정",
+        " 다음 선택: 새 문제 제기"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 226385,
-      "lastMs": 226385,
+      "totalMs": 258640,
+      "lastMs": 32255,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:08:26.486Z"
+      "updatedAt": "2026-10-10T06:08:58.742Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:04:40.012Z",
-  "updatedAt": "2026-10-10T06:08:26.486Z",
+  "updatedAt": "2026-10-10T06:08:58.742Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1711,7 +1719,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:08:26.486Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:08:58.742Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
