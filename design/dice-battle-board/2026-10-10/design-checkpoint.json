@@ -475,25 +475,40 @@
       "name": "주사위 전투 보드 - 진보적 시스템 혁명",
       "purpose": "플레이어의 선택에 기반하여 진행, 위험, 보상을 연결하는 반복 가능한 핵심 루프 재구성",
       "playerChoice": "주사위로 방향 결정 → 장애물 배열 변경 → 성공/실패 판정 및 NPC 대화 내용 변환 발생됨으로서 게임 상태와 역할 분담이 서로 영향을 미침니다 중간 과정에서 새로운 플레이 경험 제공됨으로서 주사위 결정과 역할 분담은 양방향으로 상호작용합니다 중간 과정에서 새로운 플레이 가능성이 유도됩니다 중간 과정에서 새로운 플레이 가능성 유도됨으로서 주사위 결정과 역할 분담은 양방향으로 상호작용합니다 중간 과정에서 새로운 플레이 가능성이 유도되며 이는 다음 단계에서 다시 결정됩니다 중간 과정에서 새로운 플레이 가능성 유도됨으로서 주사위 결정과 역할 분담은 양방향으로 상호작용하며 이는 다음 단계에서 다시 결정됩니다 중간 과정에서 새로운 플레이 가능성 유도됨으로서 주사위 결정과 역할 분담은 양방향으로 상호작용하여 다음 단계에 연결됩니다 중간 과정에서 새로운 플레이 가능성 유도됨으로서 주사위로"
+    },
+    "local_authoring_parts::4feb3b4fbb02686a5c519ba7496d6c58f6d3acd6bcdad43f763fbaeef8d2e530:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "dice_roll",
+        "role_assignment"
+      ],
+      "stateOutputs": [
+        "terrain_configuration",
+        "dialogue_flow"
+      ],
+      "name": "주사위 전투 보드 - 진보적 시스템 혁명",
+      "purpose": "플레이어의 선택과 NPC의 대화 내용이 서로 다른 방식으로 발전하는 게임 정체성 재구성",
+      "playerChoice": "주사위로 결정하는 방향성 문제 해결에 참여하며, 장애물 배열 변환 및 성공/실패 판정을 통해 전략적 전투 진행됨으로써 플레이어의 선택이 NPC의 대화 내용에 영향을 미침함을 경험함으로써 숙련되어야 함됨니다। 이 과정에서 NPC의 역할 분담 및 대화 흐름 변화가 발생하여 다양한 플레이 경험 제공됨으로써 플레이어는 양방향으로 선택과 대화 내용 간의 상호작용을 이해하고 숙련함으로써 게임 상태와 대화 내용이 서로 다른 방식으로 발전함을 경험하게 됩니다。"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1311449,
-      "lastMs": 119726,
+      "totalMs": 1420441,
+      "lastMs": 108992,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:00:54.215Z"
+      "updatedAt": "2026-10-10T03:02:43.209Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:39:02.717Z",
-  "updatedAt": "2026-10-10T03:00:54.216Z",
+  "updatedAt": "2026-10-10T03:02:43.209Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2214,7 +2229,7 @@
   "localAuthoringSplits": {
     "fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:00:54.216Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:02:43.209Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
