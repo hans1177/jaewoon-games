@@ -930,25 +930,60 @@
         "riskPressure": "감염은 정화로 해결되며, 정화는 감염으로 재발할 수 있다",
         "recoveryRules": "감염은 정화에 의해 회복되며, 정화는 감염에 의해 재발할 수 있다"
       }
+    },
+    "local_authoring_parts::140c07c4304513791f9e0bbaf258dc3a4cd4e36199d1b7c30640e447ea229a71:id,name,kind,ownerId,ruleId": {
+      "id": "INFECT_ATTACK",
+      "name": "감염 공격",
+      "kind": "INFECTION",
+      "ownerId": "BASE",
+      "ruleId": "INFECT_ATTACK_RU1234567890123456789012345678901234567890123456789012345678901234"
+    },
+    "local_authoring_parts::140c07c4304513791f9e0bbaf258dc3a4cd4e36199d1b7c30640e447ea229a71:trigger,range,rangeUnit,resource,cost": {
+      "trigger": "감염 공격 실행",
+      "range": 8,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 30
+    },
+    "local_authoring_parts::6a2edc9ec423ef88a428f2f71b35210daafb7dc50dcaba65764f27f95150801b:id,name,kind,ownerId,ruleId,trigger,range,rangeUnit,resource,cost": {
+      "id": "INFECT_ATTACK",
+      "name": "감염 공격",
+      "kind": "INFECTION",
+      "ownerId": "BASE",
+      "ruleId": "INFECT_ATTACK_RU1234567890123456789012345678901234567890123456789012345678901234",
+      "trigger": "감염 공격 실행",
+      "range": 8,
+      "rangeUnit": "블록",
+      "resource": "에너지",
+      "cost": 30
+    },
+    "local_authoring_parts::d928ddbacdb30e9d0aa3bcb104c0af53b8899dd776603c978818be394beffc05:cooldownSeconds,telegraph,avoidance,effect,stateInputs": {
+      "cooldownSeconds": 1.2,
+      "telegraph": "감염 공격 실행 시 정화 상태 재발",
+      "avoidance": "인간/몬스터 전환 후 감염 상태 제거",
+      "effect": "감염된 인물/몬스터 생명력 손실",
+      "stateInputs": [
+        "학교"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 54,
-      "successes": 51,
+      "calls": 57,
+      "successes": 54,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2048805,
-      "lastMs": 197841,
+      "totalMs": 2085808,
+      "lastMs": 12837,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:08:30.132Z"
+      "updatedAt": "2026-10-10T10:09:07.139Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:08:30.132Z",
+  "updatedAt": "2026-10-10T10:09:07.139Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2283,7 +2318,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:57:22.620Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:09:07.139Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
