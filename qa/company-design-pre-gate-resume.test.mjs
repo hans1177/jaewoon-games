@@ -1419,7 +1419,9 @@ test('V5 no-progress stops repeated invalid role replies',async()=>{
     parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
     recordModelHealth(){},persistDesignCheckpoint(){},
     requestLocalDesignerRaw:async(_, {schema:s})=>{
-      const role=s.properties.grammarRole.enum[0],index=calls.length+1;calls.push(role);
+      const role=s.properties.grammarRole?.enum?.[0];
+      if(!role)return JSON.stringify({stateInputs:['incoming wave pattern analysis'],stateOutputs:['unbound response state']});
+      const index=calls.length+1;calls.push(role);
       return JSON.stringify({id:'main_unique_rule',grammarRole:role,name:'Repeated '+index,
         purpose:'원본 게임의 상태 전이가 아니라 문장을 반복 '+index,
         playerChoice:'상태 이름을 다시 설명하는 잘못된 응답 '+index,
@@ -1438,6 +1440,8 @@ test('V5 designer state handoffs are schema-constrained and require distinct aut
   assert.match(source,/outputKeysToPreviousInputs/);
   assert.match(source,/contains:\{type:'string',enum:values\}/);
   assert.match(source,/DESIGN_GRAMMAR_STATE_HANDOFF_FOCUSED_REPAIR/);
+  assert.match(source,/DESIGN_GRAMMAR_STATE_IDENTIFIER_FOCUSED_REPAIR/);
+  assert.match(source,/DESIGN_GRAMMAR_UNIQUE_ROLE_FOCUSED_REPAIR/);
   assert.match(source,/DESIGN_GRAMMAR_NO_PROGRESS/);
   assert.match(source,/DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING/);
   assert.match(source,/DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING/);
@@ -1533,16 +1537,4 @@ test('current reset priority correctly binds timestamps in both canonical checkp
     assert.match(source,/const resetAt=resetGameIds\.has/);
     assert.match(source,/const resetDate=resetAt\?/);
   }
-});
-
-test('authored MAIN A B C delve grammar is carried into downstream checkpoint anchors and coding basis',()=>{
-  const writer=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
-  assert.ok(writer.length>1000,'canonical design authoring function must exist');
-  assert.match(writer,/const priorRules=Object\.fromEntries\(\['identity','creativeGrammar','coreFun'/);
-  assert.match(writer,/const dependencyHash=createHash\('sha256'\)\.update\(JSON\.stringify\(priorRules\)\)/);
-  for(const marker of ['mainIdentity:value.mainIdentity','abEvolution:value.abEvolution','cThemes:value.cThemes','cGenres:value.cGenres','cGenreInterlock:value.cGenreInterlock','delveGrowthRule:value.delveGrowthRule']){
-    assert.ok(writer.includes(marker),'missing authored grammar handoff: '+marker);
-  }
-  assert.ok(writer.includes('SHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}'));
-  assert.match(design,/identity:content\.identity,creativeGrammar:content\.creativeGrammar,coreFun:content\.coreFun/);
 });

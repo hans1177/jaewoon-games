@@ -1404,8 +1404,8 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
               console.log(`DESIGN_GRAMMAR_REFERENCE_ID_REPAIRED=${grammarRole}|${authoredId}|${value.id}`);
             }
             const roleIssues=[];
-            const inputKeys=Array.isArray(value?.stateInputs)?value.stateInputs:[];
-            const outputKeys=Array.isArray(value?.stateOutputs)?value.stateOutputs:[];
+            let inputKeys=Array.isArray(value?.stateInputs)?value.stateInputs:[];
+            let outputKeys=Array.isArray(value?.stateOutputs)?value.stateOutputs:[];
             if(value?.grammarRole!==grammarRole)roleIssues.push('DESIGN_GRAMMAR_ROLE_MISMATCH');
             if(!clean(value?.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
             if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value?.[key])===clean(row[key])).length>=2))
@@ -1418,6 +1418,48 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
               roleIssues.push('DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING');
             if(roleHandoff&&!outputKeys.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key)))
               roleIssues.push('DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING');
+            // V5 식별자 오류는 현재 역할의 상태값만 다시 작성한다. 정상 원본 키는 유지한다.
+            if(seedGameplaySketchVersion>=5&&grammarRole
+              &&roleIssues.some(code=>['DESIGN_STATE_KEY_IS_INSTRUCTION','DESIGN_RULE_STATE_MISSING'].includes(code))){
+              const stateSchema={type:'object',required:['stateInputs','stateOutputs'],properties:{
+                stateInputs:{type:'array',minItems:1,maxItems:8,items:{type:'string',pattern:stateKeyPattern}},
+                stateOutputs:{type:'array',minItems:1,maxItems:8,items:{type:'string',pattern:stateKeyPattern}}
+              },additionalProperties:false};
+              const rewrite=await callLocalDesignerModel(focusedChildSystem,
+                'GAME='+game.name+';ROLE='+grammarRole+
+                '\nORIGINAL_INPUTS='+JSON.stringify(inputKeys)+'\nORIGINAL_OUTPUTS='+JSON.stringify(outputKeys)+
+                '\nROLE_MATERIAL='+clip(roleMaterial||'',500)+
+                '\n상태 의미를 그대로 유지하고 식별자 형식만 바로잡는다. 새로운 자원·저장 키·보상을 만들지 않는다.',
+                stateSchema,{predict:700,temperature:0.05,numCtx:4096,includeAssetContext:false,grammarContext});
+              const valid=key=>new RegExp(stateKeyPattern,'u').test(clean(key));
+              const a=uniq([...inputKeys.filter(valid),...(rewrite.stateInputs||[])]).slice(0,16);
+              const b=uniq([...outputKeys.filter(valid),...(rewrite.stateOutputs||[])]).slice(0,16);
+              if(a.length&&b.length&&[...a,...b].every(valid)){
+                inputKeys=a;outputKeys=b;value.stateInputs=a;value.stateOutputs=b;
+                for(const problem of ['DESIGN_STATE_KEY_IS_INSTRUCTION','DESIGN_RULE_STATE_MISSING',
+                  ...(roleHandoff&&a.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key))?['DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING']:[]),
+                  ...(roleHandoff&&b.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key))?['DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING']:[])]){
+                  const index=roleIssues.indexOf(problem);if(index>=0)roleIssues.splice(index,1);
+                }
+                console.log('DESIGN_GRAMMAR_STATE_IDENTIFIER_FOCUSED_REPAIR='+grammarRole);
+              }
+            }
+            // 다른 역할과 겹친 설명은 이름·목적·플레이어 선택만 다시 작성한다.
+            if(seedGameplaySketchVersion>=5&&grammarRole&&roleIssues.includes('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED')){
+              const fields=['name','purpose','playerChoice'];
+              const contentSchema={type:'object',required:fields,properties:Object.fromEntries(fields.map(key=>[key,itemSchema.properties[key]])),additionalProperties:false};
+              const rewrite=await callLocalDesignerModel(focusedChildSystem,
+                'GAME='+game.name+';ROLE='+grammarRole+
+                '\nROLE_MATERIAL='+clip(roleMaterial||'',500)+
+                '\nALREADY_AUTHORED='+clip(rows.map(row=>({name:row.name,purpose:row.purpose,playerChoice:row.playerChoice})),900)+
+                '\n이 역할의 창작 소재와 실제 행동을 다른 역할과 겹치지 않게 작성한다. 상태 키·기존 수치·저장 규칙은 바꾸지 않는다.',
+                contentSchema,{predict:1300,temperature:0.2,numCtx:4096,includeAssetContext:false,grammarContext});
+              if(fields.every(key=>clean(rewrite?.[key]))&&!rows.some(row=>fields.filter(key=>clean(rewrite[key])===clean(row[key])).length>=2)){
+                for(const key of fields)value[key]=rewrite[key];
+                roleIssues.splice(roleIssues.indexOf('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'),1);
+                console.log('DESIGN_GRAMMAR_UNIQUE_ROLE_FOCUSED_REPAIR='+grammarRole);
+              }
+            }
             // 실패한 연결 필드만 모델이 앞 역할의 실제 상태명에서 다시 선택한다.
             // 나머지 새 고유 상태와 역할·행동 설명은 그대로 보존한다.
             if(roleHandoff&&!roleIssues.includes('DESIGN_STATE_KEY_IS_INSTRUCTION')
