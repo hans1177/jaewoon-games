@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 조각들을 조절하여 세계를 완성하는 역할을 수행하며, 그 과정에서 얻는 시각적 만족감과 성취감을 목표로 합니다. 조각의 색상/모양 매칭은 인과적으로 연결되어야 하며, 한쪽이 없으면 상호작용 끊음.",
       "coreFun": "조각의 배치와 연결을 통해 세계 형성을 시작하고, 그 과정에서 얻는 시각적 만족감과 성취감을 경험합니다. 조각의 색상/모양 매칭은 인과적으로 연결되어야 하며, 한쪽이 없으면 상호작용 끈기입니다. 주변 환경 변화 및 보너스 효과 발동은 플레이어의 선택에 따라 달라집니다."
+    },
+    "local_authoring_parts::be618193da13dd052c4571acc7220b3d3ff2126afdfcdef76ed94eb69fbce6f2:coreLoop": {
+      "coreLoop": [
+        "조각을 드래그하여 원하는 위치에 배치합니다",
+        "조각을 연결하면 색상/모양 매칭 효과가 나타나며 주변 환경이 변환됩니다",
+        "연속 연결(콤보)을 통해 특수 효과 발동 및 점수 증가"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 296398,
-      "lastMs": 296398,
+      "totalMs": 360415,
+      "lastMs": 64017,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:06:37.122Z"
+      "updatedAt": "2026-10-10T09:07:41.141Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:40.705Z",
-  "updatedAt": "2026-10-10T09:06:37.122Z",
+  "updatedAt": "2026-10-10T09:07:41.141Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1391,7 +1398,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:06:37.122Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:07:41.141Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
