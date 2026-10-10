@@ -420,25 +420,66 @@
       "name": "별길 개척자",
       "purpose": "플레이어 선택에 따른 실제 세계 상태 변화와 인과적 연관성 있는 결과 생성 및 시스템 간 상호작용 구현",
       "playerChoice": "플레이어의 선택은 실제 세계 상태 변화를 결정하며, 이는 기존 규칙과 인과적으로 일치해야 한다."
+    },
+    "local_authoring_parts::c3216ff948abccd83dec550b40ead86ed79ce42d38cc80239af1c3824b1be744:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "PLAYER_CHOICE",
+        "REAL_WORLD_CHANGE"
+      ],
+      "stateOutputs": [
+        "RESULT",
+        "SYSTEM_INTERACTION"
+      ],
+      "name": "별길 개척자",
+      "purpose": "플레이어 선택에 따른 실제 세계의 변화와 인과적 연결을 통해 게임의 진전 및 전략적 결정을 촉진하는 시스템",
+      "playerChoice": "플레이어의 선택은 A/B 상태 교환을 통해 상호작용하며, 이는 실제 세계의 변화와 인과적으로 연결되어야 한다. 플레이어의 선택은 보드 전략과 액션 대응 사이의 상호작용을 통해 게임의 진전을 촉진한다."
+    },
+    "local_authoring_parts::4e4a179a68cb8df39ddab4b3e2231c209a5bd1307ed6edf95fca04d0bebc1f07:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "WORLD_CHANGE"
+      ],
+      "name": "별길 개척자",
+      "purpose": "플레이어 선택에 따른 실제 세계 상태 변화를 결정하며, 진행·위험·보상을 연결하는 반복 가능한 핵심 루프",
+      "playerChoice": "플레이어의 선택이 세계 상태 변화를 유도하며, 이는 기존 규칙과 인과적으로 일치해야 한다।"
+    },
+    "local_authoring_parts::4e4a179a68cb8df39ddab4b3e2231c209a5bd1307ed6edf95fca04d0bebc1f07:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "PLAYER_CHOICE"
+      ],
+      "stateOutputs": [
+        "WORLD_CHANGE"
+      ],
+      "name": "별길 개척자",
+      "purpose": "플레이어 선택에 따른 세계 상태 변화를 결정하며, 이는 기존 규칙과 인과적으로 연결되어야 한다.",
+      "playerChoice": "플레이어의 선택이 실제 세계의 변화를 결정한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 18,
+      "successes": 18,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 840050,
-      "lastMs": 67847,
+      "totalMs": 1045154,
+      "lastMs": 65219,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:58:02.682Z"
+      "updatedAt": "2026-10-10T01:01:27.798Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:09:19.145Z",
-  "updatedAt": "2026-10-10T00:58:02.682Z",
+  "updatedAt": "2026-10-10T01:01:27.798Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1955,7 +1996,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::identity-core": 2,
     "local_authoring_parts::c3216ff948abccd83dec550b40ead86ed79ce42d38cc80239af1c3824b1be744:signatureSystems:1": 5
   },
   "slicePartialResults": {
@@ -2059,7 +2100,7 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:58:02.682Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:01:27.798Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
