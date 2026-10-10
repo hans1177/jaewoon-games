@@ -3,155 +3,43 @@
   "gameId": "wild-survival",
   "date": "2026-10-10",
   "seedId": "AUTO-MISSING-DESIGN-WILD-SURVIVAL",
-  "fingerprint": "9bada6ddb89b6e90476ee0b57178d897ae166a7129d8442e9f32af282d74c168",
+  "fingerprint": "6f9c2c0ebf489fb3be8c893f53953aeb5a4c55dbdb631b6cc34519dc37b67bb4",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::08d765b4f622727f53e18be7a3b64bb31292df3d7cdae66503b38f22d40cc81b:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "야생 생존",
-      "creativeGrammar": {
-        "mainIdentity": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-        "a": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "materialDomain": "생산 및 진입 시점, 대상/공간 선택, 자원 관리, 위험 예측, 진행 상태 전환",
-          "stateChange": "월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가"
-        },
-        "b": {
-          "system": "ACTION_SURVIVAL_ROGUELITE",
-          "material": "보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어간다.",
-          "materialDomain": "보상 기반의 목표 설정, 지역 재설정, 상호작업 전략 개발, 자원 배분 최적화",
-          "stateChange": "보상/실패 판정 → 다음 목표 결정 → 지도 재선택 → 전략 조정"
-        },
-        "abCausality": "양방향 실제 상태 교환: 월드 상태 변화 ↔ 보상/실패 판정 적용",
-        "abEvolution": {
-          "aChangesB": "월드 상태 변화 → 보상/실패 판정 적용 → 다음 목표 결정",
-          "bChangesA": "보상/실패 판정 적용 → 다음 목표 결정 → 월드 상태 변화",
-          "lateGameChange": "자원 고갈 시 정체성 변동 및 새로운 선택 사례 생성"
-        },
-        "materialFusion": {
-          "contrast": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "causalBridge": "보상/실패 판정을 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지는 구조",
-          "removalConsequence": "자원 소모 계산, 위험 수준 감소 또는 증가, 월드 상태 재설정"
-        },
-        "storyCausalChain": {
-          "cause": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-          "characterConflict": "플레이어 선택에 따른 월드 상태 변화와 보상/실패 판정의 갈등",
-          "playerChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-          "worldChange": "월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가",
-          "nextEvent": "다음 목표 결정 → 지도 재선택 → 전략 조정"
-        },
-        "cThemes": [
-          {
-            "name": "생각",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험"
-          },
-          {
-            "name": "시간",
-            "kind": "MATERIAL",
-            "gameplayEffect": "시간이 진입 시점, 대상 선택, 자원 관리 등에 영향을 미친다"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "장기적인 플레이 및 선택 사례 생성"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "ACTION_SURVIVAL_ROGUELITE",
-            "gameplayEffect": "보상/실패 판정 기반의 새로운 선택 사례 생성"
-          }
-        ],
-        "cGenreInterlock": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-        "cWorldAndGameplayEffect": "월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가",
-        "delveDiscoveries": [
-          {
-            "clue": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.",
-            "discovery": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험",
-            "newChoice": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
-          },
-          {
-            "clue": "보상/실패 판정을 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지는 구조",
-            "discovery": "월드 상태 변화와 보상/실패 판정 갈등 발생",
-            "newChoice": "다음 목표 결정 → 지도 재선택 → 전략 조정"
-          },
-          {
-            "clue": "자원 고갈 시 정체성 변동 및 새로운 선택 사례 생성",
-            "discovery": "자원 소모 계산, 위험 수준 감소 또는 증가",
-            "newChoice": "자원 고갈 시 정체성 변동 및 새로운 선택 사례 생성"
-          },
-          {
-            "clue": "시간이 진입 시점, 대상 선택, 자원 관리 등에 영향을 미친다",
-            "discovery": "시간은 플레이어의 행동과 선택에 영향을 주는 요소이다",
-            "newChoice": "시간이 진입 시점, 대상 선택, 자원 관리 등에 영향을 미친다"
-          }
-        ],
-        "delveGrowthRule": "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.",
-        "finalGameIdentity": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.의 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다."
-      },
-      "playerFantasy": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험하며, 월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가하는 과정을 거쳐 다음 목표 결정 및 전략 조정을 수행해야 한다.",
-      "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택한다.의 실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변한다.의 보상/실패 판정을 바탕으로 다음 목표·지역·상호작용·전략 선택이 이어지는 구조이다."
-    },
-    "local_authoring_parts::a027854fb25f624a22ac0b81dec0523de64ad895d8b6b8bbeb0ac2a91722d29b:coreLoop": {
-      "coreLoop": [
-        "플레이어가 야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실제 입력과 상호작용 결과로 월드 상태, 대상 정보, 자원, 위험, 진행 상태가 변하게 된다.",
-        "변화된 상태와 보상 또는 실패를 바탕으로 다음 목표, 지역, 상호작업 전략, 그리고 새로운 선택 사례를 결정하게 된다.",
-        "실제 입력과 상호작용 결과에 따라 월드 상태와 대상 정보가 변경되며, 자원 소모 계산, 위험 수준 감소/증가 등이 발생하여 플레이어의 선택에 영향을 주게 된다.",
-        "보상/실패 판정 기반으로 다음 목표 결정 및 전략 조정이 이루어지며, 이 과정에서 게임의 진입 시점, 대상 선택, 자원 관리 등의 요소들이 변화하게 된다."
-      ]
-    },
-    "local_authoring_parts::a16463de77976ad1cec3f2070ab5ff7994666d48e88c274607a9b4eea754bf1d:signatureSystems:0": {
-      "id": "ACTION_SURVIVAL_ROGUELITE",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "CURRENT_WORLD_STATE",
-        "PLAYER_CHOICE"
-      ],
-      "stateOutputs": [
-        "NEXT_WORLD_STATE",
-        "NEW_STRATEGY"
-      ],
-      "name": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실제 입력과 상호작용 결과로 월드 상태, 대상 정보, 자원, 위험, 진행 상태가 변하게 된다.",
-      "purpose": "플레이어는 현실 세계에서의 생각과 판단을 직접 경험하여, 월드 상태와 대상 정보 변경, 자원 소모 계산, 위험 수준 감소 또는 증가하는 과정을 거쳐 다음 목표 결정 및 전략 조정을 수행해야 한다.",
-      "playerChoice": "실제 입력과 상호작용 결과로 월드 상태, 대상 정보, 자원, 위험, 진행 상태가 변화하고, 이에 따라 보상/실패 판정이 이루어지며, 이후 목표, 지역, 상호작업 전략, 새로운 선택 사례가 결정된다."
-    }
-  },
+  "tasks": {},
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
-      "failures": 0,
-      "timeouts": 0,
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 511417,
-      "lastMs": 45713,
-      "lastError": null,
-      "updatedAt": "2026-10-10T03:05:30.910Z"
+      "totalMs": 300030,
+      "lastMs": 300030,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T05:25:25.445Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:56:59.147Z",
-  "updatedAt": "2026-10-10T03:05:30.920Z",
+  "createdAt": "2026-10-10T05:20:25.395Z",
+  "updatedAt": "2026-10-10T05:25:25.445Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -175,6 +63,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -229,6 +118,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -678,8 +568,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -703,6 +593,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -757,6 +648,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1206,8 +1098,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1231,6 +1123,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1285,6 +1178,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1737,23 +1631,10 @@
     "assetFacts": {}
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::a16463de77976ad1cec3f2070ab5ff7994666d48e88c274607a9b4eea754bf1d:signatureSystems:1": [
-      {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "ACTION_SURVIVAL_ROGUELITE"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::a16463de77976ad1cec3f2070ab5ff7994666d48e88c274607a9b4eea754bf1d:signatureSystems:1": 2
-  },
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T03:05:30.910Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED"
+  "localAuthoringSplits": {
+    "8da40d9f5557483e704fbacfe8dbabf9eaf22634c791d7aead24b4086cf8ba7b": true
+  }
 }
