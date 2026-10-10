@@ -70,10 +70,15 @@ test('Unity Web BUILD_UP records source and three actual browser observations wi
     assert.equal(commentOnly.verifiedGrowth,false);
 
     write(root,unity+'Scripts/GameCore.cs','public class GameCore { public int Health; public void Attack(){ Health -= 2; } public void EnterCave(){ Health -= 1; } }');
-    const actual=check('3'.repeat(64),previous,'CORE_FUN',{play:{
-      markers:[...shape().markers,'JAEWOON_UNITY_WEB_QA REGION game='+id+' region=cave'],
-      saveRestore:{pass:true,restoredKeys:['gold','caveCleared']}
-    }});
+    const caveMarkers=[...shape().markers,
+      'JAEWOON_UNITY_WEB_QA STATE game='+id+' region=cave',
+      'JAEWOON_UNITY_WEB_QA REGION game='+id+' region=cave'];
+    const caveState={pass:true,restoredKeys:['gold','caveCleared']};
+    const actual=check('3'.repeat(64),previous,'CORE_FUN',{
+      play:{markers:caveMarkers,saveRestore:caveState},
+      independent:{markers:caveMarkers,saveRestore:caveState},
+      regression:{markers:caveMarkers,saveRestore:caveState}
+    });
     assert.equal(actual.status,'VERIFIED_PLAYER_FACING_GROWTH');
     assert.equal(actual.verifiedGrowth,true);
     assert.deepEqual(actual.signals.newContentIds,['region:cave']);
@@ -83,10 +88,13 @@ test('Unity Web BUILD_UP records source and three actual browser observations wi
     const staticOnly=check('4'.repeat(64),previous,'CORE_FUN');
     assert.equal(staticOnly.verifiedGrowth,false);
     assert.equal(staticOnly.status,'SOURCE_CHANGED_PLAYER_FACING_GROWTH_UNVERIFIED');
-    const pixelOnly=check('4'.repeat(64),previous,'PRESENTATION',{play:{visualQa:{
-      renderedScene:{pass:true,sceneCaptureSha256:'b'.repeat(64),
-        pixels:{source:'REAL_UNITY_CANVAS_SCREENSHOT',distinctColorBuckets:162}}
-    }}});
+    const improvedScene={renderedScene:{pass:true,sceneCaptureSha256:'b'.repeat(64),
+      pixels:{source:'REAL_UNITY_CANVAS_SCREENSHOT',distinctColorBuckets:162}}};
+    const pixelOnly=check('4'.repeat(64),previous,'PRESENTATION',{
+      play:{visualQa:improvedScene},
+      independent:{visualQa:improvedScene},
+      regression:{visualQa:improvedScene}
+    });
     assert.equal(pixelOnly.verifiedGrowth,true,'a valid changed Unity native source and visible browser image can prove presentation changes');
     const invalidRuntime=check('4'.repeat(64),previous,'CORE_FUN',{independent:{pass:false}});
     assert.equal(invalidRuntime.runtimeQaVerified,false);
