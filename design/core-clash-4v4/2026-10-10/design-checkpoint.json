@@ -194,25 +194,43 @@
         "플레이어는 실시간 생존 게임에서 적군의 점진적인 증가에 맞서 전략적 방어를 숙련하며, 새로운 지역이나 boss와의 접촉을 통해 플레이 스타일을 변환하는 과정을 경험하게 된다.",
         "게임은 주기적으로 새로운 토지 또는 boss와의 대 face를 유도하여 플레이어에게 새로운 도전을 제공함."
       ]
+    },
+    "local_authoring_parts::f57646ced9ecc815b987ff9685f081a5682ddf31bfe65e5aad5a08a45dca9f3f:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_essential_survival_loop",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemy_wave_intensity",
+        "player_defensive_build",
+        "loot_drop",
+        "skill_tree_update"
+      ],
+      "stateOutputs": [
+        "stronger_defenses",
+        "new_terrain_or_boss",
+        "adjusted_playstyle"
+      ],
+      "name": "Strategic Defense + Progressive Difficulty - Real-time Combat + Roguelike Progression - Adaptive Builds + Dynamic Environments",
+      "purpose": "Player's defensive build evolves into a new system interaction pattern",
+      "playerChoice": "Upgrade defenses or find new strategies, adapt strategy, gain new abilities, adjust playstyle, learn new tactics, face new challenges, encounter boss, convert run result into next progression choice"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 718519,
-      "lastMs": 66767,
+      "totalMs": 791552,
+      "lastMs": 73033,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:02:54.867Z"
+      "updatedAt": "2026-10-10T07:04:07.902Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:50:55.985Z",
-  "updatedAt": "2026-10-10T07:02:54.867Z",
+  "updatedAt": "2026-10-10T07:04:07.902Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1931,7 +1949,7 @@
   "localAuthoringSplits": {
     "095b4594537e611b00c85889c82a0aa4447dc8ad046e0c10bf4f9d1c6c95fe82": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:02:54.867Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:04:07.902Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
