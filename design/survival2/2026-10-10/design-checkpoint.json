@@ -730,25 +730,40 @@
       "name": "Forest Resource Dynamics",
       "purpose": "Establish the ecological and strategic foundation for resource acquisition, risk assessment, and shelter progression.",
       "playerChoice": "Player selects a resource to collect, evaluates environmental risk, and decides on shelter strategy."
+    },
+    "local_authoring_parts::b3c92f2c3ca7b5032d95d71b5c66d970d359eca21d8c08f21c78152914f99a2a:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "Resource discovery",
+        "Risk evaluation"
+      ],
+      "stateOutputs": [
+        "Shelter selection",
+        "Interdependent goal achievement"
+      ],
+      "name": "Forest Resource Dynamics",
+      "purpose": "Establishes the causal relationship between resource availability and group decision-making in a cooperative survival context.",
+      "playerChoice": "Decide which members should focus on survival tasks based on resource distribution and environmental risk assessment."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 27,
-      "successes": 26,
+      "calls": 28,
+      "successes": 27,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2058544,
-      "lastMs": 66241,
+      "totalMs": 2124552,
+      "lastMs": 66008,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:00:40.787Z"
+      "updatedAt": "2026-10-10T01:01:46.797Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:54.072Z",
-  "updatedAt": "2026-10-10T01:00:40.787Z",
+  "updatedAt": "2026-10-10T01:01:46.797Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2587,7 +2602,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:00:40.787Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:01:46.797Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
