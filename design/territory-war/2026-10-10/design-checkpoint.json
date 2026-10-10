@@ -222,25 +222,39 @@
       "name": "지역 관리 시스템",
       "purpose": "전선 이동 및 자원 분배 결정 과정에서의 실질적 선택과 그에 따른 군사적 결과 생성",
       "playerChoice": "전선 병합 또는 단독 확장 선택"
+    },
+    "local_authoring_parts::af8c6e79fd2d24e8195a9d68753570b8d3fd3aa2254b690b567faae710c9e781:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "입력: 전선 위치 변경 및 자원 분배 결정"
+      ],
+      "stateOutputs": [
+        "선택: 전선 병합 또는 단독 확장",
+        "보상: 새로운 전략적 선택 및 군사적 결과 발생"
+      ],
+      "name": "지역 관리 시스템",
+      "purpose": "전선 이동 및 자원 분배 결정의 인과적 영향을 전술적으로 표현하며, 군사 전술에 실질적인 영향을 미칩니다.",
+      "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 중인 실제 플레이어 역할입니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 6,
-      "successes": 5,
+      "calls": 7,
+      "successes": 6,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 819419,
-      "lastMs": 70020,
+      "totalMs": 891247,
+      "lastMs": 71828,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:16:50.309Z"
+      "updatedAt": "2026-10-10T02:18:02.139Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:03:10.803Z",
-  "updatedAt": "2026-10-10T02:16:50.309Z",
+  "updatedAt": "2026-10-10T02:18:02.139Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1778,7 +1792,7 @@
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:16:50.309Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:18:02.139Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
