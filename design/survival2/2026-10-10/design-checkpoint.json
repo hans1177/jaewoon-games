@@ -187,25 +187,32 @@
       },
       "playerFantasy": "숲의 생존자들에서 플레이어는 동료들과 협력하여 환경에 맞춘 자원을 수집하며, 위험과 기회를 읽고 선택하는 경험을 반복한다.",
       "coreFun": "{\"identity\": \"숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계된다.\", \"creativeGrammar\": {\"mainIdentity\": \"Explore the forest for a needed resource while reading environmental and creature danger.\"}, \"a\": {\"system\": \"Survival\", \"material\": \"Resource acquisition, risk assessment, shelter progression.\"}, \"b\": {\"system\": \"Cooperative playstyle\", \"material\": \"Social dynamics, shared goals, interdependent actions.\"}, \"abCausality\": \"Player's decision impacts both immediate resource availability and long-term social structure; cooperative choices lead to increased resource efficiency and reduced threat levels; individual risks are mitigated through collective action.\"}, \"storyCausalChain\": {\"cause\": \"Environmental change\", \"characterConflict\": \"Player adaptation to shifting ecosystems\", \"playerChoice\": \"Strategic resource management and group collaboration\", \"worldChange\": \"Ecological transition"
+    },
+    "local_authoring_parts::971d2d87dbf4f38f339abfcdab069b14f5cd8885a8a5f9e604651e8d1e4b3765:coreLoop": {
+      "coreLoop": [
+        "OPENING: Players explore the forest for a needed resource while reading environmental and creature danger.",
+        "DEVELOPMENT: Players return or push deeper based on current supplies and group readiness.",
+        "RESOLUTION: Players craft a survival advantage, improve shelter or equipment, and prepare for the next stronger threat."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 526527,
-      "lastMs": 82530,
+      "totalMs": 624722,
+      "lastMs": 98195,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T01:54:37.120Z"
+      "updatedAt": "2026-10-10T01:56:15.318Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:45:50.305Z",
-  "updatedAt": "2026-10-10T01:54:37.121Z",
+  "updatedAt": "2026-10-10T01:56:15.318Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1914,7 +1921,7 @@
   "localAuthoringSplits": {
     "afe933c9dbac42dfcaa6f0683302f8436a0a5c9cb040848391bf8557bca8a22d": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T01:54:37.121Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:56:15.318Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
