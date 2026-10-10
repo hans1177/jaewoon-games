@@ -640,25 +640,41 @@
     },
     "local_authoring_parts::9f568ae5ad963508e9d2faf8e475af1da414fd60b4d5c0c2996be70a6d09b1ae:trigger": {
       "trigger": "Dynamic Threat Evolution from Base to Boss Tier"
+    },
+    "local_authoring_parts::9f568ae5ad963508e9d2faf8e475af1da414fd60b4d5c0c2996be70a6d09b1ae:stateChange": {
+      "stateChange": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다."
+    },
+    "local_authoring_parts::d4b5fe8205952701091ee83110ae289a0b22d3d593104dfc6995b7f576971d94:systemInterconnections:0": {
+      "fromId": "signatureSystems[0]",
+      "toId": "signatureSystems[1]",
+      "stateKeys": [
+        "A",
+        "B",
+        "DELVE"
+      ],
+      "fromSystem": "BASE_TERRAIN",
+      "toSystem": "INTERMEDIATE_ENVIRONMENT",
+      "trigger": "Dynamic Threat Evolution from Base to Boss Tier",
+      "stateChange": "플레이어는 기초 환경에서 시작하여, 단계적으로 위험과 보상을 교차하는 방식으로 전략적 결정을 내며, 이 과정에서 상태 변화가 즉각적으로 피드백되어 핵심 루프를 형성합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 18,
-      "successes": 18,
+      "calls": 19,
+      "successes": 19,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1646807,
-      "lastMs": 9888,
+      "totalMs": 1668663,
+      "lastMs": 21856,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:23:33.861Z"
+      "updatedAt": "2026-10-10T03:23:55.718Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:56:06.976Z",
-  "updatedAt": "2026-10-10T03:23:33.861Z",
+  "updatedAt": "2026-10-10T03:23:55.719Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2454,7 +2470,7 @@
       ]
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:23:33.861Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:23:55.719Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
