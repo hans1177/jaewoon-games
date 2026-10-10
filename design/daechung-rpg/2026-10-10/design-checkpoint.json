@@ -212,25 +212,38 @@
       "name": "Lv.60 만렙·숙련",
       "purpose": "캐릭터 레벨은 60에서 멈추고 이후 XP는 전투력 증가가 없는 직업 숙련으로 전환한다.",
       "playerChoice": "15킬 파티사냥 후 Lv.60 만렙 획득"
+    },
+    "local_authoring_parts::f9064eb0a5d86b47b50353dbb52ca672f863cdf1b4418a2eebba846d56b4635f:signatureSystems:1:2ec41c6ab0c619bd": {
+      "id": "a_main_lev60",
+      "grammarRole": "A",
+      "stateInputs": [
+        "만렙"
+      ],
+      "stateOutputs": [
+        "Lv.60"
+      ],
+      "name": "Lv.60 만렙·숙련",
+      "purpose": "캐릭터 레벨은 60에서 멈추고 이후 XP는 전투력 증가가 없는 직업 숙련으로 전환한다",
+      "playerChoice": "15킬 파티사냥 후 Lv.60 만렙 획득"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 4,
+      "calls": 6,
+      "successes": 5,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 789781,
-      "lastMs": 34939,
+      "totalMs": 809664,
+      "lastMs": 19883,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:45:52.141Z"
+      "updatedAt": "2026-10-10T09:46:12.026Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T09:45:52.141Z",
+  "updatedAt": "2026-10-10T09:46:12.026Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2008,7 +2021,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:45:52.141Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:46:12.026Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
