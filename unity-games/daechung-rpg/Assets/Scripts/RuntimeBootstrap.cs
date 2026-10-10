@@ -326,6 +326,9 @@ namespace JaewoonGames.DaechungRpg
             GUILayout.Label($"직업 {player.job}  ·  레벨 {player.level}");
             GUILayout.Label($"HP {player.currentHp}/{_core.GetMaxHp()}  ·  공격력 {_core.GetAttackPower()}");
             GUILayout.Label($"EXP {player.experience}/{ExperienceNeeded(player.level)}  ·  GOLD {player.gold}");
+            // 표시: 가상 점수가 아니라 GameCore의 실제 저장된 설계 상태를 표시한다.
+            GUILayout.Label($"탐사 {player.RouteState}  ·  위험 {player.RiskState}  ·  단서 {player.ResourceState}");
+            GUILayout.Label($"세계 기록 {player.WorldAccessState}  ·  사회관계 선택 {player.IntentState}");
             GUILayout.Label($"기본 HP {player.baseMaxHp}  ·  기본 공격력 {player.baseAttack}");
             GUILayout.Label($"완료한 숨은 퀘스트 {player.completedHiddenQuests.Count}  ·  메인 진행 {player.mainQuestStep}");
             GUILayout.Space(6);
@@ -614,6 +617,22 @@ namespace JaewoonGames.DaechungRpg
                 return;
             }
             GUILayout.Label(_core.GetStoryGuidance());
+            // 사회관계는 실제 촌장 대화와 전투에서 해금한 단서에 의해서만 변한다.
+            if (_core.HasStoryEvent("chief-introduction"))
+            {
+                var clueDiscovered = (_core.Player.WorldAccessState & 0x07FE0000) != 0;
+                GUILayout.Label($"현재 선택 {_core.Player.IntentState}  ·  단서 {_core.Player.ResourceState}  ·  위험 {_core.Player.RiskState}");
+                if (GUILayout.Button("마을을 돕는 길 선택"))
+                {
+                    if (_core.TryChooseStoryIntent(1)) _message = "마을 지원을 선택했다. 다음 지역 탐사의 판단에 반영돼.";
+                }
+                GUI.enabled = clueDiscovered;
+                if (GUILayout.Button(clueDiscovered ? "발견한 단서로 질서의 비밀 조사" : "사냥터 단서 발견 후 조사 가능"))
+                {
+                    if (_core.TryChooseStoryIntent(2)) _message = "발견한 단서를 따라 숨은 규칙을 조사하기로 했다.";
+                }
+                GUI.enabled = true;
+            }
             for (var i = 0; i < ResidentIds.Length; i++)
             {
                 var id = ResidentIds[i];
@@ -825,6 +844,10 @@ namespace JaewoonGames.DaechungRpg
 
             var damage = _core.GetAttackPower();
             _enemyHp = Mathf.Max(0, _enemyHp - damage);
+            // 실제 공격 입력 → MAIN 경로 기록 → A 위험/단서 상태 전이.
+            // 피해량/몬스터 능력치/멀티 패킷·보상에는 관여하지 않는다.
+            _core.RecordWorldChoice();
+            _core.RecordConsequenceChoice();
             _multiplayer?.ObserveAttack(_core.Player.currentRegionId, _enemy.id, damage, _enemyHp);
             Debug.Log($"JAEWOON_UNITY_WEB_QA ATTACK game=daechung-rpg damage={damage} enemy={_enemy.id} enemyHp={_enemyHp}");
 
@@ -881,6 +904,10 @@ namespace JaewoonGames.DaechungRpg
                 levelsGained += 1;
             }
 
+            // 승리한 실제 보스/몬스터의 정보 → B 탐색 결과 → DELVE 선택 해금.
+            // 기존 골드·경험치·레벨 계산이 끝난 후 기존 저장 호출 1회만 이용한다.
+            _core.RecordExplorationOutcome();
+            _core.RecordDelveOutcome();
             _core.Save();
             Debug.Log($"JAEWOON_UNITY_WEB_QA REWARD game=daechung-rpg enemy={defeated.id} exp={defeated.experienceReward} gold={defeated.goldReward} level={player.level}");
             Debug.Log($"JAEWOON_UNITY_WEB_QA CORE_FUN game=daechung-rpg loop=combat_defeat_reward status=PASS enemy={defeated.id}");
