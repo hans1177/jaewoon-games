@@ -82,6 +82,51 @@ function buildSharedHumanoid(kind='traveler'){
    loft(0,3,vertical(0,-.21,[.72,.93,1.12,1.36,1.64]),[.40,.39,.32,.28,.26],[.045,.052,.052,.050,.035],24);
    loft(2,3,[[.27,1.55,.19],[.17,1.36,.16],[.08,1.08,.12]],[.051,.047,.043],[.028,.03,.027],10);
  }
+ // 직업별 외형은 얼굴색만 바꾸지 않고 스킨 메시의 장비·의복·실루엣을 변경한다.
+ const roleParts={
+  samurai:[
+   [1,1,vertical(0,-.10,[1.11,.90,.72,.58]),[.30,.38,.40,.34],[.06,.08,.07,.06]],
+   [8,5,vertical(0,0,[2.15,2.22,2.31]),[.18,.20,.015],[.18,.20,.015]],
+   [8,6,[[-.33,1.79,0],[-.43,1.68,0],[-.56,1.54,0]],[.15,.18,.07],[.12,.14,.08]],
+   [8,9,[[.33,1.79,0],[.43,1.68,0],[.56,1.54,0]],[.15,.18,.07],[.12,.14,.08]],
+   [8,1,[[-.29,1.02,-.15],[-.32,.76,-.17],[-.34,.49,-.18]],[.04,.03,.008],[.03,.02,.008]]
+  ],
+  archer:[
+   [0,3,vertical(0,-.19,[1.73,1.50,1.21,.97]),[.28,.36,.35,.28],[.075,.09,.07,.05]],
+   [6,5,vertical(0,-.03,[2.16,2.29,2.36]),[.18,.22,.07],[.18,.22,.07]],
+   [2,3,[[.19,1.75,-.24],[.24,1.47,-.29],[.26,1.20,-.33]],[.14,.17,.08],[.075,.08,.05]],
+   [8,8,[[-.90,1.12,.04],[-.99,1.41,.13],[-1.05,1.75,.22],[-.97,2.09,.10],[-.92,2.18,.04]],[.020,.017,.021,.017,.020],[.015,.014,.016,.014,.015]]
+  ],
+  mage:[
+   [0,1,vertical(0,-.02,[1.13,.95,.73,.50]),[.29,.40,.50,.59],[.16,.17,.14,.10]],
+   [6,5,vertical(0,0,[2.14,2.27,2.45,2.65]),[.18,.23,.12,.003],[.18,.23,.12,.003]],
+   [5,5,vertical(0,0,[2.17,2.21,2.25]),[.25,.26,.13],[.24,.24,.12]],
+   [2,11,[[.92,1.10,.06],[.96,1.63,.06],[.97,2.18,.07],[.99,2.55,.07]],[.034,.037,.026,.014],[.032,.034,.023,.014]]
+  ],
+  rogue:[
+   [6,5,vertical(0,-.09,[2.15,2.27,2.35]),[.20,.22,.05],[.19,.21,.05]],
+   [6,5,vertical(0,.16,[1.97,2.04,2.11]),[.17,.19,.19],[.08,.11,.11]],
+   [2,3,[[-.34,1.79,-.20],[-.25,1.51,-.26],[-.04,1.24,-.29]],[.16,.15,.07],[.06,.07,.05]],
+   [8,11,[[.91,1.12,.02],[.94,.96,.07],[.97,.77,.10]],[.04,.028,.004],[.023,.016,.004]],
+   [8,8,[[-.91,1.12,.02],[-.94,.99,.07],[-.97,.84,.10]],[.035,.024,.004],[.023,.014,.004]]
+  ],
+  lancer:[
+   [8,6,[[-.34,1.81,.02],[-.43,1.67,.02],[-.56,1.54,.02]],[.17,.18,.07],[.12,.15,.07]],
+   [8,9,[[.34,1.81,.02],[.43,1.67,.02],[.56,1.54,.02]],[.17,.18,.07],[.12,.15,.07]],
+   [1,3,vertical(0,.12,[1.55,1.68,1.78]),[.26,.31,.18],[.075,.085,.055]],
+   [2,18,[[.92,.51,.09],[.92,1.16,.09],[.92,1.89,.09],[.92,2.64,.09],[.92,2.99,.09]],[.035,.038,.030,.023,.003],[.035,.038,.030,.023,.003]],
+   [8,18,[[.92,2.78,.09],[.92,2.98,.09],[.92,3.18,.09]],[.063,.052,.003],[.037,.033,.003]]
+  ],
+  blacksmith:[
+   [2,3,vertical(0,.19,[1.64,1.48,1.15,.81]),[.23,.30,.31,.32],[.05,.06,.065,.05]],
+   [4,1,vertical(0,.17,[.95,.84,.66]),[.30,.34,.30],[.07,.08,.05]],
+   [8,7,[[-.62,1.45,.01],[-.73,1.28,.01],[-.81,1.14,.01]],[.087,.10,.07],[.08,.09,.06]],
+   [8,10,[[.62,1.45,.01],[.73,1.28,.01],[.81,1.14,.01]],[.087,.10,.07],[.08,.09,.06]],
+   [8,11,[[.91,1.13,.04],[.92,1.44,.04],[.93,1.59,.04]],[.044,.044,.034],[.039,.039,.029]],
+   [8,11,[[.93,1.59,.04],[.93,1.66,.04],[.93,1.72,.04]],[.13,.13,.08],[.11,.11,.07]]
+  ]
+ };
+ for(const [material,bone,points,rx,rz] of roleParts[kind]||[])loft(material,bone,points,rx,rz,12);
  const gltf={asset:{version:'2.0',generator:'jaewoon-shared-3d-authoring'},scene:0,scenes:[],nodes:[],meshes:[],materials:[],skins:[],animations:[],accessors:[],bufferViews:[],buffers:[]};
  let bufferSize=0;const chunks=[];
  function view(array,target){const bytes=new Uint8Array(array.buffer,array.byteOffset,array.byteLength),align=(4-bufferSize%4)%4;if(align){chunks.push(new Uint8Array(align));bufferSize+=align;}const offset=bufferSize;chunks.push(new Uint8Array(bytes));bufferSize+=bytes.length;return gltf.bufferViews.push({buffer:0,byteOffset:offset,byteLength:bytes.length,...(target?{target}:{})})-1;}
@@ -100,7 +145,7 @@ function buildSharedHumanoid(kind='traveler'){
   },indices:acc(new Uint16Array(g.ind),'SCALAR',5123,34963),material:m,mode:4});
  }
  gltf.materials=palette.map((v,i)=>({name:['Cloth','Armor','Leather','Skin','Boot','Trim','Hair','Eye','Metal'][i],doubleSided:true,pbrMetallicRoughness:{baseColorFactor:v,metallicFactor:[1,8].includes(i)?.48:0,roughnessFactor:[3,7].includes(i)?.72:.53}}));
- gltf.meshes=[{name:guardian?'GuardianBody':'TravelerBody',primitives}];
+ gltf.meshes=[{name:guardian?'GuardianBody':kind==='traveler'?'TravelerBody':kind[0].toUpperCase()+kind.slice(1)+'Body',primitives}];
  gltf.nodes=joints.map(j=>({name:j[0],translation:j[2]}));
  joints.forEach((j,i)=>{if(j[1]>=0)(gltf.nodes[j[1]].children||(gltf.nodes[j[1]].children=[])).push(i)});
  const meshNode=gltf.nodes.push({name:'SkinnedActor',mesh:0,skin:0})-1;
@@ -154,7 +199,12 @@ function buildSharedHumanoid(kind='traveler'){
 
 const outputDir=path.resolve(process.argv[2]||'assets/shared');
 fs.mkdirSync(outputDir,{recursive:true});
-for(const role of ['traveler','guardian']){
+const defaultRoles=['traveler','guardian'];
+const availableRoles=[...defaultRoles,'samurai','archer','mage','rogue','lancer','blacksmith'];
+const roleArg=process.argv.find(value=>value.startsWith('--roles='));
+const requestedRoles=roleArg?roleArg.slice(8).split(',').map(x=>x.trim()).filter(Boolean):defaultRoles;
+if(!requestedRoles.length||requestedRoles.some(role=>!availableRoles.includes(role)))throw Error('UNKNOWN_SHARED_HUMANOID_ROLE');
+for(const role of [...new Set(requestedRoles)]){
   const asset=buildSharedHumanoid(role);
   const destination=path.join(outputDir,'humanoid-'+role+'.glb');
   fs.writeFileSync(destination,asset.bytes);
