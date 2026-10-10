@@ -80,25 +80,53 @@
         "worldChange": "플레이어의 선택이 게임 구조와 시스템의 상태를 바꾸고, 동시에 게임 구조의 상태 변화는 플레이어의 선택을 결정하여 중후반에서는 양방향 상태 교환을 강화한다",
         "nextEvent": "플레이어의 선택이 게임 구조와 시스템의 상태를 바꾸며, 이는 전략적 선택과 경로 확장을 유도하고, 숙련과 성장을 촉진하는 중요한 요소이다"
       }
+    },
+    "local_authoring_parts::1a6c57dc0176eb31168fa64f43986894706c580e6fe1bbebcde428f5288a657d:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "전략적 선택",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 선택 → 상태 변화 → 보상/위험/다음 선택"
+        },
+        {
+          "name": "경로 확장",
+          "kind": "MATERIAL",
+          "gameplayEffect": "선명한 대표 행동과 선택 → 상태 변화 → 보상/위험/다음 선택"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "전략 및 경로",
+          "gameplayEffect": "게임 구조와 시스템 간의 인과 관계를 재구성하여 전략적 선택과 위험/보상의 연계를 깊이 있게 연결시킨다"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "역할 및 상호작용",
+          "gameplayEffect": "게임 구조의 상태 변화가 플레이어의 선택에 직접적으로 영향을 미친다"
+        }
+      ],
+      "cGenreInterlock": "플레이어의 진입 단계부터 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복하는 핵심 루프",
+      "cWorldAndGameplayEffect": "플레이어의 선택은 게임 구조와 시스템의 상태를 결정하며, 이는 전략적 선택과 경로 확장을 유도하고 숙련과 성장을 촉진한다"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 887311,
-      "lastMs": 177689,
+      "totalMs": 1016434,
+      "lastMs": 129123,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:08:08.606Z"
+      "updatedAt": "2026-10-10T09:10:17.732Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:53:21.265Z",
-  "updatedAt": "2026-10-10T09:08:08.608Z",
+  "updatedAt": "2026-10-10T09:10:17.732Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1823,7 +1851,7 @@
     "04f5edf75ead7d3110525be2e7e6c1d0a3d036c44cfbbf8554e6caf3cdbe628e": true,
     "fda8783284de4e16ace5e2d1d5884e6fe4675651411f3c6214dab441c9f34fe5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:08:08.608Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:10:17.732Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
