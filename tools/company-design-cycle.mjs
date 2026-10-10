@@ -1471,23 +1471,51 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
                 stateInputs:{type:'array',minItems:1,maxItems:2,items:{type:'string',enum:uniq(roleHandoff.inputKeysFromPreviousOutputs)}},
                 stateOutputs:{type:'array',minItems:1,maxItems:2,items:{type:'string',enum:uniq(roleHandoff.outputKeysToPreviousInputs)}}
               },additionalProperties:false};
-              const repair=await callLocalDesignerModel(focusedChildSystem,
-                'ROLE='+grammarRole+';GAME='+game.name+
-                '\\nROLE_PURPOSE='+clip(value.purpose,250)+
-                '\\nROLE_PLAYER_CHOICE='+clip(value.playerChoice,250)+
-                '\\nPREVIOUS_STATE_HANDOFF='+JSON.stringify(roleHandoff)+
-                '\\n위 목록의 정확한 상태명을 선택해서 stateInputs/stateOutputs 두 배열만 작성한다. 기존 역할 설명과 자체 상태는 바꾸지 않는다.',
-                stateRepairSchema,{predict:512,temperature:0.05,numCtx:4096,includeAssetContext:false,grammarContext});
-              value.stateInputs=uniq([...inputKeys,...repair.stateInputs]).slice(0,16);
-              value.stateOutputs=uniq([...outputKeys,...repair.stateOutputs]).slice(0,16);
-              if(value.stateInputs.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key))
-                &&value.stateOutputs.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key))){
-                for(const code of ['DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING','DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING']){
-                  const index=roleIssues.indexOf(code);if(index>=0)roleIssues.splice(index,1);
+              let handoffSelected=false;
+              try{
+                const repair=await callLocalDesignerModel(focusedChildSystem,
+                  'ROLE='+grammarRole+';GAME='+game.name+
+                  '\\nROLE_PURPOSE='+clip(value.purpose,250)+
+                  '\\nROLE_PLAYER_CHOICE='+clip(value.playerChoice,250)+
+                  '\\nPREVIOUS_STATE_HANDOFF='+JSON.stringify(roleHandoff)+
+                  '\\n위 목록의 정확한 상태명을 선택해서 stateInputs/stateOutputs 두 배열만 작성한다. 기존 역할 설명과 자체 상태는 바꾸지 않는다.',
+                  stateRepairSchema,{predict:512,temperature:0.05,numCtx:4096,includeAssetContext:false,grammarContext});
+                value.stateInputs=uniq([...inputKeys,...repair.stateInputs]).slice(0,16);
+                value.stateOutputs=uniq([...outputKeys,...repair.stateOutputs]).slice(0,16);
+                if(value.stateInputs.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key))
+                  &&value.stateOutputs.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key))){
+                  for(const code of ['DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING','DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING']){
+                    const index=roleIssues.indexOf(code);if(index>=0)roleIssues.splice(index,1);
+                  }
+                  designCheckpoint.tasks[itemTaskKey]=value;
+                  persistDesignCheckpoint();
+                  handoffSelected=true;
+                  console.log('DESIGN_GRAMMAR_STATE_HANDOFF_FOCUSED_REPAIR='+grammarRole+'|retainedOriginalKeys=YES');
                 }
-                designCheckpoint.tasks[itemTaskKey]=value;
-                persistDesignCheckpoint();
-                console.log('DESIGN_GRAMMAR_STATE_HANDOFF_FOCUSED_REPAIR='+grammarRole+'|retainedOriginalKeys=YES');
+              }catch(error){
+                // 소재·역할은 모델이 창작하되, 이미 작성된 참조 키를 모델이 반복 복사하지 못해도
+                // 현재 설계 조각을 무한 재생성하지 않는다. 원본 인터페이스가 유효할 때만 재사용한다.
+                console.log('DESIGN_GRAMMAR_STATE_HANDOFF_MODEL_REPAIR_FAILED='+grammarRole+'|'+clean(error?.message||error).slice(0,180));
+              }
+              if(!handoffSelected){
+                const validSourceKey=key=>new RegExp(stateKeyPattern,'u').test(clean(key))
+                  &&!/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key));
+                const priorOutputKeys=uniq(roleHandoff.inputKeysFromPreviousOutputs).filter(validSourceKey);
+                const priorInputKeys=uniq(roleHandoff.outputKeysToPreviousInputs).filter(validSourceKey);
+                if(priorOutputKeys.length&&priorInputKeys.length){
+                  // 기 작성된 상태 키만 연결한다. 새 상태·저장키·보상 또는 게임 규칙은 만들지 않는다.
+                  value.stateInputs=uniq([priorOutputKeys[0],...inputKeys.filter(validSourceKey)]).slice(0,16);
+                  value.stateOutputs=uniq([priorInputKeys[0],...outputKeys.filter(validSourceKey)]).slice(0,16);
+                  if(value.stateInputs.some(key=>priorOutputKeys.includes(key))
+                    &&value.stateOutputs.some(key=>priorInputKeys.includes(key))){
+                    for(const code of ['DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING','DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING']){
+                      const index=roleIssues.indexOf(code);if(index>=0)roleIssues.splice(index,1);
+                    }
+                    designCheckpoint.tasks[itemTaskKey]=value;
+                    persistDesignCheckpoint();
+                    console.log('DESIGN_GRAMMAR_STATE_HANDOFF_ORIGINAL_KEYS_BOUND='+grammarRole+'|newKeys=NO');
+                  }
+                }
               }
             }
             if(!roleIssues.length){
