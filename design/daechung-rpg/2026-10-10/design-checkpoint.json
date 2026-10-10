@@ -3,553 +3,40 @@
   "gameId": "daechung-rpg",
   "date": "2026-10-10",
   "seedId": "OWNER-DESIGN-DAECHUNG-RPG",
-  "fingerprint": "fb713cc9d0d5ca2515e49d253e6cd400a360939548295a1765d1b92a15212ad4",
+  "fingerprint": "6ee273a3c1ee15994334841531cd62117b84165eb2d75a816abbacddc4d3585b",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f:identity,creativeGrammar": {
-      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
-      "creativeGrammar": {
-        "mainIdentity": "초원 런 보스 격파 및 동료 해금",
-        "a": {
-          "system": "포탈 전투",
-          "material": "10종 초원 몬스터 + 비밀 숲 히든 보스",
-          "materialDomain": "전투/보스 동료 해금",
-          "stateChange": "보스 첫 처치 → 동료 해금 → 파티 조합 확장"
-        },
-        "b": {
-          "system": "AI 파티 토글",
-          "material": "플레이어 1명 + 해금한 보스 동료 최대 3명",
-          "materialDomain": "파티 관리",
-          "stateChange": "동료 리더 레벨 자동 동기화 → 별도 장비 없음"
-        },
-        "abCausality": "A→B: 포탈 전투 상태 변화; B→A: 파티 토글 상태 교환; C: 보스 동료 주제/메인 장르 (보스, AI)과 보조 장르 (장비, 방어구)",
-        "abEvolution": {
-          "aChangesB": "A→B: 15킬 파티사냥 → B→A: 보스 격파/해금",
-          "bChangesA": "B→A: 파티 토글 사용 → A→B: 동료 조합 확장",
-          "lateGameChange": "C의 두 창작 소재와 메인/보조 장르를 인과적으로 결합하여 새 정체성 생성"
-        },
-        "materialFusion": {
-          "contrast": "주제/소재 대비: 보스 vs. 장비/방어구, 메인 vs. 보조 장르",
-          "causalBridge": "A/B 상태 교환을 통해 실제 선택·규칙·사건 변주",
-          "removalConsequence": "C의 두 소재 및 주/보조 장르가 게임 세계에 직접적인 변화를 유발"
-        },
-        "storyCausalChain": {
-          "cause": "초원 런 시작 시 Seed로 재조합됨",
-          "characterConflict": "플레이어 + 보스 동료 갈등 발생 시 새로운 선택 가능",
-          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정",
-          "worldChange": "15킬 파티사냥 결과로 기여도 증가 및 보상 제공",
-          "nextEvent": "마을 귀환/회복/강화 과정 시작 또는 보스 동료 해금 확장"
-        },
-        "cThemes": [
-          {
-            "name": "보스",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전투력 증가, 보상 제공, 파티 조합 확장"
-          },
-          {
-            "name": "장비",
-            "kind": "MATERIAL",
-            "gameplayEffect": "무기/방어구 성장, 유물 특성 바꾸기"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "3D 액션 RPG",
-            "gameplayEffect": "전투·갈등·위험 중심의 플레이"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "포탈 전투",
-            "gameplayEffect": "실질적 인과 변화를 주는 상태 교환"
-          }
-        ],
-        "cGenreInterlock": "C의 두 소재와 메인/보조 장르가 게임 세계에 직접적인 변화를 유발하며 상호작용 시 새로운 플레이 생성",
-        "cWorldAndGameplayEffect": "C의 두 창작 소재 및 주/보조 장르로 인해 실제 선택·세계 변화 발생",
-        "delveDiscoveries": [
-          {
-            "clue": "초원 런 시작 시 Seed로 재조합됨",
-            "discovery": "10종 초원 몬스터 + 비밀 숲 히든 보스",
-            "newChoice": "AI 파티 토글 사용, 동료 조합 확장"
-          },
-          {
-            "clue": "플레이어 1명 + 해금한 보스 동료 최대 3명",
-            "discovery": "15킬 파티사냥 결과",
-            "newChoice": "마을 귀환/회복/강화 과정 시작 또는 보스 동료 해금 확장"
-          },
-          {
-            "clue": "보스 첫 처치 → 동료 해금 → 파티 조합 확장",
-            "discovery": "파티 토글 클릭으로 파티 구성 결정",
-            "newChoice": "동료 리더 레벨 자동 동기화, 별도 장비 없음"
-          },
-          {
-            "clue": "보스 동료는 리더 레벨 자동 동기화",
-            "discovery": "보스 격파/해금 결과",
-            "newChoice": "보스 동료의 고유 실루엣과 핵심 이펙트를 그대로 계승"
-          }
-        ],
-        "delveGrowthRule": "C의 두 창작 소재와 주/보조 장르에 따라 무한 발전 규칙 적용",
-        "finalGameIdentity": "초원 런 보스 격파 및 동료 해금을 통해 새 정체성 생성"
-      }
-    },
-    "local_authoring_parts::80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f:playerFantasy,coreFun": {
-      "playerFantasy": "AI 파티 토글 사용, AI 유저와 파티 구성, 보스 공략, 전투력 증가, 기여도 확대",
-      "coreFun": "{A→B: 포탈 전투 상태 변화; B→A: 파티 토글 상태 교환; C: 보스 동료 주제/메인 장르 (보스, AI)과 보조 장르 (장비, 방어구)}"
-    },
-    "local_authoring_parts::0783f7930910d61642f0da70d17031476b3a2b8316a1205d0707f370e6c8f03c:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
-      "creativeGrammar": {
-        "mainIdentity": "초원 런 보스 격파 및 동료 해금",
-        "a": {
-          "system": "포탈 전투",
-          "material": "10종 초원 몬스터 + 비밀 숲 히든 보스",
-          "materialDomain": "전투/보스 동료 해금",
-          "stateChange": "보스 첫 처치 → 동료 해금 → 파티 조합 확장"
-        },
-        "b": {
-          "system": "AI 파티 토글",
-          "material": "플레이어 1명 + 해금한 보스 동료 최대 3명",
-          "materialDomain": "파티 관리",
-          "stateChange": "동료 리더 레벨 자동 동기화 → 별도 장비 없음"
-        },
-        "abCausality": "A→B: 포탈 전투 상태 변화; B→A: 파티 토글 상태 교환; C: 보스 동료 주제/메인 장르 (보스, AI)과 보조 장르 (장비, 방어구)",
-        "abEvolution": {
-          "aChangesB": "A→B: 15킬 파티사냥 → B→A: 보스 격파/해금",
-          "bChangesA": "B→A: 파티 토글 사용 → A→B: 동료 조합 확장",
-          "lateGameChange": "C의 두 창작 소재와 메인/보조 장르를 인과적으로 결합하여 새 정체성 생성"
-        },
-        "materialFusion": {
-          "contrast": "주제/소재 대비: 보스 vs. 장비/방어구, 메인 vs. 보조 장르",
-          "causalBridge": "A/B 상태 교환을 통해 실제 선택·규칙·사건 변주",
-          "removalConsequence": "C의 두 소재 및 주/보조 장르가 게임 세계에 직접적인 변화를 유발"
-        },
-        "storyCausalChain": {
-          "cause": "초원 런 시작 시 Seed로 재조합됨",
-          "characterConflict": "플레이어 + 보스 동료 갈등 발생 시 새로운 선택 가능",
-          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정",
-          "worldChange": "15킬 파티사냥 결과로 기여도 증가 및 보상 제공",
-          "nextEvent": "마을 귀환/회복/강화 과정 시작 또는 보스 동료 해금 확장"
-        },
-        "cThemes": [
-          {
-            "name": "보스",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전투력 증가, 보상 제공, 파티 조합 확장"
-          },
-          {
-            "name": "장비",
-            "kind": "MATERIAL",
-            "gameplayEffect": "무기/방어구 성장, 유물 특성 바꾸기"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "3D 액션 RPG",
-            "gameplayEffect": "전투·갈등·위험 중심의 플레이"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "포탈 전투",
-            "gameplayEffect": "실질적 인과 변화를 주는 상태 교환"
-          }
-        ],
-        "cGenreInterlock": "C의 두 소재와 메인/보조 장르가 게임 세계에 직접적인 변화를 유발하며 상호작용 시 새로운 플레이 생성",
-        "cWorldAndGameplayEffect": "C의 두 창작 소재 및 주/보조 장르로 인해 실제 선택·세계 변화 발생",
-        "delveDiscoveries": [
-          {
-            "clue": "초원 런 시작 시 Seed로 재조합됨",
-            "discovery": "10종 초원 몬스터 + 비밀 숲 히든 보스",
-            "newChoice": "AI 파티 토글 사용, 동료 조합 확장"
-          },
-          {
-            "clue": "플레이어 1명 + 해금한 보스 동료 최대 3명",
-            "discovery": "15킬 파티사냥 결과",
-            "newChoice": "마을 귀환/회복/강화 과정 시작 또는 보스 동료 해금 확장"
-          },
-          {
-            "clue": "보스 첫 처치 → 동료 해금 → 파티 조합 확장",
-            "discovery": "파티 토글 클릭으로 파티 구성 결정",
-            "newChoice": "동료 리더 레벨 자동 동기화, 별도 장비 없음"
-          },
-          {
-            "clue": "보스 동료는 리더 레벨 자동 동기화",
-            "discovery": "보스 격파/해금 결과",
-            "newChoice": "보스 동료의 고유 실루엣과 핵심 이펙트를 그대로 계승"
-          }
-        ],
-        "delveGrowthRule": "C의 두 창작 소재와 주/보조 장르에 따라 무한 발전 규칙 적용",
-        "finalGameIdentity": "초원 런 보스 격파 및 동료 해금을 통해 새 정체성 생성"
-      },
-      "playerFantasy": "AI 파티 토글 사용, AI 유저와 파티 구성, 보스 공략, 전투력 증가, 기여도 확대",
-      "coreFun": "{A→B: 포탈 전투 상태 변화; B→A: 파티 토글 상태 교환; C: 보스 동료 주제/메인 장르 (보스, AI)과 보조 장르 (장비, 방어구)}"
-    },
-    "local_authoring_parts::4decf361500dbcc11feaa96b4363806a40a5ec2bbac646d53093ae29c731c087:coreLoop": {
-      "coreLoop": [
-        "마을에서 퀘스트와 장비 준비",
-        "포탈로 사냥터 이동",
-        "몬스터 직접 전투",
-        "보스 첫 처치로 AI 동료 해금",
-        "15마리 파티사냥과 기여도 보상",
-        "플레이어 + 보스 동료 최대 3명 편성",
-        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-        "마을 귀환/회복/강화"
-      ]
-    },
-    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "마을에서 퀘스트와 장비 준비",
-        "포탈로 사냥터 이동"
-      ],
-      "stateOutputs": [
-        "몬스터 직접 전투",
-        "보스 첫 처치로 AI 동료 해금",
-        "15마리 파티사냥과 기여도 보상",
-        "플레이어 + 보스 동료 최대 3명 편성"
-      ],
-      "name": "초원 런 보스 격파 및 동료 해금",
-      "purpose": "전투력 증가, 보상 제공, 파티 조합 확장",
-      "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
-    },
-    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "AI 파티 토글 클릭",
-        "플레이어 1명 + 해금한 보스 동료 최대 3명"
-      ],
-      "stateOutputs": [
-        "동료 리더 레벨 자동 동기화",
-        "별도 장비 없음"
-      ],
-      "name": "AI 파티 토글 상태 교환",
-      "purpose": "파티 관리 및 상태 변주",
-      "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
-    },
-    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:2": {
-      "id": "signatureSystems[2]",
-      "grammarRole": "B",
-      "stateInputs": [
-        "AI 파티 토글 클릭",
-        "플레이어 1명 + 해금한 보스 동료 최대 3명"
-      ],
-      "stateOutputs": [
-        "동료 리더 레벨 자동 동기화",
-        "별도 장비 없음"
-      ],
-      "name": "AI 파티 토글 상태 교환",
-      "purpose": "파티 관리 및 상태 교환",
-      "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
-    },
-    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:3": {
-      "id": "DELVE[3]",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "보스 첫 처치로 AI 동료 해금"
-      ],
-      "stateOutputs": [
-        "파티 토글 클릭으로 파티 구성 결정"
-      ],
-      "name": "AI 파티 토글 상태 교환",
-      "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
-      "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
-    },
-    "local_authoring_parts::4decf361500dbcc11feaa96b4363806a40a5ec2bbac646d53093ae29c731c087:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "마을에서 퀘스트와 장비 준비",
-            "포탈로 사냥터 이동"
-          ],
-          "stateOutputs": [
-            "몬스터 직접 전투",
-            "보스 첫 처치로 AI 동료 해금",
-            "15마리 파티사냥과 기여도 보상",
-            "플레이어 + 보스 동료 최대 3명 편성"
-          ],
-          "name": "초원 런 보스 격파 및 동료 해금",
-          "purpose": "전투력 증가, 보상 제공, 파티 조합 확장",
-          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "AI 파티 토글 클릭",
-            "플레이어 1명 + 해금한 보스 동료 최대 3명"
-          ],
-          "stateOutputs": [
-            "동료 리더 레벨 자동 동기화",
-            "별도 장비 없음"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "파티 관리 및 상태 변주",
-          "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "AI 파티 토글 클릭",
-            "플레이어 1명 + 해금한 보스 동료 최대 3명"
-          ],
-          "stateOutputs": [
-            "동료 리더 레벨 자동 동기화",
-            "별도 장비 없음"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "파티 관리 및 상태 교환",
-          "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
-        },
-        {
-          "id": "DELVE[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "보스 첫 처치로 AI 동료 해금"
-          ],
-          "stateOutputs": [
-            "파티 토글 클릭으로 파티 구성 결정"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
-          "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
-        }
-      ]
-    },
-    "local_authoring_parts::bd294a238692a9b23a360ac44bbf01e4a4a69cace51a603c5bd5f73878b8ce68:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "마을에서 퀘스트와 장비 준비",
-        "포탈로 사냥터 이동",
-        "몬스터 직접 전투",
-        "보스 첫 처치로 AI 동료 해금",
-        "15마리 파티사냥과 기여도 보상",
-        "플레이어 + 보스 동료 최대 3명 편성",
-        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-        "마을 귀환/회복/강화"
-      ],
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "마을에서 퀘스트와 장비 준비",
-            "포탈로 사냥터 이동"
-          ],
-          "stateOutputs": [
-            "몬스터 직접 전투",
-            "보스 첫 처치로 AI 동료 해금",
-            "15마리 파티사냥과 기여도 보상",
-            "플레이어 + 보스 동료 최대 3명 편성"
-          ],
-          "name": "초원 런 보스 격파 및 동료 해금",
-          "purpose": "전투력 증가, 보상 제공, 파티 조합 확장",
-          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "AI 파티 토글 클릭",
-            "플레이어 1명 + 해금한 보스 동료 최대 3명"
-          ],
-          "stateOutputs": [
-            "동료 리더 레벨 자동 동기화",
-            "별도 장비 없음"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "파티 관리 및 상태 변주",
-          "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "AI 파티 토글 클릭",
-            "플레이어 1명 + 해금한 보스 동료 최대 3명"
-          ],
-          "stateOutputs": [
-            "동료 리더 레벨 자동 동기화",
-            "별도 장비 없음"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "파티 관리 및 상태 교환",
-          "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
-        },
-        {
-          "id": "DELVE[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "보스 첫 처치로 AI 동료 해금"
-          ],
-          "stateOutputs": [
-            "파티 토글 클릭으로 파티 구성 결정"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
-          "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
-        }
-      ]
-    },
-    "local_authoring_parts::bd294a238692a9b23a360ac44bbf01e4a4a69cace51a603c5bd5f73878b8ce68:multiplayerMode": {
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::0783f7930910d61642f0da70d17031476b3a2b8316a1205d0707f370e6c8f03c:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "마을에서 퀘스트와 장비 준비",
-        "포탈로 사냥터 이동",
-        "몬스터 직접 전투",
-        "보스 첫 처치로 AI 동료 해금",
-        "15마리 파티사냥과 기여도 보상",
-        "플레이어 + 보스 동료 최대 3명 편성",
-        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-        "마을 귀환/회복/강화"
-      ],
-      "signatureSystems": [
-        {
-          "id": "signatureSystems[0]",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "마을에서 퀘스트와 장비 준비",
-            "포탈로 사냥터 이동"
-          ],
-          "stateOutputs": [
-            "몬스터 직접 전투",
-            "보스 첫 처치로 AI 동료 해금",
-            "15마리 파티사냥과 기여도 보상",
-            "플레이어 + 보스 동료 최대 3명 편성"
-          ],
-          "name": "초원 런 보스 격파 및 동료 해금",
-          "purpose": "전투력 증가, 보상 제공, 파티 조합 확장",
-          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
-        },
-        {
-          "id": "signatureSystems[1]",
-          "grammarRole": "A",
-          "stateInputs": [
-            "AI 파티 토글 클릭",
-            "플레이어 1명 + 해금한 보스 동료 최대 3명"
-          ],
-          "stateOutputs": [
-            "동료 리더 레벨 자동 동기화",
-            "별도 장비 없음"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "파티 관리 및 상태 변주",
-          "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
-        },
-        {
-          "id": "signatureSystems[2]",
-          "grammarRole": "B",
-          "stateInputs": [
-            "AI 파티 토글 클릭",
-            "플레이어 1명 + 해금한 보스 동료 최대 3명"
-          ],
-          "stateOutputs": [
-            "동료 리더 레벨 자동 동기화",
-            "별도 장비 없음"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "파티 관리 및 상태 교환",
-          "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
-        },
-        {
-          "id": "DELVE[3]",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "보스 첫 처치로 AI 동료 해금"
-          ],
-          "stateOutputs": [
-            "파티 토글 클릭으로 파티 구성 결정"
-          ],
-          "name": "AI 파티 토글 상태 교환",
-          "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
-          "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
-        }
-      ],
-      "multiplayerMode": "COOP"
-    },
-    "local_authoring_parts::724f26d5c01eee8915d4b0622271cba05ae938fb7ec09e5d10ce8836b2619e8e:signatureSystems:0": {
-      "id": "signatureSystems[0]",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "마을에서 장비와 퀘스트를 준비하고",
-        "5개의 포탈 사냥터를 돌며",
-        "AI 유저와 파티를 구성해"
-      ],
-      "stateOutputs": [
-        "보스 공략 시작",
-        "파티 조합 확장",
-        "15킬 파티사냥 결과"
-      ],
-      "name": "초원 런 보스 격파 및 동료 해금",
-      "purpose": "3D 액션 RPG 게임 정체성 형성",
-      "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정하기 전에 AI 유저와 파티 구성 선택됨"
-    },
-    "local_authoring_parts::724f26d5c01eee8915d4b0622271cba05ae938fb7ec09e5d10ce8836b2619e8e:signatureSystems:1": {
-      "id": "signatureSystems[1]",
-      "grammarRole": "A",
-      "stateInputs": [
-        "마을에서 장비와 퀘스트를 준비하고",
-        "5개의 포탈 사냥터를 돌며"
-      ],
-      "stateOutputs": [
-        "AI 유저와 파티를 구성해",
-        "보스 공략 시작"
-      ],
-      "name": "초원 런 보스 격파 및 동료 해금",
-      "purpose": "포탈 전투 상태 변화",
-      "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 14,
-      "successes": 13,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 1748356,
-      "lastMs": 98423,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:37:46.210Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:08:37.800Z",
-  "updatedAt": "2026-10-10T02:37:46.215Z",
+  "createdAt": "2026-10-10T04:42:58.038Z",
+  "updatedAt": "2026-10-10T04:42:58.160Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
-          "CHARACTER",
           "CREATURE",
           "ENVIRONMENT",
           "MATERIAL",
           "MOTION",
           "PROP",
           "SKILL",
-          "UI",
           "VFX",
           "WEAPON"
         ],
@@ -560,11 +47,6 @@
             "RECTANGULAR_SURVIVAL_FOUNDATION",
             "SINGLE_SURVIVAL_DOOR",
             "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
             "ARACHNID",
@@ -645,6 +127,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -721,217 +204,6 @@
             "SUMMON",
             "TRAIL"
           ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
-          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -983,17 +255,6 @@
           },
           {
             "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1067,19 +328,6 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-rpg-system-menu-v1",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "currentSourceBound": true,
-              "verifiedRoleMatch": true
             }
           },
           {
@@ -1107,19 +355,17 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
-          "CHARACTER",
           "CREATURE",
           "ENVIRONMENT",
           "MATERIAL",
           "MOTION",
           "PROP",
           "SKILL",
-          "UI",
           "VFX",
           "WEAPON"
         ],
@@ -1130,11 +376,6 @@
             "RECTANGULAR_SURVIVAL_FOUNDATION",
             "SINGLE_SURVIVAL_DOOR",
             "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
             "ARACHNID",
@@ -1215,6 +456,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1291,217 +533,6 @@
             "SUMMON",
             "TRAIL"
           ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
-          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -1553,17 +584,6 @@
           },
           {
             "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -1637,19 +657,6 @@
               "requestedRoles": [],
               "matchedRoles": [],
               "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "UI",
-            "action": "ADAPT",
-            "assetId": "roblox-rpg-system-menu-v1",
-            "applicationMode": "STYLE_ADAPT",
-            "reason": "CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "currentSourceBound": true,
-              "verifiedRoleMatch": true
             }
           },
           {
@@ -1677,19 +684,17 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
-          "CHARACTER",
           "CREATURE",
           "ENVIRONMENT",
           "MATERIAL",
           "MOTION",
           "PROP",
           "SKILL",
-          "UI",
           "VFX",
           "WEAPON"
         ],
@@ -1700,11 +705,6 @@
             "RECTANGULAR_SURVIVAL_FOUNDATION",
             "SINGLE_SURVIVAL_DOOR",
             "SOLID_TIMBER_WALL"
-          ],
-          "CHARACTER": [
-            "BACK_CAPE_MODULE",
-            "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
           "CREATURE": [
             "ARACHNID",
@@ -1785,6 +785,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1861,217 +862,6 @@
             "SUMMON",
             "TRAIL"
           ],
-          "UI": [
-            "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
-            "ACCESSIBILITY_REDUCED_FLASH_MODE",
-            "AI_COMPANION_AUTONOMY_PANEL",
-            "AI_COMPANION_STATUS_CARD",
-            "AI_DIALOGUE_HELPER",
-            "ANIMAL_HOUSING_PANEL",
-            "ATTACK_TELEGRAPH_INDICATOR",
-            "BED_INTERACTION_PROMPT",
-            "BED_RESPAWN_PANEL",
-            "BLUEPRINT_PANEL",
-            "BOARDING_PROGRESS",
-            "BOSS_PHASE_STRIP",
-            "BUILD_ACTION_BAR",
-            "BUILD_CATALOG_PANEL",
-            "BUILD_PIECE_CARD",
-            "BUILD_TIER_BADGE",
-            "BUYBACK_PANEL",
-            "BUY_SELL_PANEL",
-            "CARGO_PANEL",
-            "CHARACTER_DETAIL_SCREEN",
-            "CHARACTER_SHEET",
-            "CODEX_SCREEN",
-            "COLLECTION_PROGRESS",
-            "COMMON_READABLE_PANEL",
-            "COMPANION_COMBAT_STANCE_PANEL",
-            "COMPANION_COMMAND_WHEEL",
-            "COMPANION_EQUIPMENT_SUMMARY",
-            "COMPANION_FORMATION_PANEL",
-            "COMPANION_GIFT_PANEL",
-            "COMPANION_HELP_REQUEST",
-            "COMPANION_INVENTORY_HANDOFF",
-            "COMPANION_ORDER_QUEUE",
-            "COMPANION_RELATIONSHIP_DETAIL",
-            "COMPANION_REVIVE_RESCUE_PANEL",
-            "COMPANION_ROLE_PANEL",
-            "COMPANION_TARGET_PING_CARD",
-            "CONFIRM_DIALOG",
-            "CONTAINER_INTERACTION_PROMPT",
-            "CONTEXT_TOOLTIP",
-            "COUNTER_READY_INDICATOR",
-            "CRAFTING_FULL_SCREEN",
-            "CRAFTING_RECIPE",
-            "CRAFTING_TREE",
-            "CRAFT_QUEUE_OVERVIEW",
-            "CROP_GROWTH_TIMELINE",
-            "CURRENCY_READOUT",
-            "DEMOLISH_PREVIEW_PANEL",
-            "DESTINATION_CARD",
-            "DIALOGUE_CHOICE",
-            "DIALOGUE_HISTORY",
-            "DIALOGUE_SURFACE",
-            "DIALOGUE_TEXT_INPUT",
-            "DIALOGUE_TYPING_STATE",
-            "DISEMBARK_PROMPT",
-            "DISMANTLE_PANEL",
-            "DURABILITY_WEAR_PREVIEW",
-            "EMPTY_STATE",
-            "EQUIPMENT_COMPARE_PANEL",
-            "EQUIPMENT_FULL_SCREEN",
-            "EQUIPMENT_SLOT",
-            "EQUIP_CONFLICT_PREVIEW",
-            "FAILURE_RECOVERY_CHECKPOINT",
-            "FAILURE_STATE",
-            "FARM_PLOT_PANEL",
-            "FILTER_BAR",
-            "FUEL_ENERGY_METER",
-            "FURNITURE_CATALOG",
-            "GENERIC_PROGRESS_READOUT",
-            "GRID_SNAP_CONTROL",
-            "GUARD_BREAK_WARNING",
-            "GUARD_METER",
-            "HARVEST_INTERACTION_PROMPT",
-            "HEALTH_STATUS_READOUT",
-            "HOTBAR",
-            "HOUSING_ROOM_FUNCTION_HEATMAP",
-            "HOUSING_STRUCTURAL_SUPPORT_OVERLAY",
-            "ICON_ACTION",
-            "INPUT_HINT",
-            "INTERACTION_PROGRESS",
-            "INTERACTION_STATE_CARD",
-            "INTRO",
-            "INVENTORY_CAPACITY_FORECAST",
-            "INVENTORY_CAPACITY_METER",
-            "INVENTORY_CONTAINER_PANEL",
-            "INVENTORY_FULL_SCREEN",
-            "INVENTORY_GRID",
-            "INVENTORY_OVERWEIGHT_RESOLUTION",
-            "INVENTORY_SLOT",
-            "INVENTORY_SMART_SORT_PREVIEW",
-            "INVENTORY_WEIGHT_METER",
-            "ITEM_COMPARE_PANEL",
-            "ITEM_CONTEXT_MENU",
-            "ITEM_DETAIL_PANEL",
-            "ITEM_SOURCE_USAGE_PANEL",
-            "ITEM_STATE_BADGES",
-            "LIGHT_CONTROL_PROMPT",
-            "LOADING_RETRY_WITH_CAUSE",
-            "LOADING_SCREEN",
-            "LOADING_STATE",
-            "LOADOUT_PRESET_PANEL",
-            "LOCKED_STATE",
-            "LOOT_FEED",
-            "LOOT_FILTER_PRESET",
-            "LOOT_WINDOW",
-            "LORE_RELATION_GRAPH",
-            "MAIN_MENU",
-            "MAP_FULL_SCREEN",
-            "MATERIAL_PALETTE_PANEL",
-            "MATERIAL_SHORTAGE_ROUTE",
-            "MATERIAL_TRACKER",
-            "MENU_CONTEXT_QUICK_ACTION_SHEET",
-            "MENU_LAST_LOCATION_RESUME",
-            "MENU_SYSTEM_SWITCHER_DRAWER",
-            "MINIMAP",
-            "MOBILE_TOUCH_ACTION",
-            "MODAL_DIALOG",
-            "MOUNT_COMMAND_WHEEL",
-            "MOUNT_EQUIPMENT_PANEL",
-            "MOUNT_INTERACTION_PROMPT",
-            "MOUNT_INVENTORY_PANEL",
-            "MOUNT_RECALL_PANEL",
-            "MOUNT_SPEED_STATE",
-            "MOUNT_STAMINA_METER",
-            "MOUNT_STATUS_HUD",
-            "MOUNT_WHISTLE_STATE",
-            "MULTI_SELECT_BAR",
-            "NAVIGATION_BREADCRUMB_BACKSTACK",
-            "NOTIFICATION_TOAST",
-            "NPC_CAMP_ACTIVITY_PANEL",
-            "NPC_CONTEXT_REACTION",
-            "NPC_INTERACTION_MENU",
-            "NPC_INTERACTION_PROMPT",
-            "NPC_MEMORY_SUMMARY",
-            "NPC_QUEST_HANDOFF",
-            "NPC_RECRUIT_DISMISS_PANEL",
-            "NPC_RELATIONSHIP_READOUT",
-            "NPC_RELATIONSHIP_TIMELINE",
-            "NPC_RUMOR_KNOWLEDGE_PANEL",
-            "NPC_SCHEDULE_AVAILABILITY",
-            "NPC_SERVICE_MENU",
-            "NPC_TOPIC_BROWSER",
-            "OBJECT_TRANSFORM_PANEL",
-            "ONE_HAND_BOTTOM_NAV",
-            "OWNERSHIP_PERMISSION_PANEL",
-            "PARRY_TIMING_INDICATOR",
-            "PARTY_MEMBER_STATUS",
-            "PARTY_ROLE_OVERVIEW",
-            "PARTY_TACTICS_PANEL",
-            "PASSENGER_LIST",
-            "PAUSE_MENU",
-            "PLACEMENT_GHOST_STATE",
-            "PLACEMENT_VALIDITY_BANNER",
-            "POPUP_PANEL",
-            "PRESENTATION",
-            "PRIMARY_TOUCH_ACTION",
-            "PROCESSING_MACHINE_PANEL",
-            "QUEST_DEPENDENCY_CHAIN",
-            "QUEST_LOG",
-            "QUEST_SUMMARY",
-            "QUEST_TRACKER",
-            "QUICK_SLOT_BAR",
-            "RADIAL_MENU",
-            "READ_INSPECT_PANEL",
-            "RECENT_ITEMS_PANEL",
-            "RECIPE_DETAIL_PANEL",
-            "RECIPE_PREREQUISITE_CHAIN",
-            "REPAIR_BUILDING_PANEL",
-            "REPAIR_PANEL",
-            "RIDE_SEAT_SELECTOR",
-            "ROOM_SCORE_PANEL",
-            "ROUTE_RISK_PREVIEW",
-            "SEARCH_FIELD",
-            "SEAT_INTERACTION_PROMPT",
-            "SEAT_SWITCH_PANEL",
-            "SETTINGS_PANEL",
-            "SETTLEMENT_OVERVIEW",
-            "SET_BONUS_PANEL",
-            "SET_PROGRESS_TRACKER",
-            "SHOP_FULL_SCREEN",
-            "SHOP_ITEM",
-            "SHOP_PRICE_DELTA_COMPARE",
-            "SIDE_NAVIGATION",
-            "SLOT_INVENTORY",
-            "SNAP_INDICATOR",
-            "SOCKET_ENCHANT_PANEL",
-            "SOCKET_ROUTE_PREVIEW",
-            "SORT_CONTROL",
-            "STABILITY_METER",
-            "STACK_SPLIT_DIALOG",
-            "STASH_SCREEN",
-            "STASH_TRANSFER_QUEUE",
-            "STATUS_EFFECT",
-            "STATUS_EFFECT_TIMELINE",
-            "TAB_NAVIGATION",
-            "TERRAIN_ACCESS_WARNING",
-            "THREAT_EDGE_INDICATOR",
-            "TOP_BAR",
-            "TRAVEL_PROGRESS_HUD",
-            "TRAVEL_ROUTE_PANEL",
-            "UI_PACK",
-            "UNDO_REDO_BAR",
-            "UPGRADE_PANEL",
-            "UPKEEP_DECAY_PANEL",
-            "VEHICLE_CONTROL_HINTS",
-            "VEHICLE_DAMAGE_STATUS",
-            "VENDOR_STOCK_STATE",
-            "WAVE_FORECAST_RIBBON",
-            "WORLD_PROP_ACTION_WHEEL",
-            "WORLD_PROP_INTERACTION_PROMPT"
-          ],
           "VFX": [
             "ATTACK_TELEGRAPH_PRESENTATION",
             "BLOCK_CONTACT",
@@ -2123,17 +913,6 @@
           },
           {
             "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
-            }
-          },
-          {
-            "family": "CHARACTER",
             "action": "HOLD",
             "assetId": null,
             "reason": "ROLE_REQUIREMENT_UNRESOLVED",
@@ -2210,19 +989,6 @@
             }
           },
           {
-            "family": "UI",
-            "action": "USE",
-            "assetId": "roblox-rpg-system-menu-v1",
-            "applicationMode": "USE_AS_IS",
-            "reason": "CURRENT_SOURCE_BOUND_READY",
-            "roleEvidence": {
-              "requestedRoles": [],
-              "matchedRoles": [],
-              "currentSourceBound": true,
-              "verifiedRoleMatch": true
-            }
-          },
-          {
             "family": "VFX",
             "action": "HOLD",
             "assetId": null,
@@ -2247,185 +1013,6 @@
         ]
       }
     },
-    "assetFacts": {
-      "roblox-rpg-system-menu-v1": {
-        "family": "UI",
-        "roleEvidence": {
-          "requestedRoles": [],
-          "matchedRoles": [],
-          "currentSourceBound": true,
-          "verifiedRoleMatch": true
-        },
-        "role": "SLOT_INVENTORY",
-        "sourcePath": "/assets/roblox/rpg-menu/RPGMenu.luau",
-        "platform": "ROBLOX",
-        "license": "project-original",
-        "referenceOnly": false,
-        "auditScore": 882.2,
-        "auditState": "UNKNOWN",
-        "qualityGap": null,
-        "runtimeState": "PENDING_STUDIO",
-        "productionVerified": false
-      }
-    }
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-        "kind": "HARD_GATE",
-        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "aToB": false,
-          "bToA": false,
-          "unconnected": [
-            "A",
-            "B"
-          ],
-          "ruleIds": [
-            "signatureSystems[0]",
-            "signatureSystems[1]",
-            "signatureSystems[2]",
-            "DELVE[3]"
-          ]
-        },
-        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ],
-    "local_authoring_parts::724f26d5c01eee8915d4b0622271cba05ae938fb7ec09e5d10ce8836b2619e8e:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:2": 1,
-    "designer_draft_slices::identity-core": 1,
-    "local_authoring_parts::724f26d5c01eee8915d4b0622271cba05ae938fb7ec09e5d10ce8836b2619e8e:signatureSystems:2": 2
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
-      "creativeGrammar": {
-        "mainIdentity": "초원 런 보스 격파 및 동료 해금",
-        "a": {
-          "system": "포탈 전투",
-          "material": "10종 초원 몬스터 + 비밀 숲 히든 보스",
-          "materialDomain": "전투/보스 동료 해금",
-          "stateChange": "보스 첫 처치 → 동료 해금 → 파티 조합 확장"
-        },
-        "b": {
-          "system": "AI 파티 토글",
-          "material": "플레이어 1명 + 해금한 보스 동료 최대 3명",
-          "materialDomain": "파티 관리",
-          "stateChange": "동료 리더 레벨 자동 동기화 → 별도 장비 없음"
-        },
-        "abCausality": "A→B: 포탈 전투 상태 변화; B→A: 파티 토글 상태 교환; C: 보스 동료 주제/메인 장르 (보스, AI)과 보조 장르 (장비, 방어구)",
-        "abEvolution": {
-          "aChangesB": "A→B: 15킬 파티사냥 → B→A: 보스 격파/해금",
-          "bChangesA": "B→A: 파티 토글 사용 → A→B: 동료 조합 확장",
-          "lateGameChange": "C의 두 창작 소재와 메인/보조 장르를 인과적으로 결합하여 새 정체성 생성"
-        },
-        "materialFusion": {
-          "contrast": "주제/소재 대비: 보스 vs. 장비/방어구, 메인 vs. 보조 장르",
-          "causalBridge": "A/B 상태 교환을 통해 실제 선택·규칙·사건 변주",
-          "removalConsequence": "C의 두 소재 및 주/보조 장르가 게임 세계에 직접적인 변화를 유발"
-        },
-        "storyCausalChain": {
-          "cause": "초원 런 시작 시 Seed로 재조합됨",
-          "characterConflict": "플레이어 + 보스 동료 갈등 발생 시 새로운 선택 가능",
-          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정",
-          "worldChange": "15킬 파티사냥 결과로 기여도 증가 및 보상 제공",
-          "nextEvent": "마을 귀환/회복/강화 과정 시작 또는 보스 동료 해금 확장"
-        },
-        "cThemes": [
-          {
-            "name": "보스",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전투력 증가, 보상 제공, 파티 조합 확장"
-          },
-          {
-            "name": "장비",
-            "kind": "MATERIAL",
-            "gameplayEffect": "무기/방어구 성장, 유물 특성 바꾸기"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "3D 액션 RPG",
-            "gameplayEffect": "전투·갈등·위험 중심의 플레이"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "포탈 전투",
-            "gameplayEffect": "실질적 인과 변화를 주는 상태 교환"
-          }
-        ],
-        "cGenreInterlock": "C의 두 소재와 메인/보조 장르가 게임 세계에 직접적인 변화를 유발하며 상호작용 시 새로운 플레이 생성",
-        "cWorldAndGameplayEffect": "C의 두 창작 소재 및 주/보조 장르로 인해 실제 선택·세계 변화 발생",
-        "delveDiscoveries": [
-          {
-            "clue": "초원 런 시작 시 Seed로 재조합됨",
-            "discovery": "10종 초원 몬스터 + 비밀 숲 히든 보스",
-            "newChoice": "AI 파티 토글 사용, 동료 조합 확장"
-          },
-          {
-            "clue": "플레이어 1명 + 해금한 보스 동료 최대 3명",
-            "discovery": "15킬 파티사냥 결과",
-            "newChoice": "마을 귀환/회복/강화 과정 시작 또는 보스 동료 해금 확장"
-          },
-          {
-            "clue": "보스 첫 처치 → 동료 해금 → 파티 조합 확장",
-            "discovery": "파티 토글 클릭으로 파티 구성 결정",
-            "newChoice": "동료 리더 레벨 자동 동기화, 별도 장비 없음"
-          },
-          {
-            "clue": "보스 동료는 리더 레벨 자동 동기화",
-            "discovery": "보스 격파/해금 결과",
-            "newChoice": "보스 동료의 고유 실루엣과 핵심 이펙트를 그대로 계승"
-          }
-        ],
-        "delveGrowthRule": "C의 두 창작 소재와 주/보조 장르에 따라 무한 발전 규칙 적용",
-        "finalGameIdentity": "초원 런 보스 격파 및 동료 해금을 통해 새 정체성 생성"
-      },
-      "playerFantasy": "AI 파티 토글 사용, AI 유저와 파티 구성, 보스 공략, 전투력 증가, 기여도 확대",
-      "coreFun": "{A→B: 포탈 전투 상태 변화; B→A: 파티 토글 상태 교환; C: 보스 동료 주제/메인 장르 (보스, AI)과 보조 장르 (장비, 방어구)}",
-      "coreLoop": [
-        "마을에서 퀘스트와 장비 준비",
-        "포탈로 사냥터 이동",
-        "몬스터 직접 전투",
-        "보스 첫 처치로 AI 동료 해금",
-        "15마리 파티사냥과 기여도 보상",
-        "플레이어 + 보스 동료 최대 3명 편성",
-        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
-        "마을 귀환/회복/강화"
-      ],
-      "multiplayerMode": "COOP"
-    }
-  },
-  "localAuthoringSplits": {
-    "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:37:46.210Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+    "assetFacts": {}
+  }
 }
