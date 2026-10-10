@@ -104,25 +104,40 @@
         "STATE CHANGE: Elemental node control is lost due to environmental factors or player decision",
         "OUTPUT: Skill tree optimization and enhanced combat mechanics are triggered"
       ]
+    },
+    "local_authoring_parts::5bb84f682d05308e03601cc05ccd06ca1af415d4a3c3cff6515608a9eaa660d9:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_rock",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Node Activation: 선택된 원소 노드가 활성화됨",
+        "Skill Synergy: 전투 중 공명 스킬 및 연쇄 반응이 유도됨"
+      ],
+      "stateOutputs": [
+        "Combat Enhancement: 전투 결과에 따라 강력한 효과가 적용됨",
+        "Elemental Fusion: 수정의 가지와 영웅의 원소 속성이 시너지로 연결됨"
+      ],
+      "name": "Rock Element Node Activation",
+      "purpose": "플레이어가 획득한 마력 파편을 소모하여 수정의 가지를 뻗어나가며, 영웅 전체에게 적용되는 고유 원소 버프와 특수 효과를 선택적으로 활성화합니다.",
+      "playerChoice": "대지"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 269521,
-      "lastMs": 41310,
+      "totalMs": 307625,
+      "lastMs": 38104,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:18:50.175Z"
+      "updatedAt": "2026-10-10T09:19:28.281Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:14:20.633Z",
-  "updatedAt": "2026-10-10T09:18:50.176Z",
+  "updatedAt": "2026-10-10T09:19:28.282Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1398,7 +1413,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:18:50.175Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:19:28.281Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
