@@ -19,6 +19,20 @@ $ownerDecisionPath = Join-Path $repoRoot '.jaewoon-owner-decision.txt'
 $directivePath = Join-Path $repoRoot 'company-directive.json'
 $logPath = Join-Path $env:TEMP 'jaewoon-company-ai.log'
 
+# Use the active Unity project, not a hard-coded single-game director target.
+$localProjectId = Split-Path $resolvedProject -Leaf
+$blenderBinary = [string]$env:VIBE2_BLENDER_BINARY
+if (-not $blenderBinary -or -not (Test-Path -LiteralPath $blenderBinary)) {
+    $blenderCommand = Get-Command blender.exe -ErrorAction SilentlyContinue
+    $blenderBinary = if ($blenderCommand) { [string]$blenderCommand.Source } else { '' }
+}
+if ($blenderBinary -and (Test-Path -LiteralPath $blenderBinary)) {
+    $env:VIBE2_BLENDER_BINARY = $blenderBinary
+} else {
+    $blenderBinary = 'NOT_INSTALLED'
+    Remove-Item Env:VIBE2_BLENDER_BINARY -ErrorAction SilentlyContinue
+}
+
 # Gemini CLI stopped serving individual/free accounts in June 2026.
 # Antigravity CLI is the current Google individual/free terminal path.
 # Copilot is last and disabled by default because its CLI credit cap is not an included-only billing guard.
@@ -177,7 +191,13 @@ function Build-DirectorPrompt($State) {
     return @"
 You are the active director AI for Jaewoon Company. Perform one real autonomous company work unit. Do not wait for a person to open VS Code or repeat instructions.
 
-Read and follow these files first:
+Read and verify the current central machine policy documents before modifying or publishing anything:
+- company-learning/platform-release-roadmap.json
+- company-learning/company-log-map.json
+- company-learning/company-architecture-map.json
+- company-learning/security-immune-system.json
+
+Read and follow these files:
 - company-directive.json
 - .github/agents/director.agent.md
 - .github/agents/homepage.agent.md
@@ -196,10 +216,14 @@ OWNER DIRECTIVE STATUS:
 Current company-directive.json:
 $($directive.raw)
 
-Priority game project: unity-games/daechung-rpg
-The web-games directory is read-only reference material. Never edit, delete, rename, or regenerate files under web-games/.
+Connected local Unity Editor project: unity-games/$localProjectId
+Persistent Blender executable: $blenderBinary
+The connected editor project is a session context, not a restriction to one game. Select eligible Unity Web games from the existing DEVELOPMENT_CONFIRMED pipeline and company-runtime queue.
+Author native 3D geometry, materials and motion with the installed Blender executable when available; inspect exported GLB/FBX and register verified assets in the existing company asset library. If Blender is unavailable, report that actual asset production was blocked, not passed.
+Use the real installed Unity Editor and existing localhost-only Unity MCP for scenes, GameObjects, components, scripts, compilation and runtime QA. If the editor or MCP is unavailable, use the existing canonical Unity Web build workflow; never invent editor or runtime PASS evidence.
+Preserve all gameplay, save data, combat numbers, existing source and exact Unity Web browser QA and deployment checks.
+The web-games directory is read-only reference material for local AI changes; use existing canonical Unity source/build and verified publication pipelines.
 Homepage operations are a standing company responsibility, not a one-time redesign. Keep index.html, company.html, game classification, mobile layout, links, status labels, and useful site features healthy as the catalog grows.
-If Unity MCP is available, use the real Unity Editor/MCP for scenes, GameObjects, components, scripts, compilation, tests, and verification.
 
 Operating rules:
 1. If the owner directive revision is pending, it is the highest-priority company work. Start it now and do not choose the normal autonomous plan first.
