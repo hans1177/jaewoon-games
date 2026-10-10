@@ -104,25 +104,40 @@
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ]
+    },
+    "local_authoring_parts::7ac24c557f653f0da9bec24a32ee611523f2a3d57eb3eb6fb7b3a09910c7b26f:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "defensiveStrategyAdaptation",
+        "resourceAllocationDecision"
+      ],
+      "stateOutputs": [
+        "newDefensiveStrategyImplementation",
+        "adjustedResourceBudget"
+      ],
+      "name": "Battlefield Layout and Economic Management System",
+      "purpose": "Influence defensive positioning and resource allocation decisions based on battlefield layouts and economic constraints.",
+      "playerChoice": "Adapt to enemy types, manage resources, prioritize positional control over efficiency in late game."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 338340,
-      "lastMs": 48496,
+      "totalMs": 373104,
+      "lastMs": 34764,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:44:14.669Z"
+      "updatedAt": "2026-10-10T02:44:49.435Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:38:36.139Z",
-  "updatedAt": "2026-10-10T02:44:14.669Z",
+  "updatedAt": "2026-10-10T02:44:49.435Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1828,7 +1843,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:44:14.669Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:44:49.435Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
