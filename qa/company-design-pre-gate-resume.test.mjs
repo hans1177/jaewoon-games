@@ -1639,3 +1639,78 @@ test('V5 resumes valid authored states but reauthors stale natural-language role
   assert.deepEqual(writes,['checkpoint.json']);
   assert.ok(logs.some(row=>row.includes('DESIGN_INVALID_STALE_ROLE_STATE_KEYS_REAUTHOR=2')));
 });
+
+test('V5 system connections use real reciprocal MAIN A B delve state paths, not five guessed edges',async()=>{
+  const snippet=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const tasks=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const systems=[
+    {id:'main_root',grammarRole:'MAIN',name:'주요 세계 행동',stateInputs:['main_state'],stateOutputs:['main_action']},
+    {id:'a_crafting',grammarRole:'A',name:'소재 채집과 제작',stateInputs:['main_action','b_response'],stateOutputs:['main_state','a_action']},
+    {id:'b_combat',grammarRole:'B',name:'위협 전투와 협상',stateInputs:['a_action','delve_response'],stateOutputs:['b_response','b_action']},
+    {id:'delve_secrets',grammarRole:'DELVE',name:'숨겨진 숙련과 비밀',stateInputs:['b_action'],stateOutputs:['delve_response']}
+  ];
+  const handoffs=[];
+  for(const from of systems)for(const to of systems){
+    if(from.id===to.id)continue;
+    const stateKeys=from.stateOutputs.filter(key=>to.stateInputs.includes(key));
+    if(stateKeys.length)handoffs.push({fromId:from.id,toId:to.id,stateKeys});
+  }
+  const names=Object.fromEntries(systems.map(row=>[row.id,row.name]));
+  const roles=Object.fromEntries(systems.map(row=>[row.grammarRole,row.id]));
+  const grammarContext={
+    authoredRuleHandoffs:{ruleIds:systems.map(row=>row.id),handoffs},
+    authoredRuleNames:names,authoredRuleRoles:roles
+  };
+  const edgeSchema={type:'object',
+    required:['fromSystem','toSystem','trigger','stateChange','fromId','toId','stateKeys'],
+    properties:{
+      fromSystem:{type:'string'},toSystem:{type:'string'},trigger:{type:'string'},
+      stateChange:{type:'string'},fromId:{type:'string'},toId:{type:'string'},
+      stateKeys:{type:'array',minItems:1,items:{type:'string'}}
+    },additionalProperties:false
+  };
+  const schema={type:'object',required:['systemInterconnections'],properties:{
+    systemInterconnections:{type:'array',minItems:5,maxItems:24,items:edgeSchema}
+  },additionalProperties:false};
+  const calls=[],checkpoint={tasks:{}};
+  const run=runInNewContext(tasks+'\n'+snippet+'\ncallLocalDesignerModel',{
+    seedGameplaySketchVersion:5,createHash,localDesignerFallbackReady:true,
+    designAssetLibraryContext:{},localDesignerCallTimeoutMs:300000,localDesignerModel:'local',
+    designerRoute:{id:'ollama:local'},gameId:'causal-edges',game:{name:'창작 인과 검증'},
+    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'연결되는 세계 인과'},
+    clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
+    console:{log(){}},clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,
+    normalizeSchemaValue:v=>v,assertSchemaValue:assertDesignSchema,
+    recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(prompt,{schema:requested})=>{
+      calls.push({prompt,keys:Object.keys(requested.properties)});
+      return JSON.stringify({
+        fromSystem:'실제 작성된 출발 시스템과 상태 전이',
+        toSystem:'실제 작성된 도착 시스템과 상태 전이',
+        trigger:'플레이어가 기존 상태를 변경하면 도착 규칙의 조건을 평가한다',
+        stateChange:'공유된 실제 상태가 달라져 선택 가능한 대응과 다음 행동이 달라진다'
+      });
+    }
+  });
+  const output=await run('designer','MAIN × A × B × C + @ causal state design',
+    schema,{predict:1000,includeAssetContext:false,grammarContext});
+  const rows=JSON.parse(JSON.stringify(output.systemInterconnections));
+  assert.equal(rows.length,6,'reciprocal four-role chain needs six edges, not a fixed five');
+  assert.equal(calls.length,6);
+  assert.ok(calls.every(row=>row.keys.join(',')==='fromSystem,toSystem,trigger,stateChange'),'source references must not be model-generated');
+  assert.ok(rows.every(row=>handoffs.some(edge=>edge.fromId===row.fromId&&edge.toId===row.toId
+    &&JSON.stringify(edge.stateKeys)===JSON.stringify(row.stateKeys))),'no invented source or state keys');
+  const walk=(from,to)=>{
+    const seen=new Set(),pending=[from];
+    while(pending.length){
+      const id=pending.shift();
+      if(id===to)return true;
+      if(seen.has(id))continue;
+      seen.add(id);
+      for(const row of rows.filter(row=>row.fromId===id))pending.push(row.toId);
+    }
+    return false;
+  };
+  assert.ok(walk('a_crafting','b_combat')&&walk('b_combat','a_crafting'));
+  assert.ok(systems.every(row=>walk('main_root',row.id)&&walk(row.id,'main_root')));
+});
