@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 작은 섬에서 직접 나무와 식량을 모으며, 주민 자동화와 병사 진군을 통해 5개 전략 거점을 점령하는 협동 왕국 성장 게임에 참여해야 한다. 이 과정에서는 자신의 역할을 수행하며, 다양한 선택과 결과를 경험해 체험적인 플레이를 증대시켜야 한다.",
       "coreFun": "손으로 시작한 작은 섬이 주민 자동화와 병사 진군으로 실제 움직이는 왕국이 되고, 5개 거점을 하나씩 점령하며 확장되는 성장감을 느끼게 된다."
+    },
+    "local_authoring_parts::7baf44e0333acf820fa350f141113ff87b9f8b611602dfa8341d3499f6eb04f3:coreLoop": {
+      "coreLoop": [
+        "INPUT/SELECT: 직접 채집 -> 상태변화: 획득 -> 보상: 자동전투",
+        "INPUT/SELECT: 주민 고용 -> 상태변화: 자동화 -> 보상: 반복 노동",
+        "INPUT/SELECT: 병사 진군 -> 상태변化: 전환 -> 보상: 병영 강화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 518270,
-      "lastMs": 62695,
+      "totalMs": 582238,
+      "lastMs": 63968,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T06:22:09.646Z"
+      "updatedAt": "2026-10-10T06:23:13.617Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:13:31.355Z",
-  "updatedAt": "2026-10-10T06:22:09.648Z",
+  "updatedAt": "2026-10-10T06:23:13.617Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -706,7 +713,7 @@
   "localAuthoringSplits": {
     "f395a8ef0a09dff7c606e410afbfc540b7152cec71bf149cc591f5de1155cb46": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T06:22:09.648Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T06:23:13.617Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
