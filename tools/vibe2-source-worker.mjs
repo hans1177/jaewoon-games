@@ -620,6 +620,61 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         }
         const glbInspection=/\.glb$/i.test(nativeArtifact.path)?masterGlbQa?.inspection||inspectVibeSourceGlb({repoRoot:cwd,source:{path:nativeArtifact.path,sourceHash:nativeArtifact.sha256}}):null;
         if(glbInspection&&glbInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT')throw new Error('NATIVE_GLB_DATA_QA_FAILED:'+clean(recipe?.id)+':'+(glbInspection.issues||[]).join(','));
+        // 공용 오픈소스 모델·의류·게임 오브젝트·설계·비식별 의료·애니·영상의 실제 출력 증거 검증.
+        const moduleName=clean(recipe?.module||'auto').toLowerCase();
+        if(moduleName!=='auto'){
+          const proof=evidence?.openSourceModule;
+          const validKinds=['mesh-ai','human','clothing','object','design','medical','animation','video'];
+          if(!validKinds.includes(moduleName)||proof?.kind!==moduleName
+            ||proof.runtimeVerified!==false||typeof proof.source?.source!=='string'
+            ||proof.source.source.length<10||proof.source.license===undefined){
+            throw new Error('NATIVE_OPEN_SOURCE_MODULE_PROVENANCE_INVALID:'+clean(recipe?.id));
+          }
+          const previewNames=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
+          if(!Array.isArray(evidence?.multiViewPreview)
+            ||previewNames.some(name=>!evidence.multiViewPreview.includes(name)
+              ||!generated.some(row=>row.path===posix(path.join(path.dirname(evidenceJson),name))))){
+            throw new Error('NATIVE_OPEN_SOURCE_MULTIVIEW_MISSING:'+clean(recipe?.id));
+          }
+          const originalModelPath=clean(recipe?.sourceModel);
+          if(originalModelPath){
+            const modelPath=dccRepoPath(originalModelPath),full=path.resolve(cwd,modelPath);
+            const provenance=evidence?.sourceMesh;
+            if(!modelPath.startsWith('assets/')||!fs.existsSync(full)||!fs.statSync(full).isFile()
+              ||provenance?.sourcePath!==modelPath||provenance.sourceSha256!==sha256File(full)
+              ||provenance.sourceFileImmutable!==true
+              ||(moduleName==='medical'&&(provenance.sanitizedAsserted!==true||proof.clinicalDiagnosisAllowed!==false))
+              ||(recipe.sourceLicense&&clean(provenance.license).toLowerCase()!==clean(recipe.sourceLicense).toLowerCase())){
+              throw new Error('NATIVE_OPEN_SOURCE_IMPORTED_MODEL_UNVERIFIED:'+clean(recipe?.id));
+            }
+          }
+          if(moduleName==='human'&&(!(glbInspection?.inventory?.skins||[]).length
+            ||!(glbInspection?.inventory?.animations||[]).length
+            ||!(glbInspection?.inventory?.meshSkinBindingCount>0))){
+            throw new Error('HUMAN_NATIVE_SKIN_AND_ANIMATION_REQUIRED:'+clean(recipe?.id));
+          }
+          if(moduleName==='animation'||moduleName==='video'){
+            const videoProof=evidence?.videoExport;
+            const videoPath=posix(path.join(path.dirname(evidenceJson),'preview-motion.mp4'));
+            const videoFile=path.resolve(cwd,videoPath);
+            const glbClips=glbInspection?.inventory?.animations||[];
+            if(!glbClips.length||!(evidence?.motionClips||[]).length
+              ||!videoProof||videoProof.path!=='preview-motion.mp4'
+              ||videoProof.actualFramesRendered!==true||videoProof.runtimeVerified!==false
+              ||videoProof.frames!==24||videoProof.fps!==12
+              ||videoProof.codec!=='MPEG4'||videoProof.format!=='MP4'
+              ||videoProof.sourceGlbSha256!==nativeArtifact.sha256
+              ||!fs.existsSync(videoFile)||fs.statSync(videoFile).size<1024
+              ||videoProof.sha256!==sha256File(videoFile)
+              ||!generated.some(row=>row.path===videoPath&&row.sha256===videoProof.sha256)){
+              throw new Error('NATIVE_OPEN_SOURCE_ANIMATION_VIDEO_OUTPUT_UNVERIFIED:'+clean(recipe?.id));
+            }
+            const header=fs.readFileSync(videoFile).subarray(0,12);
+            if(header.length<12||header.toString('ascii',4,8)!=='ftyp')
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID:'+clean(recipe?.id));
+          }
+        }
+
         const applicationOutput=generated.find(row=>row.path.endsWith('/application.json'));
         let platformApplication=null;
         if(applicationOutput){
