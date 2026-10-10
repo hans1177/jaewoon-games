@@ -2300,7 +2300,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   };
 }
 
-function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[]}={}){
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
@@ -2308,7 +2308,28 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
   const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
-  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const declaredTaskRecipes=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const requestedCareerId=clean(task?.commonCareerId).toUpperCase();
+  const requestedCareerClip=clean(task?.commonMotionClip);
+  const registeredCareerAsset=Array.isArray(registry?.assets)
+    ?registry.assets.find(asset=>asset?.id==='shared-humanoid-motion-v1'):null;
+  const availableCareerRecipes=registeredCareerAsset?.availableCareerMotionRecipes||[];
+  // 공용 클립은 원본 1개 + 모션 1개 단위로 승인한다. 14개 후보를 한 작업에 일괄 실행하지 않는다.
+  const validCareerPath=requestedCareerId
+    ?createCommonCareerMotionLoadout({careerId:requestedCareerId,platform:'SHARED'}).careerPath:[];
+  const requestedCareerCandidates=!internalMotion&&!declaredTaskRecipes.length
+    ?availableCareerRecipes.filter(recipe=>
+      (!requestedCareerClip||recipe.clipId===requestedCareerClip)
+      &&(!requestedCareerId||validCareerPath.includes(clean(recipe.careerId).toUpperCase())))
+    :[];
+  requestedCareerCandidates.sort((a,b)=>
+    validCareerPath.indexOf(clean(b.careerId).toUpperCase())-validCareerPath.indexOf(clean(a.careerId).toUpperCase())
+    ||clean(a.id).localeCompare(clean(b.id)));
+  if(requestedCareerClip&&(!availableCareerRecipes.some(recipe=>recipe.clipId===requestedCareerClip)
+    ||(requestedCareerId&&requestedCareerCandidates.length===0&&!declaredTaskRecipes.length)))
+    throw new Error('COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED:'+requestedCareerClip);
+  const selectedCareerRecipe=requestedCareerCandidates[0]||null;
+  const explicitRecipeRows=selectedCareerRecipe?[selectedCareerRecipe]:declaredTaskRecipes;
   const explicitRecipeTypes=unique(explicitRecipeRows.flatMap(recipe=>[
     ...(Array.isArray(recipe?.types)?recipe.types:[]),
     clean(recipe?.type)
@@ -2398,6 +2419,16 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
+      sharedCareerSource:freeze({
+        selectedClip:selectedCareerRecipe?.clipId||null,
+        selectedCareer:selectedCareerRecipe?.careerId||null,
+        sourceAssetId:selectedCareerRecipe?.assetId||null,
+        sourceFormat:'PLATFORM_NEUTRAL_SKINNED_GLTF',
+        selectedFromExistingCompanyRegistry:selectedCareerRecipe!==null,
+        oneObjectOneClipWorkUnit:true,unverifiedUntilNativeRuntime:true,
+        sharedAssetSourceIsNotEngineSpecific:true,
+        externalGameplayAuthority:false
+      }),
       coveredTypes:freezeList(coveredDccTypes),
       uncoveredTypes:freezeList(uncoveredDccTypes),
       genericRecipeCount:normalizedGeneric.length,
@@ -4012,6 +4043,7 @@ export function buildVibeAssetProductionPlan({
     task,
     decisions,
     manifest:manifestInput,
+    registry:selectionRegistry,
     explicitRequestedTypes:selector.explicitRequestedTypes||[]
   });
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
