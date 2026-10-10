@@ -649,11 +649,13 @@ elif ARGS.source_image:
     image_mesh_asset()
     if ARGS.module in ('clothing','design'):
         MODULE_PROVENANCE={'kind':ARGS.module,'source':OPEN_SOURCE_MODULES[ARGS.module],
-                           'method':'TRIPOSR_IMAGE_MESH_THEN_BLENDER_RECONSTRUCTION',
+                           'method':'LICENSE_VERIFIED_OFFLINE_3D_MODEL_THEN_BLENDER_RECONSTRUCTION',
                            'generatedGeometry':True,'runtimeVerified':False}
     else:
         MODULE_PROVENANCE={'kind':'mesh-ai','source':OPEN_SOURCE_MODULES['mesh-ai'],
-                           'method':'LOCAL_TRIPOSR_INFERENCE','generatedGeometry':True,
+                           'method':'LOCAL_TRELLIS2_INFERENCE' if IMAGE_PROVENANCE['modelTier']=='HIGH_FIDELITY' else 'LOCAL_TRIPOSR_INFERENCE',
+                           'model':IMAGE_PROVENANCE['model'],'modelTier':IMAGE_PROVENANCE['modelTier'],
+                           'generatedGeometry':True,
                            'runtimeVerified':False}
 elif ARGS.module == 'human':
     human_asset()
