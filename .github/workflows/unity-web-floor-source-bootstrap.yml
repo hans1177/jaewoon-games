@@ -17,6 +17,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   bootstrap:
@@ -159,6 +160,9 @@ jobs:
             git fetch --no-tags origin main
             git cat-file -e "origin/main:unity-games/$GAME_ID"
             echo "UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED=$GAME_ID:$pr_number"
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+              -f game_id="$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED
+            echo "UNITY_WEB_BOOTSTRAP_WEBGL_DISPATCHED=$GAME_ID"
             echo 'UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED'
             exit 0
           done <<< "$candidate_prs"
@@ -178,4 +182,7 @@ jobs:
           git fetch --no-tags origin main
           git cat-file -e "origin/main:unity-games/$GAME_ID"
           echo "UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED=$GAME_ID:NEW_PR"
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_id="$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED
+          echo "UNITY_WEB_BOOTSTRAP_WEBGL_DISPATCHED=$GAME_ID"
           echo 'UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED'
