@@ -30,9 +30,9 @@ permissions:
   actions: write
 
 concurrency:
-  # One canonical runtime: finish the active checkpointed batch; engine changes enter the next batch.
+  # 기존 실행의 게임별 체크포인트는 보존하고, 오래된 대기 설계 대신 최신 main 설계만 다음 순서로 유지한다.
   group: company-seed-design-runtime
-  queue: max
+  queue: single
   cancel-in-progress: false
 
 env:
