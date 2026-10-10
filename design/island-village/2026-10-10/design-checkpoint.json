@@ -97,25 +97,33 @@
       },
       "playerFantasy": "무인도 마을에서 플레이어는 Gather a focused set of island resources.을 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
       "coreFun": "플레이어는 무인도 마을에서 자원을 수집하며, 이 과정에서 다양한 전략과 경로를 선택하여 성장의 가능성에 따라 실제 변화를 경험하게 된다."
+    },
+    "local_authoring_parts::142037fa070280485837fa0ac1516cf56fa0f78d81bdf689e6881859ac8100df:coreLoop": {
+      "coreLoop": [
+        "INPUT: PLAYER_ACTION_OF_GATHERING_RESOURCES",
+        "STATE_CHANGE: RESOURCE_COLLECTION_STARTED",
+        "OUTPUT: PATH_SELECTION_TO_SECRET_CAVE",
+        "ACTION: ACTION_PLAN_CHANGED_TO_AVOID_RISK"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 286756,
-      "lastMs": 286756,
+      "totalMs": 337325,
+      "lastMs": 50569,
       "lastError": null,
-      "updatedAt": "2026-10-10T08:37:24.681Z"
+      "updatedAt": "2026-10-10T08:38:15.252Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:32:37.907Z",
-  "updatedAt": "2026-10-10T08:37:24.681Z",
+  "updatedAt": "2026-10-10T08:38:15.260Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1757,8 +1765,8 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T08:37:24.681Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T08:38:15.252Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
