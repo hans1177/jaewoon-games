@@ -1329,10 +1329,15 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const itemKey=`${identity}:${field}:${index}`;
           const itemTaskKey=`local_authoring_parts::${itemKey}`;
           const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
+          const previousRole=grammarRole==='B'?'A':grammarRole==='c'?'B':'MAIN';
+          const previousRule=grammarRole?rows.find(row=>row.grammarRole===previousRole):null;
+          const previousRead=previousRule?.stateOutputs||[];
+          const previousWrite=previousRule?.stateInputs||[];
+          const originalSystemHint=grammarRole?(typeof seed!=='undefined'?seed?.originalDesignContext?.content?.signatureSystems?.[index]||null:null):null;
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\nORIGINAL_ROLE_REFERENCE=${JSON.stringify(originalSystemHint)}\nROLE_MUST_READ_PRIOR_OUTPUT=${JSON.stringify(previousRead)}\nROLE_MUST_WRITE_PRIOR_INPUT=${JSON.stringify(previousWrite)}\n이전 역할이 변경하는 기존 상태 키를 정확히 입력으로 읽고 이전 역할이 읽는 상태 키를 출력으로 변경해 A와 B를 실제로 왕복 연결한다. 기존 역할 이름·목적·선택 복제는 금지한다.\n앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             const roleIssues=[];
@@ -1345,6 +1350,8 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             if([...inputKeys,...outputKeys].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
               roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
             if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
+            if(previousRule&&previousRead.length&&!inputKeys.some(key=>previousRead.includes(key)))roleIssues.push('DESIGN_GRAMMAR_HANDOFF_INPUT_MISSING');
+            if(previousRule&&previousWrite.length&&!outputKeys.some(key=>previousWrite.includes(key)))roleIssues.push('DESIGN_GRAMMAR_HANDOFF_OUTPUT_MISSING');
             if(!roleIssues.length){
               if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
               rows.push(value);break;
