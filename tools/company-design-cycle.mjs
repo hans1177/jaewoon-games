@@ -360,7 +360,7 @@ const homepageOnlyDesignCheckpointEligible=designCheckpoint?.contractVersion===D
   &&clean(designCheckpoint?.gameId)===gameId&&clean(designCheckpoint?.date)===date&&clean(designCheckpoint?.seedId)===clean(seed.seedId)
   &&checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
   &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,policyDigest:designCheckpoint.policyDigest,engineDigest:designCheckpoint.engineDigest})).digest('hex')
-  &&designCheckpoint?.phases&&designCheckpoint?.tasks&&designCheckpoint?.modelHealth;
+  &&Boolean(designCheckpoint?.phases&&designCheckpoint?.tasks&&designCheckpoint?.modelHealth);
 if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible||checkpointThreePlatformPolicyMigrationEligible||homepageOnlyDesignCheckpointEligible)){
   const previousContractVersion=Number(designCheckpoint.contractVersion||0);
   const previousEngineDigest=clean(designCheckpoint.engineDigest);
