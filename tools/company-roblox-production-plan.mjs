@@ -196,7 +196,7 @@ export const INTERFACE_INTERNAL_TOOL_MATCHERS=Object.freeze([
 ]);
 
 // 메뉴 도안: 장르별 실제 행동을 화면·버튼·복귀 관계로 연결한다. 게임 상태 변경은 기존 책임 코드가 소유한다.
-export function buildInterfaceBlueprintContract({design={},source={},files=[],mode='',focus='',enabled=false,platform='WEB'}={}){
+export function buildInterfaceBlueprintContract({design={},source={},files=[],mode='',focus='',enabled=false,platform='WEB',availableLibraryPaths=[]}={}){
   if(!enabled||mode==='EXISTING_SOURCE_REPAIR')return null;
   const requirements={identity:design.identity,genre:design.genre,coreLoop:design.coreLoop,systems:design.systemInterconnections,ux:design.uxAccessibilityPlan||{},mobileUx:design.mobileUx};
   const systemText=JSON.stringify([design.coreFun,design.coreLoop,design.signatureSystems,design.systemInterconnections,design.uxAccessibilityPlan,design.mobileUx]);
@@ -214,7 +214,69 @@ export function buildInterfaceBlueprintContract({design={},source={},files=[],mo
         integration:clean(platform).toUpperCase()==='WEB'?'REUSE_EXISTING_COMPATIBLE_HANDLER':'NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT',
         automaticImport:false,newGameplayAuthority:false,runtimeVerified:false};
     });
-  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
+
+  // 내부 전체 게임용 코드 라이브러리: 실제 저장소 인덱스에서 자동 탐색, 적용은 기존 담당 소스에서만.
+  const runtimeLibraries=unique(list(availableLibraryPaths))
+    .filter(value=>/^assets\/[a-z][a-z0-9-]*\.js$/i.test(value))
+    .filter(value=>!/^assets\/(?:vibe-|company-|department-|homepage-|artbook-|godot-)/i.test(value)
+      &&!/(?:-viewer|-audit|-generator|-selector|-plan|-evolution)\.js$/i.test(value));
+  const aliases=Object.freeze({
+    gathering:/gather|resource|harvest|mine|채집|수집|자원/i,
+    resource:/resource|gather|harvest|자원|채집/i,
+    versioning:/save|load|migration|version|저장|복구/i,
+    inventory:/inventory|equipment|backpack|인벤|장비|아이템/i,
+    equipment:/equip|loadout|armor|weapon|장비|무기/i,
+    crafting:/craft|recipe|workbench|제작|조합|레시피/i,
+    recipes:/recipe|craft|제작|레시피/i,
+    ai:/npc|enemy|behavior|agent|동료|주민|몬스터/i,
+    progression:/progress|level|xp|growth|레벨|성장/i,
+    combat:/combat|attack|battle|damage|전투|공격|피해/i,
+    vitals:/health|hp|shield|hunger|체력|허기/i,
+    save:/save|load|persist|datastore|저장|불러오기/i,
+    targeting:/target|enemy|combat|타깃|적|전투/i,
+    spawner:/spawn|wave|enemy|소환|스폰|웨이브/i,
+    wave:/wave|round|spawn|웨이브|라운드/i,
+    projectiles:/projectile|bullet|shoot|fire|투사체|발사|탄환/i,
+    animation:/animation|animator|motion|애니메이션|모션/i,
+    motion:/motion|animation|rig|모션|애니메이션/i,
+    input:/input|touch|joystick|button|입력|터치|조이스틱/i,
+    timers:/timer|countdown|cooldown|타이머|남은시간/i,
+    scene:/scene|world|region|씬|장면|지역/i,
+    flow:/flow|transition|navigation|screen|전환|화면|이동/i,
+    economy:/economy|gold|shop|money|재화|경제|상점/i,
+    loot:/loot|drop|item|reward|전리품|보상|드랍/i,
+    dialogue:/dialogue|npc|quest|대화|퀘스트/i,
+    quest:/quest|mission|dialogue|퀘스트|의뢰|대화/i,
+    skill:/skill|ability|cooldown|스킬|능력/i,
+    effects:/effect|vfx|skill|이펙트|효과/i,
+    character:/character|player|hero|캐릭터|플레이어/i,
+    graphics:/graphic|visual|render|그래픽|렌더|화면/i,
+    visual:/visual|graphic|render|ui|화면|시각/i,
+    day:/day|night|weather|낮|밤|날씨/i,
+    night:/night|day|weather|낮|밤|날씨/i,
+    turn:/turn|round|initiative|턴|차례/i,
+    state:/state|phase|status|상태|단계/i
+  });
+  const excludedTokens=new Set(['game','common','jaewoon','kit','core','runtime','system','engine','content','presets']);
+  const observed=anchors+' '+Object.entries(signals).filter(([,value])=>Number(value)>0).map(([key])=>key).join(' ');
+  const internalLibraryMatches=runtimeLibraries.map(library=>{
+    const name=library.slice('assets/'.length,-3);
+    const patterns=name.split('-').filter(token=>token.length>=3&&!excludedTokens.has(token))
+      .map(token=>aliases[token]||new RegExp(token,'i'));
+    const matching=value=>patterns.some(pattern=>pattern.test(value));
+    if(!patterns.length||(!matching(systemText)&&!matching(observed)))return null;
+    const matchedFiles=unique(list(source?.sourceAnchors).filter(row=>matching(clean(row?.symbol)+' '+clean(row?.context))).map(row=>row.file));
+    const fromSource=matching(observed);
+    return{
+      id:name.replace(/-/g,'_').toUpperCase(),library,sourceFiles:matchedFiles,
+      status:fromSource?'SOURCE_SIGNAL_MATCH_UNVERIFIED':'DESIGN_HINT_ONLY',
+      matchEvidence:{design:matching(systemText),source:fromSource},
+      optional:true,firstParty:true,automaticImport:false,newGameplayAuthority:false,
+      integration:clean(platform).toUpperCase()==='WEB'?'REUSE_EXISTING_COMPATIBLE_HANDLER':'NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT',
+      runtimeVerified:false
+    };
+  }).filter(Boolean);
+  return{version:1,required:clean(focus).toUpperCase()==='USABILITY',designFingerprint:hash(JSON.stringify(requirements)),requirements,referencePatterns,externalAlgorithms,internalToolMatches,internalLibraryMatches,firstPartyLibraryCount:runtimeLibraries.length,genreContext:clean(design.genre)||'UNSPECIFIED',screenHints:unique(internalToolMatches.flatMap(row=>row.screens)),sourceFiles:files,
     selectionRule:'OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.',
     scope:'TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES',
     schema:{version:1,designFingerprint:'exact contract fingerprint',viewport:{width:390,height:844,safeTop:0,safeBottom:0},entryId:'first screen',
@@ -412,7 +474,7 @@ export function validateSpatialBlueprint({contract=null,blueprint=null,sourceFil
 }
 
 // 메인: 같은 장르 계획을 플랫폼별 실제 책임 파일에 연결한다.
-export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={}}={}){
+export function buildRobloxProductionPlan({gameId='',platform='',design={},source={},sourceRoot='',responsibleFiles=[],previousPlan=null,focus='',repair=false,safeDesignlessMode=false,policy={},availableLibraryPaths=[]}={}){
   const requested=clean(platform).toUpperCase();
   const target=['UNITY_WEB','UNITY_APP'].includes(requested)?'UNITY':requested;
   if(!list(policy.platforms||['ROBLOX']).includes(target)||policy.status!=='ACTIVE_EXECUTABLE_CONTRACT')return null;
@@ -456,6 +518,12 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const packages=allowedRoles.map(role=>({role,files:roles.filter(row=>row.role===role).map(row=>row.file),
     implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
+  const interfaceContract=buildInterfaceBlueprintContract({design,source,files,mode,focus,platform:requested,enabled:policy.spatialBlueprint?.enabled===true,availableLibraryPaths});
+  const libraryReuseContract=interfaceContract?{
+    status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
+    candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
+    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false
+  }:null;
   return {
     version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
@@ -473,7 +541,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:buildInterfaceBlueprintContract({design,source,files,mode,focus,platform:requested,enabled:policy.spatialBlueprint?.enabled===true}),
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -498,7 +566,7 @@ export function productionBlueprintContractsForFiles(plan,{responsibleFiles=[]}=
   const interfaceOwner=packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))||files.some(file=>/ui|hud|menu|interface/i.test(file.split('/').at(-1)));
   const scoped=(contract,owner)=>contract?{
     ...contract,sourceFiles:files,required:contract.required===true&&owner&&files.length>0,
-    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],screenHints:[],referencePatterns:[]}:{}),
+    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],screenHints:[],referencePatterns:[]}:{}),
     ...(!owner&&contract.macroSketch?.proceduralWorldStudy?{macroSketch:{...contract.macroSketch,proceduralWorldStudy:undefined,authoredLayout:{...contract.macroSketch.authoredLayout,proceduralWorld:undefined}}}:{})
   }:null;
   return{spatial:scoped(plan?.spatialBlueprintContract,spatialOwner),interface:scoped(plan?.interfaceBlueprintContract,interfaceOwner)};
@@ -511,12 +579,23 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     return path&&!path.split('/').includes('..')&&(file===path||file.endsWith('/'+path));
   }))})).filter(row=>row.files.length);
   const blueprints=productionBlueprintContractsForFiles(plan,{responsibleFiles});
+  const scopedFiles=packages.flatMap(row=>row.files);
+  const libraryCandidates=list(plan.libraryReuseContract?.candidates)
+    .filter(row=>!responsibleFiles.length||list(row.sourceFiles).some(file=>scopedFiles.includes(file)));
   return [
     prefix+'CONCEPT='+JSON.stringify({genre:plan.genreProfile,identity:plan.conceptIdentity,mode:plan.mode,coreAction:plan.coreAction}),
     prefix+'IDEA='+JSON.stringify(plan.selectedIdea),
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
+    ...(libraryCandidates.length?[
+      prefix+'LIBRARY_MATCH='+JSON.stringify({
+        firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
+        candidates:libraryCandidates,assetLibrarySelection:plan.libraryReuseContract.assetLibrarySelection,
+        automaticImport:false,runtimeVerified:false
+      }),
+      prefix+'LIBRARY_RULE=Consider all currently available first-party game runtime libraries by actual game source evidence. Select only relevant, compatible matches within owned source. Use existing graphics asset registry and license gates. For Unity and Roblox implement platform-native functionality rather than importing Web JS. Never install external packages, force new gameplay, change balance/save/economy, or claim runtime PASS from a match.'
+    ]:[]),
     ...(plan.interfaceBlueprintContract?[
       prefix+'INTERFACE='+JSON.stringify(blueprints.interface),
       prefix+'INTERFACE_RULE=Automatically match external UX algorithms and internal tool hints by real gameplay systems, observed UI code and user friction, not by genre labels alone. All matches are optional, not mandatory menus or functionality. For relevant usability edits author task-local interfaceBlueprint first and connect actual existing handlers, preserved navigation and safe failure paths. Never auto-import hinted JS modules, invent a new gameplay system or use shadow UI. For UNITY_WEB use the SAME canonical Unity C# UI source and UI runtime as UNITY_APP, never new HTML/CSS/JS gameplay UI; Roblox must use native Luau. Preserve game rules, save, economy, restrictions, touch safety and existing return flow. Static interface validation cannot claim runtime PASS.'
