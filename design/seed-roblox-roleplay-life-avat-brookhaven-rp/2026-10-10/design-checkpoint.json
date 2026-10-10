@@ -3,263 +3,31 @@
   "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-ROLEPLAY-LIFE-AVAT-BROOKHAVEN-RP-20260917",
-  "fingerprint": "e0fc177797a9642ccaf285477aea98469a4eab550945fc256c772f0740c0a110",
+  "fingerprint": "138f9c1dcd6005428a8384d57d39ec2e5dca179bb52e621f78aec017d44909fc",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013:identity,creativeGrammar": {
-      "identity": "Harbor Days - A Mobile Survival Roguelike with Dynamic Playstyle and Adaptive Gameplay",
-      "creativeGrammar": {
-        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "a": {
-          "system": "Survival/Strategy",
-          "material": "Dynamic Build Progression, Adaptive Combat Mechanics, Real-Time Resource Management",
-          "materialDomain": "Mobile Platform, Real-Time Strategy, Adaptive Combat",
-          "stateChange": "Build Upgrade -> Enemy Pressure -> New Strategy"
-        },
-        "b": {
-          "system": "Roguelike",
-          "material": "Progressive Difficulty Curve, Multi-Stage Objective System, Player Agency",
-          "materialDomain": "Multiplayer, Progressive Difficulty, Player Agency",
-          "stateChange": "Run Result -> New Goal -> New Challenge"
-        },
-        "abCausality": "Build Upgrade → Enemy Pressure → New Strategy (A) ↔ Run Result → New Goal → New Challenge (B)",
-        "abEvolution": {
-          "aChangesB": "Build Upgrade → Enemy Pressure → New Strategy (A) ➝ Run Result → New Goal → New Challenge (B)",
-          "bChangesA": "Run Result → New Goal → New Challenge (B) ➝ Build Upgrade → Enemy Pressure → New Strategy (A)",
-          "lateGameChange": "Player Choice → World State Change → Repeated Playstyle Evolution"
-        },
-        "materialFusion": {
-          "contrast": "Adaptive Combat vs. Strategic Survival",
-          "causalBridge": "Enemy Pressure Forces Player to Adapt and Evolve",
-          "removalConsequence": "Loss of Predictable Gameplay Patterns"
-        },
-        "storyCausalChain": {
-          "cause": "Player's Initial Decision to Fight Through the Horde",
-          "characterConflict": "The Game Environment's Adaptive Nature",
-          "playerChoice": "To Choose a New Strategy or Goal",
-          "worldChange": "The Game Becomes More Complex and Dynamic with Each Playthrough",
-          "nextEvent": "New Challenges, New Goals, New Strategies"
-        },
-        "cThemes": [
-          {
-            "name": "Dynamic Combat",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Adaptive Combat Mechanics"
-          },
-          {
-            "name": "Strategic Progression",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Progressive Difficulty Curve"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Survival Roguelike",
-            "gameplayEffect": "Real-Time Strategy, Mobile Platform"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Adaptive Combat",
-            "gameplayEffect": "Dynamic Build Progression"
-          }
-        ],
-        "cGenreInterlock": "Survival Roguelike (Primary) ↔ Adaptive Combat (Secondary)",
-        "cWorldAndGameplayEffect": "Survival vs. Strategic Adaptation",
-        "delveDiscoveries": [
-          {
-            "clue": "Player Must Evolve With the Game",
-            "discovery": "Adaptive Combat Mechanic",
-            "newChoice": "Choose a New Strategy or Goal"
-          },
-          {
-            "clue": "Game Becomes More Complex",
-            "discovery": "Progressive Difficulty Curve",
-            "newChoice": "New Challenge or Objective"
-          },
-          {
-            "clue": "Playstyle Continues to Evolve",
-            "discovery": "Player Agency",
-            "newChoice": "New Playstyle or Strategy"
-          },
-          {
-            "clue": "Game State Changes with Each Playthrough",
-            "discovery": "World State Change",
-            "newChoice": "Replay Choice or New Goal"
-          }
-        ],
-        "delveGrowthRule": "Each Playthrough Introduces New Choices and World States That Influence Future Gameplay",
-        "finalGameIdentity": "A Mobile Survival Roguelike Where Player's Evolution Shapes the Game Itself"
-      }
-    },
-    "local_authoring_parts::82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013:playerFantasy,coreFun": {
-      "playerFantasy": "Harbor Days is a mobile survival roguelike where players must evolve with the game, adapting to dynamic combat mechanics, progressive difficulty curves, and player agency. The game challenges players to make strategic decisions that shape their progression, while maintaining real-time resource management and adaptive gameplay.",
-      "coreFun": "{\"identity\": \"Harbor Days - A Mobile Survival Roguelike with Dynamic Playstyle and Adaptive Gameplay\",\n\"creativeGrammar\": {\n \"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure,\",\n \"a\": {\"system\": \"Survival/Strategy\", \"material\": \"Dynamic Build Progression, Adaptive Combat Mechanics, Real-Time Resource Management\", \"stateChange\": \"Build Upgrade -> Enemy Pressure -> New Strategy\"},\n \"b\": {\"system\": \"Roguelike\", \"material\": \"Progressive Difficulty Curve, Multi-Stage Objective System, Player Agency\", \"stateChange\": \"Run Result -> New Goal -> New Challenge\"},\n \"abCausality\": \"Build Upgrade → Enemy Pressure → New Strategy (A) ↔ Run Result → New Goal → New Challenge (B)\",\n \"abEvolution\": {\"aChangesB\": \"Build Upgrade → Enemy Pressure → New Strategy (A) ➝ Run Result → New Goal → New Challenge (B)\",\n \"bChangesA\": \"Re"
-    },
-    "local_authoring_parts::b394b3128bd75fdd068f614b0d843bea1cf275b51818273f84a59f5f8e1a3e13:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "Harbor Days - A Mobile Survival Roguelike with Dynamic Playstyle and Adaptive Gameplay",
-      "creativeGrammar": {
-        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "a": {
-          "system": "Survival/Strategy",
-          "material": "Dynamic Build Progression, Adaptive Combat Mechanics, Real-Time Resource Management",
-          "materialDomain": "Mobile Platform, Real-Time Strategy, Adaptive Combat",
-          "stateChange": "Build Upgrade -> Enemy Pressure -> New Strategy"
-        },
-        "b": {
-          "system": "Roguelike",
-          "material": "Progressive Difficulty Curve, Multi-Stage Objective System, Player Agency",
-          "materialDomain": "Multiplayer, Progressive Difficulty, Player Agency",
-          "stateChange": "Run Result -> New Goal -> New Challenge"
-        },
-        "abCausality": "Build Upgrade → Enemy Pressure → New Strategy (A) ↔ Run Result → New Goal → New Challenge (B)",
-        "abEvolution": {
-          "aChangesB": "Build Upgrade → Enemy Pressure → New Strategy (A) ➝ Run Result → New Goal → New Challenge (B)",
-          "bChangesA": "Run Result → New Goal → New Challenge (B) ➝ Build Upgrade → Enemy Pressure → New Strategy (A)",
-          "lateGameChange": "Player Choice → World State Change → Repeated Playstyle Evolution"
-        },
-        "materialFusion": {
-          "contrast": "Adaptive Combat vs. Strategic Survival",
-          "causalBridge": "Enemy Pressure Forces Player to Adapt and Evolve",
-          "removalConsequence": "Loss of Predictable Gameplay Patterns"
-        },
-        "storyCausalChain": {
-          "cause": "Player's Initial Decision to Fight Through the Horde",
-          "characterConflict": "The Game Environment's Adaptive Nature",
-          "playerChoice": "To Choose a New Strategy or Goal",
-          "worldChange": "The Game Becomes More Complex and Dynamic with Each Playthrough",
-          "nextEvent": "New Challenges, New Goals, New Strategies"
-        },
-        "cThemes": [
-          {
-            "name": "Dynamic Combat",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Adaptive Combat Mechanics"
-          },
-          {
-            "name": "Strategic Progression",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Progressive Difficulty Curve"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Survival Roguelike",
-            "gameplayEffect": "Real-Time Strategy, Mobile Platform"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Adaptive Combat",
-            "gameplayEffect": "Dynamic Build Progression"
-          }
-        ],
-        "cGenreInterlock": "Survival Roguelike (Primary) ↔ Adaptive Combat (Secondary)",
-        "cWorldAndGameplayEffect": "Survival vs. Strategic Adaptation",
-        "delveDiscoveries": [
-          {
-            "clue": "Player Must Evolve With the Game",
-            "discovery": "Adaptive Combat Mechanic",
-            "newChoice": "Choose a New Strategy or Goal"
-          },
-          {
-            "clue": "Game Becomes More Complex",
-            "discovery": "Progressive Difficulty Curve",
-            "newChoice": "New Challenge or Objective"
-          },
-          {
-            "clue": "Playstyle Continues to Evolve",
-            "discovery": "Player Agency",
-            "newChoice": "New Playstyle or Strategy"
-          },
-          {
-            "clue": "Game State Changes with Each Playthrough",
-            "discovery": "World State Change",
-            "newChoice": "Replay Choice or New Goal"
-          }
-        ],
-        "delveGrowthRule": "Each Playthrough Introduces New Choices and World States That Influence Future Gameplay",
-        "finalGameIdentity": "A Mobile Survival Roguelike Where Player's Evolution Shapes the Game Itself"
-      },
-      "playerFantasy": "Harbor Days is a mobile survival roguelike where players must evolve with the game, adapting to dynamic combat mechanics, progressive difficulty curves, and player agency. The game challenges players to make strategic decisions that shape their progression, while maintaining real-time resource management and adaptive gameplay.",
-      "coreFun": "{\"identity\": \"Harbor Days - A Mobile Survival Roguelike with Dynamic Playstyle and Adaptive Gameplay\",\n\"creativeGrammar\": {\n \"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure,\",\n \"a\": {\"system\": \"Survival/Strategy\", \"material\": \"Dynamic Build Progression, Adaptive Combat Mechanics, Real-Time Resource Management\", \"stateChange\": \"Build Upgrade -> Enemy Pressure -> New Strategy\"},\n \"b\": {\"system\": \"Roguelike\", \"material\": \"Progressive Difficulty Curve, Multi-Stage Objective System, Player Agency\", \"stateChange\": \"Run Result -> New Goal -> New Challenge\"},\n \"abCausality\": \"Build Upgrade → Enemy Pressure → New Strategy (A) ↔ Run Result → New Goal → New Challenge (B)\",\n \"abEvolution\": {\"aChangesB\": \"Build Upgrade → Enemy Pressure → New Strategy (A) ➝ Run Result → New Goal → New Challenge (B)\",\n \"bChangesA\": \"Re"
-    },
-    "local_authoring_parts::5dbd7c433753e1d483f6f49d3d83a83857bc0f3e3b450750be8ba19123220dd6:coreLoop": {
-      "coreLoop": [
-        "Player makes initial decision to fight through horde",
-        "Game introduces adaptive combat mechanics and real-time resource management",
-        "Player evolves strategy based on enemy pressure and build progression",
-        "New goals and challenges are introduced with each playthrough",
-        "Game state changes dynamically, influencing future gameplay"
-      ]
-    },
-    "local_authoring_parts::c39355153390f08ba32262aa21b2fa725e3045ea0cecaf713a56d69cdad15c79:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_roadmap",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "Player makes initial decision to fight through horde",
-        "Game introduces adaptive combat mechanics and real-time resource management",
-        "Player evolves strategy based on enemy pressure and build progression"
-      ],
-      "stateOutputs": [
-        "New goals and challenges are introduced with each playthrough",
-        "Game state changes dynamically, influencing future gameplay"
-      ],
-      "name": "Harbor Days - A Mobile Survival Roguelike with Dynamic Playstyle and Adaptive Gameplay",
-      "purpose": "To create a mobile survival roguelike where players evolve with the game, adapting to dynamic combat mechanics, progressive difficulty curves, and player agency.",
-      "playerChoice": "Choose a new strategy or goal, adapt to enemy pressure, and upgrade their build in real time while managing resources for survival."
-    },
-    "local_authoring_parts::c39355153390f08ba32262aa21b2fa725e3045ea0cecaf713a56d69cdad15c79:signatureSystems:1:3c05eaf9825f1128": {
-      "id": "a_roadmap",
-      "grammarRole": "A",
-      "stateInputs": [
-        "New goals and challenges are introduced with each playthrough",
-        "Game state changes dynamically, influencing future gameplay"
-      ],
-      "stateOutputs": [
-        "Player makes initial decision to fight through horde",
-        "Game introduces adaptive combat mechanics and real-time resource management",
-        "Player evolves strategy based on enemy pressure and build progression"
-      ],
-      "name": "Harbor Days - A Mobile Survival Roguelike with Dynamic Playstyle and Adaptive Gameplay",
-      "purpose": "Define the core gameplay experience through a causal chain of player decisions and game state transitions.",
-      "playerChoice": "To evolve strategies in response to dynamic combat and progressive difficulty, while maintaining real-time resource management and adaptive gameplay."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 103,
-      "successes": 102,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2604577,
-      "lastMs": 17769,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:22:18.624Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:38:53.594Z",
-  "updatedAt": "2026-10-10T07:22:18.625Z",
+  "createdAt": "2026-10-10T08:32:11.036Z",
+  "updatedAt": "2026-10-10T08:32:11.122Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -296,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -319,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -802,8 +573,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -840,6 +611,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -863,10 +635,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1346,8 +1120,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1384,6 +1158,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1407,10 +1182,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1957,38 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::c39355153390f08ba32262aa21b2fa725e3045ea0cecaf713a56d69cdad15c79:signatureSystems:2:35d6cdd753c29025": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_roadmap",
-          "a_roadmap"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_roadmap",
-          "a_roadmap"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::c39355153390f08ba32262aa21b2fa725e3045ea0cecaf713a56d69cdad15c79:signatureSystems:1:3c05eaf9825f1128": 1,
-    "local_authoring_parts::c39355153390f08ba32262aa21b2fa725e3045ea0cecaf713a56d69cdad15c79:signatureSystems:2:35d6cdd753c29025": 96
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:22:18.624Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
