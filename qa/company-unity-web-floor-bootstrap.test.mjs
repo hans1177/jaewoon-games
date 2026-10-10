@@ -81,6 +81,8 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.buildUpDirectiveCompletionClaim,false);
     assert.equal(source.buildUpDirectiveId,null);
     assert.equal(source.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.doesNotMatch(build,/VibeWorldSurface/);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals/);
     assert.equal(source.verifiedLearningApplication.mandatoryApplicationCoveragePct,100);
     assert.equal(source.verifiedLearningApplication.allRetrievedVerifiedExternalLearningApplied,true);
     assert.equal(source.verifiedLearningApplication.retrievedCount,2);
@@ -355,6 +357,44 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
+    // 외부 공식 문서의 PBR/재질 공유 원리를 승인된 3D 월드 출력에 적용하고 스트리핑을 방지한다.
+    const build=fs.readFileSync(path.join(project,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
+    assert.match(runtime,/Resources\.Load<Material>\("VibeWorldSurface"\)/);
+    assert.match(runtime,/WORLD_LIT_MATERIAL_UNAVAILABLE/);
+    assert.doesNotMatch(runtime,/Shader\.Find\(/);
+    assert.match(build,/Shader\.Find\("Standard"\)/);
+    assert.match(build,/Shader\.Find\("Universal Render Pipeline\/Lit"\)/);
+    assert.match(build,/Assets\/Resources\/VibeWorldSurface\.mat/);
+    assert.match(build,/AssetDatabase\.CreateAsset\(sourceMaterial,materialPath\)/);
+    assert.match(build,/if\(sourceMaterial==null\)/);
+    assert.doesNotMatch(build,/AlwaysIncludedShaders/);
+    assert.match(runtime,/material\.SetFloat\("_Metallic",/);
+    assert.match(runtime,/material\.SetFloat\("_Smoothness",/);
+    assert.match(runtime,/material\.SetFloat\("_Glossiness",/);
+    assert.match(runtime,/mesh\.RecalculateNormals\(\)/);
+    assert.match(runtime,/roads\.RecalculateNormals\(\)/);
+    assert.match(runtime,/renderer\.receiveShadows=true/);
+    assert.match(runtime,/renderer\.shadowCastingMode=UnityEngine\.Rendering\.ShadowCastingMode\.Off/);
+    assert.match(runtime,/var fragmentMaterial=WorldMaterial/);
+    assert.match(runtime,/renderer\.sharedMaterial=fragmentMaterial/);
+    // 실행 중 원본 Unity MeshRenderer에서 삼각형·법선·PBR 재질을 실측한 후 화면 픽셀과 대조한다.
+    assert.match(runtime,/GetComponentsInChildren<MeshRenderer>\(true\)/);
+    assert.match(runtime,/visual\.GetTopology\(part\)==MeshTopology\.Triangles/);
+    assert.match(runtime,/visual\.normals\.Length==visual\.vertexCount/);
+    assert.match(runtime,/surfaceMaterial\.shader\.isSupported/);
+    assert.match(runtime,/surfaceMaterial\.shader\.name=="Standard"/);
+    assert.match(runtime,/surfaceMaterial\.shader\.name=="Universal Render Pipeline\/Lit"/);
+    assert.match(runtime,/litMaterialCount==materialCount/);
+    assert.match(runtime,/UNITY_WEB_WORLD=RENDER_SURFACE game=/);
+    assert.match(runtime,/source=UNITY_RUNTIME_LIT_MESH/);
+    assert.match(runtime,/WORLD_RENDER_SURFACE_INVALID/);
+    assert.match(runtime,/renderSurfacePass\?"PASS":"REPAIR_REQUIRED"/);
+
+    assert.match(runtime,/WorldMaterial\(shades\[k\],metallicProfiles\[k\],smoothnessProfiles\[k\]\)/);
+    assert.match(runtime,/WorldMaterial\(new Color\(\.35f,\.33f,\.29f\),\.01f,\.18f\)/);
+    assert.match(runtime,/float\[\] metallicProfiles=\{\.02f/);
+    assert.doesNotMatch(runtime,/WorldMaterial\(Color color\)[\s\S]*Unlit\/Color/);
+
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
     assert.match(runtime,/var models=new List<CombineInstance>\[9\]/);
     assert.match(runtime,/Mathf.Clamp\(lot.material,0,3\)/);

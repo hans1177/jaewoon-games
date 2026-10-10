@@ -509,6 +509,17 @@ jobs:
             &&e.coreFun?.pass===true&&e.saveRestore?.pass===true
             &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true);
           if(!playable)throw new Error('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED');
+          // 실제 승인 3D 월드에 대해서는 3회 브라우저 화면과 Unity PBR/법선 측정이 모두 있어야 한다.
+          // 3D 증거가 없는 일반 게임/부트스트랩은 기존 판정을 유지한다.
+          const renderScreenPass=checks.every(e=>e.visualQa?.renderedScene?.required===true
+            &&e.visualQa.renderedScene.pass===true
+            &&e.visualQa.renderedScene.sceneCapturePersisted===true
+            &&/^[a-f0-9]{64}$/.test(e.visualQa.renderedScene.sceneCaptureSha256||'')
+            &&e.visualQa.renderedScene.pixels?.source==='REAL_UNITY_CANVAS_SCREENSHOT'
+            &&(e.approvedEnvironment?.required!==true||
+              (e.visualQa.renderedScene.nativeRenderProof?.materials>0
+                &&e.visualQa.renderedScene.nativeRenderProof?.litMaterials===e.visualQa.renderedScene.nativeRenderProof?.materials)));
+          if(!renderScreenPass)throw new Error('UNITY_WEB_RENDERED_SCENE_SCREEN_EVIDENCE_REQUIRED');
           const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)
             &&checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
               &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
@@ -519,6 +530,8 @@ jobs:
           if(!gatePass&&gameId!=='daechung-rpg')
             throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
           const file=root+'/unity-web-build.json';
+          if(checks.some(e=>e.approvedEnvironment?.required===true))
+            console.log('UNITY_WEB_RENDERED_SCENE_SCREEN='+ (renderScreenPass?'PASS':'REPAIR_REQUIRED'));
           console.log('UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE');
           console.log('UNITY_WEB_GAMEPLAY_QA='+(gatePass?'PASS':'REPAIR_REQUIRED'));
           fs.writeFileSync(file,JSON.stringify({
@@ -612,6 +625,9 @@ jobs:
           const graphicsPass=!bootstrapGraphicsBlocked
             &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
             &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png')
+            &&[play,independent,regression].every(e=>e.visualQa?.renderedScene?.pass===true)
+            &&['gameplay-mobile-scene.png','independent-qa-mobile-scene.png','regression-mobile-scene.png']
+              .every(name=>fs.existsSync('/tmp/unity-web/'+name))
             &&native3dVerified;
           const webglPass=build.bootSmoke==='PASS'
             &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
@@ -690,6 +706,9 @@ jobs:
           NODE
 
       - name: Upload Unity Web artifact
+        # Build succeeds but screenshot/QA fails: preserve real browser images and failure evidence.
+        # No artifact is uploaded when the WebGL output stage itself never succeeded.
+        if: ${{ always() && steps.output.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: unity-web-${{ steps.request.outputs.game_id }}-${{ github.run_id }}-${{ github.run_attempt }}
