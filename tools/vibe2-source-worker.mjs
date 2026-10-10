@@ -2412,7 +2412,7 @@ function studioQualityWorkerGuidance(order = {}) {
 
 const SOURCE_REPAIR_DIRECTIVE_PREFIXES=Object.freeze(['sourceRepairIdentity=','sourceRepairBlockers=','sourceRepairPolicy=','sourceRepairHints=']);
 
-function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = []) {
+function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [], {cwd=process.cwd()}={}) {
   const d=order?.selectedTask?.buildUpDirective||order?.buildUpDirective||null;
   if(!d||typeof d!=='object'||!clean(d.directiveId))return'';
   const target=clean(order?.target).toUpperCase();
@@ -2476,6 +2476,62 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       clean(row.suggestedExistingOwnerFiles?.[0]),
     status:clean(row.codingStatus)
   }));
+  // 유니티 웹은 같은 Unity 프로젝트의 실행 산출물이며, 실제 C#은 로블록스 Luau의 읽기 전용 원본 참고다.
+  // MAIN/A/B/C/@·수치·저장·네트워크 권한은 승인된 공통 설계와 현재 Roblox 소스가 최우선이다.
+  const unityWebSourceReferences=[];
+  const syncGameId=clean(order.gameId);
+  const sameGameRobloxSource=target==='ROBLOX'
+    &&/^[a-z0-9][a-z0-9-]*$/.test(syncGameId)
+    &&clean(d.gameId)===syncGameId
+    &&posix(order?.source?.root)===`roblox-games/${syncGameId}`
+    &&order?.source?.internalAssetMotion!==true;
+  if(sameGameRobloxSource){
+    const repoRoot=fs.realpathSync(cwd);
+    const unityScripts=path.join(repoRoot,'unity-games',syncGameId,'Assets','Scripts');
+    if(fs.existsSync(unityScripts)&&fs.statSync(unityScripts).isDirectory()
+      &&fs.realpathSync(unityScripts)===unityScripts){
+      const entries=fs.readdirSync(unityScripts,{recursive:true})
+        .map(posix)
+        .filter(file=>/\.cs$/i.test(file)&&!/(^|\/)(?:Editor|Tests?|Packages|obj|bin)\//i.test(file))
+        .sort((a,b)=>{
+          const rank=file=>/\/(?:GameCore|Gameplay|GameManager)\.cs$/i.test('/'+file)?0
+            :/(?:GameCore|Gameplay|GameManager)\.cs$/i.test(file)?0
+            :/(?:Combat|Player|World|Session|Progress|Save)\.cs$/i.test(file)?1
+            :/UnityWebFloorGame\.cs$/i.test(file)?3:2;
+          return rank(a)-rank(b)||a.localeCompare(b);
+        });
+      for(const relative of entries){
+        if(unityWebSourceReferences.length>=3)break;
+        const file=path.resolve(unityScripts,relative);
+        if(!file.startsWith(unityScripts+path.sep))continue;
+        const stat=fs.lstatSync(file);
+        if(!stat.isFile()||stat.isSymbolicLink()||stat.size>160000||stat.size<60
+          ||fs.realpathSync(file)!==file)continue;
+        const raw=fs.readFileSync(file,'utf8');
+        const declaredId=/\b(?:const\s+string|string)\s+GameId\s*=\s*["']([^"']+)["']/.exec(raw)?.[1];
+        if(declaredId&&declaredId!==syncGameId)continue;
+        const genericWebFloor=/\bclass\s+UnityWebFloorGame\b/.test(raw)
+          &&/\bprivate\s+int\s+progress\s*;/.test(raw)
+          &&/\bprivate\s+void\s+PerformAction\s*\(\s*bool\s+mobile\s*\)/.test(raw)
+          &&/\bconst\s+string\s+CoreLoop\s*=/.test(raw);
+        const methods=genericWebFloor?[]:inspectSourceFunctions(raw,{language:'csharp'})
+          .filter(row=>/(?:Game|Gameplay|Action|Move|Jump|Attack|Combat|Damage|Health|Enemy|Spawn|Level|Reward|Currency|Save|Load|Input|Interact|World|Quest|Inventory|Network|Sync|State|Update)/i.test(row.name))
+          .sort((a,b)=>{
+            const score=row=>/(?:Action|Combat|Damage|Save|Load|State|Sync|Reward|Interact)/i.test(row.name)?0
+              :/(?:Start|Update|Game|Input|World)/i.test(row.name)?1:2;
+            return score(a)-score(b)||a.start-b.start;
+          }).slice(0,4)
+          .map(row=>({method:row.name,source:boundedPromptText(row.code.replace(/[\r\n]+/g,' '),520)}));
+        unityWebSourceReferences.push({
+          path:`unity-games/${syncGameId}/Assets/Scripts/${relative}`,
+          sha256:crypto.createHash('sha256').update(raw).digest('hex'),
+          sourceStatus:genericWebFloor?'GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY':'NATIVE_CSHARP_SOURCE_OBSERVATION_ONLY',
+          runtimeVerified:false,
+          methods
+        });
+      }
+    }
+  }
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
   // The planner already binds this failure to the current source. Preserve that identity and
@@ -2501,6 +2557,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `gameplayContract=${JSON.stringify({coreFun:d?.gameIdentityAndNonNegotiables?.coreFun,coreLoop:d?.gameIdentityAndNonNegotiables?.coreLoop,signatureSystems:d?.gameIdentityAndNonNegotiables?.signatureSystems,systemInterconnections:d?.designImplementationContext?.systemInterconnections,progressionDirection:d?.gameIdentityAndNonNegotiables?.progressionDirection,grammar:d?.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap})}`,
     `designCodePlatform=${clean(codingTrace.activePlatform)||'UNKNOWN'};source=${clean(codingTrace?.platformCodingPlans?.find(row=>row.platform===codingTrace.activePlatform)?.canonicalGameSourceRoot)};mode=${clean(codingTrace.multiplayerMode)};minPlayers=${Number(codingTrace.minimumParticipants||2)};runtime=UNVERIFIED`,
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
+    ...(unityWebSourceReferences.length?[
+      'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE; shared approved design remains MAIN/A/B/C/@ authority. Compare Unity Web C# behavior with the current Roblox server/shared/client responsibility before editing. Translate player input, condition, state transition, result, and failure recovery into native Luau; never copy C# or its placeholder resource/level/save constants into Roblox. Preserve approved balance, progression, save keys, rewards, and server authority. Optimize Roblox mobile touch, StreamingEnabled, remote validation/rate-limits, network payloads, and visual pooling in existing owner functions only when relevant. Unity C# reference is not gameplay parity, optimized code, real multiplayer sync, or runtime QA PASS. Missing/unverified Unity Web does not block independent Roblox development. No wrapper or parallel source pipeline.',
+      ...unityWebSourceReferences.map(row=>`unityWebSourceReference=${JSON.stringify(row)}`)
+    ]:[]),
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
     ...(codingTrace?.creativeCBinding?[`designCodeCreativeC=${JSON.stringify({
       designAuthored:codingTrace.creativeCBinding.designAuthored===true,
@@ -3868,7 +3928,7 @@ function boundedPromptText(value='',maxBytes=COMPACT_DIRECTIVE_LINE_BYTES){
   }
   return best;
 }
-export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
+export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false,focusedWebRepair=false,verifiedExternalLearningContract=null,motionCoaching=null,robloxSourceCoaching=null,cwd=process.cwd()}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);
   // 학습 계약이 보존하는 원문은 목표 설명에 두 번 보내지 않는다.
   const learningContract=verifiedExternalLearningContract||buildVerifiedExternalLearningPromptContract(order);
   const motionUnit=order.assetProduction?.motionRepairWorkUnit;
@@ -4146,7 +4206,7 @@ genreMenuImplementationBlock,
 precisionProductionBlock,
 order.imageAssetObservation?.required?'[IMAGE ASSET OBSERVATION BEGIN]\n'+JSON.stringify(order.imageAssetObservation)+'\nVisible observations are proposals from actual pixels. Hidden geometry and motion are creative proposals. Implement editable native assets, then compare close-up/full-turnaround/game-camera/action frames to the source; no placeholder or declaration-only completion.\n[IMAGE ASSET OBSERVATION END]':'',
 studioQualityWorkerGuidance(order),
-gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles),
+gameSpecificBuildUpDirectiveGuidance(order,responsibleFiles,{cwd}),
 robloxNativeWorkerGuidance(order,context,responsibleFiles),
 gatedRetryStrategyGuidance(order),
 weatherWorkerGuidance(order),
@@ -6373,7 +6433,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(singleMotionPreflight.required)console.log('VIBE2_MOTION_COACHING='+JSON.stringify(motionCoaching.evidence));
   const robloxSourceCoaching=buildRobloxSourceCoaching({cwd,order,responsibleFiles});
   if(robloxSourceCoaching.evidence.retrieved)console.log('VIBE2_ROBLOX_SOURCE_COACHING='+JSON.stringify(robloxSourceCoaching.evidence));
-  const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract,motionCoaching,robloxSourceCoaching});
+  const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap,focusedWebRepair,verifiedExternalLearningContract,motionCoaching,robloxSourceCoaching,cwd});
   const editContract=exploration?.editContract||{};
   const systemRegressionFiles=target==='system'?responsibleFiles.filter(file=>/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
   const systemSourceFiles=target==='system'?responsibleFiles.filter(file=>!/^qa\/.+\.test\.(?:mjs|js|cjs)$/i.test(file)):[];
