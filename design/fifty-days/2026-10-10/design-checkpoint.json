@@ -2702,25 +2702,61 @@
           "storyContext": "퀘스트/보상 선택"
         }
       ]
+    },
+    "local_authoring_parts::e07bccd6c44af60c6fd482ba21245d07e52089a18afbdd8c8fdfb3732322e282:enemiesOrChallenges,objectives": {
+      "enemiesOrChallenges": [
+        {
+          "name": "주제/역사/철학 선택",
+          "behavior": "선택",
+          "counterplay": "전투 스타일 및 인식 변화",
+          "positioning": "실시간 속도/강화 기능 증가",
+          "timing": "주제/역사/철학 선택 후",
+          "mobility": "주제/역사/철학 선택에 따른 전략 변경 가능",
+          "groupRole": "전략적 결정 요소",
+          "identity": "주제/역사/철학 선택",
+          "rewardMeaning": "전투 스타일 및 인식 변화의 깊이"
+        },
+        {
+          "name": "퀘스트/보상 선택",
+          "behavior": "선택",
+          "counterplay": "플레이어 경험/레벨 스토리 상승",
+          "positioning": "무기/속성 선택",
+          "timing": "퀘스트/보상 선택 후",
+          "mobility": "퀘스트/보상 선택에 따른 루틴 변경 가능",
+          "groupRole": "게임 세계관 진입 요소",
+          "identity": "퀘스트/보상 선택",
+          "rewardMeaning": "플레이어 경험/레벨 스토리 상승의 강도"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "중간 목표",
+          "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 경험하고, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 이끌며 실시간 속도/강화 기능 증가를 유연하게 사용할 수 있는 전략 경로를 연다"
+        },
+        {
+          "role": "장기 목표",
+          "variation": "주제/역사/철학 선택을 통해 전투 스타일과 인식 변화를 지속적으로 조정하며, 퀘스트/보상 선택으로 게임 세계관의 진입 및 경험 상승을 반복하여 플레이어에게 새로운 행동 조합과 전략 경로를 제공함으로써 게임의 시스템적 깊이와 다양성을 확보한다"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 35,
-      "successes": 26,
+      "calls": 36,
+      "successes": 27,
       "failures": 9,
       "timeouts": 7,
       "jsonFailures": 0,
-      "totalMs": 5492703,
-      "lastMs": 300030,
+      "totalMs": 5589926,
+      "lastMs": 97223,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:35:41.518Z"
+      "updatedAt": "2026-10-10T00:37:18.744Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:24:25.389Z",
-  "updatedAt": "2026-10-10T00:35:41.518Z",
+  "updatedAt": "2026-10-10T00:37:18.744Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -4509,7 +4545,7 @@
   "slicePartialResults": {
     "designer_draft_slices::content-rules": {}
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:30:41.487Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:37:18.744Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
