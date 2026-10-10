@@ -3,16 +3,10 @@
   "gameId": "bug-defense",
   "date": "2026-10-10",
   "productionClass": "DESIGN_ONLY",
-  "tierAlias": 3,
-  "tier": 3,
   "gameSeedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
   "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
   "authorModel": "vibe-native:causal-design-v1",
-  "sameModelAsDraft": true,
-  "appliedConsensusCount": 0,
-  "unresolvedConflictCount": 0,
-  "heldCount": 0,
-  "status": "DESIGN_BASELINE_CANDIDATE",
+  "status": "DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT",
   "content": {
     "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
     "creativeGrammar": {
@@ -1137,51 +1131,12 @@
       "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
       "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
-    },
-    "robloxBuildProfile": {
-      "version": 1,
-      "targetPlatform": "ROBLOX",
-      "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "declaredGameCategory": "SINGLE_DEFENSE_STRATEGY",
-      "genre": "Strategy",
-      "genreLabelKo": "전략",
-      "subgenre": "Tower Defense",
-      "subgenreLabelKo": "타워 디펜스",
-      "playMode": "COOP",
-      "playModeLabelKo": "멀티·협동",
-      "multiplayerRequired": true,
-      "coopImplementationRequired": true,
-      "competitiveImplementationRequired": false,
-      "networkingRequired": true,
-      "multiplayerQaRequired": true,
-      "minimumParticipantsForRequiredQa": 2,
-      "displayLabelKo": "전략 · 타워 디펜스 · 멀티·협동"
     }
   },
   "recovery": {
     "source": "design-checkpoint.json",
     "checkpointFingerprint": "261f54c6cef51ae62a934ab13bd5027366590cb472d69539f430d5f269a79f95",
-    "deterministicPhase": "deterministic_pre_gate",
-    "deterministicScore": 80,
-    "deterministicPassMinimum": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "appliedRepairs": [],
-    "aiReviewUsed": false,
     "aiVerdictUsed": false,
     "materializedAt": "2026-10-10T15:27:42.797Z"
-  },
-  "prePromotionRepair": {
-    "phase": "PRE_REVIEW",
-    "repairs": [
-      {
-        "field": "robloxBuildProfile",
-        "source": "GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY"
-      }
-    ],
-    "groundedOnly": true,
-    "legacyMultiplayerNormalization": false,
-    "strictScoreOrVerdictModified": false,
-    "repairedAt": "2026-10-10T15:27:42.897Z"
   }
 }
