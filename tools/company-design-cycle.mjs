@@ -15,6 +15,7 @@ import {buildVibeDesignIntelligence,buildDesignEvolutionBrief} from './vibe2-des
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from './vibe2-asset-production-plan.mjs';
 import {GAME_CONVENIENCE_REFERENCES} from './company-roblox-production-plan.mjs';
 import {computeVibeSeedProposal} from './company-game-seed-bootstrap.mjs';
+import {buildConceptSystemBlueprint} from './company-vibe2-game-flow-architect.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
@@ -723,6 +724,9 @@ function persistDesignerSeed(design,phase){
       requiredGate:'DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE',
       identity:content.identity,creativeGrammar:content.creativeGrammar,coreFun:content.coreFun,coreLoop:content.coreLoop,
       signatureSystems:content.signatureSystems,multiplayerMode:content.multiplayerMode,
+      reusableCodeModules:buildConceptSystemBlueprint({genre:seed.GAME_CATEGORY,baseline:{content}})
+        .libraryReusePolicy.knownReusableLibraries.filter(file=>/^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file))
+        .map(file=>({path:file,source:'EXISTING_REPOSITORY_MODULE',usage:'CANDIDATE_ONLY_VALIDATE_LICENSE_AND_EXISTING_FUNCTION_OWNER'})),
       targetPlatform:clean(seed.INITIAL_TARGET_PLATFORM)
     },
     fingerprint:checkpointFingerprint,engineDigest,contentDigest,
@@ -1447,8 +1451,14 @@ function computeVibeNativeDesign(){
       platformAdaptation:'내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.',
       validation:'실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다.'};
   });
-  const libraries=[...new Set((seedFlowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[]).filter(file=>
-    /^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file)))];
+  // 유틸: 기존 게임 시스템 블루프린트에서 실제 저장소에 있는 코드 모듈만 후보로 반환한다.
+  const reusableBlueprint=buildConceptSystemBlueprint({
+    genre:seed.GAME_CATEGORY,baseline:{content:{identity,coreLoop,novelGameGrammar:grammar}}
+  });
+  const libraries=[...new Set([
+    ...(seedFlowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[]),
+    ...(reusableBlueprint?.libraryReusePolicy?.knownReusableLibraries||[])
+  ].filter(file=>/^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file)))];
   const assumptions=[
     `설계 인과 원형 ${grammar.causalDNAs.slice(0,3).map(row=>row.id).join('·')}의 선택과 세계 반응을 독자적으로 적용한다.`,
     `원본의 전투·보상·저장·멀티 권한은 기존 책임 함수가 가진다. 설계 계획 상태는 새 저장 키가 아니며 실제 구현 전 소스 확인이 필요하다.`,
@@ -1802,6 +1812,9 @@ writeJson(path.join(base,'design-revised.json'),{
     failureRetryRisk:revisedDesign.failureRetryRisk,
     platformProfiles:revisedDesign.platformProfiles,
     implementationTraceability:revisedDesign.implementationTraceability,
+    reusableCodeModules:buildConceptSystemBlueprint({genre:seed.GAME_CATEGORY,baseline:{content:revisedDesign}})
+      .libraryReusePolicy.knownReusableLibraries.filter(file=>/^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file))
+      .map(file=>({path:file,source:'EXISTING_REPOSITORY_MODULE',usage:'CANDIDATE_ONLY_VALIDATE_LICENSE_AND_EXISTING_FUNCTION_OWNER'})),
     validationQuestions:revisedDesign.validationQuestions
   },
   postRevisionPreGate:{
