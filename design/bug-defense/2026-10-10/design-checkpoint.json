@@ -596,26 +596,35 @@
       "fromSystem": "Main Defensive Strategy",
       "toSystem": "Adaptive Defensive Tactics",
       "trigger": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
-      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization."
+      "stateChange": "Player inputs real-time enemy behavior and threat pattern, triggering adaptive defensive tactics and resource allocation optimization.",
+      "fromId": "a_main",
+      "toId": "b_main",
+      "stateKeys": [
+        "defender_positioning_strategy",
+        "incoming_insect_wave_pattern"
+      ]
+    },
+    "local_authoring_parts::29edf4600af6eb142357841854a1edbdf5d6d4dbd746490da95997fdd1563a26:fromSystem": {
+      "fromSystem": "Main Defensive Strategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 24,
+      "calls": 25,
+      "successes": 25,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 565810,
-      "lastMs": 7593,
+      "totalMs": 599270,
+      "lastMs": 33460,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:10:29.490Z"
+      "updatedAt": "2026-10-10T09:11:02.952Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:10:29.491Z",
+  "updatedAt": "2026-10-10T09:11:02.952Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2308,7 +2317,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:10:29.491Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:11:02.952Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
