@@ -22,6 +22,38 @@ const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const authoredHandoffSource=design.slice(design.indexOf('function authoredStateHandoffContract('),design.indexOf('const DESIGN_BASE='));
 const assertDesignSchema=runInNewContext(design.slice(design.indexOf('function assertSchemaValue('),design.indexOf('function normalizeSchemaValue('))+'\nassertSchemaValue');
 
+// 메인: 새 게임 디자이너 접수는 임시 스케치를 지운 뒤 참조하지 않고 V5 문법으로 시작한다.
+test('new designer auto-intake does not dereference deleted sketch and starts at canonical V5',()=>{
+  const start=design.indexOf('function resolveDesignerSeedInput(');
+  const end=design.indexOf('\nconst gameId=',start);
+  assert.ok(start>=0&&end>start);
+  const resolve=runInNewContext(design.slice(start,end)+'\nresolveDesignerSeedInput',{
+    path,
+    clean:value=>String(value??'').replace(/\\s+/g,' ').trim(),
+    activeSeedForGame:()=>null,
+    ownerDesignResetSeedForGame:()=>null,
+    makeAutoMissingDesignSeed:game=>({
+      gameId:game.id,gameName:game.name,GAMEPLAY_SKETCH:{version:5,source:'AUTO_INTAKE_NOT_AUTHORED'},
+      novelGrammarBackfill:{authoringPending:true}
+    }),
+    latestUsableDesign:()=>null,
+    validateGameSeed:()=>({pass:true,errors:[]})
+  });
+  const state={seeds:[]};
+  const {seed,created}=resolve({
+    state,gameId:'design-auto-test',
+    catalog:{games:[{id:'design-auto-test',name:'설계 자동 접수',lifecycleState:'ACTIVE'}]}
+  });
+  assert.equal(created,true);
+  assert.equal(seed.GAMEPLAY_SKETCH,undefined);
+  assert.equal(seed.seedAuthoring.stage,'identity-core');
+  assert.equal(state.seeds.length,1);
+  assert.match(design,/seedGameplaySketch\\?\\.version\\|\\|5/);
+  assert.match(design,/authoringPending===true\\|\\|!seedGameplaySketch/);
+  const gate=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  assert.match(gate,/seed\\?\\.GAMEPLAY_SKETCH==null/);
+});
+
 // 메인: 문법 작성 대기와 최종 설계 검증을 혼동해 설계 엔진을 멈추지 않도록 회귀 검사.
 test('canonical un-authored V5 A/B/C/@ input starts design without weakening completed-seed validation',()=>{
   const sketch={version:5,novelGameGrammar:{delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:[]}}};

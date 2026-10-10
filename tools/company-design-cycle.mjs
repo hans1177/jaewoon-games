@@ -72,7 +72,7 @@ function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
     delete input.GAMEPLAY_SKETCH;
     const inputCheck=validateGameSeed(input);
     if(!inputCheck.pass)input.inputRepairNotes=inputCheck.errors;
-    input.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
+    // 접수 전용 스케치는 제거 상태를 유지하고 실제 V5 창작은 디자이너가 작성한다.
   }
   input.seedAuthoring={writer:'GAME_DESIGNER_AI',stage:'identity-core',externalSeedRequired:false};
   state.seeds||=[];
@@ -89,11 +89,11 @@ const seedInput=resolveDesignerSeedInput({state:seedState,gameId,catalog,brief:p
 const seed=seedInput.seed;
 if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
-const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
+const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||5));
 // 자동 접수 V5의 미완성 임시 문구는 디자이너가 재사용해야 할 확정 창작안이 아니다.
 const intakeFusion=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion;
 const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
-  &&seed?.novelGrammarBackfill?.authoringPending===true
+  &&(seed?.novelGrammarBackfill?.authoringPending===true||!seedGameplaySketch)
   &&(!Array.isArray(intakeFusion?.majorAxes)||intakeFusion.majorAxes.length!==2
     ||intakeFusion.majorAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
     ||!Array.isArray(intakeFusion?.themeFusion?.themes)||intakeFusion.themeFusion.themes.length!==2

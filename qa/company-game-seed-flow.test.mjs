@@ -250,7 +250,9 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
-  assert.match(seedWorkflow,/GAME_SEED_STALE_DESIGN_RUN_POLICY=FINISH_PINNED_ENGINE/);
+  assert.match(seedWorkflow,/GAME_SEED_STALE_DESIGN_RUN_POLICY=KEEP_PINNED_ENGINE_BUT_DO_NOT_BLOCK_LATEST/);
+  assert.match(seedWorkflow,/git worktree add --detach/);
+  assert.doesNotMatch(seedWorkflow,/git checkout -B game-seed-persist/);
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_RUNNING_BATCH_CANCELLED=NO/);
   assert.doesNotMatch(seedWorkflow,/actions\/runs\/\$run_id\/cancel/);
 

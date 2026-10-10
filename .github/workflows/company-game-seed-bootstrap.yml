@@ -192,17 +192,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-game-seed';git config user.email 'game-seed@users.noreply.github.com'
           if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then echo 'persisted=false' >> "$GITHUB_OUTPUT";exit 0;fi
-          git add game-seed-state.json;git commit -m 'runtime: update seed material pool and composed seeds';generated="$(git rev-parse HEAD)";pushed=0
+          # 기존 설계·에셋 생성 작업트리는 건드리지 않고 동일한 runtime 파일만 별도 worktree에서 반영한다.
+          seed_snapshot="$(mktemp)"
+          cp game-seed-state.json "$seed_snapshot"
+          runtime_tree="$(mktemp -d)"
+          trap 'git worktree remove --force "$runtime_tree" >/dev/null 2>&1 || true; rm -f "$seed_snapshot"; rmdir "$runtime_tree" >/dev/null 2>&1 || true' EXIT
+          pushed=0
           for attempt in 1 2 3 4; do
             git fetch origin "$COMPANY_RUNTIME_BRANCH" main
-            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then git checkout -B game-seed-persist "origin/$COMPANY_RUNTIME_BRANCH"; else git checkout -B game-seed-persist origin/main; fi
-            git checkout "$generated" -- game-seed-state.json;git add game-seed-state.json
-            if git diff --cached --quiet; then pushed=1;break;fi
-            git commit -m 'runtime: update seed material pool and composed seeds'
-            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi
-            git reset --hard "$generated";sleep $((attempt*2))
+            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then base_ref="origin/$COMPANY_RUNTIME_BRANCH"; else base_ref=origin/main; fi
+            git worktree add --detach "$runtime_tree" "$base_ref"
+            cp "$seed_snapshot" "$runtime_tree/game-seed-state.json"
+            git -C "$runtime_tree" add game-seed-state.json
+            if git -C "$runtime_tree" diff --cached --quiet; then pushed=1;break;fi
+            git -C "$runtime_tree" -c user.name=jaewoon-game-seed -c user.email=game-seed@users.noreply.github.com commit -m 'runtime: update seed material pool and composed seeds'
+            if (cd "$runtime_tree" && git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"); then pushed=1;break;fi
+            git worktree remove --force "$runtime_tree"
+            sleep $((attempt*2))
           done
           test "$pushed" = 1
           echo 'persisted=true' >> "$GITHUB_OUTPUT"
