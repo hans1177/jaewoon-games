@@ -4498,6 +4498,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
   }
   local function genreMenus(state)
     if type(state.menus)=="table"then return state.menus end
+    if type(state.availableSystems)~="table"and #rows>0 then return rows end
+    if type(state.availableSystems)~="table"and type(options.menus)=="table"then return options.menus end
     local allowed=type(state.availableSystems)=="table"and state.availableSystems or options.availableSystems or {}
     local available={}
     for key,value in pairs(allowed)do
