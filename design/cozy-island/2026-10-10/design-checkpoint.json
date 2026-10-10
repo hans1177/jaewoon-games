@@ -80,25 +80,53 @@
         "worldChange": "5개 거점 점령 후, 고급 병종 확보 이후 해전 · 공성 정복 단계로 진입하여 게임의 최종 단계로 이어진다",
         "nextEvent": "해전 · 공성 정복 이후, 새로운 바이옴 또는 섬의 발견으로 게임이 계속 진행되며, 이는 플레이어의 판타지를 반영함"
       }
+    },
+    "local_authoring_parts::a392722f3923136858aa5b154b6b43bae7208cba40b16049eeaedd147d1909d0:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "야생 동물 파츠",
+          "kind": "MATERIAL",
+          "gameplayEffect": "연결된 몸처럼 보여야 함, 공중에 떨어져 보이는 경우 금지"
+        },
+        {
+          "name": "주민 자동화 시스템",
+          "kind": "MATERIAL",
+          "gameplayEffect": "직업 배치 및 반복 노동 자동화, 생산 상태 증가"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "협동 왕국 성장 게임",
+          "gameplayEffect": "5개 거점 점령, 자원 확보, 해전 · 공성 정복"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "기초 자원 수집 시스템",
+          "gameplayEffect": "나무/식량 획득, 주민 고용, 병력 전환"
+        }
+      ],
+      "cGenreInterlock": "야생 동물 파츠와 주민 자동화 시스템은 서로 다른 메인 장르로 구성되며, 이 두 시스템의 상호작용과 보조 장르 제거 시 플레이 변화를 명시한다.",
+      "cWorldAndGameplayEffect": "야생 동물 파츠는 월드 노드에서 직접 상호작용하여 획득하며, 주민 자동화 시스템은 직업을 통해 자원을 생산하고 반복 노동을 자동화함. 각 단계는 실제 상태 변화를 통해 인과적 관계 유지됨."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 912247,
-      "lastMs": 155616,
+      "totalMs": 1042808,
+      "lastMs": 130561,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:00:21.092Z"
+      "updatedAt": "2026-10-10T10:02:31.656Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:45:08.683Z",
-  "updatedAt": "2026-10-10T10:00:21.094Z",
+  "updatedAt": "2026-10-10T10:02:31.656Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1162,7 +1190,7 @@
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true,
     "eb01898a3b729b92d8d3856ec1406e7d6425ed9eff6547af95b6d21ef1ccb5d6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:00:21.094Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:02:31.656Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
