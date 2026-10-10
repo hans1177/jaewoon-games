@@ -121,25 +121,42 @@
       "name": "Survival Build Synthesis",
       "purpose": "To integrate player adaptation, environmental pressures, and system interaction into a cohesive survival experience.",
       "playerChoice": "Upgrading builds for survival, adapting to enemy positioning, and integrating multi-system interactions through strategic progression choices."
+    },
+    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:1": {
+      "id": "signatureSystems[1]",
+      "grammarRole": "A",
+      "stateInputs": [
+        "Build Combination",
+        "Wave Survival",
+        "Boss Conversion"
+      ],
+      "stateOutputs": [
+        "Reward Collection",
+        "Skill Mastery",
+        "Next Progression Choice"
+      ],
+      "name": "Survival Build Synthesis",
+      "purpose": "Facilitates the synthesis of build combinations, wave survival, and boss conversion to generate new progression choices.",
+      "playerChoice": "Upgrading builds for survival through adaptive strategies and multi-system integration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 187915,
-      "lastMs": 19278,
+      "totalMs": 224333,
+      "lastMs": 36418,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:59:50.808Z"
+      "updatedAt": "2026-10-10T02:00:27.228Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:56:42.762Z",
-  "updatedAt": "2026-10-10T01:59:50.809Z",
+  "updatedAt": "2026-10-10T02:00:27.228Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1849,7 +1866,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:59:50.808Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:00:27.228Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
