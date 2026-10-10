@@ -3,9 +3,9 @@
   "gameId": "daechung-rpg",
   "state": "REPAIR_REQUIRED",
   "pass": false,
-  "sourceCommit": "afa121a7877ec5de6600ba97496e010a5cf77648",
+  "sourceCommit": "9db1c90fca732706decba53ed14e438da5fe25fb",
   "unitySourceTreeSha256": "fe2d18860309920ac07bd5f4ceac1c7726971362fc89de47d3d8d6684a8e11cc",
-  "buildTreeSha256": "68386ef728cfa42e53987ce5aa596bc89ed5da3c2c249ef64b576d905f147ff8",
+  "buildTreeSha256": "1e1854728b754b56c69ca1ed5c6f67ec52cd4d17584368be1dad4dcddf3347ca",
   "criteria": {
     "design": {
       "pass": true
@@ -160,10 +160,10 @@
           "region:field-1",
           "region:town"
         ],
-        "sceneCaptureSha256": "156900eaa7fb76efbca9ed8b0630527e4df2692b4a7afa7894897baaa641c322",
-        "colorBuckets": 337,
-        "p95FrameMs": 50.099999999998545,
-        "bootMilliseconds": 5157
+        "sceneCaptureSha256": "7b279ce9b00ac957d2464e9b46dd9ad40eb940ae921885781770ac362f2c2885",
+        "colorBuckets": 328,
+        "p95FrameMs": 83.39999999999782,
+        "bootMilliseconds": 5707
       }
     },
     "baselineIsActualThreeBrowserRuns": false,
@@ -457,5 +457,5 @@
   "passAction": null,
   "failureAction": "REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION",
   "releaseOrDeploymentAuthority": false,
-  "generatedAt": "2026-10-10T19:33:09.396Z"
+  "generatedAt": "2026-10-10T21:04:08.847Z"
 }
