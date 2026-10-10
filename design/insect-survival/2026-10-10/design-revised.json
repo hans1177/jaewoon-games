@@ -5,9 +5,9 @@
   "gameSeedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
   "productionClass": "DESIGN_ONLY",
   "authorRole": "VIBE2_MINIMUM_DESIGN_PREPARATION",
-  "status": "MINIMUM_DEVELOPMENT_DESIGN_CANDIDATE",
+  "status": "DESIGN_GRAMMAR_AUTHORING_REQUIRED",
   "sourceAuthority": "OWNER_GAME_SEED_AND_EXISTING_GAME_IMPLEMENTATION",
-  "minimumDesignReady": true,
+  "minimumDesignReady": false,
   "strictDesignReviewed": false,
   "strictDesignPass": false,
   "independentQaPass": false,
@@ -125,5 +125,23 @@
     }
   },
   "createdAt": "2026-10-10T04:50:29.634Z",
-  "updatedAt": "2026-10-10T04:50:29.634Z"
+  "updatedAt": "2026-10-10T04:50:29.634Z",
+  "gameplaySketchVersion": 5,
+  "codeGenerationAuthorized": false,
+  "grammarValidation": {
+    "formula": "MAIN × A × B × C + @",
+    "pass": false,
+    "blockers": [
+      "DESIGN_MAIN_A_B_SOURCE_GRAMMAR_MISSING",
+      "DESIGN_C_TWO_TOPICS_REQUIRED",
+      "DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED",
+      "DESIGN_MATERIAL_FUSION_SURPRISE_UNPROVEN",
+      "DESIGN_STORY_CAUSAL_CHAIN_MISSING",
+      "DESIGN_A_B_MUTUAL_EVOLUTION_MISSING",
+      "DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING",
+      "DESIGN_MAIN_A_B_DELVE_REQUIRED"
+    ],
+    "source": "tools/company-design-gate-scoring-v2.mjs",
+    "checkedAt": "2026-10-10"
+  }
 }
