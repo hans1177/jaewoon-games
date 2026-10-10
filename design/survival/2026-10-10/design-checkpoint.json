@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 생존 기록을 채집하며, 자원과 위험 사이의 균형을 찾는 데 숙련된다. 게임 내에서 다양한 선택을 하며, 이는 세계 규칙과 새로운 플레이스타일로 전환되도록 설계되어 있다.",
       "coreFun": "{\"identity\": \"나의 생존기 정체성\", \"creativeGrammar\": {\"mainIdentity\": \"생존,채집,플레이어 역할 중심 게임\", \"a\": {\"system\": \"생존 시스템\", \"material\": \"환경 및 자원 관리\", \"materialDomain\": \"생존 전략\", \"stateChange\": \"자원 확보 -> 위험 회피 -> 성장 선택\"}, \"b\": {\"system\": \"플레이어 행동 시스템\", \"material\": \"선택적 스타일 개발\", \"materialDomain\": \"플레이어 역할 발전\", \"stateChange\": \"선택 -> 결과 -> 다음 플레이스타일 변화\"}}, \"abCausality\": \"{\\\"a\\\": \\\"자원 확보 -> 위험 회피 -> 성장 선택\\\", \\\"b\\\": \\\"선택 -> 결과 -> 다음 플레이스타일 변화\\\"}, \\\"cGenres\\\": [{\\\"role\\\": \\\"PRIMARY\\\", \\\"genre\\\": \\\"생존 전략\\\"}, {\\\"role\\\": \\\"SECONDARY\\\", \\\"genre\\\": \\\"플레이어 역할 진화\\\"}], \\\"@\\\": [\\\"자원 발견\\\", \\\"숙련된 선택\\\"]}, \"abEvolution\": {\\\"aChangesB\\\": \\\"자원 확보 -> 위험 회피 -> 성장 선택 -> 다음 플레이스타일 변화\\\", \\\"bChangesA\\\": \\\"선택 -> 결과 -> 다음 플레이스타일 변화 -> 자원 확보\\\", \\\"lateGameChange\\\": \\\"성장 선택 -> 새로운 플레이스타일 변화 -> 세계 규칙 재설정\\\"}, \"materialFusion\": {\\\"contrast\\\": \\\"환경 관리 vs. 플레이어 행동 설계, 시스템 상호작용 vs. 단순 선택\\\", \\\"causalBridge\\\": \\\"자원 확보 -> 위험 회피 -> 성장 선택 ->다"
+    },
+    "local_authoring_parts::909ea35e0eacefff30a73c838548b6b17fe86a7de33d76eb20e9c03ad6b88cde:coreLoop": {
+      "coreLoop": [
+        "생존 시스템에서 자원 확보 -> 위험 회피 -> 성장 선택의 순서로 플레이어가 행동하며, 이는 실제 세계 상태 변화에 영향을 미친다.",
+        "선택 -> 결과 -> 다음 플레이스타일 변화의 단계로 게임 내에서 다양한 선택을 하며, 이는 세계 규칙과 새로운 플레이스타일로 전환되도록 설계되어 있다.",
+        "자원 확보 -> 위험 회피 -> 성장 선택 -> 다음 플레이스타일 변화의 과정에서 생존 전략과 플레이어 역할 진화의 상호작용이 실제 세계 상태 변화로 이어진다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 787739,
-      "lastMs": 233582,
+      "totalMs": 862450,
+      "lastMs": 74711,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:23:33.409Z"
+      "updatedAt": "2026-10-10T09:24:48.124Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:10:25.475Z",
-  "updatedAt": "2026-10-10T09:23:33.411Z",
+  "updatedAt": "2026-10-10T09:24:48.124Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,7 +1940,7 @@
   "localAuthoringSplits": {
     "0e22b09efe5e07308df256d83b055d1687eba844eb8f5e27c394e55d33d9b74f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:23:33.411Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:24:48.124Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
