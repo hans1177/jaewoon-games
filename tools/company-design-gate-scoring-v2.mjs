@@ -146,7 +146,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
   // 소재 융합 문법은 단어 라벨만 아니라 실제 양방향 시스템 상태와 플레이 증거가 있어야 한다.
-  if((seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5)||selected.has('creativeGrammar')){
+  if((seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5)||selected.has('creativeGrammar')){
     const grammar=design.creativeGrammar,axes=[grammar?.a,grammar?.b];
     if(!grammar||!textReady(grammar.mainIdentity,15)||axes.some(axis=>!axis||!textReady(axis.system,2)||!textReady(axis.material,2)||!textReady(axis.materialDomain,2)||!textReady(axis.stateChange,20))||!textReady(grammar.abCausality,35)||!textReady(grammar.finalGameIdentity,18)){
       reject('DESIGN_MAIN_A_B_SOURCE_GRAMMAR_MISSING','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},'MAIN 게임 정체성 및 A/B 각각의 시스템+소재와 양방향 원인·상태 교환을 다시 설계한다.');
@@ -183,7 +183,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   // V5는 MAIN/A/B/@를 실제 규칙으로 검증하고 C를 creativeGrammar의 소재·장르 인과로 검사한다. 옛 c는 선택적이다.
   if(selected.has('signatureSystems')){
     const systems=list(design.signatureSystems);
-    const ownerV5=(seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5);
+    const ownerV5=(seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5);
     const counts=Object.fromEntries(['MAIN','A','B','c','DELVE'].map(role=>[role,systems.filter(row=>row?.grammarRole===role).length]));
     const ids=systems.map(row=>clean(row?.id));
     const rolesReady=counts.MAIN===1&&counts.A===1&&counts.B===1&&(ownerV5||counts.c>=1)&&counts.DELVE>=1;
@@ -285,7 +285,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     const byRule=new Map(systems.map(row=>[row.id,row]));
     const graph=new Map(systems.map(row=>[row.id,[]]));
     const edges=list(design.systemInterconnections);
-    let connected=edges.length>=5&&systems.length>=((seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5)?4:5);
+    let connected=edges.length>=5&&systems.length>=((seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5)?4:5);
     for(const edge of edges){
       const from=byRule.get(edge.fromId),to=byRule.get(edge.toId),keys=list(edge.stateKeys);
       if(!from||!to||!keys.length||keys.some(key=>!list(from.stateOutputs).includes(key)||!list(to.stateInputs).includes(key)))connected=false;
@@ -298,7 +298,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     if(!connected||!main||!a||!b||!reaches(a,b)||!reaches(b,a)||systems.some(row=>!reaches(main,row.id)&&!reaches(row.id,main))){
       reject('DESIGN_PRESERVATION_GRAMMAR_GRAPH_DISCONNECTED','SYSTEM_INTERCONNECTION_DESIGN',['systemInterconnections'],
         {edgeCount:edges.length,connected},
-        (seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5)
+        (seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5)
           ?'기존 규칙의 실제 상태 입출력으로 MAIN/A/B/@를 연결하고 C 소재와 주·보조 장르가 A/B 선택에 영향을 주는 인과를 증명한다. 기존 c 시스템이 없으면 만들지 않는다. 임시 보상·가짜 상태를 추가하지 않는다.'
           :'기존 규칙의 실제 상태 출력과 입력으로 MAIN/A/B/c/@를 연결하고 A/B 양방향 상태 교환을 증명한다. 임시 가짜 기능이나 새 보상을 만들지 않는다.');
     }
@@ -469,7 +469,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const playMode=clean(design.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
   const playModeKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(playMode);
   // 파일명: company-design-gate-scoring-v2.mjs / 메인: 검증 전 자동접수 V5는 복사할 설계 원본이 아니다.
-  const seedV5=(seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5);
+  const seedV5=(seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5);
   const intakeFusion=seed?.GAMEPLAY_SKETCH?.novelGameGrammar?.gameplaySystemFusion;
   const intakeThemes=intakeFusion?.themeFusion?.themes;
   const intakeGenres=intakeFusion?.themeFusion?.genres;

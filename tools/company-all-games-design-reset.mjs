@@ -150,18 +150,21 @@ function normalizedCanonicalSketch(game,seed){
   return{category,coreLoop,sketch:normalizeGameplaySketch(target,proposal,coreLoop,gameName)};
 }
 function upgradeCanonicalNovelGrammarSeed(seed,game,timestamp){
-  // 브리프만 접수된 게임과 디자이너 직접 시드는 창작을 모델에 맡기고 임시 문법으로 덮지 않는다.
-  if(['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(clean(seed?.designInputMode)))return false;
+  // 브리프 원본은 수정하지 않고 V5 재작성 필요 표시만 남긴다.
+  // 구버전 브리프를 그대로 두면 실제 자동 디자이너가 예전 c 문법을 반복한다.
+  const ownerAuthoredInput=['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(clean(seed?.designInputMode));
   // 기존 MAIN 중심 설계도 새 MAIN/A/B/C/@ 문법으로 재작성한다. 원본 게임 규칙은 별도 보존.
   if(completeNovelGrammarV5(seed))return false;
   // 접수용 임시 V5를 매 실행마다 다시 쓰지 않는다. 디자이너가 고유 소재와 장르를 직접 완성해야 한다.
   if(Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5
     &&seed?.novelGrammarBackfill?.source===CANONICAL_NOVEL_GRAMMAR_V5_SOURCE
     &&seed?.novelGrammarBackfill?.authoringPending===true)return false;
-  const normalized=normalizedCanonicalSketch(game,seed);
-  seed.GAME_CATEGORY=normalized.category;
-  seed.CORE_LOOP=normalized.coreLoop;
-  seed.GAMEPLAY_SKETCH=normalized.sketch;
+  if(!ownerAuthoredInput){
+    const normalized=normalizedCanonicalSketch(game,seed);
+    seed.GAME_CATEGORY=normalized.category;
+    seed.CORE_LOOP=normalized.coreLoop;
+    seed.GAMEPLAY_SKETCH=normalized.sketch;
+  }
   seed.novelGrammarBackfill={version:5,source:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,authoringPending:true,updatedAt:timestamp};
   const signals=Array.isArray(seed.designEvolutionSignals)?seed.designEvolutionSignals.filter(row=>clean(row?.id)!==CANONICAL_NOVEL_GRAMMAR_V5_SOURCE):[];
   signals.push({id:CANONICAL_NOVEL_GRAMMAR_V5_SOURCE,type:'OWNER_MAIN_AB_C_GRAMMAR_REDESIGN',status:'OPEN',createdAt:timestamp,source:'CANONICAL_GAME_SEED'});

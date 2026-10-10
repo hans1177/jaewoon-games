@@ -51,8 +51,14 @@ export function evaluateMinimumDesignContract(record={},{seed={},requireGrammar=
   if(!unity)blockers.push('UNITY_PLATFORM_PROFILE_INCOMPLETE');
   if(roblox&&unity&&!distinct)blockers.push('PLATFORM_PROFILES_MUST_DIFFER');
   // 기본 설계도 v5 MAIN × A × B × C + @ 문법과 실제 상태 연결이 있어야 한다.
-  const grammarRequired=requireGrammar||Number(seed?.GAMEPLAY_SKETCH?.version||record?.gameplaySketchVersion||0)>=5;
-  const grammarSeed=Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5?seed:{GAMEPLAY_SKETCH:{version:5}};
+  const grammarRequired=requireGrammar||Math.max(
+    Number(seed?.GAMEPLAY_SKETCH?.version||0),
+    Number(seed?.novelGrammarBackfill?.version||0),
+    Number(record?.gameplaySketchVersion||0)
+  )>=5;
+  const grammarSeed=grammarRequired&&Number(seed?.GAMEPLAY_SKETCH?.version||0)<5&&Number(seed?.novelGrammarBackfill?.version||0)<5
+    ?{...seed,novelGrammarBackfill:{...(seed?.novelGrammarBackfill||{}),version:5,authoringPending:true}}
+    :seed;
   const grammarFailures=grammarRequired?validateDesignAuthoringContent({
     design:content,seed:grammarSeed,fields:['creativeGrammar','signatureSystems']
   }):[];
@@ -82,7 +88,7 @@ export function materializeVibeMinimumDesign({root='.',seed={},catalogGame={},da
     return {created:false,reason:'ACTIVE_GAME_SEED_REQUIRED'};
   }
   const sketch=seed?.GAMEPLAY_SKETCH||{};
-  const grammarRequired=Number(sketch.version||0)>=5;
+  const grammarRequired=Math.max(Number(sketch.version||0),Number(seed?.novelGrammarBackfill?.version||0))>=5;
   const existing=latestMinimumDesign(root,gameId,{seed,requireGrammar:grammarRequired});
   // 메인: 소유자 초기화보다 오래된 설계는 새 기본 설계 생성의 근거가 아니다.
   // 이미 작성한 같은 날짜의 설계나 유효한 최신 설계는 덮어쓰지 않는다.

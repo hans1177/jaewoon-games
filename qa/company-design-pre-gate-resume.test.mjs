@@ -125,6 +125,7 @@ test('incomplete auto-enrolled V5 seeds do not force invented names and causal D
   const expression=design.slice(contextStart,contextEnd)+'\nseedDesignDepthContext';
   const input={
     seedGameplaySketchVersion:5,
+    inputGameplaySketchVersion:5,
     pendingSeedGrammarNotAuthored:true,
     advancedSeedDesignDepth:true,
     seedGameplaySketch:{identityCore:{oneLineFantasy:'자동 임시 정체성'},novelGameGrammar:{emergentGenre:{name:'자동 임시 장르'}}},
@@ -254,6 +255,35 @@ test('incomplete intake remains input for the designer instead of failing a seed
     assert.equal(input.status,'ACTIVE');
     assert.equal(input.designerSeed,undefined,'normalizing input is not AI authorship');
     assert.equal(validateGameSeed(input).pass,false,'record diagnostics do not fabricate a seed PASS');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// 메인: 기존 오너 브리프 V1은 원본 그대로 두고 최신 V5 자동 디자이너 대상으로 전환한다.
+test('legacy owner brief enters V5 authoring without rewriting original seed or claiming PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-brief-v5-intake-'));
+  try{
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify({games:[{
+      id:'owner-brief',name:'기존 브리프 게임',description:'기존 사용자 규칙을 보존한다',lifecycleState:'ACTIVE'
+    }]}));
+    const originalSketch={version:1,source:'OWNER_BRIEF_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN'};
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({seeds:[{
+      gameId:'owner-brief',seedId:'original-brief',status:'ACTIVE',
+      designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY',
+      OWNER_LATEST_DESIGN_REQUEST:'원본 전투 규칙과 저장은 그대로 둔다',
+      GAMEPLAY_SKETCH:originalSketch
+    }]}));
+    const result=autoEnrollMissingDesignSeeds({root,gameId:'owner-brief'});
+    assert.deepEqual(result.grammarUpgraded,['owner-brief']);
+    const current=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8')).seeds[0];
+    assert.deepEqual(current.GAMEPLAY_SKETCH,originalSketch);
+    assert.equal(current.OWNER_LATEST_DESIGN_REQUEST,'원본 전투 규칙과 저장은 그대로 둔다');
+    assert.equal(current.novelGrammarBackfill.version,5);
+    assert.equal(current.novelGrammarBackfill.authoringPending,true);
+    const failures=validateDesignAuthoringContent({
+      seed:current,design:{signatureSystems:[]},fields:['signatureSystems']
+    });
+    assert.ok(failures.some(item=>item.code==='DESIGN_MAIN_A_B_DELVE_REQUIRED'));
+    assert.equal(autoEnrollMissingDesignSeeds({root,gameId:'owner-brief'}).grammarUpgraded.length,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

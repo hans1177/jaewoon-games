@@ -115,3 +115,22 @@ test('Vibe minimum authoring rejects empty creative intake and never overrides a
     assert.equal(JSON.parse(fs.readFileSync(target,'utf8')).status,'DESIGNER_AUTHORED_CANDIDATE');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('an owner brief marked for V5 cannot enter Vibe development with a legacy minimum design',()=>{
+  const design=base();
+  const ownerSeed={GAMEPLAY_SKETCH:{version:1},novelGrammarBackfill:{version:5,authoringPending:true}};
+  const verdict=evaluateMinimumDesignContract(design,{seed:ownerSeed});
+  assert.equal(verdict.pass,false);
+  assert.equal(verdict.creativeGrammarReady,false);
+  assert.ok(verdict.blockers.some(code=>code.startsWith('DESIGN_MAIN_A_B')||code.startsWith('DESIGN_C_')));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-brief-v5-minimum-'));
+  try{
+    const seed={...ownerSeed,gameId:'owner-brief',seedId:'original',status:'ACTIVE',
+      DISTINCT_IDENTITY:'오너 원본과 기존 저장을 유지하는 게임',
+      CORE_LOOP:['원본 선택','원본 상태 변화','원본 결과'],MULTIPLAYER_DESIGN_MODE:'SINGLE'};
+    const result=materializeVibeMinimumDesign({root,seed,date:'2026-10-10'});
+    assert.equal(result.created,false);
+    assert.equal(result.reason,'DESIGN_GRAMMAR_DESIGNER_SEED_PENDING');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+

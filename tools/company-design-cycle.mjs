@@ -89,7 +89,8 @@ const seedInput=resolveDesignerSeedInput({state:seedState,gameId,catalog,brief:p
 const seed=seedInput.seed;
 if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
-const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||5));
+const inputGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
+const seedGameplaySketchVersion=Math.max(5,Number(seed?.novelGrammarBackfill?.version||0),inputGameplaySketchVersion);
 // 자동 접수 V5의 미완성 임시 문구는 디자이너가 재사용해야 할 확정 창작안이 아니다.
 const intakeFusion=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion;
 const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
@@ -98,13 +99,14 @@ const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
     ||intakeFusion.majorAxes.some(axis=>!clean(axis?.systemFamily)||!clean(axis?.sourceMaterial)||!clean(axis?.sourceDomain)||!clean(axis?.materialRule))
     ||!Array.isArray(intakeFusion?.themeFusion?.themes)||intakeFusion.themeFusion.themes.length!==2
     ||!Array.isArray(intakeFusion?.themeFusion?.genres)||intakeFusion.themeFusion.genres.length!==2);
-const advancedSeedDesignDepth=seedGameplaySketchVersion>=2;
+const advancedSeedDesignDepth=inputGameplaySketchVersion>=2;
 const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
 const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
 const seedFlowAssetRequirements=Array.isArray(seedFlowArchitecture?.assetFlow?.requirements)?seedFlowArchitecture.assetFlow.requirements:[];
 const seedDesignDepthContext={
   source:'GAME_SEED.GAMEPLAY_SKETCH',
-  version:seedGameplaySketchVersion,
+  version:inputGameplaySketchVersion,
+  authoringGrammarVersion:seedGameplaySketchVersion,
   compatibilityMode:pendingSeedGrammarNotAuthored?'V5_DESIGNER_AUTHORING_PENDING_INPUT':seedGameplaySketchVersion>=5?'V5_OWNER_CREATIVE_GRAMMAR_INPUT':seedGameplaySketchVersion>=4?'V4_CAUSAL_GRAMMAR_INPUT':advancedSeedDesignDepth?'V2_DEPTH_INPUT':'LEGACY_V1_COMPATIBILITY',
   identityCore:pendingSeedGrammarNotAuthored?null:seedGameplaySketch?.identityCore&&typeof seedGameplaySketch.identityCore==='object'?seedGameplaySketch.identityCore:null,
   novelGameGrammar:pendingSeedGrammarNotAuthored?null:seedGameplaySketch?.novelGameGrammar&&typeof seedGameplaySketch.novelGameGrammar==='object'?seedGameplaySketch.novelGameGrammar:null,
@@ -1577,7 +1579,7 @@ if(!designIntelligence.implementationGate.allowed){
   throw new Error(designCheckpoint.lastError);
 }
 persistDesignerSeed(designDraft,'designer_draft');
-writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
 // 초안 점수는 수정 근거다. 작성 완료 후보를 막는 별도 사전 통과 게이트는 없다.
 writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:preGatePass(preGate),preGateAdmissionRequired:false});
 console.log(`DESIGN_PRE_GATE=REMOVED|score=${preGate.totalScore}|finalReview=REQUIRED`);
@@ -1636,7 +1638,7 @@ persistDesignCheckpoint();
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-  gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
+  gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
@@ -1714,7 +1716,7 @@ const runtimeMetrics={
 writeJson(path.join(base,'cycle-status.json'),{
   version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
-  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:designerSeedPath,inputSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',complete:true,gameplaySketchVersion:seedGameplaySketchVersion,advancedDesignDepth:advancedSeedDesignDepth},
+  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:designerSeedPath,inputSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',complete:true,gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,advancedDesignDepth:advancedSeedDesignDepth},
   designer:{role:'GAME_DESIGNER_AI',model:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,sameModelRevised:false},
   departments:{
     count:ROLES.length,roles:ROLES,leadModels,resolvedLeadModels,
