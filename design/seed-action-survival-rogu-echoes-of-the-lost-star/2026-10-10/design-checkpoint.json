@@ -97,25 +97,32 @@
       },
       "playerFantasy": "잃어버린 별의 메아리에서 플레이어는 숙련하고 선택의 결과로 다음 전략·경로·성장 가능성이 실제로 달라지는 경험을 반복한다.",
       "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure. Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build. Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    },
+    "local_authoring_parts::9ff842cf496400cd9389932e04dc432decf0139e7aa87ad6b2c1dee924ac3573:coreLoop": {
+      "coreLoop": [
+        "Input/Choice → State Change → Reward/Risk/Next Choice",
+        "Adaptive Strategy → Resource Management → Positioning → Run Outcome → New Play Style",
+        "Player's Initial Positioning and Resource Distribution → System Evolves Due to Player Adaptation → New Strategic Build Influences Future Gameplay"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 268817,
-      "lastMs": 268817,
+      "totalMs": 306568,
+      "lastMs": 37751,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:46:50.886Z"
+      "updatedAt": "2026-10-10T02:47:28.638Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:42:22.053Z",
-  "updatedAt": "2026-10-10T02:46:50.886Z",
+  "updatedAt": "2026-10-10T02:47:28.639Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1825,7 +1832,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:46:50.886Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:47:28.639Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
