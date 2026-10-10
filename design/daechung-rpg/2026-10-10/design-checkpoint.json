@@ -246,25 +246,176 @@
       "name": "AI 파티 토글 상태 교환",
       "purpose": "파티 관리 및 상태 교환",
       "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
+    },
+    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:3": {
+      "id": "DELVE[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "보스 첫 처치로 AI 동료 해금"
+      ],
+      "stateOutputs": [
+        "파티 토글 클릭으로 파티 구성 결정"
+      ],
+      "name": "AI 파티 토글 상태 교환",
+      "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
+      "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
+    },
+    "local_authoring_parts::4decf361500dbcc11feaa96b4363806a40a5ec2bbac646d53093ae29c731c087:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "마을에서 퀘스트와 장비 준비",
+            "포탈로 사냥터 이동"
+          ],
+          "stateOutputs": [
+            "몬스터 직접 전투",
+            "보스 첫 처치로 AI 동료 해금",
+            "15마리 파티사냥과 기여도 보상",
+            "플레이어 + 보스 동료 최대 3명 편성"
+          ],
+          "name": "초원 런 보스 격파 및 동료 해금",
+          "purpose": "전투력 증가, 보상 제공, 파티 조합 확장",
+          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "AI 파티 토글 클릭",
+            "플레이어 1명 + 해금한 보스 동료 최대 3명"
+          ],
+          "stateOutputs": [
+            "동료 리더 레벨 자동 동기화",
+            "별도 장비 없음"
+          ],
+          "name": "AI 파티 토글 상태 교환",
+          "purpose": "파티 관리 및 상태 변주",
+          "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "AI 파티 토글 클릭",
+            "플레이어 1명 + 해금한 보스 동료 최대 3명"
+          ],
+          "stateOutputs": [
+            "동료 리더 레벨 자동 동기화",
+            "별도 장비 없음"
+          ],
+          "name": "AI 파티 토글 상태 교환",
+          "purpose": "파티 관리 및 상태 교환",
+          "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
+        },
+        {
+          "id": "DELVE[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "보스 첫 처치로 AI 동료 해금"
+          ],
+          "stateOutputs": [
+            "파티 토글 클릭으로 파티 구성 결정"
+          ],
+          "name": "AI 파티 토글 상태 교환",
+          "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
+          "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
+        }
+      ]
+    },
+    "local_authoring_parts::bd294a238692a9b23a360ac44bbf01e4a4a69cace51a603c5bd5f73878b8ce68:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 이동",
+        "몬스터 직접 전투",
+        "보스 첫 처치로 AI 동료 해금",
+        "15마리 파티사냥과 기여도 보상",
+        "플레이어 + 보스 동료 최대 3명 편성",
+        "보스 공략 → 보스 동료 해금 → 파티 조합 확장",
+        "마을 귀환/회복/강화"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "마을에서 퀘스트와 장비 준비",
+            "포탈로 사냥터 이동"
+          ],
+          "stateOutputs": [
+            "몬스터 직접 전투",
+            "보스 첫 처치로 AI 동료 해금",
+            "15마리 파티사냥과 기여도 보상",
+            "플레이어 + 보스 동료 최대 3명 편성"
+          ],
+          "name": "초원 런 보스 격파 및 동료 해금",
+          "purpose": "전투력 증가, 보상 제공, 파티 조합 확장",
+          "playerChoice": "AI 파티 토글 클릭으로 파티 구성 결정"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "AI 파티 토글 클릭",
+            "플레이어 1명 + 해금한 보스 동료 최대 3명"
+          ],
+          "stateOutputs": [
+            "동료 리더 레벨 자동 동기화",
+            "별도 장비 없음"
+          ],
+          "name": "AI 파티 토글 상태 교환",
+          "purpose": "파티 관리 및 상태 변주",
+          "playerChoice": "AI 파티 토글 클릭로 파티 구성 결정됨입니다. 이 선택은 실제 선택이며, AI 유저와의 파티 구성에 영향을 미칩니다. 파티 토글 사용 시 새로운 선택 가능성이 생깁니다. 이 선택은 게임 세계에 직접적인 변화를 주며, 상호작용 시 새로운 플레이가 생성됩니다. 파티 토글 상태 교환은 A→B: 포탈 전투 상태 변화; B→A: 동료 조합 확장으로 인해 실질적 인과 변화를 일으킵니다. 이는 메인/보조 장르와 C의 두 창작 소재에 의해 인과적으로 결합되어 새 정체성 생성이 가능합니다."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "AI 파티 토글 클릭",
+            "플레이어 1명 + 해금한 보스 동료 최대 3명"
+          ],
+          "stateOutputs": [
+            "동료 리더 레벨 자동 동기화",
+            "별도 장비 없음"
+          ],
+          "name": "AI 파티 토글 상태 교환",
+          "purpose": "파티 관리 및 상태 교환",
+          "playerChoice": "AI 파티 토글 사용, AI 유저와 파티 구성 결정 전략 적용됨"
+        },
+        {
+          "id": "DELVE[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "보스 첫 처치로 AI 동료 해금"
+          ],
+          "stateOutputs": [
+            "파티 토글 클릭으로 파티 구성 결정"
+          ],
+          "name": "AI 파티 토글 상태 교환",
+          "purpose": "플레이어와 AI 유저가 파티를 구성하는 선택적 전략",
+          "playerChoice": "파티 토글 클릭으로 파티 구성 결정 및 동료 리더 레벨 자동 동기화 발생 시 새로운 선택 가능 생성됨"
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1164434,
-      "lastMs": 237866,
+      "totalMs": 1264306,
+      "lastMs": 99872,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:28:02.267Z"
+      "updatedAt": "2026-10-10T02:29:42.140Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:08:37.800Z",
-  "updatedAt": "2026-10-10T02:28:02.267Z",
+  "updatedAt": "2026-10-10T02:29:42.142Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2009,18 +2160,7 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:2": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "signatureSystems[0]",
-          "signatureSystems[1]"
-        ]
-      }
-    ]
-  },
+  "sliceRepairFeedback": {},
   "sliceRepairAttempts": {
     "local_authoring_parts::cc243ae7db21b4697e3071b606d96caf345bc73bbf214ccc1b18963e44e7d1c6:signatureSystems:2": 1
   },
@@ -2028,7 +2168,7 @@
   "localAuthoringSplits": {
     "80512e8e62bf37c9e0b8c2185e9aae41ac169e759c3e0db32cec2f1bbd8e9d7f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:28:02.267Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:29:42.142Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
