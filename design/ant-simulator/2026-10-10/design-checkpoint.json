@@ -3,264 +3,31 @@
   "gameId": "ant-simulator",
   "date": "2026-10-10",
   "seedId": "AUTO-MISSING-DESIGN-ANT-SIMULATOR",
-  "fingerprint": "73ee7938a7e2fb823f86ef3b1b15d248b3eed33215e40652f2d1f955cfa17d5c",
+  "fingerprint": "46ff6b067de890749894e1a8281ab5bc4c706fb2fa50b5547bc1e06b7463ea14",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::e68b4731f3164c5a3800ddc406571b231f647df7075f420e6fce77e4f5099dd1:identity,creativeGrammar": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
-      "creativeGrammar": {
-        "mainIdentity": "개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프",
-        "a": {
-          "system": "OPEN_WORLD_SIMULATION",
-          "material": "플레이어가 세 가지 주제(생존, 전략, 협력)에서 한 가지를 선택해 월드 상태와 대상에 영향을 미치며, 이 선택은 다음 단계로 이어진다.",
-          "materialDomain": "생존",
-          "stateChange": "플레이어의 선택이 월드 상태와 대상에 직접적인 변화를 일으킴"
-        },
-        "b": {
-          "system": "STRATEGIC_UPGRADE_SYSTEM",
-          "material": "업그레이드 기반의 키트 또는 장비를 선택하여 현재 건강도나 보호 범위 등을 증가시키고, 이를 바탕으로 다음 단계로 이어진다.",
-          "materialDomain": "전략",
-          "stateChange": "선택된 업그레이드는 건강도 및 보호 범위 등 상태 변수를 변경함"
-        },
-        "abCausality": "A→B: 플레이어의 선택 → 상황 변화 → 업그레이드 적용; B→A: 업그레이드 적용 → 상태 변화 → 선택 재정립",
-        "abEvolution": {
-          "aChangesB": "업그레이드 적용 후 새로운 선택 가능 옵션 제공",
-          "bChangesA": "선택 재정립 시 새로운 전략적 접근 방식 제시",
-          "lateGameChange": "최종 선택은 A/B 상태 교환을 통해 최선의 결과 도출"
-        },
-        "materialFusion": {
-          "contrast": "A와 B는 서로 다른 주제(생존 vs. 전략)에서 오며, 각각의 소재는 실제 선택과 규칙에 영향을 미침",
-          "causalBridge": "플레이어의 선택이 월드 상태와 대상에 직접적인 영향을 줄 수 있으며, 이를 바탕으로 다음 단계로 이어짐",
-          "removalConsequence": "A 또는 B가 빠져 있으면 해당 측면의 게임 요소가 무너질 수 있으나, 전체 게임 구조를 유지함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 선택 -> 효과/위험/보상 -> 다음 사건",
-          "characterConflict": "선택의 결과가 플레이어에게 새로운 갈등을 유발하고, 이는 다음 선택에 영향을 줍니다.",
-          "playerChoice": "플레이어는 선택을 하여 월드 상태 및 대상 변화를 일으킴",
-          "worldChange": "월드 상태와 대상이 변경되어 다음 단계로 이어진다.",
-          "nextEvent": "플레이어는 새로운 선택을 통해 게임을 계속 진행하게 됨"
-        },
-        "cThemes": [
-          {
-            "name": "생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어는 생존 전략과 업그레이드 기반의 키트를 선택하여 월드 상태와 대상에 영향을 미침"
-          },
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어는 전략적 접근 방식과 상호작용 가능한 장비를 선택하여 현재 건강도나 보호 범위 등을 증가시키고, 이를 바탕으로 다음 단계로 이어짐"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "OPEN_WORLD_SIMULATION",
-            "gameplayEffect": "플레이어는 다양한 월드 상태와 대상을 탐험하며, 이 과정에서 여러 가지 선택과 결과를 경험함"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "STRATEGIC_UPGRADE_SYSTEM",
-            "gameplayEffect": "플레이어는 전략적 선택과 업그레이드 기반의 키트를 사용하여 현재 건강도 및 보호 범위 등 상태 변수를 변경하고, 이를 바탕으로 다음 단계로 이어진다."
-          }
-        ],
-        "cGenreInterlock": "A와 B는 서로 다른 주제(생존 vs. 전략)에서 오며, 각각의 소재는 실제 선택과 규칙에 영향을 미침; C의 두 창작 소재는 A/B 상태 교환을 통해 최선의 결과 도출됨",
-        "cWorldAndGameplayEffect": "플레이어는 세 가지 주제 중 하나를 선택해 월드 상태와 대상에 직접적인 변화를 일으킴; 이 선택은 다음 단계로 이어지는 반복 가능한 게임 루프를 형성한다.",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어가 세 가지 주제 중 한 가지를 선택하는 과정이 게임의 핵심 요소이며, 이 선택은 월드 상태와 대상을 직접적으로 영향을 줄 수 있음",
-            "discovery": "플레이어는 생존 전략이나 전략적 접근 방식을 선택함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          },
-          {
-            "clue": "선택된 주제와 관련된 업그레이드 기반의 키트 또는 장비는 플레이어의 선택에 따라 달라지며, 이는 다음 단계로 이어진다.",
-            "discovery": "플레이어는 업그레이드 기반의 키트 또는 장비를 선택함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          },
-          {
-            "clue": "최종 선택은 A/B 상태 교환을 통해 최선의 결과 도출됨",
-            "discovery": "플레이어는 A/B 상태 교환을 통해 최선의 결과를 도출함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          },
-          {
-            "clue": "게임은 반복 가능한 루프 형태이며, 각 단계에서 실제 선택과 규칙이 적용되어 월드 상태와 대상 변화가 일어남",
-            "discovery": "플레이어는 반복적인 선택 과정을 거쳐 게임을 진행함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          }
-        ],
-        "delveGrowthRule": "A→B: 플레이어의 선택 → 상황 변화 → 업그레이드 적용; B→A: 업그레이드 적용 → 상태 변화 → 선택 재정립; C: 두 창작 소재 및 주·보조 장르로 인해 실제 선택 및 세계 변화; @: 발견·숙련으로 구별되며, 4개 이상의 초기 사례와 무제한 발전 규칙을 가진다.",
-        "finalGameIdentity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이터의 최종 정체성"
-      }
-    },
-    "local_authoring_parts::e68b4731f3164c5a3800ddc406571b231f647df7075f420e6fce77e4f5099dd1:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 세 가지 주제(생존, 전략, 협력)에서 한 가지를 선택해 월드 상태와 대상을 직접적으로 영향을 미치며, 이 선택은 다음 단계로 이어진다. 생존 전략은 월드 탐험과 위협 회피를 통해 살아남아야 하며, 전략적 접근은 업그레이드 기반의 키트나 장비를 통해 건강도 및 보호 범위를 증가시켜야 한다. 협력은 다른 플레이어와의 협업을 통じ하여 더 강력한 자원이나 전략적 정보를 얻어야 한다.",
-      "coreFun": "{\"identity\": \"세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프\",\n \\\"a\\\": {\\n \\\"system\\\": \"OPEN_WORLD_SIMULATION\",\\n \\\"material\\\": \"플레이어가 세 가지 주제(생존, 전략, 협력)에서 한 가지를 선택해 월드 상태와 대상에 영향을 미치며, 이 선택은 다음 단계로 이어진다.\",\n \\\"materialDomain\\\": \"생존\",\\n \\\"stateChange\\\": \"플레이어의 선택이 월드 상태와 대상에 직접적인 변화를 일으킴\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"STRATEGIC_UPGRADE_SYSTEM\",\\n \\\"material\\\": \"업그레이드 기반의 키트 또는 장비를 선택하여 현재 건강도나 보호 범위 등을 증가시키고, 이를 바탕으로 다음 단계로 이어진다.\",\n \\\"materialDomain\\\": \"전략\",\\n \\\"stateChange\\\": \"선택된 업그레이드는 건강도 및 보호 범위 등 상태 변수를 변경함\"\n },\\n \\\"abCausality\\\": \"A→B: 플레이어의 선택 → 상황 변화 → 업그레이드 적용; B→A: 업그레이드 적용 → 상태 변화 → 선택 재정립\",\n \\\"abEvolution\\\": \"{\\n \\\"aChangesB\\\": \"업그레이드 적용 후 새로운 선택 가능 옵션 제공\",\n \\\"bChangesA\\\": \"선택 재정립 시 새로운 전략적 접근 방식 제시\",\n \\\"lateGameChange\\\": \"최종섍"
-    },
-    "local_authoring_parts::5d3099eda4fe495feba933aba7d8497c271502ab9a0893e4b12deb98897c3232:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션",
-      "creativeGrammar": {
-        "mainIdentity": "개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프",
-        "a": {
-          "system": "OPEN_WORLD_SIMULATION",
-          "material": "플레이어가 세 가지 주제(생존, 전략, 협력)에서 한 가지를 선택해 월드 상태와 대상에 영향을 미치며, 이 선택은 다음 단계로 이어진다.",
-          "materialDomain": "생존",
-          "stateChange": "플레이어의 선택이 월드 상태와 대상에 직접적인 변화를 일으킴"
-        },
-        "b": {
-          "system": "STRATEGIC_UPGRADE_SYSTEM",
-          "material": "업그레이드 기반의 키트 또는 장비를 선택하여 현재 건강도나 보호 범위 등을 증가시키고, 이를 바탕으로 다음 단계로 이어진다.",
-          "materialDomain": "전략",
-          "stateChange": "선택된 업그레이드는 건강도 및 보호 범위 등 상태 변수를 변경함"
-        },
-        "abCausality": "A→B: 플레이어의 선택 → 상황 변화 → 업그레이드 적용; B→A: 업그레이드 적용 → 상태 변화 → 선택 재정립",
-        "abEvolution": {
-          "aChangesB": "업그레이드 적용 후 새로운 선택 가능 옵션 제공",
-          "bChangesA": "선택 재정립 시 새로운 전략적 접근 방식 제시",
-          "lateGameChange": "최종 선택은 A/B 상태 교환을 통해 최선의 결과 도출"
-        },
-        "materialFusion": {
-          "contrast": "A와 B는 서로 다른 주제(생존 vs. 전략)에서 오며, 각각의 소재는 실제 선택과 규칙에 영향을 미침",
-          "causalBridge": "플레이어의 선택이 월드 상태와 대상에 직접적인 영향을 줄 수 있으며, 이를 바탕으로 다음 단계로 이어짐",
-          "removalConsequence": "A 또는 B가 빠져 있으면 해당 측면의 게임 요소가 무너질 수 있으나, 전체 게임 구조를 유지함"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 선택 -> 효과/위험/보상 -> 다음 사건",
-          "characterConflict": "선택의 결과가 플레이어에게 새로운 갈등을 유발하고, 이는 다음 선택에 영향을 줍니다.",
-          "playerChoice": "플레이어는 선택을 하여 월드 상태 및 대상 변화를 일으킴",
-          "worldChange": "월드 상태와 대상이 변경되어 다음 단계로 이어진다.",
-          "nextEvent": "플레이어는 새로운 선택을 통해 게임을 계속 진행하게 됨"
-        },
-        "cThemes": [
-          {
-            "name": "생존",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어는 생존 전략과 업그레이드 기반의 키트를 선택하여 월드 상태와 대상에 영향을 미침"
-          },
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어는 전략적 접근 방식과 상호작용 가능한 장비를 선택하여 현재 건강도나 보호 범위 등을 증가시키고, 이를 바탕으로 다음 단계로 이어짐"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "OPEN_WORLD_SIMULATION",
-            "gameplayEffect": "플레이어는 다양한 월드 상태와 대상을 탐험하며, 이 과정에서 여러 가지 선택과 결과를 경험함"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "STRATEGIC_UPGRADE_SYSTEM",
-            "gameplayEffect": "플레이어는 전략적 선택과 업그레이드 기반의 키트를 사용하여 현재 건강도 및 보호 범위 등 상태 변수를 변경하고, 이를 바탕으로 다음 단계로 이어진다."
-          }
-        ],
-        "cGenreInterlock": "A와 B는 서로 다른 주제(생존 vs. 전략)에서 오며, 각각의 소재는 실제 선택과 규칙에 영향을 미침; C의 두 창작 소재는 A/B 상태 교환을 통해 최선의 결과 도출됨",
-        "cWorldAndGameplayEffect": "플레이어는 세 가지 주제 중 하나를 선택해 월드 상태와 대상에 직접적인 변화를 일으킴; 이 선택은 다음 단계로 이어지는 반복 가능한 게임 루프를 형성한다.",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어가 세 가지 주제 중 한 가지를 선택하는 과정이 게임의 핵심 요소이며, 이 선택은 월드 상태와 대상을 직접적으로 영향을 줄 수 있음",
-            "discovery": "플레이어는 생존 전략이나 전략적 접근 방식을 선택함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          },
-          {
-            "clue": "선택된 주제와 관련된 업그레이드 기반의 키트 또는 장비는 플레이어의 선택에 따라 달라지며, 이는 다음 단계로 이어진다.",
-            "discovery": "플레이어는 업그레이드 기반의 키트 또는 장비를 선택함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          },
-          {
-            "clue": "최종 선택은 A/B 상태 교환을 통해 최선의 결과 도출됨",
-            "discovery": "플레이어는 A/B 상태 교환을 통해 최선의 결과를 도출함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          },
-          {
-            "clue": "게임은 반복 가능한 루프 형태이며, 각 단계에서 실제 선택과 규칙이 적용되어 월드 상태와 대상 변화가 일어남",
-            "discovery": "플레이어는 반복적인 선택 과정을 거쳐 게임을 진행함",
-            "newChoice": "플레이어는 새로운 선택 옵션을 제공하며, 이는 다음 단계로 이어짐"
-          }
-        ],
-        "delveGrowthRule": "A→B: 플레이어의 선택 → 상황 변화 → 업그레이드 적용; B→A: 업그레이드 적용 → 상태 변화 → 선택 재정립; C: 두 창작 소재 및 주·보조 장르로 인해 실제 선택 및 세계 변화; @: 발견·숙련으로 구별되며, 4개 이상의 초기 사례와 무제한 발전 규칙을 가진다.",
-        "finalGameIdentity": "세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이터의 최종 정체성"
-      },
-      "playerFantasy": "플레이어는 세 가지 주제(생존, 전략, 협력)에서 한 가지를 선택해 월드 상태와 대상을 직접적으로 영향을 미치며, 이 선택은 다음 단계로 이어진다. 생존 전략은 월드 탐험과 위협 회피를 통해 살아남아야 하며, 전략적 접근은 업그레이드 기반의 키트나 장비를 통해 건강도 및 보호 범위를 증가시켜야 한다. 협력은 다른 플레이어와의 협업을 통じ하여 더 강력한 자원이나 전략적 정보를 얻어야 한다.",
-      "coreFun": "{\"identity\": \"세 개미 종족 중 하나를 골라 거대한 정원을 탐험하고 굴을 지키는 오픈월드 멀티 시뮬레이션\",\n\"creativeGrammar\": \"{\\n \\\"mainIdentity\\\": \"개미 시뮬레이터의 실제 플레이 핵심 행동과 선택을 구체화, 행보 결과가 진행/위험/보상과 연결되는 반복 가능한 게임 루프\",\n \\\"a\\\": {\\n \\\"system\\\": \"OPEN_WORLD_SIMULATION\",\\n \\\"material\\\": \"플레이어가 세 가지 주제(생존, 전략, 협력)에서 한 가지를 선택해 월드 상태와 대상에 영향을 미치며, 이 선택은 다음 단계로 이어진다.\",\n \\\"materialDomain\\\": \"생존\",\\n \\\"stateChange\\\": \"플레이어의 선택이 월드 상태와 대상에 직접적인 변화를 일으킴\"\n },\\n \\\"b\\\": {\\n \\\"system\\\": \"STRATEGIC_UPGRADE_SYSTEM\",\\n \\\"material\\\": \"업그레이드 기반의 키트 또는 장비를 선택하여 현재 건강도나 보호 범위 등을 증가시키고, 이를 바탕으로 다음 단계로 이어진다.\",\n \\\"materialDomain\\\": \"전략\",\\n \\\"stateChange\\\": \"선택된 업그레이드는 건강도 및 보호 범위 등 상태 변수를 변경함\"\n },\\n \\\"abCausality\\\": \"A→B: 플레이어의 선택 → 상황 변화 → 업그레이드 적용; B→A: 업그레이드 적용 → 상태 변화 → 선택 재정립\",\n \\\"abEvolution\\\": \"{\\n \\\"aChangesB\\\": \"업그레이드 적용 후 새로운 선택 가능 옵션 제공\",\n \\\"bChangesA\\\": \"선택 재정립 시 새로운 전략적 접근 방식 제시\",\n \\\"lateGameChange\\\": \"최종섍"
-    },
-    "local_authoring_parts::4d8ec0c7d20aa945dae2ac439d1713be4ca27e3e0c7baaa207afe034e9a74aea:coreLoop": {
-      "coreLoop": [
-        "플레이어가 세 가지 주제(생존, 전략, 협력) 중 하나를 선택하여 월드 상태와 대상을 직접적으로 영향을 미칩니다.",
-        "선택한 주제에 따라 업그레이드 기반의 키트 또는 장비를 선택하거나 생존 전략이나 전략적 접근 방식을 적용합니다.",
-        "업그레이드나 전략적 선택이 이루어지면 월드 상태 및 대상이 변화하며, 이 변화는 다음 단계로 이어집니다.",
-        "최종 선택은 A/B 상태 교환을 통해 최선의 결과 도출되며, 이 과정에서 플레이어는 새로운 선택 옵션을 제공합니다."
-      ]
-    },
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_arena_selection",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "current_theme_choice",
-        "selected_upgrade_set",
-        "world_state_snapshot"
-      ],
-      "stateOutputs": [
-        "next_gameplay_step",
-        "updated_resource_pool",
-        "modified_enemy_behavior_profile"
-      ],
-      "name": "주제 선택 및 업그레이드 적용",
-      "purpose": "플레이어가 세 가지 주제 중 하나를 선택하여 월드 상태와 대상을 직접적으로 영향을 미칩니다.",
-      "playerChoice": "생존 전략 또는 전략적 접근 방식의 선택, 혹은 업그레이드 기반의 키트/장비의 선택을 하며, 이는 다음 단계로 이어집니다."
-    },
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:1:4b01cbb8a2321b0c": {
-      "id": "a_arena_selection",
-      "grammarRole": "A",
-      "stateInputs": [
-        "next_gameplay_step",
-        "updated_resource_pool",
-        "modified_enemy_behavior_profile"
-      ],
-      "stateOutputs": [
-        "current_theme_choice",
-        "selected_upgrade_set",
-        "world_state_snapshot"
-      ],
-      "name": "주제 선택 및 업그레이드 적용",
-      "purpose": "플레이어가 세 가지 주제(생존, 전략, 협력) 중 하나를 선택하여 월드 상태와 대상을 직접적으로 영향을 미칩니다.",
-      "playerChoice": "플레이어는 세 가지 주제 중 하나를 선택합니다. 이 선택은 다음 단계로 이어집니다. 생존 전략은 월드 탐험과 위협 회피를 통해 살아남아야 하며, 전략적 접근은 업그레이드 기반의 키트나 장비를 통해 건강도 및 보호 범위를 증가시켜야 한다. 협력은 다른 플레이어와의 협업을 통じ하여 더 강력한 자원이나 전략적 정보를 얻어야 한다."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 56,
-      "successes": 55,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2555596,
-      "lastMs": 34918,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:31:15.501Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T06:48:39.762Z",
-  "updatedAt": "2026-10-10T07:31:15.502Z",
+  "createdAt": "2026-10-10T09:10:52.331Z",
+  "updatedAt": "2026-10-10T09:10:52.350Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -297,6 +64,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -320,10 +88,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -803,8 +573,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -841,6 +611,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -864,10 +635,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1347,8 +1120,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1385,6 +1158,7 @@
             "FIELD_ELITE_WIND",
             "INSECT_ARACHNID",
             "LONG_JAW_MODULE",
+            "MONSTER",
             "MONSTER_PACK",
             "PLAINS_WILD_DARK",
             "PLAINS_WILD_GROUND",
@@ -1408,10 +1182,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1958,46 +1734,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:2:27369c5e19983ada": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_arena_selection",
-          "a_arena_selection"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_arena_selection",
-          "a_arena_selection"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "B",
-        "previousRuleIds": [
-          "main_arena_selection",
-          "a_arena_selection"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:1:4b01cbb8a2321b0c": 45,
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:2:27369c5e19983ada": 5
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "e68b4731f3164c5a3800ddc406571b231f647df7075f420e6fce77e4f5099dd1": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:31:15.501Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:B",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
