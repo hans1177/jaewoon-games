@@ -1618,25 +1618,32 @@
       "rangeKey": "IMPACT_BAG",
       "costKey": "IMPACT_BAG_COST",
       "cooldownKey": "IMPACT_BAG_COOLDOWN"
+    },
+    "local_authoring_parts::bad160705bcc4a2bae20adc6bd6fadc244aebfc31d5844ff8be3321b22683372:id,name,kind,ownerId,ruleId": {
+      "id": "CAMERA_FLASH",
+      "name": "섬광 촬영",
+      "kind": "HUMAN",
+      "ownerId": "PHOTOGRAPHER",
+      "ruleId": "CAMERA_FLASH_RU12345678901234567890123456789012345678901234567890123456789012345"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 86,
-      "successes": 83,
+      "calls": 87,
+      "successes": 84,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2556943,
-      "lastMs": 11454,
+      "totalMs": 2606094,
+      "lastMs": 49151,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:16:58.349Z"
+      "updatedAt": "2026-10-10T10:17:47.506Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T10:16:58.353Z",
+  "updatedAt": "2026-10-10T10:17:47.506Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2971,7 +2978,7 @@
     "designer_draft_slices::systems-progression": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:16:58.353Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:17:47.506Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
