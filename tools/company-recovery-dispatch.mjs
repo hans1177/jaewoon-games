@@ -35,7 +35,10 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
   recovery.tasks=recovery.tasks.map(rec=>{
     if(clean(rec.status)!=='queued')return rec;
     if(targetSourceTaskId&&clean(rec.sourceTaskId)!==targetSourceTaskId)return rec;
-    const owner=clean(rec.recoveryOwner).toUpperCase();
+    const requestedOwner=clean(rec.recoveryOwner).toUpperCase();
+    // Existing System AI worker cannot write game source. Recover legacy misrouted work in-place.
+    const gameSourceOwned=uniq(rec.responsibleFiles).some(file=>GAME_SOURCE_PREFIXES.some(prefix=>clean(file).replaceAll('\\','/').replace(/^\.\//,'').startsWith(prefix)));
+    const owner=requestedOwner==='SYSTEM_AI'&&gameSourceOwned?'VIBE2_VIBE3':requestedOwner;
     if(mode!=='all'&&mode==='vibe'&&owner!=='VIBE2_VIBE3')return rec;
     if(mode!=='all'&&mode==='system-ai'&&owner!=='SYSTEM_AI')return rec;
     const ids=uniq([rec.sourceTaskId,...(rec.relatedTaskIds||[])]);
@@ -67,7 +70,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           blocker:running?task.blocker:null,
           retries:running?task.retries:0,
           sourceMutationRequired:rec.sourceMutationRequired!==false,
-          sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+          sourceMutationBaseline:clean(task.sourceMutationBaseline||task.sourceRevision||task.candidateSha||task.baseMainSha||rec.sourceMutationBaseline||rec.checkpoint)||null,
           recurrenceCount,
           repairMode,
           userAssistanceRequired:false,
@@ -90,6 +93,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           },
           evidence:uniq([
             ...(task.evidence||[]),
+            ...uniq(rec.evidence).filter(value=>value.startsWith('system-ai-external-application-')),
+            ...(requestedOwner!==owner?['recovery-owner-routing:VIBE_GAME_SOURCE']:[]),
             'recovery-queue:'+clean(rec.id),
             'recovery-strategy:'+clean(rec.recoveryStrategy),
             'recovery-exact-stage:'+clean(rec.failureStage),
@@ -297,7 +302,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
       return rec;
     }
     dispatched.push({id:rec.id,owner,touched});
-    return{...rec,status:'dispatched',dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
+    return{...rec,status:'dispatched',recoveryOwner:owner,dispatchEvidence:uniq([...(rec.dispatchEvidence||[]),'recovery-dispatched:'+owner.toLowerCase(),'recovery-dispatched-at:'+stamp]),updatedAt:stamp};
   });
   return{recovery,gameQueue,systemAi,dispatched,gameRequeuedTaskIds:[...gameRequeuedTaskIds]};
 }

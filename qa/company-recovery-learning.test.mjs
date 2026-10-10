@@ -33,24 +33,23 @@ test('recovery wake counts unique newly dispatched queued games and preserves ac
   assert.deepEqual(systemOnly.gameRequeuedTaskIds,[]);
 });
 
-test('repeated failure is escalated into recovery queue',()=>{
-  const result=escalateRecoveryCandidates({
-    gameQueueInput:{tasks:[
-      {id:'g1',gameId:'g1',status:'failed',target:'web',sourceRoot:'web-games/g1',responsibleFiles:['web-games/g1/index.html'],currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']},
-      {id:'g2',gameId:'g2',status:'failed',target:'web',sourceRoot:'web-games/g2',responsibleFiles:['web-games/g2/index.html'],currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']},
-      {id:'g3',gameId:'g3',status:'failed',target:'web',sourceRoot:'web-games/g3',responsibleFiles:['web-games/g3/index.html'],currentStep:'WEB_RUNTIME',blocker:'same-failure',evidence:['failure-cause:same-failure']}
-    ]}
-  });
-  assert.equal(result.added.length,1);
-  const row=result.queue.tasks[0];
-  assert.equal(row.blastRadius,'portfolio:3');
-  assert.equal(row.recoveryOwner,'SYSTEM_AI');
-  assert.ok(row.evidence.includes('primary-ai-collaboration:REQUESTED'));
-  assert.ok(row.evidence.some(x=>x.startsWith('primary-ai-collaboration-reason:')));
-  assert.match(row.recoveryStrategy,/ASSIGN_SCOPED_IMPLEMENTATION_REPAIR/);
-  assert.deepEqual(row.responsibleFiles,['web-games/g1/index.html']);
+test('generic cross-game failures retain separate game-source checkpoint recovery',()=>{
+  const gameQueueInput={tasks:['g1','g2','g3'].map(id=>({
+    id,gameId:id,status:'failed',target:'web',sourceRoot:'web-games/'+id,
+    responsibleFiles:['web-games/'+id+'/index.html'],currentStep:'WEB_RUNTIME',
+    sourceRevision:'checkpoint-'+id,blocker:'same-failure',evidence:['failure-cause:same-failure']
+  }))};
+  const result=escalateRecoveryCandidates({gameQueueInput});
+  assert.equal(result.added.length,3);
+  assert.equal(result.queue.tasks.length,3);
+  for(const rec of result.queue.tasks){
+    assert.equal(rec.blastRadius,'single-task');
+    assert.equal(rec.recoveryOwner,'VIBE2_VIBE3');
+    assert.deepEqual(rec.responsibleFiles,['web-games/'+rec.sourceTaskId+'/index.html']);
+    assert.equal(rec.checkpoint,'checkpoint-'+rec.sourceTaskId);
+    assert.ok(rec.evidence.includes('primary-ai-collaboration:REQUESTED'));
+  }
 });
-
 test('generic System-AI failure signature does not group unrelated responsible files',()=>{
   const result=escalateRecoveryCandidates({
     systemAiQueueInput:{tasks:[
@@ -155,7 +154,7 @@ test('cancelled or completed tasks never re-enter recovery escalation from stale
   assert.equal(result.queue.tasks.length,0);
 });
 
-test('recovery escalation normalizes steward signatures and reuses canonical exact stage',()=>{
+test('legacy broad recovery keeps its first checkpoint while unrelated games get scoped recovery',()=>{
   const existing=enqueueRecovery({tasks:[]},{
     sourceQueue:'vibe2',sourceTaskId:'g1',failureStage:'SOURCE_CANDIDATE_GENERATION',
     failureSignature:'source-candidate-generation-failed',blastRadius:'portfolio:3',
@@ -164,19 +163,23 @@ test('recovery escalation normalizes steward signatures and reuses canonical exa
     verificationPlan:['RERUN_EXACT_FAILED_STAGE']
   }).queue;
   const result=escalateRecoveryCandidates({
-    gameQueueInput:{tasks:[
-      {id:'g1',status:'running',target:'web',sourceRoot:'web-games/g1',recoveryGeneration:1,evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']},
-      {id:'g2',status:'running',target:'web',sourceRoot:'web-games/g2',recoveryGeneration:1,evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']},
-      {id:'g3',status:'queued',target:'web',sourceRoot:'web-games/g3',recoveryGeneration:1,evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']}
-    ]},
+    gameQueueInput:{tasks:['g1','g2','g3'].map(id=>({
+      id,gameId:id,status:'queued',target:'web',sourceRoot:'web-games/'+id,
+      responsibleFiles:['web-games/'+id+'/index.html'],recoveryGeneration:1,
+      evidence:['system-steward:failure-signature:source-candidate-generation-failed',
+        'recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']
+    }))},
     recoveryInput:existing
   });
-  assert.equal(result.added.length,0);
-  assert.equal(result.queue.tasks.length,1);
-  assert.equal(result.queue.tasks[0].failureSignature,'source-candidate-generation-failed');
-  assert.equal(result.queue.tasks[0].failureStage,'SOURCE_CANDIDATE_GENERATION');
+  assert.equal(result.added.length,2);
+  assert.equal(result.queue.tasks.length,3);
+  assert.equal(result.queue.tasks.find(t=>t.sourceTaskId==='g1').id,existing.tasks[0].id);
+  for(const row of result.queue.tasks){
+    assert.equal(row.failureSignature,'source-candidate-generation-failed');
+    assert.equal(row.failureStage,'SOURCE_CANDIDATE_GENERATION');
+    if(row.sourceTaskId!=='g1')assert.equal(row.blastRadius,'single-task');
+  }
 });
-
 test('source refailure follows superseded duplicate to the dispatched canonical recovery',()=>{
   let existing=enqueueRecovery({tasks:[]},{
     id:'recovery-canonical',sourceQueue:'system-ai',sourceTaskId:'sys-impl',failureStage:'SYSTEM_AI_IMPLEMENTATION',
@@ -266,47 +269,48 @@ test('game-source recovery without explicit scoped files stays with Vibe',()=>{
   assert.equal(result.queue.tasks[0].recoveryOwner,'VIBE2_VIBE3');
 });
 
-test('scoped Vibe game bottleneck dispatch creates supervised System-AI repair task',async()=>{
+test('scoped game-source recovery requeues the original Vibe task, never System AI source writing',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
-  const recovery=escalateRecoveryCandidates({
-    gameQueueInput:{tasks:[
-      {id:'game-task',gameId:'demo',status:'failed',target:'web',sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:['game-catalog.json'],goal:'repair demo exact failure',currentStep:'WEB_RUNTIME',blocker:'runtime-failure',evidence:['failure-cause:runtime-failure']}
-    ]}
-  }).queue;
-  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  const original={id:'game-task',gameId:'demo',status:'failed',target:'web',
+    sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],
+    contextFiles:['game-catalog.json'],goal:'repair exact failure',currentStep:'WEB_RUNTIME',
+    blocker:'runtime-failure',evidence:['failure-cause:runtime-failure']};
+  const recovery=escalateRecoveryCandidates({gameQueueInput:{tasks:[original]}}).queue;
+  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[original]},systemAiQueueInput:{tasks:[]}});
   assert.equal(dispatched.dispatched.length,1);
-  const task=dispatched.systemAi.tasks.find(x=>x.id.startsWith('recovery-'));
-  assert.ok(task);
-  assert.equal(task.gameId,'demo');
-  assert.deepEqual(task.responsibleFiles,['web-games/demo/index.html']);
+  assert.equal(dispatched.recovery.tasks[0].recoveryOwner,'VIBE2_VIBE3');
+  assert.equal(dispatched.systemAi.tasks.length,0);
+  const task=dispatched.gameQueue.tasks[0];
   assert.equal(task.status,'queued');
-  assert.equal(task.supervisorReviewRequired,true);
-  assert.equal(task.workerSelfAcceptance,false);
+  assert.equal(task.sourceMutationRequired,true);
+  assert.equal(task.gameRepairContract.prePatchReproductionRequired,true);
+  assert.ok(task.evidence.some(value=>value.startsWith('recovery-queue:')));
 });
-
-test('game repair dispatch enters root-cause mode and never requires owner help for multiplayer',async()=>{
+test('legacy System AI game recovery migrates to Vibe root-cause mode without changing save or multiplayer rules',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const recovery={tasks:[{
-    id:'r-game-root',status:'queued',sourceQueue:'vibe2',sourceTaskId:'missing-game-task',
+    id:'r-game-root',status:'queued',sourceQueue:'vibe2',sourceTaskId:'game-task',
     gameId:'demo',responsibleFiles:['web-games/demo/index.html'],contextFiles:[],
     failureStage:'WEB_RUNTIME',failureSignature:'network-sync-repeat',recoveryOwner:'SYSTEM_AI',
     recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
     verificationPlan:['RERUN_EXACT_FAILED_STAGE'],recurrenceCount:3,
     evidence:['failure-cause:network-sync-repeat','multiplayer-sync','save-load']
   }]};
-  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
-  const task=dispatched.systemAi.tasks.find(x=>x.id==='recovery-r-game-root');
-  assert.ok(task);
+  const original={id:'game-task',gameId:'demo',status:'failed',responsibleFiles:['web-games/demo/index.html'],sourceRevision:'game-checkpoint'};
+  const systemPass=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[original]},route:'system-ai'});
+  assert.equal(systemPass.dispatched.length,0);
+  const dispatched=dispatchRecovery({recoveryInput:systemPass.recovery,gameQueueInput:{tasks:[original]},route:'vibe'});
+  assert.equal(dispatched.systemAi.tasks.length,0);
+  assert.equal(dispatched.recovery.tasks[0].recoveryOwner,'VIBE2_VIBE3');
+  const task=dispatched.gameQueue.tasks[0];
   assert.equal(task.repairMode,'ROOT_CAUSE_MODE');
-  assert.equal(task.gameRepairContract.mode,'ROOT_CAUSE_MODE');
   assert.equal(task.gameRepairContract.multiplayerLifecycleValidationRequired,true);
   assert.equal(task.gameRepairContract.multiplayerUserAssistanceRequired,false);
   assert.equal(task.gameRepairContract.multiplayerMinimumAutomatedClients,2);
   assert.equal(task.gameRepairContract.saveMigrationValidationRequired,true);
-  assert.ok(task.acceptanceCriteria.some(x=>/user assistance is not required/i.test(x)));
-  assert.ok(task.acceptanceCriteria.some(x=>/last known good first broken and current/i.test(x)));
+  assert.equal(task.sourceMutationBaseline,'game-checkpoint');
+  assert.ok(task.evidence.includes('recovery-owner-routing:VIBE_GAME_SOURCE'));
 });
-
 test('Vibe-owned recovery task receives the same causal game repair contract',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const recovery={tasks:[{
@@ -342,7 +346,7 @@ test('recovery queue uses unlimited causal repair and never terminal-fails from 
   assert.equal(row.maxRetries,null);
 });
 
-test('scoped recovery-created System-AI task inherits unlimited causal repair',async()=>{
+test('legacy scoped recovery never creates unexecutable game-source System AI tasks',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
   const recovery={tasks:[{
     id:'r-unlimited',status:'queued',sourceQueue:'vibe2',sourceTaskId:'missing-source-task',
@@ -351,13 +355,18 @@ test('scoped recovery-created System-AI task inherits unlimited causal repair',a
     recoveryStrategy:'ASSIGN_SCOPED_IMPLEMENTATION_REPAIR_TO_SUPERVISED_SYSTEM_AI_CANDIDATE_AND_RERUN_EXACT_FAILED_CHECK',
     verificationPlan:['RERUN_EXACT_FAILED_STAGE'],evidence:[]
   }]};
-  const result=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
-  const task=result.systemAi.tasks.find(x=>x.id==='recovery-r-unlimited');
-  assert.ok(task);
-  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
-  assert.equal(task.maxRetries,null);
+  const missing=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(missing.dispatched.length,0);
+  assert.equal(missing.systemAi.tasks.length,0);
+  assert.equal(missing.recovery.tasks[0].status,'queued');
+  const original={id:'missing-source-task',gameId:'demo',status:'failed',
+    sourceRevision:'exact-old-revision',responsibleFiles:['web-games/demo/index.html']};
+  const resumed=dispatchRecovery({recoveryInput:missing.recovery,gameQueueInput:{tasks:[original]}});
+  assert.equal(resumed.dispatched.length,1);
+  assert.equal(resumed.recovery.tasks[0].recoveryOwner,'VIBE2_VIBE3');
+  assert.equal(resumed.gameQueue.tasks[0].status,'queued');
+  assert.equal(resumed.gameQueue.tasks[0].sourceMutationBaseline,'exact-old-revision');
 });
-
 test('System-AI normalization preserves unlimited causal repair only when explicitly requested',()=>{
   const q=normalizeSystemAiQueue({tasks:[
     {id:'recovery-task',status:'queued',retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null},
@@ -384,26 +393,24 @@ test('System-AI recovery failure requeues beyond ordinary retry limits',()=>{
   assert.ok(row.evidence.includes('system-ai-retry:UNLIMITED_CAUSAL_REPAIR'));
 });
 
-test('repeated-failure recovery requires responsible source mutation before System-AI revalidation',async()=>{
+test('repeated game-source recovery preserves source mutation baseline before native revalidation',async()=>{
   const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
-  const recovery=escalateRecoveryCandidates({
-    gameQueueInput:{tasks:[{
-      id:'mutate-first',gameId:'demo',status:'failed',target:'web',sourceRoot:'web-games/demo',
-      responsibleFiles:['web-games/demo/index.html'],sourceRevision:'baseline-sha',
-      currentStep:'WEB_RUNTIME',blocker:'same-signature',evidence:['failure-cause:same-signature']
-    }]}
-  }).queue;
+  const original={id:'mutate-first',gameId:'demo',status:'failed',target:'web',
+    sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],
+    sourceRevision:'baseline-sha',currentStep:'WEB_RUNTIME',blocker:'same-signature',
+    evidence:['failure-cause:same-signature']};
+  const recovery=escalateRecoveryCandidates({gameQueueInput:{tasks:[original]}}).queue;
   const rec=recovery.tasks[0];
   assert.equal(rec.sourceMutationRequired,true);
   assert.equal(rec.sourceMutationBaseline,'baseline-sha');
-  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
-  const task=dispatched.systemAi.tasks.find(x=>x.id.startsWith('recovery-'));
-  assert.ok(task);
+  const dispatched=dispatchRecovery({recoveryInput:recovery,gameQueueInput:{tasks:[original]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.systemAi.tasks.length,0);
+  const task=dispatched.gameQueue.tasks[0];
   assert.equal(task.sourceMutationRequired,true);
   assert.equal(task.sourceMutationBaseline,'baseline-sha');
-  assert.ok(task.acceptanceCriteria.includes('unchanged-source revalidation is forbidden'));
+  assert.equal(task.gameRepairContract.impactRegressionRequired,true);
+  assert.ok(task.evidence.includes('source-mutation-required:YES'));
 });
-
 test('System-AI mutation-required task rejects PASS without changed-file and source-mutation SHA evidence',()=>{
   let q=normalizeSystemAiQueue({tasks:[{
     id:'mutation-gate',status:'running',sourceMutationRequired:true,sourceMutationBaseline:'base',
@@ -457,6 +464,7 @@ test('verified external-learning application failure is automatically routed to 
   assert.equal(repaired.gameRepairContract.fullRegressionFanInRequired,true);
   assert.equal(dispatched.systemAi.tasks.length,0);
   assert.ok(repaired.evidence.some(x=>x.startsWith('recovery-queue:')));
+  assert.ok(repaired.evidence.includes('system-ai-external-application-bottleneck:DETECTED'));
 });
 
 test('external learning failures stay game-local and system-code repair uses the supervised System AI',async()=>{

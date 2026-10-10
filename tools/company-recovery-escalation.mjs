@@ -60,15 +60,19 @@ function scopedExternalRepairEligible(task={}){
 function gameRepairRoute(task={}){
   const target=clean(task.target).toLowerCase();
   const source=clean(task.sourceRoot);
-  const gameSource=/^(web|roblox|unity|unreal|godot)-games\//.test(source)||['web','roblox','unity','unreal','godot'].includes(target);
-  if(gameSource&&scopedExternalRepairEligible(task))return'SYSTEM_AI';
-  return gameSource?'VIBE2_VIBE3':'SYSTEM_AI';
+  const files=uniq(task.responsibleFiles).map(file=>file.replaceAll('\\','/').replace(/^\.\//,''));
+  // System AI is read-only for game source. Preserve original Vibe worker authority.
+  const gameSource=/^(web|roblox|unity|unreal|godot)-games\//.test(source)
+    ||files.some(file=>/^(web|roblox|unity|unreal|godot)-games\//.test(file))
+    ||['web','roblox','unity','unreal','godot'].includes(target);
+  if(gameSource)return'VIBE2_VIBE3';
+  return scopedExternalRepairEligible(task)?'SYSTEM_AI':'VIBE2_VIBE3';
 }
 function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-task',relatedTaskIds=[]}){
   const exactExternalApplication=VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(clean(signature));
   const gameSourceOwned=uniq(task.responsibleFiles).some(file=>/^(?:web|roblox|unity|unreal|godot)-games\//.test(file));
   // System AI는 원인을 분류하고 복구를 예약한다. 게임 소스 변경은 기존 Vibe 게임 작업자가 수행한다.
-  const route=exactExternalApplication&&gameSourceOwned?'VIBE2_VIBE3':sourceQueue==='system-ai'?'SYSTEM_AI':gameRepairRoute(task);
+  const route=sourceQueue==='system-ai'&&!gameSourceOwned?'SYSTEM_AI':gameRepairRoute(task);
   const sharedInfrastructure=sourceQueue==='system-ai'&&signature==='system-ai-infrastructure-contract-failed';
   const responsibleFiles=sharedInfrastructure
     ?['tools/company-system-ai-worker.mjs','.github/workflows/company-system-ai-workers.yml','qa/company-system-ai-worker.test.mjs','qa/company-system-ai-supervision-loop.test.mjs']
@@ -142,7 +146,14 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
     const externalScope=VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(row.signature)
       ?'|GAME_SCOPE:'+clean(row.task.gameId)+'|FILES:'+uniq(row.task.responsibleFiles).sort().join('|')
       :'';
-    const key=row.sourceQueue+'|'+row.signature+(externalScope||(row.sourceQueue==='system-ai'?'|'+systemAiCohortKey(row.task,row.signature):''));
+    // Game recovery is checkpoint-local. Matching text alone never proves a shared-source defect.
+    const gameScope=row.sourceQueue==='vibe2'
+      ?'|GAME:'+clean(row.task.gameId||row.task.sourceRoot||row.task.id)
+        +'|ROOT:'+clean(row.task.sourceRoot)
+        +'|FILES:'+uniq(row.task.responsibleFiles).sort().join('|')
+        +'|STAGE:'+clean(row.stage)
+      :'';
+    const key=row.sourceQueue+'|'+row.signature+(gameScope||externalScope||'|'+systemAiCohortKey(row.task,row.signature));
     if(!grouped.has(key))grouped.set(key,[]);
     grouped.get(key).push(row);
   }
