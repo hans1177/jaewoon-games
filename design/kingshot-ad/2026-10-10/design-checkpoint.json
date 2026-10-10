@@ -149,25 +149,173 @@
       "name": "Adaptive Defense - Economic Constraint Chain",
       "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints, with each step introducing a new gameplay effect that alters subsequent decisions.",
       "playerChoice": "The player must balance immediate tactical adjustments with long-term resource management to maintain strategic flexibility while adapting to changing enemy types and wave compositions."
+    },
+    "local_authoring_parts::532bbc5813d539744d5bb42e3166cb13616b72376a31532408dc942a05977714:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "enemy wave composition",
+        "defensive placement"
+      ],
+      "stateOutputs": [
+        "resource allocation decision",
+        "economic constraint state"
+      ],
+      "name": "Adaptive Defense - Economic Constraint Chain",
+      "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints to limit future defensive choices.",
+      "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions to maintain strategic flexibility while managing limited resources for long-term defense planning."
+    },
+    "local_authoring_parts::e0d5a5395783b49891dc623b60a3f33022186f23e036b98e27394939eaea78a1:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints in a single-player defense strategy game",
+          "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions, with adaptive defense strategies to maintain strategic flexibility while managing limited resources for long-term survival and progression in the game world"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraint, enabling strategic resource management under evolving battlefield conditions.",
+          "playerChoice": "Resource allocation decision based on enemy type variation and battlefield constraints, leading to permanent economic constraint as a long-term strategy limitation."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints, with each step introducing a new gameplay effect that alters subsequent decisions.",
+          "playerChoice": "The player must balance immediate tactical adjustments with long-term resource management to maintain strategic flexibility while adapting to changing enemy types and wave compositions."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints to limit future defensive choices.",
+          "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions to maintain strategic flexibility while managing limited resources for long-term defense planning."
+        }
+      ]
+    },
+    "local_authoring_parts::68edcd8cd1942184f0e8854000c466376e7020836ba9205a34ac174a01f2bdb5:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Read the next enemy wave, place towers/defenders in positions that cover the threatened route; earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases; adapt the defense to enemy types and wave composition, protect the objective, and clear the stage/boss to unlock hard",
+        "Defensive adaptation → resource allocation → economic constraint",
+        "Defensive adaptation changes to match new enemy types; resource allocation shifts based on battlefield constraints; economic constraint becomes a permanent state"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints in a single-player defense strategy game",
+          "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions, with adaptive defense strategies to maintain strategic flexibility while managing limited resources for long-term survival and progression in the game world"
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraint, enabling strategic resource management under evolving battlefield conditions.",
+          "playerChoice": "Resource allocation decision based on enemy type variation and battlefield constraints, leading to permanent economic constraint as a long-term strategy limitation."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints, with each step introducing a new gameplay effect that alters subsequent decisions.",
+          "playerChoice": "The player must balance immediate tactical adjustments with long-term resource management to maintain strategic flexibility while adapting to changing enemy types and wave compositions."
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "enemy wave composition",
+            "defensive placement"
+          ],
+          "stateOutputs": [
+            "resource allocation decision",
+            "economic constraint state"
+          ],
+          "name": "Adaptive Defense - Economic Constraint Chain",
+          "purpose": "Establishes the causal relationship between defensive adaptation and economic constraints to limit future defensive choices.",
+          "playerChoice": "Resource allocation decision based on enemy type and battlefield conditions to maintain strategic flexibility while managing limited resources for long-term defense planning."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 640288,
-      "lastMs": 240467,
+      "totalMs": 737368,
+      "lastMs": 97080,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:54:25.387Z"
+      "updatedAt": "2026-10-10T02:56:02.468Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:43:45.072Z",
-  "updatedAt": "2026-10-10T02:54:25.387Z",
+  "updatedAt": "2026-10-10T02:56:02.471Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1873,7 +2021,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:54:25.387Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:56:02.471Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
