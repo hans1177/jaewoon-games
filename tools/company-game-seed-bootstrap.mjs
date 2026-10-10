@@ -679,15 +679,47 @@ function validateProposal(target,p){
 // 오픈소스 사례는 검증된 설계 원리 참고로만 사용하고 외부 모델·게임 코드·에셋을 복제하지 않는다.
 export function computeVibeSeedProposal(target){
   const category=clean(target.category);
+  // 오너의 게임 정체성과 기존 플레이 루프를 우선 읽고, 장르 이름만으로 MAIN을 덮어쓰지 않는다.
+  const requestedName=clean(target.gameName||target.ownerGameName);
+  const ownerBrief=clean(target.ownerBrief||target.brief);
+  const requestContext=[requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
+  const context=(category+' '+requestContext).toLowerCase();
   const profiles={
-    ACTION_SURVIVAL_ROGUELITE:{genre:'생존',a:'탐험과 채집',b:'제작과 거점 구축',choiceA:'위험한 구역을 조사해 자원과 생존 단서를 확보',choiceB:'수집한 단서에 맞춰 제작 순서와 거점 배치를 변경'},
-    SINGLE_DEFENSE_STRATEGY:{genre:'전략',a:'경로와 방어 배치',b:'적 대응 전술',choiceA:'접근 경로의 방어물과 안전 구역을 선택',choiceB:'변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석'},
-    PUZZLE:{genre:'퍼즐',a:'단서 조합',b:'공간 상태 변환',choiceA:'관찰한 단서의 순서와 의미를 조합',choiceB:'변한 공간 규칙을 이용해 새 접근 경로를 시험'},
-    CASUAL:{genre:'생활',a:'사회관계 선택',b:'생활 공간 탐색',choiceA:'인물과 대상의 요청 가운데 우선순위를 결정',choiceB:'이전 관계의 결과로 열린 장소와 상호작용을 탐색'},
-    IDLE_GROWTH_RPG:{genre:'성장',a:'생산과 자원 순환',b:'능력과 임무 선택',choiceA:'생산 자원의 공급과 소비 균형을 조절',choiceB:'확보한 자원의 조건을 이용해 임무와 성장 방향을 선택'},
-    STORY_COMPLETE_RPG:{genre:'롤플레잉',a:'인물 대화와 관계',b:'탐험과 전투 선택',choiceA:'등장인물의 갈등과 증언을 듣고 관계의 향방을 결정',choiceB:'바뀐 관계에 따라 이동 경로와 전투 대응을 결정'},
+    ACTION_SURVIVAL_ROGUELITE:{genre:'생존',a:'탐험과 채집',b:'제작과 거점 구축',choiceA:'위험한 구역을 조사해 자원과 생존 단서를 확보',choiceB:'수집한 단서에 맞춰 제작 순서와 거점 배치를 변경',playerRole:'생존자'},
+    SINGLE_DEFENSE_STRATEGY:{genre:'전략',a:'경로와 방어 배치',b:'적 대응 전술',choiceA:'접근 경로의 방어물과 안전 구역을 선택',choiceB:'변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석',playerRole:'방어 지휘관'},
+    PUZZLE:{genre:'퍼즐',a:'단서 조합',b:'공간 상태 변환',choiceA:'관찰한 단서의 순서와 의미를 조합',choiceB:'변한 공간 규칙을 이용해 새 접근 경로를 시험',playerRole:'규칙 탐구자'},
+    CASUAL:{genre:'생활',a:'사회관계 선택',b:'생활 공간 탐색',choiceA:'인물과 대상의 요청 가운데 우선순위를 결정',choiceB:'이전 관계의 결과로 열린 장소와 상호작용을 탐색',playerRole:'마을 주민'},
+    IDLE_GROWTH_RPG:{genre:'성장',a:'생산과 자원 순환',b:'능력과 임무 선택',choiceA:'생산 자원의 공급과 소비 균형을 조절',choiceB:'확보한 자원의 조건을 이용해 임무와 성장 방향을 선택',playerRole:'성장 전략가'},
+    STORY_COMPLETE_RPG:{genre:'롤플레잉',a:'인물 대화와 관계',b:'탐험과 전투 선택',choiceA:'등장인물의 갈등과 증언을 듣고 관계의 향방을 결정',choiceB:'바뀐 관계에 따라 이동 경로와 전투 대응을 결정',playerRole:'모험가'},
+    TYCOON:{genre:'경영',a:'시설 건설과 공간 배치',b:'손님과 직원 운영',choiceA:'시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정',choiceB:'손님 수요와 직원 배치의 결과를 확인해 다음 시설 투자를 결정',playerRole:'운영자'},
+    RACING:{genre:'레이싱',a:'주행 경로와 코너 진입',b:'차량 정비와 전략',choiceA:'속도와 위험을 비교해 진입 경로와 추월 시점을 선택',choiceB:'주행 결과에 맞춰 차량 성능과 다음 구간의 위험 대응을 결정',playerRole:'드라이버'},
+    CARD:{genre:'카드 전략',a:'카드 조합과 손패 관리',b:'상대 정보와 자원 운영',choiceA:'손패의 조합과 사용 순서를 선택',choiceB:'공개된 상대 행동과 남은 자원에 맞춰 다음 수를 변경',playerRole:'전략가'},
+    RPG:{genre:'롤플레잉',a:'퀘스트와 인물 관계',b:'전투와 장비 운용',choiceA:'인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택',choiceB:'전투 결과에 맞춰 장비와 동료의 다음 대응을 조정',playerRole:'모험가'},
+    SURVIVAL:{genre:'생존',a:'환경 탐색과 자원 확보',b:'제작과 방어 거점 관리',choiceA:'식량과 재료를 확보할 위험 구역을 선택',choiceB:'남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택',playerRole:'생존자'},
+    HORROR:{genre:'호러',a:'위협 탐지와 잠입',b:'봉인과 단서 해독',choiceA:'소리와 흔적을 관찰해 숨어 이동할 시점과 경로를 선택',choiceB:'확보한 단서로 봉인 순서와 위험한 상호작용을 선택',playerRole:'조사자'},
+    DEFENSE:{genre:'전략',a:'방어 시설 배치',b:'적 패턴과 자원 대응',choiceA:'접근 경로와 적의 사거리 사이에서 배치 위치를 선택',choiceB:'웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정',playerRole:'방어 지휘관'},
   };
-  const profile=profiles[category]||{genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응'};
+  const school=/학교|school/.test(context);
+  const schoolCombat=/괴물|monster|퇴마|exorc|combat|전투|액션/.test(requestContext.toLowerCase());
+  const schoolProfile=school?{genre:'경영',a:'학교 시설 건축과 배치',
+    b:schoolCombat?'괴물 대응 액션':'학생·교사와 교육 운영',
+    choiceA:'교실·복도·특수 시설의 배치로 접근과 안전 구역을 선택',
+    choiceB:schoolCombat?'시설이 만든 위험에 따라 괴물의 공격을 피하거나 봉인하는 대응을 선택':'학생의 필요와 교사 배치에 맞춰 학사 운영의 우선순위를 결정',
+    playerRole:'학교 운영자'}:null;
+  const topicalProfiles=[
+    [/타이쿤|tycoon|놀이공원|theme.?park|상점.?운영|management/,profiles.TYCOON],
+    [/생존|survival|크래프팅|crafting/,profiles.SURVIVAL],
+    [/레이싱|racing|경주|race/,profiles.RACING],
+    [/디펜스|defense|tower.?defense|방어전/,profiles.DEFENSE],
+    [/퍼즐|puzzle|추리게임/,profiles.PUZZLE],
+    [/호러|horror|공포|퇴마|귀신/,profiles.HORROR],
+    [/카드|card|덱빌딩|deckbuild/,profiles.CARD],
+    [/롤플레잉|\brpg\b|역할게임|던전/,profiles.RPG],
+  ];
+  const topicMatch=topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
+  const profile=schoolProfile||topicMatch?.[1]||profiles[category]||
+    topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
+    {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};
   const materialNames={
     KARMA_RETURN:'업보와 인과응보',MANDATE_LEGITIMACY:'왕조의 정통성과 민심',RITUAL_RECIPROCITY:'의례와 호혜 관계',ANCESTOR_MEMORY:'조상 기억과 계승',
     PROPHECY_SELF_FULFILLMENT:'그리스 비극의 자기실현 예언',HUBRIS_NEMESIS:'오만과 응보',OATH_CONTRACT:'서사시의 맹세와 계약',
@@ -698,19 +730,55 @@ export function computeVibeSeedProposal(target){
     EXILE_RETURN:'서사시의 추방과 귀환',MARTYRDOM_MOVEMENT:'순교와 집단 결속',PILGRIMAGE_TRANSFORMATION:'순례와 인물 변화',
     FORTUNE_REVERSAL:'비극과 희극의 운명 반전',ABSURD_BUREAUCRACY:'풍자 속 관료제',NAME_AND_REPUTATION_POWER:'영웅서사의 이름과 평판'
   };
-  const ids=uniq((target.materials||[]).flatMap(row=>row.causalDNA||[]));
-  const chosen=ids.map(id=>CAUSAL_DNA_LIBRARY.find(row=>row.id===id)).filter(Boolean);
-  for(const row of CAUSAL_DNA_LIBRARY)if(chosen.length<4&&!chosen.some(item=>item.id===row.id))chosen.push(row);
-  if(chosen.length<2)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
+  // 명시된 소재는 최우선이며, 부족한 창작 소재만 게임별 인과 맥락으로 보충한다.
+  // 오픈소스·사내 모듈은 원리 참고에 한정하고 외부 모델 호출은 없다.
+  const explicitIds=uniq((target.materials||[]).flatMap(row=>row.causalDNA||[]))
+    .filter(id=>CAUSAL_DNA_LIBRARY.some(row=>row.id===id));
+  const materialHints=[
+    [/로마|roman|신전|의례|ritual/,'RITUAL_RECIPROCITY'],
+    [/괴물|monster|금기|taboo|미라/,'TABOO_POLLUTION'],
+    [/철학|philosophy|변증|dialectic/,'DIALECTIC_SYNTHESIS'],
+    [/엽기|코믹|희극|comic|comedy|오해/,'COMEDIC_MISUNDERSTANDING'],
+    [/학교|school|교육/,'PATRONAGE_NETWORK'],
+    [/왕국|kingdom|왕조|dynasty/,'DYNASTIC_INHERITANCE'],
+    [/생존|survival|재난/,'EXILE_RETURN'],
+    [/호러|horror|귀신|퇴마/,'TESTIMONY_CONSENSUS_REALITY'],
+    [/시간|예언|prophecy/,'PROPHECY_SELF_FULFILLMENT'],
+    [/추리|탐정|mystery/,'TESTIMONY_CONSENSUS_REALITY'],
+    [/농장|farm|재배/,'RITUAL_RECIPROCITY'],
+  ].filter(([pattern])=>pattern.test(requestContext.toLowerCase())).map(([,id])=>id);
+  const genreMaterialIds={
+    '경영':['PATRONAGE_NETWORK','OATH_CONTRACT','ABSURD_BUREAUCRACY','FORTUNE_REVERSAL'],
+    '생존':['EXILE_RETURN','TABOO_POLLUTION','SACRIFICE_SUBSTITUTION','ANCESTOR_MEMORY'],
+    '전략':['FACTION_BALANCE','MANDATE_LEGITIMACY','OATH_CONTRACT','FORTUNE_REVERSAL'],
+    '퍼즐':['TESTIMONY_CONSENSUS_REALITY','SHIP_OF_THESEUS_IDENTITY','DIALECTIC_SYNTHESIS','TRICKSTER_REVERSAL'],
+    '레이싱':['HUBRIS_NEMESIS','FORTUNE_REVERSAL','OATH_CONTRACT','TRICKSTER_REVERSAL'],
+    '롤플레잉':['EXILE_RETURN','PILGRIMAGE_TRANSFORMATION','PROPHECY_SELF_FULFILLMENT','DIALECTIC_SYNTHESIS'],
+    '호러':['TABOO_POLLUTION','TESTIMONY_CONSENSUS_REALITY','PROPHECY_SELF_FULFILLMENT','RITUAL_RECIPROCITY'],
+    '카드 전략':['OATH_CONTRACT','TRICKSTER_REVERSAL','FACTION_BALANCE','HUBRIS_NEMESIS'],
+  };
+  const variance=Math.max(0,Math.floor(Number(target.variant)||0));
+  const hash=value=>{let n=2166136261;for(const ch of value)n=Math.imul(n^ch.codePointAt(0),16777619)>>>0;return n;};
+  const orderedPool=[...CAUSAL_DNA_LIBRARY].sort((a,b)=>
+    hash([target.requestId,category,requestedName,ownerBrief,variance,a.id].join('|'))-
+    hash([target.requestId,category,requestedName,ownerBrief,variance,b.id].join('|')));
+  const genreChoices=genreMaterialIds[profile.genre]||[];
+  const optionalIds=variance>0
+    ?[...orderedPool.map(row=>row.id),...genreChoices]
+    :[...genreChoices,...orderedPool.map(row=>row.id)];
+  const ids=uniq([...explicitIds,...materialHints,...optionalIds]);
+  const chosen=ids.map(id=>CAUSAL_DNA_LIBRARY.find(row=>row.id===id)).filter(Boolean).slice(0,4);
+  if(chosen.length<4)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
   const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
   const named=row=>materialNames[row.id]||row.id.replaceAll('_',' ');
   const aMaterial=named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
   const distinct=chosen[0].id!==chosen[1].id&&cMaterial1!==cMaterial2;
   if(!distinct)throw new Error('VIBE_NATIVE_DESIGN_DISTINCT_CAUSAL_SOURCES_REQUIRED');
-  const secondary=first.id.includes('COMEDIC')||second.id.includes('COMEDIC')?'코믹':first.id.includes('TABOO')||second.id.includes('TABOO')?'호러':first.id.includes('TESTIMONY')||second.id.includes('TESTIMONY')?'미스터리':'추리';
+  const creativeIds=chosen.map(row=>row.id).join('|');
+  const secondary=/COMEDIC|CARNIVAL|ABSURD/.test(creativeIds)?'코믹':/TABOO/.test(creativeIds)?'호러':/TESTIMONY/.test(creativeIds)?'미스터리':'추리';
   const secondaryGenre=secondary===profile.genre?'사회극':secondary;
-  const identity=`${profile.genre} 게임에서 ${aMaterial}과 ${bMaterial}의 인과법칙을 이용해 세계를 바꾸는 ${profile.a}·${profile.b} 복합 게임`;
-  const gameName=`${aMaterial}의 ${profile.genre} 세계`;
+  const gameName=requestedName||`${aMaterial}의 ${profile.genre} 세계`;
+  const identity=`${gameName}에서 ${profile.playerRole}가 ${profile.a}와 ${profile.b}의 선택을 통해 ${aMaterial}·${bMaterial}의 인과법칙을 바꾸는 ${profile.genre} 복합 게임`;
   const chooseA=`${profile.choiceA}하면서 ${first.gameGrammar}`;
   const chooseB=`${profile.choiceB}하면서 ${second.gameGrammar}`;
   const stateA=`플레이어가 ${profile.a}을 선택하면 ${aMaterial}의 규칙에 따라 다음 위험과 가능 행동이 변화한다.`;
@@ -773,7 +841,7 @@ export function computeVibeSeedProposal(target){
       worldModel:`${gameName}의 공간은 ${aMaterial}와 ${bMaterial} 선택의 결과로 목표·동선·위험이 달라진다.`,
       interactionChains:[`${chooseA} -> ${stateA} -> ${chooseB} -> ${stateB}`],
       actors:[`플레이어: ${profile.a}와 ${profile.b}의 선택을 담당한다.`,`인물과 상대: ${aMaterial}·${bMaterial}의 결과를 기억하고 반응한다.`],
-      identityCore:{oneLineFantasy:identity,playerRole:`${gameName}의 탐험가이자 인과 선택의 책임자`,
+      identityCore:{oneLineFantasy:identity,playerRole:`${gameName}의 ${profile.playerRole}이자 인과 선택의 책임자`,
         representativeAction:coreLoop[0],representativeChoice:coreLoop[1],
         signatureWorldRule:grammar.worldRule,signatureSystemPromise:[bridge],
         growthIdentity:'성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다.',
