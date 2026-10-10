@@ -194,25 +194,40 @@
         "운명 개척 탐험 시스템에서 유물 에너지 소모 또는 복구 → 맵 접근성 및 이후 전투 난이도 변화",
         "전투 속성 조합 변경 기반의 새로운 선택 → 스킬 트리 커스터마이징 → 고난도 지역 도전 → 서사 완결"
       ]
+    },
+    "local_authoring_parts::8d70f743d6fbd9779d9bd1ed3facd8f86cee5989850fdcc0ddeb058ee2a4b8a8:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "{\"score\": 10, \"distance\": 50, \"session\": \"short\"}",
+        "{\"score\": 20, \"distance\": 75, \"session\": \"medium\"}"
+      ],
+      "stateOutputs": [
+        "{\"status\": \"completed\", \"progression\": \"skill_tree_rebuilt\", \"reward\": \"exp_gain",
+        "{\"status\": \"in_progress\", \"progression\": \"map_access_expanded\", \"reward\": \"battl"
+      ],
+      "name": "Roadmap of Skill and Terrain Evolution",
+      "purpose": "Player-driven skill attribute synthesis and terrain reconfiguration through strategic resource allocation.",
+      "playerChoice": "Select skill attributes to synthesize combat effectiveness or use relic fragments to expand map access during exploration."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 586857,
-      "lastMs": 50719,
+      "totalMs": 617300,
+      "lastMs": 30443,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:20:12.453Z"
+      "updatedAt": "2026-10-10T09:20:42.898Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:10:25.362Z",
-  "updatedAt": "2026-10-10T09:20:12.453Z",
+  "updatedAt": "2026-10-10T09:20:42.898Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1740,7 +1755,7 @@
   "localAuthoringSplits": {
     "a68da76fc36cde2f96c898c6ffc9e8605599d309e121839b285bbb687c6b4151": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:20:12.453Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:20:42.898Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
