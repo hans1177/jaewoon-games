@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 단순한 수치 상승을 넘어, 수정의 성장 방향을 직접 결정하고 영웅의 시너지를 극대화하는 독창적인 시스템을 경험하게 됩니다.",
       "coreFun": "수정의 개화에서 느끼는 핵심 재미는 실시간으로 변화하는 수정의 원소 속성을 선택하고, 이에 맞춰 영웅들의 스킬 체인을 구성하여 한계를 돌파하는 전략적 의사결정과 즉각적인 수치적 피드백에 있습니다."
+    },
+    "local_authoring_parts::37d6f61c0adaa925fedfa8576d87a220623b03c363fbb42ce91eca76a38b99a6:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어가 원소 노드 선택 및 영웅 배치 결정 → 상태변화: 수정의 원소 노드 활성화 및 영웅 스킬 업그레이드 → 보상: 수치 증가 및 전투 결과 피드백",
+        "입력: 영웅 진형 강화 및 수정 버프 적용 → 상태변화: 영웅 능력치 향상 및 전투 효과 확대 → 보상: 더 높은 단계의 보스 도전 및 새로운 원소 해금",
+        "입력: 보스 도전 성공 또는 실패 → 상태변화: 수정의 다채로운 원소 가지 개화 및 영웅 시너지 최적화 → 보상: 게임 진행 상승 및 사용자 경험 향상"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 100004,
-      "lastMs": 100004,
+      "totalMs": 150492,
+      "lastMs": 7828,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:45:25.578Z"
+      "updatedAt": "2026-10-10T09:46:16.071Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:43:45.470Z",
-  "updatedAt": "2026-10-10T09:45:25.578Z",
+  "updatedAt": "2026-10-10T09:46:16.072Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1388,11 +1395,21 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::35d2d2da30eaf5d5d6d96ccff9d18490668bd69ed173f6fb8b7470a61e2781e0:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::35d2d2da30eaf5d5d6d96ccff9d18490668bd69ed173f6fb8b7470a61e2781e0:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:45:25.578Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:46:16.071Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
