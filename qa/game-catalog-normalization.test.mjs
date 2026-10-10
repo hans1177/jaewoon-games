@@ -359,8 +359,8 @@ assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeature
   });
   ui.setExposure({unityWebEnabled:true,games:[]});
   const cards=ui.developmentRows(sourceCatalog,{});
-  assert.equal(cards.length,sourceCatalog.games.length,'all native-source game cards are shown without claiming release');
-  assert.equal(new Set(Array.from(cards,game=>game.id)).size,sourceCatalog.games.length);
+  assert.equal(cards.length,sourceCatalog.games.filter(game=>!['WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','NON_GAME_SURFACE'].includes(String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase())).length,'unverified prototypes must not be listed');
+  assert.equal(new Set(Array.from(cards,game=>game.id)).size,cards.length);
 }
 
 // Cover bytes, titles and per-game typography must survive the canonical/runtime merge.

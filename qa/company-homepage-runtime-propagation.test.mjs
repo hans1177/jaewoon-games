@@ -177,7 +177,7 @@ test('source-only or failed builds and stale shared targets cannot become execut
 
 
 // 홈피: 기존 디자인·개발·출시 게임의 목록 누락을 금지하되 미검증 실행은 활성화하지 않는다.
-test('실제 카탈로그의 모든 활성 게임 카드가 출시 또는 개발 중 목록에 표시된다',()=>{
+test('실제 게임은 유지하고 버튼형 시제품과 진입점 없는 게임은 홈페이지에서 숨긴다',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
@@ -190,15 +190,46 @@ test('실제 카탈로그의 모든 활성 게임 카드가 출시 또는 개발
     !['RETIRED','REMOVED','ARCHIVED'].includes(String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase())
     &&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.canonical?.production?.class||game.productionClass||'').toUpperCase())
   );
-  assert.equal(present.size,eligible.length,'등록된 활성 게임은 정식 플랫폼 빌드 이전에도 모두 보여야 한다');
-  for(const game of eligible)assert.ok(present.has(game.id),'홈페이지 활성 게임 누락: '+game.id);
-  // 실제 원본 Roblox 프로젝트를 가진 게임은 목록에는 남고 HTML 시제품 실행 권한은 여전히 없다.
-  const prototypes=eligible.filter(row=>row.id.startsWith('seed-roblox-'));
-  assert.equal(prototypes.length,4);
-  for(const game of prototypes){
-    assert.ok(present.has(game.id));
-    assert.equal(game.canonical?.sources?.web?.playable,false,'단순 HTML 시제품 실행 차단 유지');
-  }
+  const shouldList=game=>{
+    const state=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();
+    if(state==='NON_GAME_SURFACE')return false;
+    if(!['WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID'].includes(state))return true;
+    const platform=exposure.games?.find(row=>row.gameId===game.id);
+    return (platform?.platforms||[]).some(row=>
+      Boolean(row.internalUrl||row.publicUrl)&&(
+        row.executionAvailable===true||
+        (row.internalReleaseReady===true&&row.releaseReadiness?.homepageReady===true)||
+        (row.platform==='ROBLOX'&&row.historicalInternalRelease===true)
+      )
+    );
+  };
+  const expected=eligible.filter(shouldList);
+  assert.deepEqual([...present].sort(),expected.map(row=>row.id).sort(),'정식 게임은 유지하고 출처만 있는 미검증 시제품은 제외한다');
+  assert.ok(eligible.length>expected.length,'실제 카탈로그에 제외 대상 시제품이 있다');
+  for(const row of eligible.filter(game=>!shouldList(game)))assert.equal(present.has(row.id),false,'시제품이 홈피에 남음: '+row.id);
+  for(const row of expected)assert.ok(present.has(row.id),'실제 게임 누락: '+row.id);
+});
+
+test('검증된 네이티브 게임은 철회된 웹 시제품과 무관하게 남고 버튼형 시제품은 숨긴다',()=>{
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,hasRunnableHomepageTarget,buildCard})',{document:{readyState:'loading',addEventListener(){}}});
+  const row=(id,state)=>({id,canonical:{
+    identity:{gameId:id,name:id},lifecycle:{state:'ACTIVE',ownerExistingGame:true},
+    production:{class:'DEVELOPMENT_CONFIRMED'},
+    sources:{web:{path:'web-games/'+id,state},roblox:{projectPath:'roblox-games/'+id}}
+  }});
+  const clickOnly=row('click-only','WITHDRAWN_SIMPLE_PROTOTYPE');
+  const invalid=row('missing-entry','ENTRY_MISSING_OR_INVALID');
+  const realWeb=row('real-web','UNITY_WEB_VERIFICATION_REQUIRED');
+  const native=row('verified-native','WITHDRAWN_SIMPLE_PROTOTYPE');
+  api.setExposure({unityWebEnabled:true,games:[{gameId:'verified-native',platforms:[{
+    platform:'ROBLOX',executionAvailable:true,internalUrl:'https://www.roblox.com/games/123456789'
+  }]}]});
+  const visible=api.developmentRows({games:[clickOnly,invalid,realWeb,native]},{});
+  assert.deepEqual(Array.from(visible,game=>game.id),['real-web','verified-native']);
+  assert.equal(api.hasRunnableHomepageTarget(native),true);
+  assert.match(api.buildCard(native),/https:\/\/www\.roblox\.com\/games\/123456789/);
+  assert.equal(api.hasRunnableHomepageTarget(clickOnly),false);
 });
 
 test('runtime catalog fills only missing active development games',()=>{
