@@ -2317,7 +2317,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   // 공용 클립은 원본 1개 + 모션 1개 단위로 승인한다. 14개 후보를 한 작업에 일괄 실행하지 않는다.
   const validCareerPath=requestedCareerId
     ?createCommonCareerMotionLoadout({careerId:requestedCareerId,platform:'SHARED'}).careerPath:[];
-  const requestedCareerCandidates=!internalMotion&&!declaredTaskRecipes.length
+  const requestedCareerCandidates=!internalMotion&&!declaredTaskRecipes.length&&(requestedCareerId||requestedCareerClip)
     ?availableCareerRecipes.filter(recipe=>
       (!requestedCareerClip||recipe.clipId===requestedCareerClip)
       &&(!requestedCareerId||validCareerPath.includes(clean(recipe.careerId).toUpperCase())))
