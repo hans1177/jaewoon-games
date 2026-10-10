@@ -328,27 +328,33 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY'}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
   if(!Number.isInteger(width)||!Number.isInteger(height)||width<12||height<12||width>maximum||height>maximum||!validNumber(cellSize)||cellSize<=0||!['2D','3D'].includes(dimension)||!validNumber(density)||density<0||density>1||!validNumber(maxSlopeDegrees)||maxSlopeDegrees<=0||maxSlopeDegrees>=90||!validNumber(fovDegrees)||fovDegrees<=0||fovDegrees>180||!validNumber(cameraForward?.x)||!validNumber(cameraForward?.z)||Math.hypot(cameraForward.x,cameraForward.z)<1e-6){
     return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['DIMENSIONS_OR_BUDGET_INVALID']),...noMutation});
   }
+  const seasonKey=String(season).toUpperCase();
+  if(!['ANNUAL','SPRING','SUMMER','AUTUMN','WINTER'].includes(seasonKey))
+    return Object.freeze({status:'INVALID_GENERATION_INPUT',issues:Object.freeze(['SEASON_INVALID']),...noMutation});
   const w=width,h=height,hash=String(seed).split('').reduce((v,c)=>Math.imul(v^c.charCodeAt(0),16777619)>>>0,2166136261);
   const objectNamespace='WORLD_'+hash.toString(36).toUpperCase();
   // 공용 자산은 게임에 통째로 복사하지 않는다. 실제 3D 원본+권리 확인 후보만 구조물에 매핑한다.
   const pool=(Array.isArray(libraryAssets)?libraryAssets:[]).filter(asset=>{
     const files=[asset?.path,asset?.masterGlb,asset?.meshArtifact,...(asset?.sourceFiles||[]),...(asset?.nativeArtifacts||[])];
     const license=String(asset?.license||'').toUpperCase();
+    const family=String(asset?.family||asset?.category).toUpperCase();
+    const hasNativeMesh=files.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(file||'')));
+    const hasNativeMaterial=files.some(file=>/\.(?:png|jpe?g|webp|tga|ktx2|mat|shader)$/i.test(String(file||'')));
     return Boolean(asset?.id||asset?.assetId)&&Boolean(asset?.sourceHash||asset?.contentHash||asset?.sha256)
-      &&files.some(file=>/\.(?:glb|gltf|fbx|obj|mesh|prefab)$/i.test(String(file||'')))
+      &&(family==='MATERIAL'?hasNativeMaterial||hasNativeMesh:hasNativeMesh)
       &&asset?.rightsPass!==false&&asset?.quarantined!==true&&asset?.securityBlocked!==true
       &&!/NON.?COMMERCIAL|\bNC\b|NO.DERIVATIVES|FORBIDDEN|UNKNOWN|UNVERIFIED/.test(license)
       &&(asset?.rightsPass===true||/^(?:CC0|CC-BY|MIT|APACHE|PUBLIC_DOMAIN|OWNED)/.test(license))
-      &&['BUILDING','ENVIRONMENT','PROP'].includes(String(asset?.family||asset?.category).toUpperCase());
+      &&['BUILDING','ENVIRONMENT','PROP','MATERIAL'].includes(family);
   }).sort((a,b)=>String(a.id||a.assetId).localeCompare(String(b.id||b.assetId)));
-  const poolByFamily=new Map(['BUILDING','ENVIRONMENT','PROP'].map(family=>[family,pool.filter(row=>String(row.family||row.category).toUpperCase()===family)]));
+  const poolByFamily=new Map(['BUILDING','ENVIRONMENT','PROP','MATERIAL'].map(family=>[family,pool.filter(row=>String(row.family||row.category).toUpperCase()===family)]));
   const sourceUsage=new Map();
   const pickSource=(family,kind,x,z)=>{
     const candidates=poolByFamily.get(family)||[];
