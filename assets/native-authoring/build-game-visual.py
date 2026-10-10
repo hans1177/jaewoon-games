@@ -445,7 +445,13 @@ if ARGS.cinematic:
         SCENE.render.ffmpeg.format = 'MPEG4'
         SCENE.render.ffmpeg.codec = 'H264'
         SCENE.render.ffmpeg.audio_codec = 'NONE'
-        SCENE.render.filepath = str(video_file)
+        # Blender may append the animation frame range to video filenames.
+        # Render to an isolated temporary prefix and normalize one verified result.
+        temp_video_prefix = '__vibe_cinematic_render'
+        stale_videos = list(ARGS.output.glob(temp_video_prefix + '*.mp4'))
+        if stale_videos:
+            raise RuntimeError('CINEMATIC_TEMP_VIDEO_COLLISION')
+        SCENE.render.filepath = str(ARGS.output / temp_video_prefix)
         SCENE.render.use_file_extension = True
         radius = max(BOUNDS_SIZE) * 1.70
         shot_specs = [
@@ -484,6 +490,10 @@ if ARGS.cinematic:
             })
         SCENE.frame_set(1)
         bpy.ops.render.render(animation=True)
+        rendered_movies = list(ARGS.output.glob(temp_video_prefix + '*.mp4'))
+        if len(rendered_movies) != 1 or rendered_movies[0].stat().st_size <= 1024:
+            raise RuntimeError('CINEMATIC_MP4_RENDER_MISSING_OR_AMBIGUOUS')
+        rendered_movies[0].replace(video_file)
         if not video_file.is_file() or video_file.stat().st_size <= 1024:
             raise RuntimeError('CINEMATIC_MP4_RENDER_MISSING_OR_EMPTY')
         storyboard = {
@@ -516,6 +526,10 @@ if ARGS.cinematic:
             'nativeRuntimeVerified': False, 'productionVerified': False,
         }
     finally:
+        # Never leave Blender-generated range-suffixed videos outside declared outputs.
+        if 'temp_video_prefix' in locals():
+            for temp_video in ARGS.output.glob(temp_video_prefix + '*.mp4'):
+                temp_video.unlink()
         for obj in shot_objects:
             bpy.data.objects.remove(obj, do_unlink=True)
         bpy.data.objects.remove(presentation_root, do_unlink=True)
