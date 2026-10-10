@@ -233,25 +233,155 @@
       "name": "Adaptation & Strategy System",
       "purpose": "Enables players to dynamically adjust their strategies based on real-time combat and resource management.",
       "playerChoice": "Optimize Resource Usage or Expand Defensive Positioning Based on Enemy Pressure,"
+    },
+    "local_authoring_parts::1b4ef63d3acaf0686d80d9af6557d7802296a0b51e99a57e66b0c922740cb159:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "Fight through an escalating horde in a short real-time survival run while situat"
+      ],
+      "stateOutputs": [
+        "Adaptively allocate resources or reconfigure defense"
+      ],
+      "name": "Adaptive Strategy System",
+      "purpose": "Enables players to dynamically adjust their resource allocation and defensive positioning based on evolving threats and game conditions.",
+      "playerChoice": "Choose between optimizing resources or expanding defenses based on real-time combat and threat assessment."
+    },
+    "local_authoring_parts::b020bc2e25ed4c692b2caf2237b9bb58e5345e631512b6e2344c46f039f278d6:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills"
+          ],
+          "name": "Survival & Adaptation System",
+          "purpose": "Enables players to dynamically adapt their strategies through iterative resource allocation, threat assessment, and strategic evolution.",
+          "playerChoice": "Optimize Resource Usage or Expand Defensive Positioning Based on Enemy Pressure and Dynamic Constraints."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills"
+          ],
+          "name": "Adaptation & Strategy System",
+          "purpose": "Players develop adaptive decision-making through iterative resource allocation and threat response adjustments.",
+          "playerChoice": "Optimize resources or expand defenses based on enemy pressure and dynamic constraints."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills"
+          ],
+          "name": "Adaptation & Strategy System",
+          "purpose": "Enables players to dynamically adjust their strategies based on real-time combat and resource management.",
+          "playerChoice": "Optimize Resource Usage or Expand Defensive Positioning Based on Enemy Pressure,"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Adaptively allocate resources or reconfigure defense"
+          ],
+          "name": "Adaptive Strategy System",
+          "purpose": "Enables players to dynamically adjust their resource allocation and defensive positioning based on evolving threats and game conditions.",
+          "playerChoice": "Choose between optimizing resources or expanding defenses based on real-time combat and threat assessment."
+        }
+      ]
+    },
+    "local_authoring_parts::aed7bac2121a532f3898fa3f73f01976b086d7ba802703d60b19caef2da765f9:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills"
+          ],
+          "name": "Survival & Adaptation System",
+          "purpose": "Enables players to dynamically adapt their strategies through iterative resource allocation, threat assessment, and strategic evolution.",
+          "playerChoice": "Optimize Resource Usage or Expand Defensive Positioning Based on Enemy Pressure and Dynamic Constraints."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills"
+          ],
+          "name": "Adaptation & Strategy System",
+          "purpose": "Players develop adaptive decision-making through iterative resource allocation and threat response adjustments.",
+          "playerChoice": "Optimize resources or expand defenses based on enemy pressure and dynamic constraints."
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Collect run rewards or experience and choose upgrades, perks, weapons, or skills"
+          ],
+          "name": "Adaptation & Strategy System",
+          "purpose": "Enables players to dynamically adjust their strategies based on real-time combat and resource management.",
+          "playerChoice": "Optimize Resource Usage or Expand Defensive Positioning Based on Enemy Pressure,"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Fight through an escalating horde in a short real-time survival run while situat"
+          ],
+          "stateOutputs": [
+            "Adaptively allocate resources or reconfigure defense"
+          ],
+          "name": "Adaptive Strategy System",
+          "purpose": "Enables players to dynamically adjust their resource allocation and defensive positioning based on evolving threats and game conditions.",
+          "playerChoice": "Choose between optimizing resources or expanding defenses based on real-time combat and threat assessment."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 877440,
-      "lastMs": 99229,
+      "totalMs": 975756,
+      "lastMs": 98316,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:25:15.826Z"
+      "updatedAt": "2026-10-10T02:26:54.144Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:10:38.349Z",
-  "updatedAt": "2026-10-10T02:25:15.827Z",
+  "updatedAt": "2026-10-10T02:26:54.147Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2117,7 +2247,7 @@
   "localAuthoringSplits": {
     "fbbc4ec1faa130ed8d2494f9e2eb45b567606b281c49f0cde8d4ddd65d8c05e5": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:25:15.826Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:26:54.147Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
