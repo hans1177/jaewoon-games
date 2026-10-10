@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-deploy-unity-web-monster-adventure-20261010",
+  "requestId": "unity-web-monster-adventure-enable-native-animation-module-20261010",
   "gameId": "monster-adventure",
   "projectPath": "unity-games/monster-adventure",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
@@ -12,5 +12,6 @@
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
-  "homepageCardVisibleRegardlessOfBuildResult": true
+  "homepageCardVisibleRegardlessOfBuildResult": true,
+  "repairCause": "SOURCE_USES_NATIVE_ANIMATOR_BUILTIN_ANIMATION_MODULE_NOW_ENABLED"
 }
