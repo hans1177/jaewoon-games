@@ -104,25 +104,40 @@
         "선택 -> 상태변화 -> 보상/위험/다음 선택",
         "보조 장르 제거 시 플레이어의 선택에 실질적 인과 변화가 발생함."
       ]
+    },
+    "local_authoring_parts::170e28eaf31584889c12ca4644a73273f3ed75240e551f5ae4489d3db1138add:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "선택",
+        "보조 장르 제거"
+      ],
+      "stateOutputs": [
+        "세계 상태 변화",
+        "중후반 두 시스템 교환"
+      ],
+      "name": "작은 모험 RPG - 게임 정체성",
+      "purpose": "플레이어가 직접 선택하는 단순 퀘스트 및 복잡한 패턴 연결, 역사, 철학, 무협, 과학 등의 주제로 구성된 창작 소재 융합, 플레이어의 선택에 따른 세계 상태 변화, 보상/위험/다음 선택의 인과적 연결, 중후반 두 시스템 간 양방향 인과 교환, 발전 규칙을 포함한 새로운 선택이 가능하다.",
+      "playerChoice": "플레이어의 선택이 게임 세계 상태를 변화시키는 역할을 수행함."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 215730,
-      "lastMs": 38498,
+      "totalMs": 257197,
+      "lastMs": 41467,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:06:34.808Z"
+      "updatedAt": "2026-10-10T02:07:16.277Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:02:58.967Z",
-  "updatedAt": "2026-10-10T02:06:34.808Z",
+  "updatedAt": "2026-10-10T02:07:16.277Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1712,7 +1727,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:06:34.808Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:07:16.277Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
