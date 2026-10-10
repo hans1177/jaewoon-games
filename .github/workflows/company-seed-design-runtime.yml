@@ -276,6 +276,9 @@ jobs:
             return String(seed?.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase()==='ROBLOX'?0:1;
           };
           const deterministicCheckpointPriority=seed=>{
+            // 메인: 현재 게임의 설계 초기화 시각은 각 체크포인트 선택기에서 계산한다.
+            const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed?.gameId||''));
             if(!fs.existsSync(gameRoot))return 1;
             try{
@@ -303,6 +306,9 @@ jobs:
             return 1;
           };
           const checkpointResumePriority=seed=>{
+            // 메인: 현재 게임의 설계 초기화 시각은 각 체크포인트 선택기에서 계산한다.
+            const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed?.gameId||''));
             if(!fs.existsSync(gameRoot))return 1;
             try{

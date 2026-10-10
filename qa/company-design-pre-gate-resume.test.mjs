@@ -1311,3 +1311,40 @@ test('platform views derive from the authored original without changing rules or
   normalizeWebCanonicalAndExpansionPolicy(fixture.design,fixture.seed,fixture.design.multiplayerMode,[]);
   assert.ok(validateDesignAuthoringContent(fixture).some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'));
 });
+
+test('model-authored basic coding specification remains non-authoritative until verified design promotion',()=>{
+  const start=design.indexOf('function persistDesignerSeed(');
+  const end=design.indexOf('async function authorDesignInCheckpointedSlices(',start);
+  const source=design.slice(start,end);
+  assert.match(source,/codingBasis:\s*\{/);
+  assert.match(source,/codeGenerationAuthorized:false/);
+  assert.match(source,/signatureSystems:content\.signatureSystems/);
+  assert.match(source,/DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE/);
+  assert.match(design,/codingBlueprint:\s*\{/);
+});
+
+test('blank or invalid grammar reference IDs are normalized without inventing gameplay rules',()=>{
+  const start=design.indexOf('const authoredId=clean(value?.id);');
+  const end=design.indexOf('const roleIssues=[];',start);
+  assert.ok(start>0&&end>start);
+  const normalize=runInNewContext('(value,rows,grammarRole,index)=>{'+design.slice(start,end)+'return value;}',{
+    clean:value=>String(value??'').trim(),createHash,console:{log(){}}
+  });
+  const invalid={id:'',name:'환경 상성 배치',purpose:'대상 곤충의 이동 경로를 바꾼다',playerChoice:'우회 경로를 선택한다'};
+  assert.match(normalize(invalid,[],'A',1).id,/^a_rule_[a-f0-9]{12}$/);
+  const valid={id:'b_burrow_routes',name:'땅굴 전략',purpose:'지형의 통로를 변화시킨다'};
+  assert.equal(normalize(valid,[],'B',2).id,'b_burrow_routes');
+  assert.match(design,/const roleContext=grammarRole\?/);
+});
+
+test('current reset priority correctly binds timestamps in both canonical checkpoint selectors',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  for(const name of ['deterministicCheckpointPriority','checkpointResumePriority']){
+    const start=workflow.indexOf('const '+name+'=seed=>{');
+    const end=workflow.indexOf('\n          };',start);
+    assert.ok(start>0&&end>start,name);
+    const source=workflow.slice(start,end);
+    assert.match(source,/const resetAt=resetGameIds\.has/);
+    assert.match(source,/const resetDate=resetAt\?/);
+  }
+});

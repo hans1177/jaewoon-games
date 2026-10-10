@@ -696,6 +696,16 @@ function persistDesignerSeed(design,phase){
     sourceStage:'identity-core',phase,status:'AUTHORED_CANDIDATE',
     inputSource:'OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS',
     originalSource:seed.DESIGN_BASELINE_SOURCE||null,
+    // 기본 코딩 명세는 같은 디자이너가 검증받은 identity-core에서만 파생한다.
+    // 후보 단계에서는 구현·승인을 허용하지 않으며 기존 승격 게이트가 권한을 결정한다.
+    codingBasis:{
+      state:'DESIGN_CANDIDATE',
+      codeGenerationAuthorized:false,
+      requiredGate:'DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE',
+      identity:content.identity,coreFun:content.coreFun,coreLoop:content.coreLoop,
+      signatureSystems:content.signatureSystems,multiplayerMode:content.multiplayerMode,
+      targetPlatform:clean(seed.INITIAL_TARGET_PLATFORM)
+    },
     fingerprint:checkpointFingerprint,engineDigest,contentDigest,
     externalSeedRequired:false,designPass:false,runtimePass:false,
     content,updatedAt:new Date().toISOString()
@@ -1323,6 +1333,16 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           }
           for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
           // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/C/@ 역할별 원본 설계 검사
+          // 메인: 작은 모델에는 원본 게임 규칙과 역할의 차이만 전달하고 중복 지시를 줄인다.
+          // 게임의 숫자·저장 의미는 유지하며 규칙 내용은 모델이 직접 작성한다.
+          const roleObjective={
+            MAIN:'플레이어의 대표 행동과 그 행동이 바꾸는 관찰 가능한 세계 상태',
+            A:'MAIN의 결과로 가능해지는 첫 번째 고유 전술과 선택 비용',
+            B:'A의 결과를 바꾸고 A에 다시 영향을 주는 별개 전술과 대응',
+            c:'기존 선택의 조건을 바꾸는 장르·소재의 인과적 변주',
+            DELVE:'앞 규칙의 결과에서 발견하는 숨은 정보와 새 대응법'
+          }[grammarRole]||'현재 규칙의 독립적인 플레이 역할';
+          const roleContext=grammarRole?`GAME_ID=${gameId}\nGAME_NAME=${game.name}\nGENRE=${clean(seed.GAME_CATEGORY)}\nOWNER_IDENTITY=${clip(seed.DISTINCT_IDENTITY,850)}\nOWNER_CORE_LOOP=${clip(seed.CORE_LOOP,1350)}\nOWNER_LOCKED_REQUEST=${clip(seed.OWNER_LATEST_DESIGN_REQUEST,1200)}\nORIGINAL_RULES=${clip(seed.originalDesignContext?.content?.signatureSystems||[],1250)}\nCURRENT_ROLE_GOAL=${roleObjective}\n앞선 역할의 선택·목적을 재사용하지 말고 이 게임의 행동·자원·적·월드 상태에 연결되는 별개 원인과 결과를 작성한다.`:user;
           const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
           // 메인: 직전 디자이너가 실제 작성한 상태 입출력만 다음 역할의 연결 근거로 사용한다.
           const previousRule=grammarRole?rows.at(-1):null;
@@ -1336,12 +1356,12 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              focusedChildSystem,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
+              focusedChildSystem,`${grammarRole?roleContext:user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(grammarRole?previousItems.map(({grammarRole,id,name})=>({grammarRole,id,name})):previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nREQUIRED_UNIQUE_RULE_ID_PREFIX=${grammarRole.toLowerCase()}_\n${roleHandoff?`REQUIRED_ORIGINAL_STATE_HANDOFF=${JSON.stringify(roleHandoff)}\nstateInputs에 앞 규칙 stateOutputs의 정확한 키를 하나 이상 포함하고, stateOutputs에 앞 규칙 stateInputs의 정확한 키를 하나 이상 포함하라. 실제 플레이 인과에 맞게 각 역할의 행동과 상태 전이를 구분하며 임의 상태·보상·저장 키를 만들지 마라.\n`:''}앞 역할의 식별자를 변경하지 말고 현재 역할의 실제 규칙에 해당하는 고유 영문 ID를 만들어라.\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\nROLE_RETRY=${roleAttempt}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
             ));
             if(!grammarRole){rows.push(value);break;}
             // 규칙 내용은 모델이 작성하고 참조용 ID 형식만 안전하게 정규화한다.
             const authoredId=clean(value?.id);
-            if(authoredId&&(!new RegExp(`^${grammarRole.toLowerCase()}_[a-z][a-z0-9_-]{2,69}$`).test(authoredId)||rows.some(row=>clean(row.id)===authoredId))){
+            if(!new RegExp(`^${grammarRole.toLowerCase()}_[a-z][a-z0-9_-]{2,69}$`).test(authoredId)||rows.some(row=>clean(row.id)===authoredId)){
               const suffix=createHash('sha256').update(`${grammarRole}:${clean(value?.name)}:${clean(value?.purpose)}`).digest('hex').slice(0,12);
               value.id=`${grammarRole.toLowerCase()}_rule_${suffix}`;
               console.log(`DESIGN_GRAMMAR_REFERENCE_ID_REPAIRED=${grammarRole}|${authoredId}|${value.id}`);
@@ -1601,6 +1621,20 @@ writeJson(path.join(base,'design-revised.json'),{
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
+  // 코드 생성자가 실제 역할·상태 연결·진행·검증 기준을 같은 원본에서 읽는다.
+  // 최종 엄격 검수 전에는 코딩 허가 근거가 아니다.
+  codingBlueprint:{
+    state:'PENDING_STRICT_DESIGN_REVIEW',
+    requiredGate:'DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE',
+    coreLoop:revisedDesign.coreLoop,
+    signatureSystems:revisedDesign.signatureSystems,
+    systemInterconnections:revisedDesign.systemInterconnections,
+    progressionDirection:revisedDesign.progressionDirection,
+    failureRetryRisk:revisedDesign.failureRetryRisk,
+    platformProfiles:revisedDesign.platformProfiles,
+    implementationTraceability:revisedDesign.implementationTraceability,
+    validationQuestions:revisedDesign.validationQuestions
+  },
   postRevisionPreGate:{
     totalScore:postRevisionPreGate.totalScore,
     hardFailures:postRevisionPreGate.hardFailures,
