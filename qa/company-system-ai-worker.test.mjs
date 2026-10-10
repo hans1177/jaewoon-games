@@ -500,3 +500,24 @@ test('System AI priority accounts for downstream dependency chain',()=>{
   assert.ok(root.score>systemAiImpactProfile(tasks[3],queue,{at}).score);
   assert.deepEqual(reserveSystemAiBatch(queue,{max:1,reservationId:'critical-path',at}).reserved.map(t=>t.id),['root']);
 });
+
+test('critical-path score uses longest converging DAG chain and stays finite on cyclic evidence',()=>{
+  const at=Date.parse('2026-10-11T00:10:00Z');
+  const tasks=[
+    {id:'root',status:'queued',dependencies:[],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'sink',status:'queued',dependencies:['root','step2'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'step1',status:'queued',dependencies:['root'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'step2',status:'queued',dependencies:['step1'],createdAt:'2026-10-11T00:00:00Z'}
+  ];
+  const result=systemAiImpactProfile(tasks[0],{tasks},{at});
+  assert.equal(result.criticalPathDepth,3);
+  assert.equal(result.transitiveBlockedTaskCount,3);
+  const cyclic=[
+    {id:'root',status:'queued',dependencies:['second']},
+    {id:'first',status:'queued',dependencies:['root','second']},
+    {id:'second',status:'queued',dependencies:['first']}
+  ];
+  const cycle=systemAiImpactProfile(cyclic[0],{tasks:cyclic},{at});
+  assert.ok(Number.isFinite(cycle.score));
+  assert.ok(cycle.criticalPathDepth>=1&&cycle.criticalPathDepth<=cyclic.length);
+});
