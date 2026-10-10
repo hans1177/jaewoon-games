@@ -213,6 +213,69 @@ export function evaluateUnityWebBuildUpGrowth({
   };
 }
 
+// Unity Web 기존 검증 단계의 3개 Playwright 실행이 서로 다른 실제 조작 경로를 통과했는지 판정.
+// 별도 파이프라인을 만들지 않고 기존 browser/independent/regression 증거만 소비한다.
+export function evaluateUnityWebPrecisionQa({gameId='',play=null,independent=null,regression=null}={}){
+  const id=clean(gameId);
+  if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw new Error('UNITY_WEB_PRECISION_GAME_ID_INVALID');
+  const runs=[
+    {stage:'BROWSER_PLAY',scenarioId:'actual-play',evidence:play},
+    {stage:'INDEPENDENT_QA',scenarioId:'independent-qa',evidence:independent},
+    {stage:'REGRESSION',scenarioId:'regression',evidence:regression}
+  ];
+  const failures=[];
+  const checks=runs.map(({stage,scenarioId,evidence:e})=>{
+    const p=e?.precisionQa||{},native=e?.spatialGameplay||{},visual=e?.visualQa?.renderedScene||{};
+    const action=p.liveActionState||{};
+    const replay=p.secondaryCycle||{};
+    const checks={
+      exactGameAndScenario:e?.gameId===id&&p.gameId===id
+        &&e.engine==='UNITY_WEB'&&p.scenarioId===scenarioId,
+      actualWebglBrowserRun:e?.playableBrowserTest===true&&e.boot?.pass===true
+        &&p.runtimeOrigin==='PLAYWRIGHT_CHROMIUM_ANDROID_PROFILE_REAL_WEBGL_BUILD',
+      inputAndRealGameState:e?.input?.pass===true&&e.mobile?.realGameTouchHandlerObserved===true
+        &&action.measuredFromNativeGameState===true
+        &&typeof action.stateMeasuredBefore==='string'&&action.stateMeasuredBefore.includes(' STATE ')
+        &&typeof action.stateMeasuredAfter==='string'&&action.stateMeasuredAfter.includes(' STATE ')
+        &&action.stateMeasuredBefore!==action.stateMeasuredAfter
+        &&Array.isArray(action.changedKeys)&&action.changedKeys.length>0
+        &&action.actionAfterLiveEntry===true&&action.rewardAfterLiveActions===true
+        &&action.coreFunAfterLiveActions===true,
+      persistentSaveAndRestore:e?.saveRestore?.pass===true&&p.saveRestoreConfirmed===true
+        &&Array.isArray(e?.saveRestore?.persistentChangedKeys)
+        &&e.saveRestore.persistentChangedKeys.length>0
+        &&Array.isArray(e.saveRestore.restoredKeys)
+        &&e.saveRestore.persistentChangedKeys.every(key=>e.saveRestore.restoredKeys.includes(key)),
+      native3dPixels:native.requiredDimension==='3D'&&native.pass===true&&native.depthPass===true
+        &&native.perspectiveCamera===true&&Number(native.observedMeshCount)>0
+        &&Number(native.observedTriangles)>0
+        &&e?.visualQa?.nativeUnityMesh?.pass===true
+        &&visual.pass===true&&visual.pixels?.source==='REAL_UNITY_CANVAS_SCREENSHOT'
+        &&visual.sceneCapturePersisted===true&&/^[a-f0-9]{64}$/.test(clean(visual.sceneCaptureSha256)),
+      independentTouchFirst:scenarioId!=='independent-qa'
+        ||p.distinctRoute==='REAL_BROWSER_TOUCH_FIRST',
+      regressionReplay:scenarioId!=='regression'||(
+        p.secondaryCycleRequired===true&&replay.pass===true
+        &&replay.resumedAfterReload===true&&replay.mobileInputObserved===true
+        &&replay.actionObserved===true&&replay.rewardObserved===true
+        &&Array.isArray(replay.changedPersistentKeys)&&replay.changedPersistentKeys.length>0),
+      noMarkerOnlyShortcut:p.markerOnlyPassForbidden===true
+    };
+    const bad=Object.entries(checks).filter(([,pass])=>!pass).map(([key])=>key);
+    for(const key of bad)failures.push(stage+':'+key);
+    return{stage,scenarioId,pass:bad.length===0,failedChecks:bad};
+  });
+  const pass=failures.length===0;
+  return Object.freeze({
+    version:1,gameId:id,platform:'UNITY_WEB',pass,
+    status:pass?'VERIFIED_THREE_DISTINCT_REAL_BROWSER_SCENARIOS':'PRECISION_RUNTIME_REPAIR_REQUIRED',
+    checks:Object.freeze(checks),failures:Object.freeze(failures),
+    actualIndependentQaScenarioRequired:true,postReloadSecondGameplayCycleRequired:true,
+    sourceMarkersAloneNeverProvePass:true,
+    noRobloxOrUnityAndroidGateChanges:true
+  });
+}
+
 export function readUpperPlatformReadiness(repoRoot,gameId){
   const file=path.join(repoRoot,'web-games',gameId,'upper-platform-development-readiness.json');
   if(!fs.existsSync(file))return{pass:false,reason:'READINESS_EVIDENCE_MISSING'};
@@ -256,6 +319,16 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
       &&Number.isSafeInteger(proof.gameplayActors3d)&&proof.gameplayActors3d>=1
       &&proof.spriteGameplayActors===0);
   if(!native3dEvidencePass)return{pass:false,reason:'READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED',data,currentTree};
+  if(data.precisionQaRequired===true){
+    const precision=data.precisionQa||{};
+    if(data.criteria?.precisionQa?.pass!==true||precision.pass!==true
+      ||precision.gameId!==gameId||precision.platform!=='UNITY_WEB'
+      ||precision.status!=='VERIFIED_THREE_DISTINCT_REAL_BROWSER_SCENARIOS'
+      ||!Array.isArray(precision.checks)||precision.checks.length!==3
+      ||precision.checks.some((check,index)=>check.pass!==true
+        ||check.stage!==['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'][index]))
+      return{pass:false,reason:'READINESS_PRECISE_PLAYTEST_EVIDENCE_REQUIRED',data,currentTree};
+  }
   return{pass:true,reason:'READY',data,currentTree};
 }
 
