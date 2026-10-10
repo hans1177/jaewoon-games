@@ -317,6 +317,7 @@ const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
 const checkpointCompatibleEngineDigests=new Set([
+  '90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71', // preserve unfinished designer-authored checkpoint
   '4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec',
   '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03',
   '2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f',
@@ -1244,7 +1245,14 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
   const timeoutMs=localDesignerCallTimeoutMs;
   const started=Date.now();
   const assetContext=includeAssetContext?`DESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.`:'DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR';
-  const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE\n문자 수 상한은 목표 분량이 아니다. 각 설명은 필요한 조건·행동·상태 변화를 짧고 완결된 문장으로 작성하고 같은 문장을 반복하지 않는다. 필요한 설명을 마치면 문자열과 JSON을 닫는다. 고정 ID·수치·원본 규칙은 보존한다.`;
+  // 메인: 반복 하위 생성은 전체 지시를 계속 복사하지 않고 같은 디자이너의 오너 원본과 현재 역할만 읽는다.
+  const localSubfield=/LOCAL_OUTPUT_PATH=/.test(user);
+  const sourceSeed=typeof seed!=='undefined'&&seed&&typeof seed==='object'?seed:{};
+  const sourceOriginal=sourceSeed.originalDesignContext?.content||{};
+  const brief=JSON.stringify({gameId:sourceSeed.gameId||'',gameName:sourceSeed.gameName||'',coreFun:sourceSeed.CORE_FUN_TO_LEARN||sourceOriginal.coreFun||'',coreLoop:Array.isArray(sourceSeed.CORE_LOOP)?sourceSeed.CORE_LOOP.slice(0,7):[],originalSystems:(sourceOriginal.signatureSystems||[]).slice(0,12).map(row=>({name:row.name,purpose:row.purpose})),mode:sourceSeed.MULTIPLAYER_DESIGN_MODE||sourceSeed.INITIAL_PLAY_MODE||''});
+  const authorSystem=localSubfield?String(system).slice(0,1750)+'\n현재 원본 게임에서 MAIN/A/B/C/@의 역할과 실제 상태 입출력을 각각 구별해 저작한다. 이전 역할 복사·가짜 수치·가짜 저장 상태는 금지한다.':system;
+  const authorUser=localSubfield?'OWNER_ORIGINAL='+brief.slice(0,3400)+'\n'+String(user).slice(-5200):user;
+  const prompt=`${authorSystem}\n\n${assetContext}\n\n${authorUser}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE\n문자 수 상한은 목표 분량이 아니다. 각 설명은 필요한 조건·행동·상태 변화를 짧고 완결된 문장으로 작성하고 같은 문장을 반복하지 않는다. 필요한 설명을 마치면 문자열과 JSON을 닫는다. 고정 ID·수치·원본 규칙은 보존한다.`;
   const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
   predict=Math.min(8192,Math.max(512,Number(predict)||1600,Number(designCheckpoint.localAuthoringBudgets?.[identity])||0));
   console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
