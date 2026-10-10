@@ -122,7 +122,7 @@ export async function uploadRobloxHomepageThumbnail({
 // 메인: 공식 경험 상세 페이지의 이미지는 홈 개인화 썸네일과 별개로 관리한다.
 // 원본 플레이 영상은 Roblox 네이티브 실제 실행 증거 없이는 게시하지 않는다.
 export async function syncRobloxExperienceDetailMedia({
-  universeId,pngPath,cookie='',fetchImpl=globalThis.fetch
+  universeId,pngPath,cookie='',skipDuplicateUpload=false,fetchImpl=globalThis.fetch
 }={}) {
   if(!validId(universeId))throw new Error('ROBLOX_DETAIL_UNIVERSE_INVALID');
   if(!pngPath||!fs.existsSync(pngPath))throw new Error('ROBLOX_DETAIL_PNG_MISSING');
@@ -135,7 +135,9 @@ export async function syncRobloxExperienceDetailMedia({
   const images=payload.data.filter(row=>row?.assetType==='Image'||row?.assetTypeId===1);
   const videos=payload.data.filter(row=>row?.assetType==='Video'||row?.assetTypeId===33||Boolean(row?.videoHash));
   let imageStatus=images.length?'EXISTING_GAME_DETAIL_IMAGE':'PENDING_IMAGE_UPLOAD';
-  if(!images.length){
+  if(!images.length&&skipDuplicateUpload){
+    imageStatus='AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD';
+  }else if(!images.length){
     if(!clean(cookie))throw new Error('ROBLOX_DETAIL_COOKIE_MISSING');
     const form=new FormData();
     form.append('Files',new Blob([fs.readFileSync(pngPath)],{type:'image/png'}),path.basename(pngPath));
@@ -182,8 +184,14 @@ export async function syncRobloxHomepageThumbnail({
   console.log('ROBLOX_THUMBNAIL_SOURCE_SHA256='+validated.sha256);
   console.log('ROBLOX_THUMBNAIL_RENDER=PASS:size='+rendered.size);
   if(detailOnly){
+    const previous=(queue.items||[]).find(item=>clean(item?.gameId)===target.gameId)?.robloxDetailMediaEvidence||{};
+    const samePreviousUpload=previous.gameId===target.gameId
+      &&previous.universeId===target.universeId
+      &&previous.sourceSha256===validated.sha256
+      &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD'].includes(previous.imageStatus);
     const media=await syncRobloxExperienceDetailMedia({
-      universeId:target.universeId,pngPath,cookie:robloxCookie,fetchImpl
+      universeId:target.universeId,pngPath,cookie:robloxCookie,
+      skipDuplicateUpload:samePreviousUpload,fetchImpl
     });
     const evidence={
       version:1,gameId:target.gameId,placeId:target.placeId,
