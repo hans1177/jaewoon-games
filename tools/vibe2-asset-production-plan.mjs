@@ -4208,7 +4208,8 @@ export function buildVibeAssetProductionPlan({
     ?createCommonMonsterActionLoadout({
       speciesId:sharedSpeciesId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
       bodyPlan:task.monsterBodyPlan||'',rigProfile:task.monsterRigProfile||'',
-      styleFamily:task.styleFamily||'STYLIZED_FANTASY'
+      styleFamily:task.styleFamily||'STYLIZED_FANTASY',
+      tier:task.commonMonsterMotionTier||'NORMAL'
     }):null;
   const sharedMotionRequestState=(sharedCareerId||sharedSpeciesId)
     ?(sharedMotionGenreValid?'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED':'GENRE_MAPPING_REQUIRED')
