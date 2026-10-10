@@ -145,25 +145,357 @@
       ],
       "cGenreInterlock": "보드 게임과 주제별 시스템은 서로 다른 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)로 인해 상호작용하고, 그 결과는 플레이어의 숙련과 성장을 유도한다.",
       "cWorldAndGameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다."
+    },
+    "local_authoring_parts::755c9f576f31706143e24f2ca498b01ffe62e827025d03baf779f0757f3ebdd2:delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨",
+          "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "newChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+        },
+        {
+          "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+          "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1"
+        },
+        {
+          "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2"
+        },
+        {
+          "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+          "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+        }
+      ],
+      "delveGrowthRule": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+      "finalGameIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다."
+    },
+    "local_authoring_parts::29e51beb9c6f149f8c6eb80ebba8753c56bab7ad94ac82657163e2bdbf3377a5:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect,delveDiscoveries,delveGrowthRule,finalGameIdentity": {
+      "cThemes": [
+        {
+          "name": "모험",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+        },
+        {
+          "name": "숙련",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 숙련과 성장에 기반한 반복적인 경험을 구현합니다."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "보드 게임",
+          "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 이 과정에서 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "주제별 시스템",
+          "gameplayEffect": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+        }
+      ],
+      "cGenreInterlock": "보드 게임과 주제별 시스템은 서로 다른 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)로 인해 상호작용하고, 그 결과는 플레이어의 숙련과 성장을 유도한다.",
+      "cWorldAndGameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨",
+          "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "newChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+        },
+        {
+          "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+          "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1"
+        },
+        {
+          "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2"
+        },
+        {
+          "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+          "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+        }
+      ],
+      "delveGrowthRule": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+      "finalGameIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다."
+    },
+    "local_authoring_parts::a1646dbf5a13b096791aed03e32e068d14913b9c11ced6fcdeb01cd45341f583:creativeGrammar": {
+      "mainIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다.",
+      "a": {
+        "system": "BOARD_GAME",
+        "material": "PUZZLE_LEVEL",
+        "materialDomain": "LEVEL_STRUCTURE",
+        "stateChange": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT"
+      },
+      "b": {
+        "system": "GAME_ECONOMY",
+        "material": "RESOURCE_MANAGEMENT",
+        "materialDomain": "ECONOMIC_SYSTEM",
+        "stateChange": "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+      },
+      "abCausality": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1_VARIANT_2_VARIANT_3_VARIANT_4_VARIANT_5_VARIANT_6_VARIANT_7_VARIANT_8_VARIANT_9_VARIANT_10_VARIANT_11_VARIANT_12_VARIANT_13_VARIANT_14_VARIANT_15_VARIANT_16_VARIANT_17_VARIANT_18_VARIANT_19_VARIANT_20_VARIANT_21_VARIANT_22_VARIANT_23_VARIANT_24_VARIANT_25_VARIANT_26_VARIANT_27_VARIANT_28_VARIANT_29_VARIANT_30_VARIANT_31_VARIANT_32_VARIANT_33_VARIANT_34_VARIANT_35_VARIANT_36_VARIANT_37_VARIANT_38_VARIANT_39_VARIANT_40_VARIANT_41_VARIANT_42_VARIANT_43_VARIANT_44_VARIANT_45_VARIANT_46_VARIANT_47_VARIANT_48_VARIANT_49_VARIANT_50",
+      "abEvolution": {
+        "aChangesB": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1",
+        "bChangesA": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2",
+        "lateGameChange": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+      },
+      "materialFusion": {
+        "contrast": "BOARD_GAME_PUZZLE_LEVEL_RESOURCE_MANAGEMENT",
+        "causalBridge": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION",
+        "removalConsequence": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_4"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+        "characterConflict": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+        "playerChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION",
+        "worldChange": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+        "nextEvent": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+      },
+      "cThemes": [
+        {
+          "name": "모험",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+        },
+        {
+          "name": "숙련",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어의 숙련과 성장에 기반한 반복적인 경험을 구현합니다."
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "보드 게임",
+          "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 이 과정에서 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+        },
+        {
+          "role": "SECONDARY",
+          "name": "주제별 시스템",
+          "gameplayEffect": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+        }
+      ],
+      "cGenreInterlock": "보드 게임과 주제별 시스템은 서로 다른 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)로 인해 상호작용하고, 그 결과는 플레이어의 숙련과 성장을 유도한다.",
+      "cWorldAndGameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+      "delveDiscoveries": [
+        {
+          "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨",
+          "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "newChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+        },
+        {
+          "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+          "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1"
+        },
+        {
+          "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2"
+        },
+        {
+          "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+          "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+          "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+        }
+      ],
+      "delveGrowthRule": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+      "finalGameIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다."
+    },
+    "local_authoring_parts::c8d65e0a5eb2704ae8f21a787e8148082a1cc0078ac8bc0a0082c35f9e5f8ff4:creativeGrammar": {
+      "creativeGrammar": {
+        "mainIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다.",
+        "a": {
+          "system": "BOARD_GAME",
+          "material": "PUZZLE_LEVEL",
+          "materialDomain": "LEVEL_STRUCTURE",
+          "stateChange": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT"
+        },
+        "b": {
+          "system": "GAME_ECONOMY",
+          "material": "RESOURCE_MANAGEMENT",
+          "materialDomain": "ECONOMIC_SYSTEM",
+          "stateChange": "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+        },
+        "abCausality": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1_VARIANT_2_VARIANT_3_VARIANT_4_VARIANT_5_VARIANT_6_VARIANT_7_VARIANT_8_VARIANT_9_VARIANT_10_VARIANT_11_VARIANT_12_VARIANT_13_VARIANT_14_VARIANT_15_VARIANT_16_VARIANT_17_VARIANT_18_VARIANT_19_VARIANT_20_VARIANT_21_VARIANT_22_VARIANT_23_VARIANT_24_VARIANT_25_VARIANT_26_VARIANT_27_VARIANT_28_VARIANT_29_VARIANT_30_VARIANT_31_VARIANT_32_VARIANT_33_VARIANT_34_VARIANT_35_VARIANT_36_VARIANT_37_VARIANT_38_VARIANT_39_VARIANT_40_VARIANT_41_VARIANT_42_VARIANT_43_VARIANT_44_VARIANT_45_VARIANT_46_VARIANT_47_VARIANT_48_VARIANT_49_VARIANT_50",
+        "abEvolution": {
+          "aChangesB": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1",
+          "bChangesA": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2",
+          "lateGameChange": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+        },
+        "materialFusion": {
+          "contrast": "BOARD_GAME_PUZZLE_LEVEL_RESOURCE_MANAGEMENT",
+          "causalBridge": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION",
+          "removalConsequence": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_4"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "characterConflict": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "playerChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION",
+          "worldChange": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "nextEvent": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+        },
+        "cThemes": [
+          {
+            "name": "모험",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+          },
+          {
+            "name": "숙련",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어의 숙련과 성장에 기반한 반복적인 경험을 구현합니다."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "보드 게임",
+            "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 이 과정에서 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "주제별 시스템",
+            "gameplayEffect": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+          }
+        ],
+        "cGenreInterlock": "보드 게임과 주제별 시스템은 서로 다른 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)로 인해 상호작용하고, 그 결과는 플레이어의 숙련과 성장을 유도한다.",
+        "cWorldAndGameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨",
+            "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+            "newChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+          },
+          {
+            "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+            "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+            "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1"
+          },
+          {
+            "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+            "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+            "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2"
+          },
+          {
+            "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+            "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+            "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+          }
+        ],
+        "delveGrowthRule": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+        "finalGameIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다."
+      }
+    },
+    "local_authoring_parts::9a17bde4461520220163934a29a40c96c5eb7ff1a025242aece8bf24e5ef6c65:identity,creativeGrammar": {
+      "identity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다. 게임은 플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 이 과정에서 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 게임은 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다. 주요 행동은 'Start a board or grid level with a clear goal...'이며, 이는 플레이어의 숙련과 성장에 기반한 반복적인 경험을 구현합니다. 각 필드는 원본 규칙과 수치를 유지하고, 인과적 상태 변화와 진행을 통해 게임의 깊이를 강화합니다.",
+      "creativeGrammar": {
+        "mainIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다.",
+        "a": {
+          "system": "BOARD_GAME",
+          "material": "PUZZLE_LEVEL",
+          "materialDomain": "LEVEL_STRUCTURE",
+          "stateChange": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT"
+        },
+        "b": {
+          "system": "GAME_ECONOMY",
+          "material": "RESOURCE_MANAGEMENT",
+          "materialDomain": "ECONOMIC_SYSTEM",
+          "stateChange": "CLEAR_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+        },
+        "abCausality": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1_VARIANT_2_VARIANT_3_VARIANT_4_VARIANT_5_VARIANT_6_VARIANT_7_VARIANT_8_VARIANT_9_VARIANT_10_VARIANT_11_VARIANT_12_VARIANT_13_VARIANT_14_VARIANT_15_VARIANT_16_VARIANT_17_VARIANT_18_VARIANT_19_VARIANT_20_VARIANT_21_VARIANT_22_VARIANT_23_VARIANT_24_VARIANT_25_VARIANT_26_VARIANT_27_VARIANT_28_VARIANT_29_VARIANT_30_VARIANT_31_VARIANT_32_VARIANT_33_VARIANT_34_VARIANT_35_VARIANT_36_VARIANT_37_VARIANT_38_VARIANT_39_VARIANT_40_VARIANT_41_VARIANT_42_VARIANT_43_VARIANT_44_VARIANT_45_VARIANT_46_VARIANT_47_VARIANT_48_VARIANT_49_VARIANT_50",
+        "abEvolution": {
+          "aChangesB": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1",
+          "bChangesA": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2",
+          "lateGameChange": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+        },
+        "materialFusion": {
+          "contrast": "BOARD_GAME_PUZZLE_LEVEL_RESOURCE_MANAGEMENT",
+          "causalBridge": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION",
+          "removalConsequence": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_4"
+        },
+        "storyCausalChain": {
+          "cause": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "characterConflict": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+          "playerChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION",
+          "worldChange": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+          "nextEvent": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+        },
+        "cThemes": [
+          {
+            "name": "모험",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+          },
+          {
+            "name": "숙련",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어의 숙련과 성장에 기반한 반복적인 경험을 구현합니다."
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "보드 게임",
+            "gameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨을 경험하며, 이 과정에서 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다."
+          },
+          {
+            "role": "SECONDARY",
+            "name": "주제별 시스템",
+            "gameplayEffect": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다."
+          }
+        ],
+        "cGenreInterlock": "보드 게임과 주제별 시스템은 서로 다른 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)로 인해 상호작용하고, 그 결과는 플레이어의 숙련과 성장을 유도한다.",
+        "cWorldAndGameplayEffect": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소로 이루어진 레벨",
+            "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+            "newChoice": "START_A_BOARD_OR_GRID_LEVEL_WITH_CLEAR_GOAL_LIMITED_MOVES_OBSHBACTS_OR_VISIBLE_PUZZLE_CONSTRAINT_CLEARED_THE_LEVEL_GOAL_TO_EARN_REWARDS_UNLOCK_NEXT_STAGE_THEN_FACE_NEW_BOARD_PATTERN_OR_OBSTACLE_COMBINATION"
+          },
+          {
+            "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+            "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+            "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_1"
+          },
+          {
+            "clue": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다.",
+            "discovery": "게임 내 다양한 시스템 간의 관계, 대응, 그리고 새로운 경로를 연출하여 플레이어에게 의미 있는 성장과 체감 가능한 즐거움을 제공합니다.",
+            "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_2"
+          },
+          {
+            "clue": "실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성되는 과정",
+            "discovery": "게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+            "newChoice": "INPUT_AND_MENU_TRANSITIONS_CONTEXT_LOSS_ERROR_RECOVERY_STATE_AND_COST_REGRESSION_EXACTLY_ONCE_REWARD_CLAIM_VARIANT_3"
+          }
+        ],
+        "delveGrowthRule": "플레이어가 시작 단계부터 명확한 목표, 제한된 선택, 장애물 또는 시스템 구성 요소를 경험하며, 실제 입력 → 상태 변화 → 보상/위험/다음 선택의 연결이 형성됩니다. 이는 게임의 깊이와 플레이어의 숙련에 기반한 반복적인 경험을 구현합니다.",
+        "finalGameIdentity": "작은 모험 RPG - 게임 정체성 및 인과적 상태 변화의 핵심 재미 확정판 최종 버전입니다."
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 6,
+      "calls": 10,
+      "successes": 7,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1546507,
-      "lastMs": 166840,
+      "totalMs": 1718212,
+      "lastMs": 171705,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:21:04.105Z"
+      "updatedAt": "2026-10-10T09:23:55.812Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:55:17.328Z",
-  "updatedAt": "2026-10-10T09:21:04.105Z",
+  "updatedAt": "2026-10-10T09:23:55.818Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1770,7 +2102,7 @@
     "c8d65e0a5eb2704ae8f21a787e8148082a1cc0078ac8bc0a0082c35f9e5f8ff4": true,
     "eddab799b6349ae5422648a35f7d82e32263bb8074affa02d00053dcf4bfede3": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:21:04.105Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:23:55.818Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
