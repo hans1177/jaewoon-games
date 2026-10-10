@@ -236,25 +236,164 @@
       "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
       "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미치며, 이를 기반으로 다음 사건을 예측 가능하게 만든다.",
       "playerChoice": "플레이어가 게임 내에서 자신의 선택을 하며, 이 선택은 자연 현상을 영향을 줄 수 있고 시간의 흐름도 직접적으로 관여할 수 있는 전략적인 역할을 수행합니다."
+    },
+    "local_authoring_parts::5c823be065fb391700f469f34f1070bdd758a699f9b449bf3fcc16536c60c615:signatureSystems:3": {
+      "id": "coreLoop_3",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "playerChoice",
+        "worldChange"
+      ],
+      "stateOutputs": [
+        "nextEvent"
+      ],
+      "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+      "purpose": "플레이어의 선택에 따라 실제 세계 상태가 변하게 되며, 이를 바탕으로 다음 사건이 예측 가능하도록 하여 게임의 진화와 발전을 촉진함.",
+      "playerChoice": "플레이어는 자신의 선택을 통해 세계의 상태를 영향을 줄 수 있으며, 이 선택은 다음 사건의 발생에 직접적인 영향을 미친다고 볼 수 있음."
+    },
+    "local_authoring_parts::e1c12d6ed8643316e909dd0ce59337131dcb31f124bc44dfb0f448aefb4f0f27:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "coreLoop_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미친다는 원인을 설정하며, 이를 기반으로 다음 사건을 예측 가능하게 만든다.",
+          "playerChoice": "플레이어가 전략적으로 선택하여 세계 상태를 변화시킬 수 있는 역할을 수행한다."
+        },
+        {
+          "id": "coreLoop_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미치며, 이를 기반으로 다음 사건을 예측할 수 있는 데 사용된다.",
+          "playerChoice": "플레이어가 특정 선택을 하여 자연 현상을 영향시키거나 시간 흐름을 직접 관여하는 전략적인 역할을 수행함을 의미합니다."
+        },
+        {
+          "id": "coreLoop_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미치며, 이를 기반으로 다음 사건을 예측 가능하게 만든다.",
+          "playerChoice": "플레이어가 게임 내에서 자신의 선택을 하며, 이 선택은 자연 현상을 영향을 줄 수 있고 시간의 흐름도 직접적으로 관여할 수 있는 전략적인 역할을 수행합니다."
+        },
+        {
+          "id": "coreLoop_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택에 따라 실제 세계 상태가 변하게 되며, 이를 바탕으로 다음 사건이 예측 가능하도록 하여 게임의 진화와 발전을 촉진함.",
+          "playerChoice": "플레이어는 자신의 선택을 통해 세계의 상태를 영향을 줄 수 있으며, 이 선택은 다음 사건의 발생에 직접적인 영향을 미친다고 볼 수 있음."
+        }
+      ]
+    },
+    "local_authoring_parts::57a059f70af1d03e83017d042580de620ef1b1a10d2b88e84132cf12909ebc9f:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "플레이어 선택 → 실질적 세계 상태 변화",
+        "실제 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+        "보드 게임 구조/경로 영향 미치는 플레이어 선택"
+      ],
+      "signatureSystems": [
+        {
+          "id": "coreLoop_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미친다는 원인을 설정하며, 이를 기반으로 다음 사건을 예측 가능하게 만든다.",
+          "playerChoice": "플레이어가 전략적으로 선택하여 세계 상태를 변화시킬 수 있는 역할을 수행한다."
+        },
+        {
+          "id": "coreLoop_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미치며, 이를 기반으로 다음 사건을 예측할 수 있는 데 사용된다.",
+          "playerChoice": "플레이어가 특정 선택을 하여 자연 현상을 영향시키거나 시간 흐름을 직접 관여하는 전략적인 역할을 수행함을 의미합니다."
+        },
+        {
+          "id": "coreLoop_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택이 실제 세계 상태 변화에 영향을 미치며, 이를 기반으로 다음 사건을 예측 가능하게 만든다.",
+          "playerChoice": "플레이어가 게임 내에서 자신의 선택을 하며, 이 선택은 자연 현상을 영향을 줄 수 있고 시간의 흐름도 직접적으로 관여할 수 있는 전략적인 역할을 수행합니다."
+        },
+        {
+          "id": "coreLoop_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "playerChoice",
+            "worldChange"
+          ],
+          "stateOutputs": [
+            "nextEvent"
+          ],
+          "name": "플레이어 선택 → 실질적 세계 상태 변화 → 다음 사건 예측 가능성 보장",
+          "purpose": "플레이어의 선택에 따라 실제 세계 상태가 변하게 되며, 이를 바탕으로 다음 사건이 예측 가능하도록 하여 게임의 진화와 발전을 촉진함.",
+          "playerChoice": "플레이어는 자신의 선택을 통해 세계의 상태를 영향을 줄 수 있으며, 이 선택은 다음 사건의 발생에 직접적인 영향을 미친다고 볼 수 있음."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 6,
+      "calls": 8,
+      "successes": 7,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 976432,
-      "lastMs": 101754,
+      "totalMs": 1078661,
+      "lastMs": 102229,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:30:11.923Z"
+      "updatedAt": "2026-10-10T02:31:54.154Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:13:55.461Z",
-  "updatedAt": "2026-10-10T02:30:11.923Z",
+  "updatedAt": "2026-10-10T02:31:54.157Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1847,7 +1986,7 @@
   "localAuthoringSplits": {
     "162bf8034b6d5f91d7ab9018c7feb60bc1bba4a0b287ab44d2fb152c5dcfdd70": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:30:11.923Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:31:54.157Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
