@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "id": "shared-humanoid-motion-v1",
   "kind": "PLATFORM_NEUTRAL_SKINNED_GLTF_MOTION_SOURCE",
   "family": "MOTION",
@@ -35,9 +35,9 @@
     "script": "assets/shared/humanoid-motion-v1/author-motion.py",
     "focusedClipDefault": "common_light_attack_1_hq",
     "focusedOutputRoot": "assets/shared/humanoid-motion-v1/derived/",
-    "supportedMotionDefinitions": 31,
+    "supportedMotionDefinitions": 48,
     "locomotionSourceDefinitions": 17,
-    "actionSourceDefinitions": 14,
+    "actionSourceDefinitions": 31,
     "focusedExportPerWorkUnit": 1,
     "workUnit": {
       "objectCount": 1,
@@ -48,7 +48,16 @@
     },
     "sha256ContentVerificationRequired": true,
     "footPlantValidationRequired": true,
-    "groundedRuntimeEvidenceRequired": true
+    "groundedRuntimeEvidenceRequired": true,
+    "skillMotionIntegration": {
+      "director": "assets/vibe-motion-director.js",
+      "classFamilies": 15,
+      "genreBindings": 12,
+      "sourceClipPhaseContract": "PREPARE_ANTICIPATION_RELEASE_RECOVERY",
+      "skillGameplayAuthority": false,
+      "composableModulesRequired": true,
+      "uniqueBonePoseTracksRequired": true
+    }
   },
   "sourceAuthoredClips": [
     {
@@ -174,6 +183,74 @@
     {
       "name": "common_cast_burst_hq",
       "durationSeconds": 0.84
+    },
+    {
+      "name": "common_samurai_iaido_hq",
+      "durationSeconds": 0.87
+    },
+    {
+      "name": "common_samurai_parry_hq",
+      "durationSeconds": 0.51
+    },
+    {
+      "name": "common_spear_lunge_hq",
+      "durationSeconds": 0.74
+    },
+    {
+      "name": "common_bow_draw_hq",
+      "durationSeconds": 1.12
+    },
+    {
+      "name": "common_bow_release_hq",
+      "durationSeconds": 0.55
+    },
+    {
+      "name": "common_rogue_backstab_hq",
+      "durationSeconds": 0.78
+    },
+    {
+      "name": "common_caster_channel_hq",
+      "durationSeconds": 1.24
+    },
+    {
+      "name": "common_healer_ritual_hq",
+      "durationSeconds": 1.34
+    },
+    {
+      "name": "common_summon_call_hq",
+      "durationSeconds": 1.4
+    },
+    {
+      "name": "common_forge_hammer_hq",
+      "durationSeconds": 0.94
+    },
+    {
+      "name": "common_build_place_hq",
+      "durationSeconds": 1.04
+    },
+    {
+      "name": "common_farm_harvest_hq",
+      "durationSeconds": 1.08
+    },
+    {
+      "name": "common_command_rally_hq",
+      "durationSeconds": 0.92
+    },
+    {
+      "name": "common_merchant_trade_hq",
+      "durationSeconds": 1.07
+    },
+    {
+      "name": "common_vehicle_steer_hq",
+      "durationSeconds": 1.26
+    },
+    {
+      "name": "common_fishing_cast_hq",
+      "durationSeconds": 1.16
+    },
+    {
+      "name": "common_potion_mix_hq",
+      "durationSeconds": 1.35
     }
   ],
   "authoredSourceIsBakedProductionPass": false,
@@ -199,5 +276,38 @@
     "common_heavy_attack_1_hq",
     "common_parry_hq",
     "common_hit_front_hq"
-  ]
+  ],
+  "title": "공용 휴머노이드 스킨·액션·직업별 스킬 원본",
+  "crossGenreReuse": {
+    "scope": "COMMON_ASSET_NOT_ROBLOX_ONLY",
+    "linkedDirector": "assets/vibe-motion-director.js",
+    "nativeSourceOnly": true,
+    "classHierarchyRole": "JOB_FAMILY_SPECIALIZATION_ASCENSION",
+    "genres": [
+      "ACTION_RPG",
+      "OPEN_WORLD_SURVIVAL",
+      "TACTICAL_STRATEGY",
+      "CITY_BUILDER",
+      "TYCOON",
+      "FARMING_SIM",
+      "HORROR",
+      "PUZZLE_ADVENTURE",
+      "RACING",
+      "SOCIAL_SIM",
+      "TOWER_DEFENSE",
+      "SANDBOX"
+    ],
+    "motionAssetCategories": [
+      "ACTION",
+      "SKILL",
+      "INTERACTION"
+    ],
+    "targetPlatforms": [
+      "UNITY",
+      "ROBLOX",
+      "WEB"
+    ],
+    "directCrossPlatformNativeBinaryReuseForbidden": true,
+    "gameRulesUnchanged": true
+  }
 }
