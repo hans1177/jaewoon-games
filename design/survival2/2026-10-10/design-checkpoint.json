@@ -80,25 +80,53 @@
         "worldChange": "자연적 위험 증가로 인한 세계 상태 변화",
         "nextEvent": "새로운 전략 경로 탐색 및 게임 메타데이터 생성"
       }
+    },
+    "local_authoring_parts::0202d6772dc516e5a04a606752a808988d2a856c95c0d1cd28577998d6a6c3d8:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "생태학적 위험",
+          "kind": "MATERIAL",
+          "gameplayEffect": "자연적 위험 증가로 인해 플레이어의 선택에 영향"
+        },
+        {
+          "name": "게임 메타데이터",
+          "kind": "MATERIAL",
+          "gameplayEffect": "선택 가능성 확대 및 전략 경로 개발"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "생존 게임",
+          "gameplayEffect": "자원 수집, 위험 판단, 새로운 전략 탐색"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "협력 게임",
+          "gameplayEffect": "동료와의 협업, 자원 공유, 상호작용 강화"
+        }
+      ],
+      "cGenreInterlock": "플레이어의 자원 수집 행동 → 자연적 위험 증가 → 조건적 선택 갈등 발생 → 위험 농도 읽기 → 선택 가능성 확대 → 전략 경로 탐색",
+      "cWorldAndGameplayEffect": "자연적 위험은 플레이어의 선택을 제한하고, 선택 가능성은 전략 경로를 개척한다. 위험 농도는 선택의 복잡성을 유발하며, 이는 게임 메타데이터에 영향을 미친다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 3,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 822180,
-      "lastMs": 97944,
+      "totalMs": 932361,
+      "lastMs": 110181,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:42:42.768Z"
+      "updatedAt": "2026-10-10T08:44:32.952Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:29:00.323Z",
-  "updatedAt": "2026-10-10T08:42:42.769Z",
+  "updatedAt": "2026-10-10T08:44:32.952Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1827,7 +1855,7 @@
     "8d1400d7007c78eaea4288dad042a8899b877b73238f6fb8a77088cf407da541": true,
     "2127637d6f7a83d7f7dc5a02a0a73f5a78a5c9944401b43c34c1376249304cb9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:42:42.769Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:44:32.952Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
