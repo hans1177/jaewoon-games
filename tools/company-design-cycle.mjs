@@ -773,7 +773,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       system,
       `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nAUTHORED_RULE_IDS_AND_HANDOFFS=${requestedFields.includes('systemInterconnections')?clip(authoredStateHandoffContract(merged.signatureSystems),4000):'NOT_APPLICABLE'}\nSYSTEM_INTERCONNECTION_AUTHORING_RULE=Use actual signatureSystems IDs for fromId/toId and exact overlapping output-to-input state keys; never use coreFun as a rule ID or invent gameplay states.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       callSchema,
-      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'),grammarContext:requestedFields.includes('systemInterconnections')
+      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:requestedFields.includes('systemInterconnections')||feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'),grammarContext:requestedFields.includes('systemInterconnections')
          ?{...(partial.creativeGrammar||merged.creativeGrammar||{}),
            authoredRuleHandoffs:authoredStateHandoffContract(merged.signatureSystems),
            authoredRuleNames:Object.fromEntries((merged.signatureSystems||[]).map(row=>[row.id,row.name])),
@@ -1410,6 +1410,14 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
           const grammarRole=field==='signatureSystems'?(seedGameplaySketchVersion>=5?['MAIN','A','B','DELVE']:['MAIN','A','B','c','DELVE'])[index]:null;
           const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
           const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
+          if(selectedHandoff){
+            // 규칙 ID·상태 키는 모델이 새로 쓰지 않는다. 해당 연결이 만드는 실제
+            // 발동 조건과 상태 변화 설명만 작성하고 아래에서 원본 참조를 직접 묶는다.
+            const descriptive=['fromSystem','toSystem','trigger','stateChange'];
+            itemSchema={type:'object',required:descriptive,
+              properties:Object.fromEntries(descriptive.map(key=>[key,child.items.properties[key]])),
+              additionalProperties:false};
+          }
           if(grammarRole&&itemSchema.properties?.id){
             // 설계 규칙 ID는 저장/게임플레이 키가 아닌 설계 내부 참조다.
             // 서로 다른 MAIN/A/B/@ 역할에서 작은 모델이 같은 ID를 재사용하지 않도록 출력 단계부터 구분한다.
@@ -1479,8 +1487,8 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
                 value.fromId=selectedHandoff.fromId;
                 value.toId=selectedHandoff.toId;
                 value.stateKeys=selectedHandoff.stateKeys;
-                value.fromSystem=grammarContext.authoredRuleNames?.[selectedHandoff.fromId]||value.fromSystem;
-                value.toSystem=grammarContext.authoredRuleNames?.[selectedHandoff.toId]||value.toSystem;
+                // 이름·인과 서술은 설계자가 직접 설명하고 원본 참조 ID만 강제한다.
+                // 메인/C/@ 문법의 실제 상태 연결 여부는 기존 게이트가 독립 검증한다.
               }
               rows.push(value);break;
             }
