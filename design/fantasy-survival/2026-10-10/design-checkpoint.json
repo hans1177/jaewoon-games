@@ -28,25 +28,105 @@
         "stateChange": "플레이어 대응 전략 적용 및 적 상대성 변화"
       },
       "abCausality": "양방향 실제 상태 교환: 이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화; 반대로 적 상대성 변화 → 이동 시스템의 위치 변화"
+    },
+    "local_authoring_parts::3fc0f02cd3d31e471fbc312d315a94ed8f05e7c75310768ad5d6a1949ddfa81a:abEvolution,materialFusion,storyCausalChain": {
+      "abEvolution": {
+        "aChangesB": "이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화",
+        "bChangesA": "적 상대성 변화 → 이동 시스템의 위치 변화로 양방향 상태 교환",
+        "lateGameChange": "생존 위협에 따른 플레이어 선택 및 세계 상태 변화가 다음 사건으로 연결"
+      },
+      "materialFusion": {
+        "contrast": "자원 수집 + 적 행동 융합, 지역 탐험 + 생존 위협 융합",
+        "causalBridge": "플레이어 선택 → 상태변화 → 보상/위험/다음 선택의 순차적 인과 관계",
+        "removalConsequence": "보조 장르 제거 시 주제/소재 간 실제 인과 변화가 바뀌는 플레이 사례를 명시"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 선택 및 자원 확보 상태 변환",
+        "characterConflict": "생존 위협과 새로운 전략 개척의 갈등",
+        "playerChoice": "자원, 단서, 적을 선택하여 새로운 경로와 전략 구축",
+        "worldChange": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지게 한다",
+        "nextEvent": "새로운 전략과 경로가 다음 게임 상황으로 연결되는 조건과 피드백을 명시"
+      }
+    },
+    "local_authoring_parts::91bdffcdafd2a373da1d24a3afcd3ab3f268849f8cc1586c3bb256b3fd8ff399:mainIdentity,a,b,abCausality,abEvolution,materialFusion,storyCausalChain": {
+      "mainIdentity": "마력숲 생존기 - 플레이어가 마력 숲과 연결된 지역을 탐험하며, 현재 퀘스트와 생존 위험을 읽고 자원, 단서, 적을 선택하여 새로운 전략과 경로를 개척하는 게임 정체성입니다.",
+      "a": {
+        "system": "이동",
+        "material": "자원 수집",
+        "materialDomain": "지역 탐험",
+        "stateChange": "플레이어 위치 변경 및 자원 확보 상태 변환"
+      },
+      "b": {
+        "system": "전투",
+        "material": "적 행동",
+        "materialDomain": "생존 위협",
+        "stateChange": "플레이어 대응 전략 적용 및 적 상대성 변화"
+      },
+      "abCausality": "양방향 실제 상태 교환: 이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화; 반대로 적 상대성 변화 → 이동 시스템의 위치 변화",
+      "abEvolution": {
+        "aChangesB": "이동 시스템의 위치 변화 → 전투 시스템의 적 상대성 변화",
+        "bChangesA": "적 상대성 변화 → 이동 시스템의 위치 변화로 양방향 상태 교환",
+        "lateGameChange": "생존 위협에 따른 플레이어 선택 및 세계 상태 변화가 다음 사건으로 연결"
+      },
+      "materialFusion": {
+        "contrast": "자원 수집 + 적 행동 융합, 지역 탐험 + 생존 위협 융합",
+        "causalBridge": "플레이어 선택 → 상태변화 → 보상/위험/다음 선택의 순차적 인과 관계",
+        "removalConsequence": "보조 장르 제거 시 주제/소재 간 실제 인과 변화가 바뀌는 플레이 사례를 명시"
+      },
+      "storyCausalChain": {
+        "cause": "플레이어 선택 및 자원 확보 상태 변환",
+        "characterConflict": "생존 위협과 새로운 전략 개척의 갈등",
+        "playerChoice": "자원, 단서, 적을 선택하여 새로운 경로와 전략 구축",
+        "worldChange": "플레이어 선택이 세계 상태 변화를 유도하고 다음 사건으로 이어지게 한다",
+        "nextEvent": "새로운 전략과 경로가 다음 게임 상황으로 연결되는 조건과 피드백을 명시"
+      }
+    },
+    "local_authoring_parts::49db18690aa92ae37a74f5bdae9462c40abbc74647206aaf14b69f3b0dcaa8be:cThemes,cGenres,cGenreInterlock,cWorldAndGameplayEffect": {
+      "cThemes": [
+        {
+          "name": "생존",
+          "kind": "GENRE",
+          "gameplayEffect": "플레이어가 자원, 단서, 적을 선택하여 전략과 경로를 개척하는 과정"
+        },
+        {
+          "name": "마력 숲",
+          "kind": "MATERIAL",
+          "gameplayEffect": "플레이어가 이동, 전투, 캐릭터 움직임 등 시스템 간 상태 변환을 통해 세계를 탐험하는 공간"
+        }
+      ],
+      "cGenres": [
+        {
+          "role": "PRIMARY",
+          "name": "ACTION_SURVIVAL_ROGUELITE",
+          "gameplayEffect": "플레이어가 생존 위협에 대응하며 새로운 전략과 경로를 구축하는 게임 형식"
+        },
+        {
+          "role": "SECONDARY",
+          "name": "RPG",
+          "gameplayEffect": "자원 수집, 단서 추적, 적 상대성 변화와 같은 플레이어 선택이 주제/소재에 인과적인 영향을 미치는 요소"
+        }
+      ],
+      "cGenreInterlock": "생존 위협 → 새로운 전략 구축 → 세계 상태 변화 → 다음 사건 연결",
+      "cWorldAndGameplayEffect": "플레이어 선택은 자원 확보, 적 상대성 변화, 그리고 다음 선택으로 이어지는 실제 상태 변화를 유도한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 2,
+      "calls": 6,
+      "successes": 4,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 965191,
-      "lastMs": 115732,
+      "totalMs": 1235865,
+      "lastMs": 134425,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:16:16.068Z"
+      "updatedAt": "2026-10-10T07:20:46.746Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T07:00:10.852Z",
-  "updatedAt": "2026-10-10T07:16:16.068Z",
+  "updatedAt": "2026-10-10T07:20:46.746Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1766,7 +1846,7 @@
     "b4161ac3a3a990f24ca8f2826f0161889f8341671d0d20cdea429189d7adf5f0": true,
     "ae49bb6b88f644dc2436595f30cccaab2fe0be2a2698573c66a3218ab8358514": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:16:16.068Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:20:46.746Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
