@@ -236,10 +236,14 @@ def image_mesh_asset():
     engine_home = Path(os.environ.get('VIBE_TRIPOSR_HOME', '')).expanduser()
     model_home = Path(os.environ.get('VIBE_TRIPOSR_MODEL_DIR', '')).expanduser()
     engine_file = engine_home / 'run.py'
+    engine_license = engine_home / 'LICENSE'
+    engine_source = engine_home / 'tsr' / 'system.py'
     model_config = model_home / 'config.yaml'
     model_weights = model_home / 'model.ckpt'
-    if not os.environ.get('VIBE_TRIPOSR_HOME') or not engine_file.is_file():
+    if not os.environ.get('VIBE_TRIPOSR_HOME') or not engine_file.is_file() or not engine_source.is_file() or not engine_license.is_file():
         raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED')
+    if 'MIT License' not in engine_license.read_text(encoding='utf-8'):
+        raise RuntimeError('IMAGE_TO_MESH_ENGINE_LICENSE_UNVERIFIED')
     if not os.environ.get('VIBE_TRIPOSR_MODEL_DIR') or not model_config.is_file() or not model_weights.is_file():
         raise RuntimeError('IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED')
     interpreter = os.environ.get('VIBE_TRIPOSR_PYTHON', 'python3')
@@ -268,12 +272,16 @@ def image_mesh_asset():
                 obj.data.materials.append(MID)
             ASSET_OBJECTS.append(obj)
 
+    # 대용량 가중치를 Blender 메모리로 올리지 않고 파일 스트림에서 해시를 계산한다.
+    with model_weights.open('rb') as weights_file:
+        weights_sha = hashlib.file_digest(weights_file, 'sha256').hexdigest()
     # 원본 이미지와 가중치는 읽기 전용. 해시와 라이선스만 제작 근거로 보존한다.
     IMAGE_PROVENANCE = {
         'engine': 'VAST-AI-Research/TripoSR',
         'engineLicense': 'MIT',
+        'engineSourceSha256': hashlib.sha256(engine_file.read_bytes()).hexdigest(),
         'model': 'stabilityai/TripoSR',
-        'modelWeightSha256': hashlib.sha256(model_weights.read_bytes()).hexdigest(),
+        'modelWeightSha256': weights_sha,
         'inputPath': ARGS.source_image,
         'inputSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
         'sourceLicense': license_name,
