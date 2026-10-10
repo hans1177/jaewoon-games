@@ -1241,6 +1241,7 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 
 // 내부 디자이너 요청·실행 시간 로그
 // 파일명: tools/company-design-cycle.mjs / 메인: 바이브 자체 인과 설계 연산
+let nativeDesignVariation=0;
 function computeVibeNativeDesign(){
   const original=seed.originalDesignContext?.content||{};
   const preserved=original.creativeGrammar&&original.creativeGrammar.a?.material&&original.creativeGrammar.b?.material;
@@ -1248,7 +1249,11 @@ function computeVibeNativeDesign(){
   const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
   const computed=computeVibeSeedProposal({
     requestId:gameId,category:seed.GAME_CATEGORY,platform:seed.INITIAL_TARGET_PLATFORM,
-    materials:materials.length?materials:[{causalDNA:['KARMA_RETURN','TRICKSTER_REVERSAL','TESTIMONY_CONSENSUS_REALITY','EXILE_RETURN']}]
+    gameName:clean(seed.gameName||game.name),
+    ownerBrief:clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT),
+    gameDescription:clean(game.description),
+    coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[],
+    materials,variant:nativeDesignVariation
   });
   const sketch=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'
     &&!pendingSeedGrammarNotAuthored?seedGameplaySketch:computed.gameplaySketch;
@@ -1257,8 +1262,8 @@ function computeVibeNativeDesign(){
   const a=fusion.majorAxes.find(row=>row.key==='A'),b=fusion.majorAxes.find(row=>row.key==='B');
   const c=fusion.themeFusion,main=fusion.main,delve=grammar.delveLayer.elements;
   const shorten=(value,max=650)=>clean(value).slice(0,max);
-  const name=clean(seed.DISTINCT_IDENTITY||original.identity||game.name)||main.name;
-  const mainName=clean(main.name)||game.name;
+  const name=clean(seed.gameName||game.name||original.identity||seed.DISTINCT_IDENTITY)||main.name;
+  const mainName=clean(main.name||name);
   const mode=allGamesMultiplayerRequired
     ?(['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'COOP')
     :(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'SINGLE');
@@ -1677,13 +1682,32 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   const fields=repairFields(preGate);
   const schema=designSliceSchema(fields);
   const packet=repairPacket(preGate);
-  const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callDesignerModel(
-    '너는 최초 설계를 작성한 동일 Game Designer AI다. 실패한 deterministic 설계축만 실제 설계 변경으로 수리한다. 통과를 가장하거나 실패코드를 삭제하지 않는다.',
-    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다. 각 필드는 REPAIR_PACKET의 requiredAction을 실제 구현 가능한 구체적 설계로 만족시켜야 한다. 아래 STRUCTURE_CONTRACT는 scorer가 직접 검사하는 최소 구조이며 축소하거나 형식적으로 채우면 안 된다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(fields))}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,9000)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
-    schema,
-    {predict:Math.min(1500,550+fields.length*140),temperature:0.1,numCtx:6144,timeoutMs:120000,maxAttempts:2}
-  ));
-  designDraft=enforceOwnerPreservationDesign(mergeTargetedPatch(designDraft,patch,`PRE_GATE_REPAIR_${repairAttempt}`));
+  // 동일한 모델 캐시를 돌려받는 척하지 않는다. 실패 필드만 대상으로 바이브 연산의
+  // 실제 인과 소재 후보를 재계산하고 독립 점수가 개선될 때에만 설계에 반영한다.
+  const repaired=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,async()=>{
+    const baseline=preGate;
+    const previousFailures=new Set(baseline.hardFailures||[]);
+    let best=designDraft,bestScore=baseline,bestVariant=0;
+    try{
+      for(let candidateIndex=1;candidateIndex<=8;candidateIndex++){
+        nativeDesignVariation=(repairAttempt-1)*8+candidateIndex;
+        const candidate=computeVibeNativeDesign();
+        const patch=Object.fromEntries(fields.map(field=>[field,candidate[field]]));
+        assertSchemaValue(patch,schema);
+        const next=enforceOwnerPreservationDesign(mergeTargetedPatch(designDraft,patch,`VIBE_NATIVE_REPAIR_${repairAttempt}`));
+        const scored=deterministicPreGate(next);
+        const safe=(scored.hardFailures||[]).every(code=>previousFailures.has(code));
+        const improved=(scored.hardFailures||[]).length<(bestScore.hardFailures||[]).length
+          ||((scored.hardFailures||[]).length===(bestScore.hardFailures||[]).length
+            &&Number(scored.totalScore||0)>Number(bestScore.totalScore||0));
+        if(safe&&improved){best=next;bestScore=scored;bestVariant=nativeDesignVariation;}
+      }
+    }finally{nativeDesignVariation=0;}
+    console.log(`DESIGN_NATIVE_REPAIR=${bestVariant?'IMPROVED':'NO_VERIFIED_IMPROVEMENT'}|attempt=${repairAttempt}|variant=${bestVariant}|score=${bestScore.totalScore}|hard=${(bestScore.hardFailures||[]).length}|fields=${fields.join(',')}|model_calls=0`);
+    if(!bestVariant)console.log(`DESIGN_NATIVE_REPAIR_UNRESOLVED=${packet.reasons.map(row=>row.code).join(',')||packet.hardFailures.join(',')}`);
+    return best;
+  });
+  designDraft=repaired;
   designCheckpoint.phases.designer_draft=designDraft;
   preGate=scoreCurrentDesign(`deterministic_pre_gate_after_repair_${repairAttempt}`,designDraft);
   preGateHistory.push(preGate);
