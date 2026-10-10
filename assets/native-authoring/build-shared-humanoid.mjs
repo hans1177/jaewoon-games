@@ -163,7 +163,917 @@ function buildSharedHumanoid(kind='traveler'){
    lancer:{clip:'LANCER_SPEAR_THRUST',duration:.83,pre:.33,contact:.65,bones:{Chest:[-23,35,14,-13],Shoulder_R:[-60,-30,0,0],Shoulder_L:[-59,-30,0,0],Elbow_L:[-38,16,0,0],Elbow_R:[-39,18,0,0],Hips:[-11,15,-14,0]}},
    blacksmith:{clip:'BLACKSMITH_FORGE_HAMMER',duration:1.26,pre:.44,contact:.77,bones:{Chest:[-26,36,14,-11],Shoulder_R:[-108,98,8,0],Shoulder_L:[-80,79,-8,0],Elbow_R:[-41,28,0,0],Elbow_L:[-30,22,0,0],Hips:[15,-24,-9,0]}}
   };
-  if(roleActions[kind])defs.push([roleActions[kind].clip,roleActions[kind].duration,25]);
+  // 공용 3D 직업 마스터별 실제 관절 액션: 전투·방어·생활·시전의 서로 다른 포즈와 타이밍.
+  const careerMoves={
+    "samurai": [
+      {
+        "clip": "SAMURAI_PARRY_RIPOSTE",
+        "duration": 0.79,
+        "pre": 0.27,
+        "contact": 0.6,
+        "bones": {
+          "Chest": [
+            -18,
+            29,
+            24,
+            -31
+          ],
+          "Shoulder_R": [
+            -45,
+            -112,
+            25,
+            -20
+          ],
+          "Elbow_R": [
+            -72,
+            18,
+            0,
+            0
+          ],
+          "Shoulder_L": [
+            -64,
+            -4,
+            0,
+            12
+          ],
+          "Hips": [
+            -11,
+            20,
+            -20,
+            27
+          ],
+          "UpperLeg_R": [
+            21,
+            -12,
+            0,
+            0
+          ],
+          "Head": [
+            -4,
+            13,
+            -8,
+            6
+          ]
+        }
+      },
+      {
+        "clip": "SAMURAI_CRESCENT_CUT",
+        "duration": 1.04,
+        "pre": 0.34,
+        "contact": 0.73,
+        "bones": {
+          "Chest": [
+            -29,
+            48,
+            -38,
+            47
+          ],
+          "Shoulder_R": [
+            -122,
+            68,
+            -22,
+            19
+          ],
+          "Elbow_R": [
+            -71,
+            40,
+            0,
+            0
+          ],
+          "Shoulder_L": [
+            -12,
+            -56,
+            18,
+            -27
+          ],
+          "Hips": [
+            -23,
+            24,
+            27,
+            -39
+          ],
+          "UpperLeg_L": [
+            -19,
+            31,
+            0,
+            0
+          ],
+          "Head": [
+            13,
+            -16,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "SAMURAI_SHEATH_READY",
+        "duration": 0.89,
+        "pre": 0.22,
+        "contact": 0.62,
+        "bones": {
+          "Chest": [
+            -9,
+            11,
+            -12,
+            8
+          ],
+          "Shoulder_R": [
+            -61,
+            18,
+            12,
+            -11
+          ],
+          "Elbow_R": [
+            -91,
+            66,
+            0,
+            0
+          ],
+          "Shoulder_L": [
+            -88,
+            69,
+            9,
+            -6
+          ],
+          "Hips": [
+            6,
+            -8,
+            8,
+            -9
+          ],
+          "Head": [
+            -8,
+            4,
+            -7,
+            9
+          ]
+        }
+      }
+    ],
+    "archer": [
+      {
+        "clip": "ARCHER_KNEEL_FOCUS",
+        "duration": 1.21,
+        "pre": 0.34,
+        "contact": 0.65,
+        "bones": {
+          "Chest": [
+            -8,
+            12,
+            -9,
+            10
+          ],
+          "Shoulder_L": [
+            -104,
+            57,
+            -21,
+            10
+          ],
+          "Shoulder_R": [
+            -95,
+            64,
+            26,
+            -13
+          ],
+          "Elbow_R": [
+            -124,
+            88,
+            0,
+            0
+          ],
+          "Hips": [
+            8,
+            15,
+            3,
+            -11
+          ],
+          "UpperLeg_L": [
+            68,
+            -27,
+            0,
+            0
+          ],
+          "Knee_L": [
+            58,
+            -20,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "ARCHER_MULTI_SHOT",
+        "duration": 1.05,
+        "pre": 0.24,
+        "contact": 0.7,
+        "bones": {
+          "Chest": [
+            -13,
+            28,
+            18,
+            -23
+          ],
+          "Shoulder_L": [
+            -88,
+            39,
+            -21,
+            7
+          ],
+          "Shoulder_R": [
+            -114,
+            85,
+            10,
+            -12
+          ],
+          "Elbow_R": [
+            -104,
+            74,
+            0,
+            0
+          ],
+          "Hips": [
+            -12,
+            10,
+            -9,
+            14
+          ],
+          "Head": [
+            8,
+            -11,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "ARCHER_EVADE_SHOT",
+        "duration": 0.83,
+        "pre": 0.21,
+        "contact": 0.56,
+        "bones": {
+          "Chest": [
+            13,
+            -19,
+            31,
+            -26
+          ],
+          "Shoulder_L": [
+            -55,
+            -10,
+            -12,
+            8
+          ],
+          "Shoulder_R": [
+            -76,
+            59,
+            18,
+            -15
+          ],
+          "Elbow_R": [
+            -50,
+            23,
+            0,
+            0
+          ],
+          "Hips": [
+            -18,
+            22,
+            -27,
+            33
+          ],
+          "UpperLeg_R": [
+            48,
+            -24,
+            0,
+            0
+          ],
+          "Head": [
+            -11,
+            18,
+            -6,
+            11
+          ]
+        }
+      }
+    ],
+    "mage": [
+      {
+        "clip": "MAGE_BARRIER_WARD",
+        "duration": 1.16,
+        "pre": 0.34,
+        "contact": 0.67,
+        "bones": {
+          "Chest": [
+            -24,
+            27,
+            -4,
+            7
+          ],
+          "Shoulder_L": [
+            -71,
+            92,
+            -39,
+            12
+          ],
+          "Shoulder_R": [
+            -76,
+            93,
+            38,
+            -15
+          ],
+          "Elbow_L": [
+            -93,
+            52,
+            0,
+            0
+          ],
+          "Elbow_R": [
+            -91,
+            55,
+            0,
+            0
+          ],
+          "Hips": [
+            13,
+            -7,
+            0,
+            0
+          ],
+          "Head": [
+            -8,
+            10,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "MAGE_CHAIN_BOLT",
+        "duration": 0.92,
+        "pre": 0.23,
+        "contact": 0.57,
+        "bones": {
+          "Chest": [
+            -9,
+            21,
+            -26,
+            29
+          ],
+          "Shoulder_L": [
+            -99,
+            30,
+            34,
+            -12
+          ],
+          "Shoulder_R": [
+            -57,
+            118,
+            -26,
+            31
+          ],
+          "Elbow_L": [
+            -67,
+            41,
+            0,
+            0
+          ],
+          "Elbow_R": [
+            -21,
+            70,
+            0,
+            0
+          ],
+          "Hips": [
+            -14,
+            17,
+            8,
+            -17
+          ],
+          "Head": [
+            -12,
+            9,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "MAGE_CHANNEL_RITUAL",
+        "duration": 1.52,
+        "pre": 0.36,
+        "contact": 0.76,
+        "bones": {
+          "Chest": [
+            -35,
+            18,
+            0,
+            0
+          ],
+          "Shoulder_L": [
+            -145,
+            67,
+            -24,
+            -8
+          ],
+          "Shoulder_R": [
+            -144,
+            72,
+            28,
+            8
+          ],
+          "Elbow_L": [
+            -60,
+            28,
+            0,
+            0
+          ],
+          "Elbow_R": [
+            -57,
+            35,
+            0,
+            0
+          ],
+          "Hips": [
+            9,
+            -9,
+            12,
+            -8
+          ],
+          "Head": [
+            21,
+            -11,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "rogue": [
+      {
+        "clip": "ROGUE_DUAL_BLADE_CHAIN",
+        "duration": 0.72,
+        "pre": 0.18,
+        "contact": 0.48,
+        "bones": {
+          "Chest": [
+            -26,
+            35,
+            -38,
+            43
+          ],
+          "Shoulder_R": [
+            -86,
+            66,
+            33,
+            -19
+          ],
+          "Shoulder_L": [
+            -94,
+            82,
+            -30,
+            17
+          ],
+          "Elbow_R": [
+            -64,
+            21,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -59,
+            34,
+            0,
+            0
+          ],
+          "Hips": [
+            -31,
+            26,
+            30,
+            -27
+          ],
+          "UpperLeg_L": [
+            29,
+            -13,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "ROGUE_SMOKE_THROW",
+        "duration": 0.83,
+        "pre": 0.32,
+        "contact": 0.61,
+        "bones": {
+          "Chest": [
+            -40,
+            24,
+            15,
+            -8
+          ],
+          "Shoulder_L": [
+            -15,
+            -48,
+            -21,
+            10
+          ],
+          "Shoulder_R": [
+            -81,
+            142,
+            32,
+            -16
+          ],
+          "Elbow_R": [
+            -111,
+            73,
+            0,
+            0
+          ],
+          "Hips": [
+            -24,
+            29,
+            -14,
+            21
+          ],
+          "UpperLeg_R": [
+            46,
+            -21,
+            0,
+            0
+          ],
+          "Head": [
+            16,
+            -12,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "ROGUE_BACK_DODGE",
+        "duration": 0.69,
+        "pre": 0.16,
+        "contact": 0.54,
+        "bones": {
+          "Chest": [
+            31,
+            -27,
+            27,
+            -36
+          ],
+          "Shoulder_R": [
+            -48,
+            37,
+            18,
+            -9
+          ],
+          "Shoulder_L": [
+            -52,
+            32,
+            -16,
+            11
+          ],
+          "Hips": [
+            -41,
+            18,
+            -27,
+            30
+          ],
+          "UpperLeg_R": [
+            53,
+            -12,
+            0,
+            0
+          ],
+          "UpperLeg_L": [
+            -48,
+            14,
+            0,
+            0
+          ],
+          "Head": [
+            13,
+            -7,
+            5,
+            -8
+          ]
+        }
+      }
+    ],
+    "lancer": [
+      {
+        "clip": "LANCER_SPEAR_SWEEP",
+        "duration": 1.02,
+        "pre": 0.37,
+        "contact": 0.68,
+        "bones": {
+          "Chest": [
+            -28,
+            35,
+            -49,
+            47
+          ],
+          "Shoulder_R": [
+            -54,
+            31,
+            -28,
+            23
+          ],
+          "Shoulder_L": [
+            -74,
+            46,
+            26,
+            -22
+          ],
+          "Elbow_R": [
+            -65,
+            36,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -59,
+            38,
+            0,
+            0
+          ],
+          "Hips": [
+            -11,
+            21,
+            28,
+            -24
+          ],
+          "UpperLeg_L": [
+            27,
+            -20,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "LANCER_SHAFT_PARRY",
+        "duration": 0.76,
+        "pre": 0.22,
+        "contact": 0.54,
+        "bones": {
+          "Chest": [
+            -14,
+            21,
+            24,
+            -17
+          ],
+          "Shoulder_R": [
+            -91,
+            36,
+            29,
+            -24
+          ],
+          "Shoulder_L": [
+            -89,
+            30,
+            -28,
+            23
+          ],
+          "Elbow_R": [
+            -92,
+            45,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -97,
+            50,
+            0,
+            0
+          ],
+          "Hips": [
+            7,
+            15,
+            -23,
+            16
+          ],
+          "Head": [
+            9,
+            -8,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "LANCER_JUMP_THRUST",
+        "duration": 0.94,
+        "pre": 0.29,
+        "contact": 0.65,
+        "bones": {
+          "Chest": [
+            -33,
+            59,
+            16,
+            -25
+          ],
+          "Shoulder_R": [
+            -80,
+            -9,
+            8,
+            0
+          ],
+          "Shoulder_L": [
+            -87,
+            -11,
+            -8,
+            0
+          ],
+          "Elbow_R": [
+            -54,
+            23,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -51,
+            27,
+            0,
+            0
+          ],
+          "Hips": [
+            -15,
+            24,
+            11,
+            -19
+          ],
+          "UpperLeg_R": [
+            38,
+            -26,
+            0,
+            0
+          ],
+          "Knee_R": [
+            41,
+            -19,
+            0,
+            0
+          ]
+        }
+      }
+    ],
+    "blacksmith": [
+      {
+        "clip": "BLACKSMITH_FORGE_REPAIR",
+        "duration": 1.42,
+        "pre": 0.35,
+        "contact": 0.72,
+        "bones": {
+          "Chest": [
+            -28,
+            45,
+            12,
+            -17
+          ],
+          "Shoulder_R": [
+            -85,
+            79,
+            3,
+            8
+          ],
+          "Shoulder_L": [
+            -46,
+            35,
+            -14,
+            5
+          ],
+          "Elbow_R": [
+            -89,
+            67,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -35,
+            16,
+            0,
+            0
+          ],
+          "Hips": [
+            18,
+            -25,
+            -8,
+            11
+          ],
+          "Head": [
+            19,
+            -10,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "BLACKSMITH_BUILD_RAISE",
+        "duration": 1.17,
+        "pre": 0.28,
+        "contact": 0.63,
+        "bones": {
+          "Chest": [
+            -16,
+            29,
+            -25,
+            32
+          ],
+          "Shoulder_R": [
+            -114,
+            96,
+            38,
+            -34
+          ],
+          "Shoulder_L": [
+            -116,
+            99,
+            -31,
+            30
+          ],
+          "Elbow_R": [
+            -87,
+            36,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -89,
+            38,
+            0,
+            0
+          ],
+          "Hips": [
+            -15,
+            16,
+            12,
+            -9
+          ],
+          "UpperLeg_L": [
+            34,
+            -15,
+            0,
+            0
+          ]
+        }
+      },
+      {
+        "clip": "BLACKSMITH_HAMMER_GUARD",
+        "duration": 0.84,
+        "pre": 0.19,
+        "contact": 0.55,
+        "bones": {
+          "Chest": [
+            -10,
+            16,
+            24,
+            -14
+          ],
+          "Shoulder_R": [
+            -67,
+            20,
+            29,
+            -19
+          ],
+          "Shoulder_L": [
+            -83,
+            19,
+            -33,
+            24
+          ],
+          "Elbow_R": [
+            -105,
+            70,
+            0,
+            0
+          ],
+          "Elbow_L": [
+            -68,
+            37,
+            0,
+            0
+          ],
+          "Hips": [
+            -7,
+            9,
+            -18,
+            11
+          ],
+          "Head": [
+            12,
+            -5,
+            0,
+            0
+          ]
+        }
+      }
+    ]
+  };
+  const availableCareerMoves=[...(roleActions[kind]?[roleActions[kind]]:[]),...(careerMoves[kind]||[])];
+  for(const move of availableCareerMoves)defs.push([move.clip,move.duration,25]);
  const pulse=(u,at=.42,w=.3)=>Math.exp(-Math.pow((u-at)/w,2)*2);
  function pose(name,u){
   const s=Math.sin(2*Math.PI*u),c=Math.cos(2*Math.PI*u),E={},T=[0,1.03,0];
@@ -187,7 +1097,7 @@ function buildSharedHumanoid(kind='traveler'){
   if(name==='CAST_SPELL'){const q=pulse(u,.55,.51);E.Shoulder_L=[-110*q,0,-17*q];E.Shoulder_R=[-120*q,0,17*q];E.Elbow_L=[-24*q,0,0];E.Elbow_R=[-24*q,0,0];E.Chest=[-15*q,4*q,0];E.Head=[-12*q,0,0];T[1]+=.03*q;}
   if(name==='DEATH_FRONT'||name==='GET_UP'){const q=name==='DEATH_FRONT'?u:u<.2?1:1-(u-.2)/.8;E.Chest=[55*q,0,0];E.Head=[-37*q,0,0];E.UpperLeg_L=[-54*q,0,10*q];E.UpperLeg_R=[-50*q,0,-8*q];E.Knee_L=[71*q,0,0];E.Knee_R=[69*q,0,0];E.Shoulder_L=[31*q,0,-22*q];E.Shoulder_R=[40*q,0,25*q];T[1]-=.45*q;}
   // 스킬 준비→관절 접촉 포즈→회복의 키프레임. 이동·타격 시점은 게임 소유.
-   const roleAction=roleActions[kind];
+   const roleAction=availableCareerMoves.find(move=>move.clip===name);
    if(roleAction&&name===roleAction.clip){
      const wind=pulse(u,roleAction.pre,.20),impact=pulse(u,roleAction.contact,.15);
      for(const [bone,angles] of Object.entries(roleAction.bones))
