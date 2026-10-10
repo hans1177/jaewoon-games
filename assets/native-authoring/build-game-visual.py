@@ -836,7 +836,7 @@ evidence={
     'triangleCount':sum(sum(len(face.vertices)-2 for face in obj.data.polygons) for obj in ASSET_OBJECTS),
     'uvLayersVerified':all(bool(obj.data.uv_layers) for obj in ASSET_OBJECTS),
     'materialApplicationFile':'application.json',
-    'family':('ENVIRONMENT' if ARGS.profile in ('background','environment') else 'WEAPON' if ARGS.profile in ('item','weapon') else 'PROP'),
+    'family':('CHARACTER' if MODULE_PROVENANCE and MODULE_PROVENANCE['kind']=='human' else 'ENVIRONMENT' if ARGS.profile in ('background','environment') else 'WEAPON' if ARGS.profile in ('item','weapon') else 'PROP'),
     'generator':'assets/native-authoring/build-game-visual.py',
     'sourceHash':source_hash,
     'artifactHash':artifact_hash,
