@@ -640,3 +640,58 @@ test('genre game window binds optional trading skills journal codex events and c
     assert.equal(ordinaryIds.has(id),false,id);
   }
 });
+
+
+test('game tool synchronization begins in seed design and flows through exact library requirements',()=>{
+  const baseline={content:{
+    identity:'중세 RPG 스킬트리 저널 파티 도감 월드 이벤트',
+    coreLoop:['NPC 퀘스트 탐색','동료 파티','장비 제작과 스킬트리','도감 기록'],
+    signatureSystems:[{name:'모험 저널',purpose:'퀘스트 사건 기록'},{name:'월드 이벤트',purpose:'NPC 세력 위험 변화'}]
+  }};
+  const flow=buildGameFlowArchitecture({gameId:'seed:designer-ux',genre:'STORY_COMPLETE_RPG',baseline});
+  const sync=flow.designToolSync;
+  assert.equal(sync?.version,1);
+  assert.equal(sync?.phase,'DESIGN');
+  assert.equal(sync?.source,'CANONICAL_GAME_FLOW_SYSTEM_BLUEPRINT');
+  assert.equal(sync?.runtimeAssetBindingVerified,false);
+  assert.equal(sync?.noShadowPipeline,true);
+  assert.equal(sync?.noFeatureAutoEnableFromUiCatalog,true);
+  assert.equal(sync?.menuVisibility,'AUTHORITATIVE_GAME_CAPABILITIES_ONLY');
+  assert.ok(sync.requiredSystems.includes('SKILL_TREE'));
+  assert.ok(sync.requiredSystems.includes('JOURNAL_CHRONICLE'));
+  assert.ok(sync.requiredUiRoles.includes('GAME_WINDOW_LAYOUT'));
+  assert.ok(sync.requiredUiRoles.includes('STATUS_OVERVIEW'));
+  assert.ok(sync.requiredUiRoles.includes('SKILL_TREE_SCREEN'));
+  assert.ok(sync.requiredUiRoles.includes('JOURNAL_TIMELINE'));
+  assert.ok(sync.requiredUiRoles.includes('QUEST_LOG'));
+  assert.ok(sync.requiredUiRoles.includes('PARTY_ROLE_OVERVIEW'));
+  assert.ok(sync.requiredNativeLibraryHints.includes('assets/inventory-equipment.js'));
+  assert.ok(sync.requiredNativeLibraryHints.includes('assets/quest-dialogue.js'));
+  for(const role of sync.requiredUiRoles){
+    assert.ok(flow.assetFlow.requirements.some(row=>row.family==='UI'&&row.subfamily===role&&row.required===true),role);
+  }
+  assert.ok(sync.assetRequirements.every(row=>row.assetIdPinned===false&&row.gameplayAuthority===false));
+});
+
+test('authored old game flow retains phase and systems but obtains missing design tool sync on re-evaluation',()=>{
+  const authoring={
+    version:3,flowDNA:['HUB_AND_SPOKE','EXPLORATION_REGION'],phaseArc:[
+      {phase:'EARLY',dominantFlow:'HUB_AND_SPOKE'},{phase:'MID',dominantFlow:'EXPLORATION_REGION'},{phase:'LATE',dominantFlow:'HUB_AND_SPOKE'}
+    ],
+    systemBlueprint:{
+      requiredSystems:[{id:'NPC_INTERACTION',reusableLibraryHints:['assets/quest-dialogue.js'],purpose:'existing vendor NPC'}],
+      expansionSystems:[],phasePlan:{EARLY:['NPC_INTERACTION']},
+      interconnectionChains:['NPC_INTERACTION->EXPLORATION_REGION']
+    },
+    assetFlow:{requirements:[{family:'UI',subfamily:'NPC_INTERACTION_MENU',required:true,reason:'APPROVED_BY_DESIGN'}]}
+  };
+  const flow=buildGameFlowArchitecture({gameId:'existing-design',genre:'STORY_COMPLETE_RPG',
+    baseline:{GAME_FLOW_ARCHITECTURE:authoring,content:{identity:'모험 퀘스트 저널'}}});
+  assert.deepEqual(flow.flowDNA,authoring.flowDNA);
+  assert.equal(flow.systemBlueprint.requiredSystems[0].id,'NPC_INTERACTION');
+  assert.ok(flow.systemBlueprint.requiredSystems.some(row=>row.id==='JOURNAL_CHRONICLE'));
+  assert.ok(flow.designToolSync.requiredUiRoles.includes('GAME_WINDOW_LAYOUT'));
+  assert.ok(flow.assetFlow.requirements.some(row=>row.subfamily==='NPC_INTERACTION_MENU'&&row.reason==='APPROVED_BY_DESIGN'));
+  assert.ok(flow.assetFlow.requirements.some(row=>row.subfamily==='JOURNAL_TIMELINE'));
+  assert.equal(flow.designToolSync.nativeRuntimeVerified,undefined);
+});
