@@ -1,15 +1,16 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "unity-web-horror-escape-room-owner-flow-20261008",
+  "requestId": "owner-deploy-unity-web-horror-escape-room-20261010",
   "gameId": "horror-escape-room",
   "projectPath": "unity-games/horror-escape-room",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
-  "sourceCommit": "c6199dae1308e2234512730c8d79901481bfb4b3",
+  "sourceCommit": "",
   "outputRoot": "web-games/horror-escape-room",
-  "purpose": "RUN_OWNER_REQUESTED_WEB_DEVELOPMENT_FLOOR_AND_PUBLISH_ONLY_AFTER_EXISTING_READINESS_GATES",
+  "purpose": "COMPILE_EXISTING_NATIVE_UNITY_3D_SOURCE_USING_CANONICAL_WEBGL_BUILD; PROVE_ACTUAL_BROWSER_TOUCH_GAMEPLAY_SAVE_AND_INDEPENDENT_QA; PUBLISH_ONLY_REAL_VERIFIED_BUNDLE_THROUGH_EXISTING_REVIEWED_PR_CLOUDFLARE_FLOW; KEEP_REPAIR_REQUIRED_ON_FAILURE",
+  "requiredDimension": "3D",
   "fullGameplayPassAuthority": false,
-  "requestEvidenceOnly": true,
   "releaseAuthority": false,
-  "upperPlatformReadinessRequired": true
+  "webPrototypeFallbackForbidden": true,
+  "homepageCardVisibleRegardlessOfBuildResult": true
 }
