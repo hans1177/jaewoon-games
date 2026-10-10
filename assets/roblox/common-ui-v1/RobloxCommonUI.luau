@@ -4478,17 +4478,54 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
   screen.Name="GameScreenMount";screen.BackgroundTransparency=1;screen.ClipsDescendants=true;screen.Parent=body
   local title=commonText(screen,"EmptyScreen","게임에서 연결한 화면이 없어.",
     UDim2.fromOffset(12,12),UDim2.new(1,-24,0,52),theme.MutedText,14,false)
+
   local menuButtons,rows,stack={}, {}, {}
   local selectedId=""
+  local presets={
+    RPG={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","SKILL_TREE","QUEST_LOG","PARTY","MAP_FULL_SCREEN","CODEX_SCREEN","JOURNAL_TIMELINE","TRADE_ESCROW_REVIEW","SETTINGS_PANEL"},
+    SURVIVAL={"STATUS_OVERVIEW","INVENTORY","EQUIPMENT","CRAFTING_FULL_SCREEN","MAP_FULL_SCREEN","QUEST_LOG","JOURNAL_TIMELINE","SETTINGS_PANEL"},
+    STRATEGY={"STATUS_OVERVIEW","MAP_FULL_SCREEN","PARTY","QUEST_LOG","WORLD_EVENT_TIMELINE","SETTINGS_PANEL"},
+    DEFENSE={"STATUS_OVERVIEW","EQUIPMENT","QUEST_LOG","WORLD_EVENT_TIMELINE","CODEX_SCREEN","SETTINGS_PANEL"},
+    TYCOON={"STATUS_OVERVIEW","SHOP_FULL_SCREEN","MAP_FULL_SCREEN","WORLD_EVENT_TIMELINE","SETTINGS_PANEL"},
+    HORROR={"STATUS_OVERVIEW","INVENTORY","MAP_FULL_SCREEN","QUEST_LOG","JOURNAL_TIMELINE","SETTINGS_PANEL"},
+    CASUAL={"STATUS_OVERVIEW","QUEST_LOG","CODEX_SCREEN","SETTINGS_PANEL"}
+  }
+  local titles={
+    STATUS_OVERVIEW="상태",INVENTORY="인벤토리",EQUIPMENT="장비",SKILL_TREE="스킬트리",
+    QUEST_LOG="퀘스트",PARTY="파티",MAP_FULL_SCREEN="지도",CODEX_SCREEN="도감",JOURNAL_TIMELINE="저널",
+    TRADE_ESCROW_REVIEW="거래",SETTINGS_PANEL="설정",CRAFTING_FULL_SCREEN="제작",SHOP_FULL_SCREEN="상점",
+    WORLD_EVENT_TIMELINE="이벤트"
+  }
+  local function genreMenus(state)
+    if type(state.menus)=="table"then return state.menus end
+    local allowed=type(state.availableSystems)=="table"and state.availableSystems or options.availableSystems or {}
+    local available={}
+    for key,value in pairs(allowed)do
+      if type(key)=="number"then available[tostring(value)]=true elseif value==true then available[tostring(key)]=true end
+    end
+    local genre=string.upper(tostring(state.genre or options.genre or ""))
+    local profile="CASUAL"
+    if string.find(genre,"RPG",1,true)then profile="RPG"
+    elseif string.find(genre,"SURVIV",1,true)then profile="SURVIVAL"
+    elseif string.find(genre,"DEFEN",1,true)then profile="DEFENSE"
+    elseif string.find(genre,"STRATEG",1,true)then profile="STRATEGY"
+    elseif string.find(genre,"TYCOON",1,true)or string.find(genre,"SIMULAT",1,true)then profile="TYCOON"
+    elseif string.find(genre,"HORROR",1,true)then profile="HORROR"end
+    local result={}
+    for _,id in ipairs(presets[profile])do
+      if available[id]then table.insert(result,{id=id,title=titles[id],enabled=true})end
+    end
+    return result
+  end
   local function refreshLayout()
     local compact=body.AbsoluteSize.X<700
     top.Size=UDim2.new(1,0,0,54)
     if compact then
-      nav.Position=UDim2.new(0,0,1,-76);nav.Size=UDim2.new(1,0,0,74)
+      nav.Position=UDim2.new(0,0,1,-76-math.max(0,tonumber(options.safeBottom)or 0));nav.Size=UDim2.new(1,0,0,74)
       nav.ScrollingDirection=Enum.ScrollingDirection.X
       nav.AutomaticCanvasSize=Enum.AutomaticSize.X
       layout.FillDirection=Enum.FillDirection.Horizontal
-      screen.Position=UDim2.fromOffset(0,60);screen.Size=UDim2.new(1,0,1,-142)
+      screen.Position=UDim2.fromOffset(0,60);screen.Size=UDim2.new(1,0,1,-142-math.max(0,tonumber(options.safeBottom)or 0))
       for _,button in ipairs(menuButtons)do button.Size=UDim2.fromOffset(116,52)end
     else
       nav.Position=UDim2.fromOffset(0,60);nav.Size=UDim2.new(0,204,1,-60)
@@ -4503,8 +4540,21 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
   end
   local function sync(state)
     state=type(state)=="table"and state or {}
-    rows=type(state.menus)=="table"and state.menus or {}
+    rows=genreMenus(state)
     if state.selectedId~=nil then selectedId=tostring(state.selectedId)end
+    local selectedFound=false
+    for _,row in ipairs(rows)do
+      if type(row)=="table"and row.enabled~=false and tostring(row.id or "")==selectedId then selectedFound=true end
+    end
+    if not selectedFound then
+      selectedId=""
+      for _,row in ipairs(rows)do
+        if type(row)=="table"and row.enabled~=false and tostring(row.id or "")~=""then
+          selectedId=tostring(row.id);break
+        end
+      end
+      stack={}
+    end
     for i,row in ipairs(rows)do
       if not menuButtons[i]then
         local index=i
@@ -4534,7 +4584,8 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
     end
     for i=#rows+1,#menuButtons do menuButtons[i].Visible=false end
     back.Visible=#stack>0
-    top:FindFirstChild("Title").Text=tostring(state.title or options.title or "게임")
+    local topTitle=top:FindFirstChild("Title")
+    if topTitle then topTitle.Text=tostring(state.title or options.title or "게임")end
     root:SetAttribute("SelectedMenuId",selectedId)
     root:SetAttribute("GameSnapshotRevision",tostring(state.revision or ""))
     refreshLayout()
@@ -4558,7 +4609,7 @@ function RobloxCommonUI.CreateGameWindowLayout(options)
     end
   end
   body:GetPropertyChangedSignal("AbsoluteSize"):Connect(refreshLayout)
-  sync({menus=options.menus or {},selectedId=options.selectedId or "",title=options.title})
+  sync({menus=options.menus,availableSystems=options.availableSystems,selectedId=options.selectedId or "",title=options.title,genre=options.genre})
   root:SetAttribute("OwnsNavigationAuthority",false)
   root:SetAttribute("OwnsGameplayAuthority",false)
   root:SetAttribute("OwnsSaveAuthority",false)
