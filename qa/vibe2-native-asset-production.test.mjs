@@ -2018,6 +2018,7 @@ test('all source GLBs share one internal asset identity and receive non-destruct
   assert.match(script,/VIBE_STUDIO_ASSET_UNIVERSE/);
   assert.match(script,/PBR_ROUGHNESS_STYLE_REAUTHOR/);
   assert.match(script,/PBR_BASE_COLOR_STYLE_REAUTHOR/);
+  assert.match(script,/if rig not in ASSET_ARMATURES and any/,'existing source GLB rig and motion must survive asset reauthoring');
   assert.match(script,/transformHistory.*SOURCE_ENHANCEMENTS/);
   assert.match(script,/sourceFileImmutable.*True/);
   assert.match(script,/nativeRuntimePromotionRequired.*True/);
