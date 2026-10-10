@@ -298,3 +298,50 @@ test('Unity monster adventure keeps real UV-less source meshes and uses triplana
     for(const part of parts)assert.ok(palettes.get(palette).has(part),asset+' / '+part);
   }
 });
+
+test('Unity Web uses one shared retained editor cache per exact version without weakening runtime QA',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const steps=[
+    'Restore installed Unity WebGL editor',
+    'Install Unity Hub and WebGL Editor',
+    'Retain installed Unity WebGL editor',
+    'Activate Unity Personal',
+    'Build Unity Web',
+    'Run Unity Web actual browser play',
+    'Run Unity Web independent QA',
+    'Run Unity Web regression',
+    'Evaluate upper-platform development readiness'
+  ];
+  const offsets=steps.map(step=>workflow.indexOf('      - name: '+step));
+  assert.ok(offsets.every(n=>n>=0),'editor reuse and original build/QA stages are present');
+  for(let i=1;i<offsets.length;i++)assert.ok(offsets[i]>offsets[i-1],steps[i]);
+  const key='key: unity-webgl-editor-v1-'+'${'+ '{ runner.os }}-'
+    +'${'+ '{ steps.request.outputs.unity_version }}-'
+    +'${'+ '{ steps.request.outputs.unity_revision }}';
+  assert.equal(workflow.split(key).length-1,2,'all games share the same exact-version cache');
+  assert.match(workflow,/uses: actions\/cache\/restore@v4/);
+  assert.match(workflow,/uses: actions\/cache\/save@v4/);
+  assert.match(workflow,/if: steps\.editor_cache\.outputs\.cache-hit != 'true'/);
+  assert.match(workflow,/UNITY_WEB_EDITOR_REUSED=YES/);
+  assert.match(workflow,/WebGLSupport/);
+  assert.match(workflow,/UNITY_WEB_EDITOR_CACHE_RETAINED=UNVERIFIED_RETRY_NEXT_BUILD/);
+  assert.doesNotMatch(workflow,/sudo rm -rf \/opt\/unityhub/);
+  const cache=workflow.slice(workflow.indexOf('      - name: Restore installed Unity WebGL editor'),
+    workflow.indexOf('      - name: Activate Unity Personal'));
+  assert.equal((cache.match(/continue-on-error: true/g)||[]).length,2,'cache failures must not block real builds');
+});
+
+test('existing local Vibe director reuses Blender and the active Unity MCP editor for all eligible games',()=>{
+  const start=fs.readFileSync(path.join(repo,'tools','unity-mcp','start-unity-ai.ps1'),'utf8');
+  const director=fs.readFileSync(path.join(repo,'tools','unity-mcp','run-company-ai.ps1'),'utf8');
+  assert.match(start,/function Resolve-PersistentBlender/);
+  assert.match(start,/function Ensure-PersistentBlender/);
+  assert.match(start,/BlenderFoundation\.Blender/);
+  assert.match(start,/VIBE2_BLENDER_BINARY/);
+  assert.match(start,/'--default-instance', \(Split-Path \$resolvedProject -Leaf\)/);
+  assert.match(director,/Persistent Blender executable: \$blenderBinary/);
+  assert.match(director,/Connected local Unity Editor project: unity-games\/\$localProjectId/);
+  assert.match(director,/Select eligible Unity Web games from the existing DEVELOPMENT_CONFIRMED pipeline/);
+  assert.match(director,/company-learning\/security-immune-system\.json/);
+  assert.doesNotMatch(director,/Priority game project: unity-games\/daechung-rpg/);
+});
