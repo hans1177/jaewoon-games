@@ -261,12 +261,19 @@ def image_mesh_asset():
     if source_license.lower() == 'cc-by' and not ARGS.source_credit.strip():
         raise RuntimeError('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED')
 
-    # 기존 Blender 제작 책임 함수에서 실행 능력에 따라 실제 설치된 모델만 선택한다.
-    # TRELLIS.2는 고품질 로컬 CUDA 24GiB 이상일 때 사용하며 추론 오류를 조용히 하위 품질로 대체하지 않는다.
+    # [라이선스 검증] 공개 TRELLIS.2 자체는 MIT지만 필수 nvdiffrast/nvdiffrec는
+    # 별도 NVIDIA Source Code License(비상업 용도)다. GAME GRAPHICS_PRODUCTION은
+    # 상업 이용 증빙 없는 고급 경로를 실행/자동 승격하지 않는다.
+    # 출처: github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt (3.3 Use Limitation)
+    # 출처: github.com/NVlabs/nvdiffrec/blob/main/LICENSE.txt
     requested = ARGS.mesh_model
     trellis_env = ('VIBE_TRELLIS2_HOME', 'VIBE_TRELLIS2_MODEL_DIR')
-    trellis_requested = requested == 'trellis2' or (requested == 'auto' and any(os.environ.get(k) for k in trellis_env))
-    model_engine = 'microsoft/TRELLIS.2' if trellis_requested else 'VAST-AI-Research/TripoSR'
+    trellis_requested = requested == 'trellis2'
+    if trellis_requested:
+        raise RuntimeError('IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED')
+    # 자동 선택은 상업 이용 가능한 것으로 확인된 TripoSR(MIT)를 유지한다.
+    # 향후 상업 라이선스 증빙과 보안/법무 승인 게이트가 구현되면 해당 직접 함수에서 복구한다.
+    model_engine = 'VAST-AI-Research/TripoSR'
     source_file_hash = ''
     weights_sha = ''
     model_license = 'MIT'
