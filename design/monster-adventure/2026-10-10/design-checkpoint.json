@@ -143,38 +143,25 @@
       "name": "GAME",
       "purpose": "Monsters Adventure Game",
       "playerChoice": "Select a terrain type to affect monster attributes and combat strategy."
-    },
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:3:568c7fb49fcbfa91": {
-      "id": "delve_terrain_change_effect",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "MONSTER_ATTRIBUTION"
-      ],
-      "stateOutputs": [
-        "TERRAIN_CHANGE"
-      ],
-      "name": "Terrain Change Effect",
-      "purpose": "Reflects the impact of terrain changes on monster attributes, introducing variability in combat strategy and evolution paths.",
-      "playerChoice": "Player selects a terrain type, which alters the monster's attribute distribution and affects subsequent battle outcomes."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 580650,
-      "lastMs": 47550,
+      "totalMs": 593315,
+      "lastMs": 12665,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:26:38.572Z"
+      "updatedAt": "2026-10-10T09:26:51.238Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:16:57.887Z",
-  "updatedAt": "2026-10-10T09:26:38.572Z",
+  "updatedAt": "2026-10-10T09:26:51.239Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1711,11 +1698,11 @@
   },
   "sliceRepairAttempts": {
     "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:2:ea080bfc07f2f49b": 1,
-    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:3:568c7fb49fcbfa91": 1
+    "local_authoring_parts::24290b78b96324525306f34f202bf6b31932c71dbb0e485a4e14965095758892:signatureSystems:3:568c7fb49fcbfa91": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:26:38.572Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:26:51.238Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
