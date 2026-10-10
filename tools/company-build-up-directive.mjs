@@ -1988,7 +1988,7 @@ export function directivePrompt(d={}){
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
-    ...(d.designToPlatformCodingTrace?.unityWebDevelopmentAlgorithm?[`UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS: ${JSON.stringify(d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm)}`]:[]),
+    ...(d.designToPlatformCodingTrace?.unityWebDevelopmentAlgorithm?[`UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS: ${JSON.stringify({algorithms:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.algorithms,designRequirements:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.designRequirements.length,packageCount:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.developmentPackages.length,unresolved:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.unresolvedRequirements,implementationVerified:false,runtimeVerified:false})}`]:[]),
     'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/C/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
     ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
