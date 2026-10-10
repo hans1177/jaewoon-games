@@ -223,6 +223,19 @@ export function readUpperPlatformReadiness(repoRoot,gameId){
   if(data.pass!==true||data.state!=='UPPER_PLATFORM_DEVELOPMENT_READY')return{pass:false,reason:'READINESS_NOT_PASS',data,currentTree};
   if(requiredDomains.some(key=>data.criteria?.[key]?.pass!==true))return{pass:false,reason:'READINESS_CRITERIA_INCOMPLETE',data,currentTree};
   if(!currentTree||data.unitySourceTreeSha256!==currentTree)return{pass:false,reason:'READINESS_SOURCE_STALE',data,currentTree};
+  // 기존 7개 게이트 순서는 바꾸지 않는다. Unity Web BUILD_UP이 성장 검증을 요구한 경우에만 추가 근거를 확인한다.
+  if(data.buildUpGrowthRequired===true){
+    const growth=data.buildUpGrowth||{};
+    if(growth.gameId!==gameId||growth.platform!=='UNITY_WEB'
+      ||growth.verifiedGrowth!==true||growth.runtimeQaVerified!==true
+      ||growth.comparisonAvailable!==true
+      ||growth.status!=='VERIFIED_PLAYER_FACING_GROWTH'
+      ||growth.sourceTreeSha256!==currentTree
+      ||!/^[a-f0-9]{64}$/.test(clean(growth.previousSourceTreeSha256))
+      ||growth.previousSourceTreeSha256===currentTree
+      ||data.criteria?.buildUpGrowth?.pass!==true)
+      return{pass:false,reason:'READINESS_BUILD_UP_GROWTH_EVIDENCE_REQUIRED',data,currentTree};
+  }
   if(data.releaseOrDeploymentAuthority!==false)return{pass:false,reason:'READINESS_RELEASE_AUTHORITY_INVALID',data,currentTree};
   // 기존의 2D/2.5D 검증 기록은 3D 전용 정책이 적용된 새 런타임 증거가 아니다.
   const graphics=data.criteria?.graphics||{};
