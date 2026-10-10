@@ -9,24 +9,111 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::35c473f7263f74358bad2c1154af71a663e0ee091ea3352fb745fffd17d638e9:identity,creativeGrammar": {
+      "identity": "작은 섬에서 직접 나무와 식량을 모으고 주민 자동화와 병영 성장을 거쳐 5개 전략 거점을 점령하는 협동 왕국 성장 게임",
+      "creativeGrammar": {
+        "mainIdentity": "COZY_CHIBI_KINGDOM_WORLD_V8",
+        "a": {
+          "system": "주민 자동화",
+          "material": "주민 고용 및 벌목/농업 자동화",
+          "materialDomain": "철학·역사·예술",
+          "stateChange": "주민 고용 -> 생산 직업 배치 -> 자동화 진행"
+        },
+        "b": {
+          "system": "병영/병사",
+          "material": "자원을 병력으로 전환하고 병영 레벨로 전투력을 확장",
+          "materialDomain": "과학·기술·전쟁",
+          "stateChange": "자원 -> 병력 -> 전투력 강화},"
+        },
+        "abCausality": "{\"fromId\": \"주민 고용\", \"toId\": \"병력 전환\"}",
+        "abEvolution": {
+          "aChangesB": "자원 -> 병력 -> 전투력 강화, bChangseA\": \"주민 고용 -> 생산 직업 -> 자동화 진입\"}, ",
+          "bChangesA": "자원 -> 병력 -> 전투력 강화, aChangseB\": \"주민 고용 -> 생산 직업 -> 자동화 진입\"}, ",
+          "lateGameChange": "{\"fromId\": \"5개 거점 점령\", \"toId\": \"왕국 정복\"}"
+        },
+        "materialFusion": {
+          "contrast": "주민 자동화 vs 병영/병사, 5개 거점 vs 왕국 정복",
+          "causalBridge": "자원 -> 병력 -> 전투력 강화, 주민 고용 -> 생산 직업 -> 자동화 진입",
+          "removalConsequence": "5개 거점 제거 시 왕국 정복 상태가 사라짐, 병력과 전투력이 재설정됨"
+        },
+        "storyCausalChain": {
+          "cause": "작은 섬에서 나무와 식량을 모으고 주민 자동화를 통해 왕국 성장 시작",
+          "characterConflict": "주민의 선택으로 인한 자원 분배 갈등",
+          "playerChoice": "5개 거점을 점령하는 협동 지원 결정",
+          "worldChange": "왕국 확장 및 보상 제공 증대, 단순 수치 강화 금지",
+          "nextEvent": "협동 지원으로 강한 거점 공략 진행 중"
+        },
+        "cThemes": [
+          {
+            "name": "주민 고용",
+            "kind": "MATERIAL",
+            "gameplayEffect": "자동화된 노동 기반의 생산 활동"
+          },
+          {
+            "name": "병력 전환",
+            "kind": "MATERIAL",
+            "gameplayEffect": "전투력 강화 및 병영 레벨 상승"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "주민 자동화",
+            "gameplayEffect": "직업 고용 및 자동화 진입},{\"role\":\"SECONDARY\",\"name\":\"병영/병사\",\"gameplayEffect\":\"자원 -> 병력 -> 전투력 강화\"}], "
+          },
+          {
+            "role": "PRIMARY",
+            "name": "주민 자동화",
+            "gameplayEffect": "직업 고용 및 자동화 진입\",\"stateInputs\": \"주민 고용 상태\", \"stateOutputs\": \"생산 직업 배치 상태\"}, {"
+          }
+        ],
+        "cGenreInterlock": "{\"주민 자동화와 병영/병사는 서로 다른 장르로 구성되며, 주민 고용 상태가 병력 전환 상태를 유도함}\"}，",
+        "cWorldAndGameplayEffect": "{\"주민 고용 -> 생산 직업 -> 자동화 진행, 병력 전환 -> 전투력 강화\"}",
+        "delveDiscoveries": [
+          {
+            "clue": "작은 섬에서 나무와 식량을 직접 모으는 과정",
+            "discovery": "주민 자동화 시스템의 초기 단계",
+            "newChoice": "5개 거점 점령 결정과 협동 지원 선택"
+          },
+          {
+            "clue": "주민의 선택으로 인한 자원 분배 갈등",
+            "discovery": "협동 지원 체제 도입",
+            "newChoice": "왕국 정복 목표 설정 및 보상 확보"
+          },
+          {
+            "clue": "자원->병력->전투력 강화의 순차적 변화",
+            "discovery": "게임 규칙의 상호 작용 구조 형성",
+            "newChoice": "다양한 플레이어 참여 및 협동 지원 확장"
+          },
+          {
+            "clue": "5개 거점을 점령하는 실질적인 게임 진행",
+            "discovery": "플레이어 역할의 성장 기반 마련",
+            "newChoice": "대형 섬/왕국 정복의 최종 목표 설정"
+          }
+        ],
+        "delveGrowthRule": "{\"A -> B, B -> A\": \"주민 고용 -> 생산 직업 -> 자동화 진행, 병력 전환 -> 전투력 강화\"}",
+        "finalGameIdentity": "{\"MAIN\": \"협동 왕국 성장 게임\", \"A\": \"주민 자동화 시스템\", \"B\": \"병영/병사 관리 시스템\", \"C\": \"주민 고용과 병력 전환 창작 소재\", \"@\": \"5개 거점 점령, 협동 지원 선택, 보상 확보\"}"
+      }
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300056,
-      "lastMs": 300056,
+      "totalMs": 466492,
+      "lastMs": 166436,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:57:01.920Z"
+      "updatedAt": "2026-10-10T10:59:48.358Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:52:01.604Z",
-  "updatedAt": "2026-10-10T10:57:01.921Z",
+  "updatedAt": "2026-10-10T10:59:48.358Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1088,5 +1175,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "35c473f7263f74358bad2c1154af71a663e0ee091ea3352fb745fffd17d638e9": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T10:59:48.358Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
