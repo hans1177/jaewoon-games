@@ -531,25 +531,28 @@
       ],
       "multiplayerMode": "HYBRID",
       "coreFun": "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 실제 플레이 단계 최소 3개"
+    },
+    "local_authoring_parts::b69a8845523e5266cc2d88a08059c7312db3add6cdc779576ab7de423fc22ce2:fromSystem": {
+      "fromSystem": "Main Defensive Strategy"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 12,
+      "calls": 13,
+      "successes": 13,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 433960,
-      "lastMs": 96607,
+      "totalMs": 481061,
+      "lastMs": 47101,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:08:17.616Z"
+      "updatedAt": "2026-10-10T09:09:04.725Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:08:17.621Z",
+  "updatedAt": "2026-10-10T09:09:04.725Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2242,7 +2245,7 @@
     "designer_draft_slices::identity-core": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:08:17.616Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:09:04.725Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
