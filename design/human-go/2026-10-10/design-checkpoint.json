@@ -3,515 +3,31 @@
   "gameId": "human-go",
   "date": "2026-10-10",
   "seedId": "OWNER-FULL-REBUILD-HUMAN-GO-20260916",
-  "fingerprint": "6d63c787bed1b69ec306d5b006f5a2a0e3af4f6a25f3a00e13d915e4d368382e",
+  "fingerprint": "bbb13b63fb0797f272515755e4e22b87738dffc057371828cec31f857f360b8b",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71",
+  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441:identity,creativeGrammar": {
-      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Explore a compact activity space and discover a person, task or collectible opportunity.",
-        "a": {
-          "system": "Social Interaction",
-          "material": "A mysterious figure with a glowing pendant that appears only in moments of solitude.",
-          "materialDomain": "Personality & Relationships",
-          "stateChange": "The player encounters the figure, who reveals a hidden map leading to an uncharted forest."
-        },
-        "b": {
-          "system": "Resource Management",
-          "material": "A rare crystal that grants temporary invisibility but requires careful handling.",
-          "materialDomain": "Economy & Resources",
-          "stateChange": "The player must navigate through a maze while keeping the crystal's power intact."
-        },
-        "abCausality": "Player choice determines whether the crystal is used for survival or exploration; the figure's reaction alters the environment based on the player's actions.",
-        "abEvolution": {
-          "aChangesB": "If the player chooses to use the crystal for survival, the figure becomes hostile. If chosen for exploration, it remains neutral.",
-          "bChangesA": "Using the crystal for exploration allows the player to bypass certain obstacles, but risks losing access to the map.",
-          "lateGameChange": "In later stages, the figure transforms into a guardian that tests the player's ability to make ethical choices."
-        },
-        "materialFusion": {
-          "contrast": "The figure's glowing pendant and the crystal are both essential for progression, but their roles shift depending on the player's decisions.",
-          "causalBridge": "The player's decision to prioritize one over the other creates a new narrative arc and changes the game's difficulty level.",
-          "removalConsequence": "Removing either item from the inventory results in a loss of key gameplay elements, forcing the player to re-evaluate their strategy."
-        },
-        "storyCausalChain": {
-          "cause": "Player encounters the mysterious figure with the glowing pendant",
-          "characterConflict": "The figure is torn between protecting its owner and revealing dangerous secrets",
-          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge",
-          "worldChange": "The forest becomes a battleground where players must choose between survival and discovery, altering the game's overall tone and mechanics.",
-          "nextEvent": "A new challenge emerges as the player navigates the transformed environment"
-        },
-        "cThemes": [
-          {
-            "name": "Ethical Dilemma",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player faces moral choices that affect the outcome"
-          },
-          {
-            "name": "Survival vs. Discovery",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Balances the desire for progress against the need for safety"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Social Interaction & Relationships",
-            "gameplayEffect": "Focuses on character development and player choice"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Resource Management & Economy",
-            "gameplayEffect": "Adds strategic depth through resource acquisition and use"
-          }
-        ],
-        "cGenreInterlock": "When the player chooses to prioritize social interaction over resources, the forest transforms into an open-world exploration area; when focusing on resources, it becomes a survival-based puzzle with limited access to key information.",
-        "cWorldAndGameplayEffect": "The world reacts to the player's decisions in ways that alter gameplay difficulty, narrative direction, and available objectives, creating a dynamic and evolving experience.",
-        "delveDiscoveries": [
-          {
-            "clue": "A hidden map leading to an uncharted forest",
-            "discovery": "The player discovers a new location with unique environmental hazards and opportunities",
-            "newChoice": "The player must choose between exploring the forest or returning to the starting point"
-          },
-          {
-            "clue": "A rare crystal granting temporary invisibility",
-            "discovery": "The player finds a way to bypass certain obstacles while maintaining control of their environment",
-            "newChoice": "The player can either use the crystal for immediate benefit or save it for later use"
-          },
-          {
-            "clue": "A mysterious figure with a glowing pendant",
-            "discovery": "The player learns about the figure's history and its connection to the game's overarching theme",
-            "newChoice": "The player decides whether to keep the figure as a companion or destroy it to prevent future conflicts"
-          },
-          {
-            "clue": "A transformation into a guardian",
-            "discovery": "In later stages, the figure becomes a test subject for ethical decision-making",
-            "newChoice": "The player must choose between survival or complete discovery in order to progress"
-          }
-        ],
-        "delveGrowthRule": "Each discovery adds a new layer to the player's understanding of the world, influencing subsequent choices and altering the game's difficulty level based on the player's decisions.",
-        "finalGameIdentity": "The final identity is shaped by all discoveries made through exploration, relationships built during gameplay, and the dynamic evolution of the world. It reflects the player's journey from simple discovery to complex moral dilemmas."
-      }
-    },
-    "local_authoring_parts::5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 단순한 탐험가로 시작하나, 그의 행동은 관계와 성장에 대한 깊은 이해로 이어진다. 플레이어는 세상을 작은 공간에서 발견하며, 사람들의 마음과 선택을 통해 새로운 의미를 찾는다.",
-      "coreFun": "플레이어는 처음에는 단순한 활동 공간을 탐색해보지만, 시간이 흘러가면서 그 공간 내부의 인물, 기회, 그리고 선택의 결과를 경험하게 된다. 이러한 경험은 플레이어의 정체성과 전략적 능력을 발전시키며, 다양한 상황 속에서 진정한 가치를 판단하는 데 도움을 줄 수 있다."
-    },
-    "local_authoring_parts::a183d8a6cde61e93c20ddab101434d4536bb26a13caa444cef3639060f3ca34c:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Explore a compact activity space and discover a person, task or collectible opportunity.",
-        "a": {
-          "system": "Social Interaction",
-          "material": "A mysterious figure with a glowing pendant that appears only in moments of solitude.",
-          "materialDomain": "Personality & Relationships",
-          "stateChange": "The player encounters the figure, who reveals a hidden map leading to an uncharted forest."
-        },
-        "b": {
-          "system": "Resource Management",
-          "material": "A rare crystal that grants temporary invisibility but requires careful handling.",
-          "materialDomain": "Economy & Resources",
-          "stateChange": "The player must navigate through a maze while keeping the crystal's power intact."
-        },
-        "abCausality": "Player choice determines whether the crystal is used for survival or exploration; the figure's reaction alters the environment based on the player's actions.",
-        "abEvolution": {
-          "aChangesB": "If the player chooses to use the crystal for survival, the figure becomes hostile. If chosen for exploration, it remains neutral.",
-          "bChangesA": "Using the crystal for exploration allows the player to bypass certain obstacles, but risks losing access to the map.",
-          "lateGameChange": "In later stages, the figure transforms into a guardian that tests the player's ability to make ethical choices."
-        },
-        "materialFusion": {
-          "contrast": "The figure's glowing pendant and the crystal are both essential for progression, but their roles shift depending on the player's decisions.",
-          "causalBridge": "The player's decision to prioritize one over the other creates a new narrative arc and changes the game's difficulty level.",
-          "removalConsequence": "Removing either item from the inventory results in a loss of key gameplay elements, forcing the player to re-evaluate their strategy."
-        },
-        "storyCausalChain": {
-          "cause": "Player encounters the mysterious figure with the glowing pendant",
-          "characterConflict": "The figure is torn between protecting its owner and revealing dangerous secrets",
-          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge",
-          "worldChange": "The forest becomes a battleground where players must choose between survival and discovery, altering the game's overall tone and mechanics.",
-          "nextEvent": "A new challenge emerges as the player navigates the transformed environment"
-        },
-        "cThemes": [
-          {
-            "name": "Ethical Dilemma",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player faces moral choices that affect the outcome"
-          },
-          {
-            "name": "Survival vs. Discovery",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Balances the desire for progress against the need for safety"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Social Interaction & Relationships",
-            "gameplayEffect": "Focuses on character development and player choice"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Resource Management & Economy",
-            "gameplayEffect": "Adds strategic depth through resource acquisition and use"
-          }
-        ],
-        "cGenreInterlock": "When the player chooses to prioritize social interaction over resources, the forest transforms into an open-world exploration area; when focusing on resources, it becomes a survival-based puzzle with limited access to key information.",
-        "cWorldAndGameplayEffect": "The world reacts to the player's decisions in ways that alter gameplay difficulty, narrative direction, and available objectives, creating a dynamic and evolving experience.",
-        "delveDiscoveries": [
-          {
-            "clue": "A hidden map leading to an uncharted forest",
-            "discovery": "The player discovers a new location with unique environmental hazards and opportunities",
-            "newChoice": "The player must choose between exploring the forest or returning to the starting point"
-          },
-          {
-            "clue": "A rare crystal granting temporary invisibility",
-            "discovery": "The player finds a way to bypass certain obstacles while maintaining control of their environment",
-            "newChoice": "The player can either use the crystal for immediate benefit or save it for later use"
-          },
-          {
-            "clue": "A mysterious figure with a glowing pendant",
-            "discovery": "The player learns about the figure's history and its connection to the game's overarching theme",
-            "newChoice": "The player decides whether to keep the figure as a companion or destroy it to prevent future conflicts"
-          },
-          {
-            "clue": "A transformation into a guardian",
-            "discovery": "In later stages, the figure becomes a test subject for ethical decision-making",
-            "newChoice": "The player must choose between survival or complete discovery in order to progress"
-          }
-        ],
-        "delveGrowthRule": "Each discovery adds a new layer to the player's understanding of the world, influencing subsequent choices and altering the game's difficulty level based on the player's decisions.",
-        "finalGameIdentity": "The final identity is shaped by all discoveries made through exploration, relationships built during gameplay, and the dynamic evolution of the world. It reflects the player's journey from simple discovery to complex moral dilemmas."
-      },
-      "playerFantasy": "플레이어는 단순한 탐험가로 시작하나, 그의 행동은 관계와 성장에 대한 깊은 이해로 이어진다. 플레이어는 세상을 작은 공간에서 발견하며, 사람들의 마음과 선택을 통해 새로운 의미를 찾는다.",
-      "coreFun": "플레이어는 처음에는 단순한 활동 공간을 탐색해보지만, 시간이 흘러가면서 그 공간 내부의 인물, 기회, 그리고 선택의 결과를 경험하게 된다. 이러한 경험은 플레이어의 정체성과 전략적 능력을 발전시키며, 다양한 상황 속에서 진정한 가치를 판단하는 데 도움을 줄 수 있다."
-    },
-    "local_authoring_parts::8ed881546b654717389f2450f74612550e023ee3a58fc425d0c00d3887d5f40e:coreLoop": {
-      "coreLoop": [
-        "Input: Player explores a compact activity space and discovers a person, task or collectible opportunity.",
-        "State change: The player encounters the figure, who reveals a hidden map leading to an uncharted forest.",
-        "Reward: The player gains access to new exploration areas and unique challenges."
-      ]
-    },
-    "local_authoring_parts::44bab4077e668609a12946b6c7aa0d38045474faae53bdfc1b3b389386815417:signatureSystems:0": {
-      "id": "SIGNATURE_SYSTEM_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_HIDDEN_MAP"
-      ],
-      "name": "Social Interaction & Relationships",
-      "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
-      "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
-    },
-    "local_authoring_parts::44bab4077e668609a12946b6c7aa0d38045474faae53bdfc1b3b389386815417:signatureSystems:1": {
-      "id": "SIGNATURE_SYSTEM_1",
-      "grammarRole": "A",
-      "stateInputs": [
-        "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_HIDDEN_MAP"
-      ],
-      "name": "Social Interaction & Relationships",
-      "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
-      "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
-    },
-    "local_authoring_parts::44bab4077e668609a12946b6c7aa0d38045474faae53bdfc1b3b389386815417:signatureSystems:2": {
-      "id": "SIGNATURE_SYSTEM_2",
-      "grammarRole": "B",
-      "stateInputs": [
-        "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_HIDDEN_MAP"
-      ],
-      "name": "Resource Management & Economy",
-      "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
-      "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
-    },
-    "local_authoring_parts::44bab4077e668609a12946b6c7aa0d38045474faae53bdfc1b3b389386815417:signatureSystems:3": {
-      "id": "SIGNATURE_SYSTEM_3",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_HIDDEN_MAP"
-      ],
-      "name": "Social Interaction & Relationships",
-      "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
-      "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
-    },
-    "local_authoring_parts::8ed881546b654717389f2450f74612550e023ee3a58fc425d0c00d3887d5f40e:signatureSystems": {
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
-          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
-          "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Resource Management & Economy",
-          "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
-          "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
-          "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
-        }
-      ]
-    },
-    "local_authoring_parts::353dd3b5a269e25a9a2020863b4fdce062048886fd4442eb0e0a828a688fddf7:coreLoop,signatureSystems": {
-      "coreLoop": [
-        "Input: Player explores a compact activity space and discovers a person, task or collectible opportunity.",
-        "State change: The player encounters the figure, who reveals a hidden map leading to an uncharted forest.",
-        "Reward: The player gains access to new exploration areas and unique challenges."
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
-          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
-          "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Resource Management & Economy",
-          "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
-          "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
-          "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
-        }
-      ]
-    },
-    "local_authoring_parts::353dd3b5a269e25a9a2020863b4fdce062048886fd4442eb0e0a828a688fddf7:multiplayerMode": {
-      "multiplayerMode": "HYBRID"
-    },
-    "local_authoring_parts::a183d8a6cde61e93c20ddab101434d4536bb26a13caa444cef3639060f3ca34c:coreLoop,signatureSystems,multiplayerMode": {
-      "coreLoop": [
-        "Input: Player explores a compact activity space and discovers a person, task or collectible opportunity.",
-        "State change: The player encounters the figure, who reveals a hidden map leading to an uncharted forest.",
-        "Reward: The player gains access to new exploration areas and unique challenges."
-      ],
-      "signatureSystems": [
-        {
-          "id": "SIGNATURE_SYSTEM_0",
-          "grammarRole": "MAIN",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "To establish a dynamic relationship between the player and the mysterious figure, with the figure's reaction directly influencing gameplay outcomes.",
-          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge, which affects the environment and game difficulty level based on their decisions."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_1",
-          "grammarRole": "A",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "To establish the core relationship between player actions and world changes, emphasizing exploration and discovery in a socially interactive context.",
-          "playerChoice": "The player chooses whether to prioritize social interaction or resource management, influencing the game's narrative and difficulty level based on their decisions."
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_2",
-          "grammarRole": "B",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Resource Management & Economy",
-          "purpose": "Player choice determines whether the crystal is used for survival or exploration;",
-          "playerChoice": "The player decides whether to use the crystal for survival or exploration;"
-        },
-        {
-          "id": "SIGNATURE_SYSTEM_3",
-          "grammarRole": "DELVE",
-          "stateInputs": [
-            "PLAYER_EXPLORES_COMPACT_ACTIVITY_SPACE"
-          ],
-          "stateOutputs": [
-            "FIGURE_REVEALS_HIDDEN_MAP"
-          ],
-          "name": "Social Interaction & Relationships",
-          "purpose": "Enables player choice that alters the environment based on their decisions, creating a dynamic and evolving gameplay experience.",
-          "playerChoice": "The player decides whether to prioritize social interaction or resource management in their exploration strategy, influencing the game's difficulty and narrative direction."
-        }
-      ],
-      "multiplayerMode": "HYBRID"
-    },
-    "local_authoring_parts::dc9065d7af33ea1b866c5f28a13fd2e617a150609305187c8906a279519aac51:signatureSystems:0": {
-      "id": "SIGNATURE_SYSTEM_0",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "PLAYER_ENCOUNTERS_MYSTERIC_FIGURE_WITH_GLOWING_PENDANT"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_HIDDEN_MAP_LEADING_TO_UNCHARTED_FOREST"
-      ],
-      "name": "Player Encounters Mysterious Figure with Glowing Pendant",
-      "purpose": "Initiates the game by introducing the central character and setting up the core narrative structure.",
-      "playerChoice": "The player chooses whether to trust the figure or pursue its hidden knowledge, which influences subsequent events and decisions."
-    },
-    "local_authoring_parts::dc9065d7af33ea1b866c5f28a13fd2e617a150609305187c8906a279519aac51:signatureSystems:1": {
-      "id": "SIGNATURE_SYSTEM_1",
-      "grammarRole": "A",
-      "stateInputs": [
-        "PLAYER_DISCOVERS_HIDDEN_MAP_LEADING_TO_UNCHARTED_FOREST"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_NEW_LOCATION_WITH_UNIQUE_ENVIRONMENTAL_HAZARDS_AND_OPPORTUNITIES"
-      ],
-      "name": "Player Discovers Hidden Map Leading to Uncharted Forest",
-      "purpose": "The player discovers a new location with unique environmental hazards and opportunities.",
-      "playerChoice": "The player must choose between exploring the forest or returning to the starting point."
-    },
-    "local_authoring_parts::dc9065d7af33ea1b866c5f28a13fd2e617a150609305187c8906a279519aac51:signatureSystems:2": {
-      "id": "SIGNATURE_SYSTEM_2",
-      "grammarRole": "B",
-      "stateInputs": [
-        "PLAYER_DISCOVERS_HIDDEN_MAP_LEADING_TO_UNCHARTED_FOREST"
-      ],
-      "stateOutputs": [
-        "FIGURE_REVEALS_NEW_LOCATION_WITH_UNIQUE_ENVIRONMENTAL_HAZARDS_AND_OPPORTUNITIES"
-      ],
-      "name": "Player Discovers New Location with Unique Environmental Hazards and Opportunities",
-      "purpose": "Enables player to explore new areas with unique environmental hazards and opportunities",
-      "playerChoice": "The player must choose between exploring the forest or returning to the starting point, influenced by the environment's challenges and rewards"
-    },
-    "local_authoring_parts::dc9065d7af33ea1b866c5f28a13fd2e617a150609305187c8906a279519aac51:signatureSystems:3": {
-      "id": "SIGNATURE_SYSTEM_3",
-      "grammarRole": "DELVE",
-      "stateInputs": [
-        "PLAYER_DISCOVERS_HIDDEN_MAP_LEADING_TO_UNCHARTED_FOREST"
-      ],
-      "stateOutputs": [
-        "FIGURE_TRANSFORMS_TO_GUARDIAN_TEST_SUBJECT_FOR_ETHICAL_CHOICE"
-      ],
-      "name": "Player Discovers Transformation into Guardian Test Subject for Ethical Choice",
-      "purpose": "Reflects the player's evolving understanding of moral dilemmas and their impact on gameplay progression.",
-      "playerChoice": "The player must choose between survival or complete discovery to progress in later stages of the game, reflecting the theme of ethical decision-making."
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 13,
-      "successes": 12,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 1688526,
-      "lastMs": 102167,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:05:10.931Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T02:37:02.353Z",
-  "updatedAt": "2026-10-10T03:05:10.937Z",
+  "createdAt": "2026-10-10T05:53:16.163Z",
+  "updatedAt": "2026-10-10T05:53:16.178Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 122,
-    "sha256": "7957ada55067c21152e1b11cfe50ad6415c4b8d9f52a00befa79cdf0c893e3f5",
-    "inventoryCount": 717,
+    "version": 124,
+    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
+    "inventoryCount": 721,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -533,6 +49,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -570,6 +87,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -987,8 +505,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1010,6 +528,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1047,6 +566,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -1464,8 +984,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 717,
-        "eligibleAssetCount": 408,
+        "evaluatedAssetCount": 721,
+        "eligibleAssetCount": 412,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1487,6 +1007,7 @@
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
+            "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
             "SURVIVAL_TORSO_CLOTH_MODULE"
           ],
@@ -1524,6 +1045,7 @@
             "HEAVY_ATTACK_1",
             "HIT_BACK",
             "HIT_FRONT",
+            "HUMANOID",
             "IDLE_RELAXED",
             "INJURED_WALK",
             "INTERACT_USE",
@@ -2007,148 +1529,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {
-    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
-  },
-  "sliceRepairFeedback": {
-    "designer_draft_slices::identity-core": [
-      {
-        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-        "kind": "HARD_GATE",
-        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
-        "evidenceLevel": null,
-        "minimumRequired": null,
-        "evidence": {
-          "aToB": false,
-          "bToA": false,
-          "unconnected": [
-            "A",
-            "B",
-            "DELVE"
-          ],
-          "ruleIds": [
-            "SIGNATURE_SYSTEM_0",
-            "SIGNATURE_SYSTEM_1",
-            "SIGNATURE_SYSTEM_2",
-            "SIGNATURE_SYSTEM_3"
-          ]
-        },
-        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2",
-        "fields": [
-          "signatureSystems"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 2
-  },
-  "slicePartialResults": {
-    "designer_draft_slices::identity-core": {
-      "identity": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
-      "creativeGrammar": {
-        "mainIdentity": "Explore a compact activity space and discover a person, task or collectible opportunity.",
-        "a": {
-          "system": "Social Interaction",
-          "material": "A mysterious figure with a glowing pendant that appears only in moments of solitude.",
-          "materialDomain": "Personality & Relationships",
-          "stateChange": "The player encounters the figure, who reveals a hidden map leading to an uncharted forest."
-        },
-        "b": {
-          "system": "Resource Management",
-          "material": "A rare crystal that grants temporary invisibility but requires careful handling.",
-          "materialDomain": "Economy & Resources",
-          "stateChange": "The player must navigate through a maze while keeping the crystal's power intact."
-        },
-        "abCausality": "Player choice determines whether the crystal is used for survival or exploration; the figure's reaction alters the environment based on the player's actions.",
-        "abEvolution": {
-          "aChangesB": "If the player chooses to use the crystal for survival, the figure becomes hostile. If chosen for exploration, it remains neutral.",
-          "bChangesA": "Using the crystal for exploration allows the player to bypass certain obstacles, but risks losing access to the map.",
-          "lateGameChange": "In later stages, the figure transforms into a guardian that tests the player's ability to make ethical choices."
-        },
-        "materialFusion": {
-          "contrast": "The figure's glowing pendant and the crystal are both essential for progression, but their roles shift depending on the player's decisions.",
-          "causalBridge": "The player's decision to prioritize one over the other creates a new narrative arc and changes the game's difficulty level.",
-          "removalConsequence": "Removing either item from the inventory results in a loss of key gameplay elements, forcing the player to re-evaluate their strategy."
-        },
-        "storyCausalChain": {
-          "cause": "Player encounters the mysterious figure with the glowing pendant",
-          "characterConflict": "The figure is torn between protecting its owner and revealing dangerous secrets",
-          "playerChoice": "The player decides whether to trust the figure or pursue its hidden knowledge",
-          "worldChange": "The forest becomes a battleground where players must choose between survival and discovery, altering the game's overall tone and mechanics.",
-          "nextEvent": "A new challenge emerges as the player navigates the transformed environment"
-        },
-        "cThemes": [
-          {
-            "name": "Ethical Dilemma",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Player faces moral choices that affect the outcome"
-          },
-          {
-            "name": "Survival vs. Discovery",
-            "kind": "MATERIAL",
-            "gameplayEffect": "Balances the desire for progress against the need for safety"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "Social Interaction & Relationships",
-            "gameplayEffect": "Focuses on character development and player choice"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "Resource Management & Economy",
-            "gameplayEffect": "Adds strategic depth through resource acquisition and use"
-          }
-        ],
-        "cGenreInterlock": "When the player chooses to prioritize social interaction over resources, the forest transforms into an open-world exploration area; when focusing on resources, it becomes a survival-based puzzle with limited access to key information.",
-        "cWorldAndGameplayEffect": "The world reacts to the player's decisions in ways that alter gameplay difficulty, narrative direction, and available objectives, creating a dynamic and evolving experience.",
-        "delveDiscoveries": [
-          {
-            "clue": "A hidden map leading to an uncharted forest",
-            "discovery": "The player discovers a new location with unique environmental hazards and opportunities",
-            "newChoice": "The player must choose between exploring the forest or returning to the starting point"
-          },
-          {
-            "clue": "A rare crystal granting temporary invisibility",
-            "discovery": "The player finds a way to bypass certain obstacles while maintaining control of their environment",
-            "newChoice": "The player can either use the crystal for immediate benefit or save it for later use"
-          },
-          {
-            "clue": "A mysterious figure with a glowing pendant",
-            "discovery": "The player learns about the figure's history and its connection to the game's overarching theme",
-            "newChoice": "The player decides whether to keep the figure as a companion or destroy it to prevent future conflicts"
-          },
-          {
-            "clue": "A transformation into a guardian",
-            "discovery": "In later stages, the figure becomes a test subject for ethical decision-making",
-            "newChoice": "The player must choose between survival or complete discovery in order to progress"
-          }
-        ],
-        "delveGrowthRule": "Each discovery adds a new layer to the player's understanding of the world, influencing subsequent choices and altering the game's difficulty level based on the player's decisions.",
-        "finalGameIdentity": "The final identity is shaped by all discoveries made through exploration, relationships built during gameplay, and the dynamic evolution of the world. It reflects the player's journey from simple discovery to complex moral dilemmas."
-      },
-      "playerFantasy": "플레이어는 단순한 탐험가로 시작하나, 그의 행동은 관계와 성장에 대한 깊은 이해로 이어진다. 플레이어는 세상을 작은 공간에서 발견하며, 사람들의 마음과 선택을 통해 새로운 의미를 찾는다.",
-      "coreFun": "플레이어는 처음에는 단순한 활동 공간을 탐색해보지만, 시간이 흘러가면서 그 공간 내부의 인물, 기회, 그리고 선택의 결과를 경험하게 된다. 이러한 경험은 플레이어의 정체성과 전략적 능력을 발전시키며, 다양한 상황 속에서 진정한 가치를 판단하는 데 도움을 줄 수 있다.",
-      "coreLoop": [
-        "Input: Player explores a compact activity space and discovers a person, task or collectible opportunity.",
-        "State change: The player encounters the figure, who reveals a hidden map leading to an uncharted forest.",
-        "Reward: The player gains access to new exploration areas and unique challenges."
-      ],
-      "multiplayerMode": "HYBRID"
-    }
-  },
-  "localAuthoringSplits": {
-    "5cd83d12f70a8aaa7e15a676f1e201a5b8b92fa8b038ab615047718768a7e441": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:05:10.933Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
-  "effectiveDesignerModel": "ollama:qwen3:1.7b",
-  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
+  }
 }
