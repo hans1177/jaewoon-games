@@ -187,25 +187,33 @@
       },
       "playerFantasy": "야생 생존에서 플레이어는 야생 환경의 실제 상황과 동물 행동, 날씨, 체온, 식수 및 부상을 관리하는 오픈월드 생존 게임에서, 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다.",
       "coreFun": "야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하며, 실질적인 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하고, 이는 보상 또는 실패를 바탕으로 다음 목표·지역·상호작용·전략 선택으로 이어지는 반복 가능한 게임 루프"
+    },
+    "local_authoring_parts::7c7cc11b8f7e949324957d4a7967c3fc1800da64e6e3f9ee36bdbb86717e98a9:coreLoop": {
+      "coreLoop": [
+        "플레이어가 월드 상태 변화에 따라 다음 목표·지역·상호작용·전략 선택을 결정해야 한다.",
+        "실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 이는 보상 또는 실패를 통해 다음 단계로 이어진다.",
+        "MAIN=야생 생존의 현재 상황과 목표를 읽고 장르 핵심 행동을 선택하여 월드 상태와 다음 선택을 바꾼다.",
+        "A/B=실제 입력과 상호작용 결과로 월드·대상·자원·위험·진행 상태가 변하며, 이는 보상 또는 실패를 통해 다음 목표·지역·상호작용·전략 선택으로 이어진다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 618607,
-      "lastMs": 86879,
+      "totalMs": 719523,
+      "lastMs": 100916,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:30:44.025Z"
+      "updatedAt": "2026-10-10T05:32:24.944Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:20:25.395Z",
-  "updatedAt": "2026-10-10T05:30:44.027Z",
+  "updatedAt": "2026-10-10T05:32:24.944Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1816,7 +1824,7 @@
   "localAuthoringSplits": {
     "8da40d9f5557483e704fbacfe8dbabf9eaf22634c791d7aead24b4086cf8ba7b": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:30:44.027Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:32:24.944Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
