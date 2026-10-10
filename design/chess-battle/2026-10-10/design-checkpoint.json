@@ -951,25 +951,40 @@
       "name": "체스 기반 전략적 판타지 게임 - DELVE 역할",
       "purpose": "전략적 연결과 다음 선택 가능성 확률의 균형 유지, 보조 장르와의 인과적 연관성 강화를 통한 세계 변형을 수행하며, MAIN과 A/B 역할 간의 실제 상태 교환을 조절한다.",
       "playerChoice": "전략적 판단과 전장 관리에 기반하여 새로운 전술 경로 개발, AI/블록체인 등 다른 시스템 도입으로 전략적 연결 확대, 역사·문화·체스 전략·전장 위치 선정과의 상호작용을 통해 실질적인 인과 변화가 일어나는 과정에서 플레이어에게 명확한 판타지를 제공함."
+    },
+    "local_authoring_parts::6c23b63e93fcf406e52b4b43fbc72da2bce277fbb327938a010db42d512dae19:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "{\"key\": \"ACTION\", \"value\": \"체스판 상태 변화\"}",
+        "{\"key\": \"ROLE\", \"value\": \"전략적 게임 주제\"}\""
+      ],
+      "stateOutputs": [
+        "{\"key\": \"ACTION\", \"value\": \"전략적 판단\"}",
+        "{\"key\": \"ROLE\", \"value\": \"전략적 선택 창작 소재\"}\""
+      ],
+      "name": "체스 기반 전략적 판타지 게임",
+      "purpose": "플레이어는 빠르게 정보를 읽고 전략적으로 선택하여 승패를 결정하는 경기로 구성된다.",
+      "playerChoice": "실질적인 행동과 결과에 대한 명확한 판타지를 가진다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 24,
+      "calls": 27,
+      "successes": 25,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 2904007,
-      "lastMs": 138497,
+      "totalMs": 2980576,
+      "lastMs": 76569,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-09T23:28:30.613Z"
+      "updatedAt": "2026-10-10T01:04:10.973Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:40:34.238Z",
-  "updatedAt": "2026-10-10T01:02:54.387Z",
+  "updatedAt": "2026-10-10T01:04:10.973Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2743,10 +2758,10 @@
     "8cad82fcd04878547188bd208ebd600a854df662c0c4ba2717dae045afe974ad": true,
     "48f60aca311ee2e9c21148e2f2dee21d9452453915b638a94b7b7ef1e7936178": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-09T23:28:30.615Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:04:10.973Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
