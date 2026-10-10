@@ -47,10 +47,13 @@ const PLAY_MODE={
 
 const has=(text,re)=>re.test(text);
 export function classifyRobloxGenre({category='',identity='',coreLoop=[],designText='',multiplayerMode=''}={}){
-  const text=clean([category,identity,...(Array.isArray(coreLoop)?coreLoop:[]),designText].join(' ')).toLowerCase();
+  // 오너의 메인 게임 정체성과 루프를 먼저 분류하고 기술 설명은 보조 증거로만 쓴다.
+  const identityText=clean([category,identity,...(Array.isArray(coreLoop)?coreLoop:[])].join(' ')).toLowerCase();
+  const contexts=[identityText,clean(designText).toLowerCase()];
   let genre='Utility & other',subgenre='';
-
-  if(has(text,/(obby|platformer|오비|플랫포머)/)){
+  for(const [index,text] of contexts.entries()){
+    if(!text)continue;
+    if(index===0&&has(text,/(?:\bobby\b|\bplatformer\b|오비|플랫포머)/)){
     genre='Obby & platformer';
     subgenre=has(text,/(tower|타워)/)?'Tower Obby':has(text,/(runner|러너|자동 이동)/)?'Runner':'Classic Obby';
   }else if(has(text,/(shooter|fps|gun|shoot|총기|슈터|사격)/)){
@@ -111,6 +114,8 @@ export function classifyRobloxGenre({category='',identity='',coreLoop=[],designT
     genre='Social';
   }else if(has(text,/(education|learning|교육|학습)/)){
     genre='Education';
+  }
+    if(genre!=='Utility & other')break;
   }
 
   if(!ROBLOX_GENRE_TAXONOMY[genre]?.includes(subgenre))subgenre='';
