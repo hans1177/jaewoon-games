@@ -1952,6 +1952,67 @@ test('animation and video select a real existing Blender DCC authoring recipe wi
   assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
 });
 
+test('high-quality TRELLIS.2 offline image-to-3D is selectable without enabling paid remote AI',()=>{
+  const task={gameId:'high-fidelity-scene',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
+    imageToAsset:true,assetAuthoring:{meshModel:'trellis2'},
+    referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'}]};
+  const plan=buildVibeAssetProductionPlan({
+    target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+  assert.ok(recipes.length>0);
+  for(const recipe of recipes){
+    assert.equal(recipe.meshModel,'trellis2');
+    assert.equal(recipe.imageToMesh,true);
+    assert.equal(recipe.args[recipe.args.indexOf('--mesh-model')+1],'trellis2');
+    assert.equal(recipe.runtimeVerificationRequired,true);
+    assert.equal(recipe.companyPromotionAllowed,false);
+  }
+  const autoPlan=buildVibeAssetProductionPlan({
+    target:'unity',task:{...task,assetAuthoring:{meshModel:'auto'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(autoPlan.nativeAuthoringExecution.dcc.executionRecipes.every(row=>row.meshModel==='auto'));
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{meshModel:'unknown-provider'}},manifest:{assets:[]},presetCatalog:{presets:[]}}),
+  /IMAGE_TO_MESH_MODEL_UNSUPPORTED/);
+  const source=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(source,/VIBE_TRELLIS2_EXPECTED_SOURCE_SHA256/);
+  assert.match(source,/VIBE_TRELLIS2_EXPECTED_WEIGHTS_SHA256/);
+  assert.match(source,/IMAGE_TO_MESH_TRELLIS2_WEIGHTS_HASH_MISMATCH/);
+  assert.match(source,/TRELLIS2_24G_GPU_REQUIRED/);
+  assert.match(source,/HF_HUB_OFFLINE/);
+  assert.match(source,/decimation_target=180000/);
+  assert.match(source,/TripoSR/);
+  const qa=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(qa,/IMAGE_TO_MESH_SELECTED_ENGINE_MISMATCH/);
+  assert.match(qa,/microsoft\/TRELLIS\.2-4B/);
+});
+
+test('Blender and FFmpeg video uses verifiable three-shot cinematography without changing gameplay',()=>{
+  const task={gameId:'cinematic-demo',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 환경 소품 3D 애니메이션 영상 제작',
+    assetAuthoring:{module:'video',motionKind:'turntable',cinematicStyle:'dramatic',cinematicQuality:'high'}};
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(plan.nativeAuthoringExecution.dcc.executionRecipes.length);
+  for(const recipe of plan.nativeAuthoringExecution.dcc.executionRecipes){
+    assert.equal(recipe.module,'video');
+    assert.equal(recipe.cinematicStyle,'dramatic');
+    assert.equal(recipe.cinematicQuality,'high');
+    assert.equal(recipe.args[recipe.args.indexOf('--cinematic-style')+1],'dramatic');
+    assert.equal(recipe.args[recipe.args.indexOf('--cinematic-quality')+1],'high');
+    assert.ok(recipe.outputs.some(output=>output.endsWith('/preview-motion.mp4')));
+  }
+  const source=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  for(const marker of ['ESTABLISHING','ACTION_REVEAL','SIGNATURE_CLOSEUP']){
+    assert.ok(source.includes(marker));
+  }
+  assert.match(source,/video_resolution=640 if shot_quality=='high' else 320/);
+  assert.match(source,/SCENE\.render\.filepath=str\(frames_dir/);
+  assert.match(source,/cinematicStyle':video_style/);
+  const verification=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(verification,/NATIVE_OPEN_SOURCE_CINEMATIC_SHOT_EVIDENCE_INVALID/);
+  assert.match(verification,/NATIVE_OPEN_SOURCE_CINEMATIC_REQUEST_MISMATCH/);
+});
+ 
 test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
   const threeD=buildVibeAssetProductionPlan({
     target:'web',
