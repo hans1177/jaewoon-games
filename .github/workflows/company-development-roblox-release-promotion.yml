@@ -1295,20 +1295,25 @@ jobs:
             console.log('game_ids='+requested);
           }else{
             const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-            const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
+            const queue=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+            const byId=new Map((catalog.games||[]).map(game=>[String(game?.id||''),game]));
             const ids=[];
-            for(const row of exposure.games||[]){
-              const gameId=String(row?.gameId||'').trim();
-              const roblox=(row.platforms||[]).find(p=>String(p?.platform||'').toUpperCase()==='ROBLOX');
-              const game=(catalog.games||[]).find(g=>String(g?.id||'')===gameId);
+            for(const item of queue.items||[]){
+              const gameId=String(item?.gameId||'').trim();
+              const game=byId.get(gameId),target=item?.robloxPublicationTarget||{};
               const image=String(game?.canonical?.marketing?.thumbnail||game?.marketingThumbnail||'');
+              const lifecycle=String(game?.canonical?.lifecycle?.state||game?.lifecycleState||'').toUpperCase();
               if(
-                roblox?.internalReleaseReady===true
-                &&/^[1-9][0-9]*$/.test(String(roblox?.placeId||''))
-                &&image.startsWith('assets/roblox-thumbnails/')
+                ['ACTIVE','REBUILD'].includes(lifecycle)
+                &&target.verified===true&&target.dedicated===true&&target.shared!==true
+                &&String(target.gameId||gameId)===gameId
+                &&/^[1-9][0-9]*$/.test(String(target.universeId||''))
+                &&/^[1-9][0-9]*$/.test(String(target.placeId||''))
+                &&image.startsWith('assets/roblox-thumbnails/'+gameId+'.')
+                &&fs.existsSync(image)
               ) ids.push(gameId);
             }
-            console.log('game_ids='+ids.join(' '));
+            console.log('game_ids='+[...new Set(ids)].join(' '));
           }
           NODE
           game_ids="$(sed -n 's/^game_ids=//p' "$GITHUB_OUTPUT" | tail -n1)"
@@ -1327,6 +1332,7 @@ jobs:
           test -n "$ROBLOX_OPEN_CLOUD_API_KEY"
           mkdir -p .tmp/roblox-thumbnail-evidence
           failures=()
+          scope_blocked=()
           for game_id in $GAME_IDS; do
             echo "ROBLOX_THUMBNAIL_SYNC_START=$game_id"
             log_file=".tmp/roblox-thumbnail-evidence/$game_id.log"
@@ -1338,6 +1344,7 @@ jobs:
               cat ".tmp/roblox-thumbnail-evidence/$game_id.json"
             elif grep -Eq 'ROBLOX_THUMBNAIL_UPLOAD_FAILED:403:.*Scope not authorized' "$log_file"; then
               rm -f ".tmp/roblox-thumbnail-evidence/$game_id.json"
+              scope_blocked+=("$game_id")
               echo "ROBLOX_THUMBNAIL_SCOPE_403_NON_BLOCKING=$game_id"
             else
               failures+=("$game_id")
@@ -1347,7 +1354,12 @@ jobs:
             echo "ROBLOX_THUMBNAIL_SYNC_FAILED_GAMES=${failures[*]}"
             exit 1
           fi
-          echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS'
+          if [ "${#scope_blocked[@]}" -ne 0 ]; then
+            echo "ROBLOX_THUMBNAIL_SCOPE_BLOCKED_GAMES=${scope_blocked[*]}"
+            echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=INCOMPLETE_SCOPE_403'
+          else
+            echo 'ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS'
+          fi
 
       - name: Persist verified thumbnail evidence to runtime
         working-directory: main
