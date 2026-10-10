@@ -1601,6 +1601,32 @@ test('common career motion authoring resolves one existing registered source per
     }}),/COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED/);
     const normal=buildVibeAssetProductionPlan({...base,task:{gameId:'normal-game',genre:'SURVIVAL',goal:'기존 동작 유지'}});
     assert.equal(normal.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,null);
+    const crossGenre=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'multi-genre-shared-assets',genre:'FARMING',goal:'장르 공통 직업과 몬스터 모션 선택',
+      commonCareerIds:['BUILDER','MERCHANT'],npcRoles:['FARMER','BLACKSMITH'],
+      commonMonsterSpeciesIds:['WOLF','SPIDER'],
+      assetRequirements:[{family:'CHARACTER',careerId:'CHEF'},
+        {family:'CREATURE',speciesId:'GOLEM'}]
+    }});
+    const shared=crossGenre.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(shared.genre,'FARMING');
+    assert.deepEqual(shared.careers.map(row=>row.id),['BUILDER','MERCHANT','FARMER','BLACKSMITH','CHEF']);
+    assert.deepEqual(shared.monsters.map(row=>row.id),['WOLF','SPIDER','GOLEM']);
+    assert.equal(shared.career.id,'BUILDER');
+    assert.equal(shared.monster.id,'WOLF');
+    assert.equal(shared.state,'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED');
+    assert.ok(shared.careers.every(row=>row.productionVerified===false));
+    assert.ok(shared.monsters.every(row=>row.productionVerified===false));
+    assert.ok(shared.monsters.every(row=>row.expressiveChoreography.length>0));
+    const missing=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'missing-shared-roles',genre:'FARMING',goal:'미등록 역할은 자산 검증 보류',
+      commonCareerIds:['NOT_A_CAREER'],commonMonsterSpeciesIds:['NOT_A_MONSTER']
+    }}).companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(missing.state,'ARCHETYPE_SOURCE_GAP');
+    assert.deepEqual(missing.unresolvedCareers,['NOT_A_CAREER']);
+    assert.deepEqual(missing.unresolvedSpecies,['NOT_A_MONSTER']);
+    assert.equal(missing.career,null);
+    assert.equal(missing.monster,null);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

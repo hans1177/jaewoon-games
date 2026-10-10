@@ -7,7 +7,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
 import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
@@ -4192,28 +4192,72 @@ export function buildVibeAssetProductionPlan({
   });
   // 기존 GRAPHICS_PRODUCTION 플래너가 공용 계열·종족의 동작 원본을 장르별로 요청한다.
   // 게임별 판정/체력/쿨다운과 저장은 건드리지 않는다. 알 수 없는 장르는 자동으로 RPG로 바꾸지 않는다.
-  const sharedMotionGenre=resolveCommonMotionGenre(task.commonMotionGenre||task.genre||task.gameplayGenre);
-  const sharedCareerId=clean(task.commonCareerId).toUpperCase();
-  const sharedSpeciesId=clean(task.commonMonsterSpeciesId).toUpperCase();
+  const sharedMotionGenre=resolveCommonMotionGenre(
+    task.commonMotionGenre||task.genre||task.gameplayGenre||task.designGenre
+    ||task.gameplaySketch?.genre||task.flowArchitecture?.genre||robloxAssetSelectionProfile.genre
+  );
   const sharedMotionGenreValid=Boolean(COMMON_GENRE_MOTION_CONTEXTS[sharedMotionGenre]);
-  const sharedMotionCareer=sharedCareerId&&sharedMotionGenreValid
-    ?createCommonCareerMotionLoadout({
-      careerId:sharedCareerId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
-      bodyPlan:task.characterBodyPlan||task.bodyPlan||'HUMANOID',
-      rigProfile:task.characterRigProfile||task.rigProfile||'HUMANOID',
-      weaponFamily:task.characterWeaponFamily||'',
-      styleFamily:task.styleFamily||'STYLIZED_FANTASY'
-    }):null;
-  const sharedMotionMonster=sharedSpeciesId&&sharedMotionGenreValid
-    ?createCommonMonsterActionLoadout({
-      speciesId:sharedSpeciesId,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
-      bodyPlan:task.monsterBodyPlan||'',rigProfile:task.monsterRigProfile||'',
-      styleFamily:task.styleFamily||'STYLIZED_FANTASY',
-      tier:task.commonMonsterMotionTier||'NORMAL'
-    }):null;
-  const sharedMotionRequestState=(sharedCareerId||sharedSpeciesId)
-    ?(sharedMotionGenreValid?'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED':'GENRE_MAPPING_REQUIRED')
-    :'NOT_REQUESTED';
+  // 설계/역할/에셋 요구에서 실존하는 공용 원형만 선택한다. 미등록 역할을 임의 직업으로 포장하지 않는다.
+  const careerInputs=[
+    task.commonCareerId,
+    ...(Array.isArray(task.commonCareerIds)?task.commonCareerIds:[]),
+    ...(Array.isArray(task.characterCareerIds)?task.characterCareerIds:[]),
+    ...(Array.isArray(task.playerClasses)?task.playerClasses:[]),
+    ...(Array.isArray(task.npcRoles)?task.npcRoles:[]),
+    ...flowAssetRequirements.filter(row=>row.family==='CHARACTER')
+      .map(row=>row.careerId||row.classId||row.professionId||row.characterCareerId)
+  ].filter(Boolean);
+  const monsterInputs=[
+    task.commonMonsterSpeciesId,
+    ...(Array.isArray(task.commonMonsterSpeciesIds)?task.commonMonsterSpeciesIds:[]),
+    ...(Array.isArray(task.monsterSpeciesIds)?task.monsterSpeciesIds:[]),
+    ...(Array.isArray(task.enemySpecies)?task.enemySpecies:[]),
+    ...(Array.isArray(task.monsters)?task.monsters:[]),
+    ...(Array.isArray(task.species)?task.species:[]),
+    ...flowAssetRequirements.filter(row=>row.family==='CREATURE')
+      .map(row=>row.speciesId||row.monsterSpeciesId||row.creatureId)
+  ].filter(Boolean);
+  const careerIds=unique(careerInputs.map(value=>clean(typeof value==='object'
+    ?value.careerId||value.classId||value.professionId||value.id||value.role
+    :value).toUpperCase().replace(/[\\s-]+/g,'_')).filter(Boolean));
+  const monsterIds=unique(monsterInputs.map(value=>clean(typeof value==='object'
+    ?value.speciesId||value.monsterSpeciesId||value.creatureId||value.id||value.species
+    :value).toUpperCase().replace(/[\\s-]+/g,'_')).filter(Boolean));
+  const sharedMotionUnresolvedCareers=freezeList(careerIds.filter(id=>!COMMON_CAREER_MOTION_HIERARCHY[id]));
+  const sharedMotionUnresolvedSpecies=freezeList(monsterIds.filter(id=>!COMMON_MONSTER_ACTION_SPECIES[id]));
+  const sharedMotionCareers=freezeList(sharedMotionGenreValid?careerIds
+    .filter(id=>COMMON_CAREER_MOTION_HIERARCHY[id])
+    .map(id=>{
+      const role=careerInputs.find(row=>row&&typeof row==='object'
+        &&clean(row.careerId||row.classId||row.professionId||row.id||row.role).toUpperCase().replace(/[\\s-]+/g,'_')===id)||{};
+      return createCommonCareerMotionLoadout({
+        careerId:id,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+        bodyPlan:role.bodyPlan||task.characterBodyPlan||task.bodyPlan||'HUMANOID',
+        rigProfile:role.rigProfile||task.characterRigProfile||task.rigProfile||'HUMANOID',
+        weaponFamily:role.weaponFamily||(careerIds.length===1?task.characterWeaponFamily||'':''),
+        styleFamily:role.styleFamily||task.styleFamily||'STYLIZED_FANTASY'
+      });
+    }):[]);
+  const sharedMotionMonsters=freezeList(sharedMotionGenreValid?monsterIds
+    .filter(id=>COMMON_MONSTER_ACTION_SPECIES[id])
+    .map(id=>{
+      const role=monsterInputs.find(row=>row&&typeof row==='object'
+        &&clean(row.speciesId||row.monsterSpeciesId||row.creatureId||row.id||row.species).toUpperCase().replace(/[\\s-]+/g,'_')===id)||{};
+      return createCommonMonsterActionLoadout({
+        speciesId:id,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+        bodyPlan:role.bodyPlan||(monsterIds.length===1?task.monsterBodyPlan||'':''),
+        rigProfile:role.rigProfile||(monsterIds.length===1?task.monsterRigProfile||'':''),
+        styleFamily:role.styleFamily||task.styleFamily||'STYLIZED_FANTASY',
+        tier:role.tier||role.motionTier||task.commonMonsterMotionTier||'NORMAL'
+      });
+    }):[]);
+  const sharedMotionCareer=sharedMotionCareers[0]||null;
+  const sharedMotionMonster=sharedMotionMonsters[0]||null;
+  const sharedMotionRequestState=!careerIds.length&&!monsterIds.length?'NOT_REQUESTED'
+    :!sharedMotionGenreValid?'GENRE_MAPPING_REQUIRED'
+    :sharedMotionUnresolvedCareers.length||sharedMotionUnresolvedSpecies.length
+      ?(sharedMotionCareers.length||sharedMotionMonsters.length?'PARTIAL_ARCHETYPE_GAP':'ARCHETYPE_SOURCE_GAP')
+      :'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED';
 
   const assetSynchronization=['unity','web'].includes(resolvedTarget)&&studioUniversePlan?.customization?synchronizeAssetCustomization({
     document:sharedCustomizationDocument,
@@ -4915,6 +4959,9 @@ export function buildVibeAssetProductionPlan({
           state:sharedMotionRequestState,genre:sharedMotionGenre||null,
           platform:resolvedTarget.toUpperCase(),
           career:sharedMotionCareer,monster:sharedMotionMonster,
+          careers:sharedMotionCareers,monsters:sharedMotionMonsters,
+          unresolvedCareers:sharedMotionUnresolvedCareers,
+          unresolvedSpecies:sharedMotionUnresolvedSpecies,
           preparedSemanticCannotBeVerifiedRuntime:true,
           nativeEngineRigAndContactQaRequired:true,
           gameplayAndSaveAuthorityRetained:true,

@@ -1068,7 +1068,17 @@ export const COMMON_GENRE_MOTION_CONTEXTS=Object.freeze({
   STEALTH:freezeList(['stance','locomotion','defense','interactions','skills','signature']),
   PLATFORMER:freezeList(['locomotion','attacks','defense','skills','signature']),
   HORROR:freezeList(['locomotion','defense','interactions','skills','signature']),
-  SOCIAL:freezeList(['stance','locomotion','interactions','skills','signature'])
+  SOCIAL:freezeList(['stance','locomotion','interactions','skills','signature']),
+  FARMING:freezeList(['locomotion','interactions','skills','signature']),
+  CITY_BUILDER:freezeList(['locomotion','interactions','skills','signature']),
+  EXPLORATION:freezeList(['locomotion','defense','interactions','skills','signature']),
+  COZY:freezeList(['stance','locomotion','interactions','skills','signature']),
+  PUZZLE:freezeList(['stance','locomotion','interactions','skills','signature']),
+  RHYTHM:freezeList(['stance','locomotion','interactions','skills','signature']),
+  RACING:freezeList(['stance','locomotion','defense','interactions','skills','signature']),
+  SPORTS:freezeList(['stance','locomotion','defense','interactions','skills','signature']),
+  EDUCATION:freezeList(['locomotion','interactions','skills','signature']),
+  CARD_BATTLER:freezeList(['stance','attacks','defense','skills','interactions','signature'])
 });
 
 // 공통 시전-전투 기술군: 피해·쿨타임·명중·자원 소모는 게임에서만 결정한다.
@@ -1084,7 +1094,15 @@ export function resolveCommonMotionGenre(value=''){
     SCHOOL_TYCOON:'TYCOON',PARK_TYCOON:'TYCOON',
     SURVIVAL_CRAFTING:'SURVIVAL',COOP_SURVIVAL:'SURVIVAL',
     PVP_FIGHTING:'FIGHTING',HORROR_SURVIVAL:'HORROR',
-    MMO:'MMORPG',ONLINE_RPG:'MMORPG'
+    MMO:'MMORPG',ONLINE_RPG:'MMORPG',
+    STORY_COMPLETE_RPG:'ACTION_RPG',IDLE_GROWTH_RPG:'ACTION_RPG',
+    DEFENSE_STRATEGY:'TOWER_DEFENSE',BASE_BUILDING:'CITY_BUILDER',
+    CITYBUILDING:'CITY_BUILDER',CONSTRUCTION:'CITY_BUILDER',
+    FARMING_GAME:'FARMING',FARM_SIM:'FARMING',FISHING:'FARMING',
+    COZY_GAME:'COZY',LIFE_SIMULATION:'SIMULATION',
+    RHYTHM_GAME:'RHYTHM',RACING_GAME:'RACING',SPORTS_GAME:'SPORTS',
+    DECK_BUILDER:'CARD_BATTLER',CARD_GAME:'CARD_BATTLER',
+    EXPLORATION_ADVENTURE:'EXPLORATION',PUZZLE_ADVENTURE:'PUZZLE'
   });
   const id=aliases[requested]||requested;
   return COMMON_GENRE_MOTION_CONTEXTS[id]?id:null;
@@ -1454,6 +1472,56 @@ export function createCommonMonsterActionLoadout({
       });
     })
   ));
+  // 임포트/메인: 종족별 기존 관절 정의로 스킬·방어·피격·연기·죽음까지 서로 다른 키포즈를 준비한다.
+  // 플랫폼별 GLB/애니메이터 적용과 실제 재생 검증 전에는 모션 클립이라고 주장하지 않는다.
+  const expressiveGroups=Object.freeze({
+    skills:species.skills.map(value=>value.split(':')[0]),
+    defense:profile.groups.defense,
+    reactions:profile.groups.reactions,
+    acting:profile.groups.acting,
+    deaths:profile.groups.deaths,
+    signature:profile.groups.signature
+  });
+  const expressiveChoreography=Object.freeze(Object.entries(expressiveGroups).flatMap(([group,roles])=>
+    unique(roles).map((role,index)=>{
+      const motif=monsterAttackMotif(role),shape=COMMON_MONSTER_ATTACK_MOTIFS[motif];
+      const intensity={skills:1.08,defense:.56,reactions:.85,acting:.43,deaths:1.21,signature:1.16}[group];
+      const phaseTimes=group==='skills'?[0,.12,.35,.60,.84,1]
+        :group==='deaths'?[0,.15,.39,.73,.93,1]:[0,.16,.37,.64,.86,1];
+      const wind=phaseTimes[2],contact=phaseTimes[3],side=index%2===0?1:-1;
+      const rolePart=species.specialParts.find(part=>
+        (part==='SPINNERETS'&&/WEB|SILK/.test(role))
+        ||(part==='WINGS'&&/WING|FLY|HOVER/.test(role))
+        ||(part==='TAIL'&&/TAIL|COIL/.test(role))
+        ||(part==='CORE'&&/CORE/.test(role))
+        ||(part==='ELYTRA'&&/SHELL|ELYTRA/.test(role))
+        ||(part==='ANTENNAE'&&/ANTENNA|SIGNAL/.test(role)));
+      const primaryPart=rolePart||(group==='defense'||group==='reactions'
+        ?kinematic.counterPart:species.contactLimbs[index%species.contactLimbs.length]);
+      const supportPart=primaryPart===kinematic.supportPart?kinematic.counterPart:kinematic.supportPart;
+      const before=kinematic.coil.map((v,i)=>(v+shape.before[i]*side)*tierProfile.windScale*intensity);
+      const after=kinematic.hit.map((v,i)=>(v+shape.contact[i]*side)*tierProfile.contactScale*intensity);
+      const jointTracks=Object.freeze([
+        monsterPoseFrames(primaryPart,wind,contact,before,after),
+        monsterPoseFrames(supportPart,wind,contact,
+          before.map(v=>-v*kinematic.counterWeight*tierProfile.counterScale),
+          after.map(v=>-v*kinematic.groundWeight*tierProfile.supportScale))
+      ]);
+      return Object.freeze({
+        id:role,group,presentationTier:motionTier,bodyPlan:species.bodyPlan,
+        sourceHierarchyLevel:tierActing.includes(role)||tierSignature.includes(role)
+          ?'PRESENTATION_TIER':species.skills.some(value=>value.startsWith(role+':'))
+          ||species.defense.includes(role)||species.signature.includes(role)?'SPECIES':'BODY_PLAN',
+        motif,primaryContactLimb:primaryPart,secondaryRigParts:species.specialParts,
+        poseKeyTimes:Object.freeze(phaseTimes),jointTracks,
+        animationChannelsContainDistinctArticulatedCurves:true,
+        sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
+        contactMarkerUnchanged:true,rigSpecificCurvesAndContactsRequired:true,
+        authoritativeRootMovement:false,authoritativeHitboxAndMovementUnchanged:true,
+        gameplayAuthority:false,verified:false
+      });
+    })
+  ));
   // 장르별 요청 슬롯만 투영한다. 다른 장르로 전용된 원본 동작은 삭제하지 않는다.
   const requestedGroups=COMMON_GENRE_MOTION_CONTEXTS[requestedGenre];
   const semanticOrigin=new Set([...species.locomotion,...species.attacks,...species.defense,
@@ -1488,7 +1556,7 @@ export function createCommonMonsterActionLoadout({
     presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
     speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),
     genreGroups:requestedGroups,roleRequests,
-    choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
+    choreography,expressiveChoreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
     platformNativeAdaptationRequired:true,runtimeVerified:false,productionVerified:false,

@@ -1684,3 +1684,45 @@ test('creature body-plan, species and tier motion layers preserve combat authori
   assert.equal(boss.gameplayAuthority,false);
   assert.throws(()=>createCommonMonsterActionLoadout({tier:'DIVINE'}),/UNKNOWN_COMMON_MONSTER_MOTION_TIER/);
 });
+
+test('noncombat genres reuse the same skinned career hierarchy without gameplay authority',()=>{
+  for(const genre of ['FARMING','CITY_BUILDER','EXPLORATION','COZY','PUZZLE','RHYTHM','RACING','SPORTS','EDUCATION','CARD_BATTLER']){
+    assert.ok(COMMON_GENRE_MOTION_CONTEXTS[genre],genre);
+  }
+  assert.equal(resolveCommonMotionGenre('farming-game'),'FARMING');
+  assert.equal(resolveCommonMotionGenre('base building'),'CITY_BUILDER');
+  assert.equal(resolveCommonMotionGenre('story complete rpg'),'ACTION_RPG');
+  const farmer=createCommonCareerMotionLoadout({careerId:'FARMER',genre:'FARMING',platform:'UNITY'});
+  const tycoon=createCommonCareerMotionLoadout({careerId:'FARMER',genre:'TYCOON',platform:'ROBLOX'});
+  assert.deepEqual(farmer.careerPath,tycoon.careerPath);
+  assert.deepEqual(farmer.groups.interactions,tycoon.groups.interactions);
+  assert.ok(farmer.roleRequests.some(row=>row.group==='interactions'&&row.id==='GATHER'));
+  assert.equal(farmer.productionVerified,false);
+  assert.equal(tycoon.gameplayAuthority,false);
+});
+
+test('species-specific skill defense reaction acting and death key poses vary by anatomy and tier',()=>{
+  const spider=createCommonMonsterActionLoadout({speciesId:'SPIDER',genre:'HORROR',tier:'BOSS'});
+  const wolf=createCommonMonsterActionLoadout({speciesId:'WOLF',genre:'SURVIVAL',tier:'BOSS'});
+  const normal=createCommonMonsterActionLoadout({speciesId:'SPIDER',genre:'HORROR'});
+  for(const group of ['skills','defense','reactions','acting','deaths','signature']){
+    assert.ok(spider.expressiveChoreography.some(row=>row.group===group),group);
+  }
+  const web=spider.expressiveChoreography.find(row=>row.id==='WEB_TRAP');
+  assert.equal(web.group,'skills');
+  assert.equal(web.primaryContactLimb,'SPINNERETS');
+  assert.equal(web.jointTracks.length,2);
+  assert.ok(web.jointTracks.every(row=>row.frames.length===5));
+  assert.ok(spider.expressiveChoreography.every(row=>row.verified===false
+    &&row.gameplayAuthority===false&&row.authoritativeRootMovement===false
+    &&row.authoritativeHitboxAndMovementUnchanged===true));
+  const special=spider.expressiveChoreography.find(row=>row.id==='SPIDER_BOSS_SIGNATURE_TELL');
+  assert.equal(special.sourceHierarchyLevel,'PRESENTATION_TIER');
+  assert.notDeepEqual(
+    special.jointTracks[0].frames,
+    normal.expressiveChoreography.find(row=>row.id==='SPIDER_PEDIPALP_THREAT').jointTracks[0].frames);
+  assert.notDeepEqual(
+    spider.expressiveChoreography.find(row=>row.group==='deaths').jointTracks[0].frames,
+    wolf.expressiveChoreography.find(row=>row.group==='deaths').jointTracks[0].frames);
+  assert.equal(spider.productionVerified,false);
+});
