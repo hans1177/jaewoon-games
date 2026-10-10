@@ -194,25 +194,40 @@
         "단서 해석을 통한 고대 문자 해독 및 지름길 개척",
         "속성 공명 시스템 사용 또는 고대 유물 파편 활용"
       ]
+    },
+    "local_authoring_parts::e122d2a2d7bbd0357fec960dcd307e4495834283dea76c326ba984a9d12b95b4:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "캐릭터 속성 조합 선택",
+        "유물 에너지 소모 결정"
+      ],
+      "stateOutputs": [
+        "지형 변화/길 열기",
+        "맵 접근성 및 전투 난이도 변환"
+      ],
+      "name": "주요 플레이어 행동 및 세계 상태 변화 시스템",
+      "purpose": "플레이어의 캐릭터 속성 조합 선택과 유물 에너지 사용 결정에 따라 지형 변화와 맵 구조 변경을 일으키며, 이로 인해 전략적 우위가 형성되고 새로운 게임 경험을 제공합니다.",
+      "playerChoice": "플레이어는 매 턴마다 특정 속성을 우선 사용하거나 동료와의 속성 연계를 발동할 수 있으며, 이 선택은 전투의 템포와 피해량, 그리고 맵의 접근성과 이후 전투 난이도에 즉각적인 영향을 미칩니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 588907,
-      "lastMs": 63190,
+      "totalMs": 634804,
+      "lastMs": 45897,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:46:40.236Z"
+      "updatedAt": "2026-10-10T10:47:26.135Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:36:51.303Z",
-  "updatedAt": "2026-10-10T10:46:40.236Z",
+  "updatedAt": "2026-10-10T10:47:26.135Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1740,7 +1755,7 @@
   "localAuthoringSplits": {
     "1c49f902ae7f6e55966a696147b665c64769f1cd4474acbd85ae2df4ac45ba33": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:46:40.236Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:47:26.135Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
