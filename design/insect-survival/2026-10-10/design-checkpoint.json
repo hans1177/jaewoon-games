@@ -187,25 +187,32 @@
       },
       "playerFantasy": "생명, 자원, 전투, 이동, 위협을 통해 작은 세계에서 살아남는 플레이어가 다양한 선택과 위험에 직面하며, 그들의 행동은 실제 세계 상태와 새로운 규칙을 생성하게 된다.",
       "coreFun": "{\"identity\": \"작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.\",\"creativeGrammar\": {\"mainIdentity\": \"기본 게임 주제/정체성: 작은 세계에서 살아남는 생존 게임\", \"a\": {\"system\": \"게임 시스템+해당 축 창작 소재: 생명, 자원, 전투, 이동, 위협\", \"material\": \"신화, 역사, 철학, 과학, 예술 등 제한 없음\", \"materialDomain\": \"생명, 자원, 전투, 이동, 위협\", \"stateChange\": \"생물의 진입, 자원 수집, 위협 회피, 전략 수립\" }, \"b\": {\"system\": \"다른 시스템+해당 축 창작 소재: 적, 경로, 목표, 보상, 장비\", \"material\": \"신화, 역사, 철학, 과학, 예술 등 제한 없음\", \"materialDomain\": \"적, 경로, 목표, 보상, 장비\", \"stateChange\": \"적 상대, 경로 선택, 목표 달성, 보상 획득\" }, \"abCausality\": \"양방향 실제 상태 교환: 생물의 진입 -> 적 상대 -> 경로 선택 -> 목표 달성 -> 보상 획득\", \"abEvolution\": {\"aChangesB\": \"적 상대 변화, 경로 선택 변화, 목표 달성 변화, 보상 획득 변화\", \"bChangesA\": \"생물의 진입 변화, 경로 선택 변화, 목표 달성 변화, 보상 획득 변화\", \"lateGameChange\": \"생물의 진입과 경로 선택이 새로운 규칙으로 바뀌는 조건과 피드백\"}, \"materialFusion\": {\"contrast\": \"원인 → 인물 갈등 → 플레이어 선택 → 실질 세계 상태 변화 → 다음 사건\", \"causalBridge\": \"플레이어 선택은 원인과 인물 갈"
+    },
+    "local_authoring_parts::e11ac52a4a79dffa36b02f4452136449db2f20581ef0daec104b442bc84326af:coreLoop": {
+      "coreLoop": [
+        "입력: 생물의 진입, 자원 수집, 위협 회피, 전략 수립",
+        "선택: 적 상대 대응, 경로 선택, 목표 달성, 보상 획득",
+        "보상: 새로운 규칙 생성, 세계 상태 변화"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 539894,
-      "lastMs": 74668,
+      "totalMs": 575977,
+      "lastMs": 36083,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T10:31:10.685Z"
+      "updatedAt": "2026-10-10T10:31:46.771Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:22:10.686Z",
-  "updatedAt": "2026-10-10T10:31:10.687Z",
+  "updatedAt": "2026-10-10T10:31:46.778Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "b09c1758ae1d280a4a3601ff6304e88fb8675d6891056a434cbf880cf1b36047": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:31:10.687Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:31:46.771Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
