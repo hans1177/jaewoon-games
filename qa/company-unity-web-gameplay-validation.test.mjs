@@ -545,6 +545,20 @@ test('monster adventure uses the existing original 3D library as native Unity me
 });
 
 
+test('fatal Unity ContentLoad WebGL crash is causally distinguished from downstream gameplay-start symptoms',()=>{
+  const classification=source.indexOf('const missingContentLoadMethod=');
+  const observed=source.indexOf('const failureSignature=missingContentLoadMethod&&mainLoopHalted');
+  const recorded=source.indexOf('failureSignature,markers,consoleErrors,pageErrors,failedRequests');
+  assert.ok(classification>0&&observed>classification&&recorded>observed);
+  assert.match(source,/Unable to find method ProcessResults in/);
+  assert.match(source,/UnityEngine\\.ContentLoadModule\\.dll/);
+  assert.match(source,/Unity\\.Loading\\.ContentLoadingSystem/);
+  assert.match(source,/RuntimeError:\\s\*null function/);
+  assert.match(source,/UNITY_WEB_CONTENTLOAD_METHOD_MISSING:Unity.Loading.ContentLoadingSystem.ProcessResults/);
+  assert.match(source,/UNITY_WEB_WASM_MAIN_LOOP_HALTED/);
+  assert.match(source,/throw error;/);
+});
+
 test('failed Unity Web browser runs persist observed negative evidence without bypassing QA',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
   assert.match(source,/observedRuntimeFailure:true/);
