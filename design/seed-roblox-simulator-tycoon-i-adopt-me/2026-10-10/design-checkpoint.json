@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 전략적 선택을 통해 적의 웨이브에 맞서 빠르게 변하는 방식으로 게임을 진행하며, 자원 수집과 전략적 배치가 중요한 요소로 작용합니다.",
       "coreFun": "{\"identity\": \"Pocket Foundry - Adaptive Defensive Strategy with Dynamic Resource Management\", \"creativeGrammar\": {\"mainIdentity\": \"Single-Player Tower Defense with Wave Pressure and Adaptive Defense\", \"a\": {\"system\": \"Enemy Behavior\", \"material\": \"Dynamic Enemy Types and Wave Composition\", \"materialDomain\": \"Strategy, Placement, Counterplay\", \"stateChange\": \"Adaptation to Enemy Types\"}, \"b\": {\"system\": \"Resource Management\", \"material\": \"Defensive Upgrades and Strategic Placements\", \"materialDomain\": \"Economy, Tactical Choices\", \"stateChange\": \"Resource Allocation Before Pressure Increase\"}, \"abCausality\": \"{\\\"fromId\\\": \\\"enemy_behavior\\\", \\\"toId\\\": \\\"resource_management\\\", \\\"outputToInputStateKeys\\\": [{\\\"key\\\": \\\"adaptation_to_enemy_types\\\", \\\"value\\\": \\\"dynamic_defense_strategy\\\"\"}, {\\\"key\\\": \\\"resource_allocation\\\", \\\"value\\\": \\\"tactical_placement\\\"}]}\", \"abEvolution\": {\\\"aChangesB\\\":"
+    },
+    "local_authoring_parts::02dd6b5cc05dc1aaa9059b2fe18aacd5afc576d17356762b62407ea566df2504:coreLoop": {
+      "coreLoop": [
+        "Player Action - Enemy Wave Composition",
+        "Adaptation to Enemy Types",
+        "Resource Allocation Before Pressure Increase"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 516387,
-      "lastMs": 75607,
+      "totalMs": 555615,
+      "lastMs": 39228,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:59:10.737Z"
+      "updatedAt": "2026-10-10T09:59:49.968Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:50:34.321Z",
-  "updatedAt": "2026-10-10T09:59:10.738Z",
+  "updatedAt": "2026-10-10T09:59:49.976Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1929,8 +1936,8 @@
   "localAuthoringSplits": {
     "0bfdcd16d488084664bda2bc198bbabdcb3c5278032eb0b81f1861472e590522": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:59:10.738Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:59:49.968Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
