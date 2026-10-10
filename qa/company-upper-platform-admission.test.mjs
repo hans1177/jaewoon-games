@@ -144,6 +144,51 @@ test('Unity Web existing readiness stage consumes growth proof without changing 
   assert.match(continuous,/F9/);
 });
 
+test('Unity Web required growth gate fails closed without main source-bound runtime evidence',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-growth-readiness-'));
+  const gameId='growth-readiness';
+  try{
+    write(root,'unity-games/'+gameId+'/Assets/Scripts/GameCore.cs','public class GameCore { public void Play(){} }');
+    write(root,'unity-games/'+gameId+'/Assets/Editor/WebBuild.cs','public static class WebBuild { public static void BuildWeb(){} }');
+    const sourceTree=unitySourceTreeSha256(path.join(root,'unity-games',gameId));
+    const record={
+      version:1,gameId,state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,
+      unitySourceTreeSha256:sourceTree,releaseOrDeploymentAuthority:false,
+      buildUpGrowthRequired:true,
+      criteria:{
+        design:{pass:true},code:{pass:true},
+        graphics:{pass:true,native3dVerified:true,requiredDimension:'3D',
+          native3dChecks:['BROWSER_PLAY','INDEPENDENT_QA','REGRESSION'].map(stage=>({
+            stage,pass:true,requiredDimension:'3D',
+            source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',
+            observedMeshCount:5,observedTriangles:150,depthPass:true,perspectiveCamera:true,
+            worldMeshes3d:5,worldDepthCm:150,gameplayActors3d:1,spriteGameplayActors:0
+          }))},
+        webglBuild:{pass:true},actualPlay:{pass:true},qa:{pass:true},portability:{pass:true},
+        buildUpGrowth:{pass:false}
+      }
+    };
+    const evidence='web-games/'+gameId+'/upper-platform-development-readiness.json';
+    write(root,evidence,record);
+    let result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
+    assert.equal(result.web.state,'UNITY_WEB_FLOOR');
+    assert.equal(result.web.reason,'READINESS_BUILD_UP_GROWTH_EVIDENCE_REQUIRED');
+    record.criteria.buildUpGrowth.pass=true;
+    record.buildUpGrowth={
+      gameId,platform:'UNITY_WEB',status:'VERIFIED_PLAYER_FACING_GROWTH',
+      verifiedGrowth:true,runtimeQaVerified:true,comparisonAvailable:true,
+      sourceTreeSha256:sourceTree,previousSourceTreeSha256:'f'.repeat(64)
+    };
+    write(root,evidence,record);
+    result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
+    assert.equal(result.web.state,'UNITY_WEB_VERIFIED');
+    record.buildUpGrowth.previousSourceTreeSha256=sourceTree;
+    write(root,evidence,record);
+    result=classifyUpperPlatformAdmission(baseItem(gameId),{repoRoot:root});
+    assert.equal(result.web.reason,'READINESS_BUILD_UP_GROWTH_EVIDENCE_REQUIRED');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('new upper-platform entry stays in Unity Web floor until readiness exists',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'upper-platform-floor-'));
   try{
