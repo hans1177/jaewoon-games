@@ -3,6 +3,8 @@
 // 원칙: 제작 계획은 실제 구현·런타임 통과 증거가 아니며 기존 책임 소스만 연결한다.
 // 임포트
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import {createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
@@ -195,6 +197,34 @@ export const INTERFACE_INTERNAL_TOOL_MATCHERS=Object.freeze([
   {id:'COMPANION_PARTY',match:/party|companion|squad|파티|동료|분대/i,signals:[],library:'assets/ai-party.js',screens:['GAMEPLAY']}
 ]);
 
+
+// 기존 assets/ 코드와 회사 공식 asset registry만 읽는다. 게임 파일/설계/정책은 변경하지 않는다.
+const GAME_LIBRARY_INVENTORY_CACHE=new Map();
+export function readCurrentGameLibraryInventory({repoRoot=process.cwd()}={}){
+  const root=path.resolve(repoRoot),assetsDir=path.join(root,'assets'),registryPath=path.join(root,'company-asset-library.json');
+  const stamp=file=>{try{const stat=fs.statSync(file);return stat.mtimeMs+':'+stat.size;}catch{return 'MISSING';}};
+  const key=stamp(assetsDir)+'|'+stamp(registryPath);
+  const cached=GAME_LIBRARY_INVENTORY_CACHE.get(root);
+  if(cached?.stamp===key)return cached.inventory;
+  let availableLibraryPaths=[],catalogAssets=[];
+  try{availableLibraryPaths=fs.readdirSync(assetsDir,{withFileTypes:true})
+    .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
+    .map(entry=>'assets/'+entry.name).sort();}catch{}
+  try{
+    const library=JSON.parse(fs.readFileSync(registryPath,'utf8'));
+    catalogAssets=list(library.assets).filter(row=>row&&typeof row==='object').map(row=>({
+      id:row.id,title:row.title,name:row.name,category:row.category,family:row.family,
+      platform:row.platform,status:row.status,path:row.path,sourcePath:row.sourcePath,
+      fileRoles:row.fileRoles,license:row.license,runtimeVerificationState:row.runtimeVerificationState,
+      verifiedCompanyReusable:row.verifiedCompanyReusable,productionVerified:row.productionVerified,
+      internalUseBlockedByMissingAudit:row.internalUseBlockedByMissingAudit,
+      gameExclusive:row.gameExclusive,consumerGameIds:row.consumerGameIds
+    }));
+  }catch{}
+  const inventory=Object.freeze({availableLibraryPaths:Object.freeze(availableLibraryPaths),catalogAssets:Object.freeze(catalogAssets)});
+  GAME_LIBRARY_INVENTORY_CACHE.set(root,{stamp:key,inventory});
+  return inventory;
+}
 
 // 모든 내부 라이브러리(코드·공용 메쉬·모션·머티리얼·VFX·UI 등)는 같은 기존 BUILD_UP 경로에서 선별한다.
 // 외부 알고리즘은 참고 원칙만 제공한다. 외부 패키지 설치·별도 엔진·검증 없는 자동 임포트는 금지한다.
