@@ -173,6 +173,7 @@ public static class UnityWebFloorBuild
 
         var palette=new Dictionary<string,Color>(StringComparer.Ordinal);
         var glossiness=new Dictionary<string,float>(StringComparer.Ordinal);
+        var emissions=new Dictionary<string,Color>(StringComparer.Ordinal);
         string currentMaterial="";
         foreach(string raw in File.ReadAllLines(mtlPath))
         {
@@ -181,6 +182,11 @@ public static class UnityWebFloorBuild
             if(tokens[0]=="newmtl")currentMaterial=tokens[1];
             else if(tokens[0]=="Kd"&&tokens.Length>=4&&!string.IsNullOrEmpty(currentMaterial))
                 palette[currentMaterial]=new Color(
+                    float.Parse(tokens[1],CultureInfo.InvariantCulture),
+                    float.Parse(tokens[2],CultureInfo.InvariantCulture),
+                    float.Parse(tokens[3],CultureInfo.InvariantCulture),1f);
+            else if(tokens[0]=="Ke"&&tokens.Length>=4&&!string.IsNullOrEmpty(currentMaterial))
+                emissions[currentMaterial]=new Color(
                     float.Parse(tokens[1],CultureInfo.InvariantCulture),
                     float.Parse(tokens[2],CultureInfo.InvariantCulture),
                     float.Parse(tokens[3],CultureInfo.InvariantCulture),1f);
@@ -205,6 +211,13 @@ public static class UnityWebFloorBuild
             material.color=color;
             if(material.HasProperty("_Glossiness"))
                 material.SetFloat("_Glossiness",glossiness.ContainsKey(part)?glossiness[part]:0.18f);
+            if(material.HasProperty("_EmissionColor"))
+            {
+                Color emissive=emissions.ContainsKey(part)?emissions[part]:Color.black;
+                material.SetColor("_EmissionColor",emissive);
+                if(emissive.maxColorComponent>0.001f)material.EnableKeyword("_EMISSION");
+                else material.DisableKeyword("_EMISSION");
+            }
             EditorUtility.SetDirty(material);
             assetMaterials[i]=material;
         }
