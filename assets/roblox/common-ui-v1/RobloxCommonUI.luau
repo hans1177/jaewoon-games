@@ -4813,11 +4813,12 @@ function RobloxCommonUI.CreateWorldEventTimeline(options)
   list.BackgroundTransparency=1;list.BorderSizePixel=0;list.ScrollBarThickness=4;list.Active=true
   list.ScrollingDirection=Enum.ScrollingDirection.Y;list.AutomaticCanvasSize=Enum.AutomaticSize.Y
   list.CanvasSize=UDim2.fromOffset(0,0);list.Parent=body;commonList(list,false,8)
-  local labels={}
+  local labels,eventRows={},{}
   local function sync(state)
     state=type(state)=="table"and state or {}
     local events=type(state.events)=="table"and state.events or {}
     local seen,ordered={},{}
+    eventRows=ordered
     for _,row in ipairs(events)do
       if type(row)=="table"then
         local id=tostring(row.eventId or row.id or "")
@@ -4831,10 +4832,11 @@ function RobloxCommonUI.CreateWorldEventTimeline(options)
     end)
     for i,row in ipairs(ordered)do
       if not labels[i]then
+        local index=i
         local label=RobloxCommonUI.CreateTabButton({name="Event"..i,text="",size=UDim2.new(1,-8,0,82),theme=theme})
         label.LayoutOrder=i;label.Parent=list;labels[i]=label
         label.Activated:Connect(function()
-          local current=ordered[i]
+          local current=eventRows[index]
           if current and type(options.onInspect)=="function"then options.onInspect(current.eventId or current.id,current)end
         end)
       end
@@ -5341,13 +5343,27 @@ function RobloxCommonUI.Create(atomId, options)
     return RobloxCommonUI.CreateLoadingRetryWithCause(options)
   elseif id == "FAILURE_RECOVERY_CHECKPOINT" then
     return RobloxCommonUI.CreateFailureRecoveryCheckpoint(options)
+  elseif id == "GAME_WINDOW_LAYOUT" then
+    return RobloxCommonUI.CreateGameWindowLayout(options)
+  elseif id == "STATUS_OVERVIEW" then
+    return RobloxCommonUI.CreateStatusOverview(options)
+  elseif id == "SKILL_TREE_SCREEN" then
+    return RobloxCommonUI.CreateSkillTreeScreen(options)
+  elseif id == "JOURNAL_TIMELINE" then
+    return RobloxCommonUI.CreateJournalTimeline(options)
+  elseif id == "WORLD_EVENT_TIMELINE" then
+    return RobloxCommonUI.CreateWorldEventTimeline(options)
+  elseif id == "TRADE_ESCROW_REVIEW" then
+    return RobloxCommonUI.CreateTradeEscrowReview(options)
+  elseif id == "EVENT_CINEMATIC_CARD" then
+    return RobloxCommonUI.CreateEventCinematicCard(options)
   end
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
 function RobloxCommonUI.Audit()
   return table.freeze({
-    version = 10,
+    version = 11,
     packId = "roblox-common-ui-v1",
     atoms = table.freeze({
       "FRAME_PANEL", "BUTTON_PRIMARY", "BAR_HEALTH", "INVENTORY_SLOT",
@@ -5400,11 +5416,13 @@ function RobloxCommonUI.Audit()
       "RECIPE_PREREQUISITE_CHAIN", "MATERIAL_SHORTAGE_ROUTE", "SHOP_PRICE_DELTA_COMPARE", "VENDOR_STOCK_STATE", "QUEST_DEPENDENCY_CHAIN",
       "LORE_RELATION_GRAPH", "NPC_RELATIONSHIP_TIMELINE", "PARTY_ROLE_OVERVIEW", "ROUTE_RISK_PREVIEW", "THREAT_EDGE_INDICATOR",
       "BOSS_PHASE_STRIP", "WAVE_FORECAST_RIBBON", "STATUS_EFFECT_TIMELINE", "HOUSING_STRUCTURAL_SUPPORT_OVERLAY", "HOUSING_ROOM_FUNCTION_HEATMAP",
-      "CROP_GROWTH_TIMELINE", "ACCESSIBILITY_REDUCED_FLASH_MODE", "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP", "LOADING_RETRY_WITH_CAUSE", "FAILURE_RECOVERY_CHECKPOINT"
+      "CROP_GROWTH_TIMELINE", "ACCESSIBILITY_REDUCED_FLASH_MODE", "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP", "LOADING_RETRY_WITH_CAUSE", "FAILURE_RECOVERY_CHECKPOINT",
+      "GAME_WINDOW_LAYOUT","STATUS_OVERVIEW","SKILL_TREE_SCREEN","JOURNAL_TIMELINE","WORLD_EVENT_TIMELINE",
+      "TRADE_ESCROW_REVIEW","EVENT_CINEMATIC_CARD"
     }),
-    atomCount = 204,
-    fullScreenSurfaceCount = 17,
-    deepSystemComponentCount = 150,
+    atomCount = 211,
+    fullScreenSurfaceCount = 19,
+    deepSystemComponentCount = 157,
     subsystemDepthExpansionCount = 35,
     parryPresentationComponentCount = 5,
     worldInteractionComponentCount = 10,
