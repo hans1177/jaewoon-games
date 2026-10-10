@@ -194,25 +194,40 @@
         "방어 시스템 유연성 확보 → 자원 배분 전략적 결정 → 적 웨이브 예측 및 방어 구조 생성",
         "주요 게임 정체성 발달 → 경제적 교환 기반의 전략적 의사결정 → 세계관에 따른 새로운 선택 및 결과 창출"
       ]
+    },
+    "local_authoring_parts::f7f0854a70dd3d8841f226054b032fd0cb695f57b8b90cc8766e724990c29e6d:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_arena_defense",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "enemyType",
+        "waveComposition"
+      ],
+      "stateOutputs": [
+        "defensiveStructurePlacement",
+        "resourceAllocationDecision"
+      ],
+      "name": "Arena Defense System",
+      "purpose": "Adaptive defense system with dynamic resource allocation",
+      "playerChoice": "Select defensive structures that match enemy types and invest resources in new strategies or placements before pressure increases"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 530387,
-      "lastMs": 56591,
+      "totalMs": 625824,
+      "lastMs": 95437,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:34:28.716Z"
+      "updatedAt": "2026-10-10T05:36:04.154Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:25:38.302Z",
-  "updatedAt": "2026-10-10T05:34:28.716Z",
+  "updatedAt": "2026-10-10T05:36:04.154Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1927,7 +1942,7 @@
   "localAuthoringSplits": {
     "de619f8198b3052df60b6bf980bc2d045f52e51aac8a32e9578b1d59c30ded5f": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:34:28.716Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:36:04.154Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
