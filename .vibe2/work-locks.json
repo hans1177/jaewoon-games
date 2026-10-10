@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1fcfb5m",
+      "worker": "vibe2",
+      "taskId": "internal-motion-banshee-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/banshee/init.luau"
+      ],
+      "baseSha": "f320239ae5f8bed327806f8aac0319fde33ec0a4",
+      "runId": "38037579229",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-10T09:22:19.078Z",
+      "expiresAt": "2026-10-10T10:07:19.078Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-banshee-walk-v1"
+      ]
+    }
+  ]
 }
