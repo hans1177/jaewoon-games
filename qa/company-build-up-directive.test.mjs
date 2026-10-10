@@ -1010,6 +1010,28 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.deepEqual(trace.roleBindings.map(x=>x.systemId),roles.map((_,i)=>'rule-'+i));
       assert.ok(trace.roleBindings.every(x=>x.suggestedExistingOwnerFiles.every(file=>expectedFiles.includes(file))));
       assert.ok(trace.roleBindings.every(x=>x.codingStatus==='SOURCE_OWNER_CANDIDATE_UNVERIFIED'));
+      if(platform==='UNITY_WEB'){
+        const algorithm=trace.unityWebDevelopmentAlgorithm;
+        assert.equal(algorithm.platform,'UNITY_WEB');
+        assert.ok(algorithm.algorithms.includes('DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER'));
+        assert.ok(algorithm.algorithms.includes('WEIGHTED_GREEDY_SET_COVER_FOR_RESPONSIBLE_SOURCE_FILES'));
+        assert.ok(algorithm.cyclicRoleDependencies.includes('MAIN'),'a circular authored design must not be accepted as linear');
+        const acyclic=buildDesignToPlatformCodingTrace({
+          gameId,design:{...signedDesign,systemInterconnections:signedDesign.systemInterconnections.slice(0,-1)},
+          platform,repoRoot:root,sourceRoot,sourceObservation:observed,
+          responsibleFiles:expectedFiles,multiplayerRequired:true
+        }).unityWebDevelopmentAlgorithm;
+        assert.deepEqual(acyclic.roleImplementationOrder,['MAIN','A','B','c','@']);
+        assert.deepEqual(acyclic.cyclicRoleDependencies,[]);
+        assert.equal(algorithm.designRequirements.filter(row=>row.kind==='CORE_LOOP').length,3);
+        assert.ok(algorithm.designRequirements.some(row=>row.id==='NATIVE_3D_VISUAL'));
+        assert.ok(algorithm.designRequirements.some(row=>row.id==='MULTIPLAYER_SYNC'));
+        assert.ok(algorithm.developmentPackages.length>0);
+        assert.ok(algorithm.developmentPackages.every(row=>row.responsibleFiles.every(file=>expectedFiles.includes(file))));
+        assert.equal(algorithm.existingF0F9SequencePreserved,true);
+        assert.equal(algorithm.sourceCandidatesNeverCountAsRuntimePass,true);
+        assert.deepEqual(algorithm.unresolvedRequirements,[]);
+      }else assert.equal(trace.unityWebDevelopmentAlgorithm,undefined,'Roblox/Unity app algorithms remain unchanged');
       const directive=buildGameSpecificBuildUpDirective({
         gameId,gameName:'원본 테스트',platform,repoRoot:root,sourceRoot,
         designRecord:{content:signedDesign},sourceObservation:observed,responsibleFiles:expectedFiles
@@ -1024,6 +1046,10 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.match(directivePrompt(directive),/DESIGN_TO_PLATFORM_CODING_CHECK:/);
       assert.match(directivePrompt(directive),/CODING_IMPLEMENTATION_VERDICT:/);
       assert.equal(directive.designToPlatformCodingTrace.sourceImplementationPassed,false);
+      if(platform==='UNITY_WEB'){
+        assert.match(directivePrompt(directive),/UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS:/);
+        assert.ok(directive.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm?.developmentPackages.length);
+      }else assert.doesNotMatch(directivePrompt(directive),/UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS:/);
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -1086,6 +1112,46 @@ test('Unity Web design role keys and cross-system keys are audited against execu
     assert.equal(second.sourceImplementationPassed,false,'matching tokens are still not playable rule parity');
     assert.ok(second.gapReasons.includes('DESIGN_EDGE_STATE_KEYS_INCONSISTENT:main->reward'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Web graph and source packages survive focused Vibe worker compression, not Roblox',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  const {guide,compact}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const owner='unity-games/unity-game/Assets/Scripts/GameCore.cs';
+  const directive={
+    directiveId:'unity-graph',gameId:'unity-game',generation:3,
+    gameIdentityAndNonNegotiables:{identity:'유니티 웹 3D 게임'},
+    designToPlatformCodingTrace:{
+      activePlatform:'UNITY_WEB',sourceTreeFingerprint:'a'.repeat(64),
+      platformCodingPlans:[{platform:'UNITY_WEB',canonicalGameSourceRoot:'unity-games/unity-game'}],
+      unityWebDevelopmentAlgorithm:{
+        roleImplementationOrder:['MAIN','A','B','@'],cyclicRoleDependencies:[],
+        unresolvedRequirements:[],designRequirements:[{id:'ROLE:MAIN'}],
+        developmentPackages:[{
+          sequence:1,responsibleFiles:[owner],designRequirementIds:['ROLE:MAIN','NATIVE_3D_VISUAL'],
+          acceptance:'EXACT_WEBGL_NATIVE_QA',runtimeVerified:false
+        }],
+        sequence:['LOAD_LATEST_VERIFIED_DESIGN','DIRECTLY_EDIT_UNITY_SOURCE','EXISTING_F0_TO_F9']
+      }
+    }
+  };
+  const original=guide({gameId:'unity-game',target:'unity',
+    selectedTask:{firstStageUnityWeb:true,buildUpDirective:directive}},[owner]);
+  assert.match(original,/unityWebAlgorithm=DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER/);
+  assert.match(original,/unityWebPackage=.*ROLE:MAIN/);
+  assert.match(original,/unityWebGrowthProof=COMPARE_EXACT_MAIN_VERIFIED_BASELINE/);
+  assert.match(compact(original,{compact:true,responsiblePaths:[owner]}),/unityWebPackage=/);
+  const roblox=guide({gameId:'unity-game',target:'roblox',buildUpDirective:directive},[owner]);
+  assert.doesNotMatch(roblox,/unityWebAlgorithm=/);
 });
 
 test('Roblox coding reads the same game Unity Web C# origin with exact change fingerprint and native-only authority',()=>{

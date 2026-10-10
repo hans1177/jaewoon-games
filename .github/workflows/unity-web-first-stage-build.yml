@@ -562,19 +562,39 @@ jobs:
           GAME_ID: ${{ steps.request.outputs.game_id }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
           UNITY_SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
+          VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
+          git fetch --no-tags --depth=1 origin main
+          if [ -n "$VIBE2_TASK_ID" ]; then
+            git fetch --no-tags --depth=1 origin vibe2-unreal-core || true
+          fi
           git show origin/company-runtime:development-queue.json > /tmp/company-runtime-development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
+          import {evaluateUnityWebBuildUpGrowth} from './tools/company-upper-platform-admission.mjs';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
           const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
           const item=(queue.items||[]).find(row=>row.gameId===gameId);
           if(!item)throw new Error('UPPER_PLATFORM_QUEUE_ITEM_MISSING:'+gameId);
+          // 이전 검증본은 main에 게시된 같은 게임의 QA만 사용한다. 빌드 브랜치의 자가 표식은 기준선이 아니다.
+          let previousReadiness=null;
+          try{
+            previousReadiness=JSON.parse(execFileSync('git',['show',
+              'origin/main:web-games/'+gameId+'/upper-platform-development-readiness.json'],{encoding:'utf8'}));
+          }catch{}
+          let buildUpTask=null;
+          const taskId=String(process.env.VIBE2_TASK_ID||'').trim();
+          if(taskId){
+            try{
+              const queue=JSON.parse(execFileSync('git',['show','origin/vibe2-unreal-core:.vibe2/queue.json'],{encoding:'utf8',maxBuffer:32*1024*1024}));
+              buildUpTask=(queue.tasks||[]).find(row=>row.id===taskId&&row.gameId===gameId)||null;
+            }catch{}
+          }
           const build=JSON.parse(fs.readFileSync(path.join(root,'unity-web-build.json'),'utf8'));
           const play=JSON.parse(fs.readFileSync(path.join(root,'unity-web-gameplay-validation.json'),'utf8'));
           const independent=JSON.parse(fs.readFileSync(path.join(root,'unity-web-independent-qa.json'),'utf8'));
@@ -652,6 +672,17 @@ jobs:
           const portabilityPass=designPass
             &&build.canonicalSourceRoot==='unity-games/'+gameId
             &&build.buildOutputRoot==='web-games/'+gameId;
+          // 유니티 웹의 이전 검증 게임과 실제 C#/3D 소스·3회 브라우저 관측을 비교한다.
+          // 빌드업 작업에만 적용하고 수리·최적화나 로블록스의 개발 권한은 바꾸지 않는다.
+          const taskPhase=String(buildUpTask?.studioQualityEvolution?.phase||'').toUpperCase();
+          const taskFocus=String(buildUpTask?.studioQualityEvolution?.focusPillar
+            ||buildUpTask?.buildUpDirective?.primaryFocus||'CORE_FUN').toUpperCase();
+          const growth=evaluateUnityWebBuildUpGrowth({
+            repoRoot:process.cwd(),gameId,sourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
+            previousReadiness,play,independent,regression,focus:taskFocus
+          });
+          const buildUpGrowthRequired=Boolean(taskId&&growth.comparisonAvailable
+            &&(taskPhase==='BUILD_UP'||!buildUpTask));
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
@@ -660,8 +691,12 @@ jobs:
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
             portability:{pass:portabilityPass},
+            ...(buildUpGrowthRequired?{buildUpGrowth:{pass:growth.verifiedGrowth,status:growth.status,focus:taskFocus}}:{})
           };
           const pass=Object.values(criteria).every(row=>row.pass===true);
+          console.log('UNITY_WEB_BUILD_UP_GROWTH='+growth.status);
+          console.log('UNITY_WEB_BUILD_UP_GROWTH_REQUIRED='+(buildUpGrowthRequired?'YES':'NO'));
+          console.log('UNITY_WEB_BUILD_UP_GROWTH_VERIFIED='+(growth.verifiedGrowth?'YES':'NO'));
           const evidence={
             version:1,
             gameId,
@@ -671,6 +706,8 @@ jobs:
             unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:build.buildTreeSha256,
             criteria,
+            buildUpGrowth:growth,
+            buildUpGrowthRequired,
             passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
             failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
             releaseOrDeploymentAuthority:false,
@@ -687,6 +724,9 @@ jobs:
           manifest.unitySourceTreeSha256=build.unitySourceTreeSha256;
           manifest.buildTreeSha256=build.buildTreeSha256;
           manifest.requiredDimension='3D';
+          manifest.buildUpGrowth={status:growth.status,verifiedGrowth:growth.verifiedGrowth,required:buildUpGrowthRequired,
+            previousSourceTreeSha256:growth.previousSourceTreeSha256,
+            sourceTreeSha256:growth.sourceTreeSha256};
           manifest.homepageVerified=pass;
           manifest.browserVerification={
             actualBrowserPlay:play.pass===true,

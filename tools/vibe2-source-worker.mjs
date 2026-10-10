@@ -2466,6 +2466,32 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     return Object.keys(selected).length?'volumeSpec='+group+':'+JSON.stringify(selected):null;
   }).filter(Boolean):[];
   const codingTrace=d?.designToPlatformCodingTrace||{};
+
+  // 유니티 웹 전용: 기존 BUILD_UP 설계 그래프/가중 덮개 결과만 코딩 지시에 전달한다.
+  // 워커가 자체적인 설계 파이프라인이나 별도 프레임워크를 만들지 않도록 책임 파일을 제한한다.
+  const unityWebAlgorithm=codingTrace?.activePlatform==='UNITY_WEB'
+    &&(platformKey==='UNITY_WEB'||platformKey==='WEB')
+    &&clean(d.gameId)===clean(order.gameId)
+    ?codingTrace.unityWebDevelopmentAlgorithm:null;
+  const unityWebOwnedPackages=(unityWebAlgorithm?.developmentPackages||[])
+    .filter(row=>!responsibleFiles.length||(row.responsibleFiles||[]).some(file=>
+      responsibleFiles.some(p=>posix(file)===posix(p)||posix(file).endsWith('/'+posix(p)))));
+  const unityWebDevelopmentLines=unityWebAlgorithm?[
+    'unityWebAlgorithm=DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER+WEIGHTED_GREEDY_SET_COVER+PREVIOUS_VERIFIED_RUNTIME_DIFFERENTIAL_GROWTH;status=PLANNING_ONLY',
+    'unityWebDependencies='+JSON.stringify({
+      implementationOrder:(unityWebAlgorithm.roleImplementationOrder||[]).slice(0,20),
+      cyclicRoles:unityWebAlgorithm.cyclicRoleDependencies||[],
+      uncovered:unityWebAlgorithm.unresolvedRequirements||[],
+      totalDesignRequirements:(unityWebAlgorithm.designRequirements||[]).length
+    }),
+    ...unityWebOwnedPackages.slice(0,5).map(row=>'unityWebPackage='+JSON.stringify({
+      sequence:row.sequence,files:row.responsibleFiles,requirements:row.designRequirementIds,
+      acceptance:row.acceptance,runtimeVerified:false
+    })),
+    'unityWebDevelopmentSteps='+JSON.stringify(unityWebAlgorithm.sequence||[]),
+    'unityWebGrowthProof=COMPARE_EXACT_MAIN_VERIFIED_BASELINE_WITH_REAL_NEW_WEBGL_MOBILE_BROWSER_INPUT_STATE_CONTENT_NATIVE_3D_AND_THREE_INDEPENDENT_QA_RUNS; source change, manifest or marker alone never passes; preserve current save/balance/network meaning and canonical F0-F9.'
+  ]:[];
+
   // 모델 프롬프트는 작성된 설계 역할과 실제 소스 소유자 후보를 구분한다.
   // 여기에서 코딩·전투·멀티·WebGL 그래픽 PASS를 만들지 않는다.
   const designRoleRows=(codingTrace?.roleBindings||[]).map(row=>({
@@ -2536,6 +2562,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
       `unityWebSourceReference=${JSON.stringify(canonicalUnityWebReference)}`
     ]:[]),
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status};state=${row.nativeState};missingRead=${row.missingInputs.join(',')||'NONE'};missingWrite=${row.missingOutputs.join(',')||'NONE'}`),
+    ...unityWebDevelopmentLines,
     ...(Array.isArray(codingTrace.gapReasons)&&codingTrace.gapReasons.length
       ?[`designCodeGap=${codingTrace.gapReasons.slice(0,12).map(clean).join('|')};action=REPAIR_EXACT_EXISTING_SOURCE_AND_REPLAY_NATIVE_RUNTIME`]:[]),
     ...(codingTrace?.creativeCBinding?[`designCodeCreativeC=${JSON.stringify({
@@ -2600,11 +2627,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2662,7 +2689,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
