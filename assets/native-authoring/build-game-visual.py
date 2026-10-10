@@ -847,6 +847,29 @@ physical_analysis=surface_distribution()
 # Blender 소켓 기본색을 다시 곱하면 원본보다 어두워진다.
 glb_bytes=glb.read_bytes()
 glb_document=json.loads(glb_bytes[20:20+int.from_bytes(glb_bytes[12:16],'little')])
+# 3D 제작 참고: Hunyuan3D 2.1 논문(arXiv:2506.15442)의 PBR 품질 검증 원리만 응용한다.
+# 모델 가중치/코드/출력은 사용하지 않는다. 원본 라이선스는 대한민국 사용을 제외한다.
+# 데이터 구조는 실제 내보낸 GLB에서 확인하며 임의로 완성된 3D 모델을 합성하지 않는다.
+mesh_primitives=[part for mesh in glb_document.get('meshes',[]) for part in mesh.get('primitives',[])]
+pbr_mesh_qa={
+    'method':'EXPORTED_GLTF_GEOMETRY_AND_PBR_CHANNEL_INSPECTION',
+    'meshCount':len(glb_document.get('meshes',[])),
+    'primitiveCount':len(mesh_primitives),
+    'normalAndUvPresent':all(all(k in p.get('attributes',{}) for k in ('POSITION','NORMAL','TEXCOORD_0')) for p in mesh_primitives),
+    'materialIndexValid':all(isinstance(p.get('material'),int) and 0<=p['material']<len(glb_document.get('materials',[])) for p in mesh_primitives),
+    'materialFactorsFinite':all(
+        all(isinstance(v,(int,float)) and math.isfinite(v) and 0<=v<=1 for v in
+            [*m.get('pbrMetallicRoughness',{}).get('baseColorFactor',[1,1,1,1]),
+             m.get('pbrMetallicRoughness',{}).get('roughnessFactor',1),
+             m.get('pbrMetallicRoughness',{}).get('metallicFactor',1)])
+        for m in glb_document.get('materials',[])),
+    'sourceOriginalPreserved':True,
+    'runtimeVerified':False
+}
+pbr_mesh_qa['pass']=pbr_mesh_qa['meshCount']>0 and pbr_mesh_qa['primitiveCount']>0 and all(
+    pbr_mesh_qa[k] for k in ('normalAndUvPresent','materialIndexValid','materialFactorsFinite'))
+if not pbr_mesh_qa['pass']:
+    raise RuntimeError('NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID')
 materials=[]
 for index,mat in enumerate(glb_document.get('materials',[])):
     pbr=mat.get('pbrMetallicRoughness',{})
@@ -870,6 +893,14 @@ application={'version':1,'masterSha256':hashlib.sha256(glb.read_bytes()).hexdige
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'pbrMeshQa':pbr_mesh_qa,
+    'researchApplication':{
+        'rigMo':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html','usedFor':'SKINNED_GLTF_HIERARCHY_REVIEW','modelRan':False},
+        'physSkin':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html','usedFor':'RIG_AND_WEIGHT_VALIDATION','modelRan':False},
+        'motionMaster':{'reference':'https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html','usedFor':'NATIVE_CLIP_INVENTORY_AND_ACTION_SEQUENCE','modelRan':False},
+        'phyMotion':{'reference':'https://arxiv.org/abs/2605.14269','usedFor':'SURFACE_PHYSICS_AND_CONTACT_REVIEW','modelRan':False},
+        'hunyuan3d21':{'reference':'https://arxiv.org/abs/2506.15442','usedFor':'GLTF_PBR_MATERIAL_REVIEW_ONLY','modelRan':False,'modelLicenseRegionBlocked':'SOUTH_KOREA'}
+    },
     'target':ARGS.target,'nativeRuntimeVerified':False,'automaticPromotionAllowed':False,
     'importRequirements':['EXPLICIT_PROJECT_UNITS_PER_METER','PRESERVE_PIVOT_AND_HANDEDNESS_ONCE','MATERIAL_SLOT_NAME_MATCH','NATIVE_LIGHTING_AND_GAME_CAMERA_REVIEW','INDEPENDENT_COLLISION_AND_SPAWN_CONTACT']}
 if not ASSET_ARMATURES and not MOTION_CLIPS:
@@ -1075,6 +1106,8 @@ evidence={
     'imageToMesh':IMAGE_PROVENANCE,
     'openSourceModule':MODULE_PROVENANCE,
     'sourceMesh':SOURCE_PROVENANCE,
+    'pbrMeshQa':pbr_mesh_qa,
+    'researchApplication':application['researchApplication'],
     'multiViewPreview':IMAGE_VIEW_OUTPUTS,
     'videoExport':VIDEO_EXPORT,
     'motionClips':MOTION_CLIPS,
