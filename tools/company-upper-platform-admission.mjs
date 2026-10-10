@@ -118,20 +118,26 @@ export function evaluateUnityWebBuildUpGrowth({
     &&e.visualQa?.renderedScene?.pixels?.source==='REAL_UNITY_CANVAS_SCREENSHOT'
     &&/^[a-f0-9]{64}$/.test(clean(e.visualQa.renderedScene.sceneCaptureSha256)));
   const metric=key=>Math.min(...qaRuns.map(e=>Math.max(0,Number(e?.spatialGameplay?.[key])||0)));
-  const actualMarkerLines=(Array.isArray(play?.markers)?play.markers:[])
-    .filter(line=>typeof line==='string'&&line.includes('JAEWOON_UNITY_WEB_QA ')&&line.includes('game='+id));
-  const liveEventKinds=new Set(),liveContentIds=new Set();
-  for(const line of actualMarkerLines){
-    const kind=line.match(/JAEWOON_UNITY_WEB_QA\s+([A-Z_]+)/)?.[1]||'';
-    if(['REGION','QUEST','ENCOUNTER','BOSS','SKILL','ITEM','REWARD','PROGRESS','CORE_FUN'].includes(kind)){
-      liveEventKinds.add(kind);
+  // 서로 다른 3회 브라우저 실행에서 재현되고, 실제 GAME STATE에도 도달한 콘텐츠만 사용한다.
+  // 콘솔 이벤트/상태키의 이름만 추가한 결과는 독립된 성장 증거로 인정하지 않는다.
+  const runtimeRuns=qaRuns.map(e=>{
+    const lines=(Array.isArray(e?.markers)?e.markers:[])
+      .filter(line=>typeof line==='string'&&line.includes('JAEWOON_UNITY_WEB_QA ')&&line.includes('game='+id));
+    const states=lines.filter(line=>line.includes(' STATE '));
+    const ids=new Set(),kinds=new Set();
+    for(const line of lines){
+      const kind=line.match(/JAEWOON_UNITY_WEB_QA\\s+([A-Z_]+)/)?.[1]||'';
+      if(!['REGION','QUEST','ENCOUNTER','BOSS','SKILL','ITEM','REWARD','PROGRESS','CORE_FUN'].includes(kind))continue;
+      kinds.add(kind);
       for(const key of ['region','quest','enemy','boss','skill','item','ability','content','event']){
         const value=line.match(new RegExp('\\b'+key+'=([A-Za-z][A-Za-z0-9_-]{1,63})\\b'))?.[1];
-        if(value&&!['none','unknown','null','true','false','pass','failed','ready'].includes(value.toLowerCase()))
-          liveContentIds.add(key+':'+value);
+        if(!value||['none','unknown','null','true','false','pass','failed','ready'].includes(value.toLowerCase()))continue;
+        if(states.some(state=>state.includes(key+'='+value)))ids.add(key+':'+value);
       }
     }
-  }
+    return{ids,kinds,restored:new Set((e?.saveRestore?.restoredKeys||[]).map(clean).filter(Boolean))};
+  });
+  const shared=(field)=>[...runtimeRuns[0][field]].filter(value=>runtimeRuns.every(run=>run[field].has(value))).sort();
   const minValue=e=>Math.max(0,Number(e)||0);
   const observation={
     source:sourceSnapshot,
@@ -139,9 +145,9 @@ export function evaluateUnityWebBuildUpGrowth({
       nativeMeshCount:metric('observedMeshCount'),
       worldMeshes3d:metric('worldMeshes3d'),
       gameplayActors3d:metric('gameplayActors3d'),
-      persistentStateKeys:[...new Set((play?.saveRestore?.restoredKeys||[]).map(clean).filter(Boolean))].sort(),
-      eventKinds:[...liveEventKinds].sort(),
-      contentIds:[...liveContentIds].sort(),
+      persistentStateKeys:shared('restored'),
+      eventKinds:shared('kinds'),
+      contentIds:shared('ids'),
       sceneCaptureSha256:clean(play?.visualQa?.renderedScene?.sceneCaptureSha256)||null,
       colorBuckets:minValue(play?.visualQa?.renderedScene?.pixels?.distinctColorBuckets),
       p95FrameMs:minValue(play?.performance?.framePacing?.p95FrameMs),
@@ -162,7 +168,8 @@ export function evaluateUnityWebBuildUpGrowth({
   const newStateKeys=observation.runtime.persistentStateKeys.filter(x=>!new Set(previousRuntime.persistentStateKeys||[]).has(x));
   const newEvents=observation.runtime.eventKinds.filter(x=>!new Set(previousRuntime.eventKinds||[]).has(x));
   const gameplayExpanded=changedKinds.some(kind=>kind==='scripts'||kind==='content')
-    &&Boolean(newIds.length||newStateKeys.length||newEvents.length);
+    &&Boolean(newStateKeys.length
+      ||(newIds.length&&observation.runtime.sceneCaptureSha256!==previousRuntime.sceneCaptureSha256));
   const nativeGraphicsExpanded=changedKinds.some(kind=>kind==='scripts'||kind==='graphics')
     &&(observation.runtime.nativeMeshCount>minValue(previousRuntime.nativeMeshCount)
       ||observation.runtime.worldMeshes3d>minValue(previousRuntime.worldMeshes3d)
