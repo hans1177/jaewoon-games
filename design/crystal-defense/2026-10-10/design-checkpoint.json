@@ -415,25 +415,40 @@
       "name": "방해받는 공간의 방어 전략 선택",
       "purpose": "플레이어가 경험한 전투 상황의 유사성에 따른 방어 효과 반복 및 변동",
       "playerChoice": "배치 위치와 전투 주제의 관계 변화로 인한 방어 효과 재설계 및 새로운 전투 장면 경험 구축"
+    },
+    "local_authoring_parts::1a0b85a4eeab9483697d398faa7ddeab8bd1dd3d133ed2bb3cba42401a872503:signatureSystems:3": {
+      "id": "DELVE",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "공명 파라미터",
+        "배치 위치"
+      ],
+      "stateOutputs": [
+        "방어 효과",
+        "전투 장면"
+      ],
+      "name": "발견 및 숙련 시스템",
+      "purpose": "플레이어가 경험하는 공명 파라미터와 배치 위치에 기반하여 방해받는 공간에서의 방어 전략을 재설계하고, 이를 통해 실제 세계 상태 변화를 유도합니다.",
+      "playerChoice": "플레이어는 공명 파라미터와 배치 위치 선택을 바탕으로 방어 전략의 구성 요소인 방해 받는 공간의 방어 효과와 전투 상황의 유사성을 선택하며, 이는 방어 성능의 진화로 인한 새로운 전투 장면이나 방어 효과의 생성을 초래합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1229728,
-      "lastMs": 69820,
+      "totalMs": 1305316,
+      "lastMs": 75588,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:24:18.376Z"
+      "updatedAt": "2026-10-10T00:25:33.966Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T19:38:15.687Z",
-  "updatedAt": "2026-10-10T00:24:18.376Z",
+  "updatedAt": "2026-10-10T00:25:33.974Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2151,10 +2166,10 @@
             "DELVE"
           ],
           "ruleIds": [
-            "identity-core",
-            "layout-flagship",
-            "layout-advancement",
-            "delve-core"
+            "MAIN",
+            "A",
+            "B",
+            "DELVE"
           ]
         },
         "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
@@ -2169,7 +2184,7 @@
   "sliceRepairAttempts": {
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:1": 1,
     "local_authoring_parts::f9dc8cfe103f5f378fa3890fc17badff074f1964b4d342df40bddd0b60bab975:signatureSystems:2": 2,
-    "designer_draft_slices::identity-core": 1,
+    "designer_draft_slices::identity-core": 2,
     "local_authoring_parts::1a0b85a4eeab9483697d398faa7ddeab8bd1dd3d133ed2bb3cba42401a872503:signatureSystems:1": 2
   },
   "slicePartialResults": {
@@ -2268,10 +2283,10 @@
       "multiplayerMode": "COMPETITIVE"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:24:18.376Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T00:25:33.968Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
