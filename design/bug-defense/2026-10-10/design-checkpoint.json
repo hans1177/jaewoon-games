@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 곤충의 위협을 읽고 그에 맞는 전략과 위치를 선택하며, 보상은 다음 전략의 틀을 바꾸는 데 사용된다. 게임은 변화하는 적의 행동과 환경에서 지속적으로 발전한다.",
       "coreFun": "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함한 실제 플레이 단계 최소 3개."
+    },
+    "local_authoring_parts::1be0849df2442b5f72f693da88ba29d8ba316bfdfcbec1ebf56a5a4076772701:coreLoop": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결",
+        "defenders are placed in optimal positions to counter the threat pattern",
+        "resource allocation and risk-reward analysis drive adaptive defense strategies"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 149565,
-      "lastMs": 149565,
+      "totalMs": 171728,
+      "lastMs": 22163,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:03:33.189Z"
+      "updatedAt": "2026-10-10T09:03:55.354Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:01:03.592Z",
-  "updatedAt": "2026-10-10T09:03:33.189Z",
+  "updatedAt": "2026-10-10T09:03:55.354Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1803,7 +1810,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:03:33.189Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:03:55.354Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
