@@ -9,12 +9,113 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::c6431b617039165987d68179416001e9ea9657ce4c608ee92990f9bb4dfeb9ca:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "마을에서 장비와 퀘스트를 준비하고 5개의 포탈 사냥터를 돌며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG",
+      "creativeGrammar": {
+        "mainIdentity": "RPG_STYLIZED_TOY_DARK_FANTASY",
+        "a": {
+          "system": "ROBLOX",
+          "material": "TOY",
+          "materialDomain": "PORTAL_WORLD_V5",
+          "stateChange": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH"
+        },
+        "b": {
+          "system": "ROBLOX",
+          "material": "TOY",
+          "materialDomain": "PORTAL_WORLD_V5",
+          "stateChange": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH"
+        },
+        "abCausality": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH, PLAYER_FACTION, BOSS_RECRUITMENT",
+        "abEvolution": {
+          "aChangesB": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH, PLAYER_FACTION, BOSS_RECRUITMENT",
+          "bChangesA": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH, PLAYER_FACTION, BOSS_RECRUITMENT",
+          "lateGameChange": "PLAYER_FACTION, BOSS_RECRUITMENT"
+        },
+        "materialFusion": {
+          "contrast": "RPG_STYLIZED_TOY_DARK_FANTASY",
+          "causalBridge": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH",
+          "removalConsequence": "PLAYER_FACTION, BOSS_RECRUITMENT"
+        },
+        "storyCausalChain": {
+          "cause": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH",
+          "characterConflict": "PLAYER_FACTION, BOSS_RECRUITMENT",
+          "playerChoice": "PLAYER_FACTION, BOSS_RECRUITMENT",
+          "worldChange": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH",
+          "nextEvent": "BOSS_RECRUITMENT, PLAYER_FACTION"
+        },
+        "cThemes": [
+          {
+            "name": "TOY",
+            "kind": "MATERIAL",
+            "gameplayEffect": "PLAYER_FACTION, BOSS_RECRUITMENT"
+          },
+          {
+            "name": "PORTAL",
+            "kind": "MATERIAL",
+            "gameplayEffect": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "TOY_GAME",
+            "gameplayEffect": "PLAYER_FACTION, BOSS_RECRUITMENT"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "PORTAL_WORLD",
+            "gameplayEffect": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH"
+          }
+        ],
+        "cGenreInterlock": "TOY_GAME, PORTAL_WORLD, PLAYER_FACTION, BOSS_RECRUITMENT",
+        "cWorldAndGameplayEffect": "PLAYER_FACTION, BOSS_RECRUITMENT",
+        "delveDiscoveries": [
+          {
+            "clue": "ROOM_CODE_1-10",
+            "discovery": "LEVEL_UP, ITEM_GROWTH",
+            "newChoice": "PLAYER_FACTION, BOSS_RECRUITMENT"
+          },
+          {
+            "clue": "BOSS_RECRUITMENT",
+            "discovery": "PLAYER_FACTION, BOSS_RECRUITMENT",
+            "newChoice": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH"
+          },
+          {
+            "clue": "PLAYER_FACTION",
+            "discovery": "PLAYER_FACTION, BOSS_RECRUITMENT",
+            "newChoice": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH"
+          },
+          {
+            "clue": "ROOM_CODE_1-10",
+            "discovery": "ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH",
+            "newChoice": "PLAYER_FACTION, BOSS_RECRUITMENT"
+          }
+        ],
+        "delveGrowthRule": "PLAYER_FACTION, BOSS_RECRUITMENT, ROOM_CODE_1-10, LEVEL_UP, ITEM_GROWTH",
+        "finalGameIdentity": "TOY_GAME_PORTAL_WORLD_PLAYER_FACTION_BOSS_RECRUITMENT"
+      },
+      "playerFantasy": "마을에서 퀘스트와 장비를 준비하고, 포탈 사냥터로 이동하며 AI 유저와 파티를 구성해 보스를 공략하는 3D 액션 RPG의 플레이어 역할. 다양한 직업과 전직 선택으로 성장 재미가 있으며, 보스 격파 및 동료 해금 과정에서 기여도에 따른 보상이 제공된다.",
+      "coreFun": "5개 대형 지역을 직접 전투로 돌파하고, 10명의 AI 유저 중 원하는 역할을 골라 파티 사냥을 하며 기여도로 더 큰 보상을 얻는 성장 재미. 마을 귀환/회복/강화 과정에서 게임 진행을 조절하고, 보스 공략 → 보스 동료 해금 → 파티 조합 확장 순서로 진입한다. AI 유저 두 번 클릭하여 파티 초대/제외 가능. 15킬 파티사냥 시 종료되고, 최대 3명의 파티 구성이 가능하다. 보스 첫 처치로 AI 동료 해금되며, 이후 파티 조합 확장을 통해 게임을 계속적으로 발전시킨다."
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 144176,
+      "lastMs": 144176,
+      "lastError": null,
+      "updatedAt": "2026-10-10T08:42:03.700Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:39:39.444Z",
-  "updatedAt": "2026-10-10T08:39:39.473Z",
+  "updatedAt": "2026-10-10T08:42:03.700Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1784,5 +1885,13 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "lastSuccessfulModelCallAt": "2026-10-10T08:42:03.700Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
