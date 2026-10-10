@@ -882,25 +882,28 @@
         "곤충 웨이브 패턴 읽기 실패 시 방어선 위치 선택 오류",
         "자원 소비 증가로 인해 위험 발생"
       ]
+    },
+    "local_authoring_parts::cc471e5fdf5f59fb381aa388982be214c9cefee5715087501fa8bda7e98b044a:retryFlow": {
+      "retryFlow": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 증가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 49,
-      "successes": 49,
+      "calls": 50,
+      "successes": 50,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1534675,
-      "lastMs": 33863,
+      "totalMs": 1568652,
+      "lastMs": 33977,
       "lastError": null,
-      "updatedAt": "2026-10-10T11:04:20.707Z"
+      "updatedAt": "2026-10-10T11:04:54.685Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T11:04:20.707Z",
+  "updatedAt": "2026-10-10T11:04:54.685Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2590,7 +2593,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T11:04:20.707Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T11:04:54.685Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
