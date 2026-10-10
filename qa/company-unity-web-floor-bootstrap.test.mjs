@@ -594,11 +594,11 @@ test('Unity Web design-admitted games bypass only the unrelated Roblox stage and
   assert.match(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
   assert.match(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
   assert.match(planner,/const nativeAdmitted=platformDevelopmentEligible/);
-  assert.match(planner,/item\\.minimumDesignContract\\?\\.pass===true/);
-  assert.match(workflow,/node tools\\/company-shared-context\\.mjs --output=\\/tmp\\/company-unity-web-bootstrap-context\\.json/);
+  assert.ok(planner.includes('item.minimumDesignContract?.pass===true'));
+  assert.ok(workflow.includes('node tools/company-shared-context.mjs --output=/tmp/company-unity-web-bootstrap-context.json'));
   assert.match(workflow,/group: unity-web-bootstrap-source-/);
   assert.match(workflow,/Detect already-promoted Unity source/);
-  assert.match(workflow,/if: steps\\.existing\\.outputs\\.present != 'true'/);
+  assert.ok(workflow.includes("if: steps.existing.outputs.present != 'true'"));
   assert.match(workflow,/--match-head-commit/);
   assert.match(workflow,/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED/);
   assert.doesNotMatch(workflow,/git push origin HEAD:main/);
