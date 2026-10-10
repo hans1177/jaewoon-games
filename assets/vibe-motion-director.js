@@ -1211,9 +1211,29 @@ export function createCommonCareerMotionLoadout({
     sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
     productionVerified:false,runtimeVerified:false,gameplayAuthority:false
   });
+  // 모든 인간형 직업의 스킬 의미를 이미 굽힌 공용 19관절 스킬 원본과 연결한다.
+  // 직업 고유 검·활·지팡이 액션은 상위 actionSource에 남기고 재사용은 스킬 동작에서만 허용한다.
+  const skillSource=Object.freeze({
+    assetId:'shared-humanoid-skill-actions',
+    path:'assets/shared/humanoid-skill-actions.glb',
+    rig:'SHARED_HUMANOID_SKINNED_19',sourceMasterPath:'assets/shared/humanoid-traveler.glb',
+    authoringSource:'assets/native-authoring/build-shared-humanoid.mjs',
+    skillClipCount:Object.keys(COMMON_SKILL_MOTION_GRAMMAR).length,
+    compatibleBodyPlan:'HUMANOID',gameNativeRigAndStyleRetargetRequired:true,
+    sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
+    productionVerified:false,runtimeVerified:false,gameplayAuthority:false
+  });
+  const skillBindings=Object.freeze(skills.map(skill=>Object.freeze({
+    skillId:skill.id,kind:skill.kind,
+    sourceClip:'SKILL_'+skill.kind,sourceAssetId:skillSource.assetId,
+    sourceMasterPath:skillSource.sourceMasterPath,sourceRig:skillSource.rig,
+    motionContactRole:skill.contactPart,sourceCareerId:sourceCareerForRole('skills',skill.id),
+    sourceJointAnimationPresent:true,platformNativeReauthoringRequired:true,
+    gameplaySkillAuthority:false,runtimeVerified:false,productionVerified:false
+  })));
   return Object.freeze({
     id,careerPath:freezeList(ancestors),genre:requestedGenre,platform:platformId,
-    master,actionSource,
+    master,actionSource,skillSource,skillBindings,
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
     groups,skills,genreGroups:requiredGroups,compositionLayers,roleRequests,
@@ -1383,12 +1403,17 @@ export function createCommonMonsterActionLoadout({
   const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
   const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
+  // NORMAL은 기본 확장팩, ELITE/BOSS는 같은 종족 리그의 별도 물리 관절 클립을 사용한다.
+  const packSuffix=motionTier==='NORMAL'?'':('-'+motionTier.toLowerCase());
   const actionSource=master?Object.freeze({
-    assetId:'shared-creature-'+id.toLowerCase()+'-actions',
-    path:'assets/shared/creature-'+id.toLowerCase()+'-actions.glb',
+    assetId:'shared-creature-'+id.toLowerCase()+packSuffix+'-actions',
+    path:'assets/shared/creature-'+id.toLowerCase()+packSuffix+'-actions.glb',
     sourceMasterPath:master.path,
+    originalBaseActionSource:'assets/shared/creature-'+id.toLowerCase()+'-actions.glb',
     authoringSource:'assets/native-authoring/build-shared-creature.mjs',
-    clipCount:19,additionalAuthoredClipCount:8,
+    clipCount:motionTier==='NORMAL'?19:motionTier==='ELITE'?23:24,
+    additionalAuthoredClipCount:8+(motionTier==='NORMAL'?0:motionTier==='ELITE'?4:5),
+    tierSpecificBakedClipCount:motionTier==='NORMAL'?0:motionTier==='ELITE'?4:5,
     hasSkinnedJointChannels:true,platformNativeAdaptationRequired:true,
     sourceState:'BAKED_GLTF_RUNTIME_UNVERIFIED',
     productionVerified:false,runtimeVerified:false,gameplayAuthority:false
@@ -1396,6 +1421,13 @@ export function createCommonMonsterActionLoadout({
   if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
   const tierActing=tierProfile.acting.map(role=>id+'_'+role);
   const tierSignature=tierProfile.signature.map(role=>id+'_'+role);
+  if(motionTier==='ELITE')tierSignature.push(id+'_ELITE_COUNTER_LEAD');
+  const tierMotionBindings=Object.freeze([...tierActing,...tierSignature].map(sourceClip=>Object.freeze({
+    sourceClip,sourceAssetId:actionSource?.assetId||null,
+    sourceRigProfile:actionSource?.assetId?master.rigProfile:null,
+    nativeRigAndContactAlignmentRequired:true,
+    gameplayTierAuthority:false,productionVerified:false,runtimeVerified:false
+  })));
   const profile=createCreatureMotionSetProfile({
     id:'common-'+id.toLowerCase(),archetype:id,bodyPlan:species.bodyPlan,
     rigProfile:upper(rigProfile)||master?.rigProfile||'SPECIES_RIG_AUTHORING_REQUIRED',
@@ -1487,7 +1519,7 @@ export function createCommonMonsterActionLoadout({
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
     presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
     speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),
-    genreGroups:requestedGroups,roleRequests,
+    genreGroups:requestedGroups,roleRequests,tierMotionBindings,
     choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
