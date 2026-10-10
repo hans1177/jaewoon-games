@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "unity-web-daechung-rpg-native-3d-webgl-build-20261010",
+  "requestId": "owner-daechung-rpg-rebuild-after-cs0136-scout-variable-repair-20261010",
   "gameId": "daechung-rpg",
   "projectPath": "unity-games/daechung-rpg",
   "buildMethod": "JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb",
@@ -11,5 +11,6 @@
   "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
   "requiredDimension": "3D",
   "releaseAuthority": false,
-  "noLegacyHtmlAsUnity": true
+  "noLegacyHtmlAsUnity": true,
+  "repairCause": "CS0136_SCOUT_LOCAL_NAMES_SHADOW_OUTER_TRAVEL_LOCALS"
 }
