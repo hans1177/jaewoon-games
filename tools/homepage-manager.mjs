@@ -173,7 +173,7 @@ async function captureReleaseMedia(planOnly=false){
   const exposure=json('homepage-platform-exposure.json');
   const gameFilter=process.argv.find(x=>x.startsWith('--media-game='))?.slice(13);
   const candidates=[];
-  const captureVersion=2;
+  const captureVersion=3;
   for(const game of catalog.games||[]){
     const id=game.canonical?.identity?.gameId||game.id;
     if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||gameFilter&&gameFilter!==id)continue;
@@ -184,7 +184,7 @@ async function captureReleaseMedia(planOnly=false){
     if(!fs.existsSync(entry))continue;
     const artifactIdentity=webTreeFingerprint(fs,dir);
     const current=validatedHomepageMedia(id,media.games[id]);
-    if(current?.video?.artifactIdentity===artifactIdentity)continue;
+    if(current?.video?.artifactIdentity===artifactIdentity&&current.screenshots?.length)continue;
     const attempt=media.games[id].captureAttempt;
     if(attempt?.captureVersion===captureVersion&&attempt?.artifactIdentity===artifactIdentity&&Date.now()-Date.parse(attempt.at)<86400000)continue;
     candidates.push({id,artifactIdentity,platform:/createUnityInstance|\.loader\.js/.test(fs.readFileSync(entry,'utf8'))?'UNITY_WEB':'WEB'});
@@ -226,8 +226,9 @@ async function captureReleaseMedia(planOnly=false){
       let context;
       const {id,platform,artifactIdentity}=candidate;
       try{
-        context=await browser.newContext({viewport:{width:960,height:540},recordVideo:{dir:temp,size:{width:960,height:540}},serviceWorkers:'block'});
+        context=await browser.newContext({viewport:{width:1920,height:1080},recordVideo:{dir:temp,size:{width:1920,height:1080}},serviceWorkers:'block'});
         const page=await context.newPage();
+        const captureStartedAt=Date.now();
         const errors=[];
         const loadedFiles=new Set();
         page.on('response',response=>{
@@ -253,7 +254,7 @@ async function captureReleaseMedia(planOnly=false){
         }
         await page.locator('canvas').first().waitFor({state:'visible'});
         await page.waitForTimeout(700);
-        const clipStart=await page.evaluate(()=>performance.now()/1000);
+        const clipStart=Math.max(0,(Date.now()-captureStartedAt)/1000);
         let inputEvents=id==='cozy-island'?0:1;
         for(const key of ['ArrowRight','ArrowUp','ArrowLeft','ArrowDown']){
           await page.keyboard.down(key);inputEvents++;
@@ -280,11 +281,38 @@ async function captureReleaseMedia(planOnly=false){
         const frameAt=second=>execFileSync('ffmpeg',['-v','error','-ss',String(second),'-i',temporaryOutput,'-frames:v','1','-vf','scale=64:36','-f','rawvideo','-pix_fmt','rgb24','pipe:1'],{timeout:15000});
         const firstFrame=frameAt(.5),lastFrame=frameAt(9);
         if(firstFrame.length!==64*36*3||lastFrame.length!==64*36*3||digest(firstFrame)===digest(lastFrame))throw Error('NO_VISIBLE_RUNTIME_CHANGE');
-        // Publish only after a complete successful capture. Existing media survives failures.
+        // 추출·크기·해시 검증을 끝낸 뒤에만 실제 플레이 사진과 편집 영상을 게시한다.
+        const capturedAt=new Date().toISOString();
+        const frames=[];
+        for(const second of [2,6,10].filter(value=>value<duration-.25)){
+          const n=frames.length+1;
+          const temporaryFrame=temp+'/'+id+'-'+n+'.jpg';
+          execFileSync('ffmpeg',['-y','-loglevel','error','-ss',String(clipStart+second),
+            '-i',videoPath,'-frames:v','1','-vf','scale=1920:1080:flags=lanczos,setsar=1',
+            '-q:v','6','-update','1',temporaryFrame],{timeout:45000,stdio:'pipe'});
+          const dimensions=execFileSync('ffprobe',['-v','error','-select_streams','v:0',
+            '-show_entries','stream=width,height','-of','csv=s=x:p=0',temporaryFrame],{encoding:'utf8'}).trim();
+          const imageBytes=fs.readFileSync(temporaryFrame),sha256=digest(imageBytes);
+          if(dimensions!=='1920x1080'||imageBytes.length<1024||imageBytes.length>1048576
+            ||imageBytes[0]!==0xff||imageBytes[1]!==0xd8
+            ||imageBytes[imageBytes.length-2]!==0xff||imageBytes[imageBytes.length-1]!==0xd9)throw Error('GAMEPLAY_FRAME_INVALID');
+          if(frames.some(frame=>frame.sha256===sha256)){fs.rmSync(temporaryFrame,{force:true});continue;}
+          frames.push({gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,
+            source:'ACTUAL_GAMEPLAY_VIDEO_FRAME',src:'assets/homepage-media/'+id+'-'+n+'.jpg',
+            bytes:imageBytes.length,sha256,width:1920,height:1080,second,
+            temporaryFrame});
+        }
+        if(!frames.length)throw Error('GAMEPLAY_FRAME_MISSING');
+        // 기존 검증 영상을 덮지 않고 게임별 성공 결과만 반영한다.
+        for(const frame of frames)fs.copyFileSync(frame.temporaryFrame,frame.src);
         fs.copyFileSync(temporaryOutput,output);
-        media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt:new Date().toISOString(),src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
+        media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,
+          src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,
+          width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,
+          scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
+        media.games[id].screenshots=frames.map(({temporaryFrame,...frame})=>frame);
         delete media.games[id].captureAttempt;
-        console.log(`HOMEPAGE_RELEASE_MEDIA_CAPTURED=${id} PLATFORM=${platform} BYTES=${bytes.length}`);
+        console.log('HOMEPAGE_RELEASE_MEDIA_CAPTURED='+id+' PLATFORM='+platform+' BYTES='+bytes.length+' FRAMES='+frames.length+' RESOLUTION=1920x1080');
       }catch(error){
         media.games[id].captureAttempt={artifactIdentity,captureVersion,at:new Date().toISOString(),state:'CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN',reason:String(error.message||error).slice(0,500)};
         console.log(`HOMEPAGE_RELEASE_MEDIA_PENDING=${id} REASON=${String(error.message||error).split('\n')[0]}`);
