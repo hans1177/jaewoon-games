@@ -134,25 +134,40 @@
       "name": "Essential Survival State Transition",
       "purpose": "Represents the causal chain of survival state changes, player actions, and event occurrences that drive gameplay progression.",
       "playerChoice": "Event occurrence → Strategy shift → Game identity change → Reward risk change"
+    },
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:2:c3588b41824a6ba5": {
+      "id": "b_essential_survival_state_transition",
+      "grammarRole": "B",
+      "stateInputs": [
+        "survival_status_change",
+        "resource_selection"
+      ],
+      "stateOutputs": [
+        "event_occurrence",
+        "strategy_shift"
+      ],
+      "name": "Essential Survival State Transition",
+      "purpose": "Establishes the causal chain between survival status changes and player actions, leading to event occurrences and strategy shifts.",
+      "playerChoice": "Event occurrence and strategy shift, game identity change, reward risk change"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 103,
-      "successes": 103,
+      "calls": 105,
+      "successes": 105,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1091389,
-      "lastMs": 5971,
+      "totalMs": 1167362,
+      "lastMs": 38788,
       "lastError": null,
-      "updatedAt": "2026-10-10T05:46:27.873Z"
+      "updatedAt": "2026-10-10T05:47:43.850Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:28:15.947Z",
-  "updatedAt": "2026-10-10T05:46:27.873Z",
+  "updatedAt": "2026-10-10T05:47:43.851Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1895,29 +1910,34 @@
   },
   "sliceDependencies": {},
   "sliceRepairFeedback": {
-    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": [
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": [
       {
         "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
+        "grammarRole": "DELVE",
         "previousRuleIds": [
-          "main_essential_survival_state_transition"
+          "main_essential_survival_state_transition",
+          "a_essential_survival_state_transition",
+          "b_essential_survival_state_transition"
         ]
       },
       {
         "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
+        "grammarRole": "DELVE",
         "previousRuleIds": [
-          "main_essential_survival_state_transition"
+          "main_essential_survival_state_transition",
+          "a_essential_survival_state_transition",
+          "b_essential_survival_state_transition"
         ]
       }
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 99
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:1:41db7907c3e0440f": 99,
+    "local_authoring_parts::5cfec380ee71a00e557289cc8b4a08ef067eb27a041dd104927b2352e800406b:signatureSystems:3:2668bd709ae32003": 1
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T05:46:27.873Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T05:47:43.850Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:DELVE",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
