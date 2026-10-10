@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "packId": "roblox-common-ui-v1",
   "sourceAudit": {
     "type": "STUDIO_INDEPENDENT_INTERNAL_ASSET_AUDIT",
@@ -106,7 +106,32 @@
     "management": "소유/권한·수리·철거·유지/부식·침대/리스폰·방 상태",
     "settlement": "가구·정착지 요약·농사·동물·가공 설비",
     "parry": "공격예고·가드·완벽패링·가드붕괴·반격가능을 색상 외 형태/텍스트/VFX와 연결",
-    "worldInteraction": "소품 조사·읽기·열기·앉기·침대·채집·보관·조명 등 컨텍스트 상호작용"
+    "worldInteraction": "소품 조사·읽기·열기·앉기·침대·채집·보관·조명 등 컨텍스트 상호작용",
+    "genreMenuAndGameplayWindows": {
+      "profiles": [
+        "RPG",
+        "SURVIVAL",
+        "STRATEGY",
+        "DEFENSE",
+        "TYCOON",
+        "HORROR",
+        "CASUAL"
+      ],
+      "capabilityFilteredNotInvented": true,
+      "compactBottomNav": true,
+      "desktopSideNav": true,
+      "safeAreaAware": true,
+      "focusAndBackStackPreserved": true,
+      "sourceGameControlsMountAndGameRules": true
+    },
+    "skillJournalEventTrade": {
+      "prerequisiteDAGCycleFlag": true,
+      "unlockPresentationOnly": true,
+      "chronologyDedupeByEventId": true,
+      "worldEventPriorityFromGame": true,
+      "gameOwnsTradeEscrowAndAtomicSettlement": true,
+      "cutsceneSkipNeverAltersGameplay": true
+    }
   },
   "legacyStaticAuthoringChecklist": {
     "score": 100,
@@ -125,7 +150,7 @@
   "internalAuditDoesNotRequireStudio": true,
   "studioOnlyForProductionRuntimeEvidence": true,
   "gameplayAuthority": false,
-  "sourceAssetCount": 204,
+  "sourceAssetCount": 211,
   "staticAuthoringChecklist": {
     "score": 100,
     "max": 100,
@@ -139,36 +164,30 @@
       "housingFarmingDepthExpanded": true,
       "accessibilityRecoveryDepthExpanded": true,
       "looseVolumeAutomationBound": true,
-      "gameplayAuthorityFalse": true
+      "gameplayAuthorityFalse": true,
+      "twoHundredElevenReusableCurrentAtoms": true
     }
   },
-  "fullScreenSurfaceCount": 15,
-  "deepSystemComponentCount": 150,
+  "fullScreenSurfaceCount": 19,
+  "deepSystemComponentCount": 157,
   "housingSandboxComponentCount": 24,
   "parryPresentationComponentCount": 5,
   "worldInteractionComponentCount": 10,
   "subsystemDepthExpansionCount": 35,
   "volumeUp": {
-    "phase": "COMPANY_COMMON_SEED_CROSS_GENRE_VOLUME_UP",
-    "priorCount": 169,
-    "currentCount": 204,
-    "addedCount": 35,
+    "phase": "GENRE_MENU_GAME_WINDOW_UI_EXPANSION",
+    "priorCount": 204,
+    "currentCount": 211,
+    "addedCount": 7,
     "focus": [
-      "INVENTORY_ITEM_MANAGEMENT",
-      "MENU_NAVIGATION",
-      "EQUIPMENT_LOADOUT",
-      "CRAFTING_UPGRADE",
-      "SHOP_TRADE",
-      "QUEST_CODEX",
-      "NPC_RELATIONSHIP",
-      "PARTY_COMPANION",
-      "MOUNT_TRAVEL",
-      "COMBAT_HUD",
-      "HOUSING_SANDBOX",
-      "FARMING_SETTLEMENT",
-      "ACCESSIBILITY_INPUT",
-      "LOADING_ERROR_STATE",
-      "MOBILE_ONE_HAND"
+      "GENRE_MENU",
+      "RESPONSIVE_GAME_WINDOW",
+      "LIVE_STATUS",
+      "SKILL_TREE",
+      "JOURNAL",
+      "WORLD_EVENT",
+      "ESCROW_TRADE",
+      "CINEMATIC_PRESENTATION"
     ],
     "productionVerified": false,
     "runtimeVerificationRequired": true
