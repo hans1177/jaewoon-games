@@ -387,25 +387,98 @@
           "playerChoice": "Strategic adaptation through multiple build combinations in a dynamically evolving survival scenario."
         }
       ]
+    },
+    "local_authoring_parts::3714205117c4f2b7b645c1da3a522aa5745c8910782fe37cfc514043aae213ba:multiplayerMode": {
+      "multiplayerMode": "HYBRID"
+    },
+    "local_authoring_parts::b394b3128bd75fdd068f614b0d843bea1cf275b51818273f84a59f5f8e1a3e13:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어는 매 순간 빠르게 진입하는 현실 세계 속에서 전략적 선택을 하며, 그 선택에 따라 환경이 변하고 새로운 도전이 등장합니다.",
+        "주제: 모바일 생존 Roguelite 게임, 주요 시스템: 생존 + 경로 선택, 보조 시스템: 적의 행동 패턴 및 환경 변화"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems_0",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "To enable dynamic playstyle, adaptive gameplay, and player agency through real-time survival mechanics and randomized world events.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations in Real-Time Survival Scenario with Environmental Feedback Loop and Evolving Threat Levels and Reward Structures."
+        },
+        {
+          "id": "signatureSystems_1",
+          "grammarRole": "A",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Define the core gameplay mechanics and their causal relationships in a mobile survival roguelite game.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations, Dynamic Environmental Feedback, and Player Agency in Real-Time Scenario Management."
+        },
+        {
+          "id": "signatureSystems_2",
+          "grammarRole": "B",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Establishes the core gameplay mechanics of adaptive strategy through dynamic build progression and event-driven decision making.",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations in a Real-Time Survival Scenario with Environmental Pressure and Resource Scarcity."
+        },
+        {
+          "id": "signatureSystems_3",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "Build Upgrade",
+            "Event Trigger"
+          ],
+          "stateOutputs": [
+            "New Strategy",
+            "Multi-Stage Decision Making"
+          ],
+          "name": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency",
+          "purpose": "Establishes the core gameplay mechanics through dynamic build progression and adaptive pathfinding.",
+          "playerChoice": "Strategic adaptation through multiple build combinations in a dynamically evolving survival scenario."
+        }
+      ],
+      "multiplayerMode": "HYBRID"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 953692,
-      "lastMs": 99239,
+      "totalMs": 1042704,
+      "lastMs": 89012,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:01:20.592Z"
+      "updatedAt": "2026-10-10T03:02:49.608Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:45:26.864Z",
-  "updatedAt": "2026-10-10T03:01:20.595Z",
+  "updatedAt": "2026-10-10T03:02:49.621Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2111,15 +2184,147 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems_0",
+            "signatureSystems_1",
+            "signatureSystems_2",
+            "signatureSystems_3"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "Harbor Days - A Mobile Survival Roguelite with Dynamic Playstyle and Adaptive Gameplay",
+      "creativeGrammar": {
+        "mainIdentity": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+        "a": {
+          "system": "Survival",
+          "material": "Dynamic Build Progression",
+          "materialDomain": "Real-Time Strategy & Resource Management",
+          "stateChange": "Build Upgrade -> Risk Assessment -> New Strategy"
+        },
+        "b": {
+          "system": "Roguelite",
+          "material": "Adaptive Pathfinding",
+          "materialDomain": "Randomized World Events & Player Choice",
+          "stateChange": "Event Trigger -> New Objective -> Multi-Stage Decision Making"
+        },
+        "abCausality": "Build Progression → Event Response → Strategic Adaptation",
+        "abEvolution": {
+          "aChangesB": "New Weapon/Upgrade Set -> Risk Threshold Adjustment -> Adaptive Path Selection",
+          "bChangesA": "New Environment/Scenario -> Resource Allocation Shift -> Tactical Positioning Change",
+          "lateGameChange": "Multi-Build Combination -> Environmental Feedback Loop -> Repeated Strategy Evolution"
+        },
+        "materialFusion": {
+          "contrast": "Survival Mechanics + Roguelite Elements",
+          "causalBridge": "Resource Management ↔ Event Response ↔ Strategic Adaptation",
+          "removalConsequence": "Player Agency ↔ Randomized Experience ↔ Dynamic Gameplay"
+        },
+        "storyCausalChain": {
+          "cause": "Player's Initial Build Setup",
+          "characterConflict": "Environmental Pressure and Resource Scarcity",
+          "playerChoice": "Strategic Adaptation through Multiple Build Combinations",
+          "worldChange": "Dynamic Survival Scenario with Evolving Threat Levels and Reward Structures",
+          "nextEvent": "Repetition of Core Playstyle with Increased Complexity"
+        },
+        "cThemes": [
+          {
+            "name": "Adaptive Combat",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Real-Time Strategy & Resource Management"
+          },
+          {
+            "name": "Randomized World Events",
+            "kind": "MATERIAL",
+            "gameplayEffect": "Player Choice & Multi-Stage Decision Making"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "Survival Roguelite",
+            "gameplayEffect": "Real-Time Strategy & Resource Management"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "Adaptive Pathfinding",
+            "gameplayEffect": "Player Choice & Multi-Stage Decision Making"
+          }
+        ],
+        "cGenreInterlock": "Survival Mechanics → Event Response → Strategic Adaptation",
+        "cWorldAndGameplayEffect": "Player Agency ↔ Randomized Experience ↔ Dynamic Gameplay",
+        "delveDiscoveries": [
+          {
+            "clue": "Build Progression as a Game Mechanic",
+            "discovery": "Strategic Adaptation through Multiple Build Combinations",
+            "newChoice": "New Weapon/Upgrade Set"
+          },
+          {
+            "clue": "Environmental Pressure and Resource Scarcity",
+            "discovery": "Resource Allocation Shift",
+            "newChoice": "New Environment/Scenario"
+          },
+          {
+            "clue": "Multi-Build Combination and Environmental Feedback Loop",
+            "discovery": "Repetition of Core Playstyle with Increased Complexity",
+            "newChoice": "Multi-Build Combination"
+          },
+          {
+            "clue": "Player Agency in Dynamic Survival Scenario",
+            "discovery": "Dynamic Gameplay",
+            "newChoice": "Player Agency in Dynamic Survival Scenario"
+          }
+        ],
+        "delveGrowthRule": "Player Agency is the core mechanic, and dynamic gameplay is the outcome.",
+        "finalGameIdentity": "Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency"
+      },
+      "playerFantasy": "플레이어는 매 순간 빠르게 진입하는 현실 세계 속에서 전략적 선택을 하며, 그 선택에 따라 환경이 변하고 새로운 도전이 등장합니다. 이 과정에서 플레이어는 자신의 능력과 경험을 기반으로 다양한 전략을 개발하고, 이를 통해 더 복잡하고 재미있는 게임 경로를 탐험하게 됩니다.",
+      "coreFun": "{\"identity\": \"Harbor Days - A Mobile Survival Roguelite with Adaptive Gameplay and Player Agency\",\n\"creativeGrammar\": {\n \"mainIdentity\": \"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\n \"a\": {\"system\": \"Survival\", \"material\": \"Dynamic Build Progression\", \"stateChange\": \"Build Upgrade -> Risk Assessment -> New Strategy\"},\n \"b\": {\"system\": \"Roguelite\", \"material\": \"Adaptive Pathfinding\", \"stateChange\": \"Event Trigger -> New Objective -> Multi-Stage Decision Making\"},\n \"abCausality\": \"Build Progression → Event Response → Strategic Adaptation\",\n \"abEvolution\": {\"aChangesB\": \"New Weapon/Upgrade Set -> Risk Threshold Adjustment -> Adaptive Path Selection\",\n \"bChangesA\": \"New Environment/Scenario -> Resource Allocation Shift -> Tactical Positioning Change\",\n \"lateGameChange\": \"Multi-Bild",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택",
+        "플레이어는 매 순간 빠르게 진입하는 현실 세계 속에서 전략적 선택을 하며, 그 선택에 따라 환경이 변하고 새로운 도전이 등장합니다.",
+        "주제: 모바일 생존 Roguelite 게임, 주요 시스템: 생존 + 경로 선택, 보조 시스템: 적의 행동 패턴 및 환경 변화"
+      ],
+      "multiplayerMode": "HYBRID"
+    }
+  },
   "localAuthoringSplits": {
     "82ab4d94beabc1a63445414bdd5cc6c9bf60011b18075c0d8b7e396a429f3013": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:01:20.595Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T03:02:49.612Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
