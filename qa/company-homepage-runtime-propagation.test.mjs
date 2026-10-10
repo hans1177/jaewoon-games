@@ -360,7 +360,7 @@ test('homepage exposes only verified native 3D Unity WebGL as a development link
     'qa.every(qaPassed)',
     'unityWebAvailable:false',
     'const direct=links.unityWeb||links.roblox||links.unity||',
-    "button(links.unityWeb,'Unity Web · 개발중','Unity Web · 빌드없음'",
+    "button(links.unityWeb,game.unityWebVerified?'Unity Web · 개발중':'Unity Web · 개발 테스트'",
     'function playableWebHref(row)',
     'function hasRunnableHomepageTarget(game)',
     'renderCatalog(catalog);'
