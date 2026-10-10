@@ -766,7 +766,7 @@ export function computeVibeSeedProposal(target){
   return {
     requestId:target.requestId,category,gameName,referenceGames:[],coreFunToLearn:[bridge,genreInterlock],
     coreLoop,distinctIdentity:identity,targetAudience:`${profile.genre} 장르에서 실제 선택과 세계 반응을 탐색하는 모바일 플레이어`,
-    initialTargetPlatform:target.platform,initialPlayMode:'PROJECT_DEFINED',multiplayerDesignMode:'SINGLE',
+    initialTargetPlatform:target.platform,initialPlayMode:'PROJECT_DEFINED',multiplayerDesignMode:['COOP','COMPETITIVE','HYBRID'].includes(clean(target?.portfolioRequest?.multiplayerDesignMode).toUpperCase())?clean(target.portfolioRequest.multiplayerDesignMode).toUpperCase():(/BATTLEGROUND|PVP|RACING|PARTY/.test(category)?'COMPETITIVE':'COOP'),
     crossPlatformExpansionValue:'동일 인과문법을 보존한 플랫폼별 네이티브 구현에 적용 가능하다.',
     steamExpansionPossible:'POSSIBLE',transformationMode:'ORIGINAL_COMPOSITION',
     gameplaySketch:{version:5,source:'VIBE_NATIVE_CAUSAL_COMPOSITION',novelGameGrammar:grammar,
