@@ -69,6 +69,9 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     const verifiedLearning=JSON.parse(fs.readFileSync('unity-games/test-survival/Assets/verified-external-learning.json','utf8'));
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+    // GitHub bootstrap PR must pass git diff --cached --check on generated C#.
+    assert.doesNotMatch(runtime,/[ \t]+(?=\r?$)/m);
+    assert.doesNotMatch(build,/[ \t]+(?=\r?$)/m);
     const unityModules=JSON.parse(fs.readFileSync('unity-games/test-survival/Packages/manifest.json','utf8')).dependencies;
     assert.equal(unityModules['com.unity.modules.imgui'],'1.0.0');
     assert.equal(unityModules['com.unity.modules.physics'],'1.0.0');
@@ -320,6 +323,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(manifest.proceduralEnvironment.layoutHash,createHash('sha256').update(rawLayout).digest('hex'));
     assert.equal(manifest.proceduralEnvironment.seed,'unity-web-layout-1');
     const runtime=fs.readFileSync(path.join(project,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    assert.doesNotMatch(runtime,/[ \t]+(?=\r?$)/m);
     assert.equal(manifest.proceduralEnvironment.approval,'APPROVED_DESIGN_3D_ONLY');
     assert.equal(manifest.proceduralEnvironment.status,'DATA_AUTHORED_RUNTIME_UNVERIFIED');
     assert.equal(manifest.proceduralEnvironment.renderedInRuntime,false);
