@@ -3,242 +3,31 @@
   "gameId": "star-frontier",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-STAR-FRONTIER-20260917",
-  "fingerprint": "a4c2576e9b0833fcf086f3bb566d9f35bb982976adfa54290b64ed955c6f9554",
+  "fingerprint": "81985324c3f905f5e91c45ffef667e614d86e4fda52881b8afb351f641c7f6ad",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097:identity,creativeGrammar": {
-      "identity": "별길 개척자",
-      "creativeGrammar": {
-        "mainIdentity": "별길 개척자의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백",
-        "a": {
-          "system": "보드 게임 시스템",
-          "material": "전략적 결정 및 상태 교환",
-          "materialDomain": "게임 내 전략적 선택과 결과 변주",
-          "stateChange": "플레이어의 전략적 선택에 따른 세계 상태 변화"
-        },
-        "b": {
-          "system": "액션 게임 시스템",
-          "material": "실질적인 행동 패턴과 위협 유형",
-          "materialDomain": "게임 내 실질적 행동과 결과 변주",
-          "stateChange": "플레이어의 실질적 행동에 따른 세계 상태 변화"
-        },
-        "abCausality": "플레이어의 전략적 선택과 실질적 행동은 양방향으로 상호작용하며, 주제와 보조 장르는 각각 다른 메인/보조 장르로 구성됨",
-        "abEvolution": {
-          "aChangesB": "플레이어의 전략적 선택이 실질적 행동으로 이어지는 조건을 만족할 때 B가 A를 대체한다",
-          "bChangesA": "실질적 행동이 전략적 선택으로 이어지는 조건을 만족할 때 A가 B를 대체한다",
-          "lateGameChange": "중후반에서는 두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어진다"
-        },
-        "materialFusion": {
-          "contrast": "전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다",
-          "causalBridge": "전략적 결정 -> 실질적 행동 -> 위험/보상 -> 다음 선택의 순환 구조를 유지하고, 한쪽에서 끝나면 다른 쪽에 이어지는 구조를 설계해야 한다",
-          "removalConsequence": "C의 두 창작 소재와 메인/보조 장르는 상호작용을 통해 실제 선택 및 세계 상태 변화를 유발하며, 보조 장르 제거 시 플레이어의 선택이 새로운 세계 상태로 이어진다"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전략적 선택 또는 실질적 행동",
-          "characterConflict": "게임 내 주제와 보조 장르의 대립 혹은 현실적인 세계 상태 변화",
-          "playerChoice": "플레이어가 선택한 전략이나 실질적 행동",
-          "worldChange": "실제 세계 상태 변화 및 다음 사건 발생",
-          "nextEvent": "플레이어의 선택으로 인해 발생하는 다음 사건"
-        },
-        "cThemes": [
-          {
-            "name": "전략적 결정과 실질적 행동",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 전략적 선택이 실질적 행동으로 이어지며, 위험/보상이 반복적으로 생성됨"
-          },
-          {
-            "name": "실질적 행동과 위협 유형",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실질적 행동에 따른 위협 유형 변화 및 새로운 세계 상태 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략·위험·보상 중심 게임",
-            "gameplayEffect": "전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "행동 패턴과 위협 유형 중심 게임",
-            "gameplayEffect": "실질적 행동에 따른 위협 유형 변화 및 새로운 세계 상태 변화"
-          }
-        ],
-        "cGenreInterlock": "전략·위험·보상 중심 게임과 행성·위협 유형 중심 게임 간 상호작용을 통해 실제 선택 및 세계 상태 변화가 일어나며, 보조 장르 제거 시 플레이어의 선택이 새로운 세계 상태로 이어진다",
-        "cWorldAndGameplayEffect": "전략·위험·보상 중심 게임에서의 전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어의 전략적 선택 또는 실질적 행동",
-            "discovery": "전략적 결정이 실질적 행동으로 이어지는 조건을 만족할 때 발생하는 새로운 세계 상태 변화",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          },
-          {
-            "clue": "실제 세계 상태 변화",
-            "discovery": "실질적 행동에 따른 위협 유형 변화 및 새로운 세계 상태 변화",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          },
-          {
-            "clue": "중후반의 새로운 세계 상태 변화",
-            "discovery": "두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어진다",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          },
-          {
-            "clue": "게임 내 주제와 보조 장르의 대립 혹은 현실적인 세계 상태 변화",
-            "discovery": "플레이어가 선택한 전략이나 실질적 행동",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          }
-        ],
-        "delveGrowthRule": "중후반에서는 두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어지는 규칙을 적용해야 한다",
-        "finalGameIdentity": "전략·위험·보상 중심 게임과 행성·위협 유형 중심 게임의 인과적으로 결합된 새 정체성"
-      }
-    },
-    "local_authoring_parts::a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097:playerFantasy,coreFun": {
-      "playerFantasy": "별길 개척자는 전략적 결정과 실질적 행동 사이에서 플레이어가 선택하는 모든 단계에 대해 진지하게 접근하며, 위험과 보상을 반복적으로 생성해 새로운 세계 상태로 이어진다.",
-      "coreFun": "{\"system\":\"보드 게임 시스템\",\"material\":\"전략적 결정 및 상태 교환\",\"materialDomain\":\"게임 내 전략적 선택과 결과 변주\",\"stateChange\":\"플레이어의 전략적 선택에 따른 세계 상태 변화\"},\n{\"system\":\"액션 게임 시스템\",\"material\":\"실질적인 행동 패턴과 위협 유형\",\"materialDomain\":\"게임 내 실질적 행동과 결과 변주\",\"stateChange\":\"플레이어의 실질적 행동에 따른 세계 상태 변화\"},\n{\"abCausality\":\"플레이어의 전략적 선택과 실질적 행동은 양방향으로 상호작용하며, 주제와 보조 장르는 각각 다른 메인/보조 장르로 구성됨\",\"abEvolution\":{\"aChangesB\":\"플레이어의 전략적 선택이 실질적 행동으로 이어지는 조건을 만족할 때 B가 A를 대체한다\",\"bChangesA\":\"실질적 행동이 전략적 선택으로 이어지는 조건을 만족할 때 A가 B를 대체한다\",\"lateGameChange\":\"중후반에서는 두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어진다\"}},\n{\"materialFusion\":{\"contrast\":\"전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다\",\"causalBridge\":\"전략적 결정 -> 실질적 행동 -> 위험/보상 -> 다음 선택의 순환 구조를 유지하고, 한쪽에서 끝나면 다른 쪽에 이어지는 구조를 설계해야 한다\",\"removalConsequence\":\"C의 두 창작 소재와 메인/보조 장르는 상호작용을 통해 실제 선택 및 세계 상태 변화를 유발하며, 보조 장르 제거 시 플레이어의 선택이 새로운 세계 상태로 이어진다\"},\n\"storyCausalChain\":"
-    },
-    "local_authoring_parts::e3bc5a71bf334b57f796419f61cee6d3fed5c4ca590a8c56e6ee2fdcc8f4c199:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "별길 개척자",
-      "creativeGrammar": {
-        "mainIdentity": "별길 개척자의 핵심 재미를 실제 플레이 선택으로 재정의, 진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프, 모바일에서도 즉시 이해되는 입력과 피드백",
-        "a": {
-          "system": "보드 게임 시스템",
-          "material": "전략적 결정 및 상태 교환",
-          "materialDomain": "게임 내 전략적 선택과 결과 변주",
-          "stateChange": "플레이어의 전략적 선택에 따른 세계 상태 변화"
-        },
-        "b": {
-          "system": "액션 게임 시스템",
-          "material": "실질적인 행동 패턴과 위협 유형",
-          "materialDomain": "게임 내 실질적 행동과 결과 변주",
-          "stateChange": "플레이어의 실질적 행동에 따른 세계 상태 변화"
-        },
-        "abCausality": "플레이어의 전략적 선택과 실질적 행동은 양방향으로 상호작용하며, 주제와 보조 장르는 각각 다른 메인/보조 장르로 구성됨",
-        "abEvolution": {
-          "aChangesB": "플레이어의 전략적 선택이 실질적 행동으로 이어지는 조건을 만족할 때 B가 A를 대체한다",
-          "bChangesA": "실질적 행동이 전략적 선택으로 이어지는 조건을 만족할 때 A가 B를 대체한다",
-          "lateGameChange": "중후반에서는 두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어진다"
-        },
-        "materialFusion": {
-          "contrast": "전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다",
-          "causalBridge": "전략적 결정 -> 실질적 행동 -> 위험/보상 -> 다음 선택의 순환 구조를 유지하고, 한쪽에서 끝나면 다른 쪽에 이어지는 구조를 설계해야 한다",
-          "removalConsequence": "C의 두 창작 소재와 메인/보조 장르는 상호작용을 통해 실제 선택 및 세계 상태 변화를 유발하며, 보조 장르 제거 시 플레이어의 선택이 새로운 세계 상태로 이어진다"
-        },
-        "storyCausalChain": {
-          "cause": "플레이어의 전략적 선택 또는 실질적 행동",
-          "characterConflict": "게임 내 주제와 보조 장르의 대립 혹은 현실적인 세계 상태 변화",
-          "playerChoice": "플레이어가 선택한 전략이나 실질적 행동",
-          "worldChange": "실제 세계 상태 변화 및 다음 사건 발생",
-          "nextEvent": "플레이어의 선택으로 인해 발생하는 다음 사건"
-        },
-        "cThemes": [
-          {
-            "name": "전략적 결정과 실질적 행동",
-            "kind": "MATERIAL",
-            "gameplayEffect": "플레이어의 전략적 선택이 실질적 행동으로 이어지며, 위험/보상이 반복적으로 생성됨"
-          },
-          {
-            "name": "실질적 행동과 위협 유형",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실질적 행동에 따른 위협 유형 변화 및 새로운 세계 상태 변화"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략·위험·보상 중심 게임",
-            "gameplayEffect": "전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "행동 패턴과 위협 유형 중심 게임",
-            "gameplayEffect": "실질적 행동에 따른 위협 유형 변화 및 새로운 세계 상태 변화"
-          }
-        ],
-        "cGenreInterlock": "전략·위험·보상 중심 게임과 행성·위협 유형 중심 게임 간 상호작용을 통해 실제 선택 및 세계 상태 변화가 일어나며, 보조 장르 제거 시 플레이어의 선택이 새로운 세계 상태로 이어진다",
-        "cWorldAndGameplayEffect": "전략·위험·보상 중심 게임에서의 전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다",
-        "delveDiscoveries": [
-          {
-            "clue": "플레이어의 전략적 선택 또는 실질적 행동",
-            "discovery": "전략적 결정이 실질적 행동으로 이어지는 조건을 만족할 때 발생하는 새로운 세계 상태 변화",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          },
-          {
-            "clue": "실제 세계 상태 변화",
-            "discovery": "실질적 행동에 따른 위협 유형 변화 및 새로운 세계 상태 변화",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          },
-          {
-            "clue": "중후반의 새로운 세계 상태 변화",
-            "discovery": "두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어진다",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          },
-          {
-            "clue": "게임 내 주제와 보조 장르의 대립 혹은 현실적인 세계 상태 변화",
-            "discovery": "플레이어가 선택한 전략이나 실질적 행동",
-            "newChoice": "플레이어가 선택한 전략이나 실질적 행동"
-          }
-        ],
-        "delveGrowthRule": "중후반에서는 두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어지는 규칙을 적용해야 한다",
-        "finalGameIdentity": "전략·위험·보상 중심 게임과 행성·위협 유형 중심 게임의 인과적으로 결합된 새 정체성"
-      },
-      "playerFantasy": "별길 개척자는 전략적 결정과 실질적 행동 사이에서 플레이어가 선택하는 모든 단계에 대해 진지하게 접근하며, 위험과 보상을 반복적으로 생성해 새로운 세계 상태로 이어진다.",
-      "coreFun": "{\"system\":\"보드 게임 시스템\",\"material\":\"전략적 결정 및 상태 교환\",\"materialDomain\":\"게임 내 전략적 선택과 결과 변주\",\"stateChange\":\"플레이어의 전략적 선택에 따른 세계 상태 변화\"},\n{\"system\":\"액션 게임 시스템\",\"material\":\"실질적인 행동 패턴과 위협 유형\",\"materialDomain\":\"게임 내 실질적 행동과 결과 변주\",\"stateChange\":\"플레이어의 실질적 행동에 따른 세계 상태 변화\"},\n{\"abCausality\":\"플레이어의 전략적 선택과 실질적 행동은 양방향으로 상호작용하며, 주제와 보조 장르는 각각 다른 메인/보조 장르로 구성됨\",\"abEvolution\":{\"aChangesB\":\"플레이어의 전략적 선택이 실질적 행동으로 이어지는 조건을 만족할 때 B가 A를 대체한다\",\"bChangesA\":\"실질적 행동이 전략적 선택으로 이어지는 조건을 만족할 때 A가 B를 대체한다\",\"lateGameChange\":\"중후반에서는 두 시스템 간 관계 변화가 실제로 일어나며, 플레이어의 선택이 새로운 세계 상태로 이어진다\"}},\n{\"materialFusion\":{\"contrast\":\"전략적 결정과 실질적 행동은 서로 인과적으로 연결되어야 하며, 한쪽만 빠져도 사라지거나 무효화되는 플레이를 방지해야 한다\",\"causalBridge\":\"전략적 결정 -> 실질적 행동 -> 위험/보상 -> 다음 선택의 순환 구조를 유지하고, 한쪽에서 끝나면 다른 쪽에 이어지는 구조를 설계해야 한다\",\"removalConsequence\":\"C의 두 창작 소재와 메인/보조 장르는 상호작용을 통해 실제 선택 및 세계 상태 변화를 유발하며, 보조 장르 제거 시 플레이어의 선택이 새로운 세계 상태로 이어진다\"},\n\"storyCausalChain\":"
-    },
-    "local_authoring_parts::58bb6d47307b104e0dbcef3be7add0faa63feae3a8213e39ffac237ffbdad538:coreLoop": {
-      "coreLoop": [
-        "입력: 플레이어의 전략적 선택 또는 실질적 행동",
-        " 상태변화: 전략적 선택 → 세계 상태 변화",
-        " 보상: 위험/보상 생성, 다음 선택"
-      ]
-    },
-    "local_authoring_parts::74417b76ecd5b5db99494e6d1e66ba11568f3ef763f98822647c4dda446cd9b4:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_essential_loop",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "입력: 플레이어의 전략적 선택 또는 실질적 행동"
-      ],
-      "stateOutputs": [
-        "세계 상태 변화"
-      ],
-      "name": "전략적 루프",
-      "purpose": "플레이어의 전략적 선택 또는 실질적 행동에 따른 세계 상태 변화와 위험/보상 생성을 반복적으로 연결하는 핵심 루프",
-      "playerChoice": "전략적 선택 또는 실질적 행동을 입력하여 세계 상태 변화 및 위험/보상을 생성함으로써 다음 선택을 결정함으로써 게임 진행을 이어감"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 97,
-      "successes": 96,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 2546697,
-      "lastMs": 16397,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:56:01.485Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T05:13:33.331Z",
-  "updatedAt": "2026-10-10T05:56:01.487Z",
+  "createdAt": "2026-10-10T08:37:43.767Z",
+  "updatedAt": "2026-10-10T08:37:43.885Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -279,10 +68,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -713,8 +504,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -755,10 +546,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1189,8 +982,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1231,10 +1024,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1711,36 +1506,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::74417b76ecd5b5db99494e6d1e66ba11568f3ef763f98822647c4dda446cd9b4:signatureSystems:1:8beaa661ed10fa54": [
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential_loop"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_essential_loop"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::74417b76ecd5b5db99494e6d1e66ba11568f3ef763f98822647c4dda446cd9b4:signatureSystems:0:4f53cda18c2baa0c": 1,
-    "local_authoring_parts::74417b76ecd5b5db99494e6d1e66ba11568f3ef763f98822647c4dda446cd9b4:signatureSystems:1:8beaa661ed10fa54": 91
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:56:01.485Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  }
 }
