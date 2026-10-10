@@ -19912,7 +19912,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-10-10T21:22:35.332Z"
+      "updatedAt": "2026-10-10T22:36:12.310Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -149047,7 +149047,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.543Z",
-      "updatedAt": "2026-10-10T21:22:35.279Z"
+      "updatedAt": "2026-10-10T22:36:12.273Z"
     },
     {
       "id": "recovery-13016eae2090171271f7",
@@ -149394,7 +149394,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-09T18:59:50.578Z",
-      "updatedAt": "2026-10-10T21:22:35.311Z"
+      "updatedAt": "2026-10-10T22:36:12.294Z"
     },
     {
       "id": "recovery-e94ce206a41f3f0ca95f",
@@ -162896,7 +162896,7 @@
     },
     {
       "id": "recovery-778a0904e9dae63391c3",
-      "status": "queued",
+      "status": "blocked-primary-ai-assignment-required",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-38083428335",
@@ -162932,7 +162932,13 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-10-10T21:22:48.458Z",
-      "updatedAt": "2026-10-10T21:22:48.458Z"
+      "updatedAt": "2026-10-10T22:36:13.302Z",
+      "dispatchEvidence": [
+        "security-recovery-executor-missing",
+        "primary-ai-assignment-required",
+        "primary-ai-repair-file:qa/company-unity-web-floor-bootstrap.test.mjs",
+        "recovery-dispatch-blocked-at:2026-10-10T22:36:13.302Z"
+      ]
     }
   ]
 }
