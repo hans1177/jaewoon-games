@@ -97,25 +97,32 @@
       },
       "playerFantasy": "플레이어는 AI 파티 구성 방식 재설계와 레벨 성장 메커니즘 변경으로 새로운 플레이 약속 형성하며, 보스 동료 해금 상태 변화로 게임 진행 방향 재조정을 통해 진짜 세계 속의 복잡한 관계를 경험한다.",
       "coreFun": "AI 파티 초대/제외 행동 → 반응: 파티 조합 확장 또는 제거; 플레이어 선택과 보스 동료 해금 상태 변화 간의 갈등; 15킬 파티사냥 규칙 변경으로 새로운 플레이 약속 형성; 마을 귀환/회복/강화 상태 변화로 게임 진행 방향 재조정; 전투, 보상, 저장에 대한 실제 선택 및 규칙의 변주로 게임 진행 방향 재설계이다."
+    },
+    "local_authoring_parts::59ab150854923786497b09c2b2da3dac04df4acb2b9dd5ea3c91fca8cca0c660:coreLoop": {
+      "coreLoop": [
+        "마을에서 퀘스트와 장비 준비",
+        "포탈로 사냥터 돌며 AI 파티 구성",
+        "보스 공략 및 파티 동료 해금"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 225375,
-      "lastMs": 225375,
+      "totalMs": 317564,
+      "lastMs": 92189,
       "lastError": null,
-      "updatedAt": "2026-10-10T04:46:43.777Z"
+      "updatedAt": "2026-10-10T04:48:15.967Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:42:58.038Z",
-  "updatedAt": "2026-10-10T04:46:43.777Z",
+  "updatedAt": "2026-10-10T04:48:15.967Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1120,7 +1127,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T04:46:43.777Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:48:15.967Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
