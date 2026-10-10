@@ -1053,6 +1053,24 @@ export const COMMON_GENRE_MOTION_CONTEXTS=Object.freeze({
 });
 
 // 공통 시전-전투 기술군: 피해·쿨타임·명중·자원 소모는 게임에서만 결정한다.
+// 게임별 장르 명칭을 공통 동작 투영 계약 하나로 정규화한다.
+export function resolveCommonMotionGenre(value=''){
+  const requested=upper(value).replace(/[\s-]+/g,'_');
+  const aliases=Object.freeze({
+    RPG:'ACTION_RPG',ARPG:'ACTION_RPG',ACTION:'ACTION_RPG',HACK_AND_SLASH:'ACTION_RPG',
+    ROGUELITE:'ROGUELIKE',ROGUE_LITE:'ROGUELIKE',
+    TOWERDEFENSE:'TOWER_DEFENSE',DEFENSE:'TOWER_DEFENSE',
+    AUTO_CHESS:'STRATEGY',RTS:'STRATEGY',TURN_BASED_STRATEGY:'TACTICAL_RPG',
+    SIM:'SIMULATION',LIFE_SIM:'SIMULATION',FARMING_SIM:'SIMULATION',
+    SCHOOL_TYCOON:'TYCOON',PARK_TYCOON:'TYCOON',
+    SURVIVAL_CRAFTING:'SURVIVAL',COOP_SURVIVAL:'SURVIVAL',
+    PVP_FIGHTING:'FIGHTING',HORROR_SURVIVAL:'HORROR',
+    MMO:'MMORPG',ONLINE_RPG:'MMORPG'
+  });
+  const id=aliases[requested]||requested;
+  return COMMON_GENRE_MOTION_CONTEXTS[id]?id:null;
+}
+
 export const COMMON_SKILL_MOTION_GRAMMAR=Object.freeze({
   CHARGE:Object.freeze({charge:'CHARGE',aim:'AIM',impact:'IMPACT_RESPONSE',vfx:'WEAPON_TRAIL',contact:'WEAPON'}),
   COUNTER:Object.freeze({hold:'COUNTER_WAIT',impact:'IMPACT_RESPONSE',vfx:'COUNTER_FLASH',contact:'WEAPON_OR_HAND'}),
@@ -1096,9 +1114,9 @@ export function createCommonCareerMotionLoadout({
   careerId='SAMURAI',genre='ACTION_RPG',platform='SHARED',bodyPlan='HUMANOID',
   rigProfile='HUMANOID',weaponFamily='',styleFamily='STYLIZED_FANTASY'
 }={}){
-  const id=upper(careerId),requestedGenre=upper(genre),platformId=upper(platform);
+  const id=upper(careerId),requestedGenre=resolveCommonMotionGenre(genre),platformId=upper(platform);
   if(!COMMON_CAREER_MOTION_HIERARCHY[id])throw Error('UNKNOWN_COMMON_CAREER:'+id);
-  if(!COMMON_GENRE_MOTION_CONTEXTS[requestedGenre])throw Error('UNSUPPORTED_COMMON_GENRE:'+requestedGenre);
+  if(!requestedGenre)throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
   if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
   if(!['HUMANOID','SMALL_HUMANOID_BIPED','STANDARD_HUMANOID_MONSTER'].includes(upper(bodyPlan)))
     throw Error('INCOMPATIBLE_COMMON_CAREER_BODY_PLAN:'+upper(bodyPlan));
@@ -1243,7 +1261,8 @@ export function createCommonMonsterActionLoadout({
 }={}){
   const id=upper(speciesId),species=COMMON_MONSTER_ACTION_SPECIES[id],platformId=upper(platform);
   if(!species)throw Error('UNKNOWN_COMMON_MONSTER_SPECIES:'+id);
-  if(!COMMON_GENRE_MOTION_CONTEXTS[upper(genre)])throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
+  const requestedGenre=resolveCommonMotionGenre(genre);
+  if(!requestedGenre)throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
   if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
   if(bodyPlan&&resolveMonsterBodyPlanMotionDetail(bodyPlan)!==resolveMonsterBodyPlanMotionDetail(species.bodyPlan))
     throw Error('INCOMPATIBLE_COMMON_MONSTER_BODY_PLAN:'+id+':'+upper(bodyPlan));
@@ -1303,9 +1322,9 @@ export function createCommonMonsterActionLoadout({
   }));
   const coverage=auditMotionCoverage(profile);
   return Object.freeze({
-    id,species,profile,genre:upper(genre),platform:platformId,
+    id,species,profile,genre:requestedGenre,platform:platformId,
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
-    genreGroups:COMMON_GENRE_MOTION_CONTEXTS[upper(genre)],
+    genreGroups:COMMON_GENRE_MOTION_CONTEXTS[requestedGenre],
     choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
