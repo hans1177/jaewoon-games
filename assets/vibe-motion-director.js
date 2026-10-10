@@ -1448,6 +1448,79 @@ function monsterPoseFrames(part,wind,contact,poseBefore,poseAfter){
     rigJointBindingRequired:true,semanticChannelsOnly:true
   });
 }
+// 생성된 공통 원본의 모션 계층. 미제작 종족에는 가상의 실물 클립을 상속시키지 않는다.
+export const COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS=Object.freeze({
+  "QUADRUPED_CANINE": "WOLF_PACK_CIRCLE",
+  "ARACHNID": "SPIDER_WEB_SIDESTEP",
+  "HEXAPOD_INSECT": "BEETLE_TRIPOD_SHIFT",
+  "HEAVY_GOLEM_OR_BOSS": "GOLEM_WEIGHT_BRACE",
+  "REPTILE_OR_SERPENT": "SERPENT_COIL_SLITHER"
+});
+export const COMMON_MONSTER_RANK_NATIVE_CLIPS=Object.freeze({
+  "NORMAL": {},
+  "ELITE": {
+    "stance": [
+      "ELITE_INTIMIDATE"
+    ],
+    "defense": [
+      "ELITE_COUNTER_STEP"
+    ],
+    "skills": [
+      "ELITE_INTIMIDATE",
+      "ELITE_COUNTER_STEP"
+    ]
+  },
+  "BOSS": {
+    "stance": [
+      "BOSS_TELEGRAPH"
+    ],
+    "attacks": [
+      "BOSS_TELEGRAPH"
+    ],
+    "defense": [
+      "BOSS_RECOVERY"
+    ],
+    "skills": [
+      "BOSS_PHASE_SHIFT"
+    ],
+    "signature": [
+      "BOSS_PHASE_SHIFT"
+    ]
+  }
+});
+export const COMMON_MONSTER_BASE_NATIVE_CLIPS=Object.freeze({
+  "stance": [
+    "IDLE_BREATH"
+  ],
+  "locomotion": [
+    "IDLE_BREATH",
+    "WALK",
+    "RUN",
+    "TURN",
+    "STALK_APPROACH"
+  ],
+  "attacks": [
+    "ATTACK_A",
+    "ATTACK_B"
+  ],
+  "defense": [
+    "DODGE_EVADE",
+    "GUARD_BRACE"
+  ],
+  "skills": [
+    "SKILL_PREPARE",
+    "SKILL_RELEASE"
+  ],
+  "reactions": [
+    "HIT_FRONT",
+    "HIT_SIDE",
+    "KNOCKDOWN",
+    "RECOVER_STAND",
+    "DEATH"
+  ],
+  "signature": [],
+  "interactions": []
+});
 // 이미 굽힌 종별 기술만 공용 후보로 노출한다. 미제작 몬스터는 빈 물리적 후보를 반환한다.
 export const COMMON_MONSTER_NATIVE_CLIP_ROLES=Object.freeze({
   "WOLF": {
@@ -1531,18 +1604,26 @@ export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
   id:'shared-creature-'+id.toLowerCase(),
   path:'assets/shared/creature-'+id.toLowerCase()+'.glb',
   bodyPlan,rigProfile:'SHARED_CREATURE_'+id+'_SKINNED',
-  rigJointCount:jointCount,sourceAnimationCount:15,
+  rigJointCount:jointCount,sourceAnimationCount:25,
   sourceAnimationClips:freezeList([
     'IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B',
     'SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',signatureClip,
-    'DODGE_EVADE','GUARD_BRACE',...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].speciesClips
+    'DODGE_EVADE','GUARD_BRACE',...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].speciesClips,
+    'STALK_APPROACH','HIT_SIDE','KNOCKDOWN','RECOVER_STAND',COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS[bodyPlan],
+    'ELITE_INTIMIDATE','ELITE_COUNTER_STEP','BOSS_TELEGRAPH','BOSS_PHASE_SHIFT','BOSS_RECOVERY'
   ]),
+  sourceHierarchy:Object.freeze({
+    sharedBase:COMMON_MONSTER_BASE_NATIVE_CLIPS,
+    bodyPlan:Object.freeze({id:bodyPlan,clip:COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS[bodyPlan]}),
+    species:Object.freeze({id,signatureClip,actions:freezeList(COMMON_MONSTER_NATIVE_CLIP_ROLES[id].speciesClips)}),
+    ranks:COMMON_MONSTER_RANK_NATIVE_CLIPS
+  }),
   sourceClipRoles:Object.freeze({
-    stance:freezeList(['IDLE_BREATH']),
-    locomotion:freezeList(['IDLE_BREATH','WALK','RUN','TURN']),
-    attacks:freezeList(['ATTACK_A','ATTACK_B',...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].attacks]),
-    defense:freezeList(['DODGE_EVADE','GUARD_BRACE',...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].defense]),
-    skills:freezeList(['SKILL_PREPARE','SKILL_RELEASE',...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].skills]),
+    stance:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.stance]),
+    locomotion:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.locomotion,COMMON_MONSTER_BODY_PLAN_NATIVE_CLIPS[bodyPlan]]),
+    attacks:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.attacks,...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].attacks]),
+    defense:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.defense,...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].defense]),
+    skills:freezeList([...COMMON_MONSTER_BASE_NATIVE_CLIPS.skills,...COMMON_MONSTER_NATIVE_CLIP_ROLES[id].skills]),
     signature:freezeList([signatureClip]),
     interactions:freezeList([])
   }),
@@ -1553,13 +1634,16 @@ export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
 })])));
 export function createCommonMonsterActionLoadout({
   speciesId='WOLF',genre='ACTION_RPG',platform='SHARED',bodyPlan='',
-  rigProfile='',styleFamily='STYLIZED_FANTASY'
+  rigProfile='',styleFamily='STYLIZED_FANTASY',rank='NORMAL'
 }={}){
   const id=upper(speciesId),species=COMMON_MONSTER_ACTION_SPECIES[id],platformId=upper(platform);
   if(!species)throw Error('UNKNOWN_COMMON_MONSTER_SPECIES:'+id);
   const requestedGenre=resolveCommonMotionGenre(genre);
   if(!requestedGenre)throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
   if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
+  const rankId=upper(rank);
+  if(!Object.prototype.hasOwnProperty.call(COMMON_MONSTER_RANK_NATIVE_CLIPS,rankId))
+    throw Error('UNSUPPORTED_COMMON_MONSTER_RANK:'+rankId);
   if(bodyPlan&&resolveMonsterBodyPlanMotionDetail(bodyPlan)!==resolveMonsterBodyPlanMotionDetail(species.bodyPlan))
     throw Error('INCOMPATIBLE_COMMON_MONSTER_BODY_PLAN:'+id+':'+upper(bodyPlan));
   if(upper(rigProfile)==='HUMANOID'&&!['HUMANOID_UNDEAD','BOSS_BIPED'].includes(species.bodyPlan))
@@ -1567,9 +1651,10 @@ export function createCommonMonsterActionLoadout({
   const detail=resolveMonsterBodyPlanMotionDetail(species.bodyPlan);
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
   const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
+  const sourceRankRoles=master?COMMON_MONSTER_RANK_NATIVE_CLIPS[rankId]:{};
   const physicalGenreBindings=Object.freeze(Object.fromEntries(
     COMMON_GENRE_MOTION_CONTEXTS[requestedGenre].map(group=>[
-      group,freezeList(master?.sourceClipRoles?.[group]||[])
+      group,freezeList(unique([...(master?.sourceClipRoles?.[group]||[]),...(sourceRankRoles[group]||[])]))
     ])
   ));
   if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
@@ -1626,6 +1711,7 @@ export function createCommonMonsterActionLoadout({
   const coverage=auditMotionCoverage(profile);
   return Object.freeze({
     id,species,profile,genre:requestedGenre,platform:platformId,
+    rank:rankId,sourceHierarchy:master?.sourceHierarchy||null,
     master,masterActuallyExistsInSharedRepository:!!master,
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
     genreGroups:COMMON_GENRE_MOTION_CONTEXTS[requestedGenre],
