@@ -375,25 +375,94 @@
           "playerChoice": "새로운 상태 변화와 대응 방식을 결정하는 플레이어 선택을 통해 중후반 두 시스템의 관계 변화를 실행함"
         }
       ]
+    },
+    "local_authoring_parts::8849d4a2c89704a80b7523cdcf61a053678dcdd58b1a89eec16462ee5d6e72dc:multiplayerMode": {
+      "multiplayerMode": "COOP"
+    },
+    "local_authoring_parts::e3bc5a71bf334b57f796419f61cee6d3fed5c4ca590a8c56e6ee2fdcc8f4c199:coreLoop,signatureSystems,multiplayerMode": {
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어의 전략적 결정과 위험 인식 변화를 통해 세계 재구성",
+        "역사와 철학 소재로 가득 차 있는 전략적 빌드에서의 새로운 전략 경로 생성"
+      ],
+      "signatureSystems": [
+        {
+          "id": "signatureSystems[0]",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "선택",
+            "위험"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 생성"
+          ],
+          "name": "전략적 빌드 - 역사 및 철학 소재",
+          "purpose": "플레이어의 선택과 위험에 대한 인식 변화를 통해 세계를 재구성하는 과정에서 중요한 선택을 내리는 것이 목적입니다.",
+          "playerChoice": "선택 -> 위험 증가 -> 새로운 전략 경로 생성, 역사와 철학 소재로 가득 차 있는 전략적 빌드에서의 새로운 전략 경로 생성 결정됨니다."
+        },
+        {
+          "id": "signatureSystems[1]",
+          "grammarRole": "A",
+          "stateInputs": [
+            "선택",
+            "위험"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 생성"
+          ],
+          "name": "전략적 빌드 - 역사 및 철학 소재",
+          "purpose": "역사와 철학 소재로 가득 차 있는 전략적 빌드에서 새로운 전략 경로 생성",
+          "playerChoice": "선택 -> 위험 증가 -> 새로운 전략 경로 생성"
+        },
+        {
+          "id": "signatureSystems[2]",
+          "grammarRole": "B",
+          "stateInputs": [
+            "선택",
+            "위험"
+          ],
+          "stateOutputs": [
+            "새로운 전략 경로 생성"
+          ],
+          "name": "모바일 환경 - 철학 및 역사 소재",
+          "purpose": "플레이어의 행동 패턴과 대응 방식에 대한 인식 변화를 통해 모바일 환경 내 세계 상태 변화를 결정하는 데 활용됨",
+          "playerChoice": "실제 세계 상태 변화와 다음 사건을 결정하는 플레이어 선택 및 대응 방식 정립 과정 포함됨"
+        },
+        {
+          "id": "signatureSystems[3]",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "선택",
+            "위험"
+          ],
+          "stateOutputs": [
+            "중후반 두 시스템의 관계 변화가 실제로 일어나는 조건과 피드백을 명시하며, 무제한 발전 규칙이 적용된다"
+          ],
+          "name": "역사 및 철학 소재 - 중후반 관계 변화",
+          "purpose": "플레이어 선택과 위험에 대한 인식 변화를 바탕으로 세계 재구성 및 중후반 시스템 간 관계 변화를 구현",
+          "playerChoice": "새로운 상태 변화와 대응 방식을 결정하는 플레이어 선택을 통해 중후반 두 시스템의 관계 변화를 실행함"
+        }
+      ],
+      "multiplayerMode": "COOP"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 7,
+      "calls": 9,
+      "successes": 8,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 983045,
-      "lastMs": 72833,
+      "totalMs": 1039087,
+      "lastMs": 56042,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:10:31.906Z"
+      "updatedAt": "2026-10-10T03:11:27.951Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:08.629Z",
-  "updatedAt": "2026-10-10T03:10:31.909Z",
+  "updatedAt": "2026-10-10T03:11:27.960Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1874,15 +1943,147 @@
       }
     }
   },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
+  "sliceDependencies": {
+    "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "sliceRepairFeedback": {
+    "designer_draft_slices::identity-core": [
+      {
+        "code": "DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+        "kind": "HARD_GATE",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "aToB": false,
+          "bToA": false,
+          "unconnected": [
+            "A",
+            "B",
+            "DELVE"
+          ],
+          "ruleIds": [
+            "signatureSystems[0]",
+            "signatureSystems[1]",
+            "signatureSystems[2]",
+            "signatureSystems[3]"
+          ]
+        },
+        "requiredAction": "MAIN/A/B/@의 실제 상태 입출력을 먼저 교정한다. 앞 규칙의 stateOutputs와 다음 규칙의 stateInputs가 같은 상태 키로 이어져야 한다. A↔B 왕복 및 MAIN과 모든 역할의 연결이 필요하다. coreFun 같은 가상 ID, 가짜 상태, 임의 보상·저장 키를 만들지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "signatureSystems"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::identity-core": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::identity-core": {
+      "identity": "별길 개척자 - 진보형 플레이어 역할",
+      "creativeGrammar": {
+        "mainIdentity": "별길 개척자 주제/정체성, A: 게임 시스템 + 축 창작 소재, B: 다른 시스템 + 축 창작 소재, abCausality: 양방향 실제 상태 교환, C: 주제/소재 두 개",
+        "a": {
+          "system": "전략적 빌드",
+          "material": "플레이어의 선택과 위험에 대한 인식 변화",
+          "materialDomain": "역사와 철학",
+          "stateChange": "선택 -> 위험 증가 -> 새로운 전략 경로 생성"
+        },
+        "b": {
+          "system": "모바일 환경",
+          "material": "플레이어의 행동 패턴과 대응 방식",
+          "materialDomain": "기술 및 예술",
+          "stateChange": "행동 -> 대응 -> 세계 상태 변화"
+        },
+        "abCausality": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "abEvolution": {
+          "aChangesB": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+          "bChangesA": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+          "lateGameChange": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+        },
+        "materialFusion": {
+          "contrast": "주제/소재 두 개를 선택하고, 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다.",
+          "causalBridge": "발견 단서와 새로운 실제 선택이 있는 4개 이상 초기 사례 및 무제한 발전 규칙",
+          "removalConsequence": "보조 장르 제거 시 바뀌는 플레이를 명시한다."
+        },
+        "storyCausalChain": {
+          "cause": "플레이어의 선택과 위험에 대한 인식 변화",
+          "characterConflict": "선택 -> 위험 증가 -> 새로운 전략 경로 생성",
+          "playerChoice": "새로운 상태 변화와 대응 방식을 결정하는 플레이어 선택",
+          "worldChange": "실제 세계 상태 변화와 다음 사건을 적고, 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교한다.",
+          "nextEvent": "플레이어의 선택으로 이어지는 다음 사건"
+        },
+        "cThemes": [
+          {
+            "name": "역사",
+            "kind": "MATERIAL",
+            "gameplayEffect": "플레이어의 선택과 위험에 대한 인식 변화"
+          },
+          {
+            "name": "철학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "선택 -> 위험 증가 -> 새로운 전략 경로 생성"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "전략적 빌드",
+            "gameplayEffect": "플레이어의 선택과 위험에 대한 인식 변화"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "모바일 환경",
+            "gameplayEffect": "플레이어의 행동 패턴과 대응 방식"
+          }
+        ],
+        "cGenreInterlock": "A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+        "cWorldAndGameplayEffect": "플레이어의 선택과 위험에 대한 인식 변화, 선택 -> 위험 증가 -> 새로운 전략 경로 생성",
+        "delveDiscoveries": [
+          {
+            "clue": "플레이어의 선택과 위험에 대한 인식 변화",
+            "discovery": "선택 -> 위험 증가 -> 새로운 전략 경로 생성",
+            "newChoice": "새로운 상태 변화와 대응 방식을 결정하는 플레이어 선택"
+          },
+          {
+            "clue": "선택 -> 위험 증가 -> 새로운 전략 경로 생성",
+            "discovery": "새로운 상태 변화와 대응 방식을 결정하는 플레이어 선택",
+            "newChoice": "실제 세계 상태 변화와 다음 사건을 적고, 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교한다."
+          },
+          {
+            "clue": "새로운 상태 변화와 대응 방식을 결정하는 플레이어 선택",
+            "discovery": "실제 세계 상태 변화와 다음 사건을 적고, 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교한다.",
+            "newChoice": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다."
+          },
+          {
+            "clue": "실제 세계 상태 변화와 다음 사건을 적고, 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교한다.",
+            "discovery": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다.",
+            "newChoice": "플레이어의 선택으로 이어지는 다음 사건"
+          }
+        ],
+        "delveGrowthRule": "중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시하며, 무제한 발전 규칙이 적용된다.",
+        "finalGameIdentity": "별길 개척자 - 진보형 플레이어 역할, 주제/정체성: 진보형 플레이어 역할, A: 전략적 빌드 + 역사, B: 모바일 환경 + 철학, abCausality: 양방향 실제 상태 교환, C: 역사 및 철학 두 가지 소재, 메인 장르: 전략적 빌드, 보조 장르: 모바일 환경"
+      },
+      "playerFantasy": "별길 개척자의 진보형 플레이어 역할은 전략적 결정과 위험에 대한 인식 변화를 통해 세계를 재구성하는 과정에서 중요한 선택을 내리는 것이 목적입니다. 이는 역사와 철학의 소재로 가득 차 있으며, 새로운 상태 변화와 대응 방식을 결정하는 데 기여합니다.",
+      "coreFun": "{\"system\":\"전략적 빌드\",\"material\":\"플레이어의 선택과 위험에 대한 인식 변화\",\"materialDomain\":\"역사와 철학\",\"stateChange\":\"선택 -> 위험 증가 -> 새로운 전략 경로 생성\"}",
+      "coreLoop": [
+        "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결",
+        "플레이어의 전략적 결정과 위험 인식 변화를 통해 세계 재구성",
+        "역사와 철학 소재로 가득 차 있는 전략적 빌드에서의 새로운 전략 경로 생성"
+      ],
+      "multiplayerMode": "COOP"
+    }
+  },
   "localAuthoringSplits": {
     "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:10:31.909Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T03:11:27.954Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
+  "effectiveDesignerModel": "ollama:qwen3:1.7b",
+  "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
