@@ -6,6 +6,7 @@ import path from 'node:path';
 import {
   classifyUpperPlatformAdmission,
   unitySourceTreeSha256,
+  evaluateUnityWebBuildUpGrowth,
 } from '../tools/company-upper-platform-admission.mjs';
 
 const write=(root,rel,data)=>{
@@ -19,6 +20,120 @@ const baseItem=gameId=>({
   platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},
   concurrentTargetPlatforms:['ROBLOX','UNITY'],
   currentStep:'TARGET_PLATFORM_SOURCE_BIND',
+});
+
+test('Unity Web BUILD_UP records source and three actual browser observations without claiming baseline growth',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-observed-growth-'));
+  const id='observed-growth';
+  const unity='unity-games/'+id+'/Assets/';
+  const shape=marker=>({
+    gameId:id,pass:true,playableBrowserTest:true,boot:{pass:true},
+    gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true,restoredKeys:['gold']},
+    mobile:{pass:true},
+    spatialGameplay:{requiredDimension:'3D',pass:true,observedMeshCount:8,worldMeshes3d:6,gameplayActors3d:2},
+    visualQa:{renderedScene:{pass:true,sceneCaptureSha256:'a'.repeat(64),
+      pixels:{source:'REAL_UNITY_CANVAS_SCREENSHOT',distinctColorBuckets:160}}},
+    performance:{framePacing:{p95FrameMs:60},bootMilliseconds:2200},
+    markers:['JAEWOON_UNITY_WEB_QA CORE_FUN game='+id+' status=PASS',
+      'JAEWOON_UNITY_WEB_QA REGION game='+id+' region=forest']
+  });
+  const check=(sourceTreeSha256,previousReadiness=null,focus='CORE_FUN',overrides={})=>{
+    const proof=shape();
+    const play={...proof,...(overrides.play||{})};
+    const independent={...proof,...(overrides.independent||{})};
+    const regression={...proof,...(overrides.regression||{})};
+    return evaluateUnityWebBuildUpGrowth({
+      repoRoot:root,gameId:id,sourceTreeSha256,previousReadiness,
+      play,independent,regression,focus
+    });
+  };
+  try{
+    write(root,unity+'Scripts/GameCore.cs','public class GameCore { public int Health; public void Attack(){ Health -= 2; } }');
+    write(root,unity+'Prefabs/Tree.prefab','MeshRenderer tree');
+    const first=check('1'.repeat(64));
+    assert.equal(first.status,'INITIAL_VERIFIED_BROWSER_BASELINE_NO_PRIOR_COMPARISON');
+    assert.equal(first.verifiedGrowth,false);
+    assert.equal(first.observed.source.scriptsFiles,1);
+    assert.equal(first.observed.source.graphicsFiles,1);
+    assert.equal(first.runtimeQaVerified,true);
+    assert.equal(first.noArtificialContentCountOrGenerationLimit,true);
+
+    const previous={gameId:id,pass:true,unitySourceTreeSha256:'1'.repeat(64),buildUpGrowth:first};
+    const unchanged=check('1'.repeat(64),previous);
+    assert.equal(unchanged.status,'UNCHANGED_UNITY_SOURCE_REVALIDATION_NOT_GROWTH');
+    assert.equal(unchanged.verifiedGrowth,false);
+
+    write(root,unity+'Scripts/GameCore.cs','// new level boss pending\npublic class GameCore { public int Health; public void Attack(){ Health -= 2; } }');
+    const commentOnly=check('2'.repeat(64),previous,'CORE_FUN');
+    assert.equal(commentOnly.status,'NON_GAME_SOURCE_CHANGE_NOT_GROWTH');
+    assert.deepEqual(commentOnly.changedKinds,[]);
+    assert.equal(commentOnly.verifiedGrowth,false);
+
+    write(root,unity+'Scripts/GameCore.cs','public class GameCore { public int Health; public void Attack(){ Health -= 2; } public void EnterCave(){ Health -= 1; } }');
+    const actual=check('3'.repeat(64),previous,'CORE_FUN',{play:{
+      markers:[...shape().markers,'JAEWOON_UNITY_WEB_QA REGION game='+id+' region=cave'],
+      saveRestore:{pass:true,restoredKeys:['gold','caveCleared']}
+    }});
+    assert.equal(actual.status,'VERIFIED_PLAYER_FACING_GROWTH');
+    assert.equal(actual.verifiedGrowth,true);
+    assert.deepEqual(actual.signals.newContentIds,['region:cave']);
+    assert.deepEqual(actual.signals.newPersistentStateKeys,['caveCleared']);
+    assert.deepEqual(actual.changedKinds,['scripts']);
+
+    const staticOnly=check('4'.repeat(64),previous,'CORE_FUN');
+    assert.equal(staticOnly.verifiedGrowth,false);
+    assert.equal(staticOnly.status,'SOURCE_CHANGED_PLAYER_FACING_GROWTH_UNVERIFIED');
+    const pixelOnly=check('4'.repeat(64),previous,'PRESENTATION',{play:{visualQa:{
+      renderedScene:{pass:true,sceneCaptureSha256:'b'.repeat(64),
+        pixels:{source:'REAL_UNITY_CANVAS_SCREENSHOT',distinctColorBuckets:162}}
+    }}});
+    assert.equal(pixelOnly.verifiedGrowth,true,'a valid changed Unity native source and visible browser image can prove presentation changes');
+    const invalidRuntime=check('4'.repeat(64),previous,'CORE_FUN',{independent:{pass:false}});
+    assert.equal(invalidRuntime.runtimeQaVerified,false);
+    assert.equal(invalidRuntime.verifiedGrowth,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Web growth comparison never treats markers or arbitrary new data file counts as player growth',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-unverified-'));
+  const id='growth-unverified';
+  const base='unity-games/'+id+'/Assets/';
+  try{
+    write(root,base+'Scripts/World.cs','public class World { void Update(){ } }');
+    const qa=()=>({
+      gameId:id,pass:true,playableBrowserTest:true,boot:{pass:true},gameplay:{pass:true},
+      coreFun:{pass:true},saveRestore:{pass:true,restoredKeys:['gold']},mobile:{pass:true},
+      spatialGameplay:{pass:true,requiredDimension:'3D',observedMeshCount:2,worldMeshes3d:2,gameplayActors3d:1},
+      visualQa:{renderedScene:{pass:true,sceneCaptureSha256:'a'.repeat(64),pixels:{source:'REAL_UNITY_CANVAS_SCREENSHOT',distinctColorBuckets:40}}},
+      markers:['JAEWOON_UNITY_WEB_QA CORE_FUN game='+id+' status=PASS'],
+      performance:{framePacing:{p95FrameMs:60},bootMilliseconds:2000}
+    });
+    const run=(sourceTreeSha256,previousReadiness)=>evaluateUnityWebBuildUpGrowth({
+      repoRoot:root,gameId:id,sourceTreeSha256,previousReadiness,
+      play:qa(),independent:qa(),regression:qa()
+    });
+    const before=run('1'.repeat(64),null);
+    const previous={pass:true,gameId:id,unitySourceTreeSha256:'1'.repeat(64),buildUpGrowth:before};
+    write(root,base+'Data/fake.json',{newContent:'NEVER_USED_IN_RUNTIME'});
+    const after=run('2'.repeat(64),previous);
+    assert.deepEqual(after.changedKinds,['content']);
+    assert.equal(after.verifiedGrowth,false);
+    assert.equal(after.status,'SOURCE_CHANGED_PLAYER_FACING_GROWTH_UNVERIFIED');
+    assert.equal(after.signals.gameplay,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Web existing readiness stage consumes growth proof without changing Roblox workflow or F0-F9 sequence',()=>{
+  const root=process.cwd();
+  const workflow=fs.readFileSync(path.join(root,'.github/workflows/unity-web-first-stage-build.yml'),'utf8');
+  assert.match(workflow,/evaluateUnityWebBuildUpGrowth/);
+  assert.match(workflow,/buildUpGrowthRequired/);
+  assert.match(workflow,/buildUpGrowth:\{pass:growth\.verifiedGrowth/);
+  assert.match(workflow,/manifest\.buildUpGrowth=/);
+  assert.match(workflow,/taskPhase==='BUILD_UP'/);
+  assert.match(workflow,/const pass=Object\.values\(criteria\)\.every\(row=>row\.pass===true\)/);
+  const continuous=fs.readFileSync(path.join(root,'.github/workflows/vibe2-continuous-core.yml'),'utf8');
+  assert.match(continuous,/F9/);
 });
 
 test('new upper-platform entry stays in Unity Web floor until readiness exists',()=>{
