@@ -1971,6 +1971,11 @@ test('licensed DeepMotion-style FBX uses the existing Blender motion authoring p
       assert.equal(recipe.runtimeVerificationRequired,true);
     }
   }
+  const automatic=buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{...task.assetAuthoring,module:undefined}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(automatic.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.module==='animation'
+    &&row.sourceModel==='assets/shared/mocap/walk.fbx'));
   assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
     task:{...task,assetAuthoring:{...task.assetAuthoring,module:'object'}},
     manifest:{assets:[]},presetCatalog:{presets:[]}}),/NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE/);
