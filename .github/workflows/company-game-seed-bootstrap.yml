@@ -195,7 +195,9 @@ jobs:
           git config user.name 'jaewoon-game-seed';git config user.email 'game-seed@users.noreply.github.com'
           if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then echo 'persisted=false' >> "$GITHUB_OUTPUT";exit 0;fi
           # 메인 작업트리(특히 Unity LFS 자산)를 브랜치 전환하지 않고 런타임 트리만 갱신한다.
-          generated_blob="$(git hash-object -w game-seed-state.json)"
+          # 병렬 설계 작업이 변경한 다른 게임의 시드·진행을 보존하기 위해 현재 결과를 고정한다.
+          cp game-seed-state.json "$RUNNER_TEMP/game-seed-generated.json"
+          generated_blob="$(git hash-object -w "$RUNNER_TEMP/game-seed-generated.json")"
           intake_blob="$(git hash-object /tmp/company-runtime-seed-state-before.json)"
           pushed=0
           for attempt in 1 2 3 4; do
@@ -203,9 +205,65 @@ jobs:
             runtime_parent="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
             current_blob="$(git rev-parse "$runtime_parent:game-seed-state.json")"
             if [ "$current_blob" != "$intake_blob" ]; then
-              # 다른 작업자가 수정한 최신 시드·진행·저장을 오래된 원본으로 덮어쓰지 않는다.
-              echo 'GAME_SEED_RUNTIME_BASE_CHANGED=RETRY_WITH_FRESH_INTAKE' >&2
-              exit 1
+              git show "$runtime_parent:game-seed-state.json" > "$RUNNER_TEMP/game-seed-current.json"
+              # 기존 런타임의 변경된 게임 상태는 유지하고, 이번 생성기가 실제 변경한 필드만 세 방향으로 병합한다.
+              # 같은 필드를 서로 다르게 바꾸면 추측하거나 덮어쓰지 않고 실패 처리한다.
+              node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              import path from 'node:path';
+              const dir=process.env.RUNNER_TEMP;
+              const read=name=>JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+              const before=JSON.parse(fs.readFileSync('/tmp/company-runtime-seed-state-before.json','utf8'));
+              const desired=read('game-seed-generated.json');
+              const current=read('game-seed-current.json');
+              const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+              const obj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
+              const idFor=(key,row)=>key==='seeds'?(row?.seedId||row?.gameId):
+                key==='seedMaterials'?(row?.materialId||row?.id):
+                key==='portfolioSeedRequests'?(row?.id||row?.requestId):null;
+              function merge(base,want,latest,where=[]){
+                if(eq(base,want))return latest;
+                if(eq(base,latest))return want;
+                if(eq(want,latest))return latest;
+                const key=where.at(-1);
+                if(Array.isArray(base)&&Array.isArray(want)&&Array.isArray(latest)){
+                  if(!['seeds','seedMaterials','portfolioSeedRequests'].includes(key))
+                    throw new Error('GAME_SEED_RUNTIME_CONCURRENT_UPDATE_CONFLICT:'+where.join('.'));
+                  const indexed=rows=>{
+                    const map=new Map();
+                    for(const row of rows){
+                      const id=idFor(key,row);
+                      if(!id||map.has(id))throw new Error('GAME_SEED_RUNTIME_MERGE_ID_INVALID:'+where.join('.'));
+                      map.set(id,row);
+                    }
+                    return map;
+                  };
+                  const old=indexed(base),next=indexed(want),now=indexed(latest);
+                  const order=[...new Set([...now.keys(),...next.keys(),...old.keys()])],out=[];
+                  for(const id of order){
+                    const was=old.get(id),wish=next.get(id),live=now.get(id);
+                    const merged=merge(was,wish,live,[...where,String(id)]);
+                    if(merged!==undefined)out.push(merged);
+                  }
+                  return out;
+                }
+                if(obj(want)&&obj(latest)&&(obj(base)||base===undefined)){
+                  const out={};
+                  for(const k of new Set([...Object.keys(base||{}),...Object.keys(want),...Object.keys(latest)])){
+                    const value=merge(base?.[k],want[k],latest[k],[...where,k]);
+                    if(value!==undefined)out[k]=value;
+                  }
+                  return out;
+                }
+                if(['updatedAt','lastRunAt'].includes(key)&&Number.isFinite(Date.parse(want))&&Number.isFinite(Date.parse(latest)))
+                  return Date.parse(want)>Date.parse(latest)?want:latest;
+                throw new Error('GAME_SEED_RUNTIME_CONCURRENT_UPDATE_CONFLICT:'+where.join('.'));
+              }
+              const result=merge(before,desired,current);
+              fs.writeFileSync(path.join(dir,'game-seed-merged.json'),JSON.stringify(result,null,2)+'\n');
+              console.log('GAME_SEED_RUNTIME_CONCURRENT_MERGE=NONCONFLICTING_FIELDS_ONLY');
+              NODE
+              generated_blob="$(git hash-object -w "$RUNNER_TEMP/game-seed-merged.json")"
             fi
             runtime_index="$RUNNER_TEMP/game-seed-runtime-index-$attempt"
             rm -f "$runtime_index"
