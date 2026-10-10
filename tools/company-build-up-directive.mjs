@@ -1052,9 +1052,9 @@ export function buildDesignToPlatformCodingTrace({
     }
     const ownerSets=new Map();
     const offer=(files,covered)=>{
-      const roots=uniq(files).filter(file=>file.startsWith(roots.UNITY_WEB+'/')).sort();
-      if(!roots.length)return;
-      const key=roots.join('|');
+      const nativeFiles=uniq(files).filter(file=>file.startsWith(roots.UNITY_WEB+'/')).sort();
+      if(!nativeFiles.length)return;
+      const key=nativeFiles.join('|');
       const set=ownerSets.get(key)||new Set();
       for(const ref of covered)if(requirements.has(ref))set.add(ref);
       ownerSets.set(key,set);
