@@ -95,25 +95,117 @@
         "delveGrowthRule": "TREE_COLLECTION_STARTING_POINT_TO_MINISTER_AUTO_MILITARY_CONFLICT_RESOLUTION",
         "finalGameIdentity": "COZY_CHIBI_KINGDOM"
       }
+    },
+    "local_authoring_parts::1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 작은 섬에서 직접 나무와 식량을 모으며 주민 자동화와 병사 진군을 통해 왕국을 확장하는 협동 성장 게임에 참여한다. 각 지역에서는 서로 다른 적들과 보상을 가진 5개 거점을 점령하며, 전략적 자원 확보와 강력한 병종/무역을 통한 해전 및 공성 치료를 수행해 최종적으로 대형 섬 또는 왕국을 정복할 수 있다.",
+      "coreFun": "나무와 식량은 월드 노드에서 직접 상호작용하여 획득된다. 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화하며, 자원은 병력으로 전환되고 병영 레벨로 전투력을 확장한다. 5개의 서로 다른 거점은 순차적으로 점령되며, 협동 지원을 통해 강력한 기지가 공격받는다. 이 과정에서 플레이어는 자원·주민·병력·점령 상태를 실시간으로 관리하고, 자동전투와 점령 보상이 제공되는 구조이다."
+    },
+    "local_authoring_parts::581c0bf1b5d190e53890dd6d4e280237e08ff505efa1fe22bc2663d5d6a995be:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "COZY_CHIBI_KINGDOM",
+      "creativeGrammar": {
+        "mainIdentity": "COZY_CHIBI_STORYBOOK",
+        "a": {
+          "system": "COOP",
+          "material": "TREE_AND_FOOD_COLLECTION",
+          "materialDomain": "NATURE",
+          "stateChange": "TAXI_TO_WORLD_NODE_1"
+        },
+        "b": {
+          "system": "COOP",
+          "material": "MINISTER_AUTO_MILITARY",
+          "materialDomain": "SOCIAL",
+          "stateChange": "AUTO_MILITARY_TO_TAXI_2"
+        },
+        "abCausality": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B",
+        "abEvolution": {
+          "aChangesB": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B",
+          "bChangesA": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B",
+          "lateGameChange": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B"
+        },
+        "materialFusion": {
+          "contrast": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B",
+          "causalBridge": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B",
+          "removalConsequence": "TREE_TO_MINISTER_AUTOMATION_CHAIN_A_B"
+        },
+        "storyCausalChain": {
+          "cause": "TREE_COLLECTION_STARTING_POINT",
+          "characterConflict": "MINISTER_AUTO_MILITARY_CONFLICT",
+          "playerChoice": "TAXI_TO_WORLD_NODE_1_CHOICE",
+          "worldChange": "TAXI_TO_WORLD_NODE_1_CHANGE",
+          "nextEvent": "MINISTER_AUTO_MILITARY_CONFLICT_RESOLUTION"
+        },
+        "cThemes": [
+          {
+            "name": "NATURE",
+            "kind": "MATERIAL",
+            "gameplayEffect": "TREE_COLLECTION_STARTING_POINT"
+          },
+          {
+            "name": "SOCIAL",
+            "kind": "MATERIAL",
+            "gameplayEffect": "MINISTER_AUTO_MILITARY_CONFLICT"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "COOP",
+            "gameplayEffect": "AUTO_MILITARY_TO_TAXI_2"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "TREE_AND_FOOD_COLLECTION",
+            "gameplayEffect": "TAXI_TO_WORLD_NODE_1"
+          }
+        ],
+        "cGenreInterlock": "TREE_COLLECTION_STARTING_POINT_TO_MINISTER_AUTO_MILITARY_CONFLICT_RESOLUTION",
+        "cWorldAndGameplayEffect": "TAXI_TO_WORLD_NODE_1_CHANGE_TO_AUTO_MILITARY_TO_TAXI_2_CHANGE",
+        "delveDiscoveries": [
+          {
+            "clue": "TREE_COLLECTION_STARTING_POINT",
+            "discovery": "MINISTER_AUTO_MILITARY_CONFLICT",
+            "newChoice": "TAXI_TO_WORLD_NODE_1_CHOICE"
+          },
+          {
+            "clue": "AUTO_MILITARY_TO_TAXI_2",
+            "discovery": "TAXI_TO_WORLD_NODE_1_CHANGE",
+            "newChoice": "MINISTER_AUTO_MILITARY_CONFLICT_RESOLUTION"
+          },
+          {
+            "clue": "TAXI_TO_WORLD_NODE_1",
+            "discovery": "MINISTER_AUTO_MILITARY_CONFLICT_RESOLUTION",
+            "newChoice": "AUTO_MILITARY_TO_TAXI_2_CHOICE"
+          },
+          {
+            "clue": "AUTO_MILITARY_TO_TAXI_2",
+            "discovery": "AUTO_MILITARY_TO_TAXI_2_CHOICE",
+            "newChoice": "TAXI_TO_WORLD_NODE_1_CHOICE"
+          }
+        ],
+        "delveGrowthRule": "TREE_COLLECTION_STARTING_POINT_TO_MINISTER_AUTO_MILITARY_CONFLICT_RESOLUTION",
+        "finalGameIdentity": "COZY_CHIBI_KINGDOM"
+      },
+      "playerFantasy": "플레이어는 작은 섬에서 직접 나무와 식량을 모으며 주민 자동화와 병사 진군을 통해 왕국을 확장하는 협동 성장 게임에 참여한다. 각 지역에서는 서로 다른 적들과 보상을 가진 5개 거점을 점령하며, 전략적 자원 확보와 강력한 병종/무역을 통한 해전 및 공성 치료를 수행해 최종적으로 대형 섬 또는 왕국을 정복할 수 있다.",
+      "coreFun": "나무와 식량은 월드 노드에서 직접 상호작용하여 획득된다. 고용된 주민은 생산 직업에 배치되어 반복 노동을 자동화하며, 자원은 병력으로 전환되고 병영 레벨로 전투력을 확장한다. 5개의 서로 다른 거점은 순차적으로 점령되며, 협동 지원을 통해 강력한 기지가 공격받는다. 이 과정에서 플레이어는 자원·주민·병력·점령 상태를 실시간으로 관리하고, 자동전투와 점령 보상이 제공되는 구조이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 529888,
-      "lastMs": 229791,
+      "totalMs": 619862,
+      "lastMs": 89974,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:20:20.310Z"
+      "updatedAt": "2026-10-10T09:21:50.285Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:11:30.090Z",
-  "updatedAt": "2026-10-10T09:20:20.310Z",
+  "updatedAt": "2026-10-10T09:21:50.287Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1176,7 +1268,7 @@
   "localAuthoringSplits": {
     "1e1e285771738aa1efd199eb8b7dc2b2f02de94951f807d5994e1272d7947042": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:20:20.310Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:21:50.287Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
