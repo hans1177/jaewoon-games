@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 역사를 해석하며 경제적 결정을 내리게 되며, 이는 게임의 세계 속도와 결과에 영향을 미친다.",
       "coreFun": "역사적 단서를 인지하고, 이를 기반하여 경제적 선택을 하여 새로운 가치관 형성 과정에서 플레이어가 실제 선택을 하는 행동이다."
+    },
+    "local_authoring_parts::6346acb6fda76d5dba047088e050797d6b2dedcdee1f2744fd102d6e446ef081:coreLoop": {
+      "coreLoop": [
+        "플레이어가 역사적 단서를 인지하고, 이를 기반하여 경제적 선택을 하여 새로운 가치관 형성 과정에서 실제 선택을 하는 행동이다.",
+        "역사적 사건을 해석하며 새로운 가치관 형성이 되면서 시스템 내부에 상태 변화가 발생하고, 이는 플레이어의 선택에 따라 진보하게 된다.",
+        "시작 단계에서는 간단한 한 손 만족 입력과 명확한 점수나 거리, 짧은 세션 목표로 시작되어, 이후에는 빠른 피드백과 작은 위험/선택 결정을 통해 게임이 재실행된다."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 575246,
-      "lastMs": 95209,
+      "totalMs": 675290,
+      "lastMs": 100044,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:06:58.508Z"
+      "updatedAt": "2026-10-10T02:08:38.555Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:57:23.240Z",
-  "updatedAt": "2026-10-10T02:06:58.509Z",
+  "updatedAt": "2026-10-10T02:08:38.555Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1685,7 +1692,7 @@
   "localAuthoringSplits": {
     "1785c8db0b8b453bcb6cb398c1239ca01ea1d59c1d9e04e16cc32f450ed446ad": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:06:58.509Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:08:38.555Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
