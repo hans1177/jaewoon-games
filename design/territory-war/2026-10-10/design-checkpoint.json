@@ -3,216 +3,18 @@
   "gameId": "territory-war",
   "date": "2026-10-10",
   "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
-  "fingerprint": "c18461dfd955da406b15f57156e005a937a63e9a4ca87be4d5d865f82d917430",
+  "fingerprint": "48ab5d107deaff24ce2024c0159014129c207a1af1c26f98952dd1464220145a",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
+  "engineDigest": "d0284c556e5f57f2e276bcad804df561fd6371c48db6d7f1093c39eccfb05307",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::e919bea79c8b337339e4e945928ceb7f54dc29aa40b36f63c1530847d3762b21:identity,creativeGrammar": {
-      "identity": "영토전쟁 재설계",
-      "creativeGrammar": {
-        "mainIdentity": "단순 전선 변화와 지역 특성 조합",
-        "a": {
-          "system": "게임 시스템",
-          "material": "지역 규칙 및 위협 유형 조합",
-          "materialDomain": "주요 장르(전략)과 보조 장르(영토)",
-          "stateChange": "전선 변화, 지역 기반의 자원 배분, 적 대응 방식 변경"
-        },
-        "b": {
-          "system": "게임 시스템",
-          "material": "적 유형 및 웨이브 구성",
-          "materialDomain": "보조 장르(전략)",
-          "stateChange": "전선 구축, 적 대응 전략 개발, 자원 확보 및 활용"
-        },
-        "abCausality": "전선 변화 → 지역 기반 자원 배분 → 적 대응 전략 개발 ↔ 자원 확보 및 활용 ↔ 전선 구축",
-        "abEvolution": {
-          "aChangesB": "전선 변화로 인해 지역 기반 자원 배분이 달라짐",
-          "bChangesA": "적 유형 및 웨이브 구성으로 인해 전선 변화가 달라짐",
-          "lateGameChange": "중후반에는 전선 변화와 지역 기반 자원 배분이 동시에 발생하며, 적 대응 전략이 추가적으로 형성됨"
-        },
-        "materialFusion": {
-          "contrast": "주요 장르(전략)과 보조 장르(영토)의 상호작용",
-          "causalBridge": "전선 변화는 지역 특성을 반영하고, 지역 규칙은 적 유형을 반영함",
-          "removalConsequence": "보조 장르 제거 시 주요 장르의 플레이 방식이 변동됨"
-        },
-        "storyCausalChain": {
-          "cause": "전선 변화 및 지역 특성 조합의 입력",
-          "characterConflict": "지역 자원 배분과 적 대응 전략 갈등",
-          "playerChoice": "전선 구축 및 적 대응 전략 선택의 결과",
-          "worldChange": "전선 변화로 인한 지역 규칙 변경 및 적 대응 방식 개발",
-          "nextEvent": "자원 확보 및 활용으로 인해 다음 전략 선택이 달라짐"
-        },
-        "cThemes": [
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전선 변화와 지역 기반 자원 배분"
-          },
-          {
-            "name": "영토",
-            "kind": "MATERIAL",
-            "gameplayEffect": "적 유형 및 웨이브 구성에 따른 대응 전략"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략",
-            "gameplayEffect": "전선 변화, 지역 자원 배분, 적 대응 전략"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "영토",
-            "gameplayEffect": "적 유형 반영, 웨이브 구성 반영, 자원 배분 조정"
-          }
-        ],
-        "cGenreInterlock": "전략과 영토의 상호작용은 주요 장르(전략)와 보조 장르(영토) 간의 관계를 정의하며, 보조 장르 제거 시 주요 장르의 플레이 방식이 변동됨",
-        "cWorldAndGameplayEffect": "주요 장르는 게임 전체에서 중요한 플레이·갈등·위험을 정의하고, 보조 장르는 그 선택과 관련된 실제 인과 변화를 줘야 함",
-        "delveDiscoveries": [
-          {
-            "clue": "전선 변화로 인한 지역 기반 자원 배분 변경",
-            "discovery": "자원 확보 및 활용으로 인해 다음 전략 선택 달라짐",
-            "newChoice": "전선 구축 및 적 대응 전략 개발"
-          },
-          {
-            "clue": "적 유형 및 웨이브 구성에 따른 전선 변화",
-            "discovery": "지역 자원 배분과 적 대응 전략 갈등",
-            "newChoice": "전선 구축 및 적 대응 전략 선택"
-          },
-          {
-            "clue": "중후반에는 전선 변화와 지역 기반 자원 배분 동시에 발생",
-            "discovery": "적 대응 전략 추가 형성",
-            "newChoice": "전선 변화 및 지역 자원 배분 조합"
-          },
-          {
-            "clue": "보조 장르 제거 시 주요 장르의 플레이 방식 변동",
-            "discovery": "주요 장르의 게임 규칙 재설계",
-            "newChoice": "전선 변화 및 지역 자원 배분 조합"
-          }
-        ],
-        "delveGrowthRule": "전선 변화 → 지역 자원 배분 → 적 대응 전략 ↔ 자원 확보 및 활용 ↔ 전선 구축",
-        "finalGameIdentity": "전선 변화, 지역 자원 배분, 적 대응 전략을 인과적으로 결합한 새 정체성"
-      }
-    },
-    "local_authoring_parts::e919bea79c8b337339e4e945928ceb7f54dc29aa40b36f63c1530847d3762b21:playerFantasy,coreFun": {
-      "playerFantasy": "영토전쟁에서 플레이어는 영지 확장을 위한 전략적 선택을 하며, 전선 변화와 지역 특성에 따라 자원을 효율적으로 배분해야 한다. 이 과정에서는 적 유형 및 웨이브 구성에 따른 대응 전략을 개발하며, 다양한 선택과 결과로 새로운 게임 경험을 형성한다.",
-      "coreFun": "{\"identity\": \"전선 변화, 지역 자원 배분, 적 대응 전략\", \"creativeGrammar\": {\"mainIdentity\": \"단순 전선 변화와 지역 특성 조합\", \"a\": {\"system\": \"게임 시스템\", \"material\": \"지역 규칙 및 위협 유형 조합\", \"materialDomain\": \"주요 장르(전략)과 보조 장르(영토)\", \"stateChange\": \"전선 변화, 지역 기반 자원 배분, 적 대응 방식 변경\"}, \"b\": {\"system\": \"게임 시스템\", \"material\": \"적 유형 및 웨이브 구성\", \"materialDomain\": \"보조 장르(전략)\", \"stateChange\": \"전선 구축, 적 대응 전략 개발, 자원 확보 및 활용\"}, \"abCausality\": \"전선 변화 → 지역 기반 자원 배분 → 적 대응 전략 개발 ↔ 자원 확보 및 활용 ↔ 전선 구축\", \"abEvolution\": {\"aChangesB\": \"전선 변화로 인해 지역 기반 자원 배분 달라짐\", \"bChangesA\": \"적 유형 및 웨이브 구성으로 인해 전선 변화 달라짐\", \"lateGameChange\": \"중후반에는 전선 변화와 지역 기반 자원 배분 동시에 발생하며, 적 대응 전략 추가 형성\"}}, \"storyCausalChain\": {\"cause\": \"전선 변화 및 지역 특성 조합 입력\", \"characterConflict\": \"지역 자원 배분과 적 대응 전략 갈등\", \"playerChoice\": \"전선 구축 및 적 대응 전략 선택\", \"worldChange\": \"전선 변화로 인한 지역 규칙 변경 및 적 대응 방식 개발\", \"nextEvent\": \"자원 확보 및 활용으로 인한 다음 전략 선택 변화\"}, \"cThemes\": [{\"name\": \"전략\", \"kind\": \"MÉ"
-    },
-    "local_authoring_parts::f80b8acac7168e26a0fdee73277a135b88c77b186dfe4c7437d7c129bbaadf1c:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "영토전쟁 재설계",
-      "creativeGrammar": {
-        "mainIdentity": "단순 전선 변화와 지역 특성 조합",
-        "a": {
-          "system": "게임 시스템",
-          "material": "지역 규칙 및 위협 유형 조합",
-          "materialDomain": "주요 장르(전략)과 보조 장르(영토)",
-          "stateChange": "전선 변화, 지역 기반의 자원 배분, 적 대응 방식 변경"
-        },
-        "b": {
-          "system": "게임 시스템",
-          "material": "적 유형 및 웨이브 구성",
-          "materialDomain": "보조 장르(전략)",
-          "stateChange": "전선 구축, 적 대응 전략 개발, 자원 확보 및 활용"
-        },
-        "abCausality": "전선 변화 → 지역 기반 자원 배분 → 적 대응 전략 개발 ↔ 자원 확보 및 활용 ↔ 전선 구축",
-        "abEvolution": {
-          "aChangesB": "전선 변화로 인해 지역 기반 자원 배분이 달라짐",
-          "bChangesA": "적 유형 및 웨이브 구성으로 인해 전선 변화가 달라짐",
-          "lateGameChange": "중후반에는 전선 변화와 지역 기반 자원 배분이 동시에 발생하며, 적 대응 전략이 추가적으로 형성됨"
-        },
-        "materialFusion": {
-          "contrast": "주요 장르(전략)과 보조 장르(영토)의 상호작용",
-          "causalBridge": "전선 변화는 지역 특성을 반영하고, 지역 규칙은 적 유형을 반영함",
-          "removalConsequence": "보조 장르 제거 시 주요 장르의 플레이 방식이 변동됨"
-        },
-        "storyCausalChain": {
-          "cause": "전선 변화 및 지역 특성 조합의 입력",
-          "characterConflict": "지역 자원 배분과 적 대응 전략 갈등",
-          "playerChoice": "전선 구축 및 적 대응 전략 선택의 결과",
-          "worldChange": "전선 변화로 인한 지역 규칙 변경 및 적 대응 방식 개발",
-          "nextEvent": "자원 확보 및 활용으로 인해 다음 전략 선택이 달라짐"
-        },
-        "cThemes": [
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "전선 변화와 지역 기반 자원 배분"
-          },
-          {
-            "name": "영토",
-            "kind": "MATERIAL",
-            "gameplayEffect": "적 유형 및 웨이브 구성에 따른 대응 전략"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략",
-            "gameplayEffect": "전선 변화, 지역 자원 배분, 적 대응 전략"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "영토",
-            "gameplayEffect": "적 유형 반영, 웨이브 구성 반영, 자원 배분 조정"
-          }
-        ],
-        "cGenreInterlock": "전략과 영토의 상호작용은 주요 장르(전략)와 보조 장르(영토) 간의 관계를 정의하며, 보조 장르 제거 시 주요 장르의 플레이 방식이 변동됨",
-        "cWorldAndGameplayEffect": "주요 장르는 게임 전체에서 중요한 플레이·갈등·위험을 정의하고, 보조 장르는 그 선택과 관련된 실제 인과 변화를 줘야 함",
-        "delveDiscoveries": [
-          {
-            "clue": "전선 변화로 인한 지역 기반 자원 배분 변경",
-            "discovery": "자원 확보 및 활용으로 인해 다음 전략 선택 달라짐",
-            "newChoice": "전선 구축 및 적 대응 전략 개발"
-          },
-          {
-            "clue": "적 유형 및 웨이브 구성에 따른 전선 변화",
-            "discovery": "지역 자원 배분과 적 대응 전략 갈등",
-            "newChoice": "전선 구축 및 적 대응 전략 선택"
-          },
-          {
-            "clue": "중후반에는 전선 변화와 지역 기반 자원 배분 동시에 발생",
-            "discovery": "적 대응 전략 추가 형성",
-            "newChoice": "전선 변화 및 지역 자원 배분 조합"
-          },
-          {
-            "clue": "보조 장르 제거 시 주요 장르의 플레이 방식 변동",
-            "discovery": "주요 장르의 게임 규칙 재설계",
-            "newChoice": "전선 변화 및 지역 자원 배분 조합"
-          }
-        ],
-        "delveGrowthRule": "전선 변화 → 지역 자원 배분 → 적 대응 전략 ↔ 자원 확보 및 활용 ↔ 전선 구축",
-        "finalGameIdentity": "전선 변화, 지역 자원 배분, 적 대응 전략을 인과적으로 결합한 새 정체성"
-      },
-      "playerFantasy": "영토전쟁에서 플레이어는 영지 확장을 위한 전략적 선택을 하며, 전선 변화와 지역 특성에 따라 자원을 효율적으로 배분해야 한다. 이 과정에서는 적 유형 및 웨이브 구성에 따른 대응 전략을 개발하며, 다양한 선택과 결과로 새로운 게임 경험을 형성한다.",
-      "coreFun": "{\"identity\": \"전선 변화, 지역 자원 배분, 적 대응 전략\", \"creativeGrammar\": {\"mainIdentity\": \"단순 전선 변화와 지역 특성 조합\", \"a\": {\"system\": \"게임 시스템\", \"material\": \"지역 규칙 및 위협 유형 조합\", \"materialDomain\": \"주요 장르(전략)과 보조 장르(영토)\", \"stateChange\": \"전선 변화, 지역 기반 자원 배분, 적 대응 방식 변경\"}, \"b\": {\"system\": \"게임 시스템\", \"material\": \"적 유형 및 웨이브 구성\", \"materialDomain\": \"보조 장르(전략)\", \"stateChange\": \"전선 구축, 적 대응 전략 개발, 자원 확보 및 활용\"}, \"abCausality\": \"전선 변화 → 지역 기반 자원 배분 → 적 대응 전략 개발 ↔ 자원 확보 및 활용 ↔ 전선 구축\", \"abEvolution\": {\"aChangesB\": \"전선 변화로 인해 지역 기반 자원 배분 달라짐\", \"bChangesA\": \"적 유형 및 웨이브 구성으로 인해 전선 변화 달라짐\", \"lateGameChange\": \"중후반에는 전선 변화와 지역 기반 자원 배분 동시에 발생하며, 적 대응 전략 추가 형성\"}}, \"storyCausalChain\": {\"cause\": \"전선 변화 및 지역 특성 조합 입력\", \"characterConflict\": \"지역 자원 배분과 적 대응 전략 갈등\", \"playerChoice\": \"전선 구축 및 적 대응 전략 선택\", \"worldChange\": \"전선 변화로 인한 지역 규칙 변경 및 적 대응 방식 개발\", \"nextEvent\": \"자원 확보 및 활용으로 인한 다음 전략 선택 변화\"}, \"cThemes\": [{\"name\": \"전략\", \"kind\": \"MÉ"
-    },
-    "local_authoring_parts::0c10ecb8b265ac2b65eb9491b0a9b2218e829ab1e7fa849e1c7a740a05d1a556:coreLoop": {
-      "coreLoop": [
-        "입력: 전선 변화 및 지역 특성 조합",
-        " 상태변화: 자원 배분, 적 대응 방식 변경",
-        "보상: 다음 전략 선택 변화"
-      ]
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
-      "failures": 1,
-      "timeouts": 1,
-      "jsonFailures": 0,
-      "totalMs": 729348,
-      "lastMs": 63110,
-      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:17:01.357Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T09:04:51.933Z",
-  "updatedAt": "2026-10-10T09:43:59.320Z",
+  "createdAt": "2026-10-10T10:27:51.669Z",
+  "updatedAt": "2026-10-10T10:27:51.685Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1928,16 +1730,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "e919bea79c8b337339e4e945928ceb7f54dc29aa40b36f63c1530847d3762b21": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:17:01.357Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "Cannot read properties of undefined (reading 'length')"
+  }
 }
