@@ -10562,8 +10562,8 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "lifecycleState": "DESIGN_ONLY",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/crystal-defense",
@@ -10576,7 +10576,7 @@
       "WEB_GAME_QUALITY_BAR_ROLE": "UNITY_WEB_VALIDATION_OUTPUT_ONLY",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913-2",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "GAMEPLAY_SKETCH": {
         "version": 5,
         "source": "GAME_SEED_MODEL_V5_OWNER_CREATIVE_GRAMMAR",
@@ -12375,7 +12375,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-10T11:05:25.673Z",
+      "updatedAt": "2026-10-09T16:57:34.175Z",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -12404,48 +12404,15 @@
       ],
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": false,
-      "productionTier": 2,
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
-      "minimumDesignContract": {
-        "version": 1,
-        "pass": true,
-        "source": "design/crystal-defense/2026-10-10/design-revised.json",
-        "date": "2026-10-10"
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/crystal-defense/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/crystal-defense/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "promotion": {
-        "from": "DESIGN_ONLY",
-        "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-        "requestedPlatform": "ROBLOX",
-        "concurrentTargetPlatforms": [
-          "ROBLOX",
-          "UNITY"
-        ],
-        "targetSourcePaths": {
-          "ROBLOX": "roblox-games/crystal-defense",
-          "UNITY": "unity-games/crystal-defense"
-        },
-        "designBaselineSource": "design/crystal-defense/2026-10-10/design-revised.json",
-        "designDate": "2026-10-10",
-        "strictDesignReviewRequiredForAdmission": false,
-        "strictDesignReviewContinuesInParallel": true,
-        "promotedAt": "2026-10-10T11:05:25.673Z"
-      }
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "COOP",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·협동",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-10T11:05:24.856Z"
     },
     {
       "version": 2,
