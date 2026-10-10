@@ -187,25 +187,33 @@
       },
       "playerFantasy": "플레이어는 마력숲과 연결된 지역에서 생존하며, 적의 행동 패턴을 파악하여 전략적으로 탐험하고 자원을 수집하는 역할을 수행해야 한다.",
       "coreFun": "플레이어 선택 → 상태 변화 → 보상/위험/다음 선택의 순환적 과정을 통해 게임 정체성에 대한 인과적인 관계를 형성한다."
+    },
+    "local_authoring_parts::38bda554971a2a7b7bfa9d6ea1cddf3f1dff2d8729f64c81019e031f09ce1c58:coreLoop": {
+      "coreLoop": [
+        "입력: 플레이어 선택",
+        " 상태변화: 적 행동 패턴 파악 및 전략적 탐험",
+        " 보상/위험: 자원 수집, 세계 상태 변화",
+        " 다음선택: 새로운 전략 도출"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 697420,
-      "lastMs": 228404,
+      "totalMs": 789129,
+      "lastMs": 91709,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:06:29.999Z"
+      "updatedAt": "2026-10-10T09:08:01.711Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:54:52.556Z",
-  "updatedAt": "2026-10-10T09:06:30.001Z",
+  "updatedAt": "2026-10-10T09:08:01.712Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,7 +1941,7 @@
   "localAuthoringSplits": {
     "ce308c6d2d1b22510cc71453a0aca4b506a1b6897cce39e88967bcf7cbce89f9": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:06:30.001Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:08:01.711Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
