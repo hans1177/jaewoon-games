@@ -8,11 +8,11 @@
   "percent": 17,
   "completedPhases": [],
   "completedPhaseCount": 0,
-  "cachedTaskCount": 68,
-  "lastSuccessfulModelCallAt": "2026-10-10T11:06:02.756Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "cachedTaskCount": 69,
+  "lastSuccessfulModelCallAt": "2026-10-10T11:09:34.540Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "designerSeed": {
     "file": "design/bug-defense/2026-10-10/design-seed.json",
     "contentDigest": "86437e72e92b9534a9cc5377e5e6ecd6a16955a0dc37a5854dcf28fc78204811",
@@ -21,17 +21,17 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1636717,
-      "lastMs": 34166,
+      "totalMs": 1848490,
+      "lastMs": 211773,
       "lastError": null,
-      "updatedAt": "2026-10-10T11:06:02.753Z"
+      "updatedAt": "2026-10-10T11:09:34.534Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-10-10T11:06:02.760Z"
+  "updatedAt": "2026-10-10T11:09:34.544Z"
 }

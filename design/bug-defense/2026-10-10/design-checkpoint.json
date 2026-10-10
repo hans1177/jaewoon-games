@@ -1022,25 +1022,168 @@
         "riskPressure": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요",
         "recoveryRules": "방어선 재배치 후 자원 배분 상태 변환 실패 시, 곤충 웨이브 패턴 읽기 오류 발생하며, 방어선 위치 선택 기반의 자원 소비 즁가로 위험 발생, 이로 인해 다음 선택 기반 전략 결정 필요"
       }
+    },
+    "local_authoring_parts::94f8c1cc9f5a65b44f0ef72e5d0c909eab435795d849ba4fd73c56826352230d:contentVarietyPlan": {
+      "abilities": [
+        {
+          "id": "insect_wave_pattern",
+          "name": "곤충 웨이브 패턴",
+          "kind": "MONSTER",
+          "ownerId": "main_roadmap",
+          "ruleId": "defender_placement_adjustment",
+          "trigger": "incoming_insect_wave",
+          "range": 1,
+          "rangeUnit": "unit",
+          "resource": "defense_resource",
+          "cost": 0,
+          "cooldownSeconds": 30,
+          "telegraph": "wave_pattern_analysis",
+          "avoidance": "enemy_behavior_counterplay",
+          "effect": "threat_prediction",
+          "stateInputs": [
+            "incoming_insect_wave_pattern"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment"
+          ],
+          "source": "game_seed",
+          "rangeKey": "insect_wave_pattern",
+          "costKey": "defense_resource",
+          "cooldownKey": "wave_cooldown"
+        },
+        {
+          "id": "critical_resource",
+          "name": "경제적 가치 자원",
+          "kind": "MONSTER",
+          "ownerId": "b_defense_adaptation",
+          "ruleId": "resource_allocation_state_change",
+          "trigger": "resource_shift",
+          "range": 2,
+          "rangeUnit": "unit",
+          "resource": "economic_value_resource",
+          "cost": 5,
+          "cooldownSeconds": 60,
+          "telegraph": "economic_value_estimation",
+          "avoidance": "enemy_behavior_counterplay",
+          "effect": "economical_decision_making",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "source": "game_seed",
+          "rangeKey": "critical_resource",
+          "costKey": "economic_value_cost",
+          "cooldownKey": "economic_value_cooldown"
+        }
+      ],
+      "roleTransitions": [
+        {
+          "humanId": "player",
+          "humanTool": "defense_planner",
+          "humanAbilityId": "insect_wave_pattern",
+          "infectedAbilityId": "critical_resource",
+          "retainedState": "defender_placement_adjustment",
+          "removedState": "resource_allocation_state",
+          "changedChoice": "new_defensive_strategy"
+        },
+        {
+          "humanId": "player",
+          "humanTool": "defense_planner",
+          "humanAbilityId": "insect_wave_pattern",
+          "infectedAbilityId": "critical_resource",
+          "retainedState": "defender_placement_adjustment",
+          "removedState": "resource_allocation_state",
+          "changedChoice": "economical_decision_making"
+        }
+      ],
+      "regions": [
+        {
+          "id": "main_roadmap",
+          "ruleIds": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "name": "기본 방어 전략",
+          "traversal": "wave_pattern_analysis",
+          "riskReward": "threat_prediction vs. economical_decision_making",
+          "landmark": "initial_defense_configuration",
+          "encounterPattern": "enemy_behavior_counterplay",
+          "resourcePressure": "economic_value_estimation",
+          "storyContext": "incoming_insect_wave"
+        },
+        {
+          "id": "a_main_roadmap",
+          "ruleIds": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "name": "반응형 방어 전략",
+          "traversal": "conflicting_wave_patterns",
+          "riskReward": "adaptive_resource_allocation",
+          "landmark": "dynamic_defenses",
+          "encounterPattern": "behavior_counterplay",
+          "resourcePressure": "strategic_resource_allocation",
+          "storyContext": "resource_shift"
+        }
+      ],
+      "enemiesOrChallenges": [
+        {
+          "name": "곤충 웨이브 패턴",
+          "behavior": "threat_prediction",
+          "counterplay": "defense_planner",
+          "positioning": "wave_pattern_analysis",
+          "timing": "insect_wave_arrival",
+          "mobility": "defensive_positioning",
+          "groupRole": "PRIMARY",
+          "identity": "main_roadmap",
+          "rewardMeaning": "threat_prediction_vs_economical_decisions"
+        },
+        {
+          "name": "경제적 가치 자원",
+          "behavior": "economic_value_estimation",
+          "counterplay": "resource_allocator",
+          "positioning": "critical_resource_placement",
+          "timing": "resource_availability",
+          "mobility": "economic_value_allocation",
+          "groupRole": "SECONDARY",
+          "identity": "b_defense_adaptation",
+          "rewardMeaning": "adaptive_resource_allocation"
+        }
+      ],
+      "objectives": [
+        {
+          "role": "PRIMARY",
+          "variation": "enemy_behavior_analysis_and_defense_planning"
+        },
+        {
+          "role": "SECONDARY",
+          "variation": "resource_allocation_state_change_and_strategic_decision_making"
+        }
+      ],
+      "antiMonotonyRule": "enemy_behavior_analysis ↔ resource_allocation_state_change"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 52,
-      "successes": 52,
+      "calls": 53,
+      "successes": 53,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1636717,
-      "lastMs": 34166,
+      "totalMs": 1848490,
+      "lastMs": 211773,
       "lastError": null,
-      "updatedAt": "2026-10-10T11:06:02.753Z"
+      "updatedAt": "2026-10-10T11:09:34.534Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T11:06:02.759Z",
+  "updatedAt": "2026-10-10T11:09:34.543Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2726,15 +2869,74 @@
   },
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-    "designer_draft_slices::systems-progression": "54f7853363eea993d8d153e85cb53757d3caa5dd71603318b23962c24bdf3a1c"
+    "designer_draft_slices::systems-progression": "54f7853363eea993d8d153e85cb53757d3caa5dd71603318b23962c24bdf3a1c",
+    "designer_draft_slices::content-rules": "93f6c97cb56bc61f9c607398f5f343fe9a7be7566196bb724d30f9ad68aa0256"
   },
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
-  "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T11:06:02.756Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "sliceRepairFeedback": {
+    "designer_draft_slices::content-rules": [
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.insect_wave_pattern",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.insect_wave_pattern: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_ABILITY_CONTRACT_MISSING",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "abilities.critical_resource",
+          "detail": "조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다"
+        },
+        "requiredAction": "abilities.critical_resource: 조건·범위/단위·소모·재사용·전조·회피·효과·원본 근거와 상태 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      },
+      {
+        "code": "DESIGN_MAP_RULE_UNBOUND",
+        "kind": "HARD_GATE",
+        "axis": "CORE_LOOP_DESIGN",
+        "evidenceLevel": null,
+        "minimumRequired": null,
+        "evidence": {
+          "path": "regions",
+          "detail": "각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다"
+        },
+        "requiredAction": "regions: 각 구역의 중복 없는 ID와 핵심 규칙 연결이 필요하다. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다. 문장 바꾸기나 검사 결과 선언으로 대신하지 않는다.",
+        "bypassAllowed": false,
+        "source": "STAGE_GATE_SCORING_V2",
+        "fields": [
+          "contentVarietyPlan"
+        ]
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "designer_draft_slices::content-rules": 1
+  },
+  "slicePartialResults": {
+    "designer_draft_slices::content-rules": {}
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T11:09:34.540Z",
+  "failedPhase": "designer_draft_slices",
+  "failedTask": "content-rules",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_ABILITY_CONTRACT_MISSING,DESIGN_MAP_RULE_UNBOUND",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA",
   "designerSeed": {
