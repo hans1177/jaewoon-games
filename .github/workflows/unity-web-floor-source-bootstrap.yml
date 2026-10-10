@@ -17,6 +17,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   bootstrap:
@@ -40,13 +41,31 @@ jobs:
           set -euo pipefail
           node tools/company-shared-context.mjs --output=/tmp/company-unity-web-bootstrap-context.json
 
+      - name: Detect already-promoted Unity source
+        id: existing
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]] || exit 2
+          git fetch --no-tags --depth=1 origin main
+          if git cat-file -e "origin/main:unity-games/$GAME_ID/ProjectSettings/ProjectVersion.txt" 2>/dev/null; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+            echo "UNITY_WEB_BOOTSTRAP_SOURCE_ALREADY_ON_MAIN=$GAME_ID"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify bootstrap contract
+        if: steps.existing.outputs.present != 'true'
         run: |
           set -euo pipefail
           node --check tools/company-unity-web-floor-bootstrap.mjs
           node --test qa/company-unity-web-floor-bootstrap.test.mjs
 
       - name: Fetch runtime design and verified learning authority
+        if: steps.existing.outputs.present != 'true'
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
@@ -59,85 +78,8 @@ jobs:
           [[ "$learning_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'verified learning revision missing' >&2; exit 2; }
           echo "UNITY_WEB_VERIFIED_LEARNING_REVISION=$learning_sha" >> "$GITHUB_ENV"
 
-
-      - name: Reuse pending design-bound Unity source PR
-        id: pending
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ inputs.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch --no-tags --depth=1 origin main
-          if git cat-file -e "origin/main:unity-games/$GAME_ID" 2>/dev/null; then
-            echo 'already_on_main=true' >> "$GITHUB_OUTPUT"
-            echo "UNITY_WEB_BOOTSTRAP_SOURCE_ALREADY_ON_MAIN=$GAME_ID"
-            exit 0
-          fi
-          # Search this game's title server-side; a shared 300-PR window loses valid
-          # candidates under heavy, unrelated per-game bootstrap traffic.
-          pending="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open \
-            --search "in:title \"dev: bootstrap Unity Web floor source $GAME_ID\"" \
-            --limit 100 --json number,title,url,headRefName,author \
-            | jq -c --arg title "dev: bootstrap Unity Web floor source $GAME_ID" \
-              --arg prefix "unity-web-floor/bootstrap-$GAME_ID-" \
-              '[.[] | select(.title==$title and (.headRefName|startswith($prefix)) and .author.login=="github-actions[bot]")] | sort_by(.number) | reverse | .[0] // empty')"
-          if [[ -z "$pending" ]]; then
-            echo 'reuse=false' >> "$GITHUB_OUTPUT"
-            echo "UNITY_WEB_BOOTSTRAP_SOURCE_PR=NEW:$GAME_ID"
-            exit 0
-          fi
-          pr_url="$(jq -r '.url' <<<"$pending")"
-          pr_branch="$(jq -r '.headRefName' <<<"$pending")"
-          [[ "$pr_branch" == unity-web-floor/bootstrap-"$GAME_ID"-* ]] || exit 31
-          git fetch --no-tags --depth=1 origin "refs/heads/$pr_branch"
-          git show "FETCH_HEAD:unity-games/$GAME_ID/unity-web-floor-source.json" > /tmp/unity-web-pending-source.json
-          export GAME_ID
-          set +e
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {execFileSync} from 'node:child_process';
-          import {createHash} from 'node:crypto';
-          const gameId=process.env.GAME_ID;
-          const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
-          const item=(q.items||[]).find(row=>row.gameId===gameId);
-          if(item?.productionClass!=='DEVELOPMENT_CONFIRMED'||item?.minimumDesignContract?.pass!==true)
-            throw new Error('UNITY_WEB_BOOTSTRAP_PENDING_DESIGN_NOT_ADMITTED');
-          const designPath=String(item.designBaselineSource||item.minimumDesignContract?.source||'');
-          const document=JSON.parse(execFileSync('git',['show','origin/company-runtime:'+designPath],{encoding:'utf8',maxBuffer:16*1024*1024}));
-          const design=document.content||document;
-          const source=JSON.parse(fs.readFileSync('/tmp/unity-web-pending-source.json','utf8'));
-          const generator=createHash('sha256').update(fs.readFileSync('tools/company-unity-web-floor-bootstrap.mjs')).digest('hex');
-          const identity=String(design.identity||item.gameName||gameId).replace(/\s+/g,' ').trim();
-          const coreLoop=(Array.isArray(design.coreLoop)?design.coreLoop:[]).map(value=>String(value).trim()).filter(Boolean).slice(0,6);
-          if(source.gameId!==gameId||source.generatorFingerprint!==generator
-            ||source.identity!==identity||JSON.stringify(source.coreLoop)!==JSON.stringify(coreLoop)
-            ||JSON.stringify(source.unityPlatformProfile)!==JSON.stringify(design.platformProfiles?.UNITY)
-            ||source.upperPlatformReady!==false||source.releaseOrDeploymentAuthority!==false)
-            {
-              console.error('UNITY_WEB_BOOTSTRAP_PENDING_SOURCE_SUPERSEDED_BY_CURRENT_DESIGN');
-              process.exit(77);
-            }
-          console.log('UNITY_WEB_BOOTSTRAP_PENDING_DESIGN_REUSE=PASS:'+gameId);
-          NODE
-          validation_rc=$?
-          set -e
-          # Only proven stale design content may close a generated candidate.
-          # A missing authority file, network error, or runtime exception must fail closed.
-          if (( validation_rc != 0 && validation_rc != 77 )); then exit "$validation_rc"; fi
-          if (( validation_rc == 77 )); then
-            echo "UNITY_WEB_BOOTSTRAP_STALE_PR_CLOSED=$GAME_ID:$pr_url"
-            gh pr close "$pr_url" --repo "$GITHUB_REPOSITORY" --comment 'Generated source no longer matches current design/profile or generator. The canonical bootstrap will create a fresh source candidate.'
-            echo 'reuse=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git checkout FETCH_HEAD -- "unity-games/$GAME_ID"
-          echo 'reuse=true' >> "$GITHUB_OUTPUT"
-          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
-          echo "UNITY_WEB_BOOTSTRAP_PENDING_SOURCE_REUSED=$GAME_ID:$pr_url"
-
       - name: Generate canonical Unity Web floor sources
-        if: steps.pending.outputs.reuse != 'true' && steps.pending.outputs.already_on_main != 'true'
+        if: steps.existing.outputs.present != 'true'
         id: generate
         env:
           GAME_ID: ${{ inputs.game_id }}
@@ -186,62 +128,89 @@ jobs:
           console.log('UNITY_WEB_BOOTSTRAP_GENERATED_ID='+gameId);
           NODE
 
-      - name: Validate canonical Unity project before source promotion
-        if: steps.pending.outputs.already_on_main != 'true'
-        env:
-          GAME_ID: ${{ inputs.game_id }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/company-unity-web-first-stage.mjs \
-            --game-id="$GAME_ID" \
-            --source-root="unity-games/$GAME_ID" \
-            --build-method="UnityWebFloorBuild.BuildWeb" --validate-only
-
-      - name: Create bootstrap PR
-        id: create
-        if: steps.pending.outputs.reuse != 'true' && steps.pending.outputs.already_on_main != 'true'
+      - name: Verify and promote canonical Unity Web bootstrap source PR
+        if: steps.existing.outputs.present != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.generate.outputs.game_id }}
         shell: bash
         run: |
           set -euo pipefail
-          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
-          branch="unity-web-floor/bootstrap-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          node tools/company-unity-web-first-stage.mjs \
+            --game-id="$GAME_ID" \
+            --source-root="unity-games/$GAME_ID" \
+            --build-method=UnityWebFloorBuild.BuildWeb \
+            --validate-only=true
+
+          # An older pending run must never recreate a source already on main.
+          git fetch --no-tags origin main
+          if git cat-file -e "origin/main:unity-games/$GAME_ID" 2>/dev/null; then
+            echo "UNITY_WEB_BOOTSTRAP_ALREADY_ON_MAIN=$GAME_ID"
+            exit 0
+          fi
+
           git config user.name "jaewoon-unity-web-floor"
           git config user.email "actions@users.noreply.github.com"
-          git checkout -b "$branch"
           git add "unity-games/$GAME_ID"
           git diff --cached --check
           if git diff --cached --quiet; then
             echo 'UNITY_WEB_BOOTSTRAP_PR=NO_CHANGE'
             exit 0
           fi
+          staged_tree="$(git write-tree)"
+          staged_game_tree="$(git rev-parse "$staged_tree:unity-games/$GAME_ID")"
+
+          # Reuse an identical bot-authored, source-only PR before creating another.
+          candidate_prs="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open \
+            --search "$GAME_ID in:title" --limit 100 \
+            --json number,title,headRefName,headRefOid,author \
+            | jq -c --arg title "dev: bootstrap Unity Web floor source $GAME_ID" \
+              --arg prefix "unity-web-floor/bootstrap-$GAME_ID-" \
+              '[.[] | select(.title==$title and (.headRefName|startswith($prefix)) and .author.login=="github-actions[bot]")] | sort_by(.number) | reverse | .[]')"
+          while IFS= read -r row; do
+            [ -n "$row" ] || continue
+            pr_number="$(jq -r '.number' <<< "$row")"
+            pr_branch="$(jq -r '.headRefName' <<< "$row")"
+            pr_head="$(jq -r '.headRefOid' <<< "$row")"
+            [[ "$pr_head" =~ ^[0-9a-f]{40}$ ]] || continue
+            changed_paths="$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json files --jq '.files[].path')"
+            [ -n "$changed_paths" ] || continue
+            if printf '%s\n' "$changed_paths" | grep -v "^unity-games/$GAME_ID/" >/dev/null; then
+              echo "UNITY_WEB_BOOTSTRAP_PR_SCOPE_REJECTED=$pr_number"
+              continue
+            fi
+            git fetch --no-tags --depth=1 origin "$pr_branch"
+            pr_game_tree="$(git rev-parse "FETCH_HEAD:unity-games/$GAME_ID" 2>/dev/null || true)"
+            [ "$pr_game_tree" = "$staged_game_tree" ] || continue
+            echo "UNITY_WEB_BOOTSTRAP_PR_REUSED=$pr_number"
+            gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash \
+              --delete-branch --match-head-commit "$pr_head"
+            git fetch --no-tags origin main
+            git cat-file -e "origin/main:unity-games/$GAME_ID"
+            echo "UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED=$GAME_ID:$pr_number"
+            gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+              -f game_id="$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED
+            echo "UNITY_WEB_BOOTSTRAP_WEBGL_DISPATCHED=$GAME_ID"
+            echo 'UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED'
+            exit 0
+          done <<< "$candidate_prs"
+
+          safe="$(printf '%s' "$GAME_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          branch="unity-web-floor/bootstrap-$safe-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git checkout -b "$branch"
           git commit -m "dev: bootstrap Unity Web floor source $GAME_ID"
           git push origin HEAD:"$branch"
-          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch"             --title "dev: bootstrap Unity Web floor source $GAME_ID"             --body "Bootstrap canonical Unity source for: $GAME_ID. After merge, Company DEVELOPMENT_CONFIRMED Runtime dispatches the Unity Web floor build for this exact game. Games with durable native progress are rejected by the canonical admission classifier. Generated source still requires WebGL build, actual browser play, independent QA, regression, and UPPER_PLATFORM_DEVELOPMENT_READY.")"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+            --title "dev: bootstrap Unity Web floor source $GAME_ID" \
+            --body "Canonical Unity source from the existing locked design. Scoped bootstrap static QA completed. After merge, existing WebGL build, actual browser play, independent QA, regression and native 3D gates remain required. No release or QA PASS is claimed.")"
           echo "UNITY_WEB_BOOTSTRAP_PR=$pr_url"
-          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_BOOTSTRAP_DIRECT_MAIN_WRITE=NO'
-
-      - name: Promote static-verified bootstrap through existing PR gate
-        if: steps.pending.outputs.already_on_main != 'true' && (steps.pending.outputs.reuse == 'true' || steps.create.outcome == 'success')
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GAME_ID: ${{ inputs.game_id }}
-          PR_URL: ${{ steps.pending.outputs.pr_url || steps.create.outputs.pr_url }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "$PR_URL" == "https://github.com/$GITHUB_REPOSITORY/pull/"* ]] || exit 32
-          # Source bootstrap is not release; GitHub's protected PR rules remain authoritative.
-          if gh pr merge "$PR_URL" --repo "$GITHUB_REPOSITORY" --squash --delete-branch; then
-            echo "UNITY_WEB_BOOTSTRAP_MAIN_SOURCE_MERGED=$GAME_ID:$PR_URL"
-          elif [[ "$(gh pr view "$PR_URL" --repo "$GITHUB_REPOSITORY" --json state --jq '.state')" == MERGED ]]; then
-            echo "UNITY_WEB_BOOTSTRAP_ALREADY_MERGED=$GAME_ID:$PR_URL"
-          else
-            echo "UNITY_WEB_BOOTSTRAP_PR_PROMOTION_BLOCKED=$GAME_ID:$PR_URL" >&2
-            exit 75
-          fi
-          echo 'UNITY_WEB_BOOTSTRAP_RUNTIME_QA=NOT_YET_VERIFIED'
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash \
+            --delete-branch --match-head-commit "$(git rev-parse HEAD)"
+          git fetch --no-tags origin main
+          git cat-file -e "origin/main:unity-games/$GAME_ID"
+          echo "UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED=$GAME_ID:NEW_PR"
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f game_id="$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED
+          echo "UNITY_WEB_BOOTSTRAP_WEBGL_DISPATCHED=$GAME_ID"
+          echo 'UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED'

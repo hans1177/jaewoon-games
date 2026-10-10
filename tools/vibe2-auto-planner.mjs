@@ -852,7 +852,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
   const adaptedGoal=adaptation?goal+adaptation:goal;
-  const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox';
+  const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox'||project.firstStageUnityWeb===true;
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)

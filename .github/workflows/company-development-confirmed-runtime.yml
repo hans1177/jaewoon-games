@@ -351,7 +351,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_json='+JSON.stringify(bootstrapIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
-           console.log('UNITY_WEB_DESIGN_ELIGIBLE_COUNT='+rows.length);
+          console.log('UNITY_WEB_DESIGN_ELIGIBLE_COUNT='+rows.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
           console.log('ROBLOX_NATIVE_DISPATCH_IDS='+(robloxIds.join(',')||'NONE'));
           console.log('UNITY_NATIVE_DISPATCH_IDS='+(unityIds.join(',')||'NONE'));
@@ -431,6 +431,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: write
     uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
     with:
       game_id: ${{ matrix.game_id }}

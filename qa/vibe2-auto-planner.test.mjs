@@ -1976,6 +1976,8 @@ test('central Unity Web development floor routes new DEVELOPMENT_CONFIRMED work 
   ]);
   assert.ok(task.evidence.includes('unity-web-first-stage'));
   assert.ok(task.evidence.includes('unity-web-source-root-bootstrap-required'));
+  assert.equal(task.maxRetries,null,'Unity Web bootstrap must never stop because of a retry count');
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.match(task.goal,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
   assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
   assert.match(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
@@ -2038,6 +2040,8 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
   assert.equal(task.target,'unity');
   assert.ok(task.evidence.includes('unity-web-development-floor:v1'));
   assert.ok(task.evidence.includes('platform-responsibility-split:unity-web-core-runtime'));
+  assert.equal(task.maxRetries,null,'Unity Web 3D repair must remain indefinitely retryable');
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(task.evidence.includes('same-game-cross-platform-parallel:responsible-files-only'));
   assert.ok(task.evidence.includes('upper-platform-readiness:READINESS_EVIDENCE_MISSING'));
   assert.deepEqual(task.responsibleFiles,[
