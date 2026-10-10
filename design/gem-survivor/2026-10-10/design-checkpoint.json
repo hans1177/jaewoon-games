@@ -187,25 +187,33 @@
       },
       "playerFantasy": "플레이어는 모바일 키트와 빌드 시스템을 활용해 무협 전략을 숙련하며, 역사를 통한 철학적 성찰과 예술적 창작을 통해 진보하는 생존 게임 경험을 누릴 수 있다.",
       "coreFun": "플레이어 선택 → 상태 변화 → 다음 선택 연결된 콘텐츠 구조가 실제 게임에서 실행되며, 이 과정에서 무협 빌드 시스템의 융합과 역사/철학/예술 소재의 인과적 연관성이 확립된다."
+    },
+    "local_authoring_parts::f1179543bc13a0da1e219f7162d1ef16ea20fe607ed2ffb7721b10b2b0abf0aa:coreLoop": {
+      "coreLoop": [
+        "플레이어 선택 → 상태 변화 → 다음 선택 연결",
+        "모바일 키트 및 빌드 시스템 결합",
+        "역사/철학/예술 소재 융합(2차 대응 시스템)",
+        "무협 빌드 시스템 결합"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 525038,
-      "lastMs": 64479,
+      "totalMs": 589159,
+      "lastMs": 64121,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:02:07.218Z"
+      "updatedAt": "2026-10-10T10:03:11.342Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:53:22.157Z",
-  "updatedAt": "2026-10-10T10:02:07.220Z",
+  "updatedAt": "2026-10-10T10:03:11.351Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1941,8 @@
   "localAuthoringSplits": {
     "0655f63aa53b46eeea2d70ae674114bd724955db768232ddc47c4954fcfae361": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:02:07.220Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:03:11.342Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
