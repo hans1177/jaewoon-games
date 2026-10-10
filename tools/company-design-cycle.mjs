@@ -702,7 +702,7 @@ function persistDesignerSeed(design,phase){
       state:'DESIGN_CANDIDATE',
       codeGenerationAuthorized:false,
       requiredGate:'DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE',
-      identity:content.identity,coreFun:content.coreFun,coreLoop:content.coreLoop,
+      identity:content.identity,creativeGrammar:content.creativeGrammar,coreFun:content.coreFun,coreLoop:content.coreLoop,
       signatureSystems:content.signatureSystems,multiplayerMode:content.multiplayerMode,
       targetPlatform:clean(seed.INITIAL_TARGET_PLATFORM)
     },
@@ -724,10 +724,19 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     const schema=designSliceSchemaWithAuthoredHandoffs(slice.fields,merged.signatureSystems);
     const existing=Object.fromEntries(slice.fields.filter(field=>Object.prototype.hasOwnProperty.call(merged,field)).map(field=>[field,merged[field]]));
     const taskKey=`${phase}_slices::${slice.id}`;
-    const priorRules=Object.fromEntries(['identity','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionEconomyBalance','failureRetryRisk','multiplayerMode','contentVarietyPlan','designAlternatives','selectedDesignPlan'].filter(field=>!slice.fields.includes(field)&&merged[field]!==undefined).map(field=>[field,merged[field]]));
+    const priorRules=Object.fromEntries(['identity','creativeGrammar','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionEconomyBalance','failureRetryRisk','multiplayerMode','contentVarietyPlan','designAlternatives','selectedDesignPlan'].filter(field=>!slice.fields.includes(field)&&merged[field]!==undefined).map(field=>[field,merged[field]]));
     const dependencyHash=createHash('sha256').update(JSON.stringify(priorRules)).digest('hex');
     const compactRule=value=>typeof value==='string'?clip(value,180):Array.isArray(value)?value.map(compactRule):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,compactRule(item)])):value;
-    const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='contentVarietyPlan'?{regions:value.regions?.map(({id,name,ruleIds})=>({id,name,ruleIds})),abilities:value.abilities,roleTransitions:value.roleTransitions}:field==='designAlternatives'?value.map(plan=>({label:plan.label,strategy:plan.strategy})):field==='selectedDesignPlan'?value:value])));
+    const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='contentVarietyPlan'?{regions:value.regions?.map(({id,name,ruleIds})=>({id,name,ruleIds})),abilities:value.abilities,roleTransitions:value.roleTransitions}:field==='designAlternatives'?value.map(plan=>({label:plan.label,strategy:plan.strategy})):field==='selectedDesignPlan'?value:field==='creativeGrammar'?{
+      mainIdentity:value.mainIdentity,a:value.a,b:value.b,abCausality:value.abCausality,
+      abEvolution:value.abEvolution,cThemes:value.cThemes,cGenres:value.cGenres,
+      cGenreInterlock:value.cGenreInterlock,cWorldAndGameplayEffect:value.cWorldAndGameplayEffect,
+      storyCausalChain:value.storyCausalChain,
+      delveDiscoveries:Array.isArray(value.delveDiscoveries)&&value.delveDiscoveries.length>8
+        ?[...value.delveDiscoveries.slice(0,4),...value.delveDiscoveries.slice(-4)]
+        :value.delveDiscoveries,
+      delveGrowthRule:value.delveGrowthRule,finalGameIdentity:value.finalGameIdentity
+    }:value])));
     designCheckpoint.sliceDependencies||={};
     designCheckpoint.sliceRepairFeedback||={};
     designCheckpoint.sliceRepairAttempts||={};
