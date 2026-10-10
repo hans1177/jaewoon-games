@@ -200,6 +200,9 @@ test('canonical Unity Web build refuses approval without three real canvas scree
   assert.match(workflow,/gameplay-mobile-scene\.png/);
   assert.match(workflow,/independent-qa-mobile-scene\.png/);
   assert.match(workflow,/regression-mobile-scene\.png/);
+  assert.match(workflow,/if: \$\{\{ always\(\) && steps\.output\.outcome == 'success' \}\}/);
+  assert.match(workflow,/if-no-files-found: error/,'missing WebGL artifact cannot be marked as PASS');
+
   assert.match(workflow,/const graphicsPass=!bootstrapGraphicsBlocked/);
   assert.match(workflow,/&&native3dVerified;/);
   assert.doesNotMatch(workflow,/pass=\(renderScreenPass\|\|true\)/);

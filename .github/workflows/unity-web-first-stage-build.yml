@@ -706,6 +706,9 @@ jobs:
           NODE
 
       - name: Upload Unity Web artifact
+        # Build succeeds but screenshot/QA fails: preserve real browser images and failure evidence.
+        # No artifact is uploaded when the WebGL output stage itself never succeeded.
+        if: ${{ always() && steps.output.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: unity-web-${{ steps.request.outputs.game_id }}-${{ github.run_id }}-${{ github.run_attempt }}
