@@ -489,25 +489,40 @@
       "name": "별길 개척자 - 진보형 플레이어 역할",
       "purpose": "전략적 결정과 위험에 대한 인식 변화를 통해 세계를 재구성하는 과정에서 중요한 선택을 내리는 것이 목적입니다.",
       "playerChoice": "플레이어의 선택으로 이어지는 다음 사건을 적고, 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교합니다."
+    },
+    "local_authoring_parts::c2c08952fcd1f6b529c867f34926d238458d32f2ba8165f4314a0899473f9244:signatureSystems:3": {
+      "id": "signatureSystems[3]",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "선택",
+        "위험 인식"
+      ],
+      "stateOutputs": [
+        "새로운 전략 경로 생성",
+        "세계 상태 변화"
+      ],
+      "name": "별길 개척자 - 진보형 플레이어 역할",
+      "purpose": "역사와 철학 소재로 가득 차 있는 중후반 두 시스템의 관계 변화를 통해 세계를 재구성하는 선택 과정에서 중요한 결정을 내리는 것이 목적입니다.",
+      "playerChoice": "플레이어의 선택과 위험에 대한 인식 변화를 바탕으로 새로운 전략 경로를 생성하거나, 실제 세계 상태를 변화시키며 다음 사건을 예측합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1278878,
-      "lastMs": 74321,
+      "totalMs": 1353769,
+      "lastMs": 74891,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:15:27.754Z"
+      "updatedAt": "2026-10-10T03:16:42.647Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:54:08.629Z",
-  "updatedAt": "2026-10-10T03:15:27.754Z",
+  "updatedAt": "2026-10-10T03:16:42.652Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2024,7 +2039,7 @@
     ]
   },
   "sliceRepairAttempts": {
-    "designer_draft_slices::identity-core": 1
+    "designer_draft_slices::identity-core": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2125,10 +2140,10 @@
   "localAuthoringSplits": {
     "a19c12ccfaa76767fd306b4b812626dcd3ec4f705b5d18c2c82282833f40f097": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:15:27.754Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-10-10T03:16:42.648Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_CONTENT_REPAIR_REQUIRED DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
