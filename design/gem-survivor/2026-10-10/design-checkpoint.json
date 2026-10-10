@@ -104,25 +104,42 @@
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ]
+    },
+    "local_authoring_parts::b2d6079a4773baf4099af990245ee7e72fac693c3c4d69cff4c7d1cbca329c0b:signatureSystems:0": {
+      "id": "signatureSystems[0]",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "Build Combination",
+        "Wave Survival",
+        "Boss Conversion"
+      ],
+      "stateOutputs": [
+        "Reward Collection",
+        "Skill Mastery",
+        "Next Progression Choice"
+      ],
+      "name": "Survival Build Synthesis",
+      "purpose": "To integrate player adaptation, environmental pressures, and system interaction into a cohesive survival experience.",
+      "playerChoice": "Upgrading builds for survival, adapting to enemy positioning, and integrating multi-system interactions through strategic progression choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 168637,
-      "lastMs": 24334,
+      "totalMs": 187915,
+      "lastMs": 19278,
       "lastError": null,
-      "updatedAt": "2026-10-10T01:59:31.528Z"
+      "updatedAt": "2026-10-10T01:59:50.808Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T01:56:42.762Z",
-  "updatedAt": "2026-10-10T01:59:31.528Z",
+  "updatedAt": "2026-10-10T01:59:50.809Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1832,7 +1849,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T01:59:31.528Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T01:59:50.808Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
