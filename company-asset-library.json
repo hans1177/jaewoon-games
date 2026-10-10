@@ -74566,31 +74566,6 @@
           "assets/shared/creature-wolf.glb"
         ]
       },
-      "authoringRecipes": [
-        {
-          "id": "author-shared-creature-wolf",
-          "family": "CREATURE",
-          "assetId": "shared-creature-wolf",
-          "executor": "NODE_JS",
-          "script": "assets/native-authoring/build-shared-creature.mjs",
-          "args": [
-            "assets/shared",
-            "--species=wolf"
-          ],
-          "outputs": [
-            "assets/shared/creature-wolf.glb"
-          ],
-          "targetPlatforms": [
-            "UNITY",
-            "ROBLOX",
-            "WEB"
-          ],
-          "runMode": "VERIFY_ONLY",
-          "masterGlbRequired": true,
-          "sourceLicense": "project-original",
-          "oneCreatureOneArtifact": true
-        }
-      ],
       "rigProfile": "SHARED_CREATURE_WOLF_SKINNED",
       "jointCount": 17,
       "vertices": 1052,
@@ -74620,7 +74595,15 @@
       "approvalRequiredAfterNativeRuntime": true,
       "mobileRuntimeVerificationRequired": true,
       "nativeRetargetAndConsumerQaRequired": true,
-      "distinctAttackAndSkillCurvesSourceAuthored": true
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=wolf"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
     },
     {
       "id": "shared-creature-spider",
@@ -74667,31 +74650,6 @@
           "assets/shared/creature-spider.glb"
         ]
       },
-      "authoringRecipes": [
-        {
-          "id": "author-shared-creature-spider",
-          "family": "CREATURE",
-          "assetId": "shared-creature-spider",
-          "executor": "NODE_JS",
-          "script": "assets/native-authoring/build-shared-creature.mjs",
-          "args": [
-            "assets/shared",
-            "--species=spider"
-          ],
-          "outputs": [
-            "assets/shared/creature-spider.glb"
-          ],
-          "targetPlatforms": [
-            "UNITY",
-            "ROBLOX",
-            "WEB"
-          ],
-          "runMode": "VERIFY_ONLY",
-          "masterGlbRequired": true,
-          "sourceLicense": "project-original",
-          "oneCreatureOneArtifact": true
-        }
-      ],
       "rigProfile": "SHARED_CREATURE_SPIDER_SKINNED",
       "jointCount": 29,
       "vertices": 1789,
@@ -74721,7 +74679,15 @@
       "approvalRequiredAfterNativeRuntime": true,
       "mobileRuntimeVerificationRequired": true,
       "nativeRetargetAndConsumerQaRequired": true,
-      "distinctAttackAndSkillCurvesSourceAuthored": true
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=spider"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
     },
     {
       "id": "shared-creature-beetle",
@@ -74768,31 +74734,6 @@
           "assets/shared/creature-beetle.glb"
         ]
       },
-      "authoringRecipes": [
-        {
-          "id": "author-shared-creature-beetle",
-          "family": "CREATURE",
-          "assetId": "shared-creature-beetle",
-          "executor": "NODE_JS",
-          "script": "assets/native-authoring/build-shared-creature.mjs",
-          "args": [
-            "assets/shared",
-            "--species=beetle"
-          ],
-          "outputs": [
-            "assets/shared/creature-beetle.glb"
-          ],
-          "targetPlatforms": [
-            "UNITY",
-            "ROBLOX",
-            "WEB"
-          ],
-          "runMode": "VERIFY_ONLY",
-          "masterGlbRequired": true,
-          "sourceLicense": "project-original",
-          "oneCreatureOneArtifact": true
-        }
-      ],
       "rigProfile": "SHARED_CREATURE_BEETLE_SKINNED",
       "jointCount": 23,
       "vertices": 1503,
@@ -74822,7 +74763,15 @@
       "approvalRequiredAfterNativeRuntime": true,
       "mobileRuntimeVerificationRequired": true,
       "nativeRetargetAndConsumerQaRequired": true,
-      "distinctAttackAndSkillCurvesSourceAuthored": true
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=beetle"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
     },
     {
       "id": "shared-creature-golem",
@@ -74869,31 +74818,6 @@
           "assets/shared/creature-golem.glb"
         ]
       },
-      "authoringRecipes": [
-        {
-          "id": "author-shared-creature-golem",
-          "family": "CREATURE",
-          "assetId": "shared-creature-golem",
-          "executor": "NODE_JS",
-          "script": "assets/native-authoring/build-shared-creature.mjs",
-          "args": [
-            "assets/shared",
-            "--species=golem"
-          ],
-          "outputs": [
-            "assets/shared/creature-golem.glb"
-          ],
-          "targetPlatforms": [
-            "UNITY",
-            "ROBLOX",
-            "WEB"
-          ],
-          "runMode": "VERIFY_ONLY",
-          "masterGlbRequired": true,
-          "sourceLicense": "project-original",
-          "oneCreatureOneArtifact": true
-        }
-      ],
       "rigProfile": "SHARED_CREATURE_GOLEM_SKINNED",
       "jointCount": 15,
       "vertices": 1249,
@@ -74923,7 +74847,15 @@
       "approvalRequiredAfterNativeRuntime": true,
       "mobileRuntimeVerificationRequired": true,
       "nativeRetargetAndConsumerQaRequired": true,
-      "distinctAttackAndSkillCurvesSourceAuthored": true
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=golem"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
     },
     {
       "id": "shared-creature-serpent",
@@ -74970,31 +74902,6 @@
           "assets/shared/creature-serpent.glb"
         ]
       },
-      "authoringRecipes": [
-        {
-          "id": "author-shared-creature-serpent",
-          "family": "CREATURE",
-          "assetId": "shared-creature-serpent",
-          "executor": "NODE_JS",
-          "script": "assets/native-authoring/build-shared-creature.mjs",
-          "args": [
-            "assets/shared",
-            "--species=serpent"
-          ],
-          "outputs": [
-            "assets/shared/creature-serpent.glb"
-          ],
-          "targetPlatforms": [
-            "UNITY",
-            "ROBLOX",
-            "WEB"
-          ],
-          "runMode": "VERIFY_ONLY",
-          "masterGlbRequired": true,
-          "sourceLicense": "project-original",
-          "oneCreatureOneArtifact": true
-        }
-      ],
       "rigProfile": "SHARED_CREATURE_SERPENT_SKINNED",
       "jointCount": 17,
       "vertices": 915,
@@ -75024,7 +74931,15 @@
       "approvalRequiredAfterNativeRuntime": true,
       "mobileRuntimeVerificationRequired": true,
       "nativeRetargetAndConsumerQaRequired": true,
-      "distinctAttackAndSkillCurvesSourceAuthored": true
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=serpent"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
     }
   ],
   "research": [
