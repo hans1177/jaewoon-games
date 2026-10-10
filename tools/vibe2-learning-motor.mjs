@@ -1120,7 +1120,7 @@ const OFFICIAL_GAME_CODING_REFERENCES=Object.freeze([
   },
   {
     id:'roblox-profile-before-optimization',platform:'ROBLOX',
-    match:/performance|\\blag\\b|\\bfps\\b|\\bframe\\b|render|slow|\\bnpc\\b|enemy|\\bai\\b|physics|network|memory|optimi|최적|지연|렉|프레임|메모리|몬스터|물리|성능/i,
+    match:/performance|(^|[^a-z])(?:lag|fps|frame|npc|ai)(?=$|[^a-z])|render|slow|enemy|physics|network|memory|optimi|최적|지연|렉|프레임|메모리|몬스터|물리|성능/i,
     source:'https://create.roblox.com/docs/performance-optimization/improve',
     principle:'Profile high-frequency Luau work and replication traffic before changing a hot path.',
     apply:'Optimize only measured loops or unnecessary network traffic; preserve gameplay and server state.',
