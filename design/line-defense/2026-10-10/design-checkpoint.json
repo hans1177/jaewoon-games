@@ -12,25 +12,41 @@
   "tasks": {
     "local_authoring_parts::e855dfe35b6163e298efec00c38e171ef543327830843230e8b2a8f8135f3e2e:identity": {
       "identity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다."
+    },
+    "local_authoring_parts::bcb3bd56d9ab469f837ffba23a2f10f9b6cdbbca364883d8e1fe1d5df38a44de:mainIdentity,a,b,abCausality": {
+      "mainIdentity": "골목 군단 대전은 골목길이라는 친숙한 공간에서 펼쳐지는 실시간 라인 디펜스 게임으로, 고유한 '골목길 시너지 배치 시스템'과 '실시간 재화 순환 엔진'을 통해 플레이어가 매 순간 유닛의 배치 위치와 업그레이드 타이밍을 결정하며 아지트를 방어하는 독창적인 전략적 선택과 상태 변화를 창출합니다.",
+      "a": {
+        "system": "골목길 시너지 배치 시스템",
+        "material": "특정 골목 구역에 유닛을 인접하게 배치할 때 발생하는 시너지 효과",
+        "materialDomain": "공간 배치 기반의 깊이 있는 전략적 선택",
+        "stateChange": "유닛의 배치 위치 및 업그레이드 타이밍 결정"
+      },
+      "b": {
+        "system": "실시간 재화 순환 엔진",
+        "material": "전투 중 획득하는 자원의 가치를 실시간으로 변동시켜 자원 수집과 소비의 타이밍 조율",
+        "materialDomain": "자원 수집과 소비의 타이밍 조절",
+        "stateChange": "자원의 가치 변동 및 유닛 업그레이드/배치 투자"
+      },
+      "abCausality": "골목길 시너지 배치 시스템과 실시간 재화 순환 엔진의 상호작용은 플레이어가 공간 배치 기반의 전략적 선택과 자원 관리의 타이밍 조절을 통해 이루어집니다. 이는 즉각적인 전투력 변화와 방어 성공의 쾌감을 제공합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 596083,
-      "lastMs": 20612,
+      "totalMs": 664024,
+      "lastMs": 67941,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T05:34:38.351Z"
+      "updatedAt": "2026-10-10T05:35:46.294Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:24:42.248Z",
-  "updatedAt": "2026-10-10T05:34:38.351Z",
+  "updatedAt": "2026-10-10T05:35:46.294Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -619,7 +635,7 @@
     "d993346d5612397053769c80070e8291cd8e833457a04509217722b9256421ea": true,
     "e855dfe35b6163e298efec00c38e171ef543327830843230e8b2a8f8135f3e2e": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:34:38.351Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T05:35:46.294Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
