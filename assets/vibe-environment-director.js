@@ -965,7 +965,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
         (proceduralCellHash(hash^rosterSalt,tile.x,tile.z)%19)};
     }).sort((a,b)=>b.score-a.score||a.id-b.id);
     const tile=sorted[0]?.tile||null,site=tile?worldPosition(tile.x,tile.z,tile.elevation*8):null;
-    if(tile)assignedActorCells.add(at(tile.x,tile.z));
+    if(tile&&actor.approved===true)assignedActorCells.add(at(tile.x,tile.z));
     const acceptedActions=Array.isArray(actor.allowedActions)?
       [...new Set(actor.allowedActions.map(v=>String(v).toUpperCase()).filter(v=>actorActionSet.includes(v)))]:[];
     const raidAuthorized=actor.raidApproved===true&&Boolean(actor.raidTargetId)&&
@@ -986,7 +986,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const proposedIntent=utilities[0]?.action||null;
     // 유틸리티 AI에 시간대 가중치와 행동 관성(히스테리시스)을 적용. 실행은 기존 게임 AI만 허용한다.
     const phaseWeights={DAWN:{FORAGE:12,MIGRATE:9,PATROL:7},DAY:{WORK:19,TRADE:18,TALK:12,VILLAGE_BUILD:12,SCOUT:9},
-      DUSK:{DEFEND:16,PATROL:12,REST:7},NIGHT:{REST:18,HUNT:18,SCOUT:8,DUNGEON_GUARD:15}};
+      DUSK:{DEFEND:16,PATROL:12,REST:23},NIGHT:{REST:38,HUNT:28,SCOUT:8,DUNGEON_GUARD:15}};
     let previousAction=null;
     const behaviorCycle=Object.freeze(['DAWN','DAY','DUSK','NIGHT'].map(phase=>{
       const ranked=utilities.map(row=>({action:row.action,score:row.score+(phaseWeights[phase][row.action]||0)+
@@ -1104,7 +1104,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       actualNativeUrbanWorldVerified:false}),
     sharedLibraryBinding:Object.freeze({gameId:String(gameId),target:String(target).toUpperCase(),sourceCandidateCount:pool.length,
       eligibleFamilies:Object.freeze(Object.fromEntries([...poolByFamily].map(([family,rows])=>[family,rows.length]))),
-      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation,...terrainMaterialGroups,...civicSpaces].flatMap(row=>[row.sourceBinding?.assetId,row.surfaceMaterialBinding?.assetId,...Object.values(row.construction?.materialBindings||{}).map(binding=>binding?.assetId)]).filter(Boolean))].sort()),
+      selectedAssetIds:Object.freeze([...new Set([...buildings,...vegetation,...terrainMaterialGroups,...civicSpaces].flatMap(row=>[row.sourceBinding?.assetId,row.surfaceMaterialBinding?.assetId,...Object.values(row.construction?.materialBindings||{}).map(binding=>binding?.assetId)]).concat(lifeAndEncounterSites.map(row=>row.blueprint?.assetId)).filter(Boolean))].sort()),
       originalAssetsCopied:false,actualRuntimeBindingsVerified:false,missingNativeAssetRequiresExistingAuthoring:true}),
     environmentLifeSync:Object.freeze({worldSeed:String(seed),season:seasonKey,era:eraKey,waterMode:waterKey,
       plannedActorCount:lifeAndEncounterSites.length,foodWebHabitats:habitatBalance.length,
