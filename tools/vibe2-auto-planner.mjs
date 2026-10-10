@@ -690,7 +690,11 @@ const enrichedRows=rows.map(project=>{
     ownerResumableBuildUpReason:clean(game.developmentHandling)||clean(game.lifecycleReason)||'OWNER_DIRECT_EXISTING_GAME'
   };
 });
-return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine));
+// Unity Web 개발은 Unity Android 보류와 별개다. 같은 프로젝트의 WebGL 3D 작업 증거를 정책 게이트에 전달한다.
+return enrichedRows.filter(project=>!ownerDevelopmentHeld(ownerPolicy,project.gameId,project.engine,{
+  ...project,
+  unityWebDevelopment:project.firstStageUnityWeb===true
+}));
 }
 function ownerResumableCatalogGame(game={}){
   const handling=clean(game.developmentHandling).toUpperCase();
@@ -3522,7 +3526,19 @@ export function findSafeTasks(project,repoRoot,queue){
     if(project.firstStageUnityWeb!==true)return [];
     if(project.firstStageUnityWeb===true){
       const firstStage=findUnityWebFirstStageTask(project,repoRoot,queue);
-      if(firstStage)return[firstStage];
+      if(firstStage){
+        // 기존 Unity 3D 원본 수리와 책임 파일이 다른 에셋 제작은 같은 개발 주기에 진행한다.
+        // 진행 중 작업과의 파일 충돌은 기존 plannerConflict 및 예약 검사를 그대로 따른다.
+        const independentAssetTasks=uniqueTaskCandidates([
+          ...holisticBackfillTasks,
+          findDeclaredDccAuthoringTask(project,repoRoot,queue),
+          findPresentationQualityTask(project,repoRoot,queue),
+          ...normalStudioTasks
+        ]).filter(task=>task?.assetProductionLane===true
+          &&Array.isArray(task.responsibleFiles)&&task.responsibleFiles.length>0
+          &&!sameRootResponsibilityConflict(firstStage,task));
+        return uniqueTaskCandidates([firstStage,...independentAssetTasks]);
+      }
       return uniqueTaskCandidates([
         ...holisticBackfillTasks,
         findDeclaredDccAuthoringTask(project,repoRoot,queue),
