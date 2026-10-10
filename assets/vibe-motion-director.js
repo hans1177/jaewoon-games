@@ -1154,13 +1154,39 @@ export function createCommonCareerMotionLoadout({
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),weaponFamily:weapon,platform:platformId
   })));
   const requiredGroups=COMMON_GENRE_MOTION_CONTEXTS[requestedGenre];
+  // 장르가 달라도 동일한 부모 동작을 공유하되, 실제 동작의 출처 계층을 잃지 않는다.
+  const sourceCareerForRole=(group,role)=>[...ancestors].reverse().find(name=>{
+    const node=COMMON_CAREER_MOTION_HIERARCHY[name];
+    return group==='skills'
+      ?node.skills.some(value=>value.split(':')[0]===role)
+      :(node.roles[group]||[]).includes(role);
+  })||ancestors[0];
+  const compositionLayers=Object.freeze(ancestors.map((name,index)=>Object.freeze({
+    sourceCareerId:name,parentCareerId:nodes[index].parent,layerIndex:index,
+    inherited:index<ancestors.length-1,weaponFamilies:nodes[index].weaponFamilies,
+    genreRoles:Object.freeze(Object.fromEntries(requiredGroups.map(group=>[
+      group,group==='skills'?freezeList(nodes[index].skills.map(value=>value.split(':')[0]))
+        :(nodes[index].roles[group]||freezeList([]))
+    ]))),
+    nativeRigRetargetRequired:true,productionVerified:false
+  })));
   const roleRequests=Object.freeze(requiredGroups.flatMap(group=>{
-    if(group==='skills')return skills.map(row=>Object.freeze({id:row.id,group:'skills',dna:row.dna,preparedSemanticOnly:true}));
-    return (groups[group]||[]).map(role=>Object.freeze({
-      id:role,group,dna:createMotionDNA({motionId:role,bodyPlan,rigProfile,weaponFamily:weapon,
-        styleFamily,platformVariant:platformId,runtimeVerificationState:'PREPARED_SEMANTIC'}),
-      preparedSemanticOnly:true
-    }));
+    if(group==='skills')return skills.map(row=>{
+      const owner=sourceCareerForRole(group,row.id);
+      return Object.freeze({
+        id:row.id,group:'skills',sourceCareerId:owner,sourceLayerIndex:ancestors.indexOf(owner),
+        dna:row.dna,preparedSemanticOnly:true
+      });
+    });
+    return (groups[group]||[]).map(role=>{
+      const owner=sourceCareerForRole(group,role);
+      return Object.freeze({
+        id:role,group,sourceCareerId:owner,sourceLayerIndex:ancestors.indexOf(owner),
+        dna:createMotionDNA({motionId:role,bodyPlan,rigProfile,weaponFamily:weapon,
+          styleFamily,platformVariant:platformId,runtimeVerificationState:'PREPARED_SEMANTIC'}),
+        preparedSemanticOnly:true
+      });
+    });
   }));
   const masterFamily=[...ancestors].reverse().map(name=>COMMON_CAREER_VISUAL_MASTERS[name]).find(Boolean)||'traveler';
   const master=Object.freeze({
@@ -1178,7 +1204,7 @@ export function createCommonCareerMotionLoadout({
     master,
     bodyPlan:upper(bodyPlan),rigProfile:upper(rigProfile),styleFamily:upper(styleFamily),
     weaponFamily:weapon,allowedWeapons:freezeList(allowedWeapons),
-    groups,skills,genreGroups:requiredGroups,roleRequests,
+    groups,skills,genreGroups:requiredGroups,compositionLayers,roleRequests,
     combatSourcePack:WEAPON_COMBAT_MOTION_PACKS[weapon]
       ?createDuelCombatMotionLoadout({weaponFamily:weapon,platform:platformId}):null,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
@@ -1307,12 +1333,34 @@ export const COMMON_MONSTER_SKINNED_MASTERS=Object.freeze(Object.fromEntries([
   gameSpecificStyleAndRigRetargetRequired:true,
   gameplayAuthority:false,productionVerified:false,runtimeVerified:false
 })])));
+
+// 체형 기본형→종족 특수동작→일반/정예/보스 연출 계층. 전투 수치와 접촉 시각은 변경하지 않는다.
+export const COMMON_MONSTER_MOTION_TIERS=Object.freeze({
+  NORMAL:Object.freeze({
+    poseIdentity:'SPECIES_BASE',windScale:1,contactScale:1,counterScale:1,supportScale:1,
+    variants:freezeList(['BASE']),acting:freezeList([]),signature:freezeList([])
+  }),
+  ELITE:Object.freeze({
+    poseIdentity:'HEAVY_BRACED_SPECIES',windScale:1.12,contactScale:1.1,counterScale:1.08,supportScale:1.12,
+    variants:freezeList(['BASE','COUNTER_LEAD']),
+    acting:freezeList(['ELITE_THREAT','ELITE_BRACE']),
+    signature:freezeList(['ELITE_ATTACK_READ'])
+  }),
+  BOSS:Object.freeze({
+    poseIdentity:'SIGNATURE_PHASE_SPECIES',windScale:1.24,contactScale:1.18,counterScale:1.15,supportScale:1.25,
+    variants:freezeList(['BASE','COUNTER_LEAD','CROSS_BODY']),
+    acting:freezeList(['BOSS_INTRO_POSE','BOSS_PHASE_POSE','BOSS_EXHAUSTED_POSE']),
+    signature:freezeList(['BOSS_SIGNATURE_TELL','BOSS_RECOVERY_SIGNATURE'])
+  })
+});
 export function createCommonMonsterActionLoadout({
   speciesId='WOLF',genre='ACTION_RPG',platform='SHARED',bodyPlan='',
-  rigProfile='',styleFamily='STYLIZED_FANTASY'
+  rigProfile='',styleFamily='STYLIZED_FANTASY',tier='NORMAL'
 }={}){
   const id=upper(speciesId),species=COMMON_MONSTER_ACTION_SPECIES[id],platformId=upper(platform);
   if(!species)throw Error('UNKNOWN_COMMON_MONSTER_SPECIES:'+id);
+  const motionTier=upper(tier)||'NORMAL',tierProfile=COMMON_MONSTER_MOTION_TIERS[motionTier];
+  if(!tierProfile)throw Error('UNKNOWN_COMMON_MONSTER_MOTION_TIER:'+motionTier);
   const requestedGenre=resolveCommonMotionGenre(genre);
   if(!requestedGenre)throw Error('UNSUPPORTED_COMMON_GENRE:'+upper(genre));
   if(!['SHARED','UNITY','ROBLOX','WEB'].includes(platformId))throw Error('UNSUPPORTED_COMMON_PLATFORM:'+platformId);
@@ -1324,15 +1372,17 @@ export function createCommonMonsterActionLoadout({
   if(!detail)throw Error('COMMON_MONSTER_BODY_PLAN_MISSING:'+species.bodyPlan);
   const master=COMMON_MONSTER_SKINNED_MASTERS[id]||null;
   if(master&&master.bodyPlan!==species.bodyPlan)throw Error('COMMON_MONSTER_MASTER_BODY_PLAN_MISMATCH:'+id);
+  const tierActing=tierProfile.acting.map(role=>id+'_'+role);
+  const tierSignature=tierProfile.signature.map(role=>id+'_'+role);
   const profile=createCreatureMotionSetProfile({
     id:'common-'+id.toLowerCase(),archetype:id,bodyPlan:species.bodyPlan,
     rigProfile:upper(rigProfile)||master?.rigProfile||'SPECIES_RIG_AUTHORING_REQUIRED',
     locomotion:unique([...detail.roles.locomotion,...species.locomotion]),
     attacks:unique([...detail.roles.attacks,...species.attacks]),
     defense:unique([...detail.roles.defense,...species.defense]),
-    reactions:detail.roles.reactions,acting:detail.roles.acting,deaths:detail.roles.deaths,
+    reactions:detail.roles.reactions,acting:unique([...detail.roles.acting,...tierActing]),deaths:detail.roles.deaths,
     skill:unique([...detail.roles.skill,...species.skills.map(row=>row.split(':')[0])]),
-    signature:unique([...detail.roles.signature,...species.signature]),
+    signature:unique([...detail.roles.signature,...species.signature,...tierSignature]),
     verificationState:'PREPARED_SEMANTIC'
   });
   const cues=Object.freeze(species.skills.map(value=>commonSkillMotionCue(value,{
@@ -1343,43 +1393,79 @@ export function createCommonMonsterActionLoadout({
     throw Error('COMMON_MONSTER_JOINT_PROFILE_MISSING:'+id);
   if(!species.specialParts.includes(kinematic.counterPart)||!species.specialParts.includes(kinematic.supportPart))
     throw Error('COMMON_MONSTER_JOINT_PROFILE_ANATOMY_MISMATCH:'+id);
-  const choreography=Object.freeze(species.attacks.map((id,index)=>{
-    const motif=monsterAttackMotif(id),shape=COMMON_MONSTER_ATTACK_MOTIFS[motif];
-    const heavy=/SLAM|CRUSH|OVERHEAD|BREAK|CHARGE|RAM|BURST/.test(id);
-    const phaseTimes=heavy?[0,.15,.40,.63,.84,1]:[0,.12,.29,.46,.75,1];
-    const wind=phaseTimes[2],contact=phaseTimes[3];
-    const primaryPart=species.contactLimbs[index%species.contactLimbs.length];
-    const before=kinematic.coil.map((v,i)=>v+shape.before[i]);
-    const after=kinematic.hit.map((v,i)=>v+shape.contact[i]);
-    const joints=[
-      monsterPoseFrames(primaryPart,wind,contact,before,after),
-      monsterPoseFrames(kinematic.counterPart,wind,contact,
-        before.map(v=>-v*kinematic.counterWeight),
-        after.map(v=>-v*kinematic.counterWeight)),
-      monsterPoseFrames(kinematic.supportPart,wind,contact,
-        before.map(v=>v*kinematic.groundWeight*.52),
-        after.map(v=>-v*kinematic.groundWeight*.31))
-    ];
-    return Object.freeze({
-      id,grammar:MOTION_GRAMMARS.attack,motif,
-      poseKeyTimes:Object.freeze(phaseTimes),
-      weightTransfer:detail.presentationVariation.limbPhase,
-      primaryContactLimb:primaryPart,
-      secondaryRigParts:species.specialParts,
-      jointTracks:Object.freeze(joints),
-      animationChannelsContainDistinctArticulatedCurves:true,
-      sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
-      authoritativeRootMovement:false,
-      handoffToGameplayContactMarker:true,authoritativeHitboxAndMovementUnchanged:true,
-      rigSpecificCurvesAndContactsRequired:true,verified:false
-    });
+  // 종족 관절과 접촉 부위는 공유하되 정예/보스는 다른 선행 포즈와 팔·다리 균형을 사용한다.
+  // 변형은 별도 준비 후보이며, 새로운 피해 판정·콤보·스킬 사용 권한이 아니다.
+  const choreography=Object.freeze(species.attacks.flatMap((attackId,index)=>
+    tierProfile.variants.map(variantId=>{
+      const motif=monsterAttackMotif(attackId),shape=COMMON_MONSTER_ATTACK_MOTIFS[motif];
+      const heavy=/SLAM|CRUSH|OVERHEAD|BREAK|CHARGE|RAM|BURST/.test(attackId);
+      const phaseTimes=heavy?[0,.15,.40,.63,.84,1]:[0,.12,.29,.46,.75,1];
+      const wind=phaseTimes[2],contact=phaseTimes[3];
+      const primaryPart=species.contactLimbs[(index+(variantId==='COUNTER_LEAD'?1:0))%species.contactLimbs.length];
+      const direction=variantId==='COUNTER_LEAD'?-1:1;
+      const cross=variantId==='CROSS_BODY'?[.12,-.16,.11]:[0,0,0];
+      const before=kinematic.coil.map((v,i)=>(v+shape.before[i]*direction)*tierProfile.windScale+cross[i]);
+      const after=kinematic.hit.map((v,i)=>(v+shape.contact[i]*direction)*tierProfile.contactScale-cross[i]*.55);
+      const joints=[
+        monsterPoseFrames(primaryPart,wind,contact,before,after),
+        monsterPoseFrames(kinematic.counterPart,wind,contact,
+          before.map(v=>-v*kinematic.counterWeight*tierProfile.counterScale),
+          after.map(v=>-v*kinematic.counterWeight*tierProfile.counterScale)),
+        monsterPoseFrames(kinematic.supportPart,wind,contact,
+          before.map(v=>v*kinematic.groundWeight*tierProfile.supportScale*.52),
+          after.map(v=>-v*kinematic.groundWeight*tierProfile.supportScale*.31))
+      ];
+      return Object.freeze({
+        id:variantId==='BASE'?attackId:attackId+'_'+variantId,
+        sourceAttackId:attackId,variantId,presentationTier:motionTier,
+        grammar:MOTION_GRAMMARS.attack,motif,
+        poseKeyTimes:Object.freeze(phaseTimes),contactMarkerUnchanged:true,
+        weightTransfer:detail.presentationVariation.limbPhase,
+        primaryContactLimb:primaryPart,
+        secondaryRigParts:species.specialParts,
+        jointTracks:Object.freeze(joints),
+        animationChannelsContainDistinctArticulatedCurves:true,
+        sourceType:'SHARED_SEMANTIC_JOINT_CURVES_REQUIRES_NATIVE_RIG_ADAPTATION',
+        authoritativeRootMovement:false,
+        handoffToGameplayContactMarker:true,authoritativeHitboxAndMovementUnchanged:true,
+        rigSpecificCurvesAndContactsRequired:true,verified:false
+      });
+    })
+  ));
+  // 장르별 요청 슬롯만 투영한다. 다른 장르로 전용된 원본 동작은 삭제하지 않는다.
+  const requestedGroups=COMMON_GENRE_MOTION_CONTEXTS[requestedGenre];
+  const semanticOrigin=new Set([...species.locomotion,...species.attacks,...species.defense,
+    ...species.skills.map(value=>value.split(':')[0]),...species.signature]);
+  const tierRoles=new Set([...tierActing,...tierSignature]);
+  const profileGroupForRole=Object.freeze({
+    stance:'acting',locomotion:'locomotion',attacks:'attacks',defense:'defense',
+    skills:'skill',interactions:'acting',signature:'signature'
+  });
+  const roleRequests=Object.freeze(requestedGroups.flatMap(group=>{
+    const sourceGroup=profileGroupForRole[group];
+    const ids=group==='attacks'
+      ?unique([...(profile.groups.attacks||[]),...choreography.filter(row=>row.variantId!=='BASE').map(row=>row.id)])
+      :(profile.groups[sourceGroup]||[]);
+    return ids.map(role=>Object.freeze({
+      id:role,group,sourceGroup,
+      sourceHierarchyLevel:tierRoles.has(role)||role.endsWith('_COUNTER_LEAD')||role.endsWith('_CROSS_BODY')
+        ?'PRESENTATION_TIER':semanticOrigin.has(role)?'SPECIES':'BODY_PLAN',
+      dna:createMotionDNA({
+        motionId:role,bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,
+        speciesOrArchetype:id,styleFamily,platformVariant:platformId,
+        runtimeVerificationState:'PREPARED_SEMANTIC'
+      }),
+      preparedSemanticOnly:true,nativeRigBindingRequired:true
+    }));
   }));
   const coverage=auditMotionCoverage(profile);
   return Object.freeze({
     id,species,profile,genre:requestedGenre,platform:platformId,
     master,masterActuallyExistsInSharedRepository:!!master,
     bodyPlan:species.bodyPlan,rigProfile:profile.rigProfile,styleFamily:upper(styleFamily),
-    genreGroups:COMMON_GENRE_MOTION_CONTEXTS[requestedGenre],
+    presentationTier:motionTier,tierPoseIdentity:tierProfile.poseIdentity,
+    speciesHierarchy:freezeList(['BODY_PLAN:'+species.bodyPlan,'SPECIES:'+id,'PRESENTATION_TIER:'+motionTier]),
+    genreGroups:requestedGroups,roleRequests,
     choreography,cues,coverage,candidates:motionSetToCandidates(profile,platformId,styleFamily),
     contextSpecificSpeciesSignatureRequired:true,bodyPlanRigAndLimbBindingRequired:true,
     sourceStatus:'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED',
