@@ -45,7 +45,7 @@ test('thumbnail target resolves verified runtime universe without changing publi
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const queue={items:[{
     gameId:'cozy-island',
-    robloxPublicationTarget:{universeId:'10767445741',placeId:'116850096561713'}
+    robloxPublicationTarget:{gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',verified:true,dedicated:true,shared:false}
   }]};
   const target=resolveRobloxThumbnailTarget({catalog,queue,gameId:'cozy-island'});
   assert.equal(target.universeId,'10767445741');
@@ -54,6 +54,17 @@ test('thumbnail target resolves verified runtime universe without changing publi
   const validated=validateCanonicalThumbnail({root:'.',target});
   assert.equal(validated.ext,'.svg');
   assert.equal(validated.sha256.length,64);
+});
+
+test('unverified, shared or mismatched Roblox server target never receives another game thumbnail',()=>{
+  const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+  const target={gameId:'cozy-island',universeId:'10767445741',placeId:'116850096561713',verified:true,dedicated:true,shared:false};
+  const evaluate=patch=>resolveRobloxThumbnailTarget({catalog,queue:{items:[{gameId:'cozy-island',robloxPublicationTarget:{...target,...patch}}]},gameId:'cozy-island'});
+  assert.equal(evaluate({}).universeId,target.universeId);
+  for(const patch of [
+    {verified:false},{dedicated:false},{shared:true},
+    {gameId:'daechung-rpg'},{universeId:'0'},{placeId:''}
+  ])assert.throws(()=>evaluate(patch),/ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING/);
 });
 
 test('Open Cloud thumbnail upload uses files multipart and verifies Finished operation',async()=>{
@@ -96,7 +107,10 @@ test('release promotion auto-syncs thumbnails on main push without republishing 
   assert.match(workflow,/name: sync canonical Roblox and homepage thumbnails/);
   assert.match(workflow,/github\.event_name == 'push'/);
   assert.match(workflow,/name: Resolve thumbnail sync games/);
-  assert.match(workflow,/internalReleaseReady===true/);
+  assert.match(workflow,/target\.verified===true&&target\.dedicated===true/);
+  assert.match(workflow,/\.\.\/runtime\/development-queue\.json/);
+  assert.doesNotMatch(workflow,/roblox\?\.internalReleaseReady===true/);
+  assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=INCOMPLETE_SCOPE_403/);
   assert.match(workflow,/assets\/roblox-thumbnails\//);
   assert.match(workflow,/ROBLOX_THUMBNAIL_BATCH_UPLOAD=PASS/);
   assert.match(workflow,/company-roblox-thumbnail-sync\.mjs/);
