@@ -584,25 +584,38 @@
       "name": "small-world survival pressure",
       "purpose": "To create a dynamic, interactive experience where players must navigate a small-scale ecological environment by making strategic choices between resource gathering and combat.",
       "playerChoice": "Players are presented with two options: gather resources or engage in combat, each leading to different state changes that affect their ability to survive and progress in the game."
+    },
+    "local_authoring_parts::66218fad179277a7c8a7e0f550b6ff988708c602d580f2e44363111fa553aa42:signatureSystems:2": {
+      "id": "B",
+      "grammarRole": "B",
+      "stateInputs": [
+        "initial exploration of the habitat"
+      ],
+      "stateOutputs": [
+        "evaluating risk and making strategic decisions"
+      ],
+      "name": "small-world survival pressure",
+      "purpose": "evaluate environmental risks and make informed strategic choices",
+      "playerChoice": "select between resource gathering or combat based on ecological context"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 21,
-      "successes": 21,
+      "calls": 22,
+      "successes": 22,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 812025,
-      "lastMs": 66489,
+      "totalMs": 868617,
+      "lastMs": 56592,
       "lastError": null,
-      "updatedAt": "2026-10-10T00:07:36.542Z"
+      "updatedAt": "2026-10-10T00:08:33.136Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T20:53:14.397Z",
-  "updatedAt": "2026-10-10T00:07:36.542Z",
+  "updatedAt": "2026-10-10T00:08:33.136Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2405,7 +2418,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:07:36.542Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:08:33.136Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
