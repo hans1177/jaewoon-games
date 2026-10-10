@@ -723,8 +723,8 @@ test('building reference image expands into detailed task-local building volume 
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const sourceId='qa-building-reference';
-  const imageRef='conversation://qa-building-reference.png';
-  const sourceHash='abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789';
+  const imageRef='assets/homepage-covers/realistic-builder.webp';
+  const sourceHash=createHash('sha256').update(fs.readFileSync(path.resolve(here,'..',imageRef))).digest('hex');
   const plan=buildVibeAssetProductionPlan({
     task:{
       gameId:'reference-building-volume-test',
@@ -735,6 +735,7 @@ test('building reference image expands into detailed task-local building volume 
         sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
         imageRef,
         sourceHash,
+        license:'project-original',
         domain:'BUILDING',
         purpose:'ASSET_CREATION',
         observation:{
@@ -786,8 +787,8 @@ test('one mixed reference image can seed multiple internal asset domains without
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const sourceId='qa-mixed-harbor-reference';
-  const imageRef='conversation://qa-mixed-harbor-reference.png';
-  const sourceHash='1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+  const imageRef='assets/homepage-covers/cozy-island.webp';
+  const sourceHash=createHash('sha256').update(fs.readFileSync(path.resolve(here,'..',imageRef))).digest('hex');
   const plan=buildVibeAssetProductionPlan({
     task:{
       gameId:'reference-mixed-scene-volume-test',
@@ -798,6 +799,7 @@ test('one mixed reference image can seed multiple internal asset domains without
         sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
         imageRef,
         sourceHash,
+        license:'project-original',
         domains:['BUILDING','WORLD_PROP','ENVIRONMENT'],
         purpose:'ASSET_CREATION',
         observation:{
