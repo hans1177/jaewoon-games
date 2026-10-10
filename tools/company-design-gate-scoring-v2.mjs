@@ -248,7 +248,8 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     }
     // 보존형 설계에서도 행동 설명은 실제 상태 키가 아니다.
     for(const row of systems)for(const field of ['stateInputs','stateOutputs']){
-      if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key)))){
+      if(list(row[field]).some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))
+        ||(ownerV5&&!/^[^\\s:→]{1,80}$/u.test(clean(key))))){
         const keyPath=`signatureSystems.${row.id}.${field}`;
         const detail='플레이 설명이나 입력→결과 문장 대신 실제로 읽고 변경하는 상태 키를 직접 정의해야 한다';
         reject('DESIGN_STATE_KEY_IS_INSTRUCTION','CORE_LOOP_DESIGN',['signatureSystems'],{path:keyPath,detail},`${keyPath}: ${detail}. 앞에서 확정한 원본 규칙과 현재 소스를 확인해 해당 항목을 다시 작성한다.`);

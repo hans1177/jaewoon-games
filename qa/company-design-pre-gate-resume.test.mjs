@@ -1350,13 +1350,61 @@ test('grammar content repair keeps a whole rule atomic without supplying authore
   assert.equal(calls.length,5,'one designer call per whole rule, including content repair');
 });
 
-// 메인: 기본설계 V5의 상태 연결은 모델 생성 스키마에서 정확한 키로 제한한다.
+
+// 검증: 버전 5에서 A/B/@의 고유 상태와 기존 왕복 연결을 함께 보존하고 무한 전체 재작성을 방지한다.
+test('V5 focused handoff repair keeps unique authored role states',async()=>{
+  const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
+  const tasks=design.slice(design.indexOf('async function runCheckpointTask('),design.indexOf('function isParallelPressure('));
+  const roles=['MAIN','A','B','DELVE'],checkpoint={tasks:{}},calls=[];
+  const item={type:'object',required:['id','grammarRole','name','purpose','playerChoice','stateInputs','stateOutputs'],properties:{
+    id:{type:'string'},grammarRole:{type:'string',enum:roles},name:{type:'string'},
+    purpose:{type:'string'},playerChoice:{type:'string'},
+    stateInputs:{type:'array',minItems:1,items:{type:'string'}},stateOutputs:{type:'array',minItems:1,items:{type:'string'}}
+  },additionalProperties:false};
+  const schema={type:'object',required:['signatureSystems'],properties:{signatureSystems:{type:'array',minItems:4,items:item}},additionalProperties:false};
+  const run=runInNewContext(tasks+'\n'+source+'\ncallLocalDesignerModel',{
+    seedGameplaySketchVersion:5,createHash,designAssetLibraryContext:{status:'UNAVAILABLE'},localDesignerFallbackReady:true,
+    localDesignerCallTimeoutMs:300000,localDesignerModel:'local',designerRoute:{id:'ollama:local'},
+    gameId:'v5-repair',game:{name:'검증용 게임'},
+    seed:{GAME_CATEGORY:'SURVIVAL',DISTINCT_IDENTITY:'세계 상태의 원본 유지',CORE_LOOP:['이동','채집','복구']},
+    clip:(v,n)=>JSON.stringify(v).slice(0,n),designCheckpoint:checkpoint,modelCallStats:[],
+    console:{log(){}},clean:v=>String(v??'').trim(),parseJsonObject:JSON.parse,normalizeSchemaValue:v=>v,
+    assertSchemaValue:assertDesignSchema,recordModelHealth(){},persistDesignCheckpoint(){},
+    requestLocalDesignerRaw:async(_,{schema:s})=>{
+      const role=s.properties.grammarRole?.enum?.[0];
+      if(!role){calls.push('FOCUSED');return JSON.stringify({
+        stateInputs:[s.properties.stateInputs.items.enum[0]],stateOutputs:[s.properties.stateOutputs.items.enum[0]]
+      });}
+      calls.push(role);
+      return JSON.stringify({grammarRole:role,id:role.toLowerCase()+'_original_rule',
+        name:role+' 고유 시스템',purpose:role+'에서 다른 위험 조건을 처리하는 규칙',
+        playerChoice:role+'의 자원과 이동을 선택한다',
+        stateInputs:[role==='MAIN'?'RegionState':role+'NewInput'],
+        stateOutputs:[role==='MAIN'?'RiskState':role+'NewOutput']});
+    }
+  });
+  const result=await run('designer','source rules',schema,{predict:900,includeAssetContext:false});
+  const rows=JSON.parse(JSON.stringify(result.signatureSystems));
+  assert.deepEqual(calls,['MAIN','A','FOCUSED','B','FOCUSED','DELVE','FOCUSED']);
+  assert.equal(rows.length,4);
+  for(let i=1;i<rows.length;i++){
+    assert.ok(rows[i].stateInputs.some(key=>rows[i-1].stateOutputs.includes(key)));
+    assert.ok(rows[i].stateOutputs.some(key=>rows[i-1].stateInputs.includes(key)));
+    assert.ok(rows[i].stateInputs.includes(rows[i].grammarRole+'NewInput'));
+    assert.ok(rows[i].stateOutputs.includes(rows[i].grammarRole+'NewOutput'));
+  }
+  assert.equal(Object.keys(checkpoint.tasks).length,4);
+});
+
+// 메인: V5 시스템은 기존 상태를 연결하고 자체 상태를 추가할 수 있어야 한다.
 test('V5 designer state handoffs are schema-constrained and require distinct authored roles',()=>{
   const source=design.slice(design.indexOf('async function callLocalDesignerModel('),design.indexOf('async function callDesignerModel('));
   assert.match(source,/if\(roleHandoff\)\{/);
   assert.match(source,/inputKeysFromPreviousOutputs/);
   assert.match(source,/outputKeysToPreviousInputs/);
-  assert.match(source,/items:\{\.\.\.current\.items,enum:values\}/);
+  assert.match(source,/contains:\{type:'string',enum:values\}/);
+  assert.match(source,/DESIGN_GRAMMAR_STATE_HANDOFF_FOCUSED_REPAIR/);
+  assert.match(source,/DESIGN_GRAMMAR_NO_PROGRESS/);
   assert.match(source,/DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING/);
   assert.match(source,/DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING/);
   assert.match(source,/DESIGN_GRAMMAR_ROLE_CONTENT_CLONED/);

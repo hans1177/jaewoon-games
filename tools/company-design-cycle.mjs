@@ -1353,25 +1353,34 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             inputKeysFromPreviousOutputs:previousRule.stateOutputs,
             outputKeysToPreviousInputs:previousRule.stateInputs
           }:null;
-          // 창작 모델이 앞 규칙의 상태 이름을 새로 지어 연결하지 않도록
-          // 원래 생성 스키마에서 직전 역할의 실제 작성 키만 선택하게 한다.
-          // 설계 인과 및 실제 게임 구현 검증은 기존 게이트의 책임으로 남긴다.
+          // 앞 역할의 실제 상태명과 왕복 연결하면서, 새 역할의 고유한 상태도 허용한다.
+          // 생성 문법의 contains와 작성 후 검증을 함께 사용한다.
+          const stateKeyPattern='^[^\\s:→]{1,80}$';
+          if(grammarRole){
+            for(const field of ['stateInputs','stateOutputs']){
+              const current=itemSchema.properties[field];
+              itemSchema={...itemSchema,properties:{...itemSchema.properties,
+                [field]:{...current,minItems:1,items:{...current.items,pattern:stateKeyPattern}}
+              }};
+            }
+          }
           if(roleHandoff){
             for(const [field,sourceKeys] of [
               ['stateInputs',roleHandoff.inputKeysFromPreviousOutputs],
               ['stateOutputs',roleHandoff.outputKeysToPreviousInputs]
             ]){
-              const values=uniq(sourceKeys).filter(key=>!/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(key)).slice(0,12);
+              const values=uniq(sourceKeys).filter(key=>new RegExp(stateKeyPattern,'u').test(key)).slice(0,12);
               if(!values.length)throw new Error('DESIGN_GRAMMAR_STATE_INTERFACE_INVALID '+grammarRole+':'+field);
               const current=itemSchema.properties[field];
               itemSchema={...itemSchema,properties:{...itemSchema.properties,
-                [field]:{...current,minItems:1,maxItems:values.length,items:{...current.items,enum:values}}
+                [field]:{...current,contains:{type:'string',enum:values}}
               }};
             }
           }
           // 이전 역할을 수정했다면 같은 인덱스의 낡은 응답은 재사용하지 않는다.
           const itemKey=`${identity}:${field}:${index}:${createHash('sha256').update(JSON.stringify(previousItems)).digest('hex').slice(0,16)}`;
           const itemTaskKey=`local_authoring_parts::${itemKey}`;
+          let lastFailedRoleContent='',repeatedFailedRoleContent=0;
           for(let roleAttempt=0;;roleAttempt++){
             const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
             const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
@@ -1392,16 +1401,60 @@ async function callLocalDesignerModel(system,user,schema,{predict=1600,temperatu
             if(!clean(value?.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
             if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value?.[key])===clean(row[key])).length>=2))
               roleIssues.push('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED');
-            if([...inputKeys,...outputKeys].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
+            if([...inputKeys,...outputKeys].some(key=>!new RegExp(stateKeyPattern,'u').test(clean(key))
+              ||/→|->|\\b(?:INPUT|SELECT|OUTPUT|STATE)\\s*:/i.test(clean(key))))
               roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
             if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
             if(roleHandoff&&!inputKeys.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key)))
               roleIssues.push('DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING');
             if(roleHandoff&&!outputKeys.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key)))
               roleIssues.push('DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING');
+            // 실패한 연결 필드만 모델이 앞 역할의 실제 상태명에서 다시 선택한다.
+            // 나머지 새 고유 상태와 역할·행동 설명은 그대로 보존한다.
+            if(roleHandoff&&!roleIssues.includes('DESIGN_STATE_KEY_IS_INSTRUCTION')
+              &&roleIssues.some(code=>code==='DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING'||code==='DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING')){
+              const stateRepairSchema={type:'object',required:['stateInputs','stateOutputs'],properties:{
+                stateInputs:{type:'array',minItems:1,maxItems:2,items:{type:'string',enum:uniq(roleHandoff.inputKeysFromPreviousOutputs)}},
+                stateOutputs:{type:'array',minItems:1,maxItems:2,items:{type:'string',enum:uniq(roleHandoff.outputKeysToPreviousInputs)}}
+              },additionalProperties:false};
+              const repair=await callLocalDesignerModel(focusedChildSystem,
+                'ROLE='+grammarRole+';GAME='+game.name+
+                '\\nROLE_PURPOSE='+clip(value.purpose,250)+
+                '\\nROLE_PLAYER_CHOICE='+clip(value.playerChoice,250)+
+                '\\nPREVIOUS_STATE_HANDOFF='+JSON.stringify(roleHandoff)+
+                '\\n위 목록의 정확한 상태명을 선택해서 stateInputs/stateOutputs 두 배열만 작성한다. 기존 역할 설명과 자체 상태는 바꾸지 않는다.',
+                stateRepairSchema,{predict:512,temperature:0.05,numCtx:4096,includeAssetContext:false,grammarContext});
+              value.stateInputs=uniq([...inputKeys,...repair.stateInputs]).slice(0,16);
+              value.stateOutputs=uniq([...outputKeys,...repair.stateOutputs]).slice(0,16);
+              if(value.stateInputs.some(key=>roleHandoff.inputKeysFromPreviousOutputs.includes(key))
+                &&value.stateOutputs.some(key=>roleHandoff.outputKeysToPreviousInputs.includes(key))){
+                for(const code of ['DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING','DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING']){
+                  const index=roleIssues.indexOf(code);if(index>=0)roleIssues.splice(index,1);
+                }
+                designCheckpoint.tasks[itemTaskKey]=value;
+                persistDesignCheckpoint();
+                console.log('DESIGN_GRAMMAR_STATE_HANDOFF_FOCUSED_REPAIR='+grammarRole+'|retainedOriginalKeys=YES');
+              }
+            }
             if(!roleIssues.length){
               if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
               rows.push(value);break;
+            }
+            // 반복해서 완전히 동일한 무효 응답을 생성하면 현재 호출만 중단하고 체크포인트를 보존한다.
+            // 정식 다음 실행에서 재시도하므로 장기 반복 설계 횟수에는 제한을 두지 않는다.
+            const failedContent=createHash('sha256').update(JSON.stringify({
+              name:value.name,purpose:value.purpose,playerChoice:value.playerChoice,
+              stateInputs:value.stateInputs,stateOutputs:value.stateOutputs,issues:roleIssues
+            })).digest('hex');
+            repeatedFailedRoleContent=failedContent===lastFailedRoleContent?repeatedFailedRoleContent+1:1;
+            lastFailedRoleContent=failedContent;
+            if(repeatedFailedRoleContent>=3){
+              delete designCheckpoint.tasks[itemTaskKey];
+              designCheckpoint.failedPhase='local_authoring_parts';
+              designCheckpoint.failedTask=field+':'+grammarRole;
+              designCheckpoint.lastError='DESIGN_GRAMMAR_NO_PROGRESS '+grammarRole+' '+roleIssues.join(',');
+              persistDesignCheckpoint();
+              throw new Error(designCheckpoint.lastError);
             }
             // 실패한 역할만 무효화하고 나머지 역할과 이미 완료된 필드는 재사용한다.
             delete designCheckpoint.tasks[itemTaskKey];
