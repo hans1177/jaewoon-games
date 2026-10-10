@@ -16,3 +16,14 @@ test('homepage mobile layout keeps readable single-column cards and large touch 
   assert.match(homepage,/\.foldGameBtn\.platformAction\{grid-column:1\/-1\}/);
 });
 test('touch layer provides joystick only while skipping native sticks',()=>{assert.match(touch,/#joy/);assert.match(touch,/#joystick/);assert.match(touch,/jaewoon:joystick/);assert.doesNotMatch(touch,/jg-action-a/);assert.doesNotMatch(touch,/jg-action-b/);assert.doesNotMatch(touch,/>A<|>B</);assert.match(touch,/pointerdown/);assert.match(touch,/pointermove/);});
+
+test('Unity WebGL keeps its native touch interface without injecting the legacy joystick',async()=>{
+  const edge=await import('data:text/javascript;base64,'+Buffer.from(worker).toString('base64'));
+  const html='<html><body><canvas id="unity-canvas"></canvas><script src="Build/game.loader.js"></script><script>createUnityInstance(canvas,config)</script></body></html>';
+  const env={ASSETS:{fetch:async request=>new URL(request.url).pathname==='/game-catalog.json'
+    ?Response.json({games:[],webExposurePolicy:{enabled:false}})
+    :new Response(html,{headers:{'Content-Type':'text/html; charset=utf-8'}})}};
+  const response=await edge.default.fetch(new Request('https://example.test/web-games/test-unity/'),env);
+  assert.equal(response.status,200);
+  assert.equal(await response.text(),html);
+});

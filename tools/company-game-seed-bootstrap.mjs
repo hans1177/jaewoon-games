@@ -1,3 +1,4 @@
+// 파일명: tools/company-game-seed-bootstrap.mjs
 import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {
@@ -151,7 +152,7 @@ const DELVE_ELEMENT_SCHEMA={
     discoveryCondition:{type:'string',minLength:10,maxLength:600},
     masteryOrInsight:{type:'string',minLength:10,maxLength:700},
     gameplayEffect:{type:'string',minLength:10,maxLength:700},
-    connectsTo:{type:'array',minItems:2,maxItems:4,uniqueItems:true,items:{type:'string',enum:['MAIN','A','B','c']}}
+    connectsTo:{type:'array',minItems:2,maxItems:4,uniqueItems:true,items:{type:'string',enum:['MAIN','A','B','C','c']}}
   },
   additionalProperties:false
 };
@@ -168,12 +169,12 @@ const NOVEL_GAME_GRAMMAR_SCHEMA={
     causalFusion:{type:'array',minItems:2,maxItems:6,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}},
     irreducibilityTest:{type:'object',required:['removeFirstAxis','removeSecondAxis','verdict'],properties:{removeFirstAxis:{type:'string',minLength:15,maxLength:600},removeSecondAxis:{type:'string',minLength:15,maxLength:600},verdict:{type:'string',minLength:15,maxLength:600}},additionalProperties:false},
     storyWorldBindings:{type:'object',required:['emotionalConflict','characterRule','monsterRule','regionRule','storyRule','plausibility'],properties:{emotionalConflict:{type:'string',minLength:15,maxLength:700},characterRule:{type:'string',minLength:15,maxLength:700},monsterRule:{type:'string',minLength:15,maxLength:700},regionRule:{type:'string',minLength:15,maxLength:700},storyRule:{type:'string',minLength:15,maxLength:700},plausibility:{type:'string',minLength:15,maxLength:700}},additionalProperties:false},
-    gameplaySystemFusion:{type:'object',required:['formula','main','majorAxes','themeFusion','subElements','crossSystemRules'],properties:{
+    gameplaySystemFusion:{type:'object',required:['formula','main','majorAxes','themeFusion','crossSystemRules'],properties:{
       formula:{type:'string',enum:['MAIN × A × B × C']},
       main:{type:'object',required:['name','purpose','playerAction','stateContribution'],properties:{name:{type:'string',minLength:2,maxLength:180},purpose:{type:'string',minLength:10,maxLength:600},playerAction:{type:'string',minLength:10,maxLength:600},stateContribution:{type:'string',minLength:10,maxLength:700}},additionalProperties:false},
       majorAxes:{type:'array',minItems:2,maxItems:2,items:SYSTEM_AXIS_SCHEMA},
       themeFusion:C_FUSION_SCHEMA,
-      subElements:{type:'array',minItems:2,maxItems:6,items:SUB_ELEMENT_SCHEMA},
+      subElements:{type:'array',minItems:0,maxItems:6,items:SUB_ELEMENT_SCHEMA},
       crossSystemRules:{type:'array',minItems:4,maxItems:10,uniqueItems:true,items:{type:'string',minLength:15,maxLength:700}}
     },additionalProperties:false},
     delveLayer:{type:'object',required:['formulaSuffix','role','elements'],properties:{
@@ -464,18 +465,14 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
     const row=byKey.get(key)||{},fb=axisFallback[key];
     return {key,name:clean(row.name)||fb.name,purpose:clean(row.purpose)||fb.purpose,playerChoice:clean(row.playerChoice)||fb.playerChoice,stateContribution:clean(row.stateContribution)||fb.stateContribution,systemFamily:clean(row.systemFamily),sourceMaterial:clean(row.sourceMaterial),sourceDomain:clean(row.sourceDomain),materialRule:clean(row.materialRule)};
   });
+  // V5의 C는 창작 주제와 메인·보조 장르다. 과거 c 보조 규칙은 있을 때만 보존한다.
   const rawSubElements=Array.isArray(fusion.subElements)?fusion.subElements:[];
-  const subFallback=[
-    {name:'상황 규칙',role:'MAIN/A/B의 선택 결과를 상황별로 다르게 만드는 보조 규칙.',supports:['MAIN','A'],variationEffect:'같은 MAIN 행동도 현재 상황 상태에 따라 비용·위험·효율이 달라진다.'},
-    {name:'환경 또는 이벤트 변주',role:'A/B 관계에 일시적 조건·기회·압박을 추가하는 서브요소.',supports:['A','B'],variationEffect:'같은 A/B 조합이라도 이벤트·지역·타이밍에 따라 다른 대응을 요구한다.'},
-    {name:'보조 자원 또는 정보',role:'MAIN/A/B 사이 선택의 우선순위를 바꾸는 작은 상태층.',supports:['MAIN','B'],variationEffect:'보조 정보나 자원 상태가 다음 선택 순서와 기회비용을 바꾼다.'}
-  ];
-  const subElements=[...rawSubElements,...subFallback].slice(0,6).map((row,i)=>({
-    name:clean(row?.name)||subFallback[i%subFallback.length].name,
-    role:clean(row?.role)||subFallback[i%subFallback.length].role,
+  const subElements=rawSubElements.slice(0,6).map(row=>({
+    name:clean(row?.name),
+    role:clean(row?.role),
     supports:uniq(row?.supports).filter(x=>['MAIN','A','B'].includes(x)).slice(0,3),
-    variationEffect:clean(row?.variationEffect)||subFallback[i%subFallback.length].variationEffect
-  })).map((row,i)=>({...row,supports:row.supports.length?row.supports:subFallback[i%subFallback.length].supports}));
+    variationEffect:clean(row?.variationEffect)
+  }));
   const authoredThemes=Array.isArray(fusion.themeFusion?.themes)?fusion.themeFusion.themes:[];
   const themeFusion={
     themes:authoredThemes.map(row=>({name:clean(row?.name),kind:clean(row?.kind).toUpperCase(),causalEffect:clean(row?.causalEffect)})),
@@ -491,28 +488,29 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
     main:{name:clean(rawMain.name)||primary,purpose:clean(rawMain.purpose)||'MAIN은 게임의 주제와 정체성이다. 플레이어가 누구이며 어떤 게임을 운영·진행하는지를 명확히 한다.',playerAction:clean(rawMain.playerAction)||clean(identityCore.representativeAction)||coreLoop[0]||primary,stateContribution:clean(rawMain.stateContribution)||'MAIN의 세계·정체성과 반복 목표가 A/B 시스템의 선택과 C 창작 장르 및 @ 발견에 의미를 부여한다.'},
     majorAxes:axes,
     themeFusion,
-    subElements:subElements.slice(0,Math.max(2,Math.min(6,subElements.length))),
+    subElements,
     crossSystemRules:sketchArray(fusion.crossSystemRules,[
       'MAIN의 결과가 A의 선택 비용·위험·보상 중 하나를 바꾼다.',
       'A의 선택 결과가 B의 가능 행동·상태·우선순위를 바꾼다.',
-      'c 서브요소가 MAIN/A/B의 관계를 상황별로 변주하지만 독립된 대축처럼 전체 루프를 소유하지 않는다.',
-      'B와 c의 누적 결과가 다시 MAIN의 목적·효율·위험 또는 사용법을 바꿔 순환한다.'
+      'B의 결과가 A의 다음 건설·운영·대응 선택을 되돌려 바꾼다.',
+      'C의 두 소재와 메인·보조 장르가 A/B 선택·위험·정보 및 다음 사건을 바꾼다.',
+      'A/B의 누적 결과가 다시 MAIN의 목표·세계 상태와 플레이어 선택을 바꾼다.'
     ],4,10)
   };
   const rawDelve=raw.delveLayer&&typeof raw.delveLayer==='object'&&!Array.isArray(raw.delveLayer)?raw.delveLayer:{};
   const rawDelveElements=Array.isArray(rawDelve.elements)?rawDelve.elements:[];
   const delveFallback=[
     {name:'숨은 교차조합',discoveryCondition:'MAIN과 A를 특정 순서나 조건으로 반복해 B의 평소와 다른 반응을 발견한다.',masteryOrInsight:'표면 규칙이 아니라 시스템 간 상태 전달 순서를 이해한다.',gameplayEffect:'같은 자원과 행동으로 새로운 해결법이나 빌드를 만든다.',connectsTo:['MAIN','A','B']},
-    {name:'고급 역이용',discoveryCondition:'A의 비용이나 제약을 B 또는 c 서브요소 상태로 일부러 전환해 본다.',masteryOrInsight:'불리한 규칙도 다른 시스템에서는 자원이 될 수 있음을 파악한다.',gameplayEffect:'정석 진행과 다른 고급 운용 경로가 열린다.',connectsTo:['A','B','c']},
-    {name:'재방문 재해석',discoveryCondition:'이전 선택이 누적된 뒤 과거 공간·상대·관계로 돌아간다.',masteryOrInsight:'과거 콘텐츠가 현재 상태에 따라 다른 기능과 의미를 갖는다는 것을 발견한다.',gameplayEffect:'새 통로·사건·상호작용·위험·보상 중 하나가 열린다.',connectsTo:['MAIN','c']},
-    {name:'인과 문법 숨은 변형',discoveryCondition:'선택된 causalDNA 두 개 이상의 조건을 동시에 충족한다.',masteryOrInsight:'세계의 인과법칙들이 서로 상쇄·증폭·이전될 수 있음을 이해한다.',gameplayEffect:'기존 시스템 조합만으로는 나오지 않는 예외 규칙이나 특수 결과를 만든다.',connectsTo:['MAIN','A','B','c']}
+    {name:'고급 역이용',discoveryCondition:'A의 비용이나 제약을 B 또는 C 장르·소재의 사건 조건으로 일부러 전환해 본다.',masteryOrInsight:'불리한 규칙도 다른 시스템에서는 자원이 될 수 있음을 파악한다.',gameplayEffect:'정석 진행과 다른 고급 운용 경로가 열린다.',connectsTo:['A','B','C']},
+    {name:'재방문 재해석',discoveryCondition:'이전 선택이 누적된 뒤 과거 공간·상대·관계로 돌아간다.',masteryOrInsight:'과거 콘텐츠가 현재 상태에 따라 다른 기능과 의미를 갖는다는 것을 발견한다.',gameplayEffect:'새 통로·사건·상호작용·위험·보상 중 하나가 열린다.',connectsTo:['MAIN','C']},
+    {name:'인과 문법 숨은 변형',discoveryCondition:'선택된 causalDNA 두 개 이상의 조건을 동시에 충족한다.',masteryOrInsight:'세계의 인과법칙들이 서로 상쇄·증폭·이전될 수 있음을 이해한다.',gameplayEffect:'기존 시스템 조합만으로는 나오지 않는 예외 규칙이나 특수 결과를 만든다.',connectsTo:['MAIN','A','B','C']}
   ];
   const delveElements=rawDelveElements.map((row,i)=>({
     name:clean(row?.name)||delveFallback[i%delveFallback.length].name,
     discoveryCondition:clean(row?.discoveryCondition)||delveFallback[i%delveFallback.length].discoveryCondition,
     masteryOrInsight:clean(row?.masteryOrInsight)||delveFallback[i%delveFallback.length].masteryOrInsight,
     gameplayEffect:clean(row?.gameplayEffect)||delveFallback[i%delveFallback.length].gameplayEffect,
-    connectsTo:uniq(row?.connectsTo).filter(x=>['MAIN','A','B','c'].includes(x)).slice(0,4)
+    connectsTo:uniq(row?.connectsTo).map(x=>x==='c'?'C':x).filter(x=>['MAIN','A','B','C'].includes(x)).slice(0,4)
   })).map((row,i)=>({...row,connectsTo:row.connectsTo.length>=2?row.connectsTo:delveFallback[i%delveFallback.length].connectsTo}));
   const dnaA=normalized[0],dnaB=normalized[1];
   const emergentRaw=raw.emergentGenre&&typeof raw.emergentGenre==='object'&&!Array.isArray(raw.emergentGenre)?raw.emergentGenre:{};
@@ -522,16 +520,16 @@ function normalizeNovelGameGrammar(target,rawGrammar,coreLoop,identityCore){
     toneBlend,
     familiarAnchor:clean(raw.familiarAnchor)||'상실·욕망·경쟁·소속·가족·명예·생존·인정처럼 바로 이해되는 인간 갈등을 감정적 발판으로 사용한다.',
     causalDNAs:normalized.slice(0,4),
-    brokenGenreAssumption:clean(raw.brokenGenreAssumption)||`기존 ${target.category} 관습을 최종 장르로 고정하지 않고 ${primary}의 결과가 A/B/c와 세계 인과법칙을 거치며 다시 MAIN을 바꾸게 한다.`,
+    brokenGenreAssumption:clean(raw.brokenGenreAssumption)||`기존 ${target.category} 관습을 최종 장르로 고정하지 않고 ${primary}의 결과가 A/B 시스템과 C 소재·장르 인과법칙을 거쳐 다시 MAIN을 바꾸게 한다.`,
     newPrimaryVerb,
     worldRule:clean(raw.worldRule)||identityCore.signatureWorldRule,
-    causalFusion:sketchArray(raw.causalFusion,[`${dnaA.principle} 때문에 MAIN의 결과가 다음 상태의 비용·권리·위험으로 돌아온다.`,`${dnaB.principle} 때문에 A/B/c의 선택은 기능 병렬 추가가 아니라 서로의 조건과 결과를 바꾼다.`,'재료 인과문법과 일반 시스템 융복합이 동시에 작동해 한쪽을 제거하면 최종 플레이 문법이 달라진다.'],2,6),
+    causalFusion:sketchArray(raw.causalFusion,[`${dnaA.principle} 때문에 MAIN의 결과가 다음 상태의 비용·권리·위험으로 돌아온다.`,`${dnaB.principle} 때문에 A/B의 선택과 C의 장르 간섭은 기능 병렬 추가가 아니라 서로의 조건과 결과를 바꾼다.`,'재료 인과문법과 일반 시스템 융복합이 동시에 작동해 한쪽을 제거하면 최종 플레이 문법이 달라진다.'],2,6),
     irreducibilityTest:{removeFirstAxis:clean(ir.removeFirstAxis)||`${dnaA.id} 소재를 제거하면 MAIN 정체성과 A/B 시스템·C 장르의 인과 구조가 약해지거나 사라진다.`,removeSecondAxis:clean(ir.removeSecondAxis)||`${dnaB.id} 인과를 제거하면 일반 시스템 융복합이 재료에서 나온 새 인과문법과 분리된다.`,verdict:clean(ir.verdict)||'A/B 시스템별 소재와 C의 메인·보조 장르를 어느 하나 빼도 선택·위험·스토리 결과가 변하며 단순 기능 합산으로 분리할 수 없다.'},
     storyWorldBindings:{emotionalConflict:clean(sw.emotionalConflict)||'플레이어가 이해할 수 있는 욕망과 두려움이 새 세계 규칙 때문에 충돌한다.',characterRule:clean(sw.characterRule)||'주요 인물의 목표·두려움·비밀은 핵심 인과법칙에 의해 실제 선택과 관계 변화를 만든다.',monsterRule:clean(sw.monsterRule)||'몬스터는 단순 장애물이 아니라 세계 인과법칙이 생태·저주·정치·기억 중 하나로 구체화된 존재다.',regionRule:clean(sw.regionRule)||'지역마다 같은 인과법칙의 다른 해석이나 비용이 적용되어 공간 사용법이 달라진다.',storyRule:clean(sw.storyRule)||'스토리 사건은 컷신으로만 진행되지 않고 핵심 문법을 사용한 결과로 다음 조건이 바뀐다.',plausibility:clean(sw.plausibility)||'낯선 규칙은 역사·문화·생활·권력·신앙·생태의 이유로 설명되어 세계 안에서는 자연스럽게 느껴져야 한다.'},
     gameplaySystemFusion,
     delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveElements},
-    emergentGenre:{name:emergentName,definition:clean(emergentRaw.definition)||`${primary} 정체성을 중심으로 A/B의 시스템×소재가 서로 상태를 바꾸고 C의 두 소재·메인·보조 장르가 사건과 규칙을 생성하며 @ 파고들기가 계속 확장되는 복합장르다.`,whyNotSingleConventionalGenre:clean(emergentRaw.whyNotSingleConventionalGenre)||'기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN/A/B 대축·c 서브요소·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
-    expansionVectors:sketchArray(raw.expansionVectors,['새 지역은 같은 소재와 MAIN×A×B×C 관계를 새로운 지역 법칙과 상황에서 다시 결합한다.','새 몬스터는 체력 배수가 아니라 A/B/c 관계의 상태 전달을 방해·증폭·반전한다.','새 NPC/세력은 같은 인과법칙을 다른 욕망과 이해관계로 해석해 시스템 선택을 바꾼다.','새 아이템/능력은 MAIN/A/B/c 사이의 원인·대가·정보·권리를 이동·보존·분산·위조하는 새 운용을 연다.','새 @는 숨은 조합·숙련·재해석·재방문·관계 변화·고급 변형 중 하나로 기존 시스템을 더 깊게 사용하게 한다.'],4,8),
+    emergentGenre:{name:emergentName,definition:clean(emergentRaw.definition)||`${primary} 정체성을 중심으로 A/B의 시스템×소재가 서로 상태를 바꾸고 C의 두 소재·메인·보조 장르가 사건과 규칙을 생성하며 @ 파고들기가 계속 확장되는 복합장르다.`,whyNotSingleConventionalGenre:clean(emergentRaw.whyNotSingleConventionalGenre)||'기존 장르 태그 하나가 플레이를 정의하지 않으며 재료 인과법칙·MAIN 주제·A/B 시스템·C 소재와 장르·@ 파고들기의 관계 자체가 게임의 반복 규칙을 만든다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
+    expansionVectors:sketchArray(raw.expansionVectors,['새 지역은 같은 소재와 MAIN×A×B×C 관계를 새로운 지역 법칙과 상황에서 다시 결합한다.','새 몬스터는 체력 배수가 아니라 A/B와 C의 인과관계 상태 전달을 방해·증폭·반전한다.','새 NPC/세력은 같은 인과법칙을 다른 욕망과 이해관계로 해석해 시스템 선택을 바꾼다.','새 아이템/능력은 MAIN/A/B/C 사이의 원인·대가·정보·권리를 이동·보존·분산·위조하는 새 운용을 연다.','새 @는 숨은 조합·숙련·재해석·재방문·관계 변화·고급 변형 중 하나로 기존 시스템을 더 깊게 사용하게 한다.'],4,8),
     culturalAbstractionRule:clean(raw.culturalAbstractionRule)||'동서양 역사·고전·종교·신화·철학·비극·희극·해학·정치·역사적 인물은 높낮이 없이 동등한 재료이며 이름·장면 복제가 아니라 인과구조와 인간 갈등의 추상 DNA로 재해석한다.'
   };
 }

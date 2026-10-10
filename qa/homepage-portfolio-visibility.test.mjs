@@ -4,7 +4,6 @@ import fs from 'node:fs';
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-const maintenance=JSON.parse(fs.readFileSync('company-learning/roblox-sustained-maintenance.json','utf8'));
 
 const webGames=(catalog.games||[]).filter(game=>
   ['ACTIVE','REBUILD'].includes(String(game.lifecycleState||'ACTIVE').toUpperCase())&&
@@ -12,52 +11,27 @@ const webGames=(catalog.games||[]).filter(game=>
   game.hasWebArchive===true&&
   String(game.webPath||'').trim()
 );
-assert(webGames.length>0,'expected playable web games in catalog');
+assert.equal(webGames.length,0,'legacy HTML games are archived, not marked as verified Unity WebGL');
+assert((catalog.games||[]).some(game=>game.id==='ant-simulator'&&game.hasWebArchive===true&&game.homepageWebPlayable===false),'preserve legacy game source and catalog identity');
 
-const vector=(catalog.games||[]).find(game=>game.id==='seed-roblox-battleground-fight-welcome-to-bloxburg');
-assert(vector,'Vector Clash catalog entry missing');
-assert.equal(vector.name,'Vector Clash');
-assert.equal(vector.productionClass,'DESIGN_ONLY');
-assert.equal(vector.robloxPublicationTarget?.placeId,'120787429678729');
-assert.equal(vector.robloxPublicationTarget?.verified,true);
-assert.equal(vector.robloxPublicationTarget?.historical,true);
-assert.equal(vector.robloxPublicationTarget?.currentReleaseClaim,false);
-assert.equal(vector.robloxReleaseEvidence?.historicalPublicationTargetVerified,true);
-
-const skyline=(catalog.games||[]).find(game=>game.id==='seed-roblox-obby-party-minigam-tower-of-hell');
-assert(skyline,'Skyline Rush catalog entry missing');
-assert.equal(skyline.name,'Skyline Rush');
-assert.equal(skyline.productionClass,'DESIGN_ONLY');
-assert.equal(skyline.robloxProjectPath,'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell');
-assert.equal(skyline.robloxPublicationTarget?.universeId,'10766723635');
-assert.equal(skyline.robloxPublicationTarget?.placeId,'129342889720619');
-assert.equal(skyline.robloxPublicationTarget?.verified,true);
-assert.equal(skyline.robloxPublicationTarget?.historical,true);
-assert.equal(skyline.robloxPublicationTarget?.currentReleaseClaim,false);
-assert.equal(skyline.robloxReleaseEvidence?.historicalPublicationTargetVerified,true);
-assert.equal(skyline.robloxReleaseEvidence?.actualStudioRuntime,true);
-assert.equal(skyline.robloxReleaseEvidence?.postRuntimeIndependentQa,true);
-assert.equal(skyline.robloxReleaseEvidence?.regression,true);
-assert.equal(skyline.robloxReleaseEvidence?.multiplayerQa,true);
-assert.notEqual(skyline.robloxPublicationTarget?.placeId,vector.robloxPublicationTarget?.placeId);
-
-const skylineMaintenance=(maintenance.assets||[]).find(asset=>asset.gameId===skyline.id);
-assert(skylineMaintenance,'Skyline Rush sustained maintenance entry missing');
-assert.equal(skylineMaintenance.gameName,'Skyline Rush');
-assert.equal(skylineMaintenance.maintenanceEligible,true);
-assert.equal(skylineMaintenance.currentReleaseClaim,false);
-assert.equal(skylineMaintenance.maintenanceMode,'SUSTAINED_POST_DEPLOYMENT_SOURCE_DEVELOPMENT');
-assert.equal(skylineMaintenance.evidence?.placeId,'129342889720619');
-assert.equal(skylineMaintenance.evidence?.publicationTargetObserved,true);
+// 영구 제거된 게임은 과거 배포 기록이 있어도 카탈로그에 되살리지 않는다.
+const removed=new Set(catalog.permanentRemovalPolicy?.ids||[]);
+assert(removed.has('seed-roblox-battleground-fight-welcome-to-bloxburg'));
+assert(removed.has('seed-roblox-obby-party-minigam-tower-of-hell'));
+for(const id of removed)assert(!(catalog.games||[]).some(game=>game.id===id),'removed game reappeared: '+id);
+// 일반 웹 아카이브는 남기지만 3D Unity WebGL QA 없이는 노출하지 않는다.
+assert(renderer.includes('return Boolean(internalReleaseLinks(game).unityWeb);'));
+assert(renderer.includes('manifest.homepageVerified!==true'));
+assert(!renderer.includes("button(links.web,'웹 플레이'"));
 
 assert.match(renderer,/function webPublishedRows\(/);
 assert.match(renderer,/function verifiedRobloxDeploymentRows\(/);
 assert.match(renderer,/homeWebGameCenter/);
 assert.match(renderer,/homeRobloxDeploymentCenter/);
 assert.match(renderer,/Roblox 배포 기록/);
-assert.match(renderer,/homepageDisplayMode==='WEB_PUBLISHED'/);
-assert.match(renderer,/homepageDisplayMode==='ROBLOX_HISTORICAL_DEPLOYMENT'/);
-assert.match(renderer,/https:\/\/www\.roblox\.com\/games\/\$\{placeId\}/);
+assert.match(renderer,/game\.unityWebAvailable===true/);
+assert.match(renderer,/ROBLOX_HISTORICAL_DEPLOYMENT/);
+assert(renderer.includes('historicalPublicationTargetVerified===true'));
 
 const policy=roadmap.homepagePortfolioVisibility;
 assert.equal(policy?.humanDocumentRequired,false);
@@ -66,4 +40,4 @@ assert.equal(policy?.robloxDeploymentHistory?.currentReleaseClaimRequired,false)
 assert.equal(policy?.robloxDeploymentHistory?.mustNotConvertHistoricalEvidenceIntoCurrentReleaseClaim,true);
 assert.equal(policy?.designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion,true);
 
-console.log(`PASS homepage portfolio: webGames=${webGames.length}, verifiedRobloxDeployment=Vector Clash+Skyline Rush`);
+console.log(`PASS homepage portfolio: legacyWebPublished=${webGames.length}, permanentRemovalPreserved=${removed.size}`);

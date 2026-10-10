@@ -543,7 +543,7 @@ export function evaluateGameFlowArchitecture(architecture={}){
       ||(grammar.gameplaySystemFusion?.majorAxes||[]).length!==2||(grammar.gameplaySystemFusion?.crossSystemRules||[]).length<4)blockers.push('FLOW_MAIN_A_B_C_SYSTEM_FUSION_REQUIRED');
     if(creativeV5&&(grammar.gameplaySystemFusion?.majorAxes||[]).some(row=>!clean(row.systemFamily)||!clean(row.sourceMaterial)||!clean(row.sourceDomain)||!clean(row.materialRule)))blockers.push('FLOW_A_B_SYSTEM_AND_CREATIVE_SOURCE_REQUIRED');
     const c=grammar.gameplaySystemFusion?.themeFusion,themes=Array.isArray(c?.themes)?c.themes:[];
-    if(creativeV5&&(themes.length!==2||themes.some(row=>!clean(row.name)||!clean(row.causalEffect))||!clean(c?.jointWorldRule)||!clean(c?.abGameplayEffect)))blockers.push('FLOW_C_TWO_THEMES_AND_CAUSAL_LINK_REQUIRED');
+    if(creativeV5&&(themes.length!==2||new Set(themes.map(row=>clean(row?.name).toLowerCase())).size!==2||themes.some(row=>!clean(row?.name)||!clean(row?.causalEffect))||!clean(c?.jointWorldRule)||!clean(c?.abGameplayEffect)))blockers.push('FLOW_C_TWO_THEMES_AND_CAUSAL_LINK_REQUIRED');
     const genres=Array.isArray(c?.genres)?c.genres:[];
     if(creativeV5&&(genres.length!==2
       ||!['PRIMARY','SECONDARY'].every(role=>genres.some(row=>row.role===role))

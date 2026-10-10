@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
+import {runOwnerAllGamesDesignReset} from '../tools/company-all-games-design-reset.mjs';
 
 test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog development has already started',()=>{
   const queue=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
@@ -64,9 +65,98 @@ test('all-games reset workflow binds expected reset set to current DESIGN_ONLY c
 });
 
 
+test('only main pushes or explicit dispatch can run a writable design reset',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  assert.match(workflow,/  push:\n    branches: \[main\]/);
+  assert.match(workflow,/  pull_request:\n    branches: \[main\]/);
+  assert.match(workflow,/^permissions:\n  contents: read/m);
+  assert.match(workflow,/  reset-to-design:\n    if: github\.event_name == 'workflow_dispatch' \|\| \(github\.event_name == 'push'/);
+  assert.match(workflow,/    permissions:\n      contents: write\n      actions: write/);
+  assert.match(workflow,/    if: github\.event_name == 'pull_request'/);
+  assert.equal((workflow.match(/node tools\/company-shared-context\.mjs --output=\/tmp\/owner-reset-shared-context\.json/g)||[]).length,2,'PR and official reset must both enforce current central policy before writing');
+});
+
+test('explicit reset opt-out applies only to a trailing marker, not a squash-merge history bullet',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  assert.match(workflow,/!endsWith\(github\.event\.head_commit\.message, '\[owner-reset-trigger-scope-only\]'\)/);
+  assert.doesNotMatch(workflow,/!contains\(github\.event\.head_commit\.message, '\[owner-reset-trigger-scope-only\]'\)/);
+  const marker='[owner-reset-trigger-scope-only]';
+  const mergeMessage='Fix reset workflow (#6527)\\n\\n* prior scoped-test commit '+marker+'\\n\\n* fix runtime branch checkout';
+  assert.equal(mergeMessage.includes(marker),true);
+  assert.equal(mergeMessage.endsWith(marker),false,'squashed history must not suppress the official main reset');
+  assert.equal(('no-reset-intended '+marker).endsWith(marker),true,'direct scoped write must stay opt-out');
+});
+
+test('design reset runtime checkout tolerates dirty CI-only Unity LFS files without a force push',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  const copy=workflow.indexOf('cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs');
+  const checkout=workflow.indexOf('git checkout -f -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"');
+  assert.ok(copy>=0&&checkout>copy,'canonical runtime script must be preserved before switching branches');
+  assert.match(workflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.doesNotMatch(workflow,/git push --force|git clean -fdx/);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-lfs-'));
+  const git=(...args)=>spawnSync('git',args,{cwd:root,encoding:'utf8'});
+  const pass=(...args)=>{const result=git(...args);assert.equal(result.status,0,result.stderr);return result;};
+  try{
+    pass('init','-q','-b','main');
+    pass('config','user.name','owner-reset-test');
+    pass('config','user.email','owner-reset-test@example.invalid');
+    const filename='hero-idle.tga';
+    const asset=path.join(root,filename);
+    fs.writeFileSync(asset,'committed Unity asset');
+    pass('add',filename);
+    pass('commit','-qm','main asset');
+    pass('checkout','-qb','company-runtime');
+    pass('rm','-q',filename);
+    const runtimeState=JSON.stringify({seeds:[{gameId:'x',status:'ACTIVE',stage:'F4',saveSchemaVersion:3}]});
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),runtimeState);
+    pass('add','game-seed-state.json');
+    pass('commit','-qm','runtime state only');
+    pass('checkout','-q','main');
+    fs.writeFileSync(asset,'modified CI checkout asset');
+    assert.notEqual(git('checkout','-B','owner-all-games-design-reset-runtime','company-runtime').status,0);
+    pass('checkout','-f','-B','owner-all-games-design-reset-runtime','company-runtime');
+    assert.equal(fs.existsSync(asset),false);
+    assert.equal(pass('branch','--show-current').stdout.trim(),'owner-all-games-design-reset-runtime');
+    assert.equal(pass('show',`main:${filename}`).stdout,'committed Unity asset','canonical main asset must remain in Git history');
+    assert.equal(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'),runtimeState,'runtime state must survive branch change');
+    assert.equal(pass('show','company-runtime:game-seed-state.json').stdout,runtimeState,'runtime ref content must remain unchanged');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('all-games reset preserves active developed games and existing seed save metadata',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-reset-developed-'));
+  try{
+    const catalog={games:[
+      {id:'design-game',name:'Design',productionClass:'DESIGN_ONLY'},
+      {id:'developed-game',name:'Developed',productionClass:'DEVELOPMENT_CONFIRMED'},
+      {id:'reinstated-game',name:'Reinstated',productionClass:'DEVELOPMENT_CONFIRMED'}
+    ]};
+    const target={gameId:'design-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',saveSchemaVersion:7,checkpoint:{wave:5}};
+    const developed={gameId:'developed-game',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',development:{stage:'F4'},saveSchemaVersion:9,checkpoint:{wave:19}};
+    const reinstated={gameId:'reinstated-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',pausedReason:'NOT_IN_CANONICAL_GAME_CATALOG',pausedAt:'2026-10-09',checkpoint:{wave:11}};
+    const removed={gameId:'removed-game',status:'ACTIVE',productionClass:'DESIGN_ONLY'};
+    fs.writeFileSync(path.join(root,'game-catalog.json'),JSON.stringify(catalog));
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({version:2,seeds:[target,developed,reinstated,removed]}));
+    const result=runOwnerAllGamesDesignReset({root,timestamp:'2026-10-10T00:00:00.000Z'});
+    assert.equal(result.count,1);
+    const updated=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
+    const find=id=>updated.seeds.find(seed=>seed.gameId===id);
+    assert.equal(find('design-game').productionClass,'DESIGN_ONLY');
+    assert.equal(find('design-game').ownerResetRevision,'OWNER-ALL-GAMES-DESIGN-RESET-20260917-1');
+    assert.equal(find('design-game').saveSchemaVersion,7);
+    assert.deepEqual(find('design-game').checkpoint,{wave:5});
+    assert.deepEqual(find('developed-game'),developed,'active developed game and F0-F9 stage must not be touched');
+    assert.deepEqual(find('reinstated-game'),{gameId:'reinstated-game',status:'ACTIVE',productionClass:'DESIGN_ONLY',checkpoint:{wave:11}},'obsolete pause must clear without changing saved state');
+    assert.equal(find('removed-game').status,'PAUSED','only noncatalog state may be paused');
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8')),catalog);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('seed design runtime keeps owner reset review parallel with active development',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
-  assert.match(workflow,/GAME_PRIMARY_GATE=RUN_PARALLEL_STRICT_DESIGN/);
+  assert.match(workflow,/const activeResetSeeds=active\.filter/);
+  assert.match(workflow,/designEvolutionDueFor\(seed\)/);
   assert.doesNotMatch(workflow,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
   assert.match(workflow,/materializeOwnerDesignResetSeeds/);
   assert.match(workflow,/ensureOwnerDesignResetSeed/);
@@ -117,8 +207,10 @@ test('design runtime keeps PASS as checkpoint and schedules recurring design hea
 test('design runtime binds design intelligence into engine digest and static QA',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/tools\/vibe2-design-intelligence\.mjs/);
-  assert.match(workflow,/node --check tools\/vibe2-design-intelligence\.mjs/);
-  assert.match(workflow,/node --test qa\/vibe2-design-intelligence\.test\.mjs/);
+  const begin=workflow.indexOf('const engineFiles=['),end=workflow.indexOf('const engineDigest=',begin);
+  assert.ok(begin>=0&&end>begin,'design intelligence must be included in the current designer engine digest');
+  assert.match(workflow.slice(begin,end),/tools\/vibe2-design-intelligence\.mjs/);
+  assert.match(workflow,/'qa\/vibe2-design-intelligence\.test\.mjs'/);
 });
 
 
@@ -165,8 +257,12 @@ test('missing design is admitted as a brief without invented mechanics or gramma
     assert.equal(result.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
     const intake=fs.readFileSync('tools/company-all-games-design-reset.mjs','utf8');
     const body=intake.match(/function upgradeCanonicalNovelGrammarSeed\(seed,game,timestamp\)\{([\s\S]*?)\n\}/)[1];
-    const upgrade=new Function('seed','game','timestamp',body);
-    assert.equal(upgrade(result.seed,{},'now'),false,'brief must not reach automatic grammar generation');
+    // The isolated function's original caller supplies clean(); mirror that dependency in this test.
+    const upgrade=new Function('seed','game','timestamp','clean',body);
+    const clean=value=>String(value??'').trim();
+    assert.equal(upgrade(result.seed,{},'now',clean),false,'brief must not reach automatic grammar generation');
+    assert.equal(upgrade({...result.seed,designInputMode:'DESIGNER_SELF_SEED'}, {},'now',clean),false,
+      'designer-authored game intake must not be replaced by synthetic grammar');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
@@ -183,16 +279,31 @@ test('owner brief cannot read a different game or escape the original design dir
 
 test('already developed games can re-enter the same designer from an owner brief',()=>{
   const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
-  const line=cycle.split('\n').find(row=>row.includes('DESIGN_ONLY_CLASS_REQUIRED'));
-  assert.ok(line);
-  const predicate=line.slice(line.indexOf('if(')+3,line.indexOf(')throw new Error'));
-  const blocked=new Function('catalogGame','seed','clean','return '+predicate);
-  const clean=v=>String(v??'').trim();
-  assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'},clean),false);
-  assert.equal(blocked({productionClass:'DEVELOPMENT_CONFIRMED'},{},clean),true);
+  const begin=cycle.indexOf('function resolveDesignerSeedInput(');
+  const end=cycle.indexOf('const gameId=clean(process.env.',begin);
+  assert.ok(begin>=0&&end>begin,'owner request must use the same designer intake');
+  const body=cycle.slice(begin,end);
+  assert.doesNotMatch(body,/DESIGN_ONLY_CLASS_REQUIRED/);
+  const owner={
+    gameId:'developed-game',seedId:'OWNER-DEVELOPED',status:'ACTIVE',
+    productionClass:'DESIGN_ONLY',designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY',
+    OWNER_LATEST_DESIGN_REQUEST:'Preserve the game and write its design'
+  };
+  const resolver=new Function('clean','activeSeedForGame','ownerDesignResetSeedForGame','makeAutoMissingDesignSeed',
+    'latestUsableDesign','validateGameSeed','path',body+'\nreturn resolveDesignerSeedInput;')(
+      v=>String(v??'').trim(),()=>null,()=>owner,()=>{throw Error('owner request must remain the source');},
+      ()=>null,()=>({pass:true,errors:[]}),path
+    );
+  const state={seeds:[]};
+  const catalog={games:[{id:'developed-game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]};
+  const result=resolver({state,gameId:'developed-game',catalog});
+  assert.equal(result.created,true);
+  assert.equal(result.seed,owner);
+  assert.equal(state.seeds[0],owner);
+  assert.equal(owner.seedAuthoring.writer,'GAME_DESIGNER_AI');
+  assert.equal(owner.designInputMode,'OWNER_BRIEF_AND_ORIGINAL_ONLY');
   assert.match(cycle,/OWNER_ORIGINAL_DESIGN_INPUT=/);
 });
-
 
 test('design workflow invokes the actual designer for developed games instead of class routing',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');

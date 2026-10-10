@@ -69,8 +69,12 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/MAIN × A × B × C/);
   assert.match(source,/themeFusion:C_FUSION_SCHEMA/);
   assert.match(source,/genreInterlock/);
-  const forbiddenCAsThirdMechanicalAxis=["connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
-  for(const token of forbiddenCAsThirdMechanicalAxis)assert.equal(source.includes(token),false);
+  // C는 게임의 세 번째 시스템 축이 아니라 소재·장르 층이다. @의 인과 연결 대상으로는 허용한다.
+  const axisSchema=source.slice(source.indexOf('const SYSTEM_AXIS_SCHEMA='),source.indexOf('const SUB_ELEMENT_SCHEMA='));
+  assert.match(axisSchema,/key:\{type:'string',enum:\['A','B'\]\}/);
+  assert.match(source,/majorAxes:\{type:'array',minItems:2,maxItems:2,items:SYSTEM_AXIS_SCHEMA\}/);
+  assert.match(source,/connectsTo:.*enum:\['MAIN','A','B','C','c'\]/);
+  assert.equal(source.includes("enum:['A','B','C']"),false);
   assert.match(source,/DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS/);
   assert.match(source,/SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE/);
   const legacyDepthLabels=['D1_'+'LIGHT_COMIC','D2_'+'STRANGE_FUSION','D3_'+'DEEP_CULTURAL','D4_'+'SYSTEMIC_MYTHIC'];
@@ -313,6 +317,31 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
     inventory:[]
   });
   assert.equal(evaluateGameFlowArchitecture(v5Flow).pass,true);
+  // 학교 만들기 타이쿤: C 장르는 필수, 예전 c 서브 시스템은 필수가 아니다.
+  const school=structuredClone(v5);
+  school.GAME_CATEGORY='SIMULATOR_TYCOON_INCREMENTAL';
+  const schoolFusion=school.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion;
+  delete schoolFusion.subElements;
+  schoolFusion.main={name:'초등학교 만들기 타이쿤',purpose:'학생을 위한 학교를 직접 짓고 운영한다.',playerAction:'교실과 복도의 위치를 선택해 운영한다.',stateContribution:'학교 시설 배치와 학생 성장 목표가 운영 결과에 남는다.'};
+  schoolFusion.majorAxes[0]={key:'A',name:'건축과 로마 신전',purpose:'교실 배치가 봉인과 학습의 조건을 바꾼다.',playerChoice:'교실과 복도·제례실의 위치를 결정한다.',stateContribution:'건물 동선이 시설 가동률과 봉인 범위를 바꾼다.',systemFamily:'HOUSING_BUILDING',sourceMaterial:'로마 신전 건축',sourceDomain:'서양 역사·신화',materialRule:'신전 구조를 따른 교실 배치가 학생 이동과 봉인 강도를 바꾼다.'};
+  schoolFusion.majorAxes[1]={key:'B',name:'액션과 로마 신화 괴물',purpose:'학생 보호를 위한 대응 방식이 건축 요구를 바꾼다.',playerChoice:'시설과 괴물의 약점을 이용해 대응한다.',stateContribution:'괴물 사건 결과가 학교의 수업·동선 상태를 바꾼다.',systemFamily:'TARGETING_COMBAT',sourceMaterial:'로마 신화의 괴물',sourceDomain:'로마 신화',materialRule:'괴물의 출현과 대응이 학생 안전·학교 운영과 건물 수리 우선순위를 바꾼다.'};
+  schoolFusion.themeFusion.genres=[{role:'PRIMARY',name:'미스터리',gameplayEffect:'단서를 조사해 사건 원인을 밝혀 봉인 설계를 해금한다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'학생들의 오해가 시설 접근·괴물 대응·정보 흐름을 바꾼다.'}];
+  schoolFusion.crossSystemRules=['교실 건축 선택이 괴물 출현 경로를 바꾼다.','괴물 사건의 해결 결과가 다시 교실 배치와 운영 선택을 바꾼다.','철학과 엽기 소재의 단서가 사건의 진실에 접근하는 경로를 바꾼다.','코믹한 오해 때문에 같은 단서도 정보 비용과 봉인 선택이 달라진다.'];
+  for(const element of school.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements)element.connectsTo=[...new Set(element.connectsTo.map(value=>value==='c'?'C':value))];
+  const schoolResult=validateGameSeed(school);
+  assert.equal(schoolResult.pass,true,schoolResult.errors.join('; '));
+  const schoolFlow=buildGameFlowArchitecture({gameId:'school-tycoon-v5',genre:school.GAME_CATEGORY,baseline:{content:{identity:'초등학교 만들기 타이쿤',coreFun:'학교 건설과 운영 및 괴물 사건 대응',coreLoop:school.CORE_LOOP,novelGameGrammar:school.GAMEPLAY_SKETCH.novelGameGrammar}},inventory:[]});
+  assert.equal(evaluateGameFlowArchitecture(schoolFlow).pass,true);
+  const duplicatedFlow=structuredClone(schoolFlow);
+  duplicatedFlow.systemBlueprint.novelGrammarContract.gameplaySystemFusion.themeFusion.themes[1].name='철학';
+  assert.ok(evaluateGameFlowArchitecture(duplicatedFlow).blockers.includes('FLOW_C_TWO_THEMES_AND_CAUSAL_LINK_REQUIRED'));
+  const duplicatedTheme=structuredClone(school);
+  duplicatedTheme.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.themes[1].name='철학';
+  assert.equal(validateGameSeed(duplicatedTheme).pass,false);
+  const legacyWithoutSub=structuredClone(seed);
+  delete legacyWithoutSub.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements;
+  assert.equal(validateGameSeed(legacyWithoutSub).pass,false);
+
   const oneGenre=structuredClone(v5);
   oneGenre.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.genres.pop();
   assert.equal(validateGameSeed(oneGenre).pass,false);
