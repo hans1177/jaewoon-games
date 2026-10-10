@@ -104,42 +104,25 @@
         "색채 주파수 튜너 사용하여 인접 노드 색상을 변경하고 동기화 체인 형성",
         "연쇄 기폭 장치로 체인 활성화하여 연쇄 폭발 및 보상을 획득"
       ]
-    },
-    "local_authoring_parts::f8428e278206ddabc6609a257ccd2e24d802724e5eae00867d6e1c13be1a33c4:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_abc",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "{\"node\": \"A\", \"frequency\": 420, \"pattern\": \"blue-red-blue\"}",
-        "{\"node\": \"B\", \"frequency\": 360, \"pattern\": \"red-green-yellow\"}",
-        "{\"node\": \"C\", \"frequency\": 450, \"pattern\": \"yellow-orange-purple\"}"
-      ],
-      "stateOutputs": [
-        "{\"node\": \"A\", \"frequency\": 480, \"pattern\": \"blue-red-blue-amber\"}",
-        "{\"node\": \"B\", \"frequency\": 400, \"pattern\": \"red-green-yellow-violet\"}",
-        "{\"node\": \"C\", \"frequency\": 510, \"pattern\": \"yellow-orange-purple-indigo\"}"
-      ],
-      "name": "COLOR_CHAIN_PUZZLE_MAIN",
-      "purpose": "플레이어가 제한된 튜닝 횟수 내에서 특정 노드의 색상 주파수를 전환하여 동기화된 색채 체인을 형성하고, 연쇄 기폭 장치를 활용해 강력한 에너지 파동을 일으키는 핵심 조작 시스템입니다.",
-      "playerChoice": "플레이어는 각 노드에 대해 최적의 튜닝 선택을 전술적으로 결정하여, 가장 길고 강력한 연쇄 동기화 경로를 확보해야 합니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 345392,
-      "lastMs": 49956,
+      "totalMs": 367609,
+      "lastMs": 22217,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:44:04.990Z"
+      "updatedAt": "2026-10-10T09:44:27.209Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:38:19.573Z",
-  "updatedAt": "2026-10-10T09:44:04.990Z",
+  "updatedAt": "2026-10-10T09:44:27.209Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1412,11 +1395,21 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
-  "sliceRepairAttempts": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::f8428e278206ddabc6609a257ccd2e24d802724e5eae00867d6e1c13be1a33c4:signatureSystems:0:4f53cda18c2baa0c": [
+      {
+        "code": "DESIGN_STATE_KEY_IS_INSTRUCTION",
+        "grammarRole": "MAIN",
+        "previousRuleIds": []
+      }
+    ]
+  },
+  "sliceRepairAttempts": {
+    "local_authoring_parts::f8428e278206ddabc6609a257ccd2e24d802724e5eae00867d6e1c13be1a33c4:signatureSystems:0:4f53cda18c2baa0c": 1
+  },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:44:04.990Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T09:44:27.209Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:MAIN",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_STATE_KEY_IS_INSTRUCTION"
 }
