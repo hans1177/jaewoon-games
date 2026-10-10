@@ -309,8 +309,9 @@ test('shared skinned skill grammar covers all inherited careers across gameplay 
  const expectedNames=roleKinds.map(kind=>'SKILL_'+kind);
  assert.equal(expectedNames.length,20);
  assert.deepEqual(doc.animations.slice(-20).map(a=>a.name),expectedNames);
+ const original=glbJson(fs.readFileSync(path.join(root,'assets/shared/humanoid-traveler.glb')));
  assert.deepEqual(doc.skins[0].joints.map(i=>doc.nodes[i].name),
-   glbJson(fs.readFileSync(path.join(root,'assets/shared/humanoid-traveler.glb'))).skins[0].joints.map(i=>doc.nodes[i].name));
+   original.skins[0].joints.map(i=>original.nodes[i].name));
  assert.equal(record.animationClipCount,35);
  assert.equal(record.masterGlbStaticQaPass,false);
  assert.equal(record.productionVerified,false);
