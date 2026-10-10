@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "revision": 88,
-  "updatedAt": "2026-10-09T16:45:00+09:00",
+  "revision": 90,
+  "updatedAt": "2026-10-10T10:00:00+09:00",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -139,10 +139,14 @@
       "actualGameFileSourceMetadataPreserved": true,
       "canonicalNormalizationRequiredBeforeHomepagePublication": true,
       "playableWebCompanionAvailability": "ALL_VISIBLE_GAME_CARDS_WHEN_WEB_GAMES_GAME_ID_INDEX_EXISTS",
-      "playableWebCompanionMissingEntryState": "HIDE_CARD_WHEN_NO_OTHER_RUNNABLE_TARGET",
-      "cardVisibilityRequiresRunnableTarget": true,
-      "titleOnlyCardExposureForbidden": true,
-      "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true
+      "playableWebCompanionMissingEntryState": "SHOW_DEPLOYED_GAME_CARD_DISABLE_UNVERIFIED_PLAY_LINK",
+      "cardVisibilityRequiresRunnableTarget": false,
+      "titleOnlyCardExposureForbidden": false,
+      "verifiedUnityTestBuildLaunchIndependentOfReleaseClassification": true,
+      "allRunnablePlatformAccessRef": "serverHomepageIntegration.runnablePlatformAccess",
+      "allDeployedGameCardsRequired": true,
+      "cardVisibilityIndependentOfWebRuntimeQa": true,
+      "playButtonRequiresVerifiedRunnableTarget": true
     },
     "autoClassification": {
       "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
@@ -165,6 +169,28 @@
       "jobCount": 2,
       "separatePublishJobForbidden": true,
       "duplicateCandidateApplyForbidden": true
+    },
+    "homepageListingContract": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-10-10",
+      "status": "OWNER_DIRECT_LOCKED",
+      "mode": "ALWAYS_SHOW_DEPLOYED_GAMES_IN_DEVELOPMENT_AND_RELEASE",
+      "allDeployedGamesVisible": true,
+      "showDevelopmentAndReleasedGames": true,
+      "gameCardVisibilityIndependentOfReleaseClassification": true,
+      "gameCardVisibilityIndependentOfUnityWebRuntimeQa": true,
+      "gameCardVisibilityIndependentOfPlayableTarget": true,
+      "canonicalRegisteredWebPathCountsForListing": true,
+      "nativeVerifiedRunnableTargetCountsForListing": true,
+      "simpleClickOnlyNonGamePrototypesRemainExcluded": true,
+      "unverifiedOrMissingGameBuildDisablesPlayButtonOnly": true,
+      "noFalseNative3dRuntimeOrReleasePass": true,
+      "companyRuntimeCatalogReconciliationRequired": true,
+      "existingHomepageManagerDirectorPublicationRequired": true,
+      "newPipelineForbidden": true,
+      "canonicalF0F9LockedSequenceUnchanged": true,
+      "externalPublicReleaseHardGateUnchanged": true,
+      "preserveGameSourcesAndSaveData": true
     }
   },
   "production": {
@@ -932,8 +958,9 @@
     "hardGatesMustPass": true,
     "maxVisibleTestCandidates": 30,
     "ranking": "STRICT_IMPLEMENTATION_SCORE_DESC",
-    "artbookRequiredForHomepageRegistration": true,
-    "officialCardRequiresPromotion": true
+    "artbookRequiredForHomepageRegistration": false,
+    "officialCardRequiresPromotion": true,
+    "artbookRequiredForOfficialPromotionOnly": true
   },
   "productionThroughput": {
     "concurrentGameWipTarget": 64,
