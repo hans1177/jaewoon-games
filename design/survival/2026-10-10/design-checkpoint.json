@@ -211,40 +211,25 @@
       "name": "Road to Survival",
       "purpose": "Player's initial build and progression choices determine the survival path, with upgrades and strategies shaping the gameplay experience.",
       "playerChoice": "Choose between base build or expert strategy, influencing wave difficulty and resource management."
-    },
-    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:1:d0b996c02b551b43": {
-      "id": "a_main_road_to_survival",
-      "grammarRole": "A",
-      "stateInputs": [
-        "player_has_refined_build",
-        "player_gains_expertise"
-      ],
-      "stateOutputs": [
-        "player_starts_with_base_build",
-        "player_decides_upgrade_path"
-      ],
-      "name": "Road to Survival",
-      "purpose": "Player's initial build and progression choices determine the survival path, with upgrades and strategies shaping the gameplay experience.",
-      "playerChoice": "Choose between base build or expert strategy, influencing wave difficulty and resource management."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 10,
-      "successes": 9,
+      "calls": 11,
+      "successes": 10,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 982834,
-      "lastMs": 26933,
+      "totalMs": 997196,
+      "lastMs": 14362,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:52:01.482Z"
+      "updatedAt": "2026-10-10T10:52:15.845Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:35:38.613Z",
-  "updatedAt": "2026-10-10T10:52:01.482Z",
+  "updatedAt": "2026-10-10T10:52:15.846Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1966,16 +1951,27 @@
     }
   },
   "sliceDependencies": {},
-  "sliceRepairFeedback": {},
+  "sliceRepairFeedback": {
+    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:1:d0b996c02b551b43": [
+      {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_road_to_survival"
+        ]
+      }
+    ]
+  },
   "sliceRepairAttempts": {
-    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:0:4f53cda18c2baa0c": 2
+    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:0:4f53cda18c2baa0c": 2,
+    "local_authoring_parts::c1ac75fbde5d86cbd554742a02ea7e606971b8a7d1b5abf9fb4bc2de59b8cf24:signatureSystems:1:d0b996c02b551b43": 1
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "d7f8cd81f837aa9f9e4c95595faf45ec3f8dca7c6f7526b47fa8bfb8869b037a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:52:01.482Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:52:15.845Z",
+  "failedPhase": "local_authoring_parts",
+  "failedTask": "signatureSystems:A",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED"
 }
