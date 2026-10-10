@@ -20,7 +20,8 @@ const norm=v=>{const n=Math.hypot(...v)||1;return v.map(a=>a/n)};
 const pulse=(t,p,w)=>Math.exp(-2*Math.pow((t-p)/w,2));
 const quaternion=(x,y,z)=>{
  const a=Math.cos(x/2),b=Math.sin(x/2),c=Math.cos(y/2),d=Math.sin(y/2),e=Math.cos(z/2),f=Math.sin(z/2);
- return [b*c*e-a*d*f,a*d*e+b*c*f,a*c*f-b*d*e,a*c*e+b*d*f];
+ // Export stable six-decimal joint rotations so Node and asset authoring runtimes produce identical GLB bytes.
+ return [b*c*e-a*d*f,a*d*e+b*c*f,a*c*f-b*d*e,a*c*e+b*d*f].map(v=>Math.round(v*1e6)/1e6);
 };
 export function buildSharedCreature(species='wolf'){
  const id=String(species).toLowerCase(),cfg=SHARED_CREATURE_SPECIES[id];
@@ -61,7 +62,9 @@ export function buildSharedCreature(species='wolf'){
  const groups=colors.map(()=>({p:[],n:[],uv:[],bones:[],weights:[],indices:[]}));
  function vertex(mat,bone,pos,normal,u,v){
    const g=groups[mat],index=g.p.length/3;
-   g.p.push(...pos);g.n.push(...norm(normal));g.uv.push(u,v);
+   // Quantize mesh positions and surface normals before Float32 export to make generated sources reproducible.
+   g.p.push(...pos.map(n=>Math.round(n*1e6)/1e6));
+   g.n.push(...norm(normal).map(n=>Math.round(n*1e6)/1e6));g.uv.push(u,v);
    g.bones.push(bone,0,0,0);g.weights.push(1,0,0,0);
    return index;
  }
