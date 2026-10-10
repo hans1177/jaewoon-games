@@ -9,24 +9,203 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::6ad9b2f1db65a21ec1efc44a5fb583e3181c351c3ea30c442c3d0009050ea52b:identity,creativeGrammar": {
+      "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+      "creativeGrammar": {
+        "mainIdentity": "마을 던전 RPG - 위기 상황",
+        "a": {
+          "system": "모바일 액션 전투",
+          "material": "직관적 회피 및 평타 연계 기술",
+          "materialDomain": "액션, 회피, 조작",
+          "stateChange": "던전 내 실시간 상태 변화, 스펙 향상"
+        },
+        "b": {
+          "system": "집안 재료 관리",
+          "material": "고가치 자원 취사선택",
+          "materialDomain": "재료, 보조, 저장",
+          "stateChange": "배낭 슬롯 확장, 장비 강화 재료 추가"
+        },
+        "abCausality": "실시간 회피 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 최종화",
+        "abEvolution": {
+          "aChangesB": "회피 시스템 변경 -> 스펙 증대 -> 재료 선택 변동",
+          "bChangesA": "재료 확장 -> 스펙 향상 -> 전투 빌드 구축",
+          "lateGameChange": "보스전 도전 -> 고도화된 전투 빌드 생성 -> 게임 종료"
+        },
+        "materialFusion": {
+          "contrast": "직관적 회피 vs. 재료 확장, 스펙 향상 vs. 전투 빌드 구축",
+          "causalBridge": "실시간 상태 변화 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 최종화",
+          "removalConsequence": "회피 시스템 변경 -> 스펙 증대 -> 재료 선택 변동 -> 전투 빌드 최종화"
+        },
+        "storyCausalChain": {
+          "cause": "위기 상황 -> 자원 채취 -> 던전 진입 -> 실시간 회피 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 구축 -> 보스전 도전 -> 게임 종료",
+          "characterConflict": "마을 의뢰 해결 과정에서의 위험과 리스크 관리",
+          "playerChoice": "회피 시스템 변경 또는 재료 확장 선택",
+          "worldChange": "던전 내 실시간 상태 변화 및 전투 빌드 최종화",
+          "nextEvent": "보스전 도전 및 고도화된 전투 빌드 생성"
+        },
+        "cThemes": [
+          {
+            "name": "전투 기술",
+            "kind": "MATERIAL",
+            "gameplayEffect": "직관적 회피, 평타 연계, 스펙 향상"
+          },
+          {
+            "name": "재료 관리",
+            "kind": "MATERIAL",
+            "gameplayEffect": "고가치 자원 취사선택, 장비 강화 재료 추가"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "모바일 액션 전투",
+            "gameplayEffect": "실시간 회피, 평타 연계, 조작"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "집안 재료 관리",
+            "gameplayEffect": "재료 확장, 보조 저장, 전투 빌드 구축"
+          }
+        ],
+        "cGenreInterlock": "모바일 액션 전투 -> 집안 재료 관리: 상호 작용과 보조 장르 제거 시 전투 빌드 최종화",
+        "cWorldAndGameplayEffect": "모바일 액션 전투의 실시간 상태 변화와 집안 재료 관리의 재료 확장이 전투 빌드 최终화에 연결됨",
+        "delveDiscoveries": [
+          {
+            "clue": "위기 상황에서의 선택",
+            "discovery": "회피 시스템 변경 또는 재료 확장",
+            "newChoice": "전투 빌드 최종화 선택 및 보스전 도전"
+          },
+          {
+            "clue": "자원 채취 과정의 리스크",
+            "discovery": "사전 계획된 전투 빌드 생성",
+            "newChoice": "보스전 도전 및 고도화된 전투 빌드 생성"
+          },
+          {
+            "clue": "실시간 회피의 정확성",
+            "discovery": "전투 스펙 향상 기준 설정",
+            "newChoice": "고도화된 전투 빌드 구축 및 게임 종료"
+          },
+          {
+            "clue": "재료 확장의 우선순위",
+            "discovery": "전투 빌드 최종화 방식 결정",
+            "newChoice": "보스전 도전 및 전투 빌드 최종화"
+          }
+        ],
+        "delveGrowthRule": "발견 -> 숙련 -> 재방문: 각 단계별로 새로운 선택과 상태 변화가 일어나며, 이는 전투 빌드 최终화에 연결됨",
+        "finalGameIdentity": "마을 던전 RPG - 위기 상황 해결 시스템"
+      }
+    },
+    "local_authoring_parts::6ad9b2f1db65a21ec1efc44a5fb583e3181c351c3ea30c442c3d0009050ea52b:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 위기 상황에서 마을의 의뢰를 해결하기 위해 5개의 던전을 진입하여 직관적인 원서클 모바일 액션 전투를 수행해야 한다. 수집품은 마을 복구 시설에 환원되어 전투 빌드를 고유하게 완성하며, 이 과정에서는 실시간 회피 및 평타 연계 기술이 중요하다.",
+      "coreFun": "직관적 회피로 인해 몬스터를 격퇴하는 순간의 즉각적인 손맛과, 한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관하는 선택은 전투 빌드 최종화의 핵심이다."
+    },
+    "local_authoring_parts::8cc542f6f48124e02d34de405dde5dbbdd8eaff5a31f8dea377895e72438d6d3:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다.",
+      "creativeGrammar": {
+        "mainIdentity": "마을 던전 RPG - 위기 상황",
+        "a": {
+          "system": "모바일 액션 전투",
+          "material": "직관적 회피 및 평타 연계 기술",
+          "materialDomain": "액션, 회피, 조작",
+          "stateChange": "던전 내 실시간 상태 변화, 스펙 향상"
+        },
+        "b": {
+          "system": "집안 재료 관리",
+          "material": "고가치 자원 취사선택",
+          "materialDomain": "재료, 보조, 저장",
+          "stateChange": "배낭 슬롯 확장, 장비 강화 재료 추가"
+        },
+        "abCausality": "실시간 회피 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 최종화",
+        "abEvolution": {
+          "aChangesB": "회피 시스템 변경 -> 스펙 증대 -> 재료 선택 변동",
+          "bChangesA": "재료 확장 -> 스펙 향상 -> 전투 빌드 구축",
+          "lateGameChange": "보스전 도전 -> 고도화된 전투 빌드 생성 -> 게임 종료"
+        },
+        "materialFusion": {
+          "contrast": "직관적 회피 vs. 재료 확장, 스펙 향상 vs. 전투 빌드 구축",
+          "causalBridge": "실시간 상태 변화 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 최종화",
+          "removalConsequence": "회피 시스템 변경 -> 스펙 증대 -> 재료 선택 변동 -> 전투 빌드 최종화"
+        },
+        "storyCausalChain": {
+          "cause": "위기 상황 -> 자원 채취 -> 던전 진입 -> 실시간 회피 -> 스펙 향상 -> 재료 확장 -> 전투 빌드 구축 -> 보스전 도전 -> 게임 종료",
+          "characterConflict": "마을 의뢰 해결 과정에서의 위험과 리스크 관리",
+          "playerChoice": "회피 시스템 변경 또는 재료 확장 선택",
+          "worldChange": "던전 내 실시간 상태 변화 및 전투 빌드 최종화",
+          "nextEvent": "보스전 도전 및 고도화된 전투 빌드 생성"
+        },
+        "cThemes": [
+          {
+            "name": "전투 기술",
+            "kind": "MATERIAL",
+            "gameplayEffect": "직관적 회피, 평타 연계, 스펙 향상"
+          },
+          {
+            "name": "재료 관리",
+            "kind": "MATERIAL",
+            "gameplayEffect": "고가치 자원 취사선택, 장비 강화 재료 추가"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "모바일 액션 전투",
+            "gameplayEffect": "실시간 회피, 평타 연계, 조작"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "집안 재료 관리",
+            "gameplayEffect": "재료 확장, 보조 저장, 전투 빌드 구축"
+          }
+        ],
+        "cGenreInterlock": "모바일 액션 전투 -> 집안 재료 관리: 상호 작용과 보조 장르 제거 시 전투 빌드 최종화",
+        "cWorldAndGameplayEffect": "모바일 액션 전투의 실시간 상태 변화와 집안 재료 관리의 재료 확장이 전투 빌드 최终화에 연결됨",
+        "delveDiscoveries": [
+          {
+            "clue": "위기 상황에서의 선택",
+            "discovery": "회피 시스템 변경 또는 재료 확장",
+            "newChoice": "전투 빌드 최종화 선택 및 보스전 도전"
+          },
+          {
+            "clue": "자원 채취 과정의 리스크",
+            "discovery": "사전 계획된 전투 빌드 생성",
+            "newChoice": "보스전 도전 및 고도화된 전투 빌드 생성"
+          },
+          {
+            "clue": "실시간 회피의 정확성",
+            "discovery": "전투 스펙 향상 기준 설정",
+            "newChoice": "고도화된 전투 빌드 구축 및 게임 종료"
+          },
+          {
+            "clue": "재료 확장의 우선순위",
+            "discovery": "전투 빌드 최종화 방식 결정",
+            "newChoice": "보스전 도전 및 전투 빌드 최종화"
+          }
+        ],
+        "delveGrowthRule": "발견 -> 숙련 -> 재방문: 각 단계별로 새로운 선택과 상태 변화가 일어나며, 이는 전투 빌드 최终화에 연결됨",
+        "finalGameIdentity": "마을 던전 RPG - 위기 상황 해결 시스템"
+      },
+      "playerFantasy": "플레이어는 위기 상황에서 마을의 의뢰를 해결하기 위해 5개의 던전을 진입하여 직관적인 원서클 모바일 액션 전투를 수행해야 한다. 수집품은 마을 복구 시설에 환원되어 전투 빌드를 고유하게 완성하며, 이 과정에서는 실시간 회피 및 평타 연계 기술이 중요하다.",
+      "coreFun": "직관적 회피로 인해 몬스터를 격퇴하는 순간의 즉각적인 손맛과, 한정된 던전 배낭 슬롯에 귀환용 고가치 자원과 장비 강화 재료를 취사선택하여 보관하는 선택은 전투 빌드 최종화의 핵심이다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 300082,
-      "lastMs": 300082,
+      "totalMs": 541835,
+      "lastMs": 75487,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T05:25:35.254Z"
+      "updatedAt": "2026-10-10T05:29:37.010Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T05:20:35.149Z",
-  "updatedAt": "2026-10-10T05:25:35.254Z",
+  "updatedAt": "2026-10-10T05:29:37.012Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1702,5 +1881,9 @@
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "6ad9b2f1db65a21ec1efc44a5fb583e3181c351c3ea30c442c3d0009050ea52b": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T05:29:37.012Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
