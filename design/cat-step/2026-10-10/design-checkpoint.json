@@ -9,12 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "tasks": {
+    "local_authoring_parts::8bd29d12365b474d313f8a312def98b718b5aed9ecd2eb518ab165c340d28650:identity": {
+      "identity": "캣 스텝 - 게임 정체성: 빈도, 선택, 세계, 보상, 위험, 숙련, 진보, 재생, 복구, 회복, 저장, 시스템 연결, 플레이어 역할, 인물 갈등, 단서, 실험, 새로운 선택, 상태 변화, 실제 결과, 기반 규칙, 원본 규칙, 예측, 이전 선택, 다음 선택, 인과적 경로, 창작 소재, 주제, 장르, 메타 목표, 심리적 영향, 전략, 경로, 대응, 발전, 확장, 다중 선택, 측면, 구조, 키, 상태 입력/출력, 인증, 검증, 설계 깊이, 학문, 관계, 응용, 규칙, 상황, 조합, 해법, 숙련, 발견, 실현, 반복, 변환, 최소화, 최대화, 무한, 유한, 일관성, 비가역성, 가역성, 동기부여, 성공, 실패, 재시도, 복구, 저장, 회복, 리셋, 정체성, 루프, 보상, 위험, 선택, 실행, 진보, 출발, 결말, 시작, 중간, 마지막, 순차적, 타임라인, 시스템, 플레이어, 세계, 게임, 규칙, 상태, 변화, 결과, 기능, 데이터, 애니메이션, 스토리, 인물, 갈등, 선택, 단서, 실험, 새로운 선택, 상태 변화, 실제 결과, 인과적 경로, 창작 소재, 주제, 장르, 메타 목표, 심리적 영향, 전략, 경로, 대응, 발전, 확장, 다중 선택, 측면, 구조, 키, 상태 입력/출력, 인증, 검증, 설계 깊이, 학문, 관계, 응용, 규칙, 상황, 조합, 해법, 숙련, 발견, 실현, 반복, 변환, 최소화, 최대화, 무한, 유한, 일관성, 비가역성, 가역성, 동기부여, 성공, 실패, 재시도, 복구, 저장, 회복, 리셋, 정체성, 루프, 보상, 위험, 선택, 실행, 진보, 출발, 결말, 시작, 중간, 마지막, 순차적, 타임라인, 시스템, 플레이어, 세계, 게임, 규칙, 상태, 변화, 결과, 기능, 데이터, 애니메이션, 스토리, 인물, 갈등, 선택, 단서, 실험, 새로운 선택, 상태 변화, 실제 결과, 인과적 경로, 창작 소재, 주제, 장르, 메타 목표, 심리적 영향, 전략, 경로, 대응, 발전, 확장, 다중 선택, 측면, 구조, 키, 상태 입력/출력, 인증, 검증, 설계 깊이,학"
+    }
+  },
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 3,
+      "successes": 1,
+      "failures": 2,
+      "timeouts": 2,
+      "jsonFailures": 0,
+      "totalMs": 796813,
+      "lastMs": 196611,
+      "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
+      "updatedAt": "2026-10-10T10:56:04.972Z"
+    }
+  },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:42:48.135Z",
-  "updatedAt": "2026-10-10T10:42:48.151Z",
+  "updatedAt": "2026-10-10T10:56:04.972Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1611,5 +1627,17 @@
         "productionVerified": false
       }
     }
-  }
+  },
+  "sliceDependencies": {},
+  "sliceRepairFeedback": {},
+  "sliceRepairAttempts": {},
+  "slicePartialResults": {},
+  "localAuthoringSplits": {
+    "f6c9c38435b2ffc3036e7336aa8253c01ed7863624e18ec211d44a42c6b392b7": true,
+    "8bd29d12365b474d313f8a312def98b718b5aed9ecd2eb518ab165c340d28650": true
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T10:56:04.972Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
