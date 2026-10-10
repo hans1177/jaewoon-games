@@ -1534,3 +1534,15 @@ test('current reset priority correctly binds timestamps in both canonical checkp
     assert.match(source,/const resetDate=resetAt\?/);
   }
 });
+
+test('authored MAIN A B C delve grammar is carried into downstream checkpoint anchors and coding basis',()=>{
+  const writer=design.slice(design.indexOf('async function authorDesignInCheckpointedSlices('),design.indexOf('function mergeDesignerDesign('));
+  assert.ok(writer.length>1000,'canonical design authoring function must exist');
+  assert.match(writer,/const priorRules=Object\.fromEntries\(\['identity','creativeGrammar','coreFun'/);
+  assert.match(writer,/const dependencyHash=createHash\('sha256'\)\.update\(JSON\.stringify\(priorRules\)\)/);
+  for(const marker of ['mainIdentity:value.mainIdentity','abEvolution:value.abEvolution','cThemes:value.cThemes','cGenres:value.cGenres','cGenreInterlock:value.cGenreInterlock','delveGrowthRule:value.delveGrowthRule']){
+    assert.ok(writer.includes(marker),'missing authored grammar handoff: '+marker);
+  }
+  assert.ok(writer.includes('SHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}'));
+  assert.match(design,/identity:content\.identity,creativeGrammar:content\.creativeGrammar,coreFun:content\.coreFun/);
+});
