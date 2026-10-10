@@ -89,6 +89,27 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   assert.match(card,/data-direct-play=""/);
 });
 
+test('card gallery uses the exact shared Roblox thumbnail and verified video frames',()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(source+';({mergeGame,buildCard,setExposure(value){platformExposure=value}})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl
+  });
+  api.setExposure({unityWebEnabled:false,games:[]});
+  const row={id:'picture-demo',name:'게임 화면',productionClass:'DEVELOPMENT_CONFIRMED',
+    canonical:{identity:{gameId:'picture-demo',name:'게임 화면'},marketing:{
+      thumbnail:'assets/roblox-thumbnails/picture-demo.svg',
+      homepageMedia:{small:{src:'assets/homepage-covers/picture-demo-480.webp',sha256:'a'.repeat(64)},
+        screenshots:[{src:'assets/homepage-media/picture-demo-1.jpg',sha256:'b'.repeat(64),platform:'UNITY_WEB'}]}}}};
+  const result=api.mergeGame(row);
+  assert.equal(result.image,'assets/roblox-thumbnails/picture-demo.svg');
+  const html=api.buildCard(row);
+  assert.match(html,/data-gallery-game="picture-demo"/);
+  assert.match(html,/data-gallery-step="1"/);
+  assert.match(html,/picture-demo-1\.jpg/);
+  assert.match(source,/touch-action:pan-x/);
+  assert.match(source,/scroll-snap-type:x mandatory/);
+});
+
 test('runnable native tests remain accessible before release and survive web-only withdrawal',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,queue:{items:[{

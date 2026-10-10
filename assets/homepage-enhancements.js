@@ -281,7 +281,11 @@ function mergeGame(row){
   const identity=identityOf(row),web=sourcesOf(row).web||{};
   const media=marketingOf(row).homepageMedia;
   const webPath=row?.unityWebAvailable===true?String(row.unityWebTestUrl||''):'';
-  return {...row,id:gameIdOf(row),homepageMedia:media,name:media?.titleEn||identity.name||row?.name||gameIdOf(row),subtitle:media?.titleKo||'',webPath,image:mediaImageHref(media?.cover)||marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  const canonicalThumbnail=marketingOf(row).thumbnail||identity.image;
+  // 본서버 썸네일과 홈페이지 대표 이미지의 원본은 1920x1080 동일 파일을 사용한다.
+  const sharedRobloxThumbnail=/^assets\/roblox-thumbnails\/[a-z0-9-]+\.(svg|png|jpe?g)$/i.test(canonicalThumbnail||'');
+  const image=sharedRobloxThumbnail?canonicalThumbnail:(mediaImageHref(media?.cover)||canonicalThumbnail||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png');
+  return {...row,id:gameIdOf(row),homepageMedia:media,name:media?.titleEn||identity.name||row?.name||gameIdOf(row),subtitle:media?.titleKo||'',webPath,image,sharedRobloxThumbnail,description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
@@ -356,6 +360,7 @@ function installStyles(){
 .foldGameCompletion summary{cursor:pointer;min-height:36px;display:flex;align-items:center}
 .foldGameCompletion a{display:inline-flex;min-height:36px;align-items:center;color:#1264c4}
 .foldGameCompletion ol{margin:4px 0;padding-left:20px}
+.homeGameGallery{height:100%;width:100%;position:relative}.homeGalleryTrack{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain;height:100%}.homeGalleryTrack::-webkit-scrollbar{display:none}.homeGallerySlide{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:16/9;margin:0;position:relative}.homeGallerySlide img{display:block;width:100%;height:100%;object-fit:cover}.homeGallerySlide figcaption{position:absolute;bottom:0;left:0;right:0;padding:18px 12px 9px;background:linear-gradient(transparent,rgba(0,0,0,.68));color:#fff;font-size:11px;pointer-events:none}.homeGalleryControls{position:absolute;right:9px;bottom:10px;z-index:2;display:flex;align-items:center;gap:5px;padding:2px 6px;background:rgba(0,0,0,.72);border-radius:24px;color:#fff;font-size:11px}.homeGalleryControls button{border:0;background:transparent;color:#fff;min-width:32px;min-height:32px;font-size:18px;cursor:pointer}.homeGalleryControls button:focus-visible{outline:2px solid #fff;outline-offset:2px}.homeGalleryControls span{min-width:30px;text-align:center;font-variant-numeric:tabular-nums}
 @media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
 @media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
 `;
@@ -406,7 +411,16 @@ function buildCard(row){
   const media=game.homepageMedia;
   const video=hasInternalRelease(game)&&media?.video?.runtimeVerification?.pass===true&&/^assets\/homepage-media\/[a-z0-9-]+\.mp4$/.test(media.video.src||'')?media.video:null;
   const videoMarkup=video?`<details class="homeGameplayVideo"><summary>실제 플레이 · ${esc(video.platform==='WEB'?'웹':video.platform==='UNITY_WEB'?'Unity Web':'Unity 앱')}</summary><video controls playsinline preload="none" data-src="/${esc(video.src)}?v=${esc(video.sha256.slice(0,12))}" poster="${esc(mediaImageHref(media.small))}" aria-label="${esc(game.subtitle||game.name)} 실제 플레이"></video></details>`:'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(mediaImageHref(media?.small)||game.image)}" alt="${esc(game.name+(game.subtitle?' · '+game.subtitle:''))}" width="480" height="270" loading="lazy" decoding="async"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
+  // 대표 썸네일과 실제 플레이 동영상에서 검증된 장면을 슬라이드로 묶는다.
+  const shots=Array.isArray(media?.screenshots)?media.screenshots:[];
+  const firstCaption=game.sharedRobloxThumbnail?'로블록스 동일 썸네일':'게임 대표 이미지';
+  const slides=[
+    `<figure class="homeGallerySlide"><img src="${esc(game.image)}" alt="${esc(game.name)} · ${esc(firstCaption)}" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>${esc(firstCaption)}</figcaption></figure>`,
+    ...shots.map((shot,index)=>`<figure class="homeGallerySlide"><img src="/${esc(shot.src)}?v=${esc(shot.sha256.slice(0,12))}" alt="${esc(game.name)} · 실제 플레이 화면 ${index+1}" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>${shot.platform==='UNITY_WEB'?'Unity Web 실제 플레이':'웹게임 실제 플레이'} · ${index+1}</figcaption></figure>`)
+  ];
+  const controls=shots.length?`<div class="homeGalleryControls"><button type="button" data-gallery-step="-1" aria-label="이전 게임 사진">‹</button><span data-gallery-count>1/${slides.length}</span><button type="button" data-gallery-step="1" aria-label="다음 게임 사진">›</button></div>`:'';
+  const gallery=`<div class="homeGameGallery" data-gallery-game="${esc(game.id)}"><div class="homeGalleryTrack" role="region" tabindex="0" aria-label="${esc(game.name)} 게임 사진 슬라이드">${slides.join('')}</div>${controls}</div>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt">${gallery}</div><div class="foldGameBody"><h3>${esc(game.name)}</h3>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
@@ -473,8 +487,29 @@ function bindDirectGameLaunch(){
     if(details.open&&!video.src){video.src=video.dataset.src;video.load();}
     if(!details.open){video.pause();refresh();}
   },true);
+  document.addEventListener('scroll',event=>{
+    const track=event.target?.closest?.('.homeGalleryTrack');
+    if(!track)return;
+    const total=track.querySelectorAll('.homeGallerySlide').length;
+    const index=Math.max(0,Math.min(total-1,Math.round(track.scrollLeft/Math.max(1,track.clientWidth))));
+    const counter=track.parentElement?.querySelector('[data-gallery-count]');
+    if(counter)counter.textContent=(index+1)+'/'+total;
+  },true);
   document.addEventListener('click',event=>{
-    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary,video');
+    const control=event.target.closest('button[data-gallery-step]');
+    if(control){
+      const gallery=control.closest('.homeGameGallery'),track=gallery?.querySelector('.homeGalleryTrack');
+      if(track){
+        const width=Math.max(1,track.clientWidth),total=track.querySelectorAll('.homeGallerySlide').length;
+        const index=Math.round(track.scrollLeft/width);
+        const target=Math.max(0,Math.min(total-1,index+Number(control.dataset.galleryStep||0)));
+        track.scrollTo({left:target*width,behavior:'smooth'});
+        const count=gallery.querySelector('[data-gallery-count]');
+        if(count)count.textContent=(target+1)+'/'+total;
+      }
+      return;
+    }
+    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary,video,.homeGalleryTrack');
     if(interactive)return;
     const card=event.target.closest('.foldGameCard,.gameCard');
     if(!card)return;
