@@ -431,7 +431,15 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
       });
     }
   });
-  const result=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  const grammarContext={
+    mainIdentity:'원본 자원 생존',
+    a:{system:'자원 채집',material:'숲 속 자원의 계절성',materialDomain:'생태',stateChange:'선택한 채집 동선이 위험과 수급을 바꾼다'},
+    b:{system:'거점 구축',material:'버려진 도구 공예',materialDomain:'생활사',stateChange:'거점 배치로 주변 위험과 자원 동선을 바꾼다'},
+    abCausality:'채집 위치가 건축 선택을 바꾸고, 거점 배치가 다시 채집 지도를 바꾼다',
+    cGenreInterlock:'생존을 위해 곤충의 흔적을 조사하면 안전한 경로가 열리는 탐사와 추적의 결합',
+    delveDiscoveries:[{clue:'흔적',discovery:'은신처',newChoice:'이동'},{clue:'발자국',discovery:'이동',newChoice:'추적'}]
+  };
+  const result=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false,grammarContext});
   const rows=JSON.parse(JSON.stringify(result.signatureSystems));
   assert.deepEqual(rows.map(row=>row.grammarRole),roles);
   assert.equal(new Set(rows.map(row=>row.id)).size,5,'rules must not share the same game identity as their ID');
@@ -441,10 +449,13 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
   assert.equal(Object.keys(checkpoint.tasks).length,5,'successful siblings are persisted for resume');
   assert.ok(calls[2].prompt.includes('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED'));
   assert.ok(calls[6].prompt.includes('DESIGN_STATE_KEY_IS_INSTRUCTION'));
+  assert.ok(calls.find(row=>row.role==='A').prompt.includes('숲 속 자원의 계절성'));
+  assert.ok(calls.find(row=>row.role==='B').prompt.includes('버려진 도구 공예'));
+  assert.ok(calls.find(row=>row.role==='DELVE').prompt.includes('흔적'));
   assert.ok(calls.every(row=>!row.prompt.includes('INPUT: 직접 채집 → STATE: 나무·식량 수집 상태')),'do not feed a cloned prose state trace as a rule key');
   assert.ok(logs.some(line=>line.includes('DESIGN_GRAMMAR_ROLE_REPAIR=A|')));
   const before=calls.length;
-  await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false,grammarContext});
   assert.equal(calls.length,before,'previously validated MAIN/A/B/c/@ rule checkpoints are reused');
   // 검증 전 남아 있던 오래된 잘못된 역할 캐시를 발견하면 그 역할만 다시 요청한다.
   const savedRoles=Object.values(checkpoint.tasks);
@@ -452,7 +463,7 @@ test('cloned MAIN A B c DELVE rules retry repeated invalid IDs and retain verifi
   savedRoles.find(row=>row.grammarRole==='B').id='RULE_MAIN';
   savedRoles.find(row=>row.grammarRole==='c').stateInputs=['INPUT: 채집 → STATE: 나무 증가'];
   const previousCalls=calls.length;
-  const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false});
+  const repaired=await author('designer','원본 게임의 자원·저장·멀티 규칙 보존',schema,{predict:1600,includeAssetContext:false,grammarContext});
   assert.deepEqual(calls.slice(previousCalls).map(row=>row.role),['A','c'],'malformed cached reference IDs are normalized while invalid content remains repairable');
   assert.equal(new Set(repaired.signatureSystems.map(row=>row.id)).size,5);
   assert.deepEqual(JSON.parse(JSON.stringify(repaired.signatureSystems.find(row=>row.grammarRole==='c').stateInputs)),['WoodCount']);
