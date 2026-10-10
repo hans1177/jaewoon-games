@@ -187,25 +187,32 @@
       },
       "playerFantasy": "The player is not just a passive observer but an active agent in a world filled with puzzles, obstacles, and evolving challenges. Every choice they make shapes the future of the game, influencing how the world changes and what new paths open up for them.",
       "coreFun": "Player agency drives the evolution of the world, leading to new choices and outcomes. The game begins with a clear goal on a board filled with puzzles and obstacles, and as the player progresses, the complexity of the world increases, requiring strategic thinking and adaptability."
+    },
+    "local_authoring_parts::e4d45cdd5d914999fffa85a0c498a0dacf78f648bdccdd19fc2731596f02df82:coreLoop": {
+      "coreLoop": [
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 509364,
-      "lastMs": 56459,
+      "totalMs": 565533,
+      "lastMs": 56169,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:14:47.827Z"
+      "updatedAt": "2026-10-10T10:15:43.999Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:06:18.439Z",
-  "updatedAt": "2026-10-10T10:14:47.829Z",
+  "updatedAt": "2026-10-10T10:15:44.009Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1810,8 +1817,8 @@
   "localAuthoringSplits": {
     "f0031cda569f7d76566edf87f7907ac93c66d91e737e839922fdadf848a79344": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:14:47.829Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:15:43.999Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
