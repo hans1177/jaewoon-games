@@ -187,25 +187,32 @@
       },
       "playerFantasy": "플레이어는 실시간 전투에서 점차 증가하는 허브에 빠져들며, 환경의 반응과 선택의 결과로 새로운 플레이 스타일을 탐색해야 한다.",
       "coreFun": "{\"Player Input → Environmental Response → New Play Option\", \"Build Progression, Tactical Adaptation\"}"
+    },
+    "local_authoring_parts::93d7cdd4b091c5eb486862f109f2fd6d1058e40806db3a4f9c60019f23754150:coreLoop": {
+      "coreLoop": [
+        "Player Input → Environmental Response → New Play Option",
+        "Build Progression, Tactical Adaptation",
+        "System Integration → High-Stakes Choice → Distinct Terminal Outcome"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 536636,
-      "lastMs": 58177,
+      "totalMs": 595565,
+      "lastMs": 58929,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:59:32.643Z"
+      "updatedAt": "2026-10-10T10:00:31.576Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:50:35.982Z",
-  "updatedAt": "2026-10-10T09:59:32.645Z",
+  "updatedAt": "2026-10-10T10:00:31.585Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1933,8 +1940,8 @@
   "localAuthoringSplits": {
     "11c14d5db7b97b1cb8c6ac51045c688dbfb274f5dae0cf3c9f3b86cbdca937a0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:59:32.645Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:00:31.576Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
