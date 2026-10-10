@@ -404,25 +404,42 @@
       "name": "adaptive defense",
       "purpose": "represent the core gameplay mechanic of adaptive defense in a single-strategy game",
       "playerChoice": "resource allocation decision based on enemy type and wave composition"
+    },
+    "local_authoring_parts::4aeabe3c9d7a4cb21976d9c972432b5ef6ce6393c1712d3d41a8af2947f0aa09:signatureSystems:2": {
+      "id": "signatureSystems[2]",
+      "grammarRole": "B",
+      "stateInputs": [
+        "threatened route",
+        "enemy type",
+        "wave composition"
+      ],
+      "stateOutputs": [
+        "defensive adaptation",
+        "resource allocation",
+        "economic constraint"
+      ],
+      "name": "adaptive defense",
+      "purpose": "gameplay effect that dynamically adjusts defensive strategy based on enemy types, wave compositions, and battlefield constraints",
+      "playerChoice": "resource allocation decision based on current situation and long-term resource management strategies"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 9,
-      "successes": 9,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1081989,
-      "lastMs": 25167,
+      "totalMs": 1110589,
+      "lastMs": 28600,
       "lastError": null,
-      "updatedAt": "2026-10-10T03:01:47.105Z"
+      "updatedAt": "2026-10-10T03:02:15.706Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:43:45.072Z",
-  "updatedAt": "2026-10-10T03:01:47.105Z",
+  "updatedAt": "2026-10-10T03:02:15.707Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2258,7 +2275,7 @@
       "multiplayerMode": "HYBRID"
     }
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:01:47.105Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:02:15.706Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
