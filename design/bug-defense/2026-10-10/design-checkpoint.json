@@ -95,25 +95,117 @@
         "delveGrowthRule": "wave intensity variation → adaptive defensive strategy development → dynamic strategic positioning → environmental interaction modification",
         "finalGameIdentity": "wave defense readability, meaningful placement choices, enemy-type counterplay"
       }
+    },
+    "local_authoring_parts::c0e0cdfd426b704ec88818203285d976fb1c4b8d134b9b490fe6bfab7890f597:playerFantasy,coreFun": {
+      "playerFantasy": "플레이어는 웨이브의 위협을 읽고 숙련하며, 방어 전략을 선택해 새로운 환경과 적의 관계를 재구성하는 과정에서 진보하게 된다.",
+      "coreFun": "{\"identity\": \"wave defense readability, meaningful placement choices, enemy-type counterplay\", \"a\": {\"system\": \"strategy\", \"material\": \"enemy type counterplay\", \"stateChange\": \"defender position adjustment\"}, \"b\": {\"system\": \"adventure\", \"material\": \"environmental interaction\", \"stateChange\": \"resource allocation and risk assessment\"}, \"abCausality\": \"defender position → resource allocation → environmental interaction → enemy-type counterplay\", \"abEvolution\": {\"aChangesB\": \"increased defensive priority in high-risk zones\", \"bChangesA\": \"reduced resource usage in low-threat environments\", \"lateGameChange\": \"dynamic environment adaptation based on player behavior\"}, \"materialFusion\": {\"contrast\": \"enemy-type vs. environmental interaction\", \"causalBridge\": \"defensive strategy evolution through adaptive positioning\", \"removalConsequence\": \"loss of traditional combat mechanics\"}, \"storyCausal"
+    },
+    "local_authoring_parts::d22816120e24a27964a94083dae69b9403d3455565db81d74a169d8e0d9dd2b8:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "곤충 디펜스 - 진보형 웨이브 전략 게임",
+      "creativeGrammar": {
+        "mainIdentity": "wave defense readability, meaningful placement choices, enemy-type counterplay",
+        "a": {
+          "system": "strategy",
+          "material": "enemy type counterplay",
+          "materialDomain": "warfare",
+          "stateChange": "defender position adjustment"
+        },
+        "b": {
+          "system": "adventure",
+          "material": "environmental interaction",
+          "materialDomain": "world exploration",
+          "stateChange": "resource allocation and risk assessment"
+        },
+        "abCausality": "defender position → resource allocation → environmental interaction → enemy-type counterplay",
+        "abEvolution": {
+          "aChangesB": "increased defensive priority in high-risk zones",
+          "bChangesA": "reduced resource usage in low-threat environments",
+          "lateGameChange": "dynamic environment adaptation based on player behavior"
+        },
+        "materialFusion": {
+          "contrast": "enemy-type vs. environmental interaction",
+          "causalBridge": "defensive strategy evolution through adaptive positioning",
+          "removalConsequence": "loss of traditional combat mechanics"
+        },
+        "storyCausalChain": {
+          "cause": "incoming wave pattern analysis",
+          "characterConflict": "defender's strategic decision-making process",
+          "playerChoice": "adaptive defense deployment",
+          "worldChange": "environmental interaction modification based on player behavior",
+          "nextEvent": "wave intensity variation and new threat patterns"
+        },
+        "cThemes": [
+          {
+            "name": "warfare",
+            "kind": "GENRE",
+            "gameplayEffect": "adaptive positioning"
+          },
+          {
+            "name": "exploration",
+            "kind": "GENRE",
+            "gameplayEffect": "resource allocation"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "strategy",
+            "gameplayEffect": "adaptive positioning"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "adventure",
+            "gameplayEffect": "resource allocation"
+          }
+        ],
+        "cGenreInterlock": "strategic positioning → resource allocation → environmental interaction → enemy-type counterplay",
+        "cWorldAndGameplayEffect": "dynamic environment adaptation based on player behavior",
+        "delveDiscoveries": [
+          {
+            "clue": "wave intensity variations",
+            "discovery": "adaptive defensive strategy development",
+            "newChoice": "new threat pattern recognition"
+          },
+          {
+            "clue": "enemy type diversity",
+            "discovery": "multi-dimensional combat mechanics",
+            "newChoice": "environmental interaction modification"
+          },
+          {
+            "clue": "player behavior influence",
+            "discovery": "real-time adaptive defense deployment",
+            "newChoice": "wave intensity variation and new threat patterns"
+          },
+          {
+            "clue": "defender position adjustment",
+            "discovery": "dynamic strategic positioning",
+            "newChoice": "environmental interaction modification"
+          }
+        ],
+        "delveGrowthRule": "wave intensity variation → adaptive defensive strategy development → dynamic strategic positioning → environmental interaction modification",
+        "finalGameIdentity": "wave defense readability, meaningful placement choices, enemy-type counterplay"
+      },
+      "playerFantasy": "플레이어는 웨이브의 위협을 읽고 숙련하며, 방어 전략을 선택해 새로운 환경과 적의 관계를 재구성하는 과정에서 진보하게 된다.",
+      "coreFun": "{\"identity\": \"wave defense readability, meaningful placement choices, enemy-type counterplay\", \"a\": {\"system\": \"strategy\", \"material\": \"enemy type counterplay\", \"stateChange\": \"defender position adjustment\"}, \"b\": {\"system\": \"adventure\", \"material\": \"environmental interaction\", \"stateChange\": \"resource allocation and risk assessment\"}, \"abCausality\": \"defender position → resource allocation → environmental interaction → enemy-type counterplay\", \"abEvolution\": {\"aChangesB\": \"increased defensive priority in high-risk zones\", \"bChangesA\": \"reduced resource usage in low-threat environments\", \"lateGameChange\": \"dynamic environment adaptation based on player behavior\"}, \"materialFusion\": {\"contrast\": \"enemy-type vs. environmental interaction\", \"causalBridge\": \"defensive strategy evolution through adaptive positioning\", \"removalConsequence\": \"loss of traditional combat mechanics\"}, \"storyCausal"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 404410,
-      "lastMs": 104308,
+      "totalMs": 467703,
+      "lastMs": 63293,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T04:50:02.608Z"
+      "updatedAt": "2026-10-10T04:51:05.902Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:43:17.949Z",
-  "updatedAt": "2026-10-10T04:50:02.608Z",
+  "updatedAt": "2026-10-10T04:51:05.903Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1795,7 +1887,7 @@
   "localAuthoringSplits": {
     "c0e0cdfd426b704ec88818203285d976fb1c4b8d134b9b490fe6bfab7890f597": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T04:50:02.608Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:51:05.903Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
