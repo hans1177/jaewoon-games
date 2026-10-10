@@ -167,8 +167,6 @@ async function bindAvailableUnityWebSurfaces(catalog){
     const id=gameIdOf(game);
     const unity=sourcesOf(game).unity||{};
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
-    // 배포된 게임은 Unity Web 빌드가 나중에 추가되어도 등록된 게임 ID로 찾는다.
-    // QA와 3D 검증은 아래의 실제 링크 활성화 조건에 그대로 적용한다.
     return /^[a-z0-9][a-z0-9-]*$/.test(id)
       &&(projectPath===`unity-games/${id}`||(activeLifecycle(game)&&canonicalWebHref(game)===`/web-games/${id}/`));
   }):[];
@@ -181,74 +179,83 @@ async function bindAvailableUnityWebSurfaces(catalog){
           probeFetch(`${href}index.html?ts=${stamp}`),
           probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`)
         ]);
-        if(!indexResponse.ok||!manifestResponse.ok)continue;
-        const [html,manifest]=await Promise.all([indexResponse.text(),manifestResponse.json()]);
+        if(!indexResponse.ok)continue;
+        const html=await indexResponse.text();
         if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
-        const hex64=/^[a-f0-9]{64}$/,hex40=/^[a-f0-9]{40}$/;
-        if(manifest?.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true||
-           manifest.requiredDimension!=='3D'||
-           manifest.canonicalSourceRoot!==`unity-games/${id}`||
-           !hex64.test(String(manifest.unitySourceTreeSha256||''))||
-           !hex64.test(String(manifest.buildTreeSha256||''))||
-           !hex40.test(String(manifest.sourceCommit||'')))continue;
-        if(manifest.homepageVerified!==true&&manifest.homepageDevelopmentTest!==true)continue;
-        const groups=manifest.requiredGroups||{};
-        if(!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
-        const refs=['loader','data','framework','wasm'].flatMap(key=>groups[key]);
-        if(!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
-        const files=['unity-web-build.json','upper-platform-development-readiness.json',
-          'unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'];
-        const responses=await Promise.all(files.map(file=>probeFetch(`${href}${file}?ts=${stamp}`).catch(()=>null)));
-        if(!responses.every(response=>response?.ok===true))continue;
-        const [build,readiness,...qa]=await Promise.all(responses.map(response=>response.json()));
-        const actual3d=e=>e?.spatialGameplay?.pass===true
-          &&e.spatialGameplay.requiredDimension==='3D'
-          &&e.spatialGameplay.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
-          &&e.spatialGameplay.perspectiveCamera===true&&e.spatialGameplay.depthPass===true
-          &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
-          &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
-          &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
-          &&e.visualQa?.nativeUnityMesh?.pass===true
-          &&e.visualQa.nativeUnityMesh.measurementState==='UNITY_RUNTIME_MESH_INSPECTION';
-        const qaPassed=e=>e?.engine==='UNITY_WEB'&&e.gameId===id&&e.pass===true
-          &&e.playableBrowserTest===true&&e.boot?.pass===true&&e.input?.pass===true
-          &&e.gameplay?.pass===true&&e.coreFun?.pass===true&&e.saveRestore?.pass===true
-          &&e.mobile?.pass===true&&e.mobile?.actualBrowserTouchDispatched===true
-          &&e.mobile?.realGameTouchHandlerObserved===true
-          &&e.performance?.pass===true&&e.noCriticalRuntimeError===true&&actual3d(e);
-        // 기존 Unity 원본과 웹 산출물의 동일성이 확인되지 않으면 노출하지 않는다.
-        if(build?.gameId!==id||build.canonicalSourceRoot!==`unity-games/${id}`
-           ||build.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
-           ||build.buildTreeSha256!==manifest.buildTreeSha256||build.sourceCommit!==manifest.sourceCommit
-           ||build.bootSmoke!=='PASS')continue;
-        // 정식 품질 합격과 실행 가능한 개발 버전을 분리해서 표시한다.
-        const verifiedFailed=manifest.homepageVerified!==true
-           ||build.actualBrowserPlay!=='PASS'||build.independentQa!=='PASS'
-           ||build.regression!=='PASS'||build.upperPlatformGateCandidate!==true
-           ||readiness?.gameId!==id||readiness.pass!==true||readiness.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'
-           ||readiness.sourceCommit!==manifest.sourceCommit
-           ||readiness.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
-           ||readiness.buildTreeSha256!==manifest.buildTreeSha256
-           ||readiness.criteria?.graphics?.native3dVerified!==true
-           ||readiness.criteria?.qa?.pass!==true||readiness.criteria?.qa?.multiplayerPass!==true
-           ||!qa.every(qaPassed);
-        const verified=!verifiedFailed;
-        const playableTest=manifest.homepageDevelopmentTest===true
-          &&['PASS','PLAYABLE_TEST_ONLY'].includes(build.actualBrowserPlay)
-          &&qa.every(e=>e?.engine==='UNITY_WEB'&&e.gameId===id
-            &&e.playableBrowserTest===true&&e.boot?.pass===true
-            &&e.input?.pass===true&&e.gameplay?.pass===true&&e.coreFun?.pass===true
-            &&e.saveRestore?.pass===true&&e.mobile?.pass===true
-            &&e.mobile?.actualBrowserTouchDispatched===true
-            &&e.mobile?.realGameTouchHandlerObserved===true
-            &&e.visualQa?.renderedScene?.pass===true
-            &&e.noCriticalRuntimeError===true);
-        if(!verified&&!playableTest)continue;
+        const manifest=manifestResponse.ok?await manifestResponse.json().catch(()=>null):null;
+        let refs=[];
+        if(manifest){
+          // Unity 원본과 실행 번들의 식별자는 정확해야 한다. QA 합격 여부는 링크 활성화와 분리한다.
+          const hex64=/^[a-f0-9]{64}$/,hex40=/^[a-f0-9]{40}$/;
+          if(manifest?.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true||
+             manifest.requiredDimension!=='3D'||
+             manifest.canonicalSourceRoot!==`unity-games/${id}`||
+             !hex64.test(String(manifest.unitySourceTreeSha256||''))||
+             !hex64.test(String(manifest.buildTreeSha256||''))||
+             !hex40.test(String(manifest.sourceCommit||'')))continue;
+          const groups=manifest.requiredGroups||{};
+          if(!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
+          refs=['loader','data','framework','wasm'].flatMap(key=>groups[key]);
+        }else{
+          // 이전 Unity WebGL 빌드: index의 실제 WebGL 로더 4종을 찾아 확인한다.
+          const patterns=[
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.loader\.js)["']/g,
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.data(?:\.gz|\.br)?)["']/g,
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.framework\.js(?:\.gz|\.br)?)["']/g,
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.wasm(?:\.gz|\.br)?)["']/g
+          ];
+          refs=patterns.map(pattern=>{
+            const match=pattern.exec(html);
+            return match?`Build/${match[1]}`:'';
+          });
+        }
+        if(refs.length<4||!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
         const probes=await Promise.all(refs.map(ref=>
           probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD'}).catch(()=>null)
         ));
-        const complete=probes.every(response=>response?.ok===true);
-        if(complete){available.set(id,{href,verified});break;}
+        if(!probes.every(response=>response?.ok===true))continue;
+        // 실행 파일이 실재하면 개발 테스트 링크를 표시한다. QA가 없거나 실패해도 PASS로 표시하지 않는다.
+        let verified=false;
+        if(manifest?.homepageVerified===true){
+          const files=['unity-web-build.json','upper-platform-development-readiness.json',
+            'unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'];
+          const responses=await Promise.all(files.map(file=>probeFetch(`${href}${file}?ts=${stamp}`).catch(()=>null)));
+          if(responses.every(response=>response?.ok===true)){
+            const [build,readiness,...qa]=await Promise.all(responses.map(response=>response.json()));
+            const actual3d=e=>e?.spatialGameplay?.pass===true
+              &&e.spatialGameplay.requiredDimension==='3D'
+              &&e.spatialGameplay.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
+              &&e.spatialGameplay.perspectiveCamera===true&&e.spatialGameplay.depthPass===true
+              &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+              &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+              &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
+              &&e.visualQa?.nativeUnityMesh?.pass===true
+              &&e.visualQa.nativeUnityMesh.measurementState==='UNITY_RUNTIME_MESH_INSPECTION';
+            const qaPassed=e=>e?.engine==='UNITY_WEB'&&e.gameId===id&&e.pass===true
+              &&e.playableBrowserTest===true&&e.boot?.pass===true&&e.input?.pass===true
+              &&e.gameplay?.pass===true&&e.coreFun?.pass===true&&e.saveRestore?.pass===true
+              &&e.mobile?.pass===true&&e.mobile?.actualBrowserTouchDispatched===true
+              &&e.mobile?.realGameTouchHandlerObserved===true&&e.performance?.pass===true
+              &&e.noCriticalRuntimeError===true&&actual3d(e);
+            const verifiedFailed=manifest.homepageVerified!==true
+              ||build?.gameId!==id||build.canonicalSourceRoot!==`unity-games/${id}`
+              ||build.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+              ||build.buildTreeSha256!==manifest.buildTreeSha256||build.sourceCommit!==manifest.sourceCommit
+              ||build.bootSmoke!=='PASS'||build.actualBrowserPlay!=='PASS'
+              ||build.independentQa!=='PASS'||build.regression!=='PASS'
+              ||build.upperPlatformGateCandidate!==true
+              ||readiness?.gameId!==id||readiness.pass!==true||readiness.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'
+              ||readiness.sourceCommit!==manifest.sourceCommit
+              ||readiness.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+              ||readiness.buildTreeSha256!==manifest.buildTreeSha256
+              ||readiness.criteria?.graphics?.native3dVerified!==true
+              ||readiness.criteria?.qa?.pass!==true||readiness.criteria?.qa?.multiplayerPass!==true
+              ||!qa.every(qaPassed);
+            verified=!verifiedFailed;
+          }
+        }
+        available.set(id,{href,verified});
+        break;
       }catch{}
     }
   }));

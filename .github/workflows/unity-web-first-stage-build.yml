@@ -863,7 +863,10 @@ jobs:
           test -n "$(git ls-files "$runtime_dir/Build/*.data*" | head -n1)"
           test -n "$(git ls-files "$runtime_dir/Build/*.framework.js*" | head -n1)"
           test -n "$(git ls-files "$runtime_dir/Build/*.wasm*" | head -n1)"
-          git diff --cached --check
+          # Unity가 자동 생성한 .meta YAML의 공백은 원본 그대로 유지하고, 코드 및 기타 파일의 검사도 유지한다.
+          # Unity 소스 파일을 빌드 후 임의 수정하면 검증한 소스 해시와 어긋나므로 변경하지 않는다.
+          printf 'unity-games/**/Assets/**/*.meta whitespace=-blank-at-eol\n' > /tmp/unity-web-meta-attributes
+          git -c core.attributesFile=/tmp/unity-web-meta-attributes diff --cached --check
           if git diff --cached --quiet; then
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
             if [ -n "$VIBE2_TASK_ID" ]; then
