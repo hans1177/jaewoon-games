@@ -69,6 +69,10 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     const verifiedLearning=JSON.parse(fs.readFileSync('unity-games/test-survival/Assets/verified-external-learning.json','utf8'));
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+    const unityModules=JSON.parse(fs.readFileSync('unity-games/test-survival/Packages/manifest.json','utf8')).dependencies;
+    assert.equal(unityModules['com.unity.modules.imgui'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.physics'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.animation'],'1.0.0');
     assert.equal(source.purpose,'UNITY_WEB_DEVELOPMENT_FLOOR');
     assert.equal(source.presentationState,'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP');
     assert.equal(source.upperPlatformReady,false);
