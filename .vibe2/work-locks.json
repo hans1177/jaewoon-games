@@ -3,48 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-lthbbu",
-      "worker": "vibe2",
-      "taskId": "human-go-studio-evolution-roblox-stability-v1",
-      "gameId": "human-go",
-      "files": [
-        "roblox-games/human-go/client/Game.client.luau",
-        "roblox-games/human-go/shared/GameConfig.luau",
-        "roblox-games/human-go/server/Game.server.luau"
-      ],
-      "baseSha": "b11c914c9d9655f1cc5ed510a4675f677865378d",
-      "runId": "38087188803",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-10T22:28:23.668Z",
-      "expiresAt": "2026-10-10T23:13:23.668Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:human-go-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
-      "id": "wl-1nxxyem",
-      "worker": "vibe2",
-      "taskId": "island-village-studio-evolution-roblox-stability-v1",
-      "gameId": "island-village",
-      "files": [
-        "roblox-games/island-village/client/Game.client.luau",
-        "roblox-games/island-village/shared/GameConfig.luau",
-        "roblox-games/island-village/server/Game.server.luau"
-      ],
-      "baseSha": "b11c914c9d9655f1cc5ed510a4675f677865378d",
-      "runId": "38087188803",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-10T22:28:33.595Z",
-      "expiresAt": "2026-10-10T23:13:33.595Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:island-village-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
       "id": "wl-1adcawx",
       "worker": "vibe2",
       "taskId": "zombie-survival-studio-evolution-roblox-usability-v1",
@@ -596,6 +554,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-wanyudo-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-m1kguu",
+      "worker": "vibe2",
+      "taskId": "internal-motion-bai-wuchang-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/bai-wuchang/init.luau"
+      ],
+      "baseSha": "398cd2031ba66c72765a80ed77115ea634147841",
+      "runId": "38090227358",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-10T23:13:42.032Z",
+      "expiresAt": "2026-10-10T23:58:42.032Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-bai-wuchang-walk-v1"
       ]
     }
   ]
