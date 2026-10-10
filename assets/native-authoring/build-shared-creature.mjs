@@ -112,27 +112,101 @@ export function buildSharedCreature(species='wolf'){
  }
  const clips=['IDLE_BREATH','WALK','RUN','TURN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',cfg.signature];
  function pose(clip,t){
-   const a=t*Math.PI*2,locomotion=clip==='WALK'||clip==='RUN',run=clip==='RUN',
-      strike=/ATTACK|RELEASE/.test(clip)||clip===cfg.signature,
-      before=pulse(t,.29,.20),contact=pulse(t,.62,.18);
-   const angles={};
-   angles[torso]=[.025*Math.sin(a)+(strike?-.17*before+.32*contact:0),clip==='TURN'?.29*Math.sin(a):0,.05*Math.cos(a)];
-   angles[head]=[.04*Math.sin(a)+(strike?-.29*before+.53*contact:0),.03*Math.cos(a),0];
-   angles[tail]=[.12*Math.sin(a+.7),.22*Math.sin(a+.4),0];
-   angles[jaw]=[strike?-.20*before+.49*contact:0,.08*Math.sin(a),0];
+   const a=t*Math.PI*2,locomotion=clip==='WALK'||clip==='RUN',fast=clip==='RUN';
+   const wind=pulse(t,.26,.18),contact=pulse(t,.57,.17),rebound=pulse(t,.78,.15);
+   const charge=pulse(t,.44,.32),impact=pulse(t,.69,.15),idle=Math.sin(a);
+   const angles={
+     [torso]:[.028*idle,clip==='TURN'?.33*idle:0,.03*Math.cos(a)],
+     [head]:[.036*idle,.025*Math.cos(a),0],
+     [tail]:[.09*Math.sin(a+.5),.19*Math.sin(a+.7),0],
+     [jaw]:[.023*idle,0,0]
+   };
+   // 종족별 공격: 이빨/뿔의 전방 찌르기와 측면 쓸기 동작이 분리된다.
+   if(clip==='ATTACK_A'){
+     angles[torso]=[-.28*wind+.34*contact,-.09*wind,.06*rebound];
+     angles[head]=[-.36*wind+.57*contact,0,-.05*contact];
+     angles[jaw]=[.30*wind-.64*contact,0,0];
+   }else if(clip==='ATTACK_B'){
+     angles[torso]=[.08*wind-.20*contact,-.37*wind+.53*contact,.18*wind-.21*contact];
+     angles[head]=[.18*wind-.32*contact,.29*wind-.44*contact,.13*wind];
+     angles[tail]=[-.14*wind+.29*contact,.54*wind-.71*contact,0];
+     angles[jaw]=[-.19*wind+.30*contact,0,.13*wind];
+   }else if(clip==='SKILL_PREPARE'){
+     angles[torso]=[-.34*charge,.12*charge,.10*charge];
+     angles[head]=[-.42*charge,.17*charge,0];
+     angles[jaw]=[-.30*charge,0,0];
+     angles[tail]=[.21*charge,-.22*charge,.07*charge];
+   }else if(clip==='SKILL_RELEASE'){
+     angles[torso]=[-.27*wind+.46*impact,.21*impact,.13*rebound];
+     angles[head]=[-.39*wind+.68*impact,-.24*impact,0];
+     angles[jaw]=[-.34*wind+.78*impact,0,0];
+     angles[tail]=[.17*wind-.43*impact,-.20*wind+.52*impact,0];
+   }else if(clip===cfg.signature){
+     angles[torso]=[-.38*wind+.49*contact,.17*wind-.19*contact,.12*contact];
+     angles[head]=[-.65*wind+.74*contact,.22*contact,.11*wind];
+     angles[jaw]=[-.50*wind+.83*contact,0,0];
+     angles[tail]=[.40*wind-.38*contact,.44*wind+.25*contact,0];
+   }
+   // 실제 다리·팔·척추 관절은 몸통과 서로 다른 시간차를 가진다.
    for(const l of legs){
-     const step=Math.sin(a+Math.PI*(l.p+(l.side<0?0:1))),gain=locomotion?(run?.66:.37):.045;
-     angles[l.hip]=[gain*step+(strike?.12*before:0),.07*step,l.side*.16*gain*step];
-     angles[l.knee]=[Math.max(0,-step)*gain*.72+(strike?.16*contact:0),0,0];
-     angles[l.foot]=[-Math.max(0,-step)*gain*.35,0,.05*step];
+     const phase=a+Math.PI*(l.p+(l.side<0?0:1));
+     const step=Math.sin(phase),k=locomotion?(fast?.67:.36):.032;
+     angles[l.hip]=[k*step,.09*step,l.side*.20*k*step];
+     angles[l.knee]=[Math.max(0,-step)*k*.73,0,0];
+     angles[l.foot]=[-Math.max(0,-step)*k*.38,.04*step,0];
+     if(clip==='ATTACK_A'){
+       const front=l.p===0?1:.35;
+       angles[l.hip][0]+=-.35*wind*front+.43*contact*front;
+       angles[l.knee][0]+=.31*contact*front;
+     }else if(clip==='ATTACK_B'){
+       angles[l.hip][1]+=l.side*(.29*wind-.44*contact);
+       angles[l.foot][2]+=l.side*.19*contact;
+     }else if(clip==='SKILL_PREPARE'){
+       angles[l.hip][0]+=.26*charge;
+       angles[l.knee][0]+=.29*charge;
+     }else if(clip==='SKILL_RELEASE'){
+       angles[l.hip][0]+=-.31*wind+.39*impact;
+       angles[l.knee][0]+=.37*impact;
+     }else if(clip===cfg.signature){
+       angles[l.hip][0]+=l.p%2===0?-.31*wind+.39*contact:.21*wind-.27*contact;
+       angles[l.knee][0]+=.33*contact;
+     }
    }
    for(let i=0;i<extras.length;i++){
-     const phase=a-i*.41;
-     angles[extras[i]]=[.13*Math.sin(phase)+(strike?.23*contact:0),.21*Math.sin(phase*.73),0];
+     const k=extras[i],phase=a-i*.39,delay=pulse(t,.58+i*.016,.19);
+     angles[k]=[.12*Math.sin(phase),.18*Math.sin(phase*.78),.05*Math.cos(phase)];
+     if(clip==='ATTACK_A')angles[k][0]+=-.34*wind+.44*contact;
+     else if(clip==='ATTACK_B')angles[k][1]+=.40*wind-.49*contact;
+     else if(clip==='SKILL_PREPARE')angles[k][0]+=-.31*charge;
+     else if(clip==='SKILL_RELEASE')angles[k][0]+=.52*delay;
+     else if(clip===cfg.signature){angles[k][0]+=.51*delay;angles[k][1]+=.35*contact}
    }
-   if(clip==='HIT_FRONT'){angles[torso]=[-.35*pulse(t,.34,.25),0,.17*pulse(t,.34,.24)];angles[head]=[.29*pulse(t,.32,.22),0,0]}
-   if(clip==='DEATH'){angles[torso]=[.73*t,0,.16*t];angles[head]=[-.30*t,0,0];for(const l of legs)angles[l.hip]=[.48*t,0,l.side*.15*t]}
-   if(clip===cfg.signature){angles[torso]=[-.29*before+.43*contact,.12*contact,0];angles[head]=[-.51*before+.67*contact,.15*contact,0];angles[jaw]=[-.44*before+.72*contact,0,0]}
+   // 종별 특징은 같은 일반 공격 프레임을 색상만 바꿔 공유하지 않는다.
+   if(id==='wolf'){
+     if(clip==='ATTACK_A'||clip===cfg.signature)angles[head][0]+=-.20*wind+.24*contact;
+     if(clip===cfg.signature)angles[head][0]-=.40*wind;
+   }else if(id==='spider'){
+     if(clip==='ATTACK_B')angles[tail][0]+=.39*contact;
+     if(clip==='SKILL_RELEASE'||clip===cfg.signature)angles[head][1]+=.35*impact;
+   }else if(id==='beetle'){
+     if(clip==='ATTACK_A'||clip===cfg.signature)angles[jaw][0]+=-.40*wind+.34*contact;
+     if(clip==='SKILL_PREPARE')angles[tail][0]+=.34*charge;
+   }else if(id==='golem'){
+     if(clip==='ATTACK_B')angles[torso][0]+=.42*contact;
+     if(clip===cfg.signature)angles[jaw][0]+=.52*contact;
+   }else if(id==='serpent'){
+     if(clip==='ATTACK_B')angles[tail][1]+=.70*contact;
+     if(clip==='SKILL_PREPARE')angles[torso][1]+=.29*charge;
+   }
+   if(clip==='HIT_FRONT'){
+     angles[torso]=[-.35*pulse(t,.32,.23),0,.15*pulse(t,.37,.19)];
+     angles[head]=[.36*pulse(t,.31,.21),0,0];
+   }else if(clip==='DEATH'){
+     angles[torso]=[.74*t,.10*t,.17*t];
+     angles[head]=[-.34*t,0,0];
+     for(const l of legs)angles[l.hip]=[.47*t,0,l.side*.25*t];
+     for(let i=0;i<extras.length;i++)angles[extras[i]]=[.37*t,.19*t,0];
+   }
    return angles;
  }
  const doc={asset:{version:'2.0',generator:'Jaewoon shared GRAPHICS_PRODUCTION creature'},
