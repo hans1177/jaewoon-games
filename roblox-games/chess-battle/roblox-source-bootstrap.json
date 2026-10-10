@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "gameId": "chess-battle",
   "gameName": "체스 배틀",
   "platform": "ROBLOX",
@@ -11,87 +11,21 @@
   "independentQaPassed": false,
   "regressionPassed": false,
   "releaseClaim": false,
-  "saveRequired": true,
-  "approvedScopeCount": 6,
-  "robloxBuildProfile": {
-    "version": 1,
-    "targetPlatform": "ROBLOX",
-    "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-    "declaredGameCategory": "PUZZLE",
-    "genre": "Strategy",
-    "subgenre": "Board & Card Games",
-    "playMode": "COOP",
-    "multiplayerRequired": true,
-    "coopImplementationRequired": true,
-    "competitiveImplementationRequired": false,
-    "networkingRequired": true,
-    "multiplayerQaRequired": true,
-    "minimumParticipantsForRequiredQa": 2,
-    "displayLabelKo": "전략 · 보드·카드 · 멀티·협동",
-    "designAxes": {
-      "genre": {
-        "id": "Strategy",
-        "subgenre": "Board & Card Games",
-        "rules": [
-          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
-          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-        ]
-      },
-      "style": {
-        "id": "",
-        "visual": [],
-        "motion": []
-      },
-      "concept": {
-        "id": "",
-        "world": [],
-        "mood": []
-      },
-      "sourceRevision": null
-    },
-    "styleLock": null
-  },
-  "robloxPlatformProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 짧고 명확한 전술 판단과 판 읽기를 선호하는 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Roblox DataStore-backed versioned save meaning plus server-validated remotes and rate limits when persistence/networking is required.",
-    "platformContentAdaptation": "Preserve 단서 조합의 결과를 공간 상태 변환로 전환하고 달라진 조건을 다시 활용한다. 관찰한 단서의 순서와 의미를 조합하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 플레이어가 단서 조합을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.가 바뀌고 플레이어가 공간 상태 변환을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 다시 A의 선택 조건이 달라진다. 퍼즐 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.; adapt pacing, avatar scale, social discovery and short-session Roblox conventions without changing core rules.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "Roblox publish identity + exact source revision + real runtime + independent QA + regression + private-play evidence."
-  },
-  "minimumDesignContractRequired": true,
-  "genreImplementationRequired": true,
-  "multiplayerImplementationRequired": true,
+  "existingSourcePreserved": true,
+  "gameplayAuthorityChanged": false,
+  "serverSourceChanged": false,
+  "foundationRepairApplied": false,
   "generatedFiles": [
     "shared/GameConfig.luau",
-    "server/Game.server.luau",
-    "client/Game.client.luau",
-    "default.project.json"
+    "client/Game.client.luau"
   ],
-  "generationMode": "DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT",
-  "model": "none",
+  "generationMode": "EXISTING_SOURCE_STUDIO_ASSET_REBIND",
   "modelUsed": false,
   "modelAttempts": 0,
   "modelContractFailures": [],
   "vibe3LearningApplied": true,
-  "robloxPlaybookChecklist": [
-    "bind-roblox-source-and-place",
-    "separate-server-client-authority",
-    "validate-remotes-and-datastore-boundaries",
-    "run-real-roblox-runtime-and-independent-qa",
-    "verify-save-rejoin-and-mobile-ui-when-applicable",
-    "publish-only-after-exact-revision-pass",
-    "rank-responsible-source-before-edit",
-    "generate-3-to-5-independent-candidates",
-    "prefer-smallest-behavior-preserving-diff",
-    "run-syntax-tests-runtime-regression"
-  ],
   "recombinationRecipeId": "recombine_1f33b7f33afb6484",
+  "verifiedExternalLearningAppliedToExistingSource": true,
   "verifiedExternalLearningFirst": true,
   "verifiedExternalLearningCoveragePct": 100,
   "verifiedExternalLearningRetrievedCount": 7,
@@ -120,30 +54,6 @@
     "MOTION_AND_TRANSITIONS",
     "CONTEXTUAL_ONBOARDING"
   ],
-  "recombinationOperator": "adapt-contextual-ui",
-  "recombinationSourceProjects": [
-    "block-blast",
-    "external-commercial-brawl-stars"
-  ],
-  "learningFeatureBlend": [
-    "score-combo-reward",
-    "input-drag-touch",
-    "progression-difficulty"
-  ],
-  "platformDesignProfile": {
-    "platform": "ROBLOX",
-    "inputModel": "Roblox keyboard/gamepad plus touch-safe mobile controls using Roblox input and UI conventions.",
-    "sessionModel": "Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 짧고 명확한 전술 판단과 판 읽기를 선호하는 플레이어.",
-    "multiplayerRuntime": "Roblox server-authoritative COOP replication with join/leave sync and RemoteEvent validation.",
-    "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
-    "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-    "saveAndNetwork": "Roblox DataStore-backed versioned save meaning plus server-validated remotes and rate limits when persistence/networking is required.",
-    "platformContentAdaptation": "Preserve 단서 조합의 결과를 공간 상태 변환로 전환하고 달라진 조건을 다시 활용한다. 관찰한 단서의 순서와 의미를 조합하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 플레이어가 단서 조합을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.가 바뀌고 플레이어가 공간 상태 변환을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 다시 A의 선택 조건이 달라진다. 퍼즐 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.; adapt pacing, avatar scale, social discovery and short-session Roblox conventions without changing core rules.",
-    "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "validationEvidence": "Roblox publish identity + exact source revision + real runtime + independent QA + regression + private-play evidence."
-  },
-  "webPlatformHandoffLegacy": null,
-  "webPlatformHandoffRequired": false,
   "studioAssetBinding": {
     "version": 3,
     "bindingVersion": 2,
@@ -662,22 +572,8 @@
   "studioAssetRuntimeVerified": false,
   "studioAssetPromotionEligible": false,
   "implementationNotes": [
-    "approved scope count=6",
-    "roblox genre=Strategy/Board & Card Games",
-    "play mode=COOP",
-    "multiplayer required=yes",
-    "genre core action is compiled from the approved Roblox build profile",
-    "minimum dual-platform design contract carried forward",
-    "Roblox platform session: Roblox social session model: 30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.; fast join/rejoin and avatar-safe spawn flow for 짧고 명확한 전술 판단과 판 읽기를 선호하는 플레이어.",
-    "Roblox internal release target: Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-    "server-authoritative actions broadcast synchronized participant state to all clients",
-    "co-op source maintains SharedObjective across current participants",
-    "mobile-first ScreenGui exposes approved gameplay actions",
-    "Studio base material binding applied: 360 semantic atoms; runtime verification still required",
-    "Vibe3 Roblox playbook applied: bind-roblox-source-and-place, separate-server-client-authority, validate-remotes-and-datastore-boundaries, run-real-roblox-runtime-and-independent-qa, verify-save-rejoin-and-mobile-ui-when-applicable, publish-only-after-exact-revision-pass, rank-responsible-source-before-edit, generate-3-to-5-independent-candidates, prefer-smallest-behavior-preserving-diff, run-syntax-tests-runtime-regression",
-    "verified APK principles are always adapted into Roblox environment/background, character animation/motion, skill VFX, camera feedback, UI/touch controls, gameplay state, and runtime QA",
-    "transformative recipe=recombine_1f33b7f33afb6484; operator=adapt-contextual-ui; features=score-combo-reward, input-drag-touch, progression-difficulty",
-    "persistent player state uses DataStoreService with safe fallback",
+    "existing Roblox gameplay source preserved",
+    "company library Studio asset binding updated in existing config and client presentation",
     "runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass"
   ],
   "buildUpDirectiveId": null,
@@ -687,5 +583,5 @@
   "buildUpDirectiveConsumed": false,
   "buildUpDirectiveCompletionClaim": false,
   "nextRequiredStage": "TARGET_PLATFORM_RUNTIME",
-  "createdAt": "2026-10-10T13:55:18.355Z"
+  "createdAt": "2026-10-10T14:29:24.201Z"
 }
