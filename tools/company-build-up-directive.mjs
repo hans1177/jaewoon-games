@@ -8,7 +8,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 import {normalizeWebCanonicalAndExpansionPolicy} from './company-design-prepromotion-repair.mjs';
-import {buildRobloxProductionPlan,robloxProductionPromptLines} from './company-roblox-production-plan.mjs';
+import {buildRobloxProductionPlan,robloxProductionPromptLines,readCurrentGameLibraryInventory} from './company-roblox-production-plan.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=v=>[...new Set((Array.isArray(v)?v:[]).map(clean).filter(Boolean))];
@@ -2419,16 +2419,10 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
   const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
-  // 현재 저장소의 모든 1차 게임용 코드 라이브러리를 기존 제작 지시에서 자동 인덱싱한다.
-  // 실제 게임에 없는 시스템은 추가하지 않고 외부 코드를 임의로 설치하지 않는다.
-  let availableLibraryPaths=[];
-  try{
-    availableLibraryPaths=fs.readdirSync(path.join(repoRoot,'assets'),{withFileTypes:true})
-      .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
-      .map(entry=>'assets/'+entry.name).sort();
-  }catch{}
+  // 게임 코드·모델·모션·재질·VFX·UI를 공식 라이브러리와 같은 BUILD_UP 경로에서 자동 매칭한다.
+  const {availableLibraryPaths,catalogAssets}=readCurrentGameLibraryInventory({repoRoot});
   const productionPlan=buildRobloxProductionPlan({
-    gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,
+    gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,catalogAssets,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,
