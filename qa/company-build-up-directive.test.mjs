@@ -1026,6 +1026,68 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+test('Roblox coding reads the same game Unity Web C# origin with exact change fingerprint and native-only authority',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-roblox-source-sync-'));
+  const gameId='source-sync-example';
+  const unityFile='unity-games/'+gameId+'/Assets/Scripts/GameCore.cs';
+  const otherFile='unity-games/other-game/Assets/Scripts/OtherGame.cs';
+  const roblFile='roblox-games/'+gameId+'/server/Game.server.luau';
+  const write=(file,code)=>{const full=path.join(root,file);fs.mkdirSync(path.dirname(full),{recursive:true});fs.writeFileSync(full,code);return full;};
+  const design={
+    identity:'하나의 공통 설계',
+    multiplayerMode:'COOP',
+    coreLoop:['첫 행동','결과 선택','다음 계획'],
+    signatureSystems:['MAIN','A','B','DELVE'].map((role,index)=>({
+      id:'rule-'+index,grammarRole:role,name:role,
+      stateInputs:['WorldState'],stateOutputs:['WorldState']
+    })),
+    systemInterconnections:[]
+  };
+  try{
+    write(roblFile,'local function Attack() return true end\n');
+    write(otherFile,'public class OtherGame { public void TransferSecret(){} }\n');
+    const without=buildDesignToPlatformCodingTrace({
+      gameId,design,platform:'ROBLOX',repoRoot:root,
+      sourceRoot:'roblox-games/'+gameId,multiplayerRequired:false
+    });
+    assert.equal(without.unityWebSourceSync.unityWebSourceAvailable,false);
+    assert.equal(without.unityWebSourceSync.unityWebScriptsFingerprint,null);
+    assert.equal(without.unityWebSourceSync.verificationTransferred,false);
+    assert.equal(without.sourceImplementationPassed,false);
+    write(unityFile,'public class GameCore {\n  public int Health = 12;\n  public void ApplyDamage() { Health--; }\n  public void RestoreState() { Health++; }\n}\n');
+    const sourceRoots=['roblox-games/'+gameId];
+    const observed=inspectGameSources({repoRoot:root,sourceRoots});
+    const args={gameId,design,platform:'ROBLOX',repoRoot:root,sourceRoot:sourceRoots[0],sourceObservation:observed,responsibleFiles:[roblFile],multiplayerRequired:false};
+    const first=buildDesignToPlatformCodingTrace(args);
+    assert.equal(first.unityWebSourceSync.kind,'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC');
+    assert.equal(first.unityWebSourceSync.unityWebSourceAvailable,true);
+    assert.equal(first.unityWebSourceSync.unityWebScriptCount,1);
+    assert.deepEqual(first.unityWebSourceSync.sourceFiles,[unityFile]);
+    assert.ok(first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='ApplyDamage'&&method.file===unityFile));
+    assert.ok(!first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='TransferSecret'));
+    assert.equal(first.unityWebSourceSync.sourceImplementationPassed,false);
+    assert.equal(first.unityWebSourceSync.robloxRuntimeVerified,false);
+    assert.equal(first.unityWebSourceSync.directCsCopyForbidden,true);
+    assert.equal(first.unityWebSourceSync.canonicalDesignFingerprint,first.designFingerprint);
+    const initial=first.unityWebSourceSync.unityWebScriptsFingerprint;
+    write(unityFile,'public class GameCore {\n  public int Health = 12;\n  public void ApplyDamage() { Health -= 2; }\n  public void RestoreState() { Health++; }\n}\n');
+    const second=buildDesignToPlatformCodingTrace(args);
+    assert.notEqual(second.unityWebSourceSync.unityWebScriptsFingerprint,initial,'C# source change must invalidate stale Roblox sync context');
+    assert.equal(second.designFingerprint,first.designFingerprint,'source edit must not silently redefine shared design');
+    const directive=buildGameSpecificBuildUpDirective({
+      gameId,gameName:'통합 소스 테스트',platform:'ROBLOX',repoRoot:root,
+      designRecord:{content:design},sourceRoot:sourceRoots[0],
+      sourceObservation:observed,responsibleFiles:[roblFile]
+    });
+    const prompt=directivePrompt(directive);
+    assert.match(prompt,/UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC/);
+    assert.match(prompt,/REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS/);
+    assert.match(prompt,/Roblox 서버 권한/);
+    assert.equal(directive.designToPlatformCodingTrace.unityWebSourceSync.verificationTransferred,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('design-to-native trace is fail-closed for absent owners, incomplete roles and flat Unity WebGL',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'native-coding-missing-'));
   try{
