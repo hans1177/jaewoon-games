@@ -635,21 +635,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 24,
-      "successes": 23,
+      "calls": 25,
+      "successes": 24,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 2483749,
-      "lastMs": 100504,
+      "totalMs": 2585685,
+      "lastMs": 101936,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T00:55:52.095Z"
+      "updatedAt": "2026-10-10T00:57:34.034Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-09T21:16:51.842Z",
-  "updatedAt": "2026-10-10T00:55:52.097Z",
+  "updatedAt": "2026-10-10T00:57:34.039Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2391,7 +2391,7 @@
     ],
     "local_authoring_parts::d6416f0c59ca0629f42c93491ff5e606160620782a4fb9fc9841779021a62b61:signatureSystems:1": [
       {
-        "code": "DESIGN_GRAMMAR_RULE_ID_REUSED",
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
         "grammarRole": "A",
         "previousRuleIds": [
           "signatureSystems_0"
@@ -2402,7 +2402,7 @@
   "sliceRepairAttempts": {
     "designer_draft_slices::identity-core": 4,
     "local_authoring_parts::b13426310bb3e133b89958406cdd46502589c3c3961e413fa85acc906e97e7f1:signatureSystems:1": 1,
-    "local_authoring_parts::d6416f0c59ca0629f42c93491ff5e606160620782a4fb9fc9841779021a62b61:signatureSystems:1": 1
+    "local_authoring_parts::d6416f0c59ca0629f42c93491ff5e606160620782a4fb9fc9841779021a62b61:signatureSystems:1": 2
   },
   "slicePartialResults": {
     "designer_draft_slices::identity-core": {
@@ -2503,10 +2503,10 @@
   "localAuthoringSplits": {
     "f4c45a5d9b4e9059f3efa7539e7a5c79e2f40a111147d02f3ba79b3c736cac98": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T00:55:52.095Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED",
+  "lastSuccessfulModelCallAt": "2026-10-10T00:57:34.034Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
   "effectiveDesignerModel": "ollama:qwen3:1.7b",
   "effectiveDesignerProvider": "VIBE_LOCAL_OLLAMA"
 }
