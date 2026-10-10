@@ -402,6 +402,16 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const lower=diffs.map(([a,b])=>terrain[at(a,b)]).filter(t=>t.elevation<tile.elevation).sort((a,b)=>a.elevation-b.elevation||a.z-b.z||a.x-b.x)[0];
     tile.drainageTo=lower?{x:lower.x,z:lower.z}:null;
   }
+  // 유역 유출량은 높은 셀부터 하류로 누적한다. 높이·충돌·하천 연결은 바꾸지 않는다.
+  const runoff=Float64Array.from(terrain,tile=>.15+tile.moisture*.85);
+  for(const tile of [...terrain].sort((a,b)=>b.elevation-a.elevation||a.z-b.z||a.x-b.x)){
+    if(tile.drainageTo)runoff[at(tile.drainageTo.x,tile.drainageTo.z)]+=runoff[at(tile.x,tile.z)];
+  }
+  for(const tile of terrain){
+    const accumulated=runoff[at(tile.x,tile.z)];
+    tile.catchment=Object.freeze({runoffUnits:+accumulated.toFixed(3),erosionRisk:+Math.min(1,Math.log1p(accumulated)*tile.slopeDegrees/65).toFixed(3),
+      model:'DOWNSLOPE_FLOW_ACCUMULATION',terrainEroded:false,actualFloodSimulation:false});
+  }
   // 침식으로 고도를 바꾸지 않고, 경사가 낮아지는 기존 셀만 잇는 하천 후보를 만든다.
   const river=[],sources=terrain.filter(t=>t.elevation>.57&&t.biome!=='WATER').sort((a,b)=>b.elevation-a.elevation||a.z-b.z||a.x-b.x);
   const riverStart=sources[Math.floor((proceduralCellHash(hash,4,7)/4294967296)*Math.min(18,sources.length))];
@@ -456,12 +466,15 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       :tile.biome==='FOREST'?'MOSS_LOAM':'GRASS_SOIL';
     const secondary=primary==='RIVER_SEDIMENT'?'WET_SILT':primary==='SAND_AND_GRAVEL'?'DRY_SOIL'
       :rocky?'STONE_GRAVEL':humidity>.6?'MOSS_LOAM':'DRY_SOIL';
+    const soilDepth=+(clamp01(.58+.22*humidity-slope/85-tile.catchment.erosionRisk*.23)).toFixed(3);
+    const substrateStability=+(clamp01(.93-.4*(slope/90)-.2*tile.catchment.erosionRisk+
+      (stratum==='GRANITE'?.07:stratum==='SHALE'?-.13:0))).toFixed(3);
     const blend=+(clamp01(.1+humidity*.27+(slope/90)*.13)).toFixed(3);
     const carryingCapacity=tile.biome==='WATER'?0:+(clamp01(
       (.18+humidity*.72)*(1-Math.min(.85,slope/65))*(habitat==='ROCKY_RIDGE'?.35:1)*
       (temperature<.18?.55:1))).toFixed(3);
     tile.surface=Object.freeze({primary,secondary,secondaryBlend:blend,geologyId,stratum,waterDistanceCells:waterDistance,
-      temperature: +temperature.toFixed(3),humidity:+humidity.toFixed(3),season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
+      temperature: +temperature.toFixed(3),humidity:+humidity.toFixed(3),soilDepth,substrateStability,season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
       nativeShaderAnd3dTerrainBindingRequired:true,nativeMaterialApplied:false});
     tile.ecology=Object.freeze({habitat,carryingCapacity,visualCover:0,scenicOnly:true,
       spawnRateAuthority:false,gameplayResourcesUnchanged:true});
@@ -579,11 +592,22 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   // 해시 우선순위 + 근접 금지(블루 노이즈 근사). 단순 격자 순회로 특정 구역만 채우지 않는다.
   const vegetation=[],natureGroups=new Map(),maxVegetation=mobile?64:160,placedNatureCells=new Set();
   const climateHint=String(climate).toUpperCase(),biomeHint=String(biome).toUpperCase();
+  const feedbackAccepted=ecosystemFeedback?.verifiedAgainstRuntime===true
+    &&String(ecosystemFeedback.gameId||'')===String(gameId)
+    &&Boolean(ecosystemFeedback.sourceRevision)
+    &&ecosystemFeedback.visualDensityDeltaByHabitat&&typeof ecosystemFeedback.visualDensityDeltaByHabitat==='object';
+  const visualDensityDelta=habitat=>{
+    const value=feedbackAccepted?ecosystemFeedback.visualDensityDeltaByHabitat[habitat]:0;
+    return Number.isFinite(value)?Math.max(-.2,Math.min(.2,value)):0;
+  };
   const natureCandidates=terrain.filter(tile=>{
     const key=at(tile.x,tile.z);
     if(occupied.has(key)||waterway.has(key)||sightCells.has(key)||tile.biome==='WATER'||tile.slopeDegrees>maxSlopeDegrees)return false;
     const chance=tile.biome==='FOREST'?.44:tile.biome==='PLAIN'?.1:tile.biome==='RIDGE'?.05:tile.biome==='DRY'?.04:0;
-    return proceduralCellHash(hash^0x10face,tile.x,tile.z)/4294967296<=chance;
+    const capacity=tile.ecology?.carryingCapacity||0;
+    // 서식지의 부양 능력과 검증된 시각 관찰값으로 *배경 식생만* 조정한다.
+    const habitatChance=Math.max(.01,Math.min(.62,chance+capacity*.16+visualDensityDelta(tile.ecology?.habitat)));
+    return proceduralCellHash(hash^0x10face,tile.x,tile.z)/4294967296<=habitatChance;
   }).sort((a,b)=>
     proceduralCellHash(hash^0x71eeb,a.x,a.z)-proceduralCellHash(hash^0x71eeb,b.x,b.z)
     ||a.z-b.z||a.x-b.x);
