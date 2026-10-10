@@ -176,7 +176,8 @@ test('source-only or failed builds and stale shared targets cannot become execut
 });
 
 
-test('실제 카탈로그 배포 게임 카드는 41개 이상이며, 실행 판정과 분리된다',()=>{
+// 홈피: 기존 디자인·개발·출시 게임의 목록 누락을 금지하되 미검증 실행은 활성화하지 않는다.
+test('실제 카탈로그의 모든 활성 게임 카드가 출시 또는 개발 중 목록에 표시된다',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
   const exposure=JSON.parse(fs.readFileSync('homepage-platform-exposure.json','utf8'));
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
@@ -185,11 +186,19 @@ test('실제 카탈로그 배포 게임 카드는 41개 이상이며, 실행 판
   const available=api.internalReleaseRows(catalog,{});
   const present=new Set(available.map(row=>row.id));
   for(const row of api.developmentRows(catalog,{}))present.add(row.id);
-  const prototypes=catalog.games.filter(row=>row.id.startsWith('seed-roblox-'));
+  const eligible=catalog.games.filter(game=>
+    !['RETIRED','REMOVED','ARCHIVED'].includes(String(game.canonical?.lifecycle?.state||game.lifecycleState||'').toUpperCase())
+    &&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.canonical?.production?.class||game.productionClass||'').toUpperCase())
+  );
+  assert.equal(present.size,eligible.length,'등록된 활성 게임은 정식 플랫폼 빌드 이전에도 모두 보여야 한다');
+  for(const game of eligible)assert.ok(present.has(game.id),'홈페이지 활성 게임 누락: '+game.id);
+  // 실제 원본 Roblox 프로젝트를 가진 게임은 목록에는 남고 HTML 시제품 실행 권한은 여전히 없다.
+  const prototypes=eligible.filter(row=>row.id.startsWith('seed-roblox-'));
   assert.equal(prototypes.length,4);
-  assert.equal(present.size,catalog.games.length-prototypes.length,'개발 중/출시 구분이 카드 누락 원인이면 안 된다');
-  assert.ok(present.size>=41);
-  for(const row of prototypes)assert.equal(present.has(row.id),false,'버튼형 시제품은 정식 게임 카드가 아니다');
+  for(const game of prototypes){
+    assert.ok(present.has(game.id));
+    assert.equal(game.canonical?.sources?.web?.playable,false,'단순 HTML 시제품 실행 차단 유지');
+  }
 });
 
 test('runtime catalog fills only missing active development games',()=>{
