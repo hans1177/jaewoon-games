@@ -119,25 +119,40 @@
       "name": "입력 -> 상태 변화 -> 피드백 제공",
       "purpose": "플레이어 선택 후 즉각적인 상태 변화와 피드백을 통해 반복 가능한 루프 형성",
       "playerChoice": "플레이어 선택은 게임의 핵심 재미 및 반복 가능한 루프에 기여하며, 이는 원본 수치와 일관되어야 한다। 주제/소재 두 가지의 인과 연결이 존재하며, 이는 게임의 정체성과 구축된 상태로 유지된다。 실제 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다。 전략적 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과程에서 중요한 역할을 수행한다。 보조 장르 제거 후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다。 플레이어 선택 이후 발생하는 새로운 선택은 게임의 진입, 선택, 성공, 위험, 복구, 세계 연결 과정에서 중요한 역할을 수행한다。"
+    },
+    "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:1:973b7981543efce4": {
+      "id": "a_entrance",
+      "grammarRole": "A",
+      "stateInputs": [
+        "status_change",
+        "feedback_loop"
+      ],
+      "stateOutputs": [
+        "player_choice",
+        "game_state"
+      ],
+      "name": "입력 -> 상태 변화 -> 피드백 제공",
+      "purpose": "플레이어 선택 후 즉각적인 상태 변화와 피드백 제공을 통해 게임의 학문적 가치와 현실적인 상호작용을 결합하여 이루어진다.",
+      "playerChoice": "플레이어 선택은 게임의 핵심 재미와 반복 가능한 루프를 형성하며, 이는 원본 수치와 일관되어야 한다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 391622,
-      "lastMs": 40255,
+      "totalMs": 400665,
+      "lastMs": 9043,
       "lastError": null,
-      "updatedAt": "2026-10-10T06:37:31.041Z"
+      "updatedAt": "2026-10-10T06:37:40.085Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:30:59.191Z",
-  "updatedAt": "2026-10-10T06:37:31.042Z",
+  "updatedAt": "2026-10-10T06:37:40.085Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1647,8 +1662,8 @@
     "local_authoring_parts::74150d7ccadb87a09c6b5463aae72f48f96d1b550837908dde62f3eb0af13da2:signatureSystems:1:973b7981543efce4": 2
   },
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T06:37:31.041Z",
-  "failedPhase": "local_authoring_parts",
-  "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastSuccessfulModelCallAt": "2026-10-10T06:37:40.085Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
