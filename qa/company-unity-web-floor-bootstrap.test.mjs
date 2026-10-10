@@ -270,6 +270,25 @@ test('Unity Web floor bootstrap runs per game without a global workflow serializ
   assert.match(workflow,/git add "unity-games\/\$GAME_ID"/);
 });
 
+test('Unity Web bootstrap promotes only verified same-scope PR and wakes the exact existing WebGL lane',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const caller=parent.slice(parent.indexOf('  dispatch-unity-web-bootstrap:'),parent.indexOf('  continue-cycle:'));
+  assert.match(workflow,/node tools\/company-unity-web-first-stage\.mjs/);
+  assert.ok(workflow.includes('--validate-only=true'));
+  assert.ok(workflow.includes('git cat-file -e "origin/main:unity-games/$GAME_ID"'));
+  assert.ok(workflow.includes('pr_game_tree" = "$staged_game_tree"'));
+  assert.ok(workflow.includes('.author.login=="github-actions[bot]"'));
+  assert.ok(workflow.includes('gh pr merge'));
+  assert.ok(workflow.includes('--match-head-commit'));
+  assert.equal((workflow.match(/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED/g)||[]).length,2);
+  assert.equal((workflow.match(/gh workflow run company-development-confirmed-runtime\.yml/g)||[]).length,2);
+  assert.equal((workflow.match(/-f game_id="\$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED/g)||[]).length,2);
+  assert.match(workflow,/permissions:\n  contents: write\n  pull-requests: write\n  actions: write/);
+  assert.match(caller,/permissions:\n      contents: write\n      pull-requests: write\n      actions: write/);
+  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+});
+
 test('Unity Web source bootstrap uses slim control capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
   assert.match(workflow,/\n  bootstrap:\n\s+runs-on:\s*ubuntu-slim/);
