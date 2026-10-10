@@ -21,6 +21,9 @@ permissions:
 
 jobs:
   bootstrap:
+    concurrency:
+      group: unity-web-bootstrap-source-${{ inputs.game_id }}
+      cancel-in-progress: false
     runs-on: ubuntu-slim
     timeout-minutes: 20
     steps:
@@ -33,13 +36,36 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Synchronize central worker context before Unity source work
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/unity-web-bootstrap-context.json
+
+      - name: Detect already-promoted canonical Unity source
+        id: existing
+        env:
+          GAME_ID: ${{ inputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GAME_ID" =~ ^[a-z0-9][a-z0-9-]{1,80}$ ]] || exit 2
+          git fetch --no-tags --depth=1 origin main
+          if git cat-file -e "origin/main:unity-games/$GAME_ID/ProjectSettings/ProjectVersion.txt" 2>/dev/null; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+            echo "UNITY_WEB_BOOTSTRAP_ALREADY_ON_MAIN=$GAME_ID"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Verify bootstrap contract
+        if: steps.existing.outputs.present != 'true'
         run: |
           set -euo pipefail
           node --check tools/company-unity-web-floor-bootstrap.mjs
           node --test qa/company-unity-web-floor-bootstrap.test.mjs
 
       - name: Fetch runtime design and verified learning authority
+        if: steps.existing.outputs.present != 'true'
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
@@ -53,6 +79,7 @@ jobs:
           echo "UNITY_WEB_VERIFIED_LEARNING_REVISION=$learning_sha" >> "$GITHUB_ENV"
 
       - name: Generate canonical Unity Web floor sources
+        if: steps.existing.outputs.present != 'true'
         id: generate
         env:
           GAME_ID: ${{ inputs.game_id }}
@@ -102,6 +129,7 @@ jobs:
           NODE
 
       - name: Verify and promote canonical Unity Web bootstrap source PR
+        if: steps.existing.outputs.present != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.generate.outputs.game_id }}
@@ -153,7 +181,23 @@ jobs:
             fi
             git fetch --no-tags --depth=1 origin "$pr_branch"
             pr_game_tree="$(git rev-parse "FETCH_HEAD:unity-games/$GAME_ID" 2>/dev/null || true)"
-            [ "$pr_game_tree" = "$staged_game_tree" ] || continue
+            [[ "$pr_game_tree" =~ ^[0-9a-f]{40}$ ]] || continue
+            if [ "$pr_game_tree" != "$staged_game_tree" ]; then
+              # A timestamp-only metadata change is not new gameplay or new verified learning.
+              # Every other authored Unity file, design, directive and learning field must match.
+              changed_files="$(git diff --name-only "$staged_game_tree" "$pr_game_tree")"
+              if [[ "$changed_files" != "unity-web-floor-source.json" ]]; then
+                echo "UNITY_WEB_BOOTSTRAP_PR_SOURCE_DIFFERS=$pr_number"
+                continue
+              fi
+              staged_source="$(git show "$staged_tree:unity-games/$GAME_ID/unity-web-floor-source.json" | jq -Sc 'del(.generatedAt)')"
+              pending_source="$(git show "FETCH_HEAD:unity-games/$GAME_ID/unity-web-floor-source.json" | jq -Sc 'del(.generatedAt)')"
+              if [ "$staged_source" != "$pending_source" ]; then
+                echo "UNITY_WEB_BOOTSTRAP_PR_DESIGN_OR_LEARNING_DIFFERS=$pr_number"
+                continue
+              fi
+              echo "UNITY_WEB_BOOTSTRAP_PR_TIMESTAMP_ONLY_REUSE=$pr_number"
+            fi
             echo "UNITY_WEB_BOOTSTRAP_PR_REUSED=$pr_number"
             gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash \
               --delete-branch --match-head-commit "$pr_head"
