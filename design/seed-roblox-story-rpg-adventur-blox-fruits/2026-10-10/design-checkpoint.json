@@ -532,25 +532,32 @@
       },
       "playerFantasy": "플레이어는 게임 시작 시 명확한 목표를 설정하고, 제한된 움직임과 장애물에 직면해 즉각적인 결과와 피드백을 통해 핵심 행동을 이해하며, 성장 가능성이 실제적으로 달라지는 경험을 제공합니다. 세계와 규칙은 인과적 상태 변화로 지속적으로 재구성됩니다.",
       "coreFun": "게임 정체성의 대표 행동은 플레이어가 초기 단서에서부터 진화하는 세계 상태 변화에 따라 실질적인 성장 가능성을 경험하게 됩니다. 역사, 철학, 무협, 종교 요소가 서로 다른 시스템으로 통합되어 새로운 규칙 조합을 요구하며, 플레이어의 선택과 인과 관계가 실제 결과를 갈라놓고 진화합니다."
+    },
+    "local_authoring_parts::b1e66aa21491fb2efb39b5aa49cc0a1838e0773c0ff08348b1a68f3f37a648b8:coreLoop": {
+      "coreLoop": [
+        "입력(초기 단서) → 상태변화(역사적 사건 → 플레이어 선택) → 보상(무협적 선택 → 세계 진화)",
+        "선택(철학적 해석) → 상태변화(과학적 이론 → 새로운 전략) → 보상(세계 관계 재구성 → 성장 가능성 확보)",
+        "선택(종교적 가치관) → 상태변화(전략적 성장 가능성 → 게임 재미 증대) → 보상(중후반 규칙 조합 요구)"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 8,
-      "successes": 6,
+      "calls": 9,
+      "successes": 7,
       "failures": 2,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 1327761,
-      "lastMs": 234819,
+      "totalMs": 1422873,
+      "lastMs": 95112,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:32:55.644Z"
+      "updatedAt": "2026-10-10T10:34:30.760Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:10:47.845Z",
-  "updatedAt": "2026-10-10T10:32:55.646Z",
+  "updatedAt": "2026-10-10T10:34:30.769Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2156,8 +2163,8 @@
     "52690f0f103c810e967108933276d82801582a8bf229dc8838f0f1d1b7840d47": true,
     "2208473c4ce7e2969b59feba234a94898e8edc37ffe41509a433fc17e4d694a6": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:32:55.646Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "lastSuccessfulModelCallAt": "2026-10-10T10:34:30.760Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "Cannot read properties of undefined (reading 'length')"
 }
