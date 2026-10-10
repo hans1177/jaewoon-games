@@ -238,15 +238,22 @@ export function validateGameSeed(input) {
   }
   if (seed.INITIAL_PLAY_MODE !== undefined && !isNonEmptyString(seed.INITIAL_PLAY_MODE)) errors.push('INITIAL_PLAY_MODE must be project-defined and non-empty');
 
-  // 메인: 디자이너가 아직 쓰지 않은 @ 입력을 최종 설계로 가장하지 않는다.
-  // 중앙 시드 백필의 저작 대기 항목만 접수하고, 다른 시드 규칙과 실제 최종 설계 검증은 그대로 유지한다.
-  const provisionalDelve=seed.novelGrammarBackfill?.authoringPending===true
+  // 메인: 중앙 백필의 미작성 문법은 입장권이 아니라 게임디자이너가 직접 작성할 작업이다.
+  // 입력의 기본 규칙은 계속 검사하고, 최종 MAIN/A/B/C/@ 설계 심사는 별도 원본 설계 검증에서 그대로 강제한다.
+  const provisionalGrammar=seed.novelGrammarBackfill?.authoringPending===true
     &&String(seed.novelGrammarBackfill?.source||'')==='CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009'
     &&Number(seed.GAMEPLAY_SKETCH?.version||0)>=5;
+  const deferredAuthoringIssues=new Set([
+    'GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements',
+    'GAMEPLAY_SKETCH C requires two creative theme sources',
+    'GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay',
+    'GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world'
+  ]);
   const sketchErrors=[];
   validateGameplaySketch(seed.GAMEPLAY_SKETCH,sketchErrors);
   for(const issue of sketchErrors){
-    if(provisionalDelve&&issue==='GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements')continue;
+    const creativeAxesUnwritten=/^GAMEPLAY_SKETCH A\/B [AB] missing (?:systemFamily|sourceMaterial|sourceDomain|materialRule): system plus unique creative source required$/.test(issue);
+    if(provisionalGrammar&&(deferredAuthoringIssues.has(issue)||creativeAxesUnwritten))continue;
     errors.push(issue);
   }
   validateMarketNumericClaims(seed.MARKET_EVIDENCE_SUMMARY, errors);
