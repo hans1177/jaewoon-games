@@ -533,25 +533,43 @@
     },
     "local_authoring_parts::f5fc24cf0e9d48cc4c7c3fe8b9435dc927aafdd1b75fed84695d57b258698356:contrast": {
       "contrast": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::f5fc24cf0e9d48cc4c7c3fe8b9435dc927aafdd1b75fed84695d57b258698356:causalBridge": {
+      "causalBridge": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::f5fc24cf0e9d48cc4c7c3fe8b9435dc927aafdd1b75fed84695d57b258698356:removalConsequence": {
+      "removalConsequence": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::020c3e19adf3b02b689c2e960dcbfafa45e1e1e8de19f95c2538b354efffe5ac:materialFusion": {
+      "contrast": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능",
+      "causalBridge": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능",
+      "removalConsequence": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+    },
+    "local_authoring_parts::7ba1d647e0a9a6361700a884dfe0a4c1c12b2aa1d2a9c5b1afacf5ad336dd9de:materialFusion": {
+      "materialFusion": {
+        "contrast": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능",
+        "causalBridge": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능",
+        "removalConsequence": "플레이어는 다양한 직업 선택을 통해 성장하며, 보스 동료로 영입된 AI 동료와 함께 팀워크를 수행하여 최대 3명의 파티 구성 가능"
+      }
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 26,
-      "successes": 25,
+      "calls": 28,
+      "successes": 27,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1436159,
-      "lastMs": 23084,
+      "totalMs": 1556684,
+      "lastMs": 60487,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T09:56:38.567Z"
+      "updatedAt": "2026-10-10T09:58:39.095Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:32:41.978Z",
-  "updatedAt": "2026-10-10T09:56:38.567Z",
+  "updatedAt": "2026-10-10T09:58:39.098Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2562,7 +2580,7 @@
   "localAuthoringSplits": {
     "6c628a17d4596b305f7cf19e1d2ebdad735c30d564a687bac229c64098dab8ae": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T09:56:38.567Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:58:39.097Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
