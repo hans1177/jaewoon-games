@@ -78,10 +78,10 @@ test('같은 상태에서는 requestId가 결정론적으로 동일하다', () =
 
 test('verified local trainer gives difficult QA cases priority without dropping samples or changing holdout',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-train.py',import.meta.url),'utf8');
-  assert.match(source,/class DifficultyCurriculumTrainer\\(Trainer\\)/);
-  assert.match(source,/torch\\.utils\\.data\\.WeightedRandomSampler/);
+  assert.match(source,/class DifficultyCurriculumTrainer\(Trainer\)/);
+  assert.match(source,/torch\.utils\.data\.WeightedRandomSampler/);
   assert.match(source,/replacement=False/);
-  assert.match(source,/num_samples=len\\(weights\\)/);
+  assert.match(source,/num_samples=len\(weights\)/);
   assert.match(source,/evalAndFixedHoldoutUntouched/);
   const script=[
     'import importlib.util',
@@ -94,7 +94,7 @@ test('verified local trainer gives difficult QA cases priority without dropping 
     'assert weights[0]==weights[-1]==1.0',
     'assert weights[0]<weights[1]<weights[2]<weights[3]',
     'assert module.difficulty_curriculum_weights([{"difficulty":"simple"}])==[1.0]',
-  ].join('\\n');
+  ].join('\n');
   const check=spawnSync('python3',['-c',script],{encoding:'utf8'});
   assert.equal(check.status,0,check.stderr||check.error?.message||'Python curriculum test failed');
 });
