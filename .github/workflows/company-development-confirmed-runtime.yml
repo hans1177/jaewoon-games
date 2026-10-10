@@ -253,7 +253,13 @@ jobs:
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
-            (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
+            (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY')||(
+              item.minimumDesignContract?.pass===true&&
+              ['ACTIVE','PENDING'].includes(String(item.status||'').toUpperCase())&&
+              Boolean(item.platformDesignProfiles?.ROBLOX?.source&&item.platformDesignProfiles?.UNITY?.source)&&
+              Array.isArray(item.concurrentTargetPlatforms)&&
+              item.concurrentTargetPlatforms.includes('ROBLOX')&&item.concurrentTargetPlatforms.includes('UNITY')
+            ))
           );
           const activeStates=new Set(['queued','pending','in_progress','requested']);
           const eligibleGameIds=rows.map(item=>String(item.gameId||'')).filter(id=>/^[a-z0-9][a-z0-9-]{1,80}$/.test(id));
@@ -299,11 +305,16 @@ jobs:
               console.log('GAME_MINIMUM_DESIGN_REPAIR_REQUIRED='+item.gameId+':'+decision.reason);
               continue;
             }
-            nativeIds.push(item.gameId);
-            if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN='+item.gameId+':'+currentControlSha);
-            else{
-              robloxIds.push(item.gameId);
-              console.log('ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED='+item.gameId+':'+currentControlSha);
+            const nativeAdmitted=platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY');
+            if(nativeAdmitted){
+              nativeIds.push(item.gameId);
+              if(activeRoblox.has(item.gameId))console.log('ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN='+item.gameId+':'+currentControlSha);
+              else{
+                robloxIds.push(item.gameId);
+                console.log('ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED='+item.gameId+':'+currentControlSha);
+              }
+            }else{
+              console.log('UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP='+item.gameId+':'+String(item.currentStep||'UNKNOWN'));
             }
             if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
             const web=decision.web||{};
@@ -340,6 +351,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_json='+JSON.stringify(bootstrapIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
+           console.log('UNITY_WEB_DESIGN_ELIGIBLE_COUNT='+rows.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
           console.log('ROBLOX_NATIVE_DISPATCH_IDS='+(robloxIds.join(',')||'NONE'));
           console.log('UNITY_NATIVE_DISPATCH_IDS='+(unityIds.join(',')||'NONE'));
