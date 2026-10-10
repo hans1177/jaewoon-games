@@ -194,25 +194,38 @@
         "STATE CHANGE: defender position adjustment",
         "OUTPUT: adaptive defensive strategy development"
       ]
+    },
+    "local_authoring_parts::ddadd3bbe9924afde55d6bab297ccb3c43cdee3fc45b0f3f3bafec3f02338987:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_aware_defensive_strategy",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "incoming wave pattern analysis"
+      ],
+      "stateOutputs": [
+        "adaptive defensive strategy development"
+      ],
+      "name": "Aware Defensive Strategy",
+      "purpose": "To read incoming wave patterns, adjust defender positions, and develop adaptive strategies.",
+      "playerChoice": "Adaptive defense deployment based on real-time environmental interaction and enemy-type counterplay."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 558108,
-      "lastMs": 90405,
+      "totalMs": 654919,
+      "lastMs": 96811,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T04:52:36.310Z"
+      "updatedAt": "2026-10-10T04:54:13.123Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T04:43:17.949Z",
-  "updatedAt": "2026-10-10T04:52:36.310Z",
+  "updatedAt": "2026-10-10T04:54:13.123Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1894,7 +1907,7 @@
   "localAuthoringSplits": {
     "c0e0cdfd426b704ec88818203285d976fb1c4b8d134b9b490fe6bfab7890f597": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T04:52:36.310Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T04:54:13.123Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
