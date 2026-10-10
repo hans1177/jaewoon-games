@@ -104,25 +104,41 @@
         "Makes deliberate matches, creates combos, and receives immediate feedback for each action.",
         "Clears the level goal to earn rewards or unlock new stages, then faces a new pattern or obstacle combination."
       ]
+    },
+    "local_authoring_parts::5aff463b74b588564e69356fbb60ffe8a9c3d013a971e673519ca8d06f81a1e5:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "playerStartsWithClearGoal",
+        "limitedMovesAndObstaclesOnBoardOrGrid"
+      ],
+      "stateOutputs": [
+        "deliberateMatchesCreated",
+        "combosGenerated",
+        "immediateFeedbackReceived"
+      ],
+      "name": "Last Lantern - Player's Journey Through a Living Board Game",
+      "purpose": "A dynamic board game where each decision creates an immediate consequence that affects future actions and goals.",
+      "playerChoice": "Players choose new strategies, face new risks, and unlock new levels based on their choices."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 228586,
-      "lastMs": 78790,
+      "totalMs": 265387,
+      "lastMs": 36801,
       "lastError": null,
-      "updatedAt": "2026-10-10T02:24:05.420Z"
+      "updatedAt": "2026-10-10T02:24:42.222Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:20:16.789Z",
-  "updatedAt": "2026-10-10T02:24:05.420Z",
+  "updatedAt": "2026-10-10T02:24:42.222Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1712,7 +1728,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T02:24:05.420Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:24:42.222Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
