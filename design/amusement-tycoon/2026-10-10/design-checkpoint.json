@@ -105,25 +105,40 @@
         "손님 흐름 관찰 및 피드백 수집: 손님들의 이동 경로와 만족도 아이콘을 통해 병목 현상이나 불만족 요소를 실시간으로 파악합니다.",
         "수익 재투자 및 최적화: 벌어들인 수익으로 시설을 업그레이드하거나 새로운 구역을 개방하여 효율을 극대화하고 다음 성장을 준비합니다."
       ]
+    },
+    "local_authoring_parts::8565a3a9031c1ee2df2af8165bce29b59377e68cc476f3d450c2a3767e6d7629:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_roadmap_optimization",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "플레이어가 놀이기구의 위치 및 너비를 선택하여 손님의 이동 흐름을 제어함.",
+        "손님의 이동 효율성에 따라 공원 전체의 수용 능력이 증대됨."
+      ],
+      "stateOutputs": [
+        "공원의 수용 능력이 최적화되며, 병목 현상이 방지됨.",
+        "손님의 이동 시간이 단축되어, 플레이어의 게임 진행 속도가 개선됨."
+      ],
+      "name": "로드맵 최적화 시스템",
+      "purpose": "손님의 이동 효율성을 극대화하고, 공원의 수용 능력을 높이는 것이 목적입니다.",
+      "playerChoice": "놀이기구의 위치와 너비를 결정하여 손님의 이동 흐름을 직접 제어하고 최적화할 수 있습니다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 365268,
-      "lastMs": 72558,
+      "totalMs": 411488,
+      "lastMs": 46220,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:00:25.695Z"
+      "updatedAt": "2026-10-10T10:01:11.917Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:54:20.268Z",
-  "updatedAt": "2026-10-10T10:00:25.695Z",
+  "updatedAt": "2026-10-10T10:01:11.917Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1399,7 +1414,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:00:25.695Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:01:11.917Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
