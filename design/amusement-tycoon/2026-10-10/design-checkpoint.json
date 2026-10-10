@@ -194,25 +194,40 @@
         "입력: 자원 배분 선택 → 상태변화: 자원 사용량 감소 → 보상: 점수 증가",
         "입력: 속도 향상 선택 → 상태변화: 손님 수 증가 → 보상: 점수 획득"
       ]
+    },
+    "local_authoring_parts::184ec4de60e527b7f71db78755e1e228e343b5cad8f56e24dcdf500b36c5ed35:signatureSystems:0": {
+      "id": "identity-core",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "길의 확장 선택"
+      ],
+      "stateOutputs": [
+        "길 길이 증가",
+        "손님 수 증가",
+        "보상 획득"
+      ],
+      "name": "길의 확장 선택",
+      "purpose": "실질적 선택 및 세계 상태 변화",
+      "playerChoice": "길의 확장은 속도 향상과 보상을 통해 이루어지고, 경영 관리는 자원 분배와 비용 절감을 통해 진행됨"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 740310,
-      "lastMs": 98162,
+      "totalMs": 841051,
+      "lastMs": 100741,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:12:24.129Z"
+      "updatedAt": "2026-10-10T03:14:04.872Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:00:03.792Z",
-  "updatedAt": "2026-10-10T03:12:24.129Z",
+  "updatedAt": "2026-10-10T03:14:04.872Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1692,7 +1707,7 @@
   "localAuthoringSplits": {
     "ff46e7828daec01f55058f0dfa750d7e4114a0492b9c7138e9f1afc81637f683": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:12:24.129Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:14:04.872Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
