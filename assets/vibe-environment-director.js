@@ -452,8 +452,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     }
     const stratum=['GRANITE','LIMESTONE','SHALE','BASALT'][volcanicRegion?3:proceduralCellHash(hash^0x977d,nearest.gx,nearest.gz)%3];
     const geologyId=nearest.gx+':'+nearest.gz;
-    const temperature=clamp01((coldRegion?.27:aridRegion?.77:.58)-(tile.elevation-.45)*.38+
-      (seasonKey==='WINTER'?-0.2:seasonKey==='SUMMER'?.12:0)+.08*proceduralGradientNoise(hash^0xbeef,x/8,z/8));
+    const annualTemperature=clamp01((coldRegion?.27:aridRegion?.77:.58)-(tile.elevation-.45)*.38+
+      .08*proceduralGradientNoise(hash^0xbeef,x/8,z/8));
+    const temperature=clamp01(annualTemperature+(seasonKey==='WINTER'?-0.2:seasonKey==='SUMMER'?.12:0));
     const humidity=clamp01(tile.moisture+(waterDistance!==null?.24*Math.exp(-waterDistance/3):0)-(aridRegion?.2:0));
     const slope=tile.slopeDegrees,rocky=tile.biome==='RIDGE'||slope>22;
     const habitat=tile.biome==='WATER'?'AQUATIC'
@@ -472,9 +473,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const blend=+(clamp01(.1+humidity*.27+(slope/90)*.13)).toFixed(3);
     const carryingCapacity=tile.biome==='WATER'?0:+(clamp01(
       (.18+humidity*.72)*(1-Math.min(.85,slope/65))*(habitat==='ROCKY_RIDGE'?.35:1)*
-      (temperature<.18?.55:1))).toFixed(3);
+      (annualTemperature<.18?.55:1))).toFixed(3);
     tile.surface=Object.freeze({primary,secondary,secondaryBlend:blend,geologyId,stratum,waterDistanceCells:waterDistance,
-      temperature: +temperature.toFixed(3),humidity:+humidity.toFixed(3),soilDepth,substrateStability,season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
+      temperature: +temperature.toFixed(3),annualTemperature:+annualTemperature.toFixed(3),humidity:+humidity.toFixed(3),soilDepth,substrateStability,season:seasonKey,materialModel:'SEEDED_VORONOI_GEOLOGY_AND_FBM_HYDROLOGY',
       nativeShaderAnd3dTerrainBindingRequired:true,nativeMaterialApplied:false});
     tile.ecology=Object.freeze({habitat,carryingCapacity,visualCover:0,scenicOnly:true,
       spawnRateAuthority:false,gameplayResourcesUnchanged:true});
