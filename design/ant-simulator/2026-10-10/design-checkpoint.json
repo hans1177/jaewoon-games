@@ -216,21 +216,21 @@
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 15,
-      "successes": 14,
+      "calls": 16,
+      "successes": 15,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1126019,
-      "lastMs": 46786,
+      "totalMs": 1149627,
+      "lastMs": 23608,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T07:07:25.831Z"
+      "updatedAt": "2026-10-10T07:07:49.442Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T06:48:39.762Z",
-  "updatedAt": "2026-10-10T07:07:25.833Z",
+  "updatedAt": "2026-10-10T07:07:49.443Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1946,6 +1946,13 @@
   "sliceRepairFeedback": {
     "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:1:4b01cbb8a2321b0c": [
       {
+        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
+        "grammarRole": "A",
+        "previousRuleIds": [
+          "main_arena_selection"
+        ]
+      },
+      {
         "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
         "grammarRole": "A",
         "previousRuleIds": [
@@ -1962,14 +1969,14 @@
     ]
   },
   "sliceRepairAttempts": {
-    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:1:4b01cbb8a2321b0c": 10
+    "local_authoring_parts::e4697ec90074d9adab4b2d11f28ee2cb6c04dda4867d94fdda3c7582d8bcb8a5:signatureSystems:1:4b01cbb8a2321b0c": 11
   },
   "slicePartialResults": {},
   "localAuthoringSplits": {
     "e68b4731f3164c5a3800ddc406571b231f647df7075f420e6fce77e4f5099dd1": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T07:07:25.831Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T07:07:49.442Z",
   "failedPhase": "local_authoring_parts",
   "failedTask": "signatureSystems:A",
-  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_ROLE_CONTENT_CLONED,DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING,DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING"
 }
