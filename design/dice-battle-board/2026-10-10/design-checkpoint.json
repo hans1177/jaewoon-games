@@ -3,244 +3,31 @@
   "gameId": "dice-battle-board",
   "date": "2026-10-10",
   "seedId": "OWNER-ALL-DESIGN-RESET-DICE-BATTLE-BOARD-20260917",
-  "fingerprint": "237ee59a06cbc8a5772c14aae74f97a19e83ffcd9ec121e5e48b131e17400811",
+  "fingerprint": "d1e3fbe34e0727dc1787fc97a9751a798b91fc1cc8de0d2cfa160e96fdc66973",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
-  "engineDigest": "e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92",
+  "engineDigest": "04a1b92f8d2e62526f1cd0cf7447f7693c8eceb072bbcc45e57fbb3eaa68cc8f",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {
-    "local_authoring_parts::fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47:identity,creativeGrammar": {
-      "identity": "주사위 전투 보드 - 진입 단계, 선택 경로, 세계 규칙",
-      "creativeGrammar": {
-        "mainIdentity": "주사위 전투 보드의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "a": {
-          "system": "전략",
-          "material": "보물함 빼기, 적 감지, 콤보 생성",
-          "materialDomain": "전략적 결정 및 실질적 인과 변화가 발생하는 시스템 연결",
-          "stateChange": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-        },
-        "b": {
-          "system": "디펜스",
-          "material": "무기 발射, 장비 사용, 방어 구조 조합",
-          "materialDomain": "디펜스 시스템 내에서의 실질적 인과 변화와 상호작용이 일어나는 공간 연결",
-          "stateChange": "무기 발사 -> 방어 구조 변환 -> 대응 결과 확정"
-        },
-        "abCausality": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정; 무기 발사 <-> 방어 구조 변환 <-> 대응 결과 확정",
-        "abEvolution": {
-          "aChangesB": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정",
-          "bChangesA": "무기 발사 -> 방어 구조 변환 -> 대응 결과 확정",
-          "lateGameChange": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정"
-        },
-        "materialFusion": {
-          "contrast": "보물함 빼기 <-> 적 감지 <-> 콤보 생성",
-          "causalBridge": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-          "removalConsequence": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-        },
-        "storyCausalChain": {
-          "cause": "보물함 품음, 적 감지, 콤보 생성의 실질적 인과 변화",
-          "characterConflict": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-          "playerChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정",
-          "worldChange": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-          "nextEvent": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-        },
-        "cThemes": [
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실제 선택 및 상태 변화를 통해 전략적 결정을 구현"
-          },
-          {
-            "name": "디펜스",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실제 선택 및 상태 변화를 통해 방어 구조를 조합"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략 시스템",
-            "gameplayEffect": "실제 선택 및 상태 변화로 전략적 결정이 발생"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "디펜스 시스템",
-            "gameplayEffect": "실제 선택 및 상태 변화로 디펜스 구조가 변형"
-          }
-        ],
-        "cGenreInterlock": "전략 시스템과 디펜스 시스템의 상호작용은 보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정으로 정립됨",
-        "cWorldAndGameplayEffect": "전략 시스템과 디펜스 시스템의 상호작용은 실질적 인과 변화와 함께 세계 규칙에 반영됨",
-        "delveDiscoveries": [
-          {
-            "clue": "보물함 품음, 적 감지, 콤보 생성",
-            "discovery": "실제 선택 및 상태 변화로 전략적 결정을 구현",
-            "newChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-          },
-          {
-            "clue": "무기 발사, 방어 구조 조합",
-            "discovery": "실제 선택 및 상태 변화로 디펜스 구조를 조합",
-            "newChoice": "무기 발사 -> 방어 구조 변환 -> 대응 결과 확정"
-          },
-          {
-            "clue": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-            "discovery": "실제 선택 및 상태 변화로 전략적 결정이 발생",
-            "newChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-          },
-          {
-            "clue": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-            "discovery": "실제 선택 및 상태 변화로 전략적 결정과 디펜스 구조가 상호작용",
-            "newChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-          }
-        ],
-        "delveGrowthRule": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정의 순서에 따라 무한 발전 규칙을 적용",
-        "finalGameIdentity": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정으로 인해 새 정체성이 형성됨"
-      }
-    },
-    "local_authoring_parts::fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47:playerFantasy,coreFun": {
-      "playerFantasy": "플레이어는 주사위 전투 보드에서 보물함을 빼며 전략적 결정을 내야 하는 단순한 선택을 하게 된다. 이 선택은 실제 세계 상태에 영향을 미치며, 그 결과로 새로운 게임 패턴이나 방어 구조가 생성된다. 플레이어는 이러한 진입 단계부터 계속해서 다양한 선택을 통해 전략의 깊이를 증가시키고, 결국 모든 축을 인과적으로 결합하여 새롭게 정체성을 형성할 수 있다.",
-      "coreFun": "{\"system\": \"전략\", \"material\": \"보물함 빼기, 적 감지, 콤보 생성\", \"materialDomain\": \"전략적 결정 및 실질적 인과 변화가 발생하는 시스템 연결\", \"stateChange\": \"보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정\"}"
-    },
-    "local_authoring_parts::a418bb8c424f17c444c3d8f57651f1d1b94ce0bd0f2795cef26e2b58a01b1344:identity,creativeGrammar,playerFantasy,coreFun": {
-      "identity": "주사위 전투 보드 - 진입 단계, 선택 경로, 세계 규칙",
-      "creativeGrammar": {
-        "mainIdentity": "주사위 전투 보드의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "a": {
-          "system": "전략",
-          "material": "보물함 빼기, 적 감지, 콤보 생성",
-          "materialDomain": "전략적 결정 및 실질적 인과 변화가 발생하는 시스템 연결",
-          "stateChange": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-        },
-        "b": {
-          "system": "디펜스",
-          "material": "무기 발射, 장비 사용, 방어 구조 조합",
-          "materialDomain": "디펜스 시스템 내에서의 실질적 인과 변화와 상호작용이 일어나는 공간 연결",
-          "stateChange": "무기 발사 -> 방어 구조 변환 -> 대응 결과 확정"
-        },
-        "abCausality": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정; 무기 발사 <-> 방어 구조 변환 <-> 대응 결과 확정",
-        "abEvolution": {
-          "aChangesB": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정",
-          "bChangesA": "무기 발사 -> 방어 구조 변환 -> 대응 결과 확정",
-          "lateGameChange": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정"
-        },
-        "materialFusion": {
-          "contrast": "보물함 빼기 <-> 적 감지 <-> 콤보 생성",
-          "causalBridge": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-          "removalConsequence": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-        },
-        "storyCausalChain": {
-          "cause": "보물함 품음, 적 감지, 콤보 생성의 실질적 인과 변화",
-          "characterConflict": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-          "playerChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정",
-          "worldChange": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-          "nextEvent": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-        },
-        "cThemes": [
-          {
-            "name": "전략",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실제 선택 및 상태 변화를 통해 전략적 결정을 구현"
-          },
-          {
-            "name": "디펜스",
-            "kind": "MATERIAL",
-            "gameplayEffect": "실제 선택 및 상태 변화를 통해 방어 구조를 조합"
-          }
-        ],
-        "cGenres": [
-          {
-            "role": "PRIMARY",
-            "name": "전략 시스템",
-            "gameplayEffect": "실제 선택 및 상태 변화로 전략적 결정이 발생"
-          },
-          {
-            "role": "SECONDARY",
-            "name": "디펜스 시스템",
-            "gameplayEffect": "실제 선택 및 상태 변화로 디펜스 구조가 변형"
-          }
-        ],
-        "cGenreInterlock": "전략 시스템과 디펜스 시스템의 상호작용은 보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정으로 정립됨",
-        "cWorldAndGameplayEffect": "전략 시스템과 디펜스 시스템의 상호작용은 실질적 인과 변화와 함께 세계 규칙에 반영됨",
-        "delveDiscoveries": [
-          {
-            "clue": "보물함 품음, 적 감지, 콤보 생성",
-            "discovery": "실제 선택 및 상태 변화로 전략적 결정을 구현",
-            "newChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-          },
-          {
-            "clue": "무기 발사, 방어 구조 조합",
-            "discovery": "실제 선택 및 상태 변화로 디펜스 구조를 조합",
-            "newChoice": "무기 발사 -> 방어 구조 변환 -> 대응 결과 확정"
-          },
-          {
-            "clue": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-            "discovery": "실제 선택 및 상태 변화로 전략적 결정이 발생",
-            "newChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-          },
-          {
-            "clue": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정",
-            "discovery": "실제 선택 및 상태 변화로 전략적 결정과 디펜스 구조가 상호작용",
-            "newChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-          }
-        ],
-        "delveGrowthRule": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정의 순서에 따라 무한 발전 규칙을 적용",
-        "finalGameIdentity": "보물함 품음 <-> 적 위치 변경 <-> 콤보 결과 확정으로 인해 새 정체성이 형성됨"
-      },
-      "playerFantasy": "플레이어는 주사위 전투 보드에서 보물함을 빼며 전략적 결정을 내야 하는 단순한 선택을 하게 된다. 이 선택은 실제 세계 상태에 영향을 미치며, 그 결과로 새로운 게임 패턴이나 방어 구조가 생성된다. 플레이어는 이러한 진입 단계부터 계속해서 다양한 선택을 통해 전략의 깊이를 증가시키고, 결국 모든 축을 인과적으로 결합하여 새롭게 정체성을 형성할 수 있다.",
-      "coreFun": "{\"system\": \"전략\", \"material\": \"보물함 빼기, 적 감지, 콤보 생성\", \"materialDomain\": \"전략적 결정 및 실질적 인과 변화가 발생하는 시스템 연결\", \"stateChange\": \"보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정\"}"
-    },
-    "local_authoring_parts::d1a13875d7edd36efa8433fde35e45613284da1233ef63c3b7779399ca657fac:coreLoop": {
-      "coreLoop": [
-        "입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결",
-        "보물함 품음 (입력) -> 적 위치 변경 (선택) -> 콤보 결과 확정 (보상)",
-        "무기 발사 (입력) -> 방어 구조 변환 (선택) -> 대응 결과 확정 (보상)"
-      ]
-    },
-    "local_authoring_parts::4c31193389a4bdb6f77e56cd9269ca6d85a1a9e78e7187f3e95b24ff8cbc3719:signatureSystems:0:4f53cda18c2baa0c": {
-      "id": "main_royal_match",
-      "grammarRole": "MAIN",
-      "stateInputs": [
-        "보물함 품음",
-        "무기 발사"
-      ],
-      "stateOutputs": [
-        "적 위치 변경",
-        "대응 결과 확정"
-      ],
-      "name": "주사위 전투 보드 - 진입 단계, 선택 경로, 세계 규칙",
-      "purpose": "실제 플레이 선택을 통해 전략적 결정을 구현하는 게임 정체성 형성",
-      "playerChoice": "보물함 품음 -> 적 위치 변경 -> 콤보 결과 확정"
-    }
-  },
-  "modelHealth": {
-    "ollama:qwen3:1.7b": {
-      "calls": 33,
-      "successes": 31,
-      "failures": 2,
-      "timeouts": 2,
-      "jsonFailures": 0,
-      "totalMs": 1667024,
-      "lastMs": 31879,
-      "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}",
-      "updatedAt": "2026-10-10T05:10:40.800Z"
-    }
-  },
+  "tasks": {},
+  "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-10T04:42:53.437Z",
-  "updatedAt": "2026-10-10T05:10:40.810Z",
+  "createdAt": "2026-10-10T08:40:48.286Z",
+  "updatedAt": "2026-10-10T08:40:48.300Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 124,
-    "sha256": "54aa38cb6a249a6be19e84e88a97361af4241d60e44dd8df7d13f1fbe6664ef2",
-    "inventoryCount": 721,
+    "version": 127,
+    "sha256": "8f262c7fb3024a011eed78be38de084ce4bc7493cda8a14c6545cb17f34a8f38",
+    "inventoryCount": 745,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -282,10 +69,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -750,8 +539,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -793,10 +582,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1261,8 +1052,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 721,
-        "eligibleAssetCount": 412,
+        "evaluatedAssetCount": 745,
+        "eligibleAssetCount": 436,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1304,10 +1095,12 @@
             "CARRY_IDLE",
             "CAST_BURST",
             "CHANNEL_LOOP",
+            "CHARACTER_ACTIONS",
             "CLIMB_LOOP",
             "COOK_LOOP",
             "COUNTER_READY",
             "CRAFT_LOOP",
+            "CREATURE_ACTIONS",
             "CROUCH_IDLE",
             "DEATH_FRONT",
             "DODGE_LEFT",
@@ -1818,42 +1611,5 @@
         "productionVerified": false
       }
     }
-  },
-  "sliceDependencies": {},
-  "sliceRepairFeedback": {
-    "local_authoring_parts::4c31193389a4bdb6f77e56cd9269ca6d85a1a9e78e7187f3e95b24ff8cbc3719:signatureSystems:1:a3dc90ea69b314d6": [
-      {
-        "code": "DESIGN_GRAMMAR_ROLE_CONTENT_CLONED",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_royal_match"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_INPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_royal_match"
-        ]
-      },
-      {
-        "code": "DESIGN_GRAMMAR_STATE_OUTPUT_HANDOFF_MISSING",
-        "grammarRole": "A",
-        "previousRuleIds": [
-          "main_royal_match"
-        ]
-      }
-    ]
-  },
-  "sliceRepairAttempts": {
-    "local_authoring_parts::4c31193389a4bdb6f77e56cd9269ca6d85a1a9e78e7187f3e95b24ff8cbc3719:signatureSystems:1:a3dc90ea69b314d6": 27
-  },
-  "slicePartialResults": {},
-  "localAuthoringSplits": {
-    "fb17932546cb82360e1b97bd8696ec9f804276bd7c367acf020e41d9a840cc47": true
-  },
-  "lastSuccessfulModelCallAt": "2026-10-10T05:10:08.918Z",
-  "failedPhase": "designer_draft",
-  "failedTask": "identity-core",
-  "lastError": "OLLAMA_DESIGN_HTTP_500 {\"error\":\"prediction aborted, token repeat limit reached\"}"
+  }
 }
