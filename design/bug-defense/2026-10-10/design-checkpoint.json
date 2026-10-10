@@ -154,25 +154,194 @@
       "name": "Defense Adaptation",
       "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation and decision-making.",
       "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift, prioritizing high-value countermeasures and survival strategies."
+    },
+    "local_authoring_parts::a2e3aa33d39ed132f78790390d571edb2e60ab6fc88e4b2d07d46b03788fed2e:signatureSystems:3:43ec225b21425577": {
+      "id": "delve_roadmap",
+      "grammarRole": "DELVE",
+      "stateInputs": [
+        "incoming_insect_wave_pattern",
+        "resource_allocation_state",
+        "defender_placement_adjustment",
+        "next_defense_decision_making"
+      ],
+      "stateOutputs": [
+        "defender_placement_adjustment",
+        "next_defense_decision_making",
+        "incoming_insect_wave_pattern",
+        "resource_allocation_state"
+      ],
+      "name": "Defense Adaptation",
+      "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation.",
+      "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+    },
+    "local_authoring_parts::b4e33a56aeaa940e327d36ffcfd228e146f46c46d846ae9947348d01a257be8f:signatureSystems": {
+      "signatureSystems": [
+        {
+          "id": "main_roadmap",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "name": "Main Roadmap",
+          "purpose": "Establish the core gameplay strategy for defending against insect waves, with a focus on adaptive resource allocation and strategic placement of defenders.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+        },
+        {
+          "id": "a_main_roadmap",
+          "grammarRole": "A",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state",
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making",
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "name": "After Play Flow",
+          "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+        },
+        {
+          "id": "b_defense_adaptation",
+          "grammarRole": "B",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "name": "Defense Adaptation",
+          "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation and decision-making.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift, prioritizing high-value countermeasures and survival strategies."
+        },
+        {
+          "id": "delve_roadmap",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state",
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making",
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "name": "Defense Adaptation",
+          "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+        }
+      ]
+    },
+    "local_authoring_parts::021cc8887061b409b0eae6b1a2277ea56b94618081bd96f74b790912dd931dfd:coreLoop,signatureSystems": {
+      "coreLoop": [
+        "입력: 곤충 웨이브 및 위협 패턴 읽기",
+        "선택: 방어선 재배치 및 최대한 경제적 가치에 맞춘 자원 배분",
+        "상태변화: 방어선 위치 변경, 자원 소비 증가",
+        "보상/위험: 성공 또는 실패, 다음 선택 기반의 전략 결정"
+      ],
+      "signatureSystems": [
+        {
+          "id": "main_roadmap",
+          "grammarRole": "MAIN",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "name": "Main Roadmap",
+          "purpose": "Establish the core gameplay strategy for defending against insect waves, with a focus on adaptive resource allocation and strategic placement of defenders.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+        },
+        {
+          "id": "a_main_roadmap",
+          "grammarRole": "A",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state",
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making",
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "name": "After Play Flow",
+          "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+        },
+        {
+          "id": "b_defense_adaptation",
+          "grammarRole": "B",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "name": "Defense Adaptation",
+          "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation and decision-making.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift, prioritizing high-value countermeasures and survival strategies."
+        },
+        {
+          "id": "delve_roadmap",
+          "grammarRole": "DELVE",
+          "stateInputs": [
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state",
+            "defender_placement_adjustment",
+            "next_defense_decision_making"
+          ],
+          "stateOutputs": [
+            "defender_placement_adjustment",
+            "next_defense_decision_making",
+            "incoming_insect_wave_pattern",
+            "resource_allocation_state"
+          ],
+          "name": "Defense Adaptation",
+          "purpose": "Establish the core gameplay strategy for adapting to conflicting wave patterns and adjusting defender placements dynamically, with a focus on strategic resource allocation.",
+          "playerChoice": "Player selects initial defense configuration based on wave pattern and resource availability, then adjusts defenses dynamically as resources shift."
+        }
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 10,
+      "successes": 10,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 209252,
-      "lastMs": 17624,
+      "totalMs": 233093,
+      "lastMs": 3114,
       "lastError": null,
-      "updatedAt": "2026-10-10T10:42:15.019Z"
+      "updatedAt": "2026-10-10T10:42:38.862Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:38:45.613Z",
-  "updatedAt": "2026-10-10T10:42:15.019Z",
+  "updatedAt": "2026-10-10T10:42:38.865Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1860,7 +2029,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T10:42:15.019Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:42:38.865Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
