@@ -95,25 +95,117 @@
         "delveGrowthRule": "역사·과학·예술 서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, 보조 장르는 기술적 발전으로 인해 플레이어에게 새로운 경로를 열고 있다.",
         "finalGameIdentity": "역사·과학·예술의 융합이 게임 정체성을 형성하며, 역사적 사건은 과학적 발견으로 이어지고, 과학적 발견은 기술적 발전으로 이어지며, 기술적 발전은 새로운 경로를 열고 있다."
       }
+    },
+    "local_authoring_parts::ef00e71b057bb83a672abb490dab81c631c0ab2a9c20450b5768cd5139fd7de0:playerFantasy,coreFun": {
+      "playerFantasy": "퇴마 사무소는 단순한 라이선스 시뮬레이션에서 시작해 역사, 철학, 예술을 융합한 게임 정체성으로 진화한다. 플레이어는 실질적인 선택과 위험에 직면하며, 과학적 발견과 기술 발전의 흐름을 따라 새로운 경로를 탐색해야 한다.",
+      "coreFun": "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계가 필요하다. 입력은 역사적 사건, 선택은 과학적 발견, 상태변화는 기술적 발전, 보상은 새로운 경로 확장, 다음 선택은 플레이어의 선택에 따른 규칙 조합이다."
+    },
+    "local_authoring_parts::0929213308b8c6cde6e753824095aee37397ec24945b3ef36a454606356704b8:identity,creativeGrammar,playerFantasy,coreFun": {
+      "identity": "퇴마 사무소",
+      "creativeGrammar": {
+        "mainIdentity": "기본 게임 주제/정체성: 경영, 라이선스, 시뮬레이션, RPG",
+        "a": {
+          "system": "게임 시스템+해당 축 창작 소재: 역사, 철학, 예술",
+          "material": "역사적 사건, 철학적 논리, 예술적 표현",
+          "materialDomain": "역사, 철학, 예술",
+          "stateChange": "역사적 사건의 발생, 철학적 논리의 적용, 예술적 표현의 확장"
+        },
+        "b": {
+          "system": "다른 시스템+해당 축 창작 소재: 과학, 기술, 자연",
+          "material": "과학적 발견, 기술적 발전, 자연 현상",
+          "materialDomain": "과학, 기술, 자연",
+          "stateChange": "과학적 발견의 실현, 기술적 발전의 구축, 자연 현상의 재구성"
+        },
+        "abCausality": "양방향 실제 상태 교환: 역사적 사건 → 과학적 발견 → 기술적 발전",
+        "abEvolution": {
+          "aChangesB": "역사적 사건이 과학적 발견을 유도한다(인과 관계)",
+          "bChangesA": "과학적 발견이 기술적 발전을 촉진한다(인과 관계)",
+          "lateGameChange": "기술적 발전이 새로운 경로를 열어준다(인과 관계)"
+        },
+        "materialFusion": {
+          "contrast": "역사·과학·예술 서로 다른 주제/소재 두 개 선택",
+          "causalBridge": "역사적 사건은 과학적 발견으로 인해 발생하고, 과학적 발견은 기술적 발전으로 이어지며, 기술적 발전은 새로운 경로를 열고 있다.",
+          "removalConsequence": "역사 제거 시 과학적 발견과 기술적 발전이 바뀌어야 한다."
+        },
+        "storyCausalChain": {
+          "cause": "역사적 사건의 발생 및 적용(입력/선택)",
+          "characterConflict": "과학적 발견의 실현 및 구축(상황별 예외와 대가)",
+          "playerChoice": "기술적 발전의 확장(조합의 새로운 용도)",
+          "worldChange": "새로운 경로의 열림(다음 사건)을 포함하여야 한다.",
+          "nextEvent": "새로운 경로의 확장 및 재구성(보상·위험·다음 선택)"
+        },
+        "cThemes": [
+          {
+            "name": "역사",
+            "kind": "MATERIAL",
+            "gameplayEffect": "역사적 사건의 발생 및 적용(인과 관계)"
+          },
+          {
+            "name": "과학",
+            "kind": "MATERIAL",
+            "gameplayEffect": "과학적 발견의 실현 및 구축(인과 관계)"
+          }
+        ],
+        "cGenres": [
+          {
+            "role": "PRIMARY",
+            "name": "역사·철학·예술 혼합 시스템",
+            "gameplayEffect": "역사적 사건, 철학적 논리, 예술적 표현의 융합"
+          },
+          {
+            "role": "SECONDARY",
+            "name": "과학 기술 자연 시뮬레이션",
+            "gameplayEffect": "과학적 발견, 기술적 발전, 자연 현상의 조합"
+          }
+        ],
+        "cGenreInterlock": "역사와 과학은 서로 다른 주제/소재를 사용하며, 과학과 자연은 상호작용을 통해 플레이어에게 새로운 경로를 열고 있다.",
+        "cWorldAndGameplayEffect": "역사적 사건 → 과학적 발견 → 기술적 발전으로 인해 새로운 경로가 열린다.",
+        "delveDiscoveries": [
+          {
+            "clue": "역사적 사건의 발생",
+            "discovery": "과학적 발견의 실현",
+            "newChoice": "기술적 발전의 확장 및 재구성"
+          },
+          {
+            "clue": "과학적 발견의 적용",
+            "discovery": "기술효력의 강화 및 구축",
+            "newChoice": "새로운 경로의 열림 및 확장을 위한 선택"
+          },
+          {
+            "clue": "기술적 발전의 확장",
+            "discovery": "새로운 경로의 확장 및 재구성",
+            "newChoice": "플레이어 선택에 따른 새로운 규칙 조합"
+          },
+          {
+            "clue": "새로운 경로의 확장",
+            "discovery": "게임 정체성의 변화와 확장",
+            "newChoice": "플레이어 선택과 상호작용을 통해 새로운 규칙 조합"
+          }
+        ],
+        "delveGrowthRule": "역사·과학·예술 서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, 보조 장르는 기술적 발전으로 인해 플레이어에게 새로운 경로를 열고 있다.",
+        "finalGameIdentity": "역사·과학·예술의 융합이 게임 정체성을 형성하며, 역사적 사건은 과학적 발견으로 이어지고, 과학적 발견은 기술적 발전으로 이어지며, 기술적 발전은 새로운 경로를 열고 있다."
+      },
+      "playerFantasy": "퇴마 사무소는 단순한 라이선스 시뮬레이션에서 시작해 역사, 철학, 예술을 융합한 게임 정체성으로 진화한다. 플레이어는 실질적인 선택과 위험에 직면하며, 과학적 발견과 기술 발전의 흐름을 따라 새로운 경로를 탐색해야 한다.",
+      "coreFun": "입력/선택 -> 상태변화 -> 보상/위험/다음 선택의 연결을 포함하는 최소 3개의 실제 플레이 단계가 필요하다. 입력은 역사적 사건, 선택은 과학적 발견, 상태변화는 기술적 발전, 보상은 새로운 경로 확장, 다음 선택은 플레이어의 선택에 따른 규칙 조합이다."
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 554929,
-      "lastMs": 254827,
+      "totalMs": 631606,
+      "lastMs": 76677,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T10:27:46.316Z"
+      "updatedAt": "2026-10-10T10:29:02.994Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T10:18:31.164Z",
-  "updatedAt": "2026-10-10T10:27:46.316Z",
+  "updatedAt": "2026-10-10T10:29:02.995Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1605,7 +1697,7 @@
   "localAuthoringSplits": {
     "ef00e71b057bb83a672abb490dab81c631c0ab2a9c20450b5768cd5139fd7de0": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T10:27:46.316Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T10:29:02.995Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
