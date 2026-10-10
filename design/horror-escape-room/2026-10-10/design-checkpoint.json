@@ -104,25 +104,51 @@
         "감염 공격 → 정화 공격 순차적으로 진행",
         "감염은 정화로 해결되고, 정화는 감염으로 재생될 수 있다"
       ]
+    },
+    "local_authoring_parts::5d3fa2c583cc686160a437d47ea10da8b782226433c7c080bef1e6ec48b98404:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "학교"
+      ],
+      "stateOutputs": [
+        "폐놀이공원"
+      ],
+      "name": "로드",
+      "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+      "playerChoice": "학교 → 폐놀이공원"
+    },
+    "local_authoring_parts::5d3fa2c583cc686160a437d47ea10da8b782226433c7c080bef1e6ec48b98404:signatureSystems:1:bdf57fbcafd9bfc3": {
+      "id": "a_main_road",
+      "grammarRole": "A",
+      "stateInputs": [
+        "폐놀이공원"
+      ],
+      "stateOutputs": [
+        "학교"
+      ],
+      "name": "로드",
+      "purpose": "인간이 학교에서 시작하여 폐놀이공원에 도달하는 기본 경로",
+      "playerChoice": "학교 → 폐놀이공원"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 198217,
-      "lastMs": 27390,
+      "totalMs": 221219,
+      "lastMs": 8512,
       "lastError": null,
-      "updatedAt": "2026-10-10T09:37:39.432Z"
+      "updatedAt": "2026-10-10T09:38:02.437Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:34:21.080Z",
-  "updatedAt": "2026-10-10T09:37:39.432Z",
+  "updatedAt": "2026-10-10T09:38:02.438Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1452,7 +1478,7 @@
   "sliceRepairFeedback": {},
   "sliceRepairAttempts": {},
   "slicePartialResults": {},
-  "lastSuccessfulModelCallAt": "2026-10-10T09:37:39.432Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T09:38:02.438Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
