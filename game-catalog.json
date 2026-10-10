@@ -264,8 +264,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -361,8 +361,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -435,8 +435,8 @@
         "playMode": "COOP",
         "playModeLabel": "협동",
         "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -603,8 +603,8 @@
             "playMode": "COOP",
             "playModeLabel": "협동",
             "latestWork": "영웅형 NPC·갑옷 실루엣 재구성 · 5포탈 파티 RPG 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -772,7 +772,7 @@
         "playMode": "COMPETITIVE",
         "playModeLabel": "경쟁",
         "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -918,7 +918,7 @@
             "playMode": "COMPETITIVE",
             "playModeLabel": "경쟁",
             "latestWork": "4대4 감염전 전면 전환 · 인간 캐릭터 확장 구조 · 공포 전용 캐릭터/학교 시야 개선",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -1408,6 +1408,170 @@
       }
     },
     {
+      "id": "bug-defense",
+      "name": "곤충 디펜스",
+      "description": "30웨이브 곤충 디펜스",
+      "genre": [
+        "웨이브",
+        "전략",
+        "곤충"
+      ],
+      "image": "assets/insect-war-v2.webp",
+      "webPath": "/web-games/bug-defense/",
+      "hasWebArchive": false,
+      "featured": true,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "웨이브",
+          "전략",
+          "곤충"
+        ],
+        "genreLabel": "웨이브 · 전략 · 곤충",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 7,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "bug-defense",
+          "name": "곤충 디펜스",
+          "description": "30웨이브 곤충 디펜스",
+          "genres": [
+            "웨이브",
+            "전략",
+            "곤충"
+          ],
+          "image": "assets/insect-war-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/insect-war-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/bug-defense/",
+            "archive": false,
+            "playable": false,
+            "state": "WITHDRAWN_SIMPLE_PROTOTYPE",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "웨이브",
+              "전략",
+              "곤충"
+            ],
+            "genreLabel": "웨이브 · 전략 · 곤충",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 7,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/bug-defense",
+        "UNITY": "unity-games/bug-defense"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "homepageDisplayMode": "",
+      "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE"
+    },
+    {
       "id": "insect-survival",
       "name": "곤충 생존기",
       "description": "작은 세계에서 살아남는 생존 게임",
@@ -1453,13 +1617,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 8,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -1573,13 +1737,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 8,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
@@ -1663,7 +1827,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 8,
+        "catalogOrder": 9,
         "authority": "company-runtime",
         "identity": {
           "gameId": "line-defense",
@@ -1783,7 +1947,7 @@
           }
         }
       },
-      "catalogOrder": 8,
+      "catalogOrder": 9,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -1875,7 +2039,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "village-dungeons",
@@ -1997,7 +2161,7 @@
           }
         }
       },
-      "catalogOrder": 9,
+      "catalogOrder": 10,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -2081,13 +2245,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 10,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -2199,13 +2363,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 10,
+      "catalogOrder": 11,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -2296,14 +2460,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "core-clash-4v4",
@@ -2419,13 +2583,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 11,
+      "catalogOrder": 12,
       "homepageMedia": {
         "gameId": "core-clash-4v4",
         "titleEn": "CORE CLASH",
@@ -2498,13 +2662,13 @@
         "playMode": "COOP",
         "playModeLabel": "협동",
         "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 12,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cozy-island",
@@ -2820,13 +2984,13 @@
             "playMode": "COOP",
             "playModeLabel": "협동",
             "latestWork": "동화풍 주민·동물 아트 재구성 · 5거점 정복 특징 중심 Roblox 제목 적용",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 12,
+      "catalogOrder": 13,
       "selectedPlatform": "ROBLOX",
       "nameEnglish": "Cozy Island: Build a Tiny Kingdom",
       "internationalTitle": "Cozy Island: Build a Tiny Kingdom",
@@ -3110,13 +3274,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "egg-heist",
@@ -3207,13 +3371,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 13,
+      "catalogOrder": 14,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE",
       "targetPlatform": "ROBLOX",
@@ -3274,13 +3438,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 14,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -3371,13 +3535,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 14,
+      "catalogOrder": 15,
       "ownerWebSourceState": "ENTRY_MISSING_OR_INVALID",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -3432,14 +3596,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 15,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go-temp",
@@ -3555,13 +3719,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 15,
+      "catalogOrder": 16,
       "homepageMedia": {
         "gameId": "human-go-temp",
         "titleEn": "HUMAN GO",
@@ -3634,13 +3798,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -3733,13 +3897,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 16,
+      "catalogOrder": 17,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE",
       "targetPlatform": "ROBLOX",
@@ -3803,15 +3967,15 @@
         "subgenre": "보드·카드",
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -3926,14 +4090,14 @@
             "subgenre": "보드·카드",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 17,
+      "catalogOrder": 18,
       "homepageMedia": {
         "gameId": "party-rpg",
         "titleEn": "PARTY RPG",
@@ -4009,14 +4173,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -4111,13 +4275,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 18,
+      "catalogOrder": 19,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4171,14 +4335,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -4273,13 +4437,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 19,
+      "catalogOrder": 20,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4333,14 +4497,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -4435,13 +4599,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4495,14 +4659,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "ROBLOX",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-roblox-survival-horror-es-doors",
@@ -4597,13 +4761,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -4652,13 +4816,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival2",
@@ -4749,13 +4913,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE",
       "targetPlatform": "ROBLOX",
@@ -4815,13 +4979,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -4933,13 +5097,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -5030,14 +5194,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cat-step",
@@ -5153,13 +5317,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 24,
+      "catalogOrder": 25,
       "homepageMedia": {
         "gameId": "cat-step",
         "titleEn": "CAT STEP",
@@ -5235,14 +5399,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "defense",
@@ -5358,13 +5522,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "homepageMedia": {
         "gameId": "defense",
         "titleEn": "FOREST DEFENSE",
@@ -5440,14 +5604,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "dice-battle-board",
@@ -5563,13 +5727,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "homepageMedia": {
         "gameId": "dice-battle-board",
         "titleEn": "DICE BATTLE",
@@ -5645,14 +5809,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "exorcist-office",
@@ -5768,13 +5932,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "homepageMedia": {
         "gameId": "exorcist-office",
         "titleEn": "EXORCIST OFFICE",
@@ -5848,14 +6012,14 @@
         "playMode": "HYBRID",
         "playModeLabel": "혼합",
         "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -5971,13 +6135,13 @@
             "playMode": "HYBRID",
             "playModeLabel": "혼합",
             "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "productionTarget": "ROBLOX_UNITY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "concurrentTargetPlatforms": [
@@ -6059,15 +6223,15 @@
         "subgenre": "",
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fifty-days",
@@ -6180,14 +6344,14 @@
             "subgenre": "",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "homepageMedia": {
         "gameId": "fifty-days",
         "titleEn": "FIFTY DAYS",
@@ -6263,14 +6427,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -6386,13 +6550,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "homepageMedia": {
         "gameId": "gem-survivor",
         "titleEn": "GEM SURVIVOR",
@@ -6467,15 +6631,15 @@
         "subgenre": "",
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -6590,14 +6754,14 @@
             "subgenre": "",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "homepageMedia": {
         "gameId": "kingshot-ad",
         "titleEn": "KINGSHOT",
@@ -6624,6 +6788,217 @@
         "ROBLOX",
         "UNITY"
       ]
+    },
+    {
+      "id": "monster-adventure",
+      "name": "몬스터 어드벤처",
+      "description": "몬스터 포획과 성장 모험",
+      "genre": [
+        "몬스터",
+        "턴제",
+        "모험"
+      ],
+      "image": "assets/fantasy-rpg-v2.webp",
+      "webPath": "/web-games/monster-adventure/",
+      "hasWebArchive": true,
+      "featured": false,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "몬스터",
+          "턴제",
+          "모험"
+        ],
+        "genreLabel": "몬스터 · 턴제 · 모험",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 33,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "monster-adventure",
+          "name": "몬스터 어드벤처",
+          "description": "몬스터 포획과 성장 모험",
+          "genres": [
+            "몬스터",
+            "턴제",
+            "모험"
+          ],
+          "image": "assets/fantasy-rpg-v2.webp",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/fantasy-rpg-v2.webp",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": {
+            "gameId": "monster-adventure",
+            "titleEn": "MONSTER ADVENTURE",
+            "titleKo": "몬스터 어드벤처",
+            "cover": {
+              "src": "assets/homepage-covers/monster-adventure.webp",
+              "width": 960,
+              "height": 540,
+              "bytes": 64218,
+              "sha256": "44ff5bed6ff00f1bcaecb150f0faf4187437b0d94e23f2dda7e4a757aaa3dae2"
+            },
+            "small": {
+              "src": "assets/homepage-covers/monster-adventure-480.webp",
+              "width": 480,
+              "height": 270,
+              "bytes": 27860,
+              "sha256": "c7e538c5cb2bb4389df3f2ae8a4cc7c69a519f59eaccb7649cc0791e6e6d0d4a"
+            },
+            "kind": "MARKETING_ARTWORK",
+            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+            "typography": "playful monster-adventure bouncy irregular heavy slab with flat orange outline"
+          }
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/monster-adventure/",
+            "archive": true,
+            "playable": false,
+            "state": "UNITY_WEB_VERIFICATION_REQUIRED",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "몬스터",
+              "턴제",
+              "모험"
+            ],
+            "genreLabel": "몬스터 · 턴제 · 모험",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 33,
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/monster-adventure",
+        "UNITY": "unity-games/monster-adventure"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "homepageDisplayMode": "",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
+      "ownerWebSourceRevision": "1430d58b33bc169ea7e8f01593872a7e96aade8c4b5ef9de07463380583666e5",
+      "ownerWebEntryFile": "web-games/monster-adventure/index.html",
+      "webDevelopmentResetRequired": true,
+      "homepageMedia": {
+        "gameId": "monster-adventure",
+        "titleEn": "MONSTER ADVENTURE",
+        "titleKo": "몬스터 어드벤처",
+        "cover": {
+          "src": "assets/homepage-covers/monster-adventure.webp",
+          "width": 960,
+          "height": 540,
+          "bytes": 64218,
+          "sha256": "44ff5bed6ff00f1bcaecb150f0faf4187437b0d94e23f2dda7e4a757aaa3dae2"
+        },
+        "small": {
+          "src": "assets/homepage-covers/monster-adventure-480.webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 27860,
+          "sha256": "c7e538c5cb2bb4389df3f2ae8a4cc7c69a519f59eaccb7649cc0791e6e6d0d4a"
+        },
+        "kind": "MARKETING_ARTWORK",
+        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
+        "typography": "playful monster-adventure bouncy irregular heavy slab with flat orange outline"
+      }
     },
     {
       "id": "realistic-builder",
@@ -6672,15 +7047,15 @@
         "subgenre": "",
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+        "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 34,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6795,14 +7170,14 @@
             "subgenre": "",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
+            "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 34,
       "homepageMedia": {
         "gameId": "realistic-builder",
         "titleEn": "REALISTIC BUILDER",
@@ -6881,7 +7256,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 35,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -6999,7 +7374,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 35,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7089,7 +7464,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 36,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -7186,7 +7561,7 @@
           }
         }
       },
-      "catalogOrder": 34,
+      "catalogOrder": 36,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7250,7 +7625,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -7347,7 +7722,7 @@
           }
         }
       },
-      "catalogOrder": 35,
+      "catalogOrder": 37,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7411,7 +7786,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -7508,7 +7883,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 38,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7572,7 +7947,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -7690,7 +8065,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 39,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE",
@@ -7780,7 +8155,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -7877,7 +8252,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 40,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -7937,15 +8312,15 @@
         "subgenre": "",
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
-        "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
-        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "simple-rpg",
@@ -8060,14 +8435,14 @@
             "subgenre": "",
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
-            "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
-            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 41,
       "homepageMedia": {
         "gameId": "simple-rpg",
         "titleEn": "LITTLE QUEST",
@@ -8141,14 +8516,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -8262,13 +8637,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_SOURCE_BIND",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 42,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -8295,6 +8670,166 @@
         "ROBLOX",
         "UNITY"
       ]
+    },
+    {
+      "id": "survival",
+      "name": "나의 생존기",
+      "description": "채집과 제작 중심 생존 게임",
+      "genre": [
+        "생존",
+        "채집"
+      ],
+      "image": "assets/title-survival.svg",
+      "webPath": "/web-games/survival/",
+      "hasWebArchive": false,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "ROBLOX_UNITY",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
+      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "생존",
+          "채집"
+        ],
+        "genreLabel": "생존 · 채집",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
+        "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 43,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "survival",
+          "name": "나의 생존기",
+          "description": "채집과 제작 중심 생존 게임",
+          "genres": [
+            "생존",
+            "채집"
+          ],
+          "image": "assets/title-survival.svg",
+          "aliases": []
+        },
+        "marketing": {
+          "thumbnail": "assets/title-survival.svg",
+          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
+          "homepageMedia": null
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "ROBLOX_UNITY",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/survival/",
+            "archive": false,
+            "playable": false,
+            "state": "WITHDRAWN_SIMPLE_PROTOTYPE",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Roblox + Unity 앱 동시개발",
+          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
+            "validationSchemaVersion": null,
+            "genre": [
+              "생존",
+              "채집"
+            ],
+            "genreLabel": "생존 · 채집",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
+            "status": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 43,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/survival",
+        "UNITY": "unity-games/survival"
+      },
+      "updatedAt": "2026-09-21T15:09:50.123Z",
+      "homepageDisplayMode": "",
+      "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE"
     },
     {
       "id": "tower-choice-rpg",
@@ -8344,14 +8879,14 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "selectedPlatform": "UNITY",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -8467,13 +9002,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 44,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -8547,13 +9082,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-        "updatedAt": "2026-10-10T13:43:10.559Z",
+        "updatedAt": "2026-10-10T15:27:55.406Z",
         "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 45,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -8669,13 +9204,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "30일 선택형 생존, 체력·식량·물자·방어·동료 상태, 랜덤 사건, 자동 저장 구현",
-            "updatedAt": "2026-10-10T13:43:10.559Z",
+            "updatedAt": "2026-10-10T15:27:55.406Z",
             "status": "TARGET_PLATFORM_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
-      "catalogOrder": 42,
+      "catalogOrder": 45,
       "selectedPlatform": "UNITY",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -8709,541 +9244,6 @@
         "ROBLOX",
         "UNITY"
       ]
-    },
-    {
-      "id": "bug-defense",
-      "name": "곤충 디펜스",
-      "description": "30웨이브 곤충 디펜스",
-      "genre": [
-        "웨이브",
-        "전략",
-        "곤충"
-      ],
-      "image": "assets/insect-war-v2.webp",
-      "webPath": "/web-games/bug-defense/",
-      "hasWebArchive": false,
-      "featured": true,
-      "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "웨이브",
-          "전략",
-          "곤충"
-        ],
-        "genreLabel": "웨이브 · 전략 · 곤충",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-10T04:32:24.208Z",
-        "status": "ACTIVE",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 43,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "bug-defense",
-          "name": "곤충 디펜스",
-          "description": "30웨이브 곤충 디펜스",
-          "genres": [
-            "웨이브",
-            "전략",
-            "곤충"
-          ],
-          "image": "assets/insect-war-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/insect-war-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/bug-defense/",
-            "archive": false,
-            "playable": false,
-            "state": "WITHDRAWN_SIMPLE_PROTOTYPE",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "웨이브",
-              "전략",
-              "곤충"
-            ],
-            "genreLabel": "웨이브 · 전략 · 곤충",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-10T04:32:24.208Z",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 43,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/bug-defense",
-        "UNITY": "unity-games/bug-defense"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z",
-      "homepageDisplayMode": "",
-      "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE"
-    },
-    {
-      "id": "monster-adventure",
-      "name": "몬스터 어드벤처",
-      "description": "몬스터 포획과 성장 모험",
-      "genre": [
-        "몬스터",
-        "턴제",
-        "모험"
-      ],
-      "image": "assets/fantasy-rpg-v2.webp",
-      "webPath": "/web-games/monster-adventure/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "몬스터",
-          "턴제",
-          "모험"
-        ],
-        "genreLabel": "몬스터 · 턴제 · 모험",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-10T10:59:37.448Z",
-        "status": "ACTIVE",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 44,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "monster-adventure",
-          "name": "몬스터 어드벤처",
-          "description": "몬스터 포획과 성장 모험",
-          "genres": [
-            "몬스터",
-            "턴제",
-            "모험"
-          ],
-          "image": "assets/fantasy-rpg-v2.webp",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/fantasy-rpg-v2.webp",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": {
-            "gameId": "monster-adventure",
-            "titleEn": "MONSTER ADVENTURE",
-            "titleKo": "몬스터 어드벤처",
-            "cover": {
-              "src": "assets/homepage-covers/monster-adventure.webp",
-              "width": 960,
-              "height": 540,
-              "bytes": 64218,
-              "sha256": "44ff5bed6ff00f1bcaecb150f0faf4187437b0d94e23f2dda7e4a757aaa3dae2"
-            },
-            "small": {
-              "src": "assets/homepage-covers/monster-adventure-480.webp",
-              "width": 480,
-              "height": 270,
-              "bytes": 27860,
-              "sha256": "c7e538c5cb2bb4389df3f2ae8a4cc7c69a519f59eaccb7649cc0791e6e6d0d4a"
-            },
-            "kind": "MARKETING_ARTWORK",
-            "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-            "typography": "playful monster-adventure bouncy irregular heavy slab with flat orange outline"
-          }
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/monster-adventure/",
-            "archive": true,
-            "playable": false,
-            "state": "UNITY_WEB_VERIFICATION_REQUIRED",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "몬스터",
-              "턴제",
-              "모험"
-            ],
-            "genreLabel": "몬스터 · 턴제 · 모험",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-10T10:59:37.448Z",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 44,
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/monster-adventure",
-        "UNITY": "unity-games/monster-adventure"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z",
-      "homepageDisplayMode": "",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "ownerDirectWebUpload": true,
-      "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
-      "ownerWebSourceRevision": "1430d58b33bc169ea7e8f01593872a7e96aade8c4b5ef9de07463380583666e5",
-      "ownerWebEntryFile": "web-games/monster-adventure/index.html",
-      "webDevelopmentResetRequired": true,
-      "homepageMedia": {
-        "gameId": "monster-adventure",
-        "titleEn": "MONSTER ADVENTURE",
-        "titleKo": "몬스터 어드벤처",
-        "cover": {
-          "src": "assets/homepage-covers/monster-adventure.webp",
-          "width": 960,
-          "height": 540,
-          "bytes": 64218,
-          "sha256": "44ff5bed6ff00f1bcaecb150f0faf4187437b0d94e23f2dda7e4a757aaa3dae2"
-        },
-        "small": {
-          "src": "assets/homepage-covers/monster-adventure-480.webp",
-          "width": 480,
-          "height": 270,
-          "bytes": 27860,
-          "sha256": "c7e538c5cb2bb4389df3f2ae8a4cc7c69a519f59eaccb7649cc0791e6e6d0d4a"
-        },
-        "kind": "MARKETING_ARTWORK",
-        "style": "RESTRAINED_MATTE_LOW_POLY_ROBLOX_STUDIO_STYLE",
-        "typography": "playful monster-adventure bouncy irregular heavy slab with flat orange outline"
-      }
-    },
-    {
-      "id": "survival",
-      "name": "나의 생존기",
-      "description": "채집과 제작 중심 생존 게임",
-      "genre": [
-        "생존",
-        "채집"
-      ],
-      "image": "assets/title-survival.svg",
-      "webPath": "/web-games/survival/",
-      "hasWebArchive": false,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-        "validationSchemaVersion": null,
-        "genre": [
-          "생존",
-          "채집"
-        ],
-        "genreLabel": "생존 · 채집",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-        "updatedAt": "2026-10-10T04:32:24.208Z",
-        "status": "ACTIVE",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 45,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "survival",
-          "name": "나의 생존기",
-          "description": "채집과 제작 중심 생존 게임",
-          "genres": [
-            "생존",
-            "채집"
-          ],
-          "image": "assets/title-survival.svg",
-          "aliases": []
-        },
-        "marketing": {
-          "thumbnail": "assets/title-survival.svg",
-          "source": "CANONICAL_SHARED_ROBLOX_HOMEPAGE_ASSET",
-          "homepageMedia": null
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/survival/",
-            "archive": false,
-            "playable": false,
-            "state": "WITHDRAWN_SIMPLE_PROTOTYPE",
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT",
-            "validationSchemaVersion": null,
-            "genre": [
-              "생존",
-              "채집"
-            ],
-            "genreLabel": "생존 · 채집",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "기존 공통 설계 보존 · Roblox/Unity 플랫폼 설계 보강 완료",
-            "updatedAt": "2026-10-10T04:32:24.208Z",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 45,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/survival",
-        "UNITY": "unity-games/survival"
-      },
-      "updatedAt": "2026-09-21T15:09:50.123Z",
-      "homepageDisplayMode": "",
-      "ownerWebSourceState": "WITHDRAWN_SIMPLE_PROTOTYPE"
     }
   ],
   "runtimeAuthority": "company-runtime",
