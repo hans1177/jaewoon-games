@@ -187,25 +187,32 @@
       },
       "playerFantasy": "엘도리아 연대기: 진보적 탐험, 선택의 끝없는 경로, 세계의 인성",
       "coreFun": "탐험의 시작 - 지역의 풍경, 적의 존재, 스토리의 갈등"
+    },
+    "local_authoring_parts::b225a4a75c4799d73389880d56173d06476361f971f52bdc5b5c8b0835e03752:coreLoop": {
+      "coreLoop": [
+        "탐험의 시작 - 지역의 풍경, 적의 존재, 스토리의 갈등",
+        "역사와 예술의 상태 교환 - 역사가 예술에 영향을 주고, 예술이 역사에 기반을 두며 서로 다른 방식으로 성장",
+        "역적 선택 -> 역사의 전개, 예술의 발전 -> 세계의 정체성 형성"
+      ]
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 3,
-      "successes": 2,
+      "calls": 4,
+      "successes": 3,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 710561,
-      "lastMs": 233552,
+      "totalMs": 806921,
+      "lastMs": 96360,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T03:18:33.033Z"
+      "updatedAt": "2026-10-10T03:20:09.396Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T03:06:42.448Z",
-  "updatedAt": "2026-10-10T03:18:33.035Z",
+  "updatedAt": "2026-10-10T03:20:09.396Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1951,7 +1958,7 @@
   "localAuthoringSplits": {
     "2650ff0eb6d8184864a4d0c88a2a3ce54f05bbda5ed7b3f84b78eb64644ae730": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T03:18:33.035Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T03:20:09.396Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
