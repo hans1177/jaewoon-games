@@ -3985,6 +3985,13 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       assert(declared.centroidMeters.every((v,i)=>Math.abs(v-measured.centroidMeters[i])<Math.max(1e-5,Math.max(...inspection.inventory.spatial.size)*1e-4)),'Blender and GLB surface centroid must match');
       assert.equal(measured.collisionAuthority,false);
       assert.equal(application.nativeRuntimeVerified,false);
+      assert.equal(application.pbrMeshQa.pass,true);
+      assert.equal(application.pbrMeshQa.runtimeVerified,false);
+      assert.equal(application.pbrMeshQa.normalAndUvPresent,true);
+      assert.equal(application.pbrMeshQa.materialIndexValid,true);
+      assert.equal(application.pbrMeshQa.materialFactorsFinite,true);
+      assert.equal(application.researchApplication.hunyuan3d21.modelRan,false);
+      assert.equal(application.researchApplication.hunyuan3d21.modelLicenseRegionBlocked,'SOUTH_KOREA');
       const original=inspectVibeSourceGlb({repoRoot:root,source:{path:path.relative(root,path.join(folder,'master.glb'))}});
       assert.equal(original.inventory.visibleGeometrySha256,inspection.inventory.visibleGeometrySha256);
       assert(inspection.bytes<=original.bytes);
@@ -4096,4 +4103,13 @@ test('source worker validates decoded cinematic frames rather than accepting MP4
   assert.match(worker,/nb_read_frames/);
   assert.match(worker,/stream\?\.codec_name!=='mpeg4'/);
   assert.match(worker,/sourceGlbSha256!==nativeArtifact\.sha256/);
+});
+
+test('native authoring reviews exported GLB material channels and never executes region-blocked model',()=>{
+  const source=fs.readFileSync('assets/native-authoring/build-game-visual.py','utf8');
+  assert.match(source,/pbr_mesh_qa\['pass'\]/);
+  assert.match(source,/NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID/);
+  assert.match(source,/TEXCOORD_0/);
+  assert.match(source,/modelLicenseRegionBlocked.*SOUTH_KOREA/);
+  assert.match(source,/modelRan.*False/);
 });
