@@ -2269,6 +2269,9 @@ export function buildGameSpecificBuildUpDirective({
     designedGameVolume,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      // 오토 바이옴의 월드 지오메트리·생태계 입력은 검증된 동일 게임 설계에서 가져온다.
+      spatialLayout:design.spatialLayout,
+      spatialDimension:design.spatialDimension,
       creativeGrammar:design.creativeGrammar,
       coreFun:design.coreFun,
       coreLoop:design.coreLoop,
