@@ -194,25 +194,40 @@
         "PROCESS: 감염 공격 적중률 70% 이상 -> 상태변화: 인간-> 몬스터 전환, 스킬 발현",
         "OUTPUT: 감염 상태 변화에 따른 역할 재배열, 정화 효과 반영"
       ]
+    },
+    "local_authoring_parts::b7aa4d4fb094e413148c00faa8abeb20b89daf5e007bff860b3252d469491f29:signatureSystems:0:4f53cda18c2baa0c": {
+      "id": "main_road",
+      "grammarRole": "MAIN",
+      "stateInputs": [
+        "{\"type\": \"감염 전환\", \"value\": {\"attackType\": \"몬스터 서버 권한\", \"hitRate\": 70, \"target\": ",
+        "{\"type\": \"인간 정화\", \"value\": {\"attackType\": \"정화 공격\", \"range\": 8, \"target\": \"몬스터\"}}"
+      ],
+      "stateOutputs": [
+        "{\"type\": \"감염 상태\", \"value\": {\"status\": \"전환됨\", \"role\": \"몬스터\", \"skill\": \"서버 권한 스킬\"}",
+        "{\"type\": \"정화 상태\", \"value\": {\"status\": \"제거됨\", \"role\": \"인간\", \"reward\": \"고유 도구\"}}"
+      ],
+      "name": "로드 라운드",
+      "purpose": "감염과 정화 시스템의 상호작용을 통해 플레이어 선택이 영향을 받는 감염 추격전",
+      "playerChoice": "감염 공격 적중률 70% 이상으로 인해 몬스터로 전환하거나 정화 공격 범위 8개 방향으로 제거할 수 있는 선택지 제공"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 4,
-      "successes": 3,
+      "calls": 5,
+      "successes": 4,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 590370,
-      "lastMs": 67438,
+      "totalMs": 647161,
+      "lastMs": 56791,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T08:48:35.978Z"
+      "updatedAt": "2026-10-10T08:49:32.771Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T08:38:45.583Z",
-  "updatedAt": "2026-10-10T08:48:35.978Z",
+  "updatedAt": "2026-10-10T08:49:32.771Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1545,7 +1560,7 @@
   "localAuthoringSplits": {
     "658287b18058f89b1c1bebd88fecee9d45a929f57d197cc55d4511ac954abf90": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T08:48:35.978Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T08:49:32.771Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null
