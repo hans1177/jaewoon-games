@@ -9,24 +9,28 @@
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
-  "tasks": {},
+  "tasks": {
+    "local_authoring_parts::b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2:identity": {
+      "identity": "마을 던전 RPG는 위기 상황에 놓인 마을의 의뢰를 해결하기 위해 5개 던전의 자원과 위험 속으로 진입하여 직관적인 원서클 모바일 액션 전투를 수행하고 수집품을 마을 복구 시설에 환원하여 전투 빌드를 고유하게 완성해 나가는 루프 중심의 캐주얼 모바일 액션 롤플레잉 게임이다."
+    }
+  },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 2,
-      "successes": 0,
+      "calls": 3,
+      "successes": 1,
       "failures": 2,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 562415,
-      "lastMs": 262315,
+      "totalMs": 581469,
+      "lastMs": 19054,
       "lastError": "OLLAMA_DESIGN_OUTPUT_TRUNCATED",
-      "updatedAt": "2026-10-10T09:59:20.970Z"
+      "updatedAt": "2026-10-10T09:59:40.025Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T09:49:58.534Z",
-  "updatedAt": "2026-10-10T09:59:20.970Z",
+  "updatedAt": "2026-10-10T09:59:40.026Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -1707,5 +1711,9 @@
   "localAuthoringSplits": {
     "75ba0945ed17d40871a514e4cf62008ac0692efa3f4d55815622e6ab0171e290": true,
     "b6282e7c02c36f30da719c484464527ec256b605e0310a0183cc13e1a07109e2": true
-  }
+  },
+  "lastSuccessfulModelCallAt": "2026-10-10T09:59:40.025Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
