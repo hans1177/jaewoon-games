@@ -480,3 +480,63 @@ test('기존 홈페이지 매니저가 원본 타이틀을 보존하면서 영�
   assert.match(workflow,/node tools\/homepage-manager\.mjs --capture-release-media/);
   assert.match(manager,/const captureVersion=3;/);
 });
+
+
+test('homepage title cards preserve canonical names and compact original artwork',()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(source+';({mergeGame,buildCard})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl
+  });
+  const canonical=(id,name,thumbnail,homepageMedia)=>({
+    id,name,canonical:{
+      identity:{gameId:id,name,description:'실제 게임 설명'},
+      marketing:{thumbnail,...(homepageMedia?{homepageMedia}:{})}
+    }
+  });
+  const cover={src:'assets/homepage-covers/sample-game.webp',sha256:'a'.repeat(64)};
+  const small={src:'assets/homepage-covers/sample-game-480.webp',sha256:'b'.repeat(64)};
+  const ordinary=api.mergeGame(canonical('sample-game','실제 게임 이름','assets/page-bg-v4.webp',{
+    titleEn:'ENGLISH TITLE',titleKo:'실제 게임 이름',cover,small
+  }));
+  assert.equal(ordinary.name,'실제 게임 이름');
+  assert.equal(ordinary.subtitle,'ENGLISH TITLE');
+  assert.equal(ordinary.image,'assets/homepage-covers/sample-game-480.webp?v='+small.sha256.slice(0,12));
+  assert.equal(ordinary.heroImage,'assets/homepage-covers/sample-game.webp?v='+cover.sha256.slice(0,12));
+  assert.match(api.buildCard(canonical('sample-game','실제 게임 이름','assets/page-bg-v4.webp',{
+    titleEn:'ENGLISH TITLE',titleKo:'실제 게임 이름',cover,small
+  })),/<h3>실제 게임 이름<\/h3>/);
+  const roblox=api.mergeGame(canonical('cozy-island','포근섬','assets/roblox-thumbnails/cozy-island.svg',{
+    titleEn:'COZY ISLAND',titleKo:'포근섬',cover,small
+  }));
+  assert.equal(roblox.image,'assets/roblox-thumbnails/cozy-island.svg');
+  assert.equal(roblox.heroImage,roblox.image);
+  assert.equal(roblox.sharedRobloxThumbnail,true);
+  const original=api.mergeGame(canonical('island-village','무인도 마을','assets/page-bg-v3.webp'));
+  assert.equal(original.image,'assets/title-island-village.svg');
+  assert.equal(original.originalLogo,true);
+  assert.match(api.buildCard(canonical('island-village','무인도 마을','assets/page-bg-v3.webp')),/homeOriginalTitleLogo/);
+  const originalArtwork=api.mergeGame(canonical('crystal-defense','수정 디펜스','assets/crystal-v2.webp'));
+  assert.equal(originalArtwork.image,'assets/crystal-v2.webp','keep real existing game-specific art');
+  assert.equal(originalArtwork.originalLogo,false);
+});
+
+test('homepage does not advertise generic app icons or shared page backgrounds as game title art',()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const api=vm.runInNewContext(source+';({mergeGame,buildCard})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl
+  });
+  const id='seed-roblox-roleplay-life-avat-brookhaven-rp';
+  const row={id,name:'Harbor Days',canonical:{
+    identity:{gameId:id,name:'Harbor Days'},
+    marketing:{thumbnail:'assets/pwa-icon-512.png'}
+  }};
+  const m=api.mergeGame(row);
+  assert.equal(m.image,'');
+  assert.equal(m.missingImage,true);
+  const html=api.buildCard(row);
+  assert.match(html,/homeTitlePending/);
+  assert.match(html,/대표 이미지 준비 중/);
+  assert.doesNotMatch(html,/src="assets\/pwa-icon-512\.png"/);
+  assert.match(source,/homeGallerySlide img\.homeOriginalTitleLogo\{object-fit:contain/);
+  assert.match(source,/scroll-snap-type:x mandatory/);
+});
