@@ -470,25 +470,38 @@
       "name": "전략적 선택",
       "purpose": "전선 이동에 따른 군사적 조치 결정",
       "playerChoice": "전선 병합 또는 단독 확장 선택"
+    },
+    "local_authoring_parts::48d32cc31a187257db5c9473c7fab3a8ee46457293b730dda375af618ce7265c:signatureSystems:2": {
+      "id": "signatureSystems_2",
+      "grammarRole": "B",
+      "stateInputs": [
+        "전선 위치 변경"
+      ],
+      "stateOutputs": [
+        "자원 투입"
+      ],
+      "name": "전략적 선택",
+      "purpose": "전선 변화에 따른 군사적 조치 결정",
+      "playerChoice": "전선 병합 또는 단독 확장 선택의 실행 및 전략적 변환 적용"
     }
   },
   "modelHealth": {
     "ollama:qwen3:1.7b": {
-      "calls": 12,
-      "successes": 11,
+      "calls": 13,
+      "successes": 12,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 1213595,
-      "lastMs": 62015,
+      "totalMs": 1278205,
+      "lastMs": 64610,
       "lastError": "OLLAMA_DESIGN_TIMEOUT 300000ms",
-      "updatedAt": "2026-10-10T02:23:24.571Z"
+      "updatedAt": "2026-10-10T02:24:29.183Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-10-10T02:03:10.803Z",
-  "updatedAt": "2026-10-10T02:23:24.571Z",
+  "updatedAt": "2026-10-10T02:24:29.183Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
@@ -2157,7 +2170,7 @@
   "localAuthoringSplits": {
     "039e5be2f7b084eb8c8786e3ab022db3013f416aa0f622258a945c269c64348a": true
   },
-  "lastSuccessfulModelCallAt": "2026-10-10T02:23:24.571Z",
+  "lastSuccessfulModelCallAt": "2026-10-10T02:24:29.183Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
