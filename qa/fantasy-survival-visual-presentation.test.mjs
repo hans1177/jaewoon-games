@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 
 const source=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
 
@@ -379,3 +380,34 @@ test('manual world targeting stays separate from automatic nearest selection',()
   assert.doesNotMatch(auto,/manualTarget/);
 });
 
+
+// 전투 회귀 · 태양석 유도 구슬과 근접 무기의 허공 공격 / 잘못된 처치 판정을 검증한다.
+test('sunstone orb hits a real forward target rather than nearer sand spirit or invisible enemies',()=>{
+  const state={area:'surface',camera:{x:-100,y:-140},enemies:[]};
+  const ctx={state,innerWidth:500,innerHeight:320,performance:{now:()=>10000}};
+  runInNewContext(functionBody('nearestSporeTarget'),ctx);
+  const player={x:0,y:0,faceX:1,faceY:0};
+  const target=weapon=>runInNewContext('nearestSporeTarget('+JSON.stringify(player)+','+JSON.stringify(weapon)+')?.netId ?? null',ctx);
+  const sand={netId:'sand',x:60,y:80,hp:400,area:'surface',type:{r:24,mood:'aggressive'}};
+  const front={netId:'front',x:220,y:0,hp:600,area:'surface',type:{r:30,mood:'aggressive'}};
+  state.enemies=[sand,front];
+  assert.equal(target({range:780,sunMagic:true}),'front','directly frontal monster wins over nearer side sand spirit');
+  assert.equal(target({range:760}),'sand','normal spore weapon retains original nearest targeting');
+  state.enemies=[{...sand,x:-60,y:0}];
+  assert.equal(target({range:780,sunMagic:true}),null,'backward-only target means no orb');
+  state.enemies=[{...front,x:900}];
+  assert.equal(target({range:780,sunMagic:true}),null,'offscreen target means no orb');
+  state.enemies=[{...front,hp:0}];
+  assert.equal(target({range:780,sunMagic:true}),null,'dead target means no orb');
+  const attack=functionBody('attack');
+  assert.ok(attack.includes('e.x+e.type.r<cam.x'),'melee must check visible target');
+  assert.ok(attack.includes('if(dot<-.18)continue'),'preserve existing directional melee rule');
+  assert.ok(attack.includes('if(e.hp<=0){'),'kill/reward follows actual death only');
+  const native=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const nativeAttack=native.slice(native.indexOf('private void Attack()'),native.indexOf('private void Update()'));
+  assert.ok(nativeAttack.includes('WorldToViewportPoint'),'native target must be onscreen');
+  assert.ok(nativeAttack.includes('Vector3.Dot(player.forward,offset.normalized)'),'native melee respects facing');
+  assert.ok(nativeAttack.includes('if(orb && alignedTarget!=null)target=alignedTarget'),'native orb prefers the frontal enemy');
+  assert.ok(nativeAttack.includes('if(target==null)'),'native empty attack does not damage anyone');
+  assert.ok(native.includes('if(target.hp<=0f)'),'native kill text follows real HP death');
+});
