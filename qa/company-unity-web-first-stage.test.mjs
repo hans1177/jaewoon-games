@@ -94,7 +94,10 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(build,/UNITY_WEB_NATIVE_ASSET_IMPORT_FAILED/);
   assert.match(build,/UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED/);
   assert.match(build,/SOURCE_READY_RUNTIME_UNVERIFIED/,'import preflight cannot claim runtime QA');
-  assert.match(build,/mesh\.triangles\.Length \/ 3/);
+  assert.match(build,/mesh\.GetIndexCount\(submesh\)/,'Editor import QA must work with unreadable meshes');
+  assert.match(game,/mesh\.GetIndexCount\(submesh\)/,'WebGL runtime must use non-readable-safe mesh index metadata');
+  assert.doesNotMatch(build,/mesh\.triangles\.Length/);
+  assert.doesNotMatch(game,/sharedMesh\.triangles\.Length/);
   assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
   assert.equal(request.gameId,'fantasy-survival');
   assert.equal(request.projectPath,'unity-games/fantasy-survival');
