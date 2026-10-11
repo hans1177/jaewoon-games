@@ -693,7 +693,10 @@ test('Daechung 3D visual actor and world repair emits measured native-depth evid
   assert.match(actor,/GameObject\.CreatePrimitive\(shape\)/);
   assert.match(actor,/part\.GetComponent<MeshRenderer>\(\)\.sharedMaterial = material/);
   assert.match(actor,/UnityEngine\.Object\.Destroy\(collider\)/);
-  assert.match(actor,/_renderer\.enabled = false/);
+  assert.doesNotMatch(actor,/\bSpriteRenderer\s+_renderer\b/);
+  assert.match(actor,/public bool SpriteVisible/);
+  assert.match(actor,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+  assert.match(actor,/if \(_model != null\) _model\.SetActive\(visible && _skin != null\)/);
   assert.match(actor,/HasVisibleVolumetricMesh/);
   assert.match(actor,/_model\.transform\.localRotation = Quaternion\.Euler/);
   for(const symbol of ['SetIdentity','SetTint','FaceRight','SetVisible','AddClip','Play','Tick'])
