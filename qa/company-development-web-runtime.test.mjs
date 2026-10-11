@@ -291,6 +291,25 @@ test('development runtime has no legacy Web pause switch and uses readiness-cont
   assert.doesNotMatch(workflow,/UNITY_APP_RUNTIME_DISPATCH=YES/);
 });
 
+test('Unity Web main push coordinator never locks whole workflow across independently runnable games',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const start=workflow.indexOf('\nconcurrency:\n'),end=workflow.indexOf('\npermissions:',start);
+  assert.ok(start>=0&&end>start,'top-level concurrency must be explicit');
+  const global=workflow.slice(start,end);
+  assert.equal(global.split('\n').find(row=>row.trim().startsWith('group:'))?.trim(),
+    'group: company-development-confirmed-${{ github.run_id }}');
+  assert.match(global,/cancel-in-progress: false/);
+  assert.doesNotMatch(global,/main-push|game_id|source-root/);
+  assert.match(workflow,/coordinator-gate:\s*\n/);
+  assert.match(workflow,/group: company-development-confirmed-coordinator-gate-/);
+  assert.match(workflow,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
+  assert.match(workflow,/group: unity-web-floor-call-\$\{\{ matrix\.game_id \}\}/);
+  assert.match(workflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(roadmap.finalDevelopmentLock.parallelismBoundary.stageWideRepositorySerializationForbidden,true);
+  assert.equal(roadmap.finalDevelopmentLock.parallelismBoundary.distinctGamesMustRemainParallel,true);
+});
+
 test('long native builds never serialize unrelated Unity Web or development-confirmed orchestration',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
