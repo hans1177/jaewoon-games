@@ -5640,6 +5640,31 @@ test('Unity native consumer scan resolves Resources and conditional CompanyAsset
 
 
 // [실제 게임 소스] 기존 마력숲 자산을 재작성하지 않고 22개 등록 자산의 사용 근거를 복원한다.
+test('real fantasy-survival shared imports track only the 14 selected originals without runtime promotion',()=>{
+  const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repo,'company-asset-library.json'),'utf8'));
+  const importer='unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs';
+  const source=fs.readFileSync(path.join(repo,importer),'utf8');
+  const selected=['house','house_door','house_chimney','fence_straight','fence_corner',
+    'gate_single','bench_A','tree','tree_large','foliage_A','foliage_B','cobblestones','package','mailbox'];
+  for(const name of selected){
+    const original='assets/shared/homely-house/'+name+'.obj';
+    assert.ok(source.includes('"'+original+'"'));
+    const asset=registry.assets.find(row=>row.path==='/'+original);
+    assert.ok(asset,'selected original must be registered: '+name);
+    assert.equal(asset.sourceHash,createHash('sha256').update(fs.readFileSync(path.join(repo,original))).digest('hex'));
+  }
+  assert.match(source,/foreach \(string original in VillageSourcePaths\)/);
+  assert.match(source,/string name = Path.GetFileNameWithoutExtension\(original\)/);
+  const result=synchronizeSourceBoundAssetConsumers({repoRoot:repo,registry,
+    gameCatalog:{games:[{id:'fantasy-survival',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}});
+  const imports=result.bindings.filter(row=>row.assetId.startsWith('external-tinytreats-'));
+  assert.deepEqual(imports.map(row=>row.assetId).sort(),selected.map(name=>'external-tinytreats-'+name.toLowerCase().replaceAll('_','-')+'-v1').sort());
+  assert.ok(imports.every(row=>row.evidenceFiles.includes(importer)));
+  assert.ok(imports.every(row=>row.runtimeVerified===false&&row.productionVerified===false));
+});
+
+// [실제 게임 소스] 기존 빌드 요청의 네이티브 입력을 모두 보존한다.
 test('real fantasy-survival resolves every registered native build input without runtime promotion',()=>{
   const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
   const registry=JSON.parse(fs.readFileSync(path.join(repo,'company-asset-library.json'),'utf8'));
