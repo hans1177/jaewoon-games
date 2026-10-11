@@ -2656,7 +2656,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ?dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type))
     :[];
   // [자동 재질 파생] 동일 게임 요구와 역할이 일치한 내부 원본만 실제 파일·해시를 검사해 기존 DCC로 연결한다.
-  const materialDerivationRequested=/(?:PBR|material|texture|assetization|재질|텍스처|색감|자산화|소폭\s*(?:수정|변경|보정))/i.test(clean(task.goal||task.request))
+  const materialDerivationRequested=Boolean(clean(task.gameId)&&clean(assetSupplySummary?.gameId))
     &&!clean(task.assetAuthoring?.sourceModel)&&!clean(task.assetAuthoring?.sourceImage)
     &&task.assetAuthoring?.automaticLibraryDerivation!==false;
   const librarySourceByFamily=new Map();
