@@ -1380,6 +1380,24 @@ test('stale running development reservation is requeued without consuming retry'
   assert.ok(task.evidence.includes('recovery:stale-running-reservation-v1'));
 });
 
+test('queued GitHub worker keeps its reservation beyond 45 minutes until exact run completion', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'unity-web-delayed',gameId:'unity-web-delayed',target:'unity',department:'development',type:'implementation',
+    sourceRoot:'unity-games/unity-web-delayed',goal:'implementation',status:'running',
+    reservationId:'38100001234:1',reservationRunId:'38100001234',reservationRunAttempt:1,reservedAt:'2026-10-10T22:38:00Z'
+  }]});
+  const held=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-10-10T23:30:00Z')});
+  assert.equal(held.recovered,0);
+  assert.equal(verifyVibeWorkerSynchronization(held.queue,{
+    taskId:'unity-web-delayed',reservationId:'38100001234:1',reservationRunId:'38100001234',
+    reservationRunAttempt:1,reservedAt:'2026-10-10T22:38:00Z'
+  }).pass,true);
+  const completed=recoverCompletedRunningReservations(held.queue,{completedRunIds:['38100001234']});
+  assert.equal(completed.recovered,1);
+  assert.equal(completed.queue.tasks[0].status,'queued');
+  assert.equal(completed.queue.tasks[0].reservationId,null);
+});
+
 test('awaiting QA running reservation is not reclaimed as stale worker capacity', () => {
   const queue=createVibeContinuousQueue({tasks:[{
     id:'awaiting',gameId:'awaiting',target:'web',department:'development',type:'implementation',
