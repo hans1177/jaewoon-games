@@ -1805,6 +1805,9 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
 
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true,consumerGameIds=null}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
+  // [원장 원자성] 읽기 시점 스냅샷을 고정해 동시 동기화의 덮어쓰기를 방지한다.
+  const registrySnapshotHash=persist&&fs.existsSync(registryPath)
+    ?crypto.createHash('sha256').update(fs.readFileSync(registryPath)).digest('hex'):null;
   const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
   // 동기화는 asset top-level 필드만 직접 수정하고 중첩 계약은 교체/읽기만 한다. 3MB registry 전체 JSON deep-copy를 피한다.
   const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
@@ -1847,7 +1850,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     canonicalDerivedRoot=fs.realpathSync(derivedRoot);
   }catch{}
   if(canonicalAssetRoot&&canonicalDerivedRoot.startsWith(canonicalAssetRoot+path.sep)){
-    const sourceByPath=new Map();
+    const sourceByPath=new Map(),sourceHashCache=new Map();
+    const sourceFileSha256=full=>{
+      if(!sourceHashCache.has(full)){
+        sourceHashCache.set(full,crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'));
+      }
+      return sourceHashCache.get(full);
+    };
     const allowedSource=asset=>{
       const license=clean(asset?.license).toLowerCase();
       return !asset?.parentSourceId&&!asset?.derivedFromAssetId
@@ -1906,8 +1915,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
             const family=clean(evidence?.family).toUpperCase();
             // 하나의 공용 메시를 환경 팩·개별 건물·소품이 함께 등록할 수 있다.
             // 첫 번째 경로 소유자가 아닌 실제 family/권리/원본 해시에 일치하는 자산을 선택한다.
+            const expectedParentId=clean(provenance?.libraryParentAssetId);
             const parent=(sourceByPath.get(sourcePath)||[])
-              .filter(row=>clean(row.family||row.category).toUpperCase()===family
+              .filter(row=>(!expectedParentId||clean(row.id)===expectedParentId)
+                &&clean(row.family||row.category).toUpperCase()===family
                 &&clean(row.license).toLowerCase()===license
                 &&(!clean(row.sourceSha256)||clean(row.sourceSha256)===clean(provenance?.sourceSha256)))
               .sort((a,b)=>Number(Boolean(clean(b.role)))-Number(Boolean(clean(a.role)))
@@ -1930,12 +1941,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               ||application?.sourceMesh?.sourcePath!==sourcePath)throw new Error('DERIVED_ASSET_PROVENANCE_INVALID');
             const originalFile=actualFile(sourcePath);
             if(!originalFile)throw new Error('DERIVED_ASSET_PARENT_MISSING');
-            const originalHash=crypto.createHash('sha256').update(fs.readFileSync(originalFile.full)).digest('hex');
+            const originalHash=sourceFileSha256(originalFile.full);
             if(!/^[0-9a-f]{64}$/i.test(clean(provenance.sourceSha256))
               ||originalHash!==provenance.sourceSha256
               ||(clean(parent.sourceSha256)&&clean(parent.sourceSha256)!==originalHash))throw new Error('DERIVED_ASSET_PARENT_HASH_MISMATCH');
-            const artifactHash=crypto.createHash('sha256').update(fs.readFileSync(files[0].full)).digest('hex');
-            const masterHash=crypto.createHash('sha256').update(fs.readFileSync(files[1].full)).digest('hex');
+            const artifactHash=sourceFileSha256(files[0].full);
+            const masterHash=sourceFileSha256(files[1].full);
             if(artifactHash===originalHash||masterHash===originalHash)throw new Error('DERIVED_ASSET_UNCHANGED_SOURCE');
             const preview=fs.readFileSync(files[2].full);
             const previewHash=crypto.createHash('sha256').update(preview).digest('hex');
@@ -2337,11 +2348,31 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   }
   let persisted=false,persistError=null;
   if(persist&&changed){
+    const lockPath=registryPath+'.lock';
+    let lockFd=null,tempPath=null;
     try{
-      fs.writeFileSync(registryPath,JSON.stringify(next,null,2)+'\n','utf8');
+      // [원자적 발행] 배타 잠금 → 최신 원장 비교 → 같은 디렉터리 임시 파일 → fsync → rename.
+      // 생성 파일 및 동기화된 원장 모두 검증되기 전에는 최종 원장을 노출하지 않는다.
+      lockFd=fs.openSync(lockPath,'wx',0o600);
+      const currentHash=fs.existsSync(registryPath)
+        ?crypto.createHash('sha256').update(fs.readFileSync(registryPath)).digest('hex'):null;
+      if(currentHash!==registrySnapshotHash)throw new Error('COMPANY_ASSET_LIBRARY_CONCURRENT_UPDATE');
+      tempPath=registryPath+'.tmp-'+process.pid+'-'+crypto.randomBytes(8).toString('hex');
+      const tempFd=fs.openSync(tempPath,'wx',0o600);
+      try{
+        fs.writeFileSync(tempFd,JSON.stringify(next,null,2)+'\n','utf8');
+        fs.fsyncSync(tempFd);
+      }finally{fs.closeSync(tempFd);}
+      fs.renameSync(tempPath,registryPath);
+      tempPath=null;
       persisted=true;
     }catch(error){
       persistError=clean(error?.message||error);
+    }finally{
+      if(tempPath){try{fs.rmSync(tempPath,{force:true});}catch{}}
+      if(lockFd!==null){
+        try{fs.closeSync(lockFd);}finally{fs.rmSync(lockPath,{force:true});}
+      }
     }
   }
   return freeze({
