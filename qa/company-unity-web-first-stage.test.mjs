@@ -28,6 +28,26 @@ import {createHash} from 'node:crypto';
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 
+// 변환 · 실제 공유 모델의 금속/비금속과 모션 곡선은 엔진 임포트에서 검증한다.
+test('Fantasy Survival native importer retains authored PBR and validates animation interpolation in Unity',()=>{
+  const importer=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs','utf8');
+  const bytes=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/MagicForestGuardian.bytes');
+  const doc=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+  assert.ok(doc.materials.some(row=>row.pbrMetallicRoughness.metallicFactor>.4));
+  assert.ok(doc.materials.some(row=>row.pbrMetallicRoughness.metallicFactor===0));
+  assert.ok(new Set(doc.materials.map(row=>row.pbrMetallicRoughness.roughnessFactor)).size>1);
+  assert.match(importer,/mat\.SetFloat\("_Metallic", metallic\)/);
+  assert.match(importer,/mat\.SetFloat\(smoothnessProperty, 1f - roughness\)/);
+  assert.match(importer,/GraphicsSettings\.currentRenderPipeline/);
+  assert.match(importer,/UNITY_COMPANY_PBR_CONVERSION_LOSS/);
+  assert.doesNotMatch(importer,/Shader\.Find\("Unlit\/Color"\)/);
+  assert.match(importer,/AnimationUtility\.TangentMode\.Constant/);
+  assert.match(importer,/AnimationUtility\.TangentMode\.Linear/);
+  assert.match(importer,/curves\[k\]\.Evaluate\(sampleTime\)/);
+  assert.match(importer,/UNITY_COMPANY_ACTION_INTERPOLATION_LOSS/);
+  assert.match(importer,/scaled \? "localScale\."/);
+});
+
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 // 그래픽 · 실제 회사 3D OBJ 파생본이 Unity 프로젝트 리소스와 기존 게임 소비자까지 이어지는지 검사한다.
 // 마력숲 웹 · 공용 3D 자산/오토 바이옴/캐릭터/스킬 모션은 기존 유니티 게임 소스 안에서만 바인딩한다.

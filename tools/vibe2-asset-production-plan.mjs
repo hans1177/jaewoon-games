@@ -644,10 +644,63 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       const sampleCountsCompatible=!transformPath||(inputCount>0&&outputCount===inputCount*outputMultiplier);
       const expectedOutputType=targetPath==='rotation'?'VEC4':targetPath==='translation'||targetPath==='scale'?'VEC3':null;
       const timeAccessorValid=Boolean(inputInfo.valid&&inputInfo.type==='SCALAR'&&inputInfo.componentType===5126&&accessorStrictlyIncreasing(inputInfo));
-      const samplerValid=Boolean(sampler&&timeAccessorValid&&outputInfo.valid&&sampleCountsCompatible&&(!transformPath||outputInfo.type===expectedOutputType));
+      let samplerValid=Boolean(sampler&&timeAccessorValid&&outputInfo.valid&&sampleCountsCompatible
+        &&['LINEAR','STEP','CUBICSPLINE'].includes(interpolation)
+        &&(!transformPath||outputInfo.type===expectedOutputType&&outputInfo.componentType===5126));
       const targetValid=Number.isInteger(targetNode)&&targetNode>=0&&targetNode<nodes.length&&['rotation','translation','scale','weights'].includes(targetPath);
       const jointTarget=targetValid&&jointNodeIndices.has(targetNode)&&transformPath;
-      return {channelIndex,samplerIndex,targetNode,targetPath,inputCount,outputCount,interpolation,timeAccessorValid,samplerValid,targetValid,jointTarget,valid:samplerValid&&targetValid};
+      // 모션 · 채널 개수가 아니라 바이너리 키의 실제 변화를 측정한다. q/-q는 같은 회전이다.
+      let valueChanged=false,finiteSamples=true;
+      if(samplerValid&&transformPath){
+        const dimensions=targetPath==='rotation'?4:3;
+        let first=null;
+        for(let frame=0;frame<inputCount;frame++){
+          const valueIndex=frame*outputMultiplier+(interpolation==='CUBICSPLINE'?1:0);
+          let value=Array.from({length:dimensions},(_,c)=>readAccessorComponent(outputInfo,valueIndex,c));
+          if(!value.every(Number.isFinite)){finiteSamples=false;continue;}
+          if(targetPath==='rotation'){
+            const length=Math.hypot(...value);
+            if(Math.abs(length-1)>.02){finiteSamples=false;continue;}
+            value=value.map(n=>n/length);
+            if(first&&first.reduce((sum,n,c)=>sum+n*value[c],0)<0)value=value.map(n=>-n);
+          }
+          if(!first)first=value;
+          if(value.some((n,c)=>Math.abs(n-first[c])>1e-6))valueChanged=true;
+          if(interpolation==='CUBICSPLINE'){
+            for(const offset of [0,2])for(let c=0;c<dimensions;c++){
+              const tangent=readAccessorComponent(outputInfo,frame*3+offset,c);
+              if(!Number.isFinite(tangent))finiteSamples=false;
+            }
+            if(frame>0)for(const t of [.25,.5,.75]){
+              const delta=readAccessorComponent(inputInfo,frame,0)-readAccessorComponent(inputInfo,frame-1,0);
+              const t2=t*t,t3=t2*t;
+              let sample=Array.from({length:dimensions},(_,c)=>
+                (2*t3-3*t2+1)*readAccessorComponent(outputInfo,(frame-1)*3+1,c)
+                +(t3-2*t2+t)*delta*readAccessorComponent(outputInfo,(frame-1)*3+2,c)
+                +(-2*t3+3*t2)*readAccessorComponent(outputInfo,frame*3+1,c)
+                +(t3-t2)*delta*readAccessorComponent(outputInfo,frame*3,c));
+              if(!sample.every(Number.isFinite)){finiteSamples=false;continue;}
+              if(targetPath==='rotation'){
+                const length=Math.hypot(...sample);
+                if(length<1e-8){finiteSamples=false;continue;}
+                sample=sample.map(n=>n/length);
+                if(first.reduce((sum,n,c)=>sum+n*sample[c],0)<0)sample=sample.map(n=>-n);
+              }
+              if(sample.some((n,c)=>Math.abs(n-first[c])>1e-6))valueChanged=true;
+            }
+          }
+        }
+        samplerValid=samplerValid&&finiteSamples;
+      }
+      let ancestor=parents.get(targetNode),articulatedJoint=false;
+      const visited=new Set();
+      while(ancestor!==undefined&&!visited.has(ancestor)){
+        if(jointNodeIndices.has(ancestor)){articulatedJoint=true;break;}
+        visited.add(ancestor);ancestor=parents.get(ancestor);
+      }
+      const measuredJointMotion=jointTarget&&samplerValid&&valueChanged;
+      return {channelIndex,samplerIndex,targetNode,targetPath,inputCount,outputCount,interpolation,timeAccessorValid,samplerValid,targetValid,jointTarget,
+        valueChanged,measuredJointMotion,articulatedJointMotion:measuredJointMotion&&articulatedJoint,valid:samplerValid&&targetValid};
     });
     const validChannels=channelRows.filter(row=>row.valid);
     const jointChannels=validChannels.filter(row=>row.jointTarget);
@@ -656,6 +709,8 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       index,name:animation.name||`animation-${index}`,channelCount:channels.length,samplerCount:samplers.length,
       validChannelCount:validChannels.length,invalidChannelCount:channelRows.length-validChannels.length,
       jointChannelCount:jointChannels.length,animatedJointCount:animatedJoints.length,
+      movingJointCount:new Set(jointChannels.filter(row=>row.measuredJointMotion).map(row=>row.targetNode)).size,
+      articulatedMovingJointCount:new Set(jointChannels.filter(row=>row.articulatedJointMotion).map(row=>row.targetNode)).size,
       jointMotionPaths:unique(jointChannels.map(row=>row.targetPath)),
       valid:channels.length>0&&samplers.length>0&&validChannels.length===channels.length,
       channels:channelRows
@@ -675,6 +730,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
     invalidAnimationCount:animations.filter(row=>row.valid!==true).length,
     jointAnimationChannelCount:animations.reduce((sum,row)=>sum+row.jointChannelCount,0),
     animatedJointCount:new Set(animations.flatMap(animation=>animation.channels.filter(channel=>channel.valid&&channel.jointTarget).map(channel=>channel.targetNode))).size,
+    articulatedMovingJointCount:new Set(animations.flatMap(animation=>animation.channels.filter(channel=>channel.valid&&channel.articulatedJointMotion).map(channel=>channel.targetNode))).size,
     requiredExtensions:document.extensionsRequired||[]
   };
   const requiredAuthoring=[];
@@ -736,7 +792,12 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
     };
     return unique([key,...(map[key]||[])]).map(value=>value.replace(/[^A-Z0-9]+/g,'_'));
   };
-  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some(name=>name===alias||name.includes(alias)));
+  const animationMatchesClip=clip=>clipAliases(clip).some(alias=>animationNames.some((name,index)=>{
+    if(name!==alias&&!name.includes(alias))return false;
+    // 정지 대기/가드 포즈는 허용하되 공격·이동·스킬은 이름만 있는 클립으로 충족하지 못한다.
+    const hold=/^(?:IDLE|WORK_IDLE|COMBAT_READY|BLOCK_HOLD|GUARD_HOLD)$/.test(clean(clip).toUpperCase());
+    return hold||Number(inv.animations[index]?.articulatedMovingJointCount||0)>0;
+  }));
   const missingRoleMotionClips=requiredRoleMotionClips.filter(clip=>!animationMatchesClip(clip));
   const missingCreatureRoleMotionClips=requiredCreatureMotionClips.filter(clip=>!animationMatchesClip(clip));
   const socketMatchers={
@@ -758,6 +819,7 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   if(primitives.some(row=>row.actorBindingValid!==true))blockers.push('MASTER_GLB_ACTOR_MESH_BINDING_REQUIRED');
   if(primitives.some(row=>row.skinBound===true&&row.jointWeightDataValid!==true))blockers.push('MASTER_GLB_JOINT_WEIGHTS_REQUIRED');
   if(!(inv.animations||[]).length||Number(inv.invalidAnimationCount||0)>0||Number(inv.jointAnimationChannelCount||0)<=0||Number(inv.animatedJointCount||0)<=0)blockers.push('MASTER_GLB_ANIMATION_REQUIRED');
+  if((inv.animations||[]).length&&Number(inv.articulatedMovingJointCount||0)<=0)blockers.push('MASTER_GLB_ARTICULATED_JOINT_MOTION_REQUIRED');
   if(explicitCharacterRole&&missingRoleMotionClips.length)blockers.push('MASTER_GLB_ROLE_MOTION_REQUIRED');
   if(explicitCreatureRole&&missingCreatureRoleMotionClips.length)blockers.push('MASTER_GLB_CREATURE_ROLE_MOTION_REQUIRED');
   if(explicitCharacterRole&&missingAttachmentSocketBasis.length)blockers.push('MASTER_GLB_ATTACHMENT_SOCKET_BASIS_REQUIRED');
