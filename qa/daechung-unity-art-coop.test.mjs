@@ -52,7 +52,8 @@ test('실제 제작 애니메이션 시트의 크기와 비어 있지 않은 픽
 test('3D 원근 카메라·공간 지형·입체 배우와 WebGL 성능 게이트를 유지한다', () => {
     assert.match(visuals, /camera\.orthographic\s*=\s*false/);
     assert.match(visuals, /camera\.transform\.LookAt/);
-    assert.match(visuals, /_sceneCamera\.fieldOfView = Mathf\.Clamp/);
+    assert.match(visuals, /_baseCameraFieldOfView = Mathf\.Clamp\(/);
+    assert.match(visuals, /_sceneCamera\.fieldOfView = revealActive \? Mathf\.Max\(34f, _baseCameraFieldOfView - 8f\) : _baseCameraFieldOfView/);
     assert.match(visuals, /_lastCameraAspect = _sceneCamera\.aspect/);
     assert.match(visuals, /new GameObject\("DaechungDepthGround"\)/);
     assert.match(visuals, /GameObject\.CreatePrimitive\(PrimitiveType\.Quad\)/);
