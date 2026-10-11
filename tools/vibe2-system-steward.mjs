@@ -35,6 +35,9 @@ const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,
 function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
   return new Set(queue.tasks.filter(task=>{
     if(clean(task.status).toLowerCase()!=='running'||waitBlocker(task.blocker))return false;
+    // GitHub 작업 실행 대기는 실제 작업 종료 증거가 아니므로 숫자형 실행 예약은 보존한다.
+    // 종료/대체 확인은 기존 예약 상태 점검 경로가 담당한다.
+    if (/^\d+$/.test(clean(task.reservationRunId))) return false;
     const at=Date.parse(clean(task.reservedAt));
     return !Number.isFinite(at)||nowMs-at>Math.max(60_000,Number(staleMs)||45*60*1000);
   }).map(task=>task.id));

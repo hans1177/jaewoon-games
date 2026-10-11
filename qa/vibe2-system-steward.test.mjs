@@ -32,6 +32,23 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
   }
 });
 
+test('steward preserves numeric GitHub reservation across a long runner queue',()=>{
+  const result=runSystemStewardState({
+    now:'2026-10-10T23:30:00Z',
+    queueInput:{maxConcurrentTasks:256,tasks:[{
+      id:'unity-web-delayed',gameId:'unity-web-delayed',target:'unity',
+      department:'development',type:'implementation',goal:'implement canonical Unity Web source',
+      status:'running',reservationId:'38100001234:1',reservationRunId:'38100001234',
+      reservationRunAttempt:1,reservedAt:'2026-10-10T22:38:00Z'
+    }]},
+    controlInput:{version:4,currentMax:256,lastUpdatedAt:'2026-10-10T23:25:00Z'}
+  });
+  const task=result.queue.tasks.find(t=>t.id==='unity-web-delayed');
+  assert.equal(task.status,'running');
+  assert.equal(task.reservationId,'38100001234:1');
+  assert.ok(!result.actions.includes('RECOVER_STALE_RUNNING_RESERVATION'));
+});
+
 test('steward resumes safe development failure with unlimited causal repair without erasing retry history',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'dead',gameId:'b',target:'web',department:'development',type:'implementation',goal:'x',status:'failed',retries:3,maxRetries:2,recoveryGeneration:1}]},controlInput:{currentMax:256}});
   const task=result.queue.tasks[0];

@@ -324,6 +324,9 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
     if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
+    // Github 러너가 장시간 대기 중이어도 예약 실행이 종료된 것으로 보지 않는다.
+    // 완료/대체 실행을 확인한 기존 회수 경로만 숫자형 실행 예약을 정리한다.
+    if (/^\d+$/.test(clean(task.reservationRunId))) return task;
     const reservedAtMs = Date.parse(clean(task.reservedAt));
     const leaseMissing = !Number.isFinite(reservedAtMs);
     const expired = !leaseMissing && (Number(nowMs) - reservedAtMs) > Math.max(60_000, Number(staleMs) || DEFAULT_STALE_RUNNING_MS);

@@ -55,6 +55,100 @@ test('current-game asset gap selects licensed external source for on-demand PBR 
   assert.equal(buildAssetSupplyDecisionSummary({...params,gameId:''}).selectedOnDemandExternalGapCount,0,'no unidentified game may trigger external acquisition');
 });
 
+// [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
+test('eligible internal 3d asset auto-fill exposes exact native material derivative and unverified assetization',()=>{
+  const original={
+    id:'shared-forest-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
+    path:'/assets/shared/forest-tree.glb',license:'project-original',
+    status:'REPO_ASSET',sourceSha256:'example-source-expected-hash'
+  };
+  const registry={assets:[original],externalSources:[],
+    baseMaterialLibrary:{families:{MATERIAL:['WOOD','MOD_WORN']}}};
+  const plan=buildAssetSupplyDecisionSummary({
+    gameId:'new-forest',target:'unity',request:'나무 재질 자산화',
+    requirements:[{family:'ENVIRONMENT',role:'tree'}],registry
+  });
+  const action=plan.nextActions.find(row=>row.family==='ENVIRONMENT');
+  assert.equal(action.action,'ADAPT');
+  assert.equal(action.libraryReuse.sourceAssetId,original.id);
+  assert.equal(action.libraryReuse.sourceModel,'assets/shared/forest-tree.glb');
+  assert.equal(action.libraryReuse.expectedSourceSha256,original.sourceSha256);
+  assert.equal(action.libraryReuse.sourceFileAndSha256InspectionRequired,true);
+  assert.equal(action.libraryReuse.derivativeCandidateReady,true);
+  assert.equal(action.materialRefinement.mode,'SUBTLE_CONTEXT_PBR_REAUTHOR');
+  assert.deepEqual(action.materialRefinement.availableSemanticAtoms,['WOOD','MOD_WORN']);
+  assert.equal(action.materialRefinement.sourceMaterialModificationPerformed,false);
+  assert.equal(action.assetization.nativeDccScript,'assets/native-authoring/build-game-visual.py');
+  assert.equal(action.assetization.registryWriteOwner,'EXISTING_GRAPHICS_PRODUCTION_SYNC');
+  assert.equal(action.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  assert.equal(action.assetization.productionVerified,false);
+  assert.equal(action.assetization.runtimeVerified,false);
+  assert.equal(plan.productionVerificationGranted,false);
+  assert.match(assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'new-forest',
+    target:'unity',assetSupplySummary:plan}),/COMPANY LIBRARY MATERIAL DERIVATIVE/);
+  const prompt=buildPrompt({target:'unity',gameId:'new-forest',goal:'나무 재질 자산화',
+    assetProduction:{assetSupplySummary:plan,nativeAuthoringExecution:{enabled:false}}},{
+    files:[{path:'Assets/Scripts/World.cs',editable:true,
+      content:'using UnityEngine; public class World : MonoBehaviour {}'}]
+  },['Assets/Scripts/World.cs']);
+  assert.match(prompt,/"onDemandLibrarySupply"/);
+  assert.match(prompt,/"selectedSourceId":"shared-forest-tree"/);
+  assert.ok(prompt.includes('"sourceModel":"assets/shared/forest-tree.glb"'));
+  assert.match(prompt,/"sourceInspectionRequired":true/);
+  assert.match(prompt,/"runtimeVerified":false/);
+});
+
+test('existing native DCC automatically derives only role-matched internal source with matching local SHA256',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-library-derive-'));
+  try{
+    const shared=path.join(root,'assets','shared');
+    fs.mkdirSync(shared,{recursive:true});
+    const sourcePath=path.join(shared,'tree.obj');
+    const original='mtllib tree.mtl\no tree\nv 0 0 0\nv 1 0 0\nv 0 1 0\nvt 0 0\nvt 1 0\nvt 0 1\nvn 0 0 1\nusemtl Wood\nf 1/1/1 2/2/1 3/3/1\n';
+    fs.writeFileSync(sourcePath,original);
+    fs.writeFileSync(path.join(shared,'tree.mtl'),'newmtl Wood\nKd 0.5 0.3 0.2\n');
+    const sha=createHash('sha256').update(original).digest('hex');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,
+      assets:[{id:'shared-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
+        path:'assets/shared/tree.obj',license:'project-original',status:'REPO_ASSET',
+        sourceSha256:sha,sourceFiles:['assets/shared/tree.obj']}]
+    }));
+    const task={gameId:'forest-game',goal:'environment background asset visuals',
+      assetRequirements:[{family:'ENVIRONMENT',role:'tree'}]};
+    const build=()=>buildVibeAssetProductionPlan({repoRoot:root,target:'unity',task,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    const initial=build();
+    const candidates=initial.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.automaticLibraryDerivative);
+    assert.ok(candidates.length>0,'selected internal tree should enter canonical native DCC recipes');
+    const derived=candidates.find(row=>row.sourceModel==='assets/shared/tree.obj');
+    assert.ok(derived);
+    assert.equal(derived.librarySourceAssetId,'shared-tree');
+    assert.equal(derived.librarySourceSha256,sha);
+    assert.equal(derived.sourceLicense,'project-original');
+    assert.ok(derived.args.includes('--source-model'));
+    assert.equal(derived.companyPromotionAllowed,false);
+    assert.equal(derived.runtimeVerificationRequired,true);
+    fs.appendFileSync(sourcePath,'# unauthorized source mutation\n');
+    const changed=build();
+    assert.equal(changed.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.automaticLibraryDerivative),false,
+      'stale source hashes must never auto-generate a derivative');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('unusable or rights-blocked library sources never become auto-produced models',()=>{
+  const base={id:'tree-source',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',status:'REPO_ASSET'};
+  for(const blocked of [
+    {...base,path:'/assets/shared/tree.png',license:'project-original'},
+    {...base,path:'/assets/shared/tree.glb',license:'CC-BY-NC'},
+    {...base,path:'/assets/shared/tree.glb',license:'unknown'}
+  ]){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'forest-2',target:'roblox',
+      requirements:[{family:'ENVIRONMENT',role:'tree'}],registry:{assets:[blocked],externalSources:[]}});
+    assert.equal(plan.nextActions.some(row=>row.action==='ADAPT'),false,blocked.license);
+    assert.equal(plan.productionVerificationGranted,false);
+  }
+});
+
 test('audio and UI library gap-fill cannot be routed to the 3D Blender material authoring path',()=>{
   const registry={assets:[],externalSources:[
     {id:'ui-source',name:'UI Pack',category:'UI',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
@@ -4054,6 +4148,87 @@ function writeInspectionTriangle(root,change=()=>{}){
   fs.writeFileSync(path.join(root,'triangle.glb'),Buffer.concat([header,json,binaryHeader,bin]));
   return inspectVibeSourceGlb({repoRoot:root,source:{path:'triangle.glb'}});
 }
+
+// [자동 파생 자산화] 실제 3D 원본/파생 바이트, 권리·계보·PBR 변경, 증거를 통과해야 미검증 후보만 등록한다.
+test('company registry sync automatically ingests verified-byte PBR derivatives without claiming runtime pass',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'registered-derived-'));
+  try{
+    const sourceDir=path.join(root,'assets','shared');
+    const outDir=path.join(root,'assets','generated','unity','demo','prop');
+    fs.mkdirSync(sourceDir,{recursive:true});fs.mkdirSync(outDir,{recursive:true});
+    const source=path.join(sourceDir,'source.glb');
+    writeInspectionTriangle(root);
+    fs.copyFileSync(path.join(root,'triangle.glb'),source);
+    const sourceHash=createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+    writeInspectionTriangle(root,doc=>{doc.materials[0].pbrMetallicRoughness.roughnessFactor=.72;});
+    const derived=fs.readFileSync(path.join(root,'triangle.glb'));
+    fs.writeFileSync(path.join(outDir,'asset.glb'),derived);
+    fs.writeFileSync(path.join(outDir,'master.glb'),derived);
+    const artifactHash=createHash('sha256').update(derived).digest('hex');
+    assert.notEqual(sourceHash,artifactHash);
+    const preview=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD9kAAAAASUVORK5CYII=','base64');
+    fs.writeFileSync(path.join(outDir,'preview.png'),preview);
+    const parent={id:'shared-source',title:'Source',family:'PROP',role:'environment-prop',
+      path:'assets/shared/source.glb',sourceFiles:['assets/shared/source.glb'],
+      sourceSha256:sourceHash,license:'project-original',status:'REPO_ASSET'};
+    // 동일 GLB를 환경 팩/소품 팩/개별 소품이 공유해도 올바른 계열과 원본 계보를 선택해야 한다.
+    const environmentPack={...parent,id:'environment-pack',family:'ENVIRONMENT',role:'',sourceFiles:['assets/shared/source.glb']};
+    const genericPropPack={...parent,id:'generic-prop-pack',role:'',sourceFiles:['assets/shared/source.glb','assets/shared/unused.glb']};
+    const staleProp={...parent,id:'stale-prop',sourceSha256:'f'.repeat(64)};
+    const registry={version:1,assets:[environmentPack,genericPropPack,staleProp,parent],externalSources:[]};
+    const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
+      sourceFileImmutable:true,license:'project-original',
+      transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
+    const evidence={version:1,assetId:'demo-prop',family:'PROP',
+      generator:'assets/native-authoring/build-game-visual.py',
+      sourceMesh:provenance,license:'project-original',artifactHash,
+      previewHash:createHash('sha256').update(preview).digest('hex'),
+      pbrMeshQa:{pass:true},internalAsset:{library:'VIBE_STUDIO_ASSET_UNIVERSE',
+        state:'PREPARED_NATIVE_QA_PENDING'},
+      runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+      productionVerified:false,companyPromotionEligible:false};
+    const writeEvidence=()=>fs.writeFileSync(path.join(outDir,'evidence.json'),JSON.stringify(evidence));
+    writeEvidence();
+    fs.writeFileSync(path.join(outDir,'application.json'),JSON.stringify({
+      sourceMesh:provenance,masterSha256:artifactHash,
+      internalAsset:{originalImmutable:true,nativeRuntimePromotionRequired:true}
+    }));
+    const sync=(value=registry)=>synchronizeCompanyCommonAssetRegistry({
+      repoRoot:root,registry:value,persist:false,consumerGameIds:['demo']
+    });
+    const first=sync();
+    assert.equal(first.derivedSync.inspected,1);
+    assert.equal(first.derivedSync.registered,1,JSON.stringify(first.derivedSync));
+    assert.equal(first.derivedSync.rejected,0);
+    const added=first.registry.assets.find(row=>row.id==='derived-unity-demo-prop');
+    assert.ok(added);
+    assert.equal(added.parentSourceId,'shared-source');
+    assert.equal(added.sourceHash,sourceHash);
+    assert.equal(added.artifactHash,artifactHash);
+    assert.equal(added.platform,'SHARED_MASTER');
+    assert.equal(added.runtimeVerificationState,'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING');
+    assert.equal(added.productionVerified,false);
+    assert.equal(added.verifiedCompanyReusable,false);
+    assert.equal(added.nativeRuntimeVerified,false);
+    assert.deepEqual(added.platformVariants,{});
+    assert.equal(first.changedSections.includes('assets'),true);
+    const second=sync(first.registry);
+    assert.equal(second.derivedSync.registered,0,'unchanged source and outputs must not register twice');
+    assert.equal(second.changed,false,'idempotent sync must not mutate canonical registry');
+    evidence.companyPromotionEligible=true;
+    writeEvidence();
+    const unsafePromotion=sync();
+    assert.equal(unsafePromotion.derivedSync.registered,0);
+    assert.equal(unsafePromotion.derivedSync.rejected,1);
+    assert.ok(!unsafePromotion.registry.assets.some(row=>row.id==='derived-unity-demo-prop'));
+    evidence.companyPromotionEligible=false;
+    writeEvidence();
+    fs.appendFileSync(source,Buffer.from([0x20]));
+    const staleParent=sync();
+    assert.equal(staleParent.derivedSync.registered,0);
+    assert.equal(staleParent.derivedSync.rejected,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('GLB production inspection measures transformed geometry and ground pivot for static props',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-spatial-'));

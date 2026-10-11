@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
@@ -21,9 +22,38 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   const mtls=fs.readFileSync(art+'MagicForestMaterials.mtl','utf8');
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   const manifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
   const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  const companyRegistry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const sha256=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const materialId='unity-fantasy-survival-tree-materials-v1';
+  const recordedMaterial=companyRegistry.assets.find(asset=>asset.id===materialId);
+  assert.ok(recordedMaterial,'native material derivative must exist in the central registry');
+  assert.equal(recordedMaterial.path,'/'+art+'MagicForestMaterials.mtl');
+  assert.equal(recordedMaterial.family,'MATERIAL');
+  assert.equal(recordedMaterial.sourceHash,sha256('assets/roblox/survival-core-world-v1/survival-core-world.mtl'));
+  assert.equal(recordedMaterial.nativeArtifactHash,sha256(art+'MagicForestMaterials.mtl'));
+  assert.equal(recordedMaterial.productionVerified,false,'static source evidence cannot promote a material');
+  const expectedNativeIds=['unity-fantasy-survival-tree-trunk-v1','unity-fantasy-survival-tree-crown-v1'];
   for(const [i,obj] of models.entries()){
+    const row=companyRegistry.assets.find(asset=>asset.id===expectedNativeIds[i]);
+    assert.ok(row,'real Unity asset derivative must be registered');
+    assert.equal(row.platform,'UNITY');
+    assert.equal(row.family,'ENVIRONMENT');
+    assert.equal(row.status,'REPO_ASSET');
+    assert.equal(row.productionVerified,false);
+    assert.equal(row.nativeRuntimeVerified,false);
+    assert.equal(row.consumerGameIds.length,0,'source selection alone is not verified consumer usage');
+    assert.equal(row.originalSourceImmutable,true);
+    const originalPath='assets/roblox/survival-core-world-v1/'+['tree_trunk_thick.obj','tree_crown_round.obj'][i];
+    const nativePath=art+['MagicForestTrunk.obj','MagicForestCrown.obj'][i];
+    assert.equal(row.sourceHash,sha256(originalPath));
+    assert.equal(row.nativeArtifactHash,sha256(nativePath));
+    assert.equal(row.platformVariants?.UNITY?.path,nativePath);
+    assert.equal(row.path,'/'+nativePath);
+    assert.equal(row.sourceParentPath,originalPath);
+    assert.ok(row.transformHistory.some(change=>change.kind==='PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT'));
     assert.notEqual(obj,sources[i],'native Unity model must be a real derivative, not a cross-platform raw copy');
     assert.match(obj,/mtllib MagicForestMaterials\.mtl/);
     assert.match(obj,/Parent Git blob [0-9a-f]{40}/);
@@ -53,17 +83,90 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(game,/Instantiate\(treeCrownSource, worldRoot\.transform\)/);
   assert.match(game,/trunk\.GetComponent<Renderer>\(\)\.enabled = false/);
   assert.match(game,/crown\.GetComponent<Renderer>\(\)\.enabled = false/);
+  assert.match(game,/Collider oldCrownCollider = crown\.GetComponent<Collider>\(\)/);
+  assert.match(game,/Destroy\(oldCrownCollider\)/,'hidden canopy collider must not block resource raycast');
   assert.match(game,/trunk\.name = i % 4 == 0 \? "Rock" : "Tree"/,'existing harvest target names remain');
   assert.match(game,/if\(n!="Tree" && n!="Rock"\)continue;/,'existing harvesting logic retained');
   assert.match(game,/MAGIC_FOREST_NATIVE_ASSET_BINDING=.*ASSET_REPAIR_REQUIRED/,'runtime failure remains visible');
   assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
   assert.match(build,/UnityWebFloorBuild/);
   assert.match(build,/BuildPipeline\.BuildPlayer\(/);
+  assert.match(build,/AssetDatabase\.LoadAssetAtPath<GameObject>\(modelPath\)/);
+  assert.match(build,/UNITY_WEB_NATIVE_ASSET_IMPORT_FAILED/);
+  assert.match(build,/UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_PATH_INVALID/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED/);
+  assert.equal(request.registryVersionRequired,companyRegistry.version);
+  assert.deepEqual(request.registryAssetIds,[
+    'unity-fantasy-survival-tree-trunk-v1',
+    'unity-fantasy-survival-tree-crown-v1',
+    'unity-fantasy-survival-tree-materials-v1'
+  ]);
+  assert.match(build,/SOURCE_READY_RUNTIME_UNVERIFIED/,'import preflight cannot claim runtime QA');
+  assert.match(build,/mesh\.GetIndexCount\(submesh\)/,'Editor import QA must work with unreadable meshes');
+  assert.match(game,/mesh\.GetIndexCount\(submesh\)/,'WebGL runtime must use non-readable-safe mesh index metadata');
+  assert.doesNotMatch(build,/mesh\.triangles\.Length/);
+  assert.doesNotMatch(game,/sharedMesh\.triangles\.Length/);
   assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
   assert.equal(request.gameId,'fantasy-survival');
   assert.equal(request.projectPath,'unity-games/fantasy-survival');
   assert.equal(request.buildMethod,'UnityWebFloorBuild.BuildWeb');
   assert.equal(request.fullGameplayPassAuthority,false,'source and metadata are not runtime pass evidence');
+});
+
+test('native asset registry preflight runs before Unity editor and fails closed on tampered source',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  const begin=workflow.indexOf('      - name: Verify Unity Web development-floor contract');
+  const after=workflow.indexOf('      - name: Bind canonical Unity source tree',begin);
+  assert.ok(begin>=0&&after>begin);
+  const section=workflow.slice(begin,after);
+  const start=section.indexOf("node --input-type=module <<'NODE'\n");
+  const end=section.indexOf('\n          NODE',start);
+  assert.ok(start>=0&&end>start);
+  const code=section.slice(start+"node --input-type=module <<'NODE'\n".length,end)
+    .split('\n').map(line=>line.replace(/^          /,'')).join('\n');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'fantasy-registry-preflight-'));
+  const paths=[
+    'company-learning/platform-release-roadmap.json',
+    'company-asset-library.json',
+    '.build-requests/unity-web/fantasy-survival.json',
+    'assets/roblox/survival-core-world-v1/tree_trunk_thick.obj',
+    'assets/roblox/survival-core-world-v1/tree_crown_round.obj',
+    'assets/roblox/survival-core-world-v1/survival-core-world.mtl',
+    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',
+    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj',
+    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl'
+  ];
+  const invoke=()=>execFileSync(process.execPath,['--input-type=module','--eval',code],{
+    cwd:root,encoding:'utf8',timeout:15000,
+    env:{...process.env,GAME_ID:'fantasy-survival',PROJECT_PATH:'unity-games/fantasy-survival'}
+  });
+  try{
+    for(const relative of paths){
+      const dest=path.join(root,relative);
+      fs.mkdirSync(path.dirname(dest),{recursive:true});
+      fs.copyFileSync(relative,dest);
+    }
+    const cleanRun=invoke();
+    assert.match(cleanRun,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count=3/);
+    const tampered=path.join(root,'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj');
+    fs.appendFileSync(tampered,'\n# deliberate SHA256 mismatch\n');
+    assert.throws(invoke,error=>{
+      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
+      return true;
+    });
+    fs.copyFileSync('unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',tampered);
+    const requestFile=path.join(root,'.build-requests/unity-web/fantasy-survival.json');
+    const req=JSON.parse(fs.readFileSync(requestFile,'utf8'));
+    req.registryVersionRequired=999999;
+    fs.writeFileSync(requestFile,JSON.stringify(req));
+    assert.throws(invoke,error=>{
+      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE/);
+      return true;
+    });
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
