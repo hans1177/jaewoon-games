@@ -1103,6 +1103,17 @@ jobs:
             echo "UNITY_WEB_POST_DEPLOY_NEXT_BUILD_UP=REFILL_REQUESTED:$GAME_ID:$promotion_sha"
           fi
 
+      - name: Preserve public Unity Web mobile replay evidence
+        if: ${{ always() && steps.publish.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unity-web-hosted-mobile-${{ steps.request.outputs.game_id }}-${{ github.run_id }}
+          path: |
+            /tmp/unity-web/web-games/${{ steps.request.outputs.game_id }}/unity-web-hosted-mobile-qa.json
+            /tmp/unity-web/hosted-mobile-qa*.png
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Mark Unity Web floor repair requirement
         id: repair
         if: ${{ always() && !cancelled() && (steps.readiness.outputs.pass != 'true' || steps.publish.outcome == 'failure') }}
