@@ -5,17 +5,17 @@
   "pressureStreak": 0,
   "lastDecision": "HOLD",
   "lastReason": "RUN_LOCAL_BACKPRESSURE_ACTIVE",
-  "lastRunId": "38095488387",
-  "lastUpdatedAt": "2026-10-11T01:32:35.297Z",
+  "lastRunId": "38096507874",
+  "lastUpdatedAt": "2026-10-11T01:32:52.429Z",
   "lastTelemetry": {
-    "runId": "38095488387",
-    "workerCount": 1,
+    "runId": "38096507874",
+    "workerCount": 2,
     "effectiveMax": 128,
     "actualPeakConcurrency": 1,
     "effectivePeakUtilizationPct": 0.78,
     "failureRatePct": 100,
     "pressureLevel": "SEVERE",
-    "bottleneck": "PREPARATION_OVERHEAD",
+    "bottleneck": "SOURCE_CANDIDATE_GENERATION",
     "firstCandidatePassRatePct": 0,
     "verifiedCandidatesPerMinute": 0
   }
