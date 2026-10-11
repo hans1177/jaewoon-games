@@ -2107,6 +2107,21 @@ test('Unity native presentation responsibility excludes gameplay core when a vis
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
 });
 
+test('Unity presentation finds existing embedded render ownership without requiring a new visual file',()=>{
+  const root=tempRepo();
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  fs.writeFileSync(policyPath,JSON.stringify(policy));
+  const scripts=path.join(root,'unity-games','embedded','Assets','Scripts');
+  fs.mkdirSync(scripts,{recursive:true});
+  fs.writeFileSync(path.join(scripts,'UnityWebFloorGame.cs'),'class UnityWebFloorGame { void Draw() { var source = Resources.Load<GameObject>("CompanyAssets/Wolf"); Instantiate(source); } }');
+  fs.writeFileSync(path.join(scripts,'Save.cs'),'class Save { void Store() {} }');
+  const task=findPresentationQualityTask({gameId:'embedded',engine:'unity',releaseState:'development-confirmed',projectPath:'unity-games/embedded'},root,{tasks:[]});
+  assert.ok(task);
+  assert.deepEqual(task.responsibleFiles,['unity-games/embedded/Assets/Scripts/UnityWebFloorGame.cs']);
+});
+
 test('current owner hold keeps daechung RPG Unity Web 3D work eligible while Android remains held',()=>{
   const root=tempRepo(),gameId='daechung-rpg';
   const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
@@ -2514,7 +2529,16 @@ test('existing Roblox games automatically receive a Studio asset selection hando
   assert.ok(task.evidence.includes('roblox-studio-asset-runtime-promotion:blocked-until-pass'));
 
   fs.writeFileSync(path.join(shared,'GameConfig.luau'),'local STUDIO_ASSET_BINDING_VERSION = 1\nreturn { StudioAssets = { BindingVersion = 1 } }\n','utf8');
+  assert.ok(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}), 'metadata alone must not suppress actual application');
+  const client=path.join(root,'roblox-games',gameId,'client');
+  fs.mkdirSync(client,{recursive:true});
+  fs.writeFileSync(path.join(client,'Game.client.luau'),'local root = Instance.new("Frame")\nroot.BackgroundColor3 = studioAssetFamily("UI").Color\n');
   assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}),null);
+  fs.writeFileSync(path.join(client,'Game.client.luau'),'local root = Instance.new("Frame")\nroot.BackgroundColor3 = Color3.fromRGB(20,20,20)\n');
+  const repaired=findRobloxStudioAssetBackfillTask(project,root,{tasks:[{...task,status:'verified'}]});
+  assert.ok(repaired,'historical completion must not hide current source gaps');
+  assert.notEqual(repaired.id,task.id);
+  assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[{...task,status:'verified'},repaired]}),null);
 });
 
 

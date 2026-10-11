@@ -3178,7 +3178,9 @@ test('existing Roblox games receive one Studio asset backfill task until real bi
       'root.BackgroundColor3 = Color3.fromRGB(20,20,20)'
     ].join('\n'));
     const alreadyBound=findRobloxStudioAssetBackfillTask(project,root,{tasks:[]});
-    assert.equal(alreadyBound,null);
+    assert.ok(alreadyBound,'trace attributes do not apply library assets');
+    fs.appendFileSync(path.join(gameRoot,'client','Game.client.luau'),'\nroot.BackgroundColor3 = studioAssetFamily("UI").Color\n');
+    assert.equal(findRobloxStudioAssetBackfillTask(project,root,{tasks:[]}),null);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
