@@ -72,7 +72,10 @@ public static class UnityWebFloorBuild
             {
                 if (filter == null || filter.sharedMesh == null) continue;
                 Mesh mesh = filter.sharedMesh;
-                triangles += mesh.triangles.Length / 3;
+                // Unity가 Read/Write를 비활성화한 수입 메시도 안전하게 검사한다.
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        triangles += (int)(mesh.GetIndexCount(submesh) / 3);
                 Vector3 bounds = mesh.bounds.size;
                 if (bounds.x > .1f && bounds.y > .1f && bounds.z > .1f) hasDepth = true;
             }
