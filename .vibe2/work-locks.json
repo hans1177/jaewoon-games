@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1wyiz8p",
+      "worker": "vibe2",
+      "taskId": "horror-escape-room-unity-web-base-implementation-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "unity-games/horror-escape-room/Assets/Scripts/GameCore.cs",
+        "unity-games/horror-escape-room/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "e764fe5c274a99e5f192500fc7e27861b60eb09d",
+      "runId": "38129872250",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T10:43:08.403Z",
+      "expiresAt": "2026-10-11T11:28:08.403Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:horror-escape-room-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
