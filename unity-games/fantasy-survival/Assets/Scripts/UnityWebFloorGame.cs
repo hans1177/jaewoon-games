@@ -473,17 +473,46 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             mainCamera = cameraObject.AddComponent<Camera>();
             cameraObject.tag = "MainCamera";
         }
+        // 렌더링 · Unity WebGL 기기 성능에 맞춰 조명과 그림자만 조절한다.
+        // 공격/히트박스/이동/저장 권한은 건드리지 않는다.
+        bool mobileVisuals = Application.isMobilePlatform;
+        QualitySettings.antiAliasing = mobileVisuals ? 2 : 4;
+        QualitySettings.shadows = mobileVisuals ? ShadowQuality.HardOnly : ShadowQuality.All;
+        QualitySettings.shadowResolution = mobileVisuals ? ShadowResolution.Medium : ShadowResolution.High;
+        QualitySettings.shadowDistance = mobileVisuals ? 24f : 48f;
+        QualitySettings.shadowCascades = mobileVisuals ? 0 : 2;
+        QualitySettings.pixelLightCount = mobileVisuals ? 1 : 2;
         mainCamera.clearFlags = CameraClearFlags.SolidColor;
-        mainCamera.backgroundColor = new Color(0.065f, 0.16f, 0.14f);
+        mainCamera.backgroundColor = new Color(.10f, .17f, .18f);
         mainCamera.fieldOfView = 57f;
+        mainCamera.allowMSAA = true;
+        mainCamera.allowHDR = !mobileVisuals;
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+        RenderSettings.ambientSkyColor = new Color(.46f, .56f, .62f);
+        RenderSettings.ambientEquatorColor = new Color(.30f, .38f, .35f);
+        RenderSettings.ambientGroundColor = new Color(.12f, .17f, .15f);
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogColor = new Color(.18f, .25f, .24f);
+        RenderSettings.fogStartDistance = 28f;
+        RenderSettings.fogEndDistance = mobileVisuals ? 59f : 75f;
 
-        if (FindFirstObjectByType<Light>() == null)
+        Light sunlight = FindFirstObjectByType<Light>();
+        if (sunlight == null)
         {
             GameObject source = new GameObject("Sunlight");
-            Light sunlight = source.AddComponent<Light>();
+            sunlight = source.AddComponent<Light>();
             sunlight.type = LightType.Directional;
-            sunlight.intensity = 1.15f;
+            sunlight.intensity = 1.35f;
+            sunlight.color = new Color(1f, .92f, .77f);
             source.transform.rotation = Quaternion.Euler(46f, -25f, 0f);
+        }
+        if (sunlight.type == LightType.Directional)
+        {
+            sunlight.shadows = mobileVisuals ? LightShadows.Hard : LightShadows.Soft;
+            sunlight.shadowStrength = mobileVisuals ? .58f : .72f;
+            sunlight.shadowBias = .045f;
+            sunlight.shadowNormalBias = .45f;
         }
 
         Color[] regionColors =
@@ -675,7 +704,13 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private static void Tint(GameObject obj, Color color)
     {
         Renderer rr = obj.GetComponent<Renderer>();
-        if (rr != null) rr.material.color = color;
+        if (rr == null) return;
+        // 재질 인스턴스 폭증 방지 · 실제 Lit 메시는 유지하고 색상만 렌더러별 적용한다.
+        var block = new MaterialPropertyBlock();
+        rr.GetPropertyBlock(block);
+        block.SetColor("_Color", color);
+        block.SetColor("_BaseColor", color);
+        rr.SetPropertyBlock(block);
     }
 
     // 그래픽 · 기존 GameObject/Collider 생성 함수의 비충돌 시각 자산 경로
