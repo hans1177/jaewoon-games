@@ -369,7 +369,9 @@ test('bottleneck sensor reports free capacity, common failures, stale reservatio
   assert.equal(snapshot.queueDepth.queued,3);
   assert.equal(snapshot.staleReservations.length,1);
   assert.equal(snapshot.commonFailureCohorts.length,1);
-  assert.equal(snapshot.recommendedBatch,3);
+  assert.equal(snapshot.recommendedBatch,2);
+  assert.deepEqual(snapshot.representativeCanaryTaskIds,['a']);
+  assert.deepEqual(snapshot.disjointQueuedTaskIds,['a','c']);
   assert.deepEqual(snapshot.caretakerHotspots,[{gameId:'demo',count:2}]);
   assert.ok(snapshot.actions.includes('REPRESENTATIVE_CANARY_FOR_COMMON_FAILURE'));
 });

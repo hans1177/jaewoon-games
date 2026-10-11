@@ -343,12 +343,19 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
   assert.equal(evidence.stage,'TARGET_PLATFORM_SOURCE_BIND',`${gameId} source-bind stage mismatch`);
   assert.equal(evidence.sourceValidationPassed,true,`${gameId} source validation must remain passed`);
   assert.equal(evidence.releaseClaim,false,`${gameId} must not claim release from source-only evidence`);
-  assert.equal(evidence.approvedScopeCount>=1,true,`${gameId} approved scope missing`);
-  assert.deepEqual(
-    new Set(evidence.generatedFiles||[]),
-    new Set(['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json']),
-    `${gameId} generated file contract drift`,
-  );
+  const sourceFiles=['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json'];
+  if(evidence.generationMode==='EXISTING_SOURCE_STUDIO_ASSET_REBIND'){
+    assert.equal(evidence.existingSourcePreserved,true,`${gameId} rebind must preserve source`);
+    assert.equal(evidence.gameplayAuthorityChanged,false,`${gameId} rebind must preserve gameplay authority`);
+    assert.equal(evidence.studioAssetBinding?.applied,true,`${gameId} rebind evidence missing`);
+    assert.match(evidence.studioAssetBinding?.selectionFingerprint||'',/^[a-f0-9]{64}$/);
+    assert.ok((evidence.generatedFiles||[]).every(file=>sourceFiles.includes(file)),`${gameId} rebind scope drift`);
+  }else{
+    assert.equal(evidence.approvedScopeCount>=1,true,`${gameId} approved scope missing`);
+    assert.deepEqual(new Set(evidence.generatedFiles||[]),new Set(sourceFiles),`${gameId} generated file contract drift`);
+  }
+  for(const file of sourceFiles)assert.ok(fs.existsSync(path.join(root,file)),`${gameId} required source missing: ${file}`);
+
 
   assert.equal(project?.tree?.ReplicatedStorage?.Shared?.['$path'],'shared',`${gameId} shared Rojo mapping drift`);
   assert.equal(project?.tree?.ServerScriptService?.GameServer?.['$path'],'server',`${gameId} server Rojo mapping drift`);
