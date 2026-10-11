@@ -67,7 +67,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T09:45:02.101Z",
-      "updatedAt": "2026-10-11T13:59:54.824Z",
+      "updatedAt": "2026-10-11T14:00:37.341Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -101,7 +101,7 @@
         "capturedAt": "2026-10-10T09:54:42.325Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-11T13:59:54.824Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-11T14:00:37.341Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -8520,7 +8520,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T10:51:37.532Z",
-      "updatedAt": "2026-10-11T13:59:54.824Z",
+      "updatedAt": "2026-10-11T14:00:37.341Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -8532,7 +8532,7 @@
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "afbb92536eb3aa4c5014597d7fcf5acb215041f6",
       "robloxSourceBootstrapPassedAt": "2026-10-11T08:02:45.154Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-11T13:59:54.824Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-11T14:00:37.341Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -13981,7 +13981,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T10:51:37.532Z",
-      "updatedAt": "2026-10-11T13:59:54.824Z",
+      "updatedAt": "2026-10-11T14:00:37.341Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -13993,7 +13993,7 @@
       "strictDesignReviewRefreshRequired": true,
       "robloxSourceCommit": "f9fdf0dc83361541d35458e300353422f1bc5874",
       "robloxSourceBootstrapPassedAt": "2026-10-11T08:23:53.813Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-11T13:59:54.824Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-11T14:00:37.341Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxStudioAssetBindingApplied": true,
@@ -56780,10 +56780,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T11:45:11.398Z",
-      "updatedAt": "2026-10-11T13:38:51.141Z",
+      "updatedAt": "2026-10-11T14:00:37.341Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -56817,9 +56817,9 @@
         "capturedAt": "2026-10-10T12:02:00.451Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "52448dfce64270e76c9a3dae7b1c957c8e1b6d44",
-      "robloxSourceBootstrapPassedAt": "2026-10-11T07:58:51.188Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-11T13:38:51.141Z",
+      "robloxSourceCommit": "6c123676248d546c838b39895bd43820e107ae95",
+      "robloxSourceBootstrapPassedAt": "2026-10-11T14:00:37.341Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -56871,7 +56871,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-studio-asset-binding-required",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+        "roblox-runtime-evidence-pending"
       ],
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "52448dfce64270e76c9a3dae7b1c957c8e1b6d44",
@@ -57503,10 +57503,10 @@
         "bindingVersion": 2,
         "applied": true,
         "source": "company-asset-library.json#baseMaterialLibrary",
-        "libraryVersion": 137,
-        "selectionFingerprint": "45623435114d75690d83c8c52fe1f8fbd51fbd8efd113e155caebc1ae09e39a4",
-        "buildUpAssetSourceUsageFingerprint": "3ec4e44104b928d825d698ccb260e2827e13385bc027db9e268312c63c286c12",
-        "buildUpAssetSourceUsageLibraryVersion": 137,
+        "libraryVersion": 138,
+        "selectionFingerprint": "eeaadcfc3ce60294ad37f441c897a51a5fd439b0408b018e15b0f2b045152a31",
+        "buildUpAssetSourceUsageFingerprint": "7b3f7e6d8fef7199005cb8f9939aeffad95abcad81fbfed99c184ca83d2f3ca9",
+        "buildUpAssetSourceUsageLibraryVersion": 138,
         "selectedSourceContentHashes": [
           {
             "source": "company-asset-library.json#baseMaterialLibrary",
@@ -64182,7 +64182,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T15:19:36.355Z",
-      "updatedAt": "2026-10-11T13:59:54.824Z",
+      "updatedAt": "2026-10-11T14:00:37.341Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -64192,7 +64192,7 @@
         "capturedAt": "2026-10-10T15:27:55.188Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-11T13:59:54.824Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-11T14:00:37.341Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -64434,7 +64434,7 @@
       "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T15:27:55.406Z",
-      "updatedAt": "2026-10-11T13:59:54.824Z",
+      "updatedAt": "2026-10-11T14:00:37.341Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -64444,7 +64444,7 @@
         "capturedAt": "2026-10-10T15:36:38.441Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": "2026-10-11T13:59:54.824Z",
+      "robloxSourceBootstrapFailedAt": "2026-10-11T14:00:37.341Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -64495,7 +64495,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-11T13:59:54.824Z",
+  "updatedAt": "2026-10-11T14:00:37.341Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
