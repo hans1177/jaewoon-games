@@ -34,6 +34,7 @@ namespace JaewoonGames.DaechungRpg
         private SpriteRenderer _backdrop;
         private MeshRenderer _depthGround;
         private MeshRenderer _depthPath;
+        private Material _treeCanopyMaterial;
         private Camera _sceneCamera;
         private float _lastCameraAspect = -1f;
         private string _enemyId = "skeleton";
@@ -92,6 +93,16 @@ namespace JaewoonGames.DaechungRpg
 #endif
 
             _sceneCamera = SetupCamera();
+            // 그래픽: 비어 있는 테스트 씬도 입체 메시를 실제 조명 아래 표시한다.
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.65f, 0.70f, 0.75f, 1f);
+            var sun = new GameObject("DaechungWorldSun");
+            sun.transform.SetParent(transform, false);
+            sun.transform.rotation = Quaternion.Euler(43f, -28f, 0f);
+            var light = sun.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 0.92f;
+            light.shadows = LightShadows.None;
             _player = new AnimatedActor("PrototypePlayer", new Vector3(0f, -1.65f, 0f), true);
             _enemy = new AnimatedActor("PrototypeEnemy", new Vector3(2.85f, -1.65f, 0.65f), false);
             _enemy.SetVisible(false);
@@ -327,8 +338,9 @@ namespace JaewoonGames.DaechungRpg
             // 몬스터 히트박스, 이동·저장·전투 수치와 무관한 시각 레이어다.
             if (_depthGround == null)
             {
-                var shader = Shader.Find("Unlit/Color");
-                if (shader == null) shader = Shader.Find("Sprites/Default");
+                var shader = Shader.Find("Standard");
+                if (shader == null || !shader.isSupported) shader = Shader.Find("Unlit/Color");
+                if (shader == null || !shader.isSupported) shader = Shader.Find("Sprites/Default");
                 if (shader != null)
                 {
                     var groundObject = new GameObject("DaechungDepthGround");
@@ -362,6 +374,32 @@ namespace JaewoonGames.DaechungRpg
                     pathObject.AddComponent<MeshFilter>().sharedMesh = pathMesh;
                     _depthPath = pathObject.AddComponent<MeshRenderer>();
                     _depthPath.sharedMaterial = new Material(shader);
+                    // 그래픽: 기존 지역 렌더 책임 함수에서 실제 3D 식생을 깊이 방향에 배치한다.
+                    // 물리 Collider는 제거하므로 이동·전투·드랍 판정은 기존 GameCore 그대로다.
+                    var bark = new Material(shader) { color = new Color(0.43f, 0.29f, 0.18f) };
+                    _treeCanopyMaterial = new Material(shader) { color = new Color(0.28f, 0.53f, 0.30f) };
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var tier = i / 2;
+                        var x = (i % 2 == 0 ? -1f : 1f) * (3.5f + 0.45f * tier);
+                        var z = -3.5f + tier * 4f;
+                        var trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                        trunk.name = "DaechungWorldTreeTrunk_" + i;
+                        trunk.transform.SetParent(transform, false);
+                        trunk.transform.localPosition = new Vector3(x, -1.11f, z);
+                        trunk.transform.localScale = new Vector3(0.21f, 0.70f, 0.21f);
+                        trunk.GetComponent<MeshRenderer>().sharedMaterial = bark;
+                        var trunkCollider = trunk.GetComponent<Collider>();
+                        if (trunkCollider != null) UnityEngine.Object.Destroy(trunkCollider);
+                        var canopy = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        canopy.name = "DaechungWorldTreeCanopy_" + i;
+                        canopy.transform.SetParent(transform, false);
+                        canopy.transform.localPosition = new Vector3(x, -0.12f, z);
+                        canopy.transform.localScale = new Vector3(1.05f, 1.32f, 0.96f);
+                        canopy.GetComponent<MeshRenderer>().sharedMaterial = _treeCanopyMaterial;
+                        var canopyCollider = canopy.GetComponent<Collider>();
+                        if (canopyCollider != null) UnityEngine.Object.Destroy(canopyCollider);
+                    }
                 }
             }
 
@@ -376,6 +414,10 @@ namespace JaewoonGames.DaechungRpg
                 _depthPath.sharedMaterial.color = snowy ? new Color(0.76f, 0.80f, 0.78f) :
                     gloomy ? new Color(0.35f, 0.31f, 0.36f) :
                     tropical ? new Color(0.40f, 0.37f, 0.24f) : new Color(0.58f, 0.46f, 0.31f);
+                if (_treeCanopyMaterial != null)
+                    _treeCanopyMaterial.color = snowy ? new Color(0.72f, 0.84f, 0.83f) :
+                        gloomy ? new Color(0.31f, 0.35f, 0.40f) :
+                        tropical ? new Color(0.16f, 0.49f, 0.24f) : new Color(0.28f, 0.53f, 0.30f);
             }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -416,6 +458,40 @@ namespace JaewoonGames.DaechungRpg
                 bool geometryPass = inspected >= 2 && validMeshes == inspected && triangles > 0
                     && volumetricMeshes > 0 && materialsValid && textureDecoded;
                 Debug.Log($"JAEWOON_UNITY_WEB_QA MESH_INTEGRITY game=daechung-rpg source=UNITY_MESH_FILTER inspected={inspected} validMeshes={validMeshes} triangles={triangles} volumetricMeshes={volumetricMeshes} materialPass={(materialsValid ? 1 : 0)} texturePass={(textureDecoded ? 1 : 0)} status={(geometryPass ? "PASS" : "REPAIR_REQUIRED")}");
+                // QA는 마커 수치를 만드는 게 아니라 실제 MeshRenderer/카메라/캐릭터 상태를 읽는다.
+                int worldMeshes3d = 0;
+                float minZ = float.PositiveInfinity, maxZ = float.NegativeInfinity;
+                foreach (var nativeRenderer in FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None))
+                {
+                    if (nativeRenderer == null || !nativeRenderer.enabled || !nativeRenderer.gameObject.activeInHierarchy)
+                        continue;
+                    var nativeFilter = nativeRenderer.GetComponent<MeshFilter>();
+                    if (nativeFilter == null || nativeFilter.sharedMesh == null) continue;
+                    var bounds = nativeRenderer.bounds;
+                    if (bounds.size.x <= 0.02f || bounds.size.y <= 0.02f || bounds.size.z <= 0.02f)
+                        continue;
+                    worldMeshes3d++;
+                    minZ = Mathf.Min(minZ, bounds.min.z);
+                    maxZ = Mathf.Max(maxZ, bounds.max.z);
+                }
+                int worldDepthCm = worldMeshes3d > 0
+                    ? Mathf.RoundToInt(Mathf.Max(0f, maxZ - minZ) * 100f) : 0;
+                int gameplayActors3d = 0, spriteGameplayActors = 0;
+                foreach (var actor in new[] { _player, _enemy, _coopPartner })
+                {
+                    if (actor == null) continue;
+                    if (actor.HasVisibleVolumetricMesh) gameplayActors3d++;
+                    if (actor.SpriteVisible) spriteGameplayActors++;
+                }
+                foreach (var resident in _villageResidents)
+                {
+                    if (resident.Actor.HasVisibleVolumetricMesh) gameplayActors3d++;
+                    if (resident.Actor.SpriteVisible) spriteGameplayActors++;
+                }
+                bool perspective = _sceneCamera != null && _sceneCamera.enabled && !_sceneCamera.orthographic;
+                bool spatialPass = perspective && worldMeshes3d >= 2 && worldDepthCm >= 50
+                    && gameplayActors3d >= 1 && spriteGameplayActors == 0 && geometryPass;
+                Debug.Log($"JAEWOON_UNITY_WEB_QA SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH cameraPerspective={(perspective ? 1 : 0)} worldMeshes3d={worldMeshes3d} worldDepthCm={worldDepthCm} gameplayActors3d={gameplayActors3d} spriteGameplayActors={spriteGameplayActors} status={(spatialPass ? "PASS" : "REPAIR_REQUIRED")}");
             }
 #endif
         }
@@ -469,6 +545,7 @@ namespace JaewoonGames.DaechungRpg
                 }
                 actor.AddClip(action, frames, action == "walk" ? 8 : 5);
             }
+            actor.SetIdentity(id);
             actor.Play("idle", true, true);
         }
 
@@ -880,8 +957,7 @@ namespace JaewoonGames.DaechungRpg
                 camera = cameraObject.AddComponent<Camera>();
             }
 
-            // 그래픽: 2.5D 원근 카메라. 3D XZ 지형과 깊이가 다른 2D 애니메이션 배우를
-            // 하나의 Unity 씬에서 합성하며 2D 전용 정면 카메라를 사용하지 않는다.
+            // 그래픽: 기존 카메라를 실제 X/Y/Z 3D 게임 월드와 입체 배우의 원근 시점으로 유지한다.
             camera.orthographic = false;
             camera.fieldOfView = 40f;
             camera.nearClipPlane = 0.2f;
@@ -917,6 +993,13 @@ namespace JaewoonGames.DaechungRpg
             private readonly Dictionary<string, Clip> _clips = new Dictionary<string, Clip>(StringComparer.OrdinalIgnoreCase);
             private readonly GameObject _root;
             private readonly SpriteRenderer _renderer;
+            // 실제 Unity Native Mesh는 기존 액션 상태를 렌더할 뿐 게임플레이/저장 권한이 없다.
+            private readonly GameObject _model;
+            private readonly Transform _body, _head, _leftArm, _rightArm, _leftLeg, _rightLeg;
+            private readonly Material _skin, _accent;
+            private Color _tint = Color.white;
+            private Color _baseColor = new Color(0.28f, 0.53f, 0.82f);
+            private bool _faceRight;
             private string _currentAction = string.Empty;
             private bool _loop = true;
             private float _actionStarted;
@@ -929,10 +1012,103 @@ namespace JaewoonGames.DaechungRpg
                 _renderer = _root.AddComponent<SpriteRenderer>();
                 _renderer.flipX = faceRight;
                 _renderer.sortingOrder = 10;
+                _faceRight = faceRight;
+                // 렌더러의 기존 생성 책임 안에서 3D 모델을 한 번만 만든다.
+                var shader = Shader.Find("Standard");
+                if (shader == null || !shader.isSupported) shader = Shader.Find("Unlit/Color");
+                if (shader == null || !shader.isSupported) shader = Shader.Find("Sprites/Default");
+                _model = new GameObject(name + "_3DModel");
+                _model.transform.SetParent(_root.transform, false);
+                if (shader == null || !shader.isSupported)
+                {
+                    _model.SetActive(false);
+                    return;
+                }
+                _skin = new Material(shader) { color = _baseColor };
+                _accent = new Material(shader) { color = new Color(0.85f, 0.73f, 0.56f) };
+                _body = CreatePart(_model.transform, "Body", PrimitiveType.Capsule,
+                    new Vector3(0f, 0.62f, 0f), new Vector3(0.46f, 0.49f, 0.33f), _skin);
+                _head = CreatePart(_model.transform, "Head", PrimitiveType.Sphere,
+                    new Vector3(0f, 1.34f, -0.04f), new Vector3(0.52f, 0.55f, 0.46f), _accent);
+                _leftArm = CreatePart(_model.transform, "LeftArm", PrimitiveType.Capsule,
+                    new Vector3(-0.33f, 0.77f, 0f), new Vector3(0.17f, 0.37f, 0.19f), _skin);
+                _rightArm = CreatePart(_model.transform, "RightArm", PrimitiveType.Capsule,
+                    new Vector3(0.33f, 0.77f, 0f), new Vector3(0.17f, 0.37f, 0.19f), _skin);
+                _leftLeg = CreatePart(_model.transform, "LeftLeg", PrimitiveType.Capsule,
+                    new Vector3(-0.14f, 0.17f, 0f), new Vector3(0.17f, 0.31f, 0.17f), _accent);
+                _rightLeg = CreatePart(_model.transform, "RightLeg", PrimitiveType.Capsule,
+                    new Vector3(0.14f, 0.17f, 0f), new Vector3(0.17f, 0.31f, 0.17f), _accent);
+                _renderer.enabled = false;
+                FaceRight(faceRight);
             }
 
-            public void SetTint(Color tint) { _renderer.color = tint; }
-            public void FaceRight(bool facingRight) { _renderer.flipX = facingRight; }
+            // 같은 캐릭터의 원본 Clip·이동·전투 역할을 보존하면서 모양만 교체한다.
+            private static Transform CreatePart(Transform parent, string name, PrimitiveType shape,
+                Vector3 position, Vector3 scale, Material material)
+            {
+                var part = GameObject.CreatePrimitive(shape);
+                part.name = name;
+                part.transform.SetParent(parent, false);
+                part.transform.localPosition = position;
+                part.transform.localScale = scale;
+                var collider = part.GetComponent<Collider>();
+                if (collider != null) UnityEngine.Object.Destroy(collider);
+                part.GetComponent<MeshRenderer>().sharedMaterial = material;
+                return part.transform;
+            }
+
+            public bool HasVisibleVolumetricMesh
+            {
+                get
+                {
+                    if (_skin == null || _body == null || !_model.activeInHierarchy) return false;
+                    var meshFilter = _body.GetComponent<MeshFilter>();
+                    var meshRenderer = _body.GetComponent<MeshRenderer>();
+                    var mesh = meshFilter != null ? meshFilter.sharedMesh : null;
+                    return meshRenderer != null && meshRenderer.enabled && meshRenderer.sharedMaterial != null
+                        && mesh != null && mesh.bounds.size.x > 0.02f
+                        && mesh.bounds.size.y > 0.02f && mesh.bounds.size.z > 0.02f;
+                }
+            }
+            public bool SpriteVisible => _renderer.enabled && _renderer.gameObject.activeInHierarchy;
+
+            public void SetIdentity(string id)
+            {
+                var species = (id ?? "hero").ToLowerInvariant();
+                bool slime = species.Contains("slime");
+                bool skeleton = species.Contains("skeleton") || species.Contains("bone");
+                bool beast = species.Contains("wolf") || species.Contains("boar") ||
+                    species.Contains("tiger") || species.Contains("panther");
+                _baseColor = slime ? new Color(0.26f, 0.70f, 0.42f) :
+                    skeleton ? new Color(0.80f, 0.81f, 0.74f) :
+                    beast ? new Color(0.59f, 0.36f, 0.22f) : new Color(0.28f, 0.53f, 0.82f);
+                if (_skin == null) return;
+                _head.gameObject.SetActive(!slime);
+                _leftArm.gameObject.SetActive(!slime);
+                _rightArm.gameObject.SetActive(!slime);
+                _leftLeg.gameObject.SetActive(!slime);
+                _rightLeg.gameObject.SetActive(!slime);
+                _body.localPosition = slime ? new Vector3(0f, 0.39f, 0f) : new Vector3(0f, 0.62f, 0f);
+                _body.localScale = slime ? new Vector3(0.80f, 0.39f, 0.63f) :
+                    beast ? new Vector3(0.68f, 0.43f, 0.51f) : new Vector3(0.46f, 0.49f, 0.33f);
+                _accent.color = skeleton ? new Color(0.94f, 0.91f, 0.81f) : new Color(0.85f, 0.73f, 0.56f);
+                SetTint(_tint);
+            }
+
+            public void SetTint(Color tint)
+            {
+                _tint = tint;
+                _renderer.color = tint;
+                if (_skin != null)
+                    _skin.color = new Color(_baseColor.r * tint.r, _baseColor.g * tint.g, _baseColor.b * tint.b);
+            }
+            public void FaceRight(bool facingRight)
+            {
+                _faceRight = facingRight;
+                _renderer.flipX = facingRight;
+                if (_model != null) _model.transform.localRotation =
+                    Quaternion.Euler(0f, facingRight ? -16f : 16f, 0f);
+            }
             public void SetMaterial(Material material) { _renderer.sharedMaterial = material; }
 
             public bool Loaded { get; set; }
@@ -946,7 +1122,8 @@ namespace JaewoonGames.DaechungRpg
 
             public void SetVisible(bool visible)
             {
-                _renderer.enabled = visible;
+                _renderer.enabled = visible && _skin == null;
+                if (_model != null) _model.SetActive(visible && _skin != null);
             }
 
             public void AddClip(string action, Sprite[] frames, int fps)
@@ -986,6 +1163,24 @@ namespace JaewoonGames.DaechungRpg
                 }
 
                 _renderer.sprite = clip.Frames[frameIndex];
+                // 기존 Clip 시간에 맞춘 네이티브 3D 자세만 갱신한다. 공격 판정은 GameCore가 유지한다.
+                if (_skin == null || !_model.activeInHierarchy) return;
+                bool walking = _currentAction == "walk";
+                bool attacking = _currentAction == "attack";
+                bool hurt = _currentAction == "hurt";
+                bool dying = _currentAction == "death";
+                float stride = walking ? Mathf.Sin(elapsed * 10f) : 0f;
+                float strike = attacking ? Mathf.Sin(Mathf.Clamp01(elapsed / 0.48f) * Mathf.PI) : 0f;
+                float hit = hurt ? Mathf.Sin(Mathf.Clamp01(elapsed / 0.30f) * Mathf.PI) : 0f;
+                float deathTilt = dying ? -72f * Mathf.Clamp01(elapsed / 0.45f) : 0f;
+                _model.transform.localPosition = new Vector3(0f, walking ?
+                    Mathf.Abs(stride) * 0.045f : Mathf.Sin(now * 1.8f) * 0.015f, 0f);
+                _model.transform.localRotation = Quaternion.Euler(-hit * 12f,
+                    _faceRight ? -16f : 16f, deathTilt);
+                _leftArm.localRotation = Quaternion.Euler(stride * 22f, 0f, 0f);
+                _rightArm.localRotation = Quaternion.Euler(-stride * 22f - strike * 68f, 0f, 0f);
+                _leftLeg.localRotation = Quaternion.Euler(-stride * 16f, 0f, 0f);
+                _rightLeg.localRotation = Quaternion.Euler(stride * 16f, 0f, 0f);
             }
         }
     }
