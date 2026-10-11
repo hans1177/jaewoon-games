@@ -88,6 +88,22 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
       }finally{fs.writeFileSync(sourceFile,valid3d);}
     }
     assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
+    // 3D 검증의 읽기 전용 탐지는 허용하지만 실제 2D 컴포넌트 사용은 아래 테스트에서 차단한다.
+    const nativeSourceFile=path.join(root,'Assets','Scripts','Game.cs');
+    fs.writeFileSync(nativeSourceFile,[
+      'using UnityEngine;',
+      'public class Game:MonoBehaviour {',
+      '  void Check() {',
+      '    int spriteGameplayActors = 0;',
+      '    foreach (Renderer candidate in FindObjectsByType<Renderer>(FindObjectsSortMode.None)) {',
+      '      if (candidate != null && candidate.gameObject.activeInHierarchy',
+      '          && candidate.GetType().Name == "SpriteRenderer") spriteGameplayActors++;',
+      '    }',
+      '  }',
+      '}'
+    ].join('\n'));
+    assert.match(run().toString(),/UNITY_WEB_REQUEST_STATUS=READY/);
+    fs.writeFileSync(nativeSourceFile,valid3d);
     const reject=(relative,body)=>{
       const target=path.join(root,relative);
       fs.mkdirSync(path.dirname(target),{recursive:true});
