@@ -1499,13 +1499,14 @@ function sourceConsumerRoots({repoRoot,game}={}){
 }
 function sourceConsumerAssetReference({repoRoot,file,raw}={}){
   const value=clean(raw).replaceAll('\\','/');
+  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   let absolute='';
-  if(value.startsWith('/assets/'))absolute=path.resolve(repoRoot,value.slice(1));
-  else if(value.startsWith('assets/'))absolute=path.resolve(repoRoot,value);
-  else if(/^(?:\.\.\/|\.\/)+assets\//.test(value))absolute=path.resolve(path.dirname(file),value);
+  if(value.startsWith('/')&&allowed.test(value.slice(1)))absolute=path.resolve(repoRoot,value.slice(1));
+  else if(allowed.test(value))absolute=path.resolve(repoRoot,value);
+  else if(/^(?:\.\.\/|\.\/)+/.test(value))absolute=path.resolve(path.dirname(file),value);
   if(!absolute)return'';
   const relative=sourceConsumerPath(path.relative(repoRoot,absolute));
-  if(relative.startsWith('../')||!relative.startsWith('assets/'))return'';
+  if(relative.startsWith('../')||!allowed.test(relative))return'';
   try{return fs.statSync(absolute).isFile()?relative:'';}catch{return'';}
 }
 function collectSourceConsumerJsonPaths(value,{repoRoot,file,out}={}){
@@ -1580,11 +1581,34 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         scannedFileCount+=1;scannedBytes+=stat.size;
         const relative=sourceConsumerPath(path.relative(repoRoot,file));
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
-        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(tokens,match[1],relative);
-        const usageSource=sourceConsumerUsageSource(source);
-        for(const match of usageSource.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(usageTokens,match[1],relative);
-        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*assets\/[A-Za-z0-9._\/-]+)/g)){
+        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
+        }
+        // Unity Resources.Load consumes imported assets without their extensions.
+        // Resolve only exact existing native files referenced by executable game code.
+        // This is source-bound evidence, never proof of an actual rendered frame.
+        if(root.relative.startsWith('unity-games/')){
+          const resourceRoot=root.relative+'/Assets/Resources/';
+          const extensions=['.obj','.fbx','.prefab','.asset','.mat','.png','.jpg','.jpeg','.json','.wav','.ogg','.mp3','.glb','.gltf'];
+          const bindResource=resource=>{
+            if(!/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/.test(resource))return;
+            for(const extension of extensions){
+              const assetPath=sourceConsumerAssetReference({repoRoot,file,raw:resourceRoot+resource+extension});
+              addAssetPath(assetPath,relative);
+            }
+          };
+          for(const match of usageSource.matchAll(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*["']([A-Za-z0-9_/-]+)["']/g)){
+            bindResource(match[1]);
+          }
+          // Existing Unity-native visual consumer resolves CompanyAssets/<name> in
+          // BindCompanyVisual. Bind literal/conditional call sites only when that
+          // actual Resources.Load implementation exists in this same source file.
+          if(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*["']CompanyAssets\/["']\s*\+\s*/.test(usageSource)){
+            for(const match of usageSource.matchAll(/\bBindCompanyVisual\s*\(\s*(?:[A-Za-z_$][\w$]*\s*\?\s*)?["']([A-Za-z0-9_-]+)["'](?:\s*:\s*["']([A-Za-z0-9_-]+)["'])?/g)){
+              bindResource('CompanyAssets/'+match[1]);
+              if(match[2])bindResource('CompanyAssets/'+match[2]);
+            }
+          }
         }
         if(path.extname(entry.name).toLowerCase()==='.json'){
           try{
@@ -1614,9 +1638,13 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   return snapshot;
 }
 function sourceConsumerAssetPaths(asset={}){
+  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   return unique([
-    ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),...(asset.nativeArtifacts||[])
-  ].map(sourceConsumerPath).filter(value=>value.startsWith('assets/')));
+    ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),
+    ...(asset.nativeArtifacts||[]),asset.masterGlb,asset.meshArtifact,
+    ...(asset.fileRoles?.models||[]),...(asset.fileRoles?.runtimeCode||[]),
+    ...(asset.fileRoles?.materials||[]),...(asset.fileRoles?.textures||[])
+  ].map(sourceConsumerPath).filter(value=>allowed.test(value)));
 }
 function sourceConsumerIdentityTokens(asset={}){
   return unique([
@@ -4903,15 +4931,14 @@ export function buildVibeAssetProductionPlan({
     seed:task.mapReconstruction.seed||clean(task.gameId),
     gameId:clean(task.gameId),target:resolvedTarget
   }):null;
-  // 월드 제작 지시는 기존 BUILD_UP의 검증 설계에서 자동 발생한다. 별도 옵션이나 파이프라인이 필요 없다.
+  // [오토 바이옴 · 모든 게임] 기존 BUILD_UP은 매 회차 바이옴 제작 도구를 실행한다.
+  // 검증된 게임 설계에 공간 정보가 없는 경우에도 실행 결과를 누락하지 않고
+  // APPROVED_DESIGN_REQUIRED로 유지한다. 도구 사용은 맵 생성 승인이나 게임 상태 변경이 아니다.
   const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
     ?task.buildUpDirective?.designImplementationContext||null:null;
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
-  const spatialFamilies=new Set(['ENVIRONMENT','BUILDING','PROP','CREATURE','CHARACTER','MATERIAL']);
-  const spatialDemand=(task.assetRequirements||[]).some(item=>spatialFamilies.has(clean(item?.family).toUpperCase()))
-    ||/(?:WORLD|MAP|REGION|BIOME|TERRAIN|ENVIRONMENT|DUNGEON|VILLAGE|SETTLEMENT|CAVE|맵|지형|지역|배경|생태|마을|던전|건축|도시|호수|바다)/i.test(request);
-  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0&&spatialDemand
+  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0
     ?{
       approvedDesign:true,
       seed:clean(task.gameId)||'world',
@@ -4929,7 +4956,11 @@ export function buildVibeAssetProductionPlan({
       source:'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
     }:null;
   const approvedWorld=task.worldDesign?.approvedDesign===true?task.worldDesign:null;
-  const worldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
+  const existingWorldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
+  const biomeToolRequired=Boolean(clean(task.gameId))&&['roblox','unity','web'].includes(resolvedTarget);
+  const worldInput=existingWorldInput||(biomeToolRequired?{
+    approvedDesign:false,seed:clean(task.gameId),source:'EXISTING_GAME_APPROVED_SPATIAL_DESIGN_REQUIRED'
+  }:null);
   const proceduralWorldLayout=worldInput&&typeof worldInput==='object'&&!Array.isArray(worldInput)
     ?createVibeProceduralWorldLayout({
       ...worldInput,dimension:'3D',gameId:clean(task.gameId),target:resolvedTarget,
@@ -4943,6 +4974,22 @@ export function buildVibeAssetProductionPlan({
       styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey||'STYLIZED_FANTASY',
       libraryAssets:selectionRegistry?.assets||[]})
     :null;
+  const autoBiomeEvaluation=freeze({
+    required:biomeToolRequired,
+    tool:'assets/vibe-environment-director.js#createVibeProceduralWorldLayout',
+    evaluated:proceduralWorldLayout!==null,
+    status:proceduralWorldLayout?.status||'NO_GAME_SCOPE',
+    source:worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+      :worldInput===approvedWorld?'EXPLICIT_APPROVED_GAME_WORLD'
+      :worldInput===existingWorldInput?'EXISTING_WORLD_REQUEST'
+      :biomeToolRequired?'EXISTING_GAME_APPROVED_SPATIAL_DESIGN_REQUIRED':'NO_GAME_SCOPE',
+    approvedWorldRequired:true,
+    missingDesignMustRouteToExistingDesignPipeline:true,
+    gameSourceMutationPerformed:false,
+    nativeAssetBindingPerformed:false,
+    runtimeVerified:false,
+    noGameplaySaveOrMapAuthorityChange:true
+  });
   const qualityDNA=freeze({
     version:1,
     gameId:clean(task.gameId)||null,
@@ -5349,8 +5396,8 @@ export function buildVibeAssetProductionPlan({
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
     proceduralWorldLayout,
-    autoBiomeSource:worldInput&&worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
-      :worldInput?'EXPLICIT_APPROVED_GAME_WORLD':'NO_VERIFIED_SPATIAL_WORLD',
+    autoBiomeSource:autoBiomeEvaluation.source,
+    autoBiomeEvaluation,
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
       studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
