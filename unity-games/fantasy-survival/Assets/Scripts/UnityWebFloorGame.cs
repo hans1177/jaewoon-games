@@ -428,6 +428,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private float playerActionStart,playerActionUntil,playerActionDuration;
     private int playerActionKind;
     private Texture2D uiPanelTexture,uiButtonTexture,uiButtonActiveTexture,uiInsetTexture;
+    // 스킬 연출 전용 공용 재질은 전투 판정·네트워크·저장 상태와 무관하다.
+    private Material combatFxMaterial;
 
     // 메인 · 초기화
     private void Awake()
@@ -1200,6 +1202,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 {
                     foreach(Renderer oldRenderer in root.GetComponentsInChildren<Renderer>())
                         if(!oldRenderer.transform.IsChildOf(rigVisual.transform))oldRenderer.enabled=false;
+                    if(name.Contains("crystal")||name.Contains("fire")||name.Contains("ice")||
+                        name.Contains("frost")||name.Contains("sand")||name.Contains("toxic"))
+                        TintCompanyMesh(rigVisual,baseColor);
                     PlayNativeMotion(monster.nativeMotion,"IDLE_BREATH");
                 }
             }
@@ -1403,12 +1408,88 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
     }
 
+    // 스킬 · 원래 피해 이벤트만 관찰하여 입자·타격감을 재생한다. 추가 피격/드랍 판정 없음.
+    private Material CombatFxMaterial()
+    {
+        if(combatFxMaterial!=null)return combatFxMaterial;
+        Shader shader=Shader.Find("Particles/Standard Unlit")??Shader.Find("Sprites/Default")
+            ??Shader.Find("Unlit/Color");
+        if(shader==null)return null;
+        combatFxMaterial=new Material(shader){name="MagicForest_CombatPresentation"};
+        return combatFxMaterial;
+    }
+
+    private void SpawnImpactEffect(Vector3 position,Color color,float size)
+    {
+        Material material=CombatFxMaterial();
+        if(material==null || worldRoot==null)return;
+        GameObject effect=new GameObject("MagicForest_NativeHitVFX");
+        effect.transform.SetParent(worldRoot.transform,false);
+        effect.transform.position=position;
+        ParticleSystem particles=effect.AddComponent<ParticleSystem>();
+        var main=particles.main;
+        main.duration=.32f;
+        main.loop=false;
+        main.playOnAwake=false;
+        main.startLifetime=new ParticleSystem.MinMaxCurve(.12f,.27f);
+        main.startSpeed=new ParticleSystem.MinMaxCurve(1.6f*size,3.2f*size);
+        main.startSize=new ParticleSystem.MinMaxCurve(.08f*size,.20f*size);
+        main.startColor=color;
+        main.simulationSpace=ParticleSystemSimulationSpace.World;
+        main.maxParticles=18;
+        main.stopAction=ParticleSystemStopAction.Destroy;
+        var emission=particles.emission;
+        emission.rateOverTime=0f;
+        emission.SetBursts(new[]{new ParticleSystem.Burst(0f,14)});
+        var shape=particles.shape;
+        shape.shapeType=ParticleSystemShapeType.Sphere;
+        shape.radius=.16f*size;
+        ParticleSystemRenderer renderer=effect.GetComponent<ParticleSystemRenderer>();
+        renderer.sharedMaterial=material;
+        particles.Play();
+    }
+
+    // 유도 스킬의 실제 3D 탄체에 잔상/빛을 부여하며 명중 판정은 기존 UpdateHomingSpells만 담당한다.
+    private void StyleHomingProjectile(GameObject projectile,bool sand)
+    {
+        if(projectile==null)return;
+        Color color=sand?new Color(1f,.75f,.32f):new Color(.65f,.43f,1f);
+        Renderer core=projectile.GetComponent<Renderer>();
+        if(core!=null)
+        {
+            core.material.color=color;
+            core.material.EnableKeyword("_EMISSION");
+            core.material.SetColor("_EmissionColor",color*.85f);
+        }
+        Material material=CombatFxMaterial();
+        if(material!=null)
+        {
+            TrailRenderer trail=projectile.AddComponent<TrailRenderer>();
+            trail.sharedMaterial=material;
+            trail.time=.30f;
+            trail.minVertexDistance=.08f;
+            trail.startWidth=sand?.32f:.29f;
+            trail.endWidth=.015f;
+            trail.startColor=color;
+            trail.endColor=new Color(color.r,color.g,color.b,0f);
+        }
+        Light glow=projectile.AddComponent<Light>();
+        glow.type=LightType.Point;
+        glow.color=color;
+        glow.intensity=.9f;
+        glow.range=2.4f;
+        glow.shadows=LightShadows.None;
+    }
+
     // 전투 · 기존 처치/진행 처리는 유지하고 아군 소환수 처치는 제외한다.
     private void HurtMonster(Monster target,float damage)
     {
         if(target==null||target.hp<=0f)return;
         target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
         target.hitPoseUntil=Time.time+motionProfile.hitSeconds;
+        if(target.obj!=null && damage>0f)
+            SpawnImpactEffect(target.obj.transform.position+Vector3.up*.95f,
+                target.hp<=0f?new Color(1f,.75f,.32f):new Color(.96f,.42f,.29f),1f);
         if(target.hp<=0f)
         {
             if(!target.ally)
@@ -1439,6 +1520,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             if(towards.sqrMagnitude<=step*step || towards.magnitude<=.85f)
             {
                 HurtMonster(target,spell.damage);
+                SpawnImpactEffect(destination,spell.sandEffect?new Color(.95f,.78f,.36f):
+                    new Color(.75f,.50f,1f),1.5f);
                 if(spell.sandEffect && target.hp>0f && UnityEngine.Random.value<.30f)
                 {
                     target.slowedUntil=Mathf.Max(target.slowedUntil,Time.time+3f);
@@ -1489,6 +1572,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Tint(sphere,sand?new Color(.89f,.73f,.33f):new Color(.74f,.49f,.98f));
             Collider collider=sphere.GetComponent<Collider>();
             if(collider!=null)Destroy(collider);
+            StyleHomingProjectile(sphere,sand);
             homingSpells.Add(new HomingSpell{targetId=target.runtimeId,
                 damage=damage,speed=sand?18f:21f,expiresAt=Time.time+3.5f,
                 sandEffect=sand,obj=sphere});
@@ -1863,6 +1947,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         foreach(Monster m in monsters)maxId=Mathf.Max(maxId,m.runtimeId+1);
         foreach(SpawnBlock b in blocks)maxId=Mathf.Max(maxId,b.id+1);
         nextId=maxId;
+    }
+
+    // 메모리 · 재사용한 이펙트 재질만 종료 시 정리한다.
+    private void OnDestroy()
+    {
+        if(combatFxMaterial!=null)Destroy(combatFxMaterial);
     }
 
     // 저장 · 타이틀/모드 선택 화면에서는 앱 중단·종료로 직전 세션을 다시 쓰지 않는다.
