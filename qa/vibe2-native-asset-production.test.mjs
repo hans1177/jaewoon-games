@@ -93,7 +93,7 @@ test('eligible internal 3d asset auto-fill exposes exact native material derivat
   },['Assets/Scripts/World.cs']);
   assert.match(prompt,/"onDemandLibrarySupply"/);
   assert.match(prompt,/"selectedSourceId":"shared-forest-tree"/);
-  assert.match(prompt,/"sourceModel":"assets\\/shared\\/forest-tree\\.glb"/);
+  assert.ok(prompt.includes('"sourceModel":"assets/shared/forest-tree.glb"'));
   assert.match(prompt,/"sourceInspectionRequired":true/);
   assert.match(prompt,/"runtimeVerified":false/);
 });
