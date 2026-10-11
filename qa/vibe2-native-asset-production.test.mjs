@@ -7,7 +7,7 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeSourceBoundAssetConsumers,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings,buildInternalAssetApiIndex,attachSelectedInternalAssetApiContext} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
@@ -4606,4 +4606,82 @@ test('native authoring reviews exported GLB material channels and never executes
   assert.match(source,/TEXCOORD_0/);
   assert.match(source,/modelLicenseRegionBlocked.*SOUTH_KOREA/);
   assert.match(source,/modelRan.*False/);
+});
+
+
+// [공용 자산 회귀] 파일이 실제 소스 소비자와 연결되더라도 엔진 표시는 별도 검증한다.
+test('Unity resource calls bind existing native source assets without claiming runtime verification',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-source-unity-'));
+  try{
+    const folder=path.join(root,'unity-games','sample','Assets');
+    const resources=path.join(folder,'Resources','CompanyAssets');
+    const scripts=path.join(folder,'Scripts');
+    fs.mkdirSync(resources,{recursive:true});
+    fs.mkdirSync(scripts,{recursive:true});
+    for(const name of ['Tree','Rock']){
+      fs.writeFileSync(path.join(resources,name+'.obj'),'o '+name+'\\nv 0 0 0\\nv 1 0 0\\nv 0 1 0\\nf 1 2 3\\n');
+    }
+    fs.writeFileSync(path.join(scripts,'NativeWorld.cs'),[
+      'GameObject tree=Resources.Load<GameObject>("CompanyAssets/Tree");',
+      'GameObject rock=BindCompanyVisual("Rock",transform,Vector3.zero,Vector3.one,Quaternion.identity);',
+      'GameObject BindCompanyVisual(string id,Transform parent,Vector3 position,Vector3 scale,Quaternion rotation) {',
+      ' return Resources.Load<GameObject>("CompanyAssets/"+id);',
+      '}'
+    ].join('\\n'));
+    const assets=['Tree','Rock'].map(name=>({
+      id:'sample-'+name.toLowerCase(),family:'ENVIRONMENT',
+      path:'unity-games/sample/Assets/Resources/CompanyAssets/'+name+'.obj',
+      productionVerified:false,verifiedCompanyReusable:false
+    }));
+    const result=synchronizeSourceBoundAssetConsumers({
+      repoRoot:root,registry:{assets},
+      gameCatalog:{games:[{id:'sample',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}
+    });
+    assert.equal(result.summary.scannedGameCount,1);
+    assert.equal(result.summary.boundAssetCount,2);
+    assert.deepEqual(result.registry.assets.map(asset=>asset.sourceBoundConsumerGameIds),[['sample'],['sample']]);
+    assert.equal(result.bindings.every(binding=>binding.mode==='PROJECT_ASSET_PATH'),true);
+    assert.equal(result.bindings.every(binding=>binding.runtimeVerified===false),true);
+    assert.equal(result.summary.runtimeVerifiedConsumerCount,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [공용 자산 회귀] 원장 선언만 있는 원자는 사용으로 계산하지 않는다.
+test('Roblox native asset uses are counted while unconsumed configuration atoms remain unbound',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-source-roblox-'));
+  try{
+    const game=path.join(root,'roblox-games','sample');
+    fs.mkdirSync(path.join(game,'shared'),{recursive:true});
+    fs.mkdirSync(path.join(game,'client'),{recursive:true});
+    fs.writeFileSync(path.join(game,'shared','GameConfig.luau'),[
+      'return {',
+      '  -- STUDIO_ASSET_BINDING_BEGIN',
+      '  StudioAssets = { Families = {',
+      '    UI = { "FRAME_PANEL", "BUTTON_PRIMARY" },',
+      '    AUDIO = { "ENV_WIND" },',
+      '  } },',
+      '  -- STUDIO_ASSET_BINDING_END',
+      '}'
+    ].join('\\n'));
+    fs.writeFileSync(path.join(game,'client','Game.client.luau'),[
+      'local studioAssetFamilies = Config.StudioAssets.Families',
+      'if hasStudioAssetAtom("FRAME_PANEL") then root.Visible=true end',
+      'local wind = table.find(studioAssetFamily("AUDIO"), "ENV_WIND")',
+      '-- if hasStudioAssetAtom("BUTTON_PRIMARY") then fake=true end'
+    ].join('\\n'));
+    const registry={assets:[
+      {id:'frame',family:'UI',atomId:'FRAME_PANEL'},
+      {id:'unused-button',family:'UI',atomId:'BUTTON_PRIMARY'},
+      {id:'wind',family:'AUDIO',atomId:'ENV_WIND'}
+    ]};
+    const result=synchronizeSourceBoundAssetConsumers({
+      repoRoot:root,registry,
+      gameCatalog:{games:[{id:'sample',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}
+    });
+    assert.deepEqual(result.bindings.map(binding=>binding.assetId).sort(),['frame','wind']);
+    assert.equal(result.summary.boundAssetCount,2);
+    assert.equal(result.registry.assets.find(asset=>asset.id==='unused-button').sourceBoundConsumerGameIds,undefined);
+    assert.equal(result.bindings.every(binding=>binding.mode==='MANAGED_LIBRARY_IDENTITY'),true);
+    assert.equal(result.summary.runtimeVerifiedConsumerCount,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
