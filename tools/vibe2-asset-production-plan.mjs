@@ -3451,6 +3451,10 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
     const compatible=familyClassified&&!hardBlockReason&&applicationMode!=='NOT_SUPPORTED';
     if(compatible){
       compatibleCandidateCount+=1;
+      // 플랫폼 파생 경로와 원본 해시를 함께 전달한다. 선택표에서 실제 모델 경로를 잃지 않는다.
+      const variants=asset?.platformVariants&&typeof asset.platformVariants==='object'?asset.platformVariants:{};
+      const nativeVariant=Object.entries(variants).find(([platform])=>clean(platform).toLowerCase()===resolved)?.[1]||{};
+      const masterSourcePath=clean(asset?.masterGlb||asset?.meshArtifact||asset?.masterSourcePath);
       const row=freeze({
         assetId:clean(asset?.id),
         family,
@@ -3461,9 +3465,13 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
         applicationMode,
         status:clean(asset?.status)||null,
         license:clean(asset?.license)||null,
-        path:clean(asset?.path)||null,
-        sourceFiles:freezeList(asset?.sourceFiles||[]),
-        nativeArtifacts:freezeList(asset?.nativeArtifacts||[]),
+        path:clean(nativeVariant.path||asset?.path||masterSourcePath)||null,
+        masterSourcePath:masterSourcePath||null,
+        sourceHash:clean(asset?.editableSourceHash||asset?.sourceHash||asset?.sourceSha256||asset?.masterGlbHash||asset?.masterGlbSha256)||null,
+        artifactHash:clean(nativeVariant.artifactSha256||asset?.nativeArtifactHash||asset?.artifactHash)||null,
+        sourceFiles:freezeList(unique([...(asset?.sourceFiles||[]),masterSourcePath].filter(Boolean))),
+        nativeArtifacts:freezeList(unique([...(asset?.nativeArtifacts||[]),clean(nativeVariant.path)].filter(Boolean))),
+        platformVariants:freeze(variants),
         fileRoles:freeze(Object.fromEntries(Object.entries(asset?.fileRoles||{}).map(([role,files])=>[role,freezeList(files)]))),
         companyCommonBase:asset?.companyCommonBase===true,
         verifiedCompanyReusable:asset?.verifiedCompanyReusable===true,
@@ -3487,14 +3495,14 @@ export function buildAllGameDynamicLibraryBindingPlan({companyRegistry={},target
   const baseMaterialAtomCount=Object.values(baseMaterialFamilies).reduce((sum,rows)=>sum+rows.length,0);
   const candidateCountsByFamily=Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[family,familyCandidates[family].length]));
   const fingerprint=crypto.createHash('sha256').update(JSON.stringify({
-    version:1,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
+    version:2,gameId:clean(gameId),target:resolved,libraryVersion:Number(companyRegistry?.version||0),
     baseMaterialFamilies:Object.fromEntries(Object.entries(baseMaterialFamilies).map(([family,rows])=>[family,[...rows].sort()])),
     candidates:Object.fromEntries(UNIVERSAL_ASSET_FAMILIES.map(family=>[
-      family,familyCandidates[family].map(row=>[row.assetId,row.sourcePackId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
+      family,familyCandidates[family].map(row=>[row.assetId,row.sourcePackId,row.applicationMode,row.path,[...row.sourceFiles],[...row.nativeArtifacts],row.fileRoles,row.masterSourcePath,row.sourceHash,row.artifactHash,row.platformVariants]).sort((a,b)=>String(a[0]).localeCompare(String(b[0])))
     ]))
   })).digest('hex');
   return freeze({
-    version:1,
+    version:2,
     required,
     authority:'company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.allGameDynamicInternalAssetBindingContract',
     gameId:clean(gameId)||null,

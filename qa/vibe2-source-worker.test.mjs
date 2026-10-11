@@ -1165,6 +1165,17 @@ test('Roblox internal asset family binding requires actual family use and reject
   });
   assert.equal(rejected.pass,false);
   assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
+
+  write(path.join(root,'client/Game.client.luau'),appliedUi);
+  const retained=evaluateRobloxInternalAssetFamilyBindingCandidate({sourceRoot:root,expectedFamilies,requireChangedBinding:false});
+  assert.equal(retained.pass,true,'an exact existing native binding may be reused without fake source churn');
+  assert.equal(retained.changedAppliedFamilyCount,0);
+  write(path.join(root,'client/Game.client.luau'),markerOnly);
+  const missing=evaluateRobloxInternalAssetFamilyBindingCandidate({sourceRoot:root,expectedFamilies,requireChangedBinding:false});
+  assert.equal(missing.pass,false,'reuse still requires actual native consumption');
+  const error=new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+missing.blockers.join(','));
+  assert.equal(generationFailureClass(error),'ROBLOX_INTERNAL_ASSET_APPLICATION');
+  assert.equal(shouldRetryGenerationError(error),true,'binding failures must enter the existing corrective generation loop');
 });
 
 // [자동 자산 연결] 기존 바이브 코딩 프롬프트가 제작 플래너의 누락 작업을 직접 소비한다.
@@ -3753,6 +3764,53 @@ test('exact edit preserves the original EOF shape instead of introducing a git d
     replace:'return { Value = 2 }\n'
   }]);
   assert.equal(fs.readFileSync(withoutEol,'utf8'),'return { Value = 2 }');
+});
+
+// 소스 변환 · 뒤쪽 실패는 원본을 보존하고 자산 검사와 실제 적용은 같은 바이트를 만든다.
+test('exact edit validates the entire batch before writing any file or document',()=>{
+  const cwd=tempRoot();
+  const originals=new Map([['first.js','const value = 1;\n'],['second.js','const next = 2;\n']]);
+  for(const [file,source] of originals)write(path.join(cwd,file),source);
+  const edits=[
+    {path:'first.js',find:'value = 1',replace:'value = 3'},
+    {path:'second.js',find:'missing = 2',replace:'next = 4'}
+  ];
+  assert.throws(()=>applyExactEdits(cwd,edits),/edit find 불일치/);
+  for(const [file,source] of originals)assert.equal(fs.readFileSync(path.join(cwd,file),'utf8'),source);
+  const documents=new Map(originals);
+  assert.throws(()=>applyExactEdits('',edits,{documents}),/edit find 불일치/);
+  assert.deepEqual(documents,originals);
+});
+
+test('asset inspection and exact writes share trimmed anchors sequential edits and literal dollar handling',()=>{
+  const cwd=tempRoot(),source='function draw(){\r\n  const label = "before";\r\n}\r\n';
+  write(path.join(cwd,'game.js'),source);
+  const documents=new Map([['game.js',source]]);
+  const edits=[
+    {path:'game.js',find:'function draw(){\nconst label = "before";\n}',replace:'function draw(){\n const label = "$& $$ $1";\n}'},
+    {path:'game.js',find:'$& $$ $1',replace:'$& $$ $1 literal'}
+  ];
+  applyExactEdits('',edits,{documents,dryRun:true});
+  assert.equal(documents.get('game.js'),source);
+  applyExactEdits('',edits,{documents});
+  applyExactEdits(cwd,edits);
+  assert.equal(documents.get('game.js'),fs.readFileSync(path.join(cwd,'game.js'),'utf8'));
+  assert.match(documents.get('game.js'),/\$& \$\$ \$1 literal/);
+});
+
+test('dynamic binding evaluates the normalized candidate and reports missing consumption as repair',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'web-games/demo');
+  const source='<script>\r\nfunction draw(){\r\n  const atoms=internalAssetFamily("UI");\r\n  menu.classList.add(atoms[0]);\r\n}\r\n</script>\r\n';
+  write(path.join(root,'index.html'),source);
+  const candidate={edits:[{path:'index.html',find:'function draw(){\nconst atoms=internalAssetFamily("UI");\nmenu.classList.add(atoms[0]);\n}',replace:'function draw(){\nconst atoms=internalAssetFamily("UI");\nconsole.log(atoms[0]);\n}'}]};
+  const bindingPlan={required:true};
+  const inspected=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'web',bindingPlan,candidate});
+  assert.equal(inspected.pass,false);
+  assert.equal(inspected.familyResults.find(row=>row.family==='UI').status,'ASSET_REPAIR_REQUIRED');
+  applyExactEdits(root,candidate.edits);
+  const applied=evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'web',bindingPlan});
+  assert.deepEqual(inspected.blockers,applied.blockers);
+  assert.throws(()=>evaluateAllGameDynamicAssetBindingCandidate({sourceRoot:root,target:'web',bindingPlan,candidate}),/edit find 불일치/);
 });
 
 test('candidate manifest persists design intelligence requirements and starts evidence unverified', async () => {

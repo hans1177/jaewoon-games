@@ -1125,6 +1125,40 @@ test('all-game internal asset source hash and API cache reuse unchanged models b
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('dynamic library handoff preserves master and native variant identities across games',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'asset-native-handoff-'));
+  try{
+    const master='assets/shared/model.glb',native='unity-games/demo/Assets/Resources/CompanyAssets/Model.prefab';
+    for(const file of [master,native]){fs.mkdirSync(path.dirname(path.join(cwd,file)),{recursive:true});fs.writeFileSync(path.join(cwd,file),file);}
+    const sourceHash=createHash('sha256').update(master).digest('hex');
+    const artifactHash=createHash('sha256').update(native).digest('hex');
+    const asset={id:'shared-prop',family:'PROP',platform:'SHARED_3D',license:'CC0',masterGlb:master,sourceHash,
+      platformVariants:{UNITY:{path:native,artifactSha256:artifactHash}}};
+    const registry={version:20,assets:[asset]};
+    const plan=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target:'unity',gameId:'demo'});
+    const row=plan.familyCandidates.PROP[0];
+    assert.equal(row.path,native);
+    assert.equal(row.masterSourcePath,master);
+    assert.equal(row.sourceHash,sourceHash);
+    assert.equal(row.artifactHash,artifactHash);
+    assert.ok(row.sourceFiles.includes(master));
+    assert.ok(row.nativeArtifacts.includes(native));
+    const usage=buildInternalAssetSourceUsageContract({target:'unity',gameId:'demo',assetProduction:{allGameDynamicLibraryBinding:plan}},{cwd});
+    assert.equal(usage.libraryVersion,20);
+    assert.equal(usage.sourceCandidates[0].sourceHash,sourceHash);
+    assert.equal(usage.sourceCandidates[0].artifactHash,artifactHash);
+    for(const file of [master,native])assert.equal(usage.selectedSourceHashes.find(row=>row.path===file).status,'SOURCE_HASHED');
+    const changed=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{...registry,assets:[{...asset,sourceHash:'b'.repeat(64)}]},target:'unity',gameId:'demo'});
+    assert.notEqual(changed.fingerprint,plan.fingerprint,'source identity changes even when catalog version was not advanced');
+    const changedNative=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{...registry,assets:[{...asset,platformVariants:{UNITY:{path:native,artifactSha256:'c'.repeat(64)}}}]},target:'unity',gameId:'demo'});
+    assert.notEqual(changedNative.fingerprint,plan.fingerprint);
+    const other=buildAllGameDynamicLibraryBindingPlan({companyRegistry:registry,target:'roblox',gameId:'other-game'});
+    assert.equal(other.familyCandidates.PROP[0].path,master);
+    assert.equal(other.familyCandidates.PROP[0].gameplayAuthority,false);
+    assert.equal(row.runtimeVerified,undefined,'selection is not runtime evidence');
+  }finally{fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
 test('Vibe source rotates detailed API context while keeping the full eligibility index',()=>{
   const source=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(source,/sourceApiContextOnlyForSelectedAssets:false/);
@@ -1135,7 +1169,26 @@ test('Vibe source rotates detailed API context while keeping the full eligibilit
   assert.match(source,/apiContextPerFileMaxBytes:4500/);
   assert.match(source,/apiContextRotationByBuildUpGeneration:true/);
   assert.match(source,/allSelectedApiSourcesRemainEligibleAcrossCycles:true/);
-  assert.match(source,/const start=\(\(generation-1\)\*batchSize\)%allSelectedPaths\.length/);
+  // 구현 문자열이 바뀌어도 전체 후보 유지·상세 회전·빈 목록 동작을 직접 검증한다.
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-api-rotation-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets'),{recursive:true});
+    const selectedSourcePaths=Array.from({length:7},(_,i)=>'assets/Library'+i+'.luau');
+    for(const [i,file] of selectedSourcePaths.entries())fs.writeFileSync(path.join(root,file),'function Library.Action'+i+'()\n return true\nend\n');
+    const contract={selectedSourcePaths,synchronization:{apiContextBatchSize:4}};
+    const context={files:[{path:'client/Game.luau',content:'local world = {}',editable:true}],bytes:16};
+    const first=attachSelectedInternalAssetApiContext(context,{cwd:root,contract,order:{target:'roblox',buildUpGeneration:1}});
+    const second=attachSelectedInternalAssetApiContext(context,{cwd:root,contract,order:{target:'roblox',buildUpGeneration:2}});
+    assert.deepEqual(first.internalAssetApiContextFiles,selectedSourcePaths.slice(0,4));
+    assert.deepEqual(second.internalAssetApiContextFiles,[...selectedSourcePaths.slice(4),selectedSourcePaths[0]]);
+    for(const result of [first,second]){
+      assert.equal(result.internalAssetApiIndexRepresentedSourceCount,7);
+      for(const file of selectedSourcePaths)assert.ok(result.internalAssetApiIndex.includes(file));
+      assert.ok(result.files.filter(row=>row.internalAssetApiContext).every(row=>row.editable===false));
+    }
+    const empty=attachSelectedInternalAssetApiContext(context,{cwd:root,contract:{selectedSourcePaths:[]},order:{target:'roblox'}});
+    assert.equal(empty,context);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
   assert.match(source,/internalAssetApiContextEligibleSourceCount:allSelectedPaths\.length/);
   assert.match(source,/internalAssetApiContext:true/);
   assert.match(source,/editable:false/);
