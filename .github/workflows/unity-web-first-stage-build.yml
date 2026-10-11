@@ -400,6 +400,8 @@ jobs:
           BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         run: |
           set -euo pipefail
+          # Roslyn/Unity 실제 컴파일 실패를 검증 통과로 숨기지 않고 원인 로그로 보존한다.
+          # 기존 set -euo pipefail이 파이프 전체에 실제 Unity 종료코드를 적용한다.
           "$UNITY_EDITOR_PATH" \
             -batchmode \
             -nographics \
@@ -407,7 +409,7 @@ jobs:
             -buildTarget WebGL \
             -projectPath "$GITHUB_WORKSPACE/$PROJECT_PATH" \
             -executeMethod "$BUILD_METHOD" \
-            -logFile /dev/stdout
+            -logFile /dev/stdout 2>&1 | tee "$RUNNER_TEMP/unity-web-build.log"
 
       - name: Collect Unity Web output
         id: output
@@ -1138,6 +1140,16 @@ jobs:
             if [ -n "$preflight_signature" ]; then
               failure_stage=UNITY_WEB_SOURCE_PREFLIGHT
               failure_signature="$preflight_signature"
+            fi
+          fi
+          # C# 실제 오류의 책임 파일·줄·코드를 기존 바이브 수리 경로로 전달한다.
+          # sed는 증거 텍스트만 추출하며, 입력값을 명령으로 실행하지 않는다.
+          compiler_log="$RUNNER_TEMP/unity-web-build.log"
+          if [ -s "$compiler_log" ]; then
+            compiler_failure="$(sed -nE 's#^.*(Assets/[A-Za-z0-9._/-]+\.cs)\(([0-9]+),[0-9]+\): error (CS[0-9]+):.*$#\1:\2:\3#p' "$compiler_log" | head -n 1 || true)"
+            if [ -n "$compiler_failure" ]; then
+              failure_stage=UNITY_WEB_CSHARP_COMPILE
+              failure_signature="UNITY_WEB_CSHARP_COMPILE_ERROR:$compiler_failure"
             fi
           fi
           # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
