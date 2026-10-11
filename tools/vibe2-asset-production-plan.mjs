@@ -1917,6 +1917,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               ||(clean(parent.sourceSha256)&&clean(parent.sourceSha256)!==originalHash))throw new Error('DERIVED_ASSET_PARENT_HASH_MISMATCH');
             const artifactHash=crypto.createHash('sha256').update(fs.readFileSync(files[0].full)).digest('hex');
             const masterHash=crypto.createHash('sha256').update(fs.readFileSync(files[1].full)).digest('hex');
+            if(artifactHash===originalHash||masterHash===originalHash)throw new Error('DERIVED_ASSET_UNCHANGED_SOURCE');
             const preview=fs.readFileSync(files[2].full);
             const previewHash=crypto.createHash('sha256').update(preview).digest('hex');
             if(!preview.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
@@ -2330,6 +2331,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerBindings:consumerSync.bindings,
     sourceConsumerRelations:consumerSync.relations,
     sourceConsumerRegistry:consumerSync.registry,
+    derivedSync:freeze({...derivedSync}),
     seedCount:seedPlan.seedCount,
     automationPlan:libraryPlan,
     executionAutomationPlan
