@@ -253,6 +253,15 @@ public static class UnityWebFloorBuild
             :EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);
         var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT")??new GameObject("UNITY_WEB_FLOOR_ROOT");
         if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>();
+        // 물리 · Unity 6은 link.xml만으로 Physics 모듈의 네이티브 빌드 포함을 보장하지 않는다.
+        // 이미 존재하는 씬 루트에 비활성 콜라이더를 직렬화해 실제 Box/Sphere/Capsule 클래스를 빌드에 포함한다.
+        // 충돌판정에는 참여하지 않아 기존 저장·동작·전투 수치에 영향을 주지 않는다.
+        BoxCollider nativeBox=root.GetComponent<BoxCollider>()??root.AddComponent<BoxCollider>();
+        SphereCollider nativeSphere=root.GetComponent<SphereCollider>()??root.AddComponent<SphereCollider>();
+        CapsuleCollider nativeCapsule=root.GetComponent<CapsuleCollider>()??root.AddComponent<CapsuleCollider>();
+        nativeBox.enabled=false;
+        nativeSphere.enabled=false;
+        nativeCapsule.enabled=false;
         EditorSceneManager.MarkSceneDirty(scene);
         if(!EditorSceneManager.SaveScene(scene,ScenePath))throw new Exception("SCENE_SAVE_FAILED");
         EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(ScenePath,true)};
