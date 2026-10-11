@@ -821,6 +821,18 @@ try{
     fs.mkdirSync(path.dirname(output),{recursive:true});
     fs.writeFileSync(output,JSON.stringify(failureEvidence,null,2)+'\n');
   }
+  // 메인 · 공개 모바일에서 플레이 도중 발견한 시각/성능 실패도 이미 기록한 결과에 원인 상태를 남긴다.
+  if(hostedUrl&&output&&fs.existsSync(output)){
+    const recorded=JSON.parse(fs.readFileSync(output,'utf8'));
+    if(recorded.pass!==true){
+      recorded.observedRuntimeFailure=true;
+      recorded.failureStage='UNITY_WEB_HOSTED_MOBILE_'+scenarioId.toUpperCase().replaceAll('-','_');
+      recorded.failureSignature=failureSignature;
+      recorded.hostedUrl=hostedUrl;
+      recorded.hostedAssetChecks=hostedAssetChecks;
+      fs.writeFileSync(output,JSON.stringify(recorded,null,2)+'\n');
+    }
+  }
   console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+scenarioId+':'+failureSignature);
   try{
     if(browser?.isConnected())await browser.close();
