@@ -80,6 +80,21 @@ test('failure classifier separates infrastructure, QA drift, security, and imple
   assert.equal(implementation.failureClass,'IMPLEMENTATION_DEFECT');
 });
 
+test('blocked game runtime and mesh failures do not become reservation retries',()=>{
+  for(const failureSignature of ['GAME_START_BLOCKED','MESH_RENDER_BLOCKED','animation clock failed']){
+    const result=classifySystemAiFailure({task:{failureStage:'RUNTIME',failureSignature},result:{outcome:'FAIL'}});
+    assert.equal(result.failureClass,'IMPLEMENTATION_DEFECT',failureSignature);
+    assert.equal(result.route,'SCOPED_CAUSAL_IMPLEMENTATION_REPAIR');
+    assert.equal(result.retryBudgetConsumed,true);
+  }
+  for(const failureSignature of ['WORK_LOCK_BUSY','reservation-conflict','LEASE_EXPIRED','NON_FAST_FORWARD','deadlock detected','locked']){
+    const result=classifySystemAiFailure({task:{failureSignature},result:{outcome:'FAIL'}});
+    assert.equal(result.failureClass,'RESERVATION_OR_LOCK_CONTENTION',failureSignature);
+    assert.equal(result.retryBudgetConsumed,false);
+    assert.equal(result.workerHandoffRecommended,true);
+  }
+});
+
 test('infrastructure failure requeues without consuming retry budget and requests exact worker handoff',()=>{
   const queue={tasks:[{
     id:'infra',status:'running',priority:'high',goal:'repair',responsibleFiles:['tools/a.mjs'],
