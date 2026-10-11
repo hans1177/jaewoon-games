@@ -174,8 +174,17 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     .map(step=>({job:clean(job.name),step:clean(step.name)})))[0]
     ||(failedJobs.length?{job:clean(failedJobs[0].name),step:clean(failedJobs[0].name)}:{job:'UNKNOWN',step:'UNKNOWN'});
   const stepKey=deploymentStepKey(failedStep.step);
-  const stage='DEPLOYMENT_'+platform+'_'+stepKey;
-  const signature='WORKFLOW_FAILED_'+stepKey;
+  // Only strict machine markers extracted from the exact failed GitHub job may identify
+  // a Unity compile/QA failure. The generic "repair requirement" step is ambiguous:
+  // it can also be caused by a Cloudflare/PR publication failure.
+  const markers=uniq(jobsInput.failureMarkers).filter(value=>
+    /^UNITY_WEB_REPAIR_FAILURE_(?:STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}$/.test(value));
+  const exactStage=platform==='UNITY_WEB'
+    ?clean(markers.find(value=>value.startsWith('UNITY_WEB_REPAIR_FAILURE_STAGE='))?.slice('UNITY_WEB_REPAIR_FAILURE_STAGE='.length)):'';
+  const exactSignature=platform==='UNITY_WEB'
+    ?clean(markers.find(value=>value.startsWith('UNITY_WEB_REPAIR_FAILURE_SIGNATURE='))?.slice('UNITY_WEB_REPAIR_FAILURE_SIGNATURE='.length)):'';
+  const stage=exactStage||'DEPLOYMENT_'+platform+'_'+stepKey;
+  const signature=exactSignature||'WORKFLOW_FAILED_'+stepKey;
   const known=deploymentGameIds(catalogInput,tasks);
   const title=clean(run?.display_title)+' '+clean(run?.head_branch);
   const matching=known.filter(id=>new RegExp('(^|[^a-z0-9_-])'+id+'(?=$|[^a-z0-9_-])','i').test(title));
@@ -185,8 +194,10 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     &&(clean(task.candidateBranch)===clean(run.head_branch)
       ||[task.candidateSha,task.sourceRevision,task.baseSourceRevision].map(clean).includes(sha))
     &&uniq(task.responsibleFiles).length>0);
-  const sourceFailure=/(?:SOURCE|BUILD|COMPILE|STATIC|QA|REGRESSION|TEST|BROWSER|GAMEPLAY|VALIDATION|READINESS|REPAIR_REQUIREMENT|RUNTIME|PREFLIGHT|F0|F1|F2|F3|F4|F9)/.test(stepKey)
-    &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey);
+  const sourceFailure=exactStage
+    ? !/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|RELEASE|BUILD_OR_READINESS|UNKNOWN)/.test(exactStage)
+    : /(?:SOURCE|CSHARP|COMPILE|GAMEPLAY|BROWSER|INDEPENDENT_QA|STATIC_QA|REGRESSION|UNIT_TEST|F0_SOURCE)/.test(stepKey)
+      &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey);
   const codeFiles=sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask):[];
   const catalogGame=(Array.isArray(catalogInput.games)?catalogInput.games:[]).find(item=>clean(item?.id)===gameId);
   const productionClass=clean(catalogGame?.productionClass||linkedTask?.productionClass).toUpperCase();
@@ -220,6 +231,8 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
       'deployment-game:'+(gameId||'UNRESOLVED'),'deployment-head-sha:'+sha,
       'deployment-production-class:'+(releaseEligible?productionClass:'UNVERIFIED'),
       'deployment-failed-job:'+deploymentStepKey(failedStep.job),'deployment-failed-step:'+stepKey,
+      ...(exactStage?['deployment-confirmed-failure-stage:'+exactStage]:[]),
+      ...(exactSignature?['deployment-confirmed-failure-signature:'+exactSignature]:[]),
       'deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/'+runId,
       'deployment-failure-triage:'+(sourceRepair?'SCOPED_GAME_SOURCE':'WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE'),
       'deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY','deployment-release-gates:PRESERVED',
