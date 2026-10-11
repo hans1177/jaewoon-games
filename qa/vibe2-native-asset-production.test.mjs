@@ -125,6 +125,8 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.equal(derived.librarySourceAssetId,'shared-tree');
     assert.equal(derived.librarySourceSha256,sha);
     assert.equal(derived.sourceLicense,'project-original');
+    assert.equal(derived.args[derived.args.indexOf('--library-parent-id')+1],'shared-tree');
+    assert.equal(derived.args[derived.args.indexOf('--library-source-sha256')+1],sha);
     assert.ok(derived.args.includes('--source-model'));
     assert.equal(derived.companyPromotionAllowed,false);
     assert.equal(derived.runtimeVerificationRequired,true);
@@ -4177,6 +4179,7 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const staleProp={...parent,id:'stale-prop',sourceSha256:'f'.repeat(64)};
     const registry={version:1,assets:[environmentPack,genericPropPack,staleProp,parent],externalSources:[]};
     const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
+      libraryParentAssetId:'shared-source',
       sourceFileImmutable:true,license:'project-original',
       transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
     const evidence={version:1,assetId:'demo-prop',family:'PROP',
@@ -4215,6 +4218,13 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const second=sync(first.registry);
     assert.equal(second.derivedSync.registered,0,'unchanged source and outputs must not register twice');
     assert.equal(second.changed,false,'idempotent sync must not mutate canonical registry');
+    provenance.libraryParentAssetId='environment-pack';
+    writeEvidence();
+    const mismatchedParent=sync();
+    assert.equal(mismatchedParent.derivedSync.registered,0);
+    assert.equal(mismatchedParent.derivedSync.rejected,1,'wrong family parent cannot be registered');
+    provenance.libraryParentAssetId='shared-source';
+    writeEvidence();
     evidence.companyPromotionEligible=true;
     writeEvidence();
     const unsafePromotion=sync();
@@ -4227,6 +4237,31 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const staleParent=sync();
     assert.equal(staleParent.derivedSync.registered,0);
     assert.equal(staleParent.derivedSync.rejected,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [원자적 등록] 실패 시 기존 원장 보존, 재시도 시 완전한 JSON 한 번에 반영.
+test('company asset registry publish uses an exclusive lock and atomic rename',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-atomic-sync-'));
+  try{
+    const registryPath=path.join(root,'company-asset-library.json');
+    const original=JSON.stringify({version:1,assets:[],externalSources:[]})+'\n';
+    fs.writeFileSync(registryPath,original);
+    fs.writeFileSync(registryPath+'.lock','other-writer');
+    const blocked=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(blocked.changed,true);
+    assert.equal(blocked.persisted,false);
+    assert.ok(blocked.persistError);
+    assert.equal(fs.readFileSync(registryPath,'utf8'),original,'lock failure must not overwrite canonical bytes');
+    assert.equal(fs.readFileSync(registryPath+'.lock','utf8'),'other-writer');
+    fs.rmSync(registryPath+'.lock');
+    const committed=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(committed.persisted,true,committed.persistError||'');
+    assert.equal(JSON.parse(fs.readFileSync(registryPath,'utf8')).version,2);
+    assert.equal(fs.existsSync(registryPath+'.lock'),false);
+    assert.equal(fs.readdirSync(root).some(name=>name.startsWith('company-asset-library.json.tmp-')),false);
+    const next=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(next.changed,false,'published registry should remain idempotent');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
