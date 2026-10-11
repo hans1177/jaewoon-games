@@ -55,6 +55,28 @@ test('current-game asset gap selects licensed external source for on-demand PBR 
   assert.equal(buildAssetSupplyDecisionSummary({...params,gameId:''}).selectedOnDemandExternalGapCount,0,'no unidentified game may trigger external acquisition');
 });
 
+test('audio and UI library gap-fill cannot be routed to the 3D Blender material authoring path',()=>{
+  const registry={assets:[],externalSources:[
+    {id:'ui-source',name:'UI Pack',category:'UI',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+      sourceUrl:'https://kenney.nl/assets/ui-pack',licenseEvidenceUrl:'https://kenney.nl/assets/ui-pack',
+      verifiedAt:'2026-10-01',license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true},
+    {id:'sound-source',name:'Impact Sounds',category:'AUDIO',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+      sourceUrl:'https://kenney.nl/assets/impact-sounds',licenseEvidenceUrl:'https://kenney.nl/assets/impact-sounds',
+      verifiedAt:'2026-10-01',license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true}
+  ]};
+  for(const family of ['UI','AUDIO']){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'asset-test',target:'unity',requirements:[{family,role:'generic'}],registry});
+    const candidate=plan.nextActions.find(row=>row.family===family);
+    assert.equal(candidate.action,'ACQUIRE_ADAPT');
+    assert.equal(candidate.materialRefinement.mode,'NATIVE_FAMILY_ADAPT_NO_PBR');
+    assert.deepEqual(candidate.materialRefinement.allowedAxes,[]);
+    assert.equal(candidate.assetization.nativeDccScript,null);
+    assert.equal(candidate.assetization.nativeSourceModelField,null);
+    assert.deepEqual(candidate.assetization.nativeOutputFiles,[]);
+    assert.equal(candidate.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  }
+});
+
 test('blocked, manual or unverified external catalogs cannot authorize asset acquisition',()=>{
   const base={id:'test-source',name:'Forest Asset',category:'ENVIRONMENT',
     status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourceUrl:'https://example.org/forest',
