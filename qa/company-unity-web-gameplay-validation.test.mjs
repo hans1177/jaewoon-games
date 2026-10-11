@@ -714,3 +714,28 @@ test('Daechung 3D scene work keeps the canonical combat, touch and save authorit
   assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
   assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
 });
+
+
+test('Unity native source F0 failure carries exact signature and file into existing causal-repair workflow',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('- name: Verify Unity Web development-floor contract');
+  const end=workflow.indexOf('- name: Bind canonical Unity source tree',start);
+  const f0=workflow.slice(start,end);
+  const repair=workflow.slice(workflow.indexOf('- name: Mark Unity Web floor repair requirement'));
+  assert.ok(start>=0&&end>start);
+  assert.match(f0,/set -euo pipefail/);
+  assert.ok(f0.includes('--validate-only 2>&1 | tee "$RUNNER_TEMP/unity-web-preflight.log"'));
+  assert.doesNotMatch(f0,/continue-on-error: true/);
+  assert.ok(repair.includes('preflight_log="$RUNNER_TEMP/unity-web-preflight.log"'));
+  assert.ok(repair.includes('failure_stage=UNITY_WEB_SOURCE_PREFLIGHT'));
+  assert.ok(repair.includes('failure_signature="$preflight_signature"'));
+  assert.ok(repair.includes("tr -cd 'a-zA-Z0-9_.:/-'"));
+  assert.ok(repair.includes('for filename in unity-web-post-deploy-mobile.json'));
+  assert.ok(repair.includes("echo 'required=true'"));
+  assert.ok(repair.includes('exit 42'));
+  assert.ok(workflow.includes('repair-vibe2:'));
+  const error='Error: UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+  const extracted=error.match(/UNITY_WEB_[A-Z0-9_]+:[A-Za-z0-9._:/-]+/g)?.at(-1);
+  assert.equal(extracted,'UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs');
+  assert.equal(extracted.replace(/[^a-zA-Z0-9_.:/-]/g,'').slice(0,128),extracted);
+});
