@@ -9,12 +9,14 @@ import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,normalizeRo
 import {hasCurrentRobloxPackageAssetRepair,robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,detectRobloxStudioAssetSystems,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES,robloxBuildProfileFromBaseline,robloxStudioAssetFamilyBoundInText,robloxStudioAssetFamilyStatusFromSource} from '../tools/company-development-roblox-bootstrap.mjs';
 
-test('guarded native asset bindings count the condition and render sink as one binding scope',()=>{
+test('guarded native bindings distinguish selected atoms from list counts',()=>{
   const environment='if #studioAssetFamily("ENVIRONMENT") > 0 and camp and camp:IsA("BasePart") then\n  camp.Material = Enum.Material.Slate\nend';
   const prop='if #studioAssetFamily("PROP") > 0 and workbench and workbench:IsA("BasePart") then\n  workbench.Material = Enum.Material.WoodPlanks\nend';
   const unbound='if #studioAssetFamily("ENVIRONMENT") > 0 then\n  local marker = true\nend';
-  assert.equal(robloxStudioAssetFamilyBoundInText(environment,'ENVIRONMENT'),true);
-  assert.equal(robloxStudioAssetFamilyBoundInText(prop,'PROP'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(environment,'ENVIRONMENT'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(environment.replace('#studioAssetFamily("ENVIRONMENT") > 0','hasStudioAssetAtom("ENVIRONMENT", "ROCK_SLATE")'),'ENVIRONMENT'),true);
+  assert.equal(robloxStudioAssetFamilyBoundInText(prop,'PROP'),false);
+  assert.equal(robloxStudioAssetFamilyBoundInText(prop.replace('#studioAssetFamily("PROP") > 0','hasStudioAssetAtom("PROP", "WORKBENCH_WOOD")'),'PROP'),true);
   assert.equal(robloxStudioAssetFamilyBoundInText(unbound,'ENVIRONMENT'),false);
 });
 
@@ -369,6 +371,18 @@ test('Roblox family binding proof requires selected values to reach a native pre
     'root:SetAttribute("StudioAssetAtoms", table.concat(atoms, ","))'
   ].join('\n');
   assert.equal(robloxStudioAssetFamilyBoundInText(markerOnly,'UI'),false);
+});
+
+test('Roblox binding rejects nonempty lists and comments while accepting actual selected values',()=>{
+  const cases=[
+    'local root=Instance.new("Frame")\nif #studioAssetFamily("UI") > 0 then root.BackgroundColor3=Color3.new(1,1,1) end',
+    'local root=Instance.new("Frame")\nlocal atoms=studioAssetFamily("UI")\nroot.BackgroundTransparency=#atoms > 0 and 0.2 or 0.4',
+    'if #studioAssetFamily("PROP") > 0 then\n local tree=Instance.new("MeshPart")\n tree.Material=Enum.Material.Wood\nend',
+    'local root=Instance.new("Frame")\n-- root.BackgroundColor3=studioAssetFamily("UI").Color',
+    'local root=Instance.new("Frame")\n--[[ root.BackgroundColor3=studioAssetFamily("UI").Color ]]'
+  ];
+  for(const source of cases)assert.equal(robloxStudioAssetFamilyBoundInText(source,source.includes('"PROP"')?'PROP':'UI'),false,source);
+  assert.equal(robloxStudioAssetFamilyBoundInText('local root=Instance.new("Frame")\nlocal theme=studioAssetFamily("UI")[1]\nroot.BackgroundColor3=theme.Color','UI'),true);
 });
 
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{

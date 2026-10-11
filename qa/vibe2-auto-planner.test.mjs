@@ -2544,6 +2544,28 @@ test('existing Roblox games automatically receive a Studio asset selection hando
 
 
 
+test('Roblox asset backfill includes recursive server and shared native owners',()=>{
+  const root=tempRepo(),gameId='nested-rbx',sourceRoot=`roblox-games/${gameId}`;
+  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({
+    assetProductionParallelContract:{enabled:true}
+  }));
+  const files={
+    'shared/GameConfig.luau':'return { StudioAssets = { BindingVersion = 1 } }',
+    'server/world/Scenery.luau':'local prop = Instance.new("MeshPart")\nprop.Material = Enum.Material.Wood',
+    'shared/presentation/Theme.luau':'local root = Instance.new("Frame")\nroot.BackgroundColor3 = Color3.new(1,1,1)',
+    'shared/Network.luau':'return { MaxRequests = 10 }'
+  };
+  for(const [file,text] of Object.entries(files)){
+    fs.mkdirSync(path.dirname(path.join(root,sourceRoot,file)),{recursive:true});
+    fs.writeFileSync(path.join(root,sourceRoot,file),text);
+  }
+  const task=findRobloxStudioAssetBackfillTask({gameId,engine:'roblox',releaseState:'development-confirmed',projectPath:sourceRoot},root,{tasks:[]});
+  assert.ok(task);
+  assert.deepEqual([...task.responsibleFiles].sort(),[
+    `${sourceRoot}/shared/GameConfig.luau`,`${sourceRoot}/server/world/Scenery.luau`,`${sourceRoot}/shared/presentation/Theme.luau`
+  ].sort());
+});
+
 test('runtime PASS compiles to non-firing neural RUNTIME_RESULT evidence',()=>{
   const compiled=compileRuntimeNeuralEvent({
     gameId:'runtime-pass',

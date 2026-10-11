@@ -1000,7 +1000,7 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       &&clean(dccEvidence?.preview)
     )
   );
-  const bindingText=text.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/<!--[\s\S]*?-->/g,' ').replace(/^\s*\/\/.*$/gm,' ');
+  const bindingText=text.replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->|--\[(=*)\[[\s\S]*?\]\2\]|--[^\n]*/g,(match,literal)=>literal||' ');
   const unityActorLoaderSignal=/(?:AssetDatabase\.LoadAssetAtPath|Resources\.Load|Addressables\.(?:LoadAssetAsync|InstantiateAsync)|GltfImport|GltfAsset|GLTFast|UniGLTF)/i.test(bindingText);
   const unityActorBindingSignal=/(?:SkinnedMeshRenderer|Animator|Instantiate\s*\(|InstantiateMainSceneAsync|sharedMesh\s*=)/i.test(bindingText);
   const webActorLoaderSignal=/(?:GLTFLoader|loadAsync\s*\(|\.load\s*\(|fetch\s*\()/i.test(bindingText);
@@ -1015,11 +1015,13 @@ export function evaluateNativeAssetAuthoringCandidate({order={},candidate={}}={}
       ||clean(row?.masterGlbHash)&&clean(row?.derivedFromMasterGlbHash)===clean(row?.masterGlbHash);
     const artifactReady=Boolean(assetPath&&artifactHash&&lineageReady);
     const identityBound=artifactReady&&bindingText.includes(assetPath)&&bindingText.includes(artifactHash);
-    const runtimeBindingSignalPass=!masterRequired||(
-      target==='unity'?(unityActorLoaderSignal&&unityActorBindingSignal)
+    const runtimeBindingSignalPass=target==='unity'?(unityActorLoaderSignal&&unityActorBindingSignal)
       :target==='web'?(webActorLoaderSignal&&webActorBindingSignal)
-      :true
-    );
+      :target==='roblox'?(
+        /\.(?:luau?|rbxm|rbxmx)$/i.test(assetPath)
+        &&/(?:\brequire\s*\(|(?:InsertService|AssetService).*?(?:LoadAsset|CreateMeshPart)|:\s*Clone\s*\()/i.test(bindingText)
+        &&/(?:\.Parent\s*=|:PivotTo\s*\(|\.CFrame\s*=)/i.test(bindingText)
+      ):false;
     return Object.freeze({
       index,assetId:clean(row?.assetId||row?.id)||null,masterRequired,webUsesMaster,path:assetPath||null,artifactHash:artifactHash||null,
       lineageReady,artifactReady,identityBound,runtimeBindingSignalPass,bound:artifactReady&&identityBound&&runtimeBindingSignalPass,
@@ -1125,6 +1127,8 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     }
   }
   const dccEvidence=order?.assetProduction?.nativeAuthoringExecution?.dcc?.executionEvidence;
+  const generatedBinding=evaluateNativeAssetAuthoringCandidate({order,candidate});
+  const boundGenerated=new Set(generatedBinding.boundGeneratedArtifacts||[]);
   for(const recipe of Array.isArray(dccEvidence?.recipes)?dccEvidence.recipes:[]){
     const id=clean(recipe?.assetId||recipe?.id);
     const assetPath=posix(recipe?.nativeArtifact);
@@ -1140,6 +1144,7 @@ export function collectNativeAssetRuntimePromotionCandidates({order={},candidate
     if(masterGlbRequired&&(!platformNativeArtifact||!platformNativeArtifactHash||!masterGlbHash||derivedFromMasterGlbHash!==masterGlbHash))continue;
     const promotionPath=masterGlbRequired?platformNativeArtifact:assetPath,promotionHash=masterGlbRequired?platformNativeArtifactHash:artifactHash;
     if(!id||!promotionPath||!sourceHash||!promotionHash||!family||!license||!changedText.includes(promotionPath)||!changedText.includes(promotionHash))continue;
+    if(!boundGenerated.has(promotionPath))continue;
     rows.set(id,Object.freeze({
       assetId:id,family,license,path:promotionPath,robloxAssetId:null,sourceHash,editableSourceHash:clean(recipe?.editableSourceHash||sourceHash),artifactHash:promotionHash,nativeArtifactHash:promotionHash,
       masterGlb:masterGlb||null,masterGlbHash:masterGlbHash||null,derivedFromMasterGlbHash:derivedFromMasterGlbHash||null,masterGlbStaticQaPass:recipe?.masterGlbStaticQaPass===true,
@@ -1342,18 +1347,64 @@ function allGameInternalAssetFamilyRefPattern(family='',target=''){
   }
   return robloxInternalAssetFamilyRefPattern(value);
 }
-function allGameInternalAssetFamilyBoundInText(text='',family='',target=''){
+// 기존 Resources 로더도 등록된 같은 프로젝트의 네이티브 파일과 정확히 일치할 때만 인정한다.
+// 이 검사는 소스 연결 증거이며 엔진 import/렌더 PASS를 생성하지 않는다.
+function unityRegisteredAssetReferences(raw='',candidates=[],sourceRoot=''){
+  const resources=new Set();
+  for(const asset of candidates){
+    for(const file of [asset.path,...(asset.sourceFiles||[]),...(asset.nativeArtifacts||[]),...Object.values(asset.fileRoles||{}).flat()]){
+      const normalized=posix(file),at=normalized.indexOf('Assets/Resources/');
+      if(at<0||! /\.(?:obj|fbx|prefab|asset|mat|anim|png|jpe?g|wav|ogg|mp3|json|ttf|otf)$/i.test(normalized))continue;
+      const relative=normalized.slice(at),absolute=path.resolve(sourceRoot,relative);
+      // 다른 프로젝트의 동명 파일을 현재 게임의 등록 자산으로 오인하지 않는다.
+      const root=posix(path.resolve(sourceRoot));
+      if(!root.endsWith(normalized.slice(0,at).replace(/\/$/,'')))continue;
+      if(!absolute.startsWith(path.resolve(sourceRoot)+path.sep)||!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())continue;
+      resources.add(relative.slice('Assets/Resources/'.length).replace(/\.[^.]+$/,''));
+    }
+  }
+  const refs=[];
+  for(const ref of raw.matchAll(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*"([^"\n]+)"\s*\)/g)){
+    if(resources.has(ref[1]))refs.push(ref);
+  }
+  // 현재 게임의 기존 BindCompanyVisual 구현: 호출의 ID -> Resources.Load -> Instantiate.
+  // 이름만 같은 빈 함수나 사용하지 않는 로더는 소비로 인정하지 않는다.
+  const definition=/\bGameObject\s+BindCompanyVisual\s*\(\s*string\s+(\w+)[^)]*\)\s*\{/.exec(raw);
+  if(definition){
+    const start=definition.index+definition[0].length;
+    let depth=1,end=start;
+    for(;end<raw.length&&depth;end++){
+      if(raw[end]==='"'||raw[end]==="'"){
+        const quote=raw[end++];for(;end<raw.length;end++){if(raw[end]==='\\'){end++;continue;}if(raw[end]===quote)break;}
+      }else if(raw[end]==='{')depth++;else if(raw[end]==='}')depth--;
+    }
+    const body=raw.slice(start,end-1);
+    const load=new RegExp('\\b(\\w+)\\s*=\\s*Resources\\.Load<GameObject>\\s*\\(\\s*"CompanyAssets/"\\s*\\+\\s*'+definition[1]+'\\s*\\)').exec(body);
+    if(load&&new RegExp('\\bInstantiate\\s*\\(\\s*'+load[1]+'\\s*[,)]').test(body.slice(load.index+load[0].length))){
+      for(const ref of raw.matchAll(/\bBindCompanyVisual\s*\(\s*(?:[A-Za-z_]\w*\s*\?\s*)?"([A-Za-z0-9_-]+)"(?:\s*:\s*"([A-Za-z0-9_-]+)")?\s*,/g)){
+        if([ref[1],ref[2]].filter(Boolean).some(id=>resources.has('CompanyAssets/'+id))){
+          ref.nativeConsumer=true;refs.push(ref);
+        }
+      }
+    }
+  }
+  return refs;
+}
+function allGameInternalAssetFamilyBoundInText(text='',family='',target='',{candidates=[],sourceRoot=''}={}){
   if(clean(target).toLowerCase()==='roblox')return robloxInternalAssetFamilyBoundInText(text,family);
   const nativePattern=ALL_GAME_INTERNAL_ASSET_NATIVE_PATTERNS[clean(target).toLowerCase()]?.[family];
   if(!nativePattern)return false;
   const raw=String(text||'');
   // 선택값이 실제 표현에 전달되는지 추적한다. 주변 API·목록 길이·로그는 사용 증거가 아니다.
   const statements=raw.split(/[;\n]/);
-  const renderSink=/(?:\.(?:sprite|texture|mainTexture|material|sharedMaterial|clip|color|fillStyle|strokeStyle|backgroundImage|backgroundColor|fontFamily|src|transform|position|rotation|localScale)\s*=|\b(?:drawImage|fillRect|strokeRect|fillText|Instantiate|PlayOneShot|SetTexture|SetColor|SetFloat|SetTrigger|CrossFade)\s*\(|\.classList\.(?:add|replace)\s*\()/i;
-  for(const ref of raw.matchAll(allGameInternalAssetFamilyRefPattern(family,target))){
+  const renderSink=/(?:\.(?:sprite|texture|mainTexture|material|sharedMaterial|clip|color|textColor|background|font|fillStyle|strokeStyle|backgroundImage|backgroundColor|fontFamily|src|transform|position|rotation|localScale)\s*=|\b(?:drawImage|fillRect|strokeRect|fillText|Instantiate|PlayOneShot|SetTexture|SetColor|SetFloat|SetTrigger|CrossFade)\s*\(|\.classList\.(?:add|replace)\s*\()/i;
+  const references=[...raw.matchAll(allGameInternalAssetFamilyRefPattern(family,target)),
+    ...(target==='unity'?unityRegisteredAssetReferences(raw,candidates,sourceRoot):[])];
+  for(const ref of references){
     const start=Math.max(0,Number(ref.index||0)-5000);
     const end=Math.min(raw.length,Number(ref.index||0)+String(ref[0]||'').length+5000);
     if(!nativePattern.test(raw.slice(start,end)))continue;
+    if(ref.nativeConsumer===true)return true;
     const statementStart=Math.max(raw.lastIndexOf(';',ref.index),raw.lastIndexOf('\n',ref.index))+1;
     const prefix=raw.slice(statementStart,ref.index);
     const directSink=prefix.match(renderSink);
@@ -1383,7 +1434,7 @@ export function evaluateAllGameDynamicAssetBindingCandidate({candidate={},source
   const base=allGameInternalAssetSourceDocuments(sourceRoot,resolved);
   const result=robloxInternalAssetApplyCandidateDocuments(base,candidate);
   // 문자열은 보존하되 주석과 JSON 메타데이터를 실행 근거에서 제외한다.
-  const sourceDocuments=new Map([...result.entries()].filter(([file])=>!file.endsWith('.json')).map(([file,text])=>[
+  const sourceDocuments=new Map([...result.entries()].filter(([file])=>!file.endsWith('.json')&&!/(?:^|\/)Editor(?:\/|$)/.test(file)).map(([file,text])=>[
     file,String(text).replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)|\/\/[^\n]*|\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g,(match,literal)=>literal||' ')
   ]));
   const semanticSource=[...sourceDocuments.values()].join('\n');
@@ -1397,7 +1448,7 @@ export function evaluateAllGameDynamicAssetBindingCandidate({candidate={},source
   for(const family of ROBLOX_INTERNAL_ASSET_FAMILIES){
     const systemPresent=ALL_GAME_INTERNAL_ASSET_SYSTEM_PATTERNS[family]?.test(semanticSource)===true
       ||allGameInternalAssetFamilyRefPattern(family,resolved).test(semanticSource);
-    const boundFiles=[...sourceDocuments.entries()].filter(([,text])=>allGameInternalAssetFamilyBoundInText(text,family,resolved)).map(([relative])=>relative);
+    const boundFiles=[...sourceDocuments.entries()].filter(([,text])=>allGameInternalAssetFamilyBoundInText(text,family,resolved,{candidates:bindingPlan?.familyCandidates?.[family]||[],sourceRoot})).map(([relative])=>relative);
     const actualBinding=boundFiles.length>0;
     const changedBinding=boundFiles.some(relative=>touched.has(relative));
     const status=systemPresent?'APPLIED':'NOT_APPLICABLE';
@@ -1470,19 +1521,12 @@ export function deterministicDiagnosticCandidate({exploration={},sourceRoot='',r
 }
 
 export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sourceRootRelative='',responsibleFiles=[],candidateValidator=null,verifiedExternalLearningContract=null,generatedAssetBindings=[],allowAssetDevelopment=false}={}){
-  const persistedBindings=(Array.isArray(generatedAssetBindings)?generatedAssetBindings:[])
-    .map(row=>({
-      path:posix(row?.path),
-      artifactHash:clean(row?.artifactHash),
-      family:clean(row?.family).toUpperCase()||null,
-      assetId:clean(row?.assetId)||null
-    }))
-    .filter(row=>row.path&&row.artifactHash);
-  const generatedAssetBindingMode=allowAssetDevelopment===true&&assetDevelopmentTask(order)&&persistedBindings.length>0;
-  if(!robloxDeterministicPresentationEligible(order)&&!generatedAssetBindingMode)return null;
+  // DCC 파일 경로/해시를 HUD 속성에 기록하는 것은 네이티브 변환/사용이 아니다.
+  // 자산 제작은 기존 소스 생성·검증·인과 복구 경로에서 실제 소비 코드를 만든다.
+  if(!robloxDeterministicPresentationEligible(order))return null;
   if(clean(order?.target).toLowerCase()!=='roblox'||!clean(sourceRoot))return null;
   const presentationPass=clean(order?.presentationQuality?.pass).toUpperCase();
-  if(!generatedAssetBindingMode&&(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION'))return null;
+  if(order?.presentationQuality?.required!==true||presentationPass!=='ASSET_ADAPTATION')return null;
   const clientFiles=unique(responsibleFiles).filter(file=>/(?:^|\/)client(?:\/|$)|\.client\.luau$/i.test(file));
   if(!clientFiles.length)return null;
 
@@ -1501,24 +1545,6 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
     if(existing)return{find:existing.text,replace:block,stage:existing.stage+1};
     if(!anchorText||source.split(anchorText).length-1!==1)return null;
     return{find:anchorText,replace:anchorText+'\n'+block,stage:1};
-  };
-
-  const generatedBindingLines=(targetExpression)=>{
-    if(!generatedAssetBindingMode)return[];
-    const lines=[
-      '  local generatedAssetBindingLighting = game:GetService("Lighting")',
-      `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingVersion", 1)`,
-      `  ${targetExpression}:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`,
-      `  generatedAssetBindingLighting:SetAttribute("GeneratedNativeAssetBindingCount", ${persistedBindings.length})`
-    ];
-    for(const [index,binding] of persistedBindings.entries()){
-      const slot=index+1;
-      lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetPath${slot}", ${JSON.stringify(binding.path)})`);
-      lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetSha256_${slot}", ${JSON.stringify(binding.artifactHash)})`);
-      if(binding.family)lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetFamily${slot}", ${JSON.stringify(binding.family)})`);
-      if(binding.assetId)lines.push(`  ${targetExpression}:SetAttribute("GeneratedNativeAssetId${slot}", ${JSON.stringify(binding.assetId)})`);
-    }
-    return lines;
   };
 
   for(const relative of clientFiles){
@@ -1570,7 +1596,6 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
       'do',
       `  local deterministicBuildStage = ${stage}`,
       '  root:SetAttribute("DeterministicBuildStage", deterministicBuildStage)',
-      ...generatedBindingLines('root'),
       '  local deterministicGameplayHudCorner = root:FindFirstChild("DeterministicGameplayHudCorner")',
       '  if not deterministicGameplayHudCorner then',
       '    deterministicGameplayHudCorner = Instance.new("UICorner")',
@@ -1675,7 +1700,6 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
           `  local deterministicBuildStage = ${stage}`,
           `  local deterministicGameplaySurfaceTarget = ${variable}`,
           '  deterministicGameplaySurfaceTarget:SetAttribute("DeterministicBuildStage", deterministicBuildStage)',
-          ...generatedBindingLines('deterministicGameplaySurfaceTarget'),
           '  local deterministicGameplaySurfaceCorner = deterministicGameplaySurfaceTarget:FindFirstChild("DeterministicGameplaySurfaceCorner")',
           '  if not deterministicGameplaySurfaceCorner then',
           '    deterministicGameplaySurfaceCorner = Instance.new("UICorner")',
@@ -1754,12 +1778,8 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
         after:'deterministic native Roblox HUD restyle with grounded corner, stroke, gradient, and TweenService entry motion'
       }:null;
       const candidate=normalizeCandidate({
-        summary:generatedAssetBindingMode
-          ?'Deterministic generated native asset binding stage '+stage
-          :'Deterministic Roblox presentation build-up stage '+stage,
-        expectedEffect:generatedAssetBindingMode
-          ?'persisted generated native asset identity bound to the existing Roblox visual owner before runtime verification'
-          :'model-independent native Roblox HUD style and motion build-up',
+        summary:'Deterministic Roblox presentation build-up stage '+stage,
+        expectedEffect:'model-independent native Roblox HUD style and motion build-up',
         edits:rows,newFiles:[],replaceFiles:[],tests:[],
         graphicsReplacementReport
       },{target:'roblox',responsibleFiles,sourceRootRelative,allowFullRewrite:false});
@@ -1770,17 +1790,17 @@ export function deterministicRobloxBuildUpCandidate({order={},sourceRoot='',sour
         candidateValidation,
         generation:{
           attempts:0,recoveryUsed:false,deterministicRobloxBuildUp:true,deterministicRobloxBuildStage:stage,
-          deterministicGeneratedAssetBinding:generatedAssetBindingMode,
-          generatedAssetBindingCount:generatedAssetBindingMode?persistedBindings.length:0,
+          deterministicGeneratedAssetBinding:false,
+          generatedAssetBindingCount:0,
           deterministicVerifiedExternalLearningApplied:verifiedLearning.required===true&&verifiedLearningConsumed,
           deterministicVerifiedExternalLearningIds:[...verifiedLearningIds],
           deterministicVerifiedExternalLearningCoveragePct:verifiedLearning.required===true?100:0,
           deterministicVerifiedExternalLearningContractConsumed:verifiedLearningConsumed,
           verifiedExternalLearningPromptChecks:0,
           verifiedExternalLearningPromptAllAttempts:verifiedLearning.required!==true,
-          mode:generatedAssetBindingMode?'DETERMINISTIC_GENERATED_ASSET_BINDING':'DETERMINISTIC_ROBLOX_BUILDUP',
+          mode:'DETERMINISTIC_ROBLOX_BUILDUP',
           maxPredict:0,timeoutMs:0,contextWindow:0,temperature:0,
-          completionMode:generatedAssetBindingMode?'DETERMINISTIC_GENERATED_ASSET_BINDING':'DETERMINISTIC_ROBLOX_BUILDUP'
+          completionMode:'DETERMINISTIC_ROBLOX_BUILDUP'
         }
       };
     }catch(error){
@@ -6727,7 +6747,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
   const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>
-    /(?:^|\/)client\/|VisualStyle\.luau$|BattleVisual\.luau$/i.test(clean(file))
+    /\.lua[u]?$/i.test(clean(file))&&!/(?:^|\/)GameConfig\.luau$/i.test(clean(file))
   ):[];
   const candidateValidator=candidate=>{
     const touched=new Set([
@@ -6808,18 +6828,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
         ...(candidate.newFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||'')),
         ...(candidate.replaceFiles||[]).filter(row=>touchedVisual.includes(clean(row.path))).map(row=>String(row.content||''))
       ].join('\n');
-      const studioHandoff=order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff||{};
-      const studioBindingVersion=Math.max(1,Math.floor(Number(studioHandoff.bindingVersion||2)));
-      const required=[
-        new RegExp('\\bSTUDIO_ASSET_BINDING_VERSION\\s*=\\s*'+studioBindingVersion+'\\b'),
-        /\bSTUDIO_ASSET_SELECTION\s*=\s*\{/,
-        /\bSTUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/,
-        /StudioAssetBindingVersion/,
-        /StudioAssetAtoms/,
-        /(?:Instance\.new\s*\(|Color3\.(?:fromRGB|new)\s*\(|\.(?:Material|Color|BackgroundColor3|TextureID|MeshId)\s*=)/
-      ];
-      if(required.some(pattern=>!pattern.test(visualChangeText))){
-        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:VISUAL_OWNER_MUST_CONTAIN_BINDING_V'+studioBindingVersion+'_SELECTION_FAMILY_STATUS_RUNTIME_ATTRIBUTES_AND_NATIVE_VISUAL_CHANGE');
+      // 원본 전체+정확한 후보를 아래 단일 검사에서 검증한다. 매 편집에 이미 존재하는
+      // 선택 메타데이터를 복제하도록 요구하면 서버/공용 함수의 실제 자산 연결이 막힌다.
+      if(!Object.values(detectRobloxStudioAssetSystems({sourceText:visualChangeText})).some(Boolean)){
+        throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:NATIVE_PRESENTATION_DELTA_REQUIRED');
       }
       const familyBinding=evaluateRobloxInternalAssetFamilyBindingCandidate({
         candidate,sourceRoot,
@@ -6931,15 +6943,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     return{...result,sourceSyntax,blueprintContracts,spatialBlueprintValidation,interfaceBlueprintValidation,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,robloxDesignGrounding,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
-  const generatedAssetBindings=persistedGeneratedAssetBindings(order);
   let generated=null;
-  if(target==='roblox'&&generatedAssetBindings.length){
-    generated=deterministicRobloxBuildUpCandidate({
-      order,sourceRoot,sourceRootRelative,responsibleFiles,candidateValidator,verifiedExternalLearningContract,
-      generatedAssetBindings,allowAssetDevelopment:true
-    });
-    if(generated)console.log('VIBE2_GENERATED_NATIVE_ASSET_BINDING=PASS:'+generatedAssetBindings.length);
-  }
   const deterministicDiagnostic=!allowFullRewrite&&verifiedExternalLearningContract.required!==true?deterministicDiagnosticCandidate({exploration,sourceRoot,responsibleFiles,order}):null;
   if(!generated&&deterministicDiagnostic){
     try{

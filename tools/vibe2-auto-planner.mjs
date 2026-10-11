@@ -2178,15 +2178,13 @@ export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
   if(!assetProductionEnabled(repoRoot))return null;
   const root=posix(project.projectPath);
   if(root!==`roblox-games/${project.gameId}`)return null;
-  const candidates=[
-    `${root}/shared/GameConfig.luau`,
-    `${root}/client/Game.client.luau`,
-    `${root}/server/Game.server.luau`,
-    `${root}/shared/VisualStyle.luau`,
-    `${root}/client/BattleVisual.luau`
-  ].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
+  const owners=[];
+  const sourceText=robloxStudioAssetDetectionSourceFromRoot(sourceFile(repoRoot,root),{onSource:({relative,text})=>{
+    if(Object.values(detectRobloxStudioAssetSystems({sourceText:text})).some(Boolean))owners.push(`${root}/${relative}`);
+  }});
+  const config=`${root}/shared/GameConfig.luau`;
+  const candidates=[...(fs.existsSync(sourceFile(repoRoot,config))?[config]:[]),...owners];
   if(!candidates.length)return null;
-  const sourceText=robloxStudioAssetDetectionSourceFromRoot(sourceFile(repoRoot,root));
   const systems=detectRobloxStudioAssetSystems({sourceText});
   const applicable=Object.keys(systems).filter(family=>systems[family]);
   const missing=applicable.filter(family=>!robloxStudioAssetFamilyBoundInText(sourceText,family));
