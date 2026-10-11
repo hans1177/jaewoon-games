@@ -655,6 +655,10 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     }
 
     private static void Tint(GameObject obj, Color color)
+    {
+        Renderer rr = obj.GetComponent<Renderer>();
+        if (rr != null) rr.material.color = color;
+    }
 
     // 그래픽 · 기존 GameObject/Collider 생성 함수의 비충돌 시각 자산 경로
     private GameObject BindCompanyVisual(string assetId,Transform parent,Vector3 position,Vector3 scale,Quaternion rotation)
@@ -811,11 +815,6 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(monster.nativePose!=null)
             monster.nativePose.localRotation=Quaternion.Euler(hit*9f,0f,
                 attack*11f+(isMoving?Mathf.Sin(phase*2f)*2f:0f));
-    }
-
-    {
-        Renderer rr = obj.GetComponent<Renderer>();
-        if (rr != null) rr.material.color = color;
     }
 
     private void FollowCamera(bool instant)
