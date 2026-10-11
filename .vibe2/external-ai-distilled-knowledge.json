@@ -683,6 +683,95 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:assistant-assistant_vibe_automatic_trace_ingress_20261012-b570f83a82be",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI_ASSISTANT_TRACE",
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "patterns": [
+        "Connect persisted assistant action records to the existing learning feed and existing scheduler rather than adding a parallel learning pipeline.",
+        "Classify every registered action with its content hash and verification disposition; self-reported success and learningState alone must not create verified knowledge.",
+        "Require traceable independent source or runtime evidence before distillation, preserve failed and unverified actions as review candidates, and keep native runtime and weight promotion separate."
+      ],
+      "cautions": [
+        "Do not claim that repository trace ingestion monitors all ChatGPT conversations or unrecorded tool calls.",
+        "Do not promote static code checks into gameplay, touch, engine, release or model-weight success."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "b570f83a82be631402ff268ebdd1b5cc5452a69818f99df0c3ff768bfdc4f7ef",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/7efe095afd571c24cb84e588381b92c78be0ab50",
+          "qa:qa/company-system-ai-learning.test.mjs#assistant actions enter the existing learning feed automatically",
+          "qa:qa/vibe2-external-ai-distillation.test.mjs"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:assistant-assistant_vibe_core_qa_supersession_repair_20261012-00eeb80d780a",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI_ASSISTANT_TRACE",
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "engine": "cross-engine",
+      "gameId": "cross-game",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "patterns": [
+        "When exact-head QA cannot qualify a newer PR revision, cancel only superseded runs in the same PR concurrency group so current verification can enter the runner queue.",
+        "Test the actual workflow cancellation expression for PR/main pushes versus manual/feature runs and verify that distinct PR refs resolve to distinct groups.",
+        "After rebasing a learning PR, preserve both source-verification and retrieval regressions; keep exact-head QA success mandatory for knowledge promotion."
+      ],
+      "cautions": [
+        "Do not cancel unrelated game production or manual runs to free a QA queue.",
+        "Do not call queued tests successful or treat stale-head QA success as latest-head evidence."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "00eeb80d780a09269803a60a1660e0eb1f1ac0914612e119e8e2e30edef8156a",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/b2a8562ebf7be2d8d40198ab5e909c7014ea4c65",
+          "qa:qa/company-system-ai-learning.test.mjs#Core QA coalesces obsolete revisions of the same PR",
+          "actions-run:38180450504:completed-cancelled",
+          "actions-run:38181335509:completed-cancelled"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
