@@ -520,17 +520,45 @@ ${nativeWorldRuntime}
             cam = cameraObject.AddComponent<Camera>();
             cameraObject.tag = "MainCamera";
         }
+        // 렌더링 · 모든 신규 Unity Web 프로젝트는 같은 3D 조명 기본선을 사용하되
+        // 게임의 메시/색/스킬 규칙은 기존 책임 소스에서 개별 저작한다.
+        bool mobileVisuals = Application.isMobilePlatform;
+        QualitySettings.antiAliasing = mobileVisuals ? 2 : 4;
+        QualitySettings.shadows = mobileVisuals ? ShadowQuality.HardOnly : ShadowQuality.All;
+        QualitySettings.shadowResolution = mobileVisuals ? ShadowResolution.Medium : ShadowResolution.High;
+        QualitySettings.shadowDistance = mobileVisuals ? 22f : 44f;
+        QualitySettings.shadowCascades = mobileVisuals ? 0 : 2;
+        QualitySettings.pixelLightCount = mobileVisuals ? 1 : 2;
         cam.transform.position = new Vector3(0f, 6.5f, -9f);
         cam.transform.rotation = Quaternion.Euler(24f, 0f, 0f);
-        cam.backgroundColor = new Color(0.06f,0.08f,0.13f);
+        cam.backgroundColor = new Color(.10f,.15f,.19f);
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.allowMSAA = true;
+        cam.allowHDR = !mobileVisuals;
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+        RenderSettings.ambientSkyColor = new Color(.44f,.51f,.59f);
+        RenderSettings.ambientEquatorColor = new Color(.29f,.34f,.39f);
+        RenderSettings.ambientGroundColor = new Color(.13f,.16f,.19f);
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogColor = new Color(.19f,.24f,.29f);
+        RenderSettings.fogStartDistance = 25f;
+        RenderSettings.fogEndDistance = mobileVisuals ? 54f : 72f;
 
-        if (FindFirstObjectByType<Light>() == null)
+        Light light = FindFirstObjectByType<Light>();
+        if (light == null)
         {
             var lightObject = new GameObject("Key Light");
-            var light = lightObject.AddComponent<Light>();
+            light = lightObject.AddComponent<Light>();
             light.type = LightType.Directional;
-            light.intensity = 1.25f;
+            light.intensity = 1.35f;
+            light.color = new Color(1f,.93f,.84f);
             lightObject.transform.rotation = Quaternion.Euler(48f,-28f,0f);
+        }
+        if (light.type == LightType.Directional)
+        {
+            light.shadows = mobileVisuals ? LightShadows.Hard : LightShadows.Soft;
+            light.shadowStrength = mobileVisuals ? .54f : .72f;
         }
 
         var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
