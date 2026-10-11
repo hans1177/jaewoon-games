@@ -1839,7 +1839,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   // [자동 파생 자산화] 기존 GRAPHICS_PRODUCTION 동기화가 실제 DCC 결과만 PREPARED 후보로 등록한다.
   // 원본 모델·게임 코드는 불변이며 native 런타임 QA 없이 productionVerified를 올리지 않는다.
   let organizationAssetsChanged=false;
-  const derivedSync={inspected:0,registered:0,rejected:0};
+  const derivedSync={inspected:0,registered:0,rejected:0,failureCounts:{}};
   const derivedRoot=path.join(repoRoot,'assets','generated');
   let canonicalAssetRoot='',canonicalDerivedRoot='';
   try{
@@ -1888,7 +1888,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           const files=[assetPath,masterPath,previewPath,evidencePath,applicationPath].map(actualFile);
           if(!files[3])continue;
           derivedSync.inspected++;
-          if(files.some(row=>!row)){derivedSync.rejected++;continue;}
+          if(files.some(row=>!row)){
+            derivedSync.rejected++;
+            derivedSync.failureCounts.DERIVED_ASSET_ARTIFACT_MISSING=(derivedSync.failureCounts.DERIVED_ASSET_ARTIFACT_MISSING||0)+1;
+            continue;
+          }
           try{
             const evidence=readJson(files[3].full),application=readJson(files[4].full);
             const provenance=evidence?.sourceMesh,sourcePath=clean(provenance?.sourcePath).replaceAll('\\','/');
@@ -1920,7 +1924,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
             if(artifactHash===originalHash||masterHash===originalHash)throw new Error('DERIVED_ASSET_UNCHANGED_SOURCE');
             const preview=fs.readFileSync(files[2].full);
             const previewHash=crypto.createHash('sha256').update(preview).digest('hex');
-            if(!preview.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+            if(preview.length<45||!preview.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+              ||preview.readUInt32BE(8)!==13||preview.toString('ascii',12,16)!=='IHDR'
+              ||preview.readUInt32BE(16)<1||preview.readUInt32BE(16)>4096
+              ||preview.readUInt32BE(20)<1||preview.readUInt32BE(20)>4096
+              ||preview.readUInt32BE(preview.length-12)!==0||preview.toString('ascii',preview.length-8,preview.length-4)!=='IEND'
               ||evidence?.artifactHash!==artifactHash||evidence?.previewHash!==previewHash
               ||application?.masterSha256!==artifactHash)throw new Error('DERIVED_ASSET_OUTPUT_HASH_MISMATCH');
             const staticQa=inspectVibeSourceGlb({repoRoot,source:{path:assetPath,sourceHash:artifactHash}});
@@ -1949,7 +1957,11 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
             else{next.assets.push(candidate);registryAssetById.set(id,candidate);}
             derivedSync.registered++;
             organizationAssetsChanged=true;
-          }catch{derivedSync.rejected++;}
+          }catch(error){
+            derivedSync.rejected++;
+            const raw=clean(error?.message),signature=/^DERIVED_ASSET_[A-Z_]+$/.test(raw)?raw:'DERIVED_ASSET_VALIDATION_FAILED';
+            derivedSync.failureCounts[signature]=(derivedSync.failureCounts[signature]||0)+1;
+          }
         }
       }
     }
