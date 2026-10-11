@@ -1,19 +1,19 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-fantasy-unityweb-cc0-world-actors-webgl-first-merge-20261011",
+  "requestId": "owner-fantasy-unityweb-f0-native-animation-particles-module-repair-20261011",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
   "sourceCommit": "",
   "outputRoot": "web-games/fantasy-survival",
-  "purpose": "REBUILD_CANONICAL_FANTASY_SURVIVAL_UNITY_WEBGL_WITH_CC0_VILLAGES_EXISTING_SKINNED_ACTORS_AND_MOTIONS; ACTUAL_BROWSER_QA_AND_REVIEWED_DEPLOY; GAMEPLAY_SAVE_BALANCE_UNCHANGED",
+  "purpose": "REBUILD_EXISTING_3D_FANTASY_SURVIVAL_WEBGL_AFTER_CONFIRMED_NATIVE_ANIMATION_AND_PARTICLES_F0_FAILURE; RUN_EXISTING_BROWSER_QA_THEN_REVIEWED_CLOUDFLARE_DEPLOY; PRESERVE_GAME_BALANCE_SAVE_MULTIPLAYER",
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
   "upperPlatformReadinessRequired": true,
   "homepageCardVisibleRegardlessOfBuildResult": true,
-  "repairCause": "COMPANY_LIBRARY_NATIVE_VISUAL_AND_MOTION_BINDING_GAP",
+  "repairCause": "UNITY_WEB_NATIVE_MODULE_MISSING_ANIMATION_AND_PARTICLES_F0",
   "nativeAssetSourcePaths": [
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
@@ -38,7 +38,7 @@
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json",
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json"
   ],
-  "assetValidationStatus": "COMMON_CC0_3D_VILLAGE_SOURCE_AND_EXISTING_SKINNED_CHARACTER_REGISTERED_WEBGL_RUNTIME_QA_PENDING",
+  "assetValidationStatus": "COMMON_CC0_3D_VILLAGE_SKINNED_CHARACTER_AND_SKILL_EFFECT_READY_FOR_INDEPENDENT_WEB_RUNTIME_QA",
   "productionVerified": false,
   "registryAssetIds": [
     "unity-fantasy-survival-tree-trunk-v1",

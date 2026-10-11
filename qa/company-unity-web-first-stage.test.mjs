@@ -1,5 +1,22 @@
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 
+// 검증 · 실제 마력숲 C#에 사용되는 애니메이션·입자 모듈이 WebGL 네이티브 프로젝트에 선언돼야 한다.
+test('Fantasy Survival WebGL native animation and skill particles must resolve from the canonical Unity manifest',()=>{
+  const manifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
+  const source=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const buildRequest=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  assert.match(source,/\bAnimation\b/,'real skinned character clips use the native animation module');
+  assert.match(source,/\bParticleSystem\b/,'real skill and biome visual effects use the native particle module');
+  for(const module of ['animation','particlesystem']){
+    assert.equal(manifest.dependencies['com.unity.modules.'+module],'1.0.0','required Unity WebGL module '+module);
+  }
+  assert.equal(buildRequest.gameId,'fantasy-survival');
+  assert.equal(buildRequest.fullGameplayPassAuthority,false);
+  assert.equal(buildRequest.productionVerified,false);
+  assert.equal(buildRequest.releaseAuthority,false);
+});
+
+
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
