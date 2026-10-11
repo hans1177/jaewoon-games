@@ -880,6 +880,7 @@ jobs:
           retention-days: 7
 
       - name: Create verified Unity Web readiness PR
+        id: publish
         if: steps.readiness.outcome == 'success' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
@@ -1016,6 +1017,35 @@ jobs:
             sleep 10
           done
 
+          # 기존 검증기로 Cloudflare 본서버 게임의 모바일 터치·전투·저장을 다시 확인한다.
+          # Android 브라우저 모의 환경이며 실제 휴대전화 장치 검증은 별도다.
+          echo "UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=START"
+          (
+            cd /tmp/unity-web
+            node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+              --game-id="$GAME_ID" \
+              --source="web-games/$GAME_ID" \
+              --scenario=actual-play \
+              --public-url="https://jaewoon-games.pages.dev/$runtime_dir/" \
+              --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-post-deploy-mobile.json" \
+              --screenshot="/tmp/unity-web/post-deploy-mobile.png"
+          )
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='/tmp/unity-web/web-games/'+process.env.GAME_ID+'/unity-web-post-deploy-mobile.json';
+          const evidence=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(evidence.runtimeSurface!=='CLOUDFLARE_PAGES_MOBILE_EMULATION'||
+             evidence.pass!==true||evidence.playableBrowserTest!==true||
+             evidence.boot?.pass!==true||evidence.input?.pass!==true||
+             evidence.gameplay?.pass!==true||evidence.coreFun?.pass!==true||
+             evidence.mobile?.pass!==true||evidence.saveRestore?.pass!==true||
+             evidence.noCriticalRuntimeError!==true||
+             evidence.observedRuntimeFailure===true)
+            throw new Error('UNITY_WEB_PUBLIC_MOBILE_GAMEPLAY_REPAIR_REQUIRED');
+          console.log('UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=PASS');
+          console.log('UNITY_WEB_PUBLIC_PHYSICAL_DEVICE_QA=NOT_VERIFIED');
+          NODE
+
           echo "UNITY_WEB_MAIN_PROMOTION_SHA=$promotion_sha"
           echo "UNITY_WEB_PUBLIC_BROWSER_TEST_PATH=/$runtime_dir/"
           echo "UNITY_WEB_UPPER_PLATFORM_READY=$READINESS_PASS"
@@ -1090,7 +1120,7 @@ jobs:
 
       - name: Mark Unity Web floor repair requirement
         id: repair
-        if: ${{ always() && !cancelled() && steps.readiness.outputs.pass != 'true' }}
+        if: ${{ always() && !cancelled() && (steps.readiness.outputs.pass != 'true' || steps.publish.outcome == 'failure') }}
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -1100,7 +1130,7 @@ jobs:
           failure_stage=UNITY_WEB_BUILD_OR_READINESS
           failure_signature=REPAIR_REQUIRED
           # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
-          for filename in unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
+          for filename in unity-web-post-deploy-mobile.json unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
             evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"
             if [ -f "$evidence_file" ]; then
               evidence_line="$(jq -r 'select(.observedRuntimeFailure == true) | [.failureStage, .failureSignature] | @tsv' "$evidence_file" 2>/dev/null || true)"
