@@ -41,7 +41,7 @@ function readJson(file, fallback = {}) {
   if (!clean(raw)) return fallback;
   return JSON.parse(raw);
 }
-function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
+function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); const compactQueue=/(?:^|\/)\.vibe2\/queue\.json$/.test(String(file).replaceAll('\\','/')); fs.writeFileSync(file, `${JSON.stringify(value, null, compactQueue?0:2)}\n`, 'utf8'); }
 
 function fixedGamePrimaryRepeatSlots() {
   const policy=readJson(CANONICAL_RESERVATION_POLICY,{});
@@ -324,8 +324,8 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
     if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
-    // GitHub Actions can queue workers longer than this lease. Only the existing
-    // observed completed/superseded-run path may reclaim a numeric run reservation.
+    // Github 러너가 장시간 대기 중이어도 예약 실행이 종료된 것으로 보지 않는다.
+    // 완료/대체 실행을 확인한 기존 회수 경로만 숫자형 실행 예약을 정리한다.
     if (/^\d+$/.test(clean(task.reservationRunId))) return task;
     const reservedAtMs = Date.parse(clean(task.reservedAt));
     const leaseMissing = !Number.isFinite(reservedAtMs);
