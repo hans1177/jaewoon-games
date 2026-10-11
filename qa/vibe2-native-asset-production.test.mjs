@@ -141,6 +141,7 @@ test('existing native DCC automatically derives only role-matched internal sourc
 test('library derivative refuses changed parent bytes without invoking Blender authoring',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-parent-atomic-'));
   try{
+    execFileSync('git',['init','-q'],{cwd:root});
     fs.mkdirSync(path.join(root,'assets','shared'),{recursive:true});
     fs.mkdirSync(path.join(root,'assets','native-authoring'),{recursive:true});
     const sourcePath=path.join(root,'assets','shared','tree.obj');
