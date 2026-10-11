@@ -209,6 +209,9 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
   const game=fs.readFileSync(project+'Scripts/UnityWebFloorGame.cs','utf8');
   const editor=fs.readFileSync(project+'Editor/UnityWebFloorBuild.cs','utf8');
   const reg=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const nativeManifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
+  assert.equal(nativeManifest.dependencies['com.unity.modules.animation'],'1.0.0',
+    'skinned actor Animation and imported AnimationClip require the native animation module');
   const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
   const nativeAssets=request.registryAssetIds.map(id=>reg.assets.find(asset=>asset.id===id));
   assert.ok(nativeAssets.every(Boolean),'every requested asset is in the company registry');
