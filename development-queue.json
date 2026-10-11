@@ -48765,7 +48765,41 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "fantasy-survival",
+        "sourcePath": "web-games/fantasy-survival",
+        "sourceBefore": "a4e3b038aa0b3366d451e0fab4074474271e6086",
+        "sourceAfter": "6127c7f1583043521c6e6e9a765ab47cd6f3796d",
+        "semanticIntentFingerprint": "998d4e841ed0174b80dbf552ab5e26259881ddb1ed2c4d2f5d772b31679b952f",
+        "affectedSystems": [
+          "MOVEMENT",
+          "COMBAT",
+          "CRAFTING",
+          "INVENTORY",
+          "WORLD",
+          "MULTIPLAYER",
+          "PROGRESSION",
+          "AUDIO",
+          "UI_UX",
+          "SAVE",
+          "BALANCE"
+        ],
+        "platformTargets": [
+          "UNITY",
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-10-11T14:24:25.267Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-10-11T14:24:25.267Z"
     },
     {
       "gameId": "human-go-temp",
@@ -67027,7 +67061,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-11T14:23:18.887Z",
+  "updatedAt": "2026-10-11T14:24:25.267Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",

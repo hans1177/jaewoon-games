@@ -1,28 +1,39 @@
 {
   "version": 1,
-  "before": "8bed6a8d399c134331400ec523536e0c97cb9ed0",
-  "after": "18277e5e4d64f66b54bc70379e0d0007974d0f93",
-  "generatedAt": "2026-10-11T11:46:26.994Z",
+  "before": "a4e3b038aa0b3366d451e0fab4074474271e6086",
+  "after": "6127c7f1583043521c6e6e9a765ab47cd6f3796d",
+  "generatedAt": "2026-10-11T14:24:25.267Z",
   "manifests": [
     {
       "version": 1,
       "authority": "OWNER_DIRECTIVE",
-      "gameId": "daechung-rpg",
-      "sourcePath": "web-games/daechung-rpg",
-      "sourceBefore": "8bed6a8d399c134331400ec523536e0c97cb9ed0",
-      "sourceAfter": "18277e5e4d64f66b54bc70379e0d0007974d0f93",
-      "semanticIntentFingerprint": "ba650ba0b71580e9dbf24ca1892fb2fa0b38c1c16fd95578b71dc3c8419a36f9",
+      "gameId": "fantasy-survival",
+      "sourcePath": "web-games/fantasy-survival",
+      "sourceBefore": "a4e3b038aa0b3366d451e0fab4074474271e6086",
+      "sourceAfter": "6127c7f1583043521c6e6e9a765ab47cd6f3796d",
+      "semanticIntentFingerprint": "998d4e841ed0174b80dbf552ab5e26259881ddb1ed2c4d2f5d772b31679b952f",
       "affectedSystems": [
-        "UI_UX"
+        "MOVEMENT",
+        "COMBAT",
+        "CRAFTING",
+        "INVENTORY",
+        "WORLD",
+        "MULTIPLAYER",
+        "PROGRESSION",
+        "AUDIO",
+        "UI_UX",
+        "SAVE",
+        "BALANCE"
       ],
       "platformTargets": [
+        "UNITY",
         "ROBLOX"
       ],
       "literalWebCodeCrossPlatformCopyForbidden": true,
       "semanticIntentPropagationRequired": true,
       "affectedWebQaRequired": true,
       "affectedPlatformQaRequired": true,
-      "detectedAt": "2026-10-11T11:46:26.994Z",
+      "detectedAt": "2026-10-11T14:24:25.267Z",
       "state": "PLATFORM_PROPAGATION_REQUIRED"
     }
   ]
