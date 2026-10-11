@@ -3,7 +3,7 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-11",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "64d8c22277f6333b5d1d95c1fe07bbbf4127531cf8286f29fbe8f1b63e44fcdb",
+  "fingerprint": "42a0ec270a755daa788577f3a61990cde9005b1342e55dc9d09c8bdae8e43e8d",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
   "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
   "status": "IN_PROGRESS",
@@ -277,31 +277,42 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-11T07:05:54.668Z",
-  "updatedAt": "2026-10-11T07:05:54.734Z",
+  "createdAt": "2026-10-11T07:32:25.098Z",
+  "updatedAt": "2026-10-11T07:32:25.162Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 136,
-    "sha256": "2c9f3bb0e7064bdd6457e1722f793db90262d49e548486bbd917ad86cd8a1d31",
-    "inventoryCount": 767,
+    "version": 137,
+    "sha256": "3c63ddb5d846eac76196ee8b0b6afbc6b422b679ef26e48fc477b008aa18244c",
+    "inventoryCount": 799,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 767,
-        "eligibleAssetCount": 458,
+        "evaluatedAssetCount": 799,
+        "eligibleAssetCount": 490,
         "requiredFamilies": [
           "AUDIO",
+          "CHARACTER",
           "CREATURE",
           "MOTION",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
+          "CHARACTER": [
+            "BACK_CAPE_MODULE",
+            "HUMANOID",
+            "LIGHT_SHOULDER_MODULE",
+            "SHOULDER_GEAR",
+            "SURVIVAL_TORSO_CLOTH_MODULE",
+            "TRAVELER_CAPE",
+            "TRAVELER_TORSO"
+          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD",
@@ -389,6 +400,29 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -654,6 +688,17 @@
             }
           },
           {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
             "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
@@ -676,6 +721,21 @@
                 "run"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "ADAPT",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
@@ -691,18 +751,22 @@
                 "progress"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
               "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -719,18 +783,29 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 767,
-        "eligibleAssetCount": 458,
+        "evaluatedAssetCount": 799,
+        "eligibleAssetCount": 490,
         "requiredFamilies": [
           "AUDIO",
+          "CHARACTER",
           "CREATURE",
           "MOTION",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
+          "CHARACTER": [
+            "BACK_CAPE_MODULE",
+            "HUMANOID",
+            "LIGHT_SHOULDER_MODULE",
+            "SHOULDER_GEAR",
+            "SURVIVAL_TORSO_CLOTH_MODULE",
+            "TRAVELER_CAPE",
+            "TRAVELER_TORSO"
+          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD",
@@ -818,6 +893,29 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1083,6 +1181,17 @@
             }
           },
           {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
             "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
@@ -1105,6 +1214,21 @@
                 "run"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "ADAPT",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
@@ -1120,18 +1244,22 @@
                 "progress"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
               "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1148,18 +1276,29 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 767,
-        "eligibleAssetCount": 458,
+        "evaluatedAssetCount": 799,
+        "eligibleAssetCount": 490,
         "requiredFamilies": [
           "AUDIO",
+          "CHARACTER",
           "CREATURE",
           "MOTION",
+          "SKILL",
           "UI",
           "VFX",
           "WEAPON"
         ],
         "availableRoles": {
           "AUDIO": [],
+          "CHARACTER": [
+            "BACK_CAPE_MODULE",
+            "HUMANOID",
+            "LIGHT_SHOULDER_MODULE",
+            "SHOULDER_GEAR",
+            "SURVIVAL_TORSO_CLOTH_MODULE",
+            "TRAVELER_CAPE",
+            "TRAVELER_TORSO"
+          ],
           "CREATURE": [
             "ARACHNID",
             "CANINE_HEAD",
@@ -1247,6 +1386,29 @@
             "UNEQUIP_STOW",
             "USE_CONSUMABLE",
             "WALK"
+          ],
+          "SKILL": [
+            "AREA",
+            "AREA_TELEGRAPH_PRESENTATION",
+            "AUDIO_ROLE",
+            "AURA",
+            "BEAM",
+            "CAMERA_ROLE",
+            "CAST_ORIGIN_PRESENTATION",
+            "CHANNEL",
+            "DASH",
+            "HEAL",
+            "ICON",
+            "INTERRUPT",
+            "MOBILE_DENSITY",
+            "PROJECTILE",
+            "SHIELD",
+            "SKILL_PACK",
+            "SMALL_IMPACT_PRESENTATION",
+            "STATUS_APPLY",
+            "STATUS_CLEANSE",
+            "SUMMON",
+            "TRAIL"
           ],
           "UI": [
             "ACCESSIBILITY_COLOR_BLIND_SHAPE_BACKUP",
@@ -1512,6 +1674,17 @@
             }
           },
           {
+            "family": "CHARACTER",
+            "action": "HOLD",
+            "assetId": null,
+            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "verifiedRoleMatch": false
+            }
+          },
+          {
             "family": "CREATURE",
             "action": "HOLD",
             "assetId": null,
@@ -1534,6 +1707,21 @@
                 "run"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
+            }
+          },
+          {
+            "family": "SKILL",
+            "action": "USE",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
+            "roleEvidence": {
+              "requestedRoles": [],
+              "matchedRoles": [],
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
@@ -1549,18 +1737,22 @@
                 "progress"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
               "verifiedRoleMatch": true
             }
           },
           {
             "family": "VFX",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-vfx-attack-telegraph-pulse",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1586,6 +1778,7 @@
             "run"
           ],
           "currentSourceBound": false,
+          "genericFamilyRequest": false,
           "verifiedRoleMatch": true
         },
         "role": "RUN",
@@ -1599,6 +1792,26 @@
         "runtimeState": "PENDING_STUDIO",
         "productionVerified": false
       },
+      "roblox-common-skill-area-field": {
+        "family": "SKILL",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true
+        },
+        "role": "AREA",
+        "sourcePath": "/assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 908.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
       "roblox-common-ui-character-detail-screen": {
         "family": "UI",
         "roleEvidence": {
@@ -1607,6 +1820,7 @@
             "progress"
           ],
           "currentSourceBound": false,
+          "genericFamilyRequest": false,
           "verifiedRoleMatch": true
         },
         "role": "CHARACTER_DETAIL_SCREEN",
@@ -1615,6 +1829,26 @@
         "license": "project-original",
         "referenceOnly": false,
         "auditScore": 956.4,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "roblox-common-vfx-attack-telegraph-pulse": {
+        "family": "VFX",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true
+        },
+        "role": "ATTACK_TELEGRAPH_PRESENTATION",
+        "sourcePath": "/assets/roblox/common-vfx-v1/RobloxCommonVFX.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 913.1,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
