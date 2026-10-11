@@ -41,7 +41,7 @@ function readJson(file, fallback = {}) {
   if (!clean(raw)) return fallback;
   return JSON.parse(raw);
 }
-function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
+function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); const compactQueue=/(?:^|\/)\.vibe2\/queue\.json$/.test(String(file).replaceAll('\\','/')); fs.writeFileSync(file, `${JSON.stringify(value, null, compactQueue?0:2)}\n`, 'utf8'); }
 
 function fixedGamePrimaryRepeatSlots() {
   const policy=readJson(CANONICAL_RESERVATION_POLICY,{});
