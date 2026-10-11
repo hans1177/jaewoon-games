@@ -137,6 +137,38 @@ test('existing native DCC automatically derives only role-matched internal sourc
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+// [원자적 제작] 원본이 계획 이후 바뀌면 기존 Blender 실행 전 중단한다.
+test('library derivative refuses changed parent bytes without invoking Blender authoring',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-parent-atomic-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets','shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','native-authoring'),{recursive:true});
+    const sourcePath=path.join(root,'assets','shared','tree.obj');
+    const source='v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n';
+    fs.writeFileSync(sourcePath,source);
+    const expected=createHash('sha256').update(source).digest('hex');
+    fs.appendFileSync(sourcePath,'# changed\n');
+    fs.writeFileSync(path.join(root,'assets/native-authoring/build-game-visual.py'),'# fixture\n');
+    const fake=path.join(root,'fake-blender.sh');
+    fs.writeFileSync(fake,'#!/bin/sh\nif [ "$1" = "--version" ]; then exit 0; fi\ntouch invoked\nexit 0\n');
+    fs.chmodSync(fake,0o755);
+    const recipe={
+      id:'derived-tree',executor:'BLENDER_PYTHON',runMode:'VERIFY_ONLY',
+      script:'assets/native-authoring/build-game-visual.py',
+      automaticLibraryDerivative:true,librarySourceAssetId:'shared-tree',
+      librarySourceSha256:expected,sourceModel:'assets/shared/tree.obj',
+      args:['--source-model','assets/shared/tree.obj','--library-parent-id','shared-tree','--library-source-sha256',expected],
+      outputs:['assets/generated/unity/demo/environment/asset.glb']
+    };
+    const order={evidence:['asset-production-parallel:v1'],assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[recipe]}}}};
+    assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({
+      cwd:root,order,blenderExecutable:fake,persistCandidateOutputs:false
+    }),/NATIVE_DCC_LIBRARY_SOURCE_CHANGED/);
+    assert.equal(fs.existsSync(path.join(root,'invoked')),false);
+    assert.equal(fs.existsSync(path.join(root,recipe.outputs[0])),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('unusable or rights-blocked library sources never become auto-produced models',()=>{
   const base={id:'tree-source',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',status:'REPO_ASSET'};
   for(const blocked of [
