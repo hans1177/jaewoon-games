@@ -1176,6 +1176,10 @@ test('Roblox internal asset family binding requires actual family use and reject
   const error=new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+missing.blockers.join(','));
   assert.equal(generationFailureClass(error),'ROBLOX_INTERNAL_ASSET_APPLICATION');
   assert.equal(shouldRetryGenerationError(error),true,'binding failures must enter the existing corrective generation loop');
+  write(path.join(root,'client/Game.client.luau'),'local STUDIO_ASSET_FAMILY_STATUS = { '+ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>family+' = "NOT_APPLICABLE"').join(', ')+' }');
+  const empty=evaluateRobloxInternalAssetFamilyBindingCandidate({sourceRoot:root,expectedFamilies,requireChangedBinding:false});
+  assert.equal(empty.pass,false,'an empty game cannot bypass required library consumption by marking all families inapplicable');
+  assert.ok(empty.blockers.includes('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE'));
 });
 
 // [자동 자산 연결] 기존 바이브 코딩 프롬프트가 제작 플래너의 누락 작업을 직접 소비한다.

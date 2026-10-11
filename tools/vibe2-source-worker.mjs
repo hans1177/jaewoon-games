@@ -1248,7 +1248,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
       actualBinding,changedBinding,boundFiles:Object.freeze(boundFiles)
     }));
   }
-  if(requireChangedBinding&&changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
+  if(appliedCount===0||requireChangedBinding&&changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
   return Object.freeze({
     pass:blockers.length===0,
     requiredFamilies:ROBLOX_INTERNAL_ASSET_FAMILIES,
