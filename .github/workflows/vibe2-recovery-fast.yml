@@ -96,6 +96,24 @@ jobs:
                 printf '%s\n' '{"jobs":[]}' > /tmp/vibe2-recovery-fast/deployment-jobs.json
                 echo "DEPLOYMENT_FAILED_RUN_JOBS=UNAVAILABLE_CAUSAL_TRIAGE_REQUIRED"
               fi
+              # Unity Web's own repair step emits strict failure-stage markers. Do not
+              # mistake a failed Cloudflare publish for a C# or gameplay defect.
+              workflow_name="$(node -e 'const e=require(process.env.GITHUB_EVENT_PATH);process.stdout.write(String(e.workflow_run?.name||""))')"
+              if [ "$workflow_name" = 'Unity Web Development Floor' ]; then
+                failed_job_id="$(node -e 'const fs=require("fs");const j=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));const f=(j.jobs||[]).find(x=>x.conclusion==="failure"&&Number.isSafeInteger(x.id));process.stdout.write(f?String(f.id):"")' /tmp/vibe2-recovery-fast/deployment-jobs.json)"
+                if [[ "$failed_job_id" =~ ^[0-9]+$ ]]; then
+                  # Stream job logs through a strict allowlist; never save or execute raw logs.
+                  marker_lines="$(curl --location --fail-with-body --silent --show-error \
+                    --header 'Accept: application/vnd.github+json' \
+                    --header "Authorization: Bearer $GH_TOKEN" \
+                    --header 'X-GitHub-Api-Version: 2022-11-28' \
+                    "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/$failed_job_id/logs" \
+                    | grep -oE 'UNITY_WEB_REPAIR_FAILURE_(STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]+' | tail -n 12 || true)"
+                  if [ -n "$marker_lines" ]; then
+                    DEPLOYMENT_MARKERS="$marker_lines" node -e 'const fs=require("fs");const p="/tmp/vibe2-recovery-fast/deployment-jobs.json";const j=JSON.parse(fs.readFileSync(p,"utf8"));j.failureMarkers=process.env.DEPLOYMENT_MARKERS.split("\n").filter(x=>/^UNITY_WEB_REPAIR_FAILURE_(STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}$/.test(x));fs.writeFileSync(p,JSON.stringify(j))'
+                  fi
+                fi
+              fi
               deployment_args=("--deployment-event=$GITHUB_EVENT_PATH" "--deployment-jobs=/tmp/vibe2-recovery-fast/deployment-jobs.json")
             fi
             node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" --catalog=game-catalog.json "${deployment_args[@]}" | tee /tmp/vibe2-recovery-fast/escalation.log
