@@ -186,11 +186,11 @@ public sealed class UnityWebFloorGame : MonoBehaviour
 
         VerifyNativeSpatialDepth();
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=RUNTIME_QA_REQUIRED");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=RUNTIME_QA_REQUIRED");
         Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=" +
                    (approvedEnvironmentReady ? "PASS" : "REPAIR_REQUIRED reason=APPROVED_ENVIRONMENT_AUTHORING_FAILED"));
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=RUNTIME_QA_REQUIRED");
         int nativeMotionActors = BindNativeMotionActors();
         Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
                   " status=" + (nativeMotionActors > 0 ? "STARTED" : "REPAIR_REQUIRED") +
@@ -255,6 +255,14 @@ public sealed class UnityWebFloorGame : MonoBehaviour
                 candidate.gameObject.AddComponent<JaewoonNativeMotionActor>();
             count++;
         }
+        foreach (Animation motion in FindObjectsByType<Animation>(FindObjectsSortMode.None))
+        {
+            var skin = motion.GetComponentInChildren<SkinnedMeshRenderer>();
+            if (skin == null || skin.sharedMesh == null || skin.bones.Length < 3
+                || motion.GetClip("IDLE_BREATH") == null || motion.GetClipCount() < 5) continue;
+            if (!motion.isPlaying) motion.Play("IDLE_BREATH");
+            count++;
+        }
         return count;
     }
 
@@ -302,6 +310,72 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         landmark.name = "Identity_" + Mode;
         landmark.transform.position = new Vector3(0f,1.5f,3f);
         landmark.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+
+        // 그래픽 · 기존 생성 책임에서 공용 프리팹을 실제 표시한다. 부모 충돌체·배치·저장은 보존한다.
+        var visualOwners = new[] { ground, player, enemy, equipment, landmark };
+        string[] visualKeys = { "Environment", "Character", "Enemy", "Equipment", "Identity" };
+        var visualSizes = new[] { new Vector3(10f, .18f, 10f), new Vector3(1f, 2f, 1f),
+            Vector3.one, Vector3.one, new Vector3(1f, 2f, 1f) };
+        for (int i = 0; i < visualOwners.Length; i++)
+        {
+            if (visualKeys[i] == null)
+            {
+                Debug.LogWarning("UNITY_COMPANY_ROLE_REPAIR_REQUIRED game=" + GameId + " role=" + visualOwners[i].name + " reason=COMPATIBLE_MODEL_REQUIRED");
+                continue;
+            }
+            var source = Resources.Load<GameObject>("CompanyAssets/" + visualKeys[i]);
+            if (source == null) throw new System.InvalidOperationException("UNITY_COMPANY_PREFAB_REQUIRED:" + visualKeys[i]);
+            var visual = Instantiate(source, visualOwners[i].transform, false);
+            visual.name = "Library_" + visualKeys[i];
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+            var renderers = visual.GetComponentsInChildren<Renderer>(true);
+            var bounds = new Bounds();
+            bool measured = false;
+            foreach (var renderer in renderers)
+            {
+                var skin = renderer as SkinnedMeshRenderer;
+                var filter = renderer.GetComponent<MeshFilter>();
+                var mesh = skin != null ? skin.sharedMesh : filter != null ? filter.sharedMesh : null;
+                if (mesh == null || mesh.vertexCount < 3 || renderer.sharedMaterials.Length == 0)
+                    throw new System.InvalidOperationException("UNITY_COMPANY_MESH_REQUIRED:" + visualKeys[i]);
+                var matrix = visual.transform.worldToLocalMatrix * renderer.localToWorldMatrix;
+                var local = skin != null ? skin.localBounds : mesh.bounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = matrix.MultiplyPoint3x4(local.center + Vector3.Scale(local.extents,
+                        new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1)));
+                    if (!measured) { bounds = new Bounds(point, Vector3.zero); measured = true; }
+                    else bounds.Encapsulate(point);
+                }
+                var materials = renderer.sharedMaterials;
+                for (int slot = 0; slot < materials.Length; slot++)
+                {
+                    var material = materials[slot];
+                    if (material == null || material.shader == null)
+                        throw new System.InvalidOperationException("UNITY_COMPANY_MATERIAL_REQUIRED:" + visualKeys[i]);
+                    if (material.HasProperty("_Color"))
+                    {
+                        var properties = new MaterialPropertyBlock();
+                        properties.SetColor("_Color", material.color * (i == 2 || i == 3 ? new Color(0.96f, 0.86f, 0.63f) : new Color(0.72f, 0.94f, 0.88f)));
+                        renderer.SetPropertyBlock(properties, slot);
+                    }
+                }
+            }
+            if (!measured || bounds.size.x <= 0f || bounds.size.y <= 0f || bounds.size.z <= 0f)
+                throw new System.InvalidOperationException("UNITY_COMPANY_VOLUME_REQUIRED:" + visualKeys[i]);
+            var size = visualSizes[i];
+            var fit = new Vector3(size.x / bounds.size.x, size.y / bounds.size.y, size.z / bounds.size.z);
+            if (i != 0 && i != 3) fit = Vector3.one * Mathf.Min(fit.x, fit.y, fit.z);
+            visual.transform.localScale = fit;
+            visual.transform.localPosition = -Vector3.Scale(bounds.center, fit)
+                + Vector3.up * ((bounds.size.y * fit.y - size.y) * .5f - (i == 0 ? .09f : 0f));
+            foreach (var extra in visual.GetComponentsInChildren<Collider>(true)) Destroy(extra);
+            visualOwners[i].GetComponent<Renderer>().enabled = false;
+            Debug.Log("UNITY_COMPANY_NATIVE_BOUND game=" + GameId + " key=" + visualKeys[i] + " status=RUNTIME_QA_REQUIRED");
+        }
+
 
     }
 

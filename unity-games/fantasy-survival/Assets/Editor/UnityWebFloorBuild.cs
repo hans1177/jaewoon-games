@@ -168,9 +168,30 @@ public static class UnityWebFloorBuild
             SkinnedMeshRenderer skin=actor.GetComponentInChildren<SkinnedMeshRenderer>(true);
             if(skin==null || skin.sharedMesh==null || skin.sharedMesh.vertexCount<100 || skin.bones.Length<3)
                 throw new Exception("UNITY_COMPANY_ACTOR_SKIN_MISSING:"+role);
+            // 모션 · Unity 프리팹 에셋의 AnimationState 열거는 에디터 비활성 상태에서 0개로 반환될 수 있다.
+            // 기존 GLB 변환기가 생성한 실제 .anim 에셋의 Legacy 클립/커브를 검증한다.
+            string clipPrefix="Assets/Resources/CompanyAssets/MagicForest"+role+"_";
             int clipCount=0;
-            foreach(AnimationState state in actor.GetComponent<Animation>())if(state.clip!=null)clipCount++;
+            foreach(string guid in AssetDatabase.FindAssets("t:AnimationClip",new[]{"Assets/Resources/CompanyAssets"}))
+            {
+                string clipPath=AssetDatabase.GUIDToAssetPath(guid);
+                if(!clipPath.StartsWith(clipPrefix,StringComparison.Ordinal)
+                    || !clipPath.EndsWith(".anim",StringComparison.OrdinalIgnoreCase))continue;
+                AnimationClip clip=AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+                if(clip!=null && clip.legacy && !clip.empty)clipCount++;
+            }
             if(clipCount<5)throw new Exception("UNITY_COMPANY_ACTOR_ACTION_COVERAGE_MISSING:"+role);
+            if(role=="Guardian")
+            {
+                // 실제 플레이어가 사용하는 모든 모션은 동일한 원본 리그의 import 결과여야 한다.
+                foreach(string action in new[]{"IDLE_BREATH","RUN","ATTACK_LIGHT_SLASH","ATTACK_HEAVY",
+                    "HIT_FRONT","GUARDIAN_REVIVE","GUARDIAN_PARRY"})
+                {
+                    AnimationClip clip=AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPrefix+action+".anim");
+                    if(clip==null || !clip.legacy || clip.empty)
+                        throw new Exception("UNITY_COMPANY_GUARDIAN_ACTION_CLIP_MISSING:"+action);
+                }
+            }
             Debug.Log("UNITY_COMPANY_ACTOR_SKINNED_ACTION=SOURCE_READY_RUNTIME_UNVERIFIED:"+role+":clips="+clipCount);
         }
         // Build 전 검사 · 기존 Unity 프로젝트에 실제 네이티브 3D 자산이 임포트됐는지 확인한다.

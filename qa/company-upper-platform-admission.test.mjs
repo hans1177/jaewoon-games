@@ -650,3 +650,29 @@ test('upper-platform orchestration uses reusable workflows instead of rate-limit
 
   for(const workflow of [roblox,unity,web,bootstrap])assert.match(workflow,/workflow_call:/);
 });
+
+// 회귀 · 프로젝트 밖의 실제 공용 입력이 바뀌면 오래된 Unity 빌드 증거를 재사용할 수 없다.
+test('Unity source identity includes selected shared native inputs, materials and importer',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-shared-source-'));
+  const project=path.join(root,'unity-games/native-game');
+  try{
+    write(root,'unity-games/native-game/Packages/manifest.json',{dependencies:{'com.jaewoon.assets':'file:../../../assets/shared'}});
+    write(root,'unity-games/native-game/Assets/Editor/Build.cs','var file="assets/native/model.obj";');
+    write(root,'assets/shared/Editor/UnityCompanyAssets.cs','importer v1');
+    write(root,'company-asset-library.json',{assets:[]});
+    write(root,'assets/native/model.obj','mtllib model.mtl\nv 0 0 0\n');
+    write(root,'assets/native/model.mtl','newmtl surface\nKd 1 1 1\n');
+    let previous=unitySourceTreeSha256(project);
+    for(const file of ['assets/native/model.obj','assets/native/model.mtl','assets/shared/Editor/UnityCompanyAssets.cs','company-asset-library.json']){
+      fs.appendFileSync(path.join(root,file),'\n');
+      const next=unitySourceTreeSha256(project);
+      assert.notEqual(next,previous,file+' must invalidate stale evidence');previous=next;
+    }
+    write(root,'assets/unselected/other.obj','unrelated');
+    assert.equal(unitySourceTreeSha256(project),previous,'unselected external input does not invalidate this project');
+    write(root,'unity-games/native-game/Library/cache','local cache');
+    assert.equal(unitySourceTreeSha256(project),previous);
+    write(root,'unity-games/native-game/Packages/manifest.json',{dependencies:{'com.jaewoon.assets':'file:../../other'}});
+    assert.throws(()=>unitySourceTreeSha256(project),/UNITY_SHARED_PACKAGE_PATH_INVALID/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

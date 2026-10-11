@@ -128,6 +128,10 @@ namespace JaewoonGames.DaechungRpg.Editor
 
         private static void EnsureTestScene()
         {
+            UnityCompanyAssets.Prepare(
+                new[] { "Hero", "Wolf", "Spider", "Golem" },
+                new[] { "shared-humanoid-traveler-actions", "shared-creature-wolf-actions", "shared-creature-spider-actions", "shared-creature-golem-actions" },
+                new[] { "assets/shared/humanoid-traveler-actions.glb", "assets/shared/creature-wolf-actions.glb", "assets/shared/creature-spider-actions.glb", "assets/shared/creature-golem-actions.glb" });
             if (!AssetDatabase.IsValidFolder(SceneFolder))
             {
                 AssetDatabase.CreateFolder("Assets", "Scenes");

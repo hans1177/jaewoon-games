@@ -210,6 +210,57 @@ namespace JaewoonGames.DungeonCompany
             go.name = name; go.transform.SetParent(parent, false); go.transform.localPosition = pos; go.transform.localScale = scale;
             var renderer = go.GetComponent<Renderer>(); if (renderer != null && mat != null) renderer.sharedMaterial = mat;
             var col = go.GetComponent<Collider>(); if (col != null) Object.Destroy(col);
+            if (name == "Body" || name.StartsWith("Arm") || name.StartsWith("Leg")) return go;
+            string nativeKey = name == "Gate" ? "Door" : name == "Gold" ? "Chest" : name == "Bench" ? "Bench"
+                : name.StartsWith("Banner") ? "Cape" : name == "Spike" || name.StartsWith("Darts") ? "Sword" : name == "Rack" ? "Wall" : "Foundation";
+            var color = mat != null ? mat.color : Color.white;
+            var source = Resources.Load<GameObject>("CompanyAssets/" + nativeKey);
+            if (source == null) throw new System.InvalidOperationException("UNITY_COMPANY_PREFAB_REQUIRED:" + nativeKey);
+            var visual = Object.Instantiate(source, go.transform, false);
+            visual.name = "Library_" + nativeKey;
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+            var renderers = visual.GetComponentsInChildren<Renderer>(true);
+            var bounds = new Bounds();
+            bool measured = false;
+            foreach (var nativeRenderer in renderers)
+            {
+                var skin = nativeRenderer as SkinnedMeshRenderer;
+                var filter = nativeRenderer.GetComponent<MeshFilter>();
+                var mesh = skin != null ? skin.sharedMesh : filter != null ? filter.sharedMesh : null;
+                if (mesh == null || nativeRenderer.sharedMaterials.Length == 0)
+                    throw new System.InvalidOperationException("UNITY_COMPANY_MESH_REQUIRED:" + nativeKey);
+                var matrix = visual.transform.worldToLocalMatrix * nativeRenderer.localToWorldMatrix;
+                var local = skin != null ? skin.localBounds : mesh.bounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = matrix.MultiplyPoint3x4(local.center + Vector3.Scale(local.extents,
+                        new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1)));
+                    if (!measured) { bounds = new Bounds(point, Vector3.zero); measured = true; }
+                    else bounds.Encapsulate(point);
+                }
+                for (int slot = 0; slot < nativeRenderer.sharedMaterials.Length; slot++)
+                {
+                    var material = nativeRenderer.sharedMaterials[slot];
+                    if (material == null || material.shader == null) throw new System.InvalidOperationException("UNITY_COMPANY_MATERIAL_REQUIRED:" + nativeKey);
+                    if (material.HasProperty("_Color"))
+                    {
+                        var properties = new MaterialPropertyBlock();
+                        properties.SetColor("_Color", material.color * color);
+                        nativeRenderer.SetPropertyBlock(properties, slot);
+                    }
+                }
+            }
+            if (!measured || bounds.size.x <= 0f || bounds.size.y <= 0f || bounds.size.z <= 0f)
+                throw new System.InvalidOperationException("UNITY_COMPANY_VOLUME_REQUIRED:" + nativeKey);
+            var size = go.GetComponent<MeshFilter>().sharedMesh.bounds.size;
+            var fit = new Vector3(size.x / bounds.size.x, size.y / bounds.size.y, size.z / bounds.size.z);
+            if (visual.GetComponentInChildren<SkinnedMeshRenderer>() != null) fit = Vector3.one * Mathf.Min(fit.x, fit.y, fit.z);
+            visual.transform.localScale = fit;
+            visual.transform.localPosition = -Vector3.Scale(bounds.center, fit) + Vector3.up * ((bounds.size.y * fit.y - size.y) * .5f);
+            foreach (var extra in visual.GetComponentsInChildren<Collider>(true)) Object.Destroy(extra);
+            go.GetComponent<Renderer>().enabled = false;
             return go;
         }
 
@@ -219,12 +270,82 @@ namespace JaewoonGames.DungeonCompany
             go.name = name; go.transform.SetParent(parent, false); go.transform.localPosition = pos; go.transform.localScale = scale;
             go.GetComponent<Renderer>().sharedMaterial = mat;
             var col = go.GetComponent<Collider>(); if (col != null) Object.Destroy(col);
+            if (name == "Slime" || name == "Flame" || name == "Head")
+            {
+                if (name == "Slime") Debug.LogWarning("UNITY_COMPANY_ROLE_REPAIR_REQUIRED game=dungeon-company role=Slime reason=SPECIES_MODEL_REQUIRED");
+                return go;
+            }
+            string nativeKey = "Rock";
+            var color = mat != null ? mat.color : Color.white;
+            var source = Resources.Load<GameObject>("CompanyAssets/" + nativeKey);
+            if (source == null) throw new System.InvalidOperationException("UNITY_COMPANY_PREFAB_REQUIRED:" + nativeKey);
+            var visual = Object.Instantiate(source, go.transform, false);
+            visual.name = "Library_" + nativeKey;
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+            var renderers = visual.GetComponentsInChildren<Renderer>(true);
+            var bounds = new Bounds();
+            bool measured = false;
+            foreach (var nativeRenderer in renderers)
+            {
+                var skin = nativeRenderer as SkinnedMeshRenderer;
+                var filter = nativeRenderer.GetComponent<MeshFilter>();
+                var mesh = skin != null ? skin.sharedMesh : filter != null ? filter.sharedMesh : null;
+                if (mesh == null || nativeRenderer.sharedMaterials.Length == 0)
+                    throw new System.InvalidOperationException("UNITY_COMPANY_MESH_REQUIRED:" + nativeKey);
+                var matrix = visual.transform.worldToLocalMatrix * nativeRenderer.localToWorldMatrix;
+                var local = skin != null ? skin.localBounds : mesh.bounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = matrix.MultiplyPoint3x4(local.center + Vector3.Scale(local.extents,
+                        new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1)));
+                    if (!measured) { bounds = new Bounds(point, Vector3.zero); measured = true; }
+                    else bounds.Encapsulate(point);
+                }
+                for (int slot = 0; slot < nativeRenderer.sharedMaterials.Length; slot++)
+                {
+                    var material = nativeRenderer.sharedMaterials[slot];
+                    if (material == null || material.shader == null) throw new System.InvalidOperationException("UNITY_COMPANY_MATERIAL_REQUIRED:" + nativeKey);
+                    if (material.HasProperty("_Color"))
+                    {
+                        var properties = new MaterialPropertyBlock();
+                        properties.SetColor("_Color", material.color * color);
+                        nativeRenderer.SetPropertyBlock(properties, slot);
+                    }
+                }
+            }
+            if (!measured || bounds.size.x <= 0f || bounds.size.y <= 0f || bounds.size.z <= 0f)
+                throw new System.InvalidOperationException("UNITY_COMPANY_VOLUME_REQUIRED:" + nativeKey);
+            var size = go.GetComponent<MeshFilter>().sharedMesh.bounds.size;
+            var fit = new Vector3(size.x / bounds.size.x, size.y / bounds.size.y, size.z / bounds.size.z);
+            if (visual.GetComponentInChildren<SkinnedMeshRenderer>() != null) fit = Vector3.one * Mathf.Min(fit.x, fit.y, fit.z);
+            visual.transform.localScale = fit;
+            visual.transform.localPosition = -Vector3.Scale(bounds.center, fit) + Vector3.up * ((bounds.size.y * fit.y - size.y) * .5f);
+            foreach (var extra in visual.GetComponentsInChildren<Collider>(true)) Object.Destroy(extra);
+            go.GetComponent<Renderer>().enabled = false;
             return go;
         }
 
         private static GameObject Humanoid(string name, Vector3 pos, Material mat, Transform parent)
         {
             var root = new GameObject(name); root.transform.SetParent(parent, false); root.transform.localPosition = pos;
+            if (name == "Hero")
+            {
+                var source = Resources.Load<GameObject>("CompanyAssets/Hero");
+                if (source == null) throw new System.InvalidOperationException("UNITY_COMPANY_HERO_REQUIRED");
+                var visual = Object.Instantiate(source, root.transform, false);
+                var skin = visual.GetComponentInChildren<SkinnedMeshRenderer>();
+                if (skin == null || skin.sharedMesh == null || skin.localBounds.size.y <= 0f)
+                    throw new System.InvalidOperationException("UNITY_COMPANY_HERO_SKIN_REQUIRED");
+                var bounds = skin.localBounds;
+                float fit = 2f / bounds.size.y;
+                visual.transform.localScale = Vector3.one * fit;
+                visual.transform.localPosition = new Vector3(-bounds.center.x, -bounds.min.y, -bounds.center.z) * fit;
+                foreach (var extra in visual.GetComponentsInChildren<Collider>(true)) Object.Destroy(extra);
+                return root;
+            }
+            Debug.LogWarning("UNITY_COMPANY_ROLE_REPAIR_REQUIRED game=dungeon-company role=" + name + " reason=SPECIES_MODEL_REQUIRED");
             Cube("Body", new Vector3(0, .9f, 0), new Vector3(.75f, 1.05f, .48f), mat, root.transform);
             Sphere("Head", new Vector3(0, 1.72f, 0), Vector3.one * .62f, mat, root.transform);
             Cube("ArmL", new Vector3(-.55f, .95f, 0), new Vector3(.22f, .9f, .22f), mat, root.transform);

@@ -1,25 +1,20 @@
 // 파일명: PrototypeAnimatedVisuals.cs
-// 역할: 대충 RPG 초안에 검증된 무료 Pirate/Skeleton 애니메이션 스프라이트를 실제 적용한다.
-// 출처: https://github.com/chongdashu/ai-pixel-snapped-game-sprites (MIT)
+// 역할: 기존 캐릭터·전투 표시 책임에 내부 라이브러리의 네이티브 리그와 모션을 연결한다.
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace JaewoonGames.DaechungRpg
 {
     public sealed class PrototypeAnimatedVisuals : MonoBehaviour
     {
-        private const string SourceRoot = "https://raw.githubusercontent.com/chongdashu/ai-pixel-snapped-game-sprites/main/spritesheets";
-        private const int RequestTimeoutSeconds = 12;
         private static readonly string[] Actions = { "idle", "walk", "attack", "hurt", "death" };
 
         public static PrototypeAnimatedVisuals Instance { get; private set; }
         public bool Ready => _ready;
-        public string StatusText => !_ready ? "LOADING" : (!string.IsNullOrEmpty(_loadError) ? "READY · LOCAL ART / REMOTE UNAVAILABLE" : "READY · ANIMATED ACTORS AND LOCAL ART");
+        public string StatusText => !_ready ? "LOADING" : "READY · LOCAL ART";
 
         private AnimatedActor _player;
         private AnimatedActor _enemy;
@@ -27,10 +22,9 @@ namespace JaewoonGames.DaechungRpg
         private bool _hasCoopPartner;
         private bool _ready;
         private bool _battleVisible;
-        private string _loadError = string.Empty;
         private Coroutine _combatRoutine;
         private Coroutine _travelRoutine;
-        // 그래픽: 원격 에셋을 유지하고 오프라인 전용 아트·사냥터 장면을 제공한다.
+        // 그래픽: 기존 지역별 아트와 내부 3D 모델은 네트워크 다운로드 없이 표시한다.
         private MeshRenderer _backdrop;
         private MeshRenderer _depthGround;
         private MeshRenderer _depthPath;
@@ -130,7 +124,6 @@ namespace JaewoonGames.DaechungRpg
             _coopPartner.SetTint(new Color(0.64f, 1.0f, 0.8f, 1f));
             _ready = true;
             ShowTown();
-            StartCoroutine(LoadAll());
         }
 
         private void Update()
@@ -719,165 +712,6 @@ namespace JaewoonGames.DaechungRpg
             _travelRoutine = null;
         }
 
-        private IEnumerator LoadAll()
-        {
-            // 로컬 정식 픽셀 애니메이션이 존재하면 불필요한 외부 원격 시트 요청을 하지 않는다.
-            // 로컬 아트가 없는 기존 프로젝트에서만 원격 MIT 아트 폴백을 유지한다.
-            if (Resources.Load<Texture2D>("DaechungArt/hero-idle") != null)
-                yield break;
-
-            yield return LoadActor(_player, "pirate");
-            if (!string.IsNullOrEmpty(_loadError)) yield break;
-
-            yield return LoadActor(_enemy, "skeleton");
-            if (!string.IsNullOrEmpty(_loadError)) yield break;
-
-            _ready = true;
-            SetEnemyIdentity(_enemyId);
-            if (_battleVisible) ResetBattleActors();
-            else ShowTown();
-        }
-
-        private IEnumerator LoadActor(AnimatedActor actor, string actorId)
-        {
-            foreach (var action in Actions)
-            {
-                yield return LoadClip(actor, actorId, action);
-                if (!string.IsNullOrEmpty(_loadError)) yield break;
-            }
-
-            actor.Loaded = true;
-            actor.Play("idle", true, true);
-        }
-
-        private IEnumerator LoadClip(AnimatedActor actor, string actorId, string action)
-        {
-            var baseUrl = $"{SourceRoot}/{actorId}/{action}";
-            var cacheDirectory = Path.Combine(Application.persistentDataPath, "prototype-asset-cache", "ai-pixel-snapped", actorId, action);
-            var manifestPath = Path.Combine(cacheDirectory, "manifest.json");
-            var spritePath = Path.Combine(cacheDirectory, "spritesheet.png");
-            Directory.CreateDirectory(cacheDirectory);
-
-            string manifestJson = null;
-            if (File.Exists(manifestPath))
-            {
-                try { manifestJson = File.ReadAllText(manifestPath); }
-                catch { manifestJson = null; }
-            }
-
-            if (string.IsNullOrEmpty(manifestJson))
-            {
-                using (var request = UnityWebRequest.Get(baseUrl + "/manifest.json"))
-                {
-                    request.timeout = RequestTimeoutSeconds;
-                    yield return request.SendWebRequest();
-                    if (request.result != UnityWebRequest.Result.Success)
-                    {
-                        _loadError = $"manifest {actorId}/{action}";
-                        yield break;
-                    }
-
-                    manifestJson = request.downloadHandler.text;
-                    try { File.WriteAllText(manifestPath, manifestJson); } catch { }
-                }
-            }
-
-            RemoteManifest manifest;
-            try
-            {
-                manifest = JsonUtility.FromJson<RemoteManifest>(manifestJson);
-            }
-            catch
-            {
-                try { File.Delete(manifestPath); } catch { }
-                _loadError = $"manifest parse {actorId}/{action}";
-                yield break;
-            }
-
-            if (manifest == null)
-            {
-                try { File.Delete(manifestPath); } catch { }
-                _loadError = $"manifest parse {actorId}/{action}";
-                yield break;
-            }
-
-            byte[] textureBytes = null;
-            if (File.Exists(spritePath))
-            {
-                try { textureBytes = File.ReadAllBytes(spritePath); }
-                catch { textureBytes = null; }
-            }
-
-            if (textureBytes == null || textureBytes.Length == 0)
-            {
-                using (var request = UnityWebRequest.Get(baseUrl + "/spritesheet.png"))
-                {
-                    request.timeout = RequestTimeoutSeconds;
-                    yield return request.SendWebRequest();
-                    if (request.result != UnityWebRequest.Result.Success)
-                    {
-                        _loadError = $"spritesheet {actorId}/{action}";
-                        yield break;
-                    }
-
-                    textureBytes = request.downloadHandler.data;
-                    try { File.WriteAllBytes(spritePath, textureBytes); } catch { }
-                }
-            }
-
-            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-            if (!texture.LoadImage(textureBytes, false))
-            {
-                Destroy(texture);
-                try { File.Delete(spritePath); } catch { }
-                _loadError = $"texture decode {actorId}/{action}";
-                yield break;
-            }
-
-            texture.name = $"{actorId}-{action}";
-            texture.filterMode = FilterMode.Point;
-            texture.wrapMode = TextureWrapMode.Clamp;
-
-            if (manifest.frames <= 0 || manifest.columns <= 0 || manifest.frameWidth <= 0 || manifest.frameHeight <= 0 || manifest.fps <= 0)
-            {
-                Destroy(texture);
-                try { File.Delete(manifestPath); } catch { }
-                _loadError = $"manifest values {actorId}/{action}";
-                yield break;
-            }
-
-            var frameCount = manifest.frames;
-            var columns = manifest.columns;
-            var frameWidth = manifest.frameWidth;
-            var frameHeight = manifest.frameHeight;
-            var rows = ((long)frameCount + columns - 1L) / columns;
-            var requiredWidth = (long)Mathf.Min(frameCount, columns) * frameWidth;
-            var requiredHeight = rows * frameHeight;
-            if (requiredWidth > texture.width || requiredHeight > texture.height)
-            {
-                Destroy(texture);
-                try { File.Delete(manifestPath); } catch { }
-                try { File.Delete(spritePath); } catch { }
-                _loadError = $"asset bounds {actorId}/{action}";
-                yield break;
-            }
-
-            var frames = new Sprite[frameCount];
-
-            for (var i = 0; i < frameCount; i++)
-            {
-                var column = i % columns;
-                var row = i / columns;
-                var x = column * frameWidth;
-                var y = texture.height - ((row + 1) * frameHeight);
-                var rect = new Rect(x, y, frameWidth, frameHeight);
-                frames[i] = Sprite.Create(texture, rect, new Vector2(0.5f, 0.06f), 128f);
-                frames[i].name = $"{actorId}-{action}-{i:00}";
-            }
-
-            actor.AddClip(action, frames, manifest.fps);
-        }
-
         private IEnumerator TravelRoutine()
         {
             _player.SetVisible(true);
@@ -977,16 +811,6 @@ namespace JaewoonGames.DaechungRpg
             return camera;
         }
 
-        [Serializable]
-        private sealed class RemoteManifest
-        {
-            public int frameWidth;
-            public int frameHeight;
-            public int frames;
-            public int columns;
-            public int fps;
-        }
-
         private sealed class AnimatedActor
         {
             private sealed class Clip
@@ -1000,6 +824,9 @@ namespace JaewoonGames.DaechungRpg
             private readonly GameObject _root;
             // 실제 Unity Native Mesh는 기존 액션 상태를 렌더할 뿐 게임플레이/저장 권한이 없다.
             private readonly GameObject _model;
+            private GameObject _libraryModel;
+            private Animation _nativeMotion;
+            private string _libraryKey;
             private readonly Transform _body, _head, _leftArm, _rightArm, _leftLeg, _rightLeg;
             private readonly Material _skin, _accent;
             private Color _tint = Color.white;
@@ -1062,10 +889,9 @@ namespace JaewoonGames.DaechungRpg
             {
                 get
                 {
-                    if (_skin == null || _body == null || !_model.activeInHierarchy) return false;
-                    var meshFilter = _body.GetComponent<MeshFilter>();
-                    var meshRenderer = _body.GetComponent<MeshRenderer>();
-                    var mesh = meshFilter != null ? meshFilter.sharedMesh : null;
+                    if (_libraryModel == null || !_model.activeInHierarchy) return false;
+                    var meshRenderer = _libraryModel.GetComponentInChildren<SkinnedMeshRenderer>();
+                    var mesh = meshRenderer != null ? meshRenderer.sharedMesh : null;
                     return meshRenderer != null && meshRenderer.enabled && meshRenderer.sharedMaterial != null
                         && mesh != null && mesh.bounds.size.x > 0.02f
                         && mesh.bounds.size.y > 0.02f && mesh.bounds.size.z > 0.02f;
@@ -1106,12 +932,49 @@ namespace JaewoonGames.DaechungRpg
                 _body.localScale = slime ? new Vector3(0.80f, 0.39f, 0.63f) :
                     beast ? new Vector3(0.68f, 0.43f, 0.51f) : new Vector3(0.46f, 0.49f, 0.33f);
                 _accent.color = skeleton ? new Color(0.94f, 0.91f, 0.81f) : new Color(0.85f, 0.73f, 0.56f);
+                string key = species == "hero" ? "Hero" : species.Contains("wolf") ? "Wolf"
+                    : species.Contains("spider") ? "Spider" : species.Contains("golem") ? "Golem" : null;
+                if (_libraryKey != key)
+                {
+                    if (_libraryModel != null) { _libraryModel.SetActive(false); UnityEngine.Object.Destroy(_libraryModel); }
+                    _libraryModel = null; _nativeMotion = null; _libraryKey = key;
+                    if (key != null)
+                    {
+                        var source = Resources.Load<GameObject>("CompanyAssets/" + key);
+                        if (source == null) throw new InvalidOperationException("UNITY_COMPANY_ACTOR_REQUIRED:" + key);
+                        _libraryModel = UnityEngine.Object.Instantiate(source, _model.transform, false);
+                        _libraryModel.name = "Library_" + key;
+                        var skin = _libraryModel.GetComponentInChildren<SkinnedMeshRenderer>();
+                        _nativeMotion = _libraryModel.GetComponent<Animation>();
+                        if (skin == null || skin.sharedMesh == null || _nativeMotion == null || skin.localBounds.size.y <= 0f)
+                            throw new InvalidOperationException("UNITY_COMPANY_ACTOR_SKIN_AND_MOTION_REQUIRED:" + key);
+                        var bounds = skin.localBounds;
+                        float fit = 1.55f / bounds.size.y;
+                        _libraryModel.transform.localScale = Vector3.one * fit;
+                        _libraryModel.transform.localPosition = new Vector3(-bounds.center.x, -bounds.min.y, -bounds.center.z) * fit;
+                        _model.transform.localPosition = Vector3.zero;
+                        foreach (var extra in _libraryModel.GetComponentsInChildren<Collider>(true)) UnityEngine.Object.Destroy(extra);
+                    }
+                }
+                if (key == null) Debug.LogWarning("UNITY_COMPANY_ROLE_REPAIR_REQUIRED game=daechung-rpg role=" + species + " reason=SPECIES_MODEL_REQUIRED");
+                foreach (var part in new[] { _body, _head, _leftArm, _rightArm, _leftLeg, _rightLeg })
+                    if (part != null) part.GetComponent<Renderer>().enabled = _libraryModel == null;
                 SetTint(_tint);
             }
 
             public void SetTint(Color tint)
             {
                 _tint = tint;
+                if (_libraryModel != null) foreach (var renderer in _libraryModel.GetComponentsInChildren<Renderer>())
+                {
+                    var materials = renderer.sharedMaterials;
+                    for (int slot = 0; slot < materials.Length; slot++) if (materials[slot] != null && materials[slot].HasProperty("_Color"))
+                    {
+                        var properties = new MaterialPropertyBlock();
+                        properties.SetColor("_Color", materials[slot].color * tint);
+                        renderer.SetPropertyBlock(properties, slot);
+                    }
+                }
                 if (_skin != null)
                     _skin.color = new Color(_baseColor.r * tint.r, _baseColor.g * tint.g, _baseColor.b * tint.b);
             }
@@ -1150,6 +1013,15 @@ namespace JaewoonGames.DaechungRpg
                 _currentAction = action;
                 _loop = shouldLoop;
                 _actionStarted = Time.time;
+                if (_nativeMotion != null)
+                {
+                    string clip = action == "walk" ? "WALK" : action == "attack"
+                        ? (_nativeMotion.GetClip("ATTACK_LIGHT_SLASH") != null ? "ATTACK_LIGHT_SLASH" : "ATTACK_A")
+                        : action == "hurt" ? "HIT_FRONT" : action == "death" ? (_nativeMotion.GetClip("DEATH_FRONT") != null ? "DEATH_FRONT" : "DEATH") : "IDLE_BREATH";
+                    if (_nativeMotion.GetClip(clip) == null) throw new InvalidOperationException("UNITY_COMPANY_ACTION_REQUIRED:" + clip);
+                    _nativeMotion[clip].wrapMode = shouldLoop ? WrapMode.Loop : WrapMode.Once;
+                    _nativeMotion.CrossFade(clip, 0.08f);
+                }
             }
 
             public void Tick(float now)
@@ -1172,7 +1044,9 @@ namespace JaewoonGames.DaechungRpg
                     }
                 }
 
-                // 기존 프레임 시간에 맞춰 같은 캐릭터의 네이티브 3D 포즈만 갱신한다.
+                if (_libraryModel != null) return; // 실제 리그 클립이 포즈를 담당한다. 판정·원래 행동 시간은 그대로다.
+
+                // 호환 종 모델이 없는 기존 캐릭터는 기존 표현을 보존하고 품질 보완 대상으로 남긴다.
                 // 기존 텍스처 프레임은 로딩·동작 타이밍 메타데이터로 유지한다.
                 if (clip.Frames[frameIndex] == null) return; // 공격 판정은 GameCore가 유지한다.
                 if (_skin == null || !_model.activeInHierarchy) return;

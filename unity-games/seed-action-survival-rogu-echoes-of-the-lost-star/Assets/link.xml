@@ -1,1 +1,12 @@
-<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>
+<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" />
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.BoxCollider" preserve="all" />
+    <type fullname="UnityEngine.SphereCollider" preserve="all" />
+    <type fullname="UnityEngine.CapsuleCollider" preserve="all" />
+  </assembly>
+  <assembly fullname="UnityEngine.AnimationModule">
+    <type fullname="UnityEngine.Animation" preserve="all" />
+    <type fullname="UnityEngine.AnimationClip" preserve="all" />
+    <type fullname="UnityEngine.AnimationState" preserve="all" />
+  </assembly>
+</linker>

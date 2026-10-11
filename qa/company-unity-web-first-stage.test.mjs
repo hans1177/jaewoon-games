@@ -1,5 +1,22 @@
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 
+// 검증 · 실제 마력숲 C#에 사용되는 애니메이션·입자 모듈이 WebGL 네이티브 프로젝트에 선언돼야 한다.
+test('Fantasy Survival WebGL native animation and skill particles must resolve from the canonical Unity manifest',()=>{
+  const manifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
+  const source=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const buildRequest=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  assert.match(source,/\bAnimation\b/,'real skinned character clips use the native animation module');
+  assert.match(source,/\bParticleSystem\b/,'real skill and biome visual effects use the native particle module');
+  for(const module of ['animation','particlesystem']){
+    assert.equal(manifest.dependencies['com.unity.modules.'+module],'1.0.0','required Unity WebGL module '+module);
+  }
+  assert.equal(buildRequest.gameId,'fantasy-survival');
+  assert.equal(buildRequest.fullGameplayPassAuthority,false);
+  assert.equal(buildRequest.productionVerified,false);
+  assert.equal(buildRequest.releaseAuthority,false);
+});
+
+
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -14,6 +31,20 @@ const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 // 그래픽 · 실제 회사 3D OBJ 파생본이 Unity 프로젝트 리소스와 기존 게임 소비자까지 이어지는지 검사한다.
 // 마력숲 웹 · 공용 3D 자산/오토 바이옴/캐릭터/스킬 모션은 기존 유니티 게임 소스 안에서만 바인딩한다.
+test('Fantasy Survival Unity Web validates imported skinned action assets instead of inactive prefab AnimationState enumeration',()=>{
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const importer=fs.readFileSync('assets/shared/Editor/UnityCompanyAssets.cs','utf8');
+  assert.match(build,/UnityCompanyAssets\.Prepare\(\)/);
+  assert.match(build,/AssetDatabase\.FindAssets\("t:AnimationClip"/);
+  assert.match(build,/clipPath\.StartsWith\(clipPrefix,StringComparison\.Ordinal\)/);
+  assert.match(build,/clip!=null && clip\.legacy && !clip\.empty/);
+  assert.doesNotMatch(build,/foreach\(AnimationState state in actor\.GetComponent<Animation>\(\)\)/);
+  assert.match(build,/UNITY_COMPANY_GUARDIAN_ACTION_CLIP_MISSING/);
+  assert.match(build,/if\(clipCount<5\)throw new Exception\("UNITY_COMPANY_ACTOR_ACTION_COVERAGE_MISSING:/);
+  assert.match(importer,/var clip = new AnimationClip \{ name = source\.name, legacy = true/);
+  assert.match(importer,/AssetDatabase\.CreateAsset\(clip, clipPath\)/);
+});
+
 test('Fantasy Survival Web native 3D auto biome and real skill motion remain cosmetic-only',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
@@ -25,13 +56,42 @@ test('Fantasy Survival Web native 3D auto biome and real skill motion remain cos
   assert.match(game,/MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS/,'five true native 3D biomes are built');
   assert.match(game,/surface\.AddComponent<MeshFilter>\(\)\.sharedMesh=mesh/,'3D ground surfaces have real mesh data');
   assert.match(game,/string\[\] biomeNames=\{"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"\}/);
-  assert.match(game,/BindCompanyVisual\("MagicForestTraveler"/,'player uses real skinned source');
+  assert.match(game,/BindCompanyVisual\("MagicForestGuardian"/,'player uses the 3D guardian skinned model');
   assert.match(game,/monster\.nativeMotion=rigVisual\.GetComponent<Animation>\(\)/,'monsters use native rig action clips');
   assert.match(game,/ParticleSystemStopAction\.Destroy/,'skill hit particles have bounded lifetimes');
   assert.match(game,/trail\.time=\.30f/,'homing projectiles have visible 3D motion trails');
   assert.match(game,/StyleHomingProjectile\(sphere,sand\)/,'spell VFX is applied to the actual projectile');
   assert.match(game,/target\.hp=Mathf\.Max\(0f,target\.hp-Mathf\.Max\(0f,damage\)\)/,'existing damage logic unchanged');
   assert.match(game,/private const string SavePrefix = "fantasy_survival_webfloor_"/,'save namespace remains stable');
+});
+
+// 캐릭터 · 실제 공용 GLB 본·애니메이션과 교체된 Unity 3D 플레이어 생성 경로 검증.
+test('Fantasy Survival replaces primitive avatar with actual guardian native skinned rig',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const importer=fs.readFileSync('assets/shared/Editor/UnityCompanyAssets.cs','utf8');
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const glb=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/MagicForestGuardian.bytes');
+  assert.equal(glb.toString('ascii',0,4),'glTF','character source must be native 3D GLB');
+  assert.equal(glb.readUInt32LE(4),2,'native character GLB version required');
+  const jsonLength=glb.readUInt32LE(12);
+  const model=JSON.parse(glb.subarray(20,20+jsonLength).toString('utf8'));
+  assert.ok(model.meshes?.[0]?.primitives?.length>=1,'character must have real mesh');
+  assert.ok(model.skins?.[0]?.joints?.length>=3,'character must have a real bone rig');
+  assert.ok(model.nodes?.some(node=>node.name==='WeaponGrip'),'existing weapon attaches to the model');
+  for(const clip of ['IDLE_BREATH','RUN','ATTACK_LIGHT_SLASH','ATTACK_HEAVY','HIT_FRONT','GUARDIAN_REVIVE','GUARDIAN_PARRY'])
+    assert.ok(model.animations?.some(action=>action.name===clip),'missing real guardian action '+clip);
+  assert.match(importer,/"Traveler", "Rogue", "Guardian"/,'original common importer must prepare real guardian prefab');
+  assert.match(build,/UnityCompanyAssets\.Prepare\(\)/,'original WebGL build consumes the imported model');
+  assert.match(game,/MAGIC_FOREST_PLAYER_GUARDIAN_SKIN_OR_MOTION_INVALID/,'cannot fall back to primitive actor');
+  assert.match(game,/playerWeaponGrip=bone/,'weapon remains bound to actual rig');
+  const actorStart=game.indexOf('GameObject character = new GameObject("Player_3D")');
+  const actorEnd=game.indexOf('FollowCamera(true);',actorStart);
+  assert.ok(actorStart>=0&&actorEnd>actorStart);
+  const playerBlock=game.slice(actorStart,actorEnd);
+  assert.match(playerBlock,/BindCompanyVisual\("MagicForestGuardian"/);
+  assert.doesNotMatch(playerBlock,/CreatePart\(/,'no placeholder capsule player remains');
+  assert.doesNotMatch(playerBlock,/MagicForestTraveler/,'old traveler model cannot appear as the player');
+  assert.match(game,/private const string SavePrefix = "fantasy_survival_webfloor_"/,'save keys are unchanged');
 });
 
 test('Fantasy Survival reauthored company 3D tree assets reach the canonical Unity Web build and preserve harvest collision',()=>{
@@ -266,7 +326,7 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
   assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestMotion"\)/);
   assert.match(game,/BindCompanyVisual\("MagicForestRock"/);
   assert.match(game,/BindCompanyVisual\("MagicForestRoad"/);
-  assert.match(game,/BindCompanyVisual\("MagicForestTorso"/);
+  assert.match(game,/BindCompanyVisual\("MagicForestGuardian"/);
   assert.match(game,/SyncPlayerWeaponVisual\(\)/);
   assert.match(game,/AnimatePlayerPresentation\(movement\.magnitude\)/);
   assert.match(game,/AnimateMonsterPresentation\(m,presentationWalking\)/);
@@ -891,4 +951,83 @@ test('Unity Web verified builds automatically enter the existing reviewed Cloudf
   assert.match(publish,/UNITY_WEB_CLOUDFLARE_MAIN=/,'actual main deployment remains required');
   assert.match(publish,/UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=PASS/,'mobile gameplay validation remains required');
   assert.match(workflow,/repair-vibe2:/,'failed build and deployment continue through existing causal repair');
+});
+
+// 회귀 · 실제 Editor 선택을 검사하되 소스 연결을 엔진 표시로 승격하지 않는다.
+test('shared Unity native selections resolve real registered hashes, rigs and existing Web build methods',async()=>{
+  const {discoverUnityWebBuildMethod}=await import('../tools/company-upper-platform-admission.mjs');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8')).assets;
+  const checked=new Set();let selectedProjects=0,webProjects=0;
+  for(const id of fs.readdirSync('unity-games')){
+    const method=discoverUnityWebBuildMethod(repo,id);if(!method)continue;webProjects++;
+    const output=execFileSync(process.execPath,[tool,'--game-id='+id,'--build-method='+method,'--validate-only'],{encoding:'utf8'});
+    assert.match(output,/UNITY_WEB_SOURCE_PREFLIGHT=PASS/,id);
+    const files=fs.readdirSync('unity-games/'+id+'/Assets/Editor').filter(file=>file.endsWith('.cs'));
+    let hasSelection=false;
+    for(const file of files){
+      const source=fs.readFileSync('unity-games/'+id+'/Assets/Editor/'+file,'utf8');
+      for(const call of source.matchAll(/UnityCompanyAssets\.Prepare\(\s*new\[\]\s*\{([^{}]*)\}\s*,\s*new\[\]\s*\{([^{}]*)\}\s*,\s*new\[\]\s*\{([^{}]*)\}\s*\)/g)){
+        hasSelection=true;
+        const [keys,ids,paths]=call.slice(1).map(text=>[...text.matchAll(/"([^"]+)"/g)].map(row=>row[1]));
+        assert.equal(keys.length,ids.length);assert.equal(ids.length,paths.length);
+        for(let i=0;i<ids.length;i++){
+          if(checked.has(ids[i]))continue;checked.add(ids[i]);
+          const entry=registry.find(row=>row.id===ids[i]),bytes=fs.readFileSync(paths[i]);
+          assert.ok(entry);assert.equal(entry.path,'/'+paths[i]);
+          assert.ok(['CC0','project-original'].includes(entry.license));
+          const sha256=entry.nativeArtifactHash||entry.sourceHash;
+          const digest=sha256?createHash('sha256').update(bytes).digest('hex'):createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+          assert.equal(digest,sha256||entry.masterGlbGitBlobSha||entry.sourceGitBlobSha,ids[i]);
+          if(!paths[i].endsWith('.glb'))continue;
+          assert.equal(bytes.toString('ascii',0,4),'glTF');
+          const model=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)));
+          assert.ok(model.skins?.[0]?.joints?.length>=3,ids[i]);
+          assert.ok(model.meshes?.[0]?.primitives?.length>=1,ids[i]);
+          for(const clip of ['IDLE_BREATH','WALK','HIT_FRONT'])assert.ok(model.animations.some(row=>row.name===clip),ids[i]+':'+clip);
+        }
+      }
+    }
+    if(hasSelection)selectedProjects++;
+  }
+  assert.ok(webProjects>=45);assert.ok(selectedProjects>=43);assert.ok(checked.size>=32);
+});
+
+test('shared Unity native preflight rejects tampering, unknown rights and unsupported texture dependencies',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-native-preflight-'));
+  const write=(file,data)=>{const dest=path.join(root,file);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,typeof data==='string'?data:JSON.stringify(data));};
+  const game='native-fixture',project='unity-games/'+game;
+  const model='mtllib floor.mtl\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n';
+  const asset={id:'native-floor',path:'/assets/native/floor.obj',license:'project-original',nativeArtifactHash:createHash('sha256').update(model).digest('hex')};
+  const run=()=>execFileSync(process.execPath,[tool,'--game-id='+game,'--build-method=Fixture.BuildWeb','--validate-only'],{cwd:root,encoding:'utf8',stdio:'pipe'});
+  const rejects=pattern=>assert.throws(run,error=>pattern.test(String(error.stderr)));
+  try{
+    write('company-learning/platform-release-roadmap.json',JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json')));
+    write(project+'/Packages/manifest.json',{dependencies:{'com.jaewoon.assets':'file:../../../assets/shared'}});
+    write(project+'/ProjectSettings/ProjectVersion.txt','m_EditorVersion: 6000.3.0f1');
+    write(project+'/Assets/Scripts/Game.cs','public class Game {}');
+    write(project+'/Assets/Editor/Fixture.cs','public static class Fixture { public static void BuildWeb(){ UnityCompanyAssets.Prepare(new[]{"Floor"},new[]{"native-floor"},new[]{"assets/native/floor.obj"}); }}');
+    for(const file of ['package.json','Editor/Jaewoon.Assets.Editor.asmdef','Editor/UnityCompanyAssets.cs'])write('assets/shared/'+file,fs.readFileSync('assets/shared/'+file,'utf8'));
+    write('assets/native/floor.obj',model);write('assets/native/floor.mtl','newmtl floor\nKd 1 1 1\n');
+    write('company-asset-library.json',{assets:[asset]});
+    assert.match(run(),/VALIDATED_SOURCE_ONLY count=1/);
+    write('assets/native/floor.obj',model+'# tamper');rejects(/UNITY_COMPANY_SOURCE_HASH_MISMATCH/);
+    write('assets/native/floor.obj',model);write('company-asset-library.json',{assets:[{...asset,license:'UNKNOWN'}]});rejects(/UNITY_COMPANY_REGISTERED_SOURCE_REQUIRED/);
+    write('company-asset-library.json',{assets:[asset]});write('assets/native/floor.mtl','newmtl floor\nmap_Kd absent.png\n');rejects(/UNITY_COMPANY_TEXTURE_DEPENDENCY_REQUIRES_IMPORT/);
+    write('assets/native/floor.mtl','newmtl floor\nKd 1 1 1\n');fs.rmSync(path.join(root,'assets/shared/Editor/UnityCompanyAssets.cs'));rejects(/UNITY_SHARED_IMPORTER_REQUIRED/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Fantasy Survival WebGL preserves native colliders and persisted guardian actions through Unity linker',()=>{
+  const linker=fs.readFileSync('unity-games/fantasy-survival/Assets/link.xml','utf8');
+  const importer=fs.readFileSync('assets/shared/Editor/UnityCompanyAssets.cs','utf8');
+  const nativeGame=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  for(const type of ['UnityEngine.BoxCollider','UnityEngine.SphereCollider','UnityEngine.CapsuleCollider',
+    'UnityEngine.Animation','UnityEngine.AnimationClip','UnityEngine.AnimationState']){
+    assert.ok(linker.includes('fullname="'+type+'" preserve="all"'),type+' cannot be removed by WebGL stripping');
+  }
+  assert.ok(importer.includes('AnimationUtility.SetAnimationClips(animation, actionClips.ToArray())'));
+  assert.ok(importer.includes('AnimationUtility.GetAnimationClips(persisted)'));
+  assert.ok(importer.includes('UNITY_COMPANY_PERSISTED_ACTION_CLIP_MISSING'));
+  assert.ok(nativeGame.includes('MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING'));
+  assert.ok(nativeGame.includes('GameObject.CreatePrimitive(primitive)'));
 });

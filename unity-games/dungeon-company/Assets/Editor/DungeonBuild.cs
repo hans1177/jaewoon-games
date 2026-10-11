@@ -80,6 +80,10 @@ namespace JaewoonGames.DungeonCompany.Editor
 
         private static void EnsureScene()
         {
+            UnityCompanyAssets.Prepare(
+                new[] { "Foundation", "Wall", "Door", "Chest", "Rock", "Sword", "Cape", "Hero", "Bench" },
+                new[] { "unity-fantasy-survival-foundation-v1", "unity-fantasy-survival-wall-v1", "unity-fantasy-survival-door-v1", "unity-fantasy-survival-chest-v1", "unity-fantasy-survival-rock-v1", "unity-fantasy-survival-sword-v1", "unity-fantasy-survival-cape-v1", "shared-humanoid-guardian-actions", "external-tinytreats-bench-a-v1" },
+                new[] { "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestFoundation.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestWall.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDoor.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestChest.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestRock.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestSword.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj", "assets/shared/humanoid-guardian-actions.glb", "assets/shared/homely-house/bench_A.obj" });
             if (!AssetDatabase.IsValidFolder(SceneFolder)) AssetDatabase.CreateFolder("Assets", "Scenes");
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             if (!EditorSceneManager.SaveScene(scene, ScenePath))

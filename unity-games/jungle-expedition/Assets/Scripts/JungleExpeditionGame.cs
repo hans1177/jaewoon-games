@@ -157,7 +157,7 @@ namespace JaewoonGames.JungleExpedition
                 rock.name = "바위";
                 rock.transform.position = new Vector3(UnityEngine.Random.Range(-17f, 17f), 0.3f, z);
                 rock.transform.localScale = new Vector3(1.3f, 0.7f, 1.1f);
-                SetColor(rock, new Color(0.33f, 0.34f, 0.30f));
+                SetColor(rock, new Color(0.33f, 0.34f, 0.30f), "Rock");
             }
         }
 
@@ -206,7 +206,7 @@ namespace JaewoonGames.JungleExpedition
             body.transform.SetParent(go.transform, false);
             body.transform.localPosition = new Vector3(0, 1f, 0);
             Destroy(body.GetComponent<Collider>());
-            SetColor(body, new Color(0.95f, 0.72f, 0.18f));
+            SetColor(body, new Color(0.95f, 0.72f, 0.18f), "Explorer");
             playerVisual = body.transform;
 
             var pack = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -215,7 +215,7 @@ namespace JaewoonGames.JungleExpedition
             pack.transform.localPosition = new Vector3(0, 1.05f, -0.42f);
             pack.transform.localScale = new Vector3(0.75f, 0.8f, 0.35f);
             Destroy(pack.GetComponent<Collider>());
-            SetColor(pack, new Color(0.24f, 0.16f, 0.08f));
+            SetColor(pack, new Color(0.24f, 0.16f, 0.08f), "Crate");
 
             var camGo = new GameObject("Main Camera");
             cam = camGo.AddComponent<Camera>();
@@ -940,7 +940,10 @@ namespace JaewoonGames.JungleExpedition
             go.name = name;
             go.transform.position = pos;
             go.transform.localScale = type == PrimitiveType.Cube ? new Vector3(2.2f, 0.8f, 1.2f) : new Vector3(1.15f, 1.0f, 1.15f);
-            SetColor(go, color);
+            string nativeKey = name.Contains("뱀") ? "Serpent" : name.Contains("거미") ? "Spider"
+                : kind == EnemyKind.Guardian || kind == EnemyKind.TempleGuardian ? "Guardian" : null;
+            SetColor(go, color, nativeKey);
+            if (nativeKey == null) Debug.LogWarning("UNITY_COMPANY_ROLE_REPAIR_REQUIRED game=jungle-expedition role=" + name + " reason=SPECIES_MODEL_REQUIRED");
 
             var enemy = new Enemy
             {
@@ -965,7 +968,7 @@ namespace JaewoonGames.JungleExpedition
             go.name = name;
             go.transform.position = pos;
             go.transform.localScale = type == SampleType.Seal ? Vector3.one * 0.9f : Vector3.one * 0.6f;
-            SetColor(go, SampleColor(type));
+            SetColor(go, SampleColor(type), type == SampleType.Herb || type == SampleType.Forest ? "Crown" : "Rock");
             samples.Add(new Sample { go = go, name = name, type = type });
         }
 
@@ -998,7 +1001,7 @@ namespace JaewoonGames.JungleExpedition
             go.name = name;
             go.transform.position = pos;
             go.transform.localScale = new Vector3(0.8f, 0.4f, 1.3f);
-            SetColor(go, new Color(0.78f, 0.72f, 0.55f));
+            SetColor(go, new Color(0.78f, 0.72f, 0.55f), type == GearType.Machete ? "Sword" : "Chest");
 
             var pickup = go.AddComponent<GearPickup>();
             pickup.owner = this;
@@ -1046,12 +1049,12 @@ namespace JaewoonGames.JungleExpedition
             trunk.name = "정글 나무";
             trunk.transform.position = pos + Vector3.up * 2f * scale;
             trunk.transform.localScale = new Vector3(0.55f * scale, 2f * scale, 0.55f * scale);
-            SetColor(trunk, new Color(0.27f, 0.16f, 0.07f));
+            SetColor(trunk, new Color(0.27f, 0.16f, 0.07f), "Trunk");
 
             var crown = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             crown.transform.position = pos + Vector3.up * 4.7f * scale;
             crown.transform.localScale = new Vector3(3.2f, 2.2f, 3.2f) * scale;
-            SetColor(crown, new Color(0.10f, 0.38f, 0.11f));
+            SetColor(crown, new Color(0.10f, 0.38f, 0.11f), "Crown");
         }
 
         private static GameObject MakeBlock(string name, Vector3 pos, Vector3 scale, Color color)
@@ -1060,11 +1063,13 @@ namespace JaewoonGames.JungleExpedition
             go.name = name;
             go.transform.position = pos;
             go.transform.localScale = scale;
-            SetColor(go, color);
+            // 물 표면은 기존 전용 표현을 유지한다. 승인되지 않은 배치·수체 생성은 하지 않는다.
+            SetColor(go, color, name == "강" || name.Contains("물") ? null
+                : name.Contains("기둥") || name.Contains("석상") ? "Wall" : "Foundation");
             return go;
         }
 
-        private static void SetColor(GameObject go, Color color)
+        private static void SetColor(GameObject go, Color color, string nativeKey = null)
         {
             var renderer = go.GetComponent<Renderer>();
             if (renderer == null) return;
@@ -1074,6 +1079,55 @@ namespace JaewoonGames.JungleExpedition
             var mat = new Material(shader);
             mat.color = color;
             renderer.material = mat;
+            if (nativeKey == null) return;
+            var source = Resources.Load<GameObject>("CompanyAssets/" + nativeKey);
+            if (source == null) throw new System.InvalidOperationException("UNITY_COMPANY_PREFAB_REQUIRED:" + nativeKey);
+            var visual = UnityEngine.Object.Instantiate(source, go.transform, false);
+            visual.name = "Library_" + nativeKey;
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+            var renderers = visual.GetComponentsInChildren<Renderer>(true);
+            var bounds = new Bounds();
+            bool measured = false;
+            foreach (var nativeRenderer in renderers)
+            {
+                var skin = nativeRenderer as SkinnedMeshRenderer;
+                var filter = nativeRenderer.GetComponent<MeshFilter>();
+                var mesh = skin != null ? skin.sharedMesh : filter != null ? filter.sharedMesh : null;
+                if (mesh == null || nativeRenderer.sharedMaterials.Length == 0)
+                    throw new System.InvalidOperationException("UNITY_COMPANY_MESH_REQUIRED:" + nativeKey);
+                var matrix = visual.transform.worldToLocalMatrix * nativeRenderer.localToWorldMatrix;
+                var local = skin != null ? skin.localBounds : mesh.bounds;
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    var point = matrix.MultiplyPoint3x4(local.center + Vector3.Scale(local.extents,
+                        new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1)));
+                    if (!measured) { bounds = new Bounds(point, Vector3.zero); measured = true; }
+                    else bounds.Encapsulate(point);
+                }
+                for (int slot = 0; slot < nativeRenderer.sharedMaterials.Length; slot++)
+                {
+                    var material = nativeRenderer.sharedMaterials[slot];
+                    if (material == null || material.shader == null) throw new System.InvalidOperationException("UNITY_COMPANY_MATERIAL_REQUIRED:" + nativeKey);
+                    if (material.HasProperty("_Color"))
+                    {
+                        var properties = new MaterialPropertyBlock();
+                        properties.SetColor("_Color", material.color * color);
+                        nativeRenderer.SetPropertyBlock(properties, slot);
+                    }
+                }
+            }
+            if (!measured || bounds.size.x <= 0f || bounds.size.y <= 0f || bounds.size.z <= 0f)
+                throw new System.InvalidOperationException("UNITY_COMPANY_VOLUME_REQUIRED:" + nativeKey);
+            var size = go.GetComponent<MeshFilter>().sharedMesh.bounds.size;
+            var fit = new Vector3(size.x / bounds.size.x, size.y / bounds.size.y, size.z / bounds.size.z);
+            if (visual.GetComponentInChildren<SkinnedMeshRenderer>() != null) fit = Vector3.one * Mathf.Min(fit.x, fit.y, fit.z);
+            visual.transform.localScale = fit;
+            visual.transform.localPosition = -Vector3.Scale(bounds.center, fit) + Vector3.up * ((bounds.size.y * fit.y - size.y) * .5f);
+            foreach (var extra in visual.GetComponentsInChildren<Collider>(true)) UnityEngine.Object.Destroy(extra);
+            go.GetComponent<Renderer>().enabled = false;
+
         }
 
         public sealed class GearPickup : MonoBehaviour

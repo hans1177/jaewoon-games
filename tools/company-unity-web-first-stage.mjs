@@ -2,6 +2,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 
 const args=Object.fromEntries(process.argv.slice(2).map(v=>{
   const m=v.match(/^--([^=]+)=(.*)$/);
@@ -109,6 +110,45 @@ const methodOwner=buildMethod.split('.').slice(0,-1).pop();
 const methodPattern=new RegExp(`(?:class|static\\s+class)\\s+${methodOwner.replace(/[.*+?^${\}()|[\]\\]/g,'\\$&')}[\\s\\S]*?\\b${methodName.replace(/[.*+?^${\}()|[\]\\]/g,'\\$&')}\\s*\\(`);
 const buildMethodPresent=editorFiles.some(file=>methodPattern.test(fs.readFileSync(file,'utf8')));
 if(!buildMethodPresent)throw new Error(`UNITY_WEB_BUILD_METHOD_NOT_FOUND:${buildMethod}`);
+
+// 임포트 · 기존 빌드의 공용 자산 입력을 에디터 설치 전에 검증한다. 표시·게임 실행 통과 증거는 아니다.
+if(nativeDependencies['com.jaewoon.assets']){
+  if(nativeDependencies['com.jaewoon.assets']!=='file:../../../assets/shared')
+    throw new Error('UNITY_SHARED_PACKAGE_PATH_INVALID');
+  for(const file of ['assets/shared/package.json','assets/shared/Editor/Jaewoon.Assets.Editor.asmdef','assets/shared/Editor/UnityCompanyAssets.cs'])
+    if(!fs.existsSync(file))throw new Error('UNITY_SHARED_IMPORTER_REQUIRED:'+file);
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  let selected=0;
+  for(const file of editorFiles){
+    const source=fs.readFileSync(file,'utf8').replace(/\/\*[\s\S]*?\*\/|(^|\n)\s*\/\/[^\n]*/g,' ');
+    for(const call of source.matchAll(/UnityCompanyAssets\.Prepare\(\s*new\[\]\s*\{([^{}]*)\}\s*,\s*new\[\]\s*\{([^{}]*)\}\s*,\s*new\[\]\s*\{([^{}]*)\}\s*\)/g)){
+      const arrays=call.slice(1).map(text=>[...text.matchAll(/"([^"]+)"/g)].map(row=>row[1]));
+      const [keys,ids,paths]=arrays;
+      if(!keys.length||keys.length!==ids.length||keys.length!==paths.length||new Set(keys).size!==keys.length)
+        throw new Error('UNITY_COMPANY_SELECTION_LENGTH_MISMATCH');
+      for(let i=0;i<keys.length;i++){
+        const sourcePath=paths[i],entry=registry.assets.find(row=>row.id===ids[i]);
+        if(!/^[A-Za-z][A-Za-z0-9_]*$/.test(keys[i])||sourcePath.includes('..')||!/^(?:assets|unity-games)\/[A-Za-z0-9_./-]+\.(?:obj|glb)$/.test(sourcePath))
+          throw new Error('UNITY_COMPANY_SOURCE_PATH_INVALID:'+sourcePath);
+        if(!entry||entry.path!=='/'+sourcePath||!['project-original','CC0'].includes(entry.license))
+          throw new Error('UNITY_COMPANY_REGISTERED_SOURCE_REQUIRED:'+ids[i]);
+        const bytes=fs.readFileSync(sourcePath),sha256=entry.nativeArtifactHash||entry.sourceHash;
+        const expected=sha256||entry.masterGlbGitBlobSha||entry.sourceGitBlobSha;
+        const digest=sha256?createHash('sha256').update(bytes).digest('hex')
+          :createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+        if(!expected||digest!==expected.toLowerCase())throw new Error('UNITY_COMPANY_SOURCE_HASH_MISMATCH:'+ids[i]);
+        if(sourcePath.endsWith('.obj'))for(const match of bytes.toString('utf8').matchAll(/^mtllib\s+([^\r\n]+)$/gm)){
+          const name=match[1].trim();
+          if(path.basename(name)!==name)throw new Error('UNITY_COMPANY_MATERIAL_PATH_INVALID:'+ids[i]);
+          const material=fs.readFileSync(path.join(path.dirname(sourcePath),name),'utf8');
+          if(/^\s*(?:map_|bump |disp |decal )/m.test(material))throw new Error('UNITY_COMPANY_TEXTURE_DEPENDENCY_REQUIRES_IMPORT:'+ids[i]);
+        }
+        selected++;
+      }
+    }
+  }
+  console.log('UNITY_COMPANY_NATIVE_INPUTS=VALIDATED_SOURCE_ONLY count='+selected);
+}
 
 // 메인 · 실제 플레이가 아닌 SOURCE_READY_3D 부팅 표식만 있으면 무거운 WebGL 빌드 전에 수리로 돌린다.
 // 정적 PASS 문자열도 검증 증거로 승격하지 않는다. 정상 소스는 기존 실제 브라우저 QA가 판정한다.
