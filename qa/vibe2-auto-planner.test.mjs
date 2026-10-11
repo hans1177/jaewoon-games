@@ -5091,7 +5091,9 @@ test('current-use internal motion planning accepts dynamically source-bound cons
     fs.writeFileSync(path.join(root,'roblox-games','horror-escape-room','default.project.json'),JSON.stringify({
       tree:{ReplicatedStorage:{WorldGhostSkins:{GhostSkinFactory:{$path:'../../assets/roblox/world-ghosts/GhostSkinFactory.luau'}}}}
     }));
-    fs.writeFileSync(path.join(root,'roblox-games','horror-escape-room','client','Game.client.luau'),'local map={YUREI="yurei"}');
+    const clientSource=path.join(root,'roblox-games','horror-escape-room','client','Game.client.luau');
+    // 실제 호출이 없는 문자열 선언은 바인딩 증거가 아니다.
+    fs.writeFileSync(clientSource,'local map={YUREI="yurei"}');
     fs.writeFileSync(path.join(root,'assets','roblox','world-ghosts','motions','yurei','init.luau'),
       'local Motion={}\nMotion.AssetId = "yurei"\nfunction Motion.walk(form,bones,time)\n local state="walk"\n return {}\nend\nreturn Motion\n');
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[
@@ -5099,6 +5101,8 @@ test('current-use internal motion planning accepts dynamically source-bound cons
       {id:'roblox-world-ghost-yurei',packId:'roblox-world-ghost-skins-v1',family:'CREATURE',skinId:'yurei',sourceFiles:['assets/roblox/world-ghosts/GhostSkinFactory.luau'],intendedConsumerGameIds:['horror-escape-room'],license:'project-original'}
     ]}));
     const project={gameId:'horror-escape-room',engine:'roblox',releaseState:'development-confirmed'};
+    assert.equal(findSafeTasks(project,root,{tasks:[]}).length,0,'unconsumed identity literal must not count as current library use');
+    fs.writeFileSync(clientSource,"local StudioAssets={Families={CREATURE={\"yurei\"}}}\nlocal function hasStudioAssetAtom(family,atom)\n return table.find(StudioAssets.Families[family] or {},atom)~=nil\nend\nlocal currentGhost=hasStudioAssetAtom(\"CREATURE\",\"yurei\")\n");
     const tasks=findSafeTasks(project,root,{tasks:[]});
     assert.equal(tasks.length,1);
     assert.equal(tasks[0].id,'internal-motion-yurei-walk-v1');
