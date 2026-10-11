@@ -120,8 +120,8 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     reasons.push({...rejectionReason({code,axis,evidence,requiredAction}),fields:affected});
   };
   const proseFields=['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','technicalAssumptions','implementationTraceability'];
-  const enumKeys=new Set(['name','label','role','phase','platform','targetPlatform','designAuthority','mode','sharedLargeFrame','expansionLimit','internalReleaseTarget','fromSystem','toSystem','responsibleSystem']);
-  const identifierKeys=new Set(['id','fromId','toId','from','to','ruleId','ruleIds','stateInputs','stateOutputs','stateKeys','key','ownerId','abilityId','humanId','humanAbilityId','infectedAbilityId','regionId','stateKey','actorId','targetId','classId','assetId','rangeKey','costKey','cooldownKey','reachableBy','nextPhase']);
+  const enumKeys=new Set(['name','label','role','phase','element','linkedElements','platform','targetPlatform','designAuthority','mode','sharedLargeFrame','expansionLimit','internalReleaseTarget','fromSystem','toSystem','responsibleSystem']);
+  const identifierKeys=new Set(['id','fromId','toId','from','to','ruleId','ruleIds','stateInputs','stateOutputs','stateKeys','key','ownerId','abilityId','humanId','humanAbilityId','infectedAbilityId','regionId','regionIds','stateKey','actorId','targetId','classId','assetId','rangeKey','costKey','cooldownKey','reachableBy','nextPhase']);
   const scan=(value,path,root,identifier=false)=>{
     if(Array.isArray(value)){value.forEach((item,index)=>scan(item,`${path}[${index}]`,root,identifier));return;}
     if(value&&typeof value==='object'){
@@ -146,7 +146,8 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   };
   for(const field of proseFields)if(selected.has(field))scan(design[field],field,field);
   // 소재 융합 문법은 라벨이 아니라 양방향 상태와 실제 플레이 변화로 증명한다.
-  const ownerV5Grammar=seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5;
+  // 육하원칙 기본설계는 V5 저작 결과다. 옛 접수 스케치 버전 때문에 c 축을 다시 강제하지 않는다.
+  const ownerV5Grammar=Array.isArray(design.creativeGrammar?.fiveWOneH)||seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5;
   if(ownerV5Grammar||selected.has('creativeGrammar')){
     const grammar=design.creativeGrammar,axes=[grammar?.a,grammar?.b];
     if(!grammar||!textReady(grammar.mainIdentity,15)||axes.some(axis=>!axis||!textReady(axis.system,2)||!textReady(axis.material,2)||!textReady(axis.materialDomain,2)||!textReady(axis.stateChange,20))||!textReady(grammar.abCausality,35)||!textReady(grammar.finalGameIdentity,18)){
@@ -205,11 +206,57 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
         {total:delve.length,distinct:distinctDiscoveries},
         '초기 파고들기 네 사례는 서로 다른 단서·발견·새 선택을 가져야 한다. 순번·수치만 변경한 복제는 제외하고, 이후 상한 없이 깊어질 규칙을 작성한다.');
     }
+    const details=list(grammar?.fiveWOneH),elements=['MAIN','A','B','C'];
+    const detailFields=['who','when','where','what','how','why','result'];
+    const detailKey=row=>row?.element==='DELVE'?`DELVE[${row.discoveryIndex}]`:row?.element;
+    const expected=[...elements,...delve.map((_,index)=>`DELVE[${index}]`)];
+    const keys=details.map(detailKey);
+    const missing=expected.filter(key=>!keys.includes(key));
+    const malformed=details.flatMap((row,index)=>{
+      const absent=detailFields.filter(field=>typeof row?.[field]!=='string'||!textReady(row[field],10));
+      const key=detailKey(row);
+      if(!expected.includes(key)||keys.indexOf(key)!==index
+        ||(row?.element==='DELVE'?!Number.isInteger(row.discoveryIndex):row?.discoveryIndex!==undefined))absent.push('element/discoveryIndex');
+      for(const field of ['ruleIds','regionIds'])if(!list(row?.[field]).length||list(row?.[field]).some(id=>typeof id!=='string'||!clean(id))||new Set(row[field]).size!==row[field].length)absent.push(field);
+      const links=list(row?.linkedElements);
+      if(!links.length||links.some(role=>!elements.includes(role))||new Set(links).size!==links.length
+        ||(row?.element==='DELVE'?links.length<2:!links.includes(row?.element)))absent.push('linkedElements');
+      return absent.length?[{path:`creativeGrammar.fiveWOneH[${index}]`,element:key,missing:absent}]:[];
+    });
+    if(missing.length||malformed.length||details.length!==expected.length)reject(
+      'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE','IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',['creativeGrammar'],
+      {missing,malformed,expected:expected.length,actual:details.length},
+      'MAIN/A/B/C 각각과 모든 @ 발견마다 누가·언제·어디서·무엇을·어떻게·왜 및 결과/다음 선택을 구분해 작성한다. ruleIds·regionIds는 설계에 선언한 항목에 연결한다. @는 0부터 시작하는 discoveryIndex로 일대일 대응하고 linkedElements에 MAIN/A/B/C 중 최소 두 항목을 연결한다. 상한은 없다.');
+    const normalizeDetail=value=>clean(value).normalize('NFKC').toLowerCase().replace(/\p{N}+/gu,'#').replace(/[\p{P}\p{S}\s]+/gu,'');
+    const detailBodies=new Map();
+    for(const [index,row]of details.entries()){
+      const bodyFields=['what','how','why','result'],body=bodyFields.map(field=>normalizeDetail(row?.[field])).join('|');
+      const copiedWithin=bodyFields.filter(field=>textReady(row?.[field],10)).map(field=>normalizeDetail(row[field]));
+      if(detailBodies.has(body)||(copiedWithin.length>1&&new Set(copiedWithin).size!==copiedWithin.length))reject(
+        'DESIGN_GRAMMAR_FIVE_W_ONE_H_CLONED','IDEA_AND_DISTINCTNESS',['creativeGrammar'],
+        {path:`creativeGrammar.fiveWOneH[${index}]`,copiedFrom:detailBodies.get(body)??null},
+        '항목마다 행동·판정·이유·결과를 다르게 작성한다. 육하원칙의 칸을 같은 설명으로 채우거나 순번·숫자만 바꾼 복제 항목은 구체화로 인정하지 않는다.');
+      detailBodies.set(body,index);
+    }
+    // 부분 작성 중에는 아직 없는 뒤쪽 조각을 요구하지 않는다. 전체 심사에서는 실제 선언과 결합한다.
+    const rules=Array.isArray(design.signatureSystems)?new Map(design.signatureSystems.map(row=>[row.id,row])):null;
+    const regions=Array.isArray(design.contentVarietyPlan?.regions)?new Set(design.contentVarietyPlan.regions.map(row=>row.id)):null;
+    for(const [index,row]of details.entries()){
+      const ids=list(row?.ruleIds),links=list(row?.linkedElements);
+      const requiredRoles=[...new Set([...links.flatMap(role=>role==='C'?['A','B']:[role]),...(row?.element==='DELVE'?['DELVE']:[])])];
+      const unboundRules=rules?ids.filter(id=>!rules.has(id)):[];
+      const unboundRegions=regions?list(row?.regionIds).filter(id=>!regions.has(id)):[];
+      const missingRoles=rules?requiredRoles.filter(role=>!ids.some(id=>rules.get(id)?.grammarRole===role)):[];
+      if(unboundRules.length||unboundRegions.length||missingRoles.length)reject(
+        'DESIGN_GRAMMAR_FIVE_W_ONE_H_UNBOUND','SYSTEM_INTERCONNECTION_DESIGN',['creativeGrammar'],
+        {path:`creativeGrammar.fiveWOneH[${index}]`,unboundRules,unboundRegions,missingRoles},
+        '육하원칙을 현재 signatureSystems와 contentVarietyPlan.regions에 선언된 규칙·장소로 연결한다. 연결한 문법 역할의 실제 규칙을 포함하고 C는 A/B를 통해 작용한다. @는 연결한 두 개 이상 항목과 DELVE 규칙을 함께 참조한다.');
+    }
   }
   // V5는 MAIN/A/B/@를 실제 규칙으로 검증하고 C를 creativeGrammar의 소재·장르 인과로 검사한다. 옛 c는 선택적이다.
   if(selected.has('signatureSystems')){
     const systems=list(design.signatureSystems);
-    const ownerV5=(seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5);
+    const ownerV5=ownerV5Grammar;
     const counts=Object.fromEntries(['MAIN','A','B','c','DELVE'].map(role=>[role,systems.filter(row=>row?.grammarRole===role).length]));
     const ids=systems.map(row=>clean(row?.id));
     const rolesReady=counts.MAIN===1&&counts.A===1&&counts.B===1&&(ownerV5||counts.c>=1)&&counts.DELVE>=1;

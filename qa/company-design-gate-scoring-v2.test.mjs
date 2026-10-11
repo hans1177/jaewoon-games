@@ -445,13 +445,17 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
   assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
   assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
   assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
-  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION']){
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION','KINGDOM']){
     const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
     const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
       {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
       {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
     ]};
     const proposal=computeVibeSeedProposal(target);
+    if(category==='KINGDOM')proposal.gameplaySketch.novelGameGrammar.delveLayer.elements.push(
+      {name:'주민의 이중 약속',discoveryCondition:'수확을 기다리는 주민에게 경비와 생산을 번갈아 맡겨 관계 변화를 비교한다.',masteryOrInsight:'같은 주민의 과거 역할이 새 거점의 협상 조건을 바꾸는 원리를 배운다.',gameplayEffect:'정복 대신 생산 협약으로 거점 접근권을 얻는 선택이 열린다.',connectsTo:['MAIN','C']},
+      {name:'비워 둔 귀환로',discoveryCondition:'병력을 거점에 남기지 않고 철수한 다음 주민이 만든 귀환 통로를 조사한다.',masteryOrInsight:'방어 자원을 비축하지 않은 결과가 이동 경로의 우회 조건으로 전환된다.',gameplayEffect:'병력 증원 대신 자원 수송 동선을 옮겨 안전한 귀환을 선택한다.',connectsTo:['A','B']}
+    );
     const seed={
       seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
       status:'ACTIVE',generation:'MATERIAL_COMPOSED',GAME_CATEGORY:category,
@@ -499,6 +503,41 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       multiplayerRequired:true,requirePlayableContract:true,sourceText
     });
     assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
+    const details=design.creativeGrammar.fiveWOneH;
+    assert.equal(details.length,4+design.creativeGrammar.delveDiscoveries.length);
+    assert.equal(details.filter(row=>row.element==='C').length,1);
+    for(const row of [...design.creativeGrammar.cThemes,...design.creativeGrammar.cGenres])assert.ok(details.find(row=>row.element==='C').what.includes(row.name));
+    if(category==='KINGDOM'){
+      assert.equal(details.filter(row=>row.element==='DELVE').length,6,'@ remains open beyond four discoveries');
+      const check=changed=>validateDesignAuthoringContent({design:changed,seed,fields:['creativeGrammar']});
+      const expectRejected=(mutate,code)=>{
+        const changed=structuredClone(design);mutate(changed);
+        assert.ok(check(changed).some(row=>row.code===code),code);
+        assert.ok(scoreDesignGateV2({seed,designRecord:{content:changed},cycleStatus:{status:'IN_PROGRESS'}}).hardFailures.includes(code),'strict gate carries '+code);
+      };
+      for(const field of ['who','when','where','what','how','why','result'])expectRejected(
+        changed=>{delete changed.creativeGrammar.fiveWOneH[1][field];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
+      expectRejected(changed=>changed.creativeGrammar.fiveWOneH.pop(),'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[5].discoveryIndex=0;},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[4].linkedElements=['A'];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[0].ruleIds=['MISSING_RULE'];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_UNBOUND');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[0].regionIds=['MISSING_REGION'];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_UNBOUND');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[3].ruleIds=[changed.signatureSystems.find(row=>row.grammarRole==='A').id];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_UNBOUND');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[4].ruleIds=[changed.signatureSystems.find(row=>row.grammarRole==='DELVE').id];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_UNBOUND');
+      expectRejected(changed=>{
+        const row=changed.creativeGrammar.fiveWOneH[1];row.why=row.what;
+      },'DESIGN_GRAMMAR_FIVE_W_ONE_H_CLONED');
+      expectRejected(changed=>{
+        const rows=changed.creativeGrammar.fiveWOneH;
+        for(const field of ['what','how','why','result']){rows[4][field]+=' 1';rows[5][field]=rows[4][field].replace(/ 1$/,' 2');}
+      },'DESIGN_GRAMMAR_FIVE_W_ONE_H_CLONED');
+      expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[0].who='PLACEHOLDER 담당 주체';},'DESIGN_PLACEHOLDER_CONTENT');
+      assert.deepEqual(validateDesignAuthoringContent({design:{creativeGrammar:design.creativeGrammar},seed,fields:['creativeGrammar']}),[],
+        'partial authoring checks completeness before later rule/region slices exist');
+      assert.deepEqual(validateDesignAuthoringContent({design,seed:{...seed,GAMEPLAY_SKETCH:{version:1}},fields:['creativeGrammar','signatureSystems']}),[],
+        'new basic design from a legacy intake must not require a separate c system');
+      console.log('DESIGN_GRAMMAR_FIVE_W_ONE_H_NATIVE_AND_MUTATION_TESTS=PASS');
+    }
     if(category==='INFECTION'){
       assert.equal(design.contentVarietyPlan.roleTransitions.length,3,'every selectable class has a transition');
       assert.equal(design.selectedDesignPlan.participants.length,4,'class options do not inflate match slots');

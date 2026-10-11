@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {runInNewContext} from 'node:vm';
 
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const readText=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
@@ -1267,7 +1268,7 @@ test('Roblox development keeps only current code/static QA contract and no histo
   ])assert.equal(Object.hasOwn(logMap,key),false,key);
 });
 
-test('core QA cancels superseded main regressions while preserving non-main active runs',()=>{
+test('core QA supersedes main and PR revisions while preserving manual and other branch runs',()=>{
   const historical=roadmap.changeRecord?.vibe2CoreQaActiveCompletion20260927;
   const policy=roadmap.changeRecord?.runnerBackpressureBottleneckRelief20261001?.coreQa;
   assert.equal(historical?.cancelActiveValidation,false);
@@ -1277,7 +1278,15 @@ test('core QA cancels superseded main regressions while preserving non-main acti
   assert.equal(policy?.mainPushCancelsSupersededInProgress,true);
   assert.equal(policy?.nonMainActiveRunPreserved,true);
   assert.equal(policy?.exactShaAuthorityPreserved,true);
-  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}[\s\S]*?cancel-in-progress:\s*\$\{\{ github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' \}\}/);
+  const concurrency=coreQaWorkflow.match(/^concurrency:\n([\s\S]*?)(?=^\S)/m)?.[1]||'';
+  assert.match(concurrency,/group: vibe2-core-qa-\$\{\{ github\.ref \}\}/);
+  const cancellation=concurrency.match(/cancel-in-progress:\s*\$\{\{(.*?)\}\}/)?.[1];
+  assert.ok(cancellation,'evaluate the actual workflow cancellation expression');
+  for(const [event_name,ref,expected]of [
+    ['push','refs/heads/main',true],['pull_request','refs/pull/7680/merge',true],
+    ['push','refs/heads/topic',false],['workflow_dispatch','refs/heads/main',false],
+    ['workflow_dispatch','refs/heads/topic',false],['schedule','refs/heads/main',false]
+  ])assert.equal(runInNewContext(cancellation,{github:{event_name,ref}},{timeout:1000}),expected,event_name+' '+ref);
   const pool=architecture.neuralWorkGraphTopology?.currentWaveExecution?.vibeGameControlRunnerPool;
   assert.equal(pool?.coreQaRunner,'ubuntu-slim');
   assert.equal(pool?.coreQaConcurrencyMode,'MAIN_LATEST_SHA_ONLY_NON_MAIN_ACTIVE_PRESERVED');
