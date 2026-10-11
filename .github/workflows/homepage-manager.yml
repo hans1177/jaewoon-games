@@ -5,6 +5,14 @@ on:
   workflow_run:
     workflows:
       - Company Status Sync
+      - Unity Web Development Floor
+      - Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
+      - Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review
+      - Company DEVELOPMENT_CONFIRMED Unity Runtime
+      - Vibe2 Candidate Release Gate
+      - Unity Cloud Android Test
+      - Unity Local PC Android APK
+      - Unity Hybrid Android Build
     types: [completed]
   schedule:
     - cron: '29 * * * *'
