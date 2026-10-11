@@ -312,8 +312,19 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
     'MagicForestShoulder','MagicForestCanine','MagicForestClaw','MagicForestSword','MagicForestGrip']){
     assert.match(editor,new RegExp('CompanyAssets/'+name+'\\.obj'));
     const model=fs.readFileSync(project+'Resources/CompanyAssets/'+name+'.obj','utf8');
-    assert.match(model,/mtllib MagicForestDetailMaterials\.mtl/);
-    assert.match(model,/Parent Git blob [0-9a-f]{40}/);
+    // 자산 복구본의 실제 소재 참조와 원본 바이트를 검사한다. 주석 표기나 과거 소재 파일명에 의존하지 않는다.
+    const materialFiles=[...model.matchAll(/^mtllib (MagicForest[A-Za-z]*Materials\.mtl)\s*$/gm)];
+    assert.ok(materialFiles.length>0,name+' must bind a native material library');
+    const materials=materialFiles.map(([,file])=>fs.readFileSync(project+'Resources/CompanyAssets/'+file,'utf8')).join('\n');
+    const definedMaterials=new Set([...materials.matchAll(/^newmtl\s+(\S+)/gm)].map(([,id])=>id));
+    const usedMaterials=[...model.matchAll(/^usemtl\s+(\S+)/gm)].map(([,id])=>id);
+    assert.ok(usedMaterials.length>0,name+' must use actual materials');
+    assert.ok(usedMaterials.every(id=>definedMaterials.has(id)),name+' material references must resolve');
+    const registered=nativeAssets.find(asset=>asset.path.endsWith('/'+name+'.obj'));
+    const parent=fs.readFileSync(registered.sourceParentPath);
+    const parentBlob=createHash('sha1').update('blob '+parent.length+'\0').update(parent).digest('hex');
+    const recordedParent=model.match(/(?:Parent|Original) Git blob:?\s*([0-9a-f]{40})/);
+    assert.equal(recordedParent?.[1],parentBlob,name+' parent Git blob must match immutable source');
     assert.ok((model.match(/^v /gm)||[]).length>=30);
     assert.ok((model.match(/^f /gm)||[]).length>=20);
   }
@@ -975,6 +986,10 @@ test('Fantasy Survival WebGL canonical native physics scene collider references'
   assert.ok(build.includes('if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>()'));
   for(const type of ['Box','Sphere','Capsule']){
     assert.ok(build.includes('root.AddComponent<'+type+'Collider>()'),'native scene reference: '+type);
+    assert.ok(build.includes('if(native'+type+'==null)native'+type+'=root.AddComponent<'+type+'Collider>()'),
+      'missing native component must use Unity null equality before AddComponent: '+type);
+    assert.ok(!build.includes('root.GetComponent<'+type+'Collider>()??'),
+      'CLR null coalescing must not retain an Editor missing-component object: '+type);
     assert.ok(game.includes('obj.AddComponent<'+type+'Collider>()'),'native runtime reference: '+type);
     assert.ok(build.includes('native'+type+'.enabled=false'),'scene collision stays disabled: '+type);
   }

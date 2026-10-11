@@ -251,14 +251,19 @@ public static class UnityWebFloorBuild
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
             ?EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single)
             :EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);
-        var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT")??new GameObject("UNITY_WEB_FLOOR_ROOT");
+        var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT");
+        if(root==null)root=new GameObject("UNITY_WEB_FLOOR_ROOT");
         if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>();
         // 물리 · Unity 6은 link.xml만으로 Physics 모듈의 네이티브 빌드 포함을 보장하지 않는다.
         // 이미 존재하는 씬 루트에 비활성 콜라이더를 직렬화해 실제 Box/Sphere/Capsule 클래스를 빌드에 포함한다.
         // 충돌판정에는 참여하지 않아 기존 저장·동작·전투 수치에 영향을 주지 않는다.
-        BoxCollider nativeBox=root.GetComponent<BoxCollider>()??root.AddComponent<BoxCollider>();
-        SphereCollider nativeSphere=root.GetComponent<SphereCollider>()??root.AddComponent<SphereCollider>();
-        CapsuleCollider nativeCapsule=root.GetComponent<CapsuleCollider>()??root.AddComponent<CapsuleCollider>();
+        // Editor의 누락 컴포넌트는 관리 참조가 남을 수 있으므로 Unity의 null 비교로 생성 여부를 판단한다.
+        BoxCollider nativeBox=root.GetComponent<BoxCollider>();
+        if(nativeBox==null)nativeBox=root.AddComponent<BoxCollider>();
+        SphereCollider nativeSphere=root.GetComponent<SphereCollider>();
+        if(nativeSphere==null)nativeSphere=root.AddComponent<SphereCollider>();
+        CapsuleCollider nativeCapsule=root.GetComponent<CapsuleCollider>();
+        if(nativeCapsule==null)nativeCapsule=root.AddComponent<CapsuleCollider>();
         nativeBox.enabled=false;
         nativeSphere.enabled=false;
         nativeCapsule.enabled=false;
