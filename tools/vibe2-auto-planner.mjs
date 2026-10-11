@@ -26,6 +26,7 @@ import { buildInterfaceBlueprintContract, INTERFACE_EXTERNAL_ALGORITHMS } from '
 import { hasCurrentRobloxPackageAssetRepair, currentSourceTreeSha } from './company-development-roblox-source-reconcile.mjs';
 import { buildGameFlowArchitecture, buildFlowAssetRequirements } from './company-vibe2-game-flow-architect.mjs';
 import { synchronizeSourceBoundAssetConsumers } from './vibe2-asset-production-plan.mjs';
+import { detectRobloxStudioAssetSystems, robloxStudioAssetDetectionSourceFromRoot, robloxStudioAssetFamilyBoundInText } from './company-development-roblox-bootstrap.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -1740,6 +1741,7 @@ function presentationSourcesForProject(project,repoRoot){
   }else if(engine==='unity'){
     const scriptsDir=sourceFile(repoRoot,`${root}/Assets/Scripts`);
     const dedicated=[];
+    const embeddedVisualOwners=[];
     const preferred=[
       `${root}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,
       `${root}/Assets/Scripts/Presentation.cs`,
@@ -1757,6 +1759,7 @@ function presentationSourcesForProject(project,repoRoot){
           const full=path.join(current,entry.name);
           if(entry.isDirectory()){stack.push(full);continue;}
           if(!entry.isFile()||!/\.cs$/i.test(entry.name))continue;
+          if(/(?:GameObject\.CreatePrimitive|AddComponent\s*<\s*(?:MeshRenderer|SkinnedMeshRenderer|SpriteRenderer)|Resources\.Load\s*<\s*(?:GameObject|Material|Mesh)|\bInstantiate\s*\()/i.test(readText(full)))embeddedVisualOwners.push(posix(path.relative(repoRoot,full)));
           if(/^(?:GameCore|RuntimeBootstrap)\.cs$/i.test(entry.name))continue;
           if(!/(?:Visual|Presentation|Render|View|Animation|Motion|Vfx|Effect|Particle|Camera|Hud|Ui|Audio)/i.test(entry.name))continue;
           dedicated.push(posix(path.relative(repoRoot,full)));
@@ -1765,7 +1768,7 @@ function presentationSourcesForProject(project,repoRoot){
       }
     }
     candidates=[...new Set(dedicated)];
-    if(!candidates.length)candidates=[`${root}/Assets/Scripts/RuntimeBootstrap.cs`];
+    if(!candidates.length)candidates=embeddedVisualOwners.length?[...new Set(embeddedVisualOwners)]:[`${root}/Assets/Scripts/RuntimeBootstrap.cs`];
   }else if(engine==='roblox'){
     candidates=[`${root}/client/Game.client.luau`,`${root}/server/Game.server.luau`,`${root}/shared/GameConfig.luau`,`${root}/shared/VisualStyle.luau`,`${root}/client/BattleVisual.luau`];
   }else if(engine==='unreal'){
@@ -2178,17 +2181,25 @@ export function findRobloxStudioAssetBackfillTask(project,repoRoot,queue){
   const candidates=[
     `${root}/shared/GameConfig.luau`,
     `${root}/client/Game.client.luau`,
+    `${root}/server/Game.server.luau`,
     `${root}/shared/VisualStyle.luau`,
     `${root}/client/BattleVisual.luau`
   ].filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
   if(!candidates.length)return null;
-  const sourceText=candidates.map(relative=>readText(sourceFile(repoRoot,relative))).join('\n');
-  if(/\bSTUDIO_ASSET_BINDING_VERSION\s*=\s*[12]\b/.test(sourceText)&&/(?:StudioAssets|StudioAssetAtoms|StudioAssetAtom)/.test(sourceText))return null;
-  const id=`${project.gameId}-roblox-studio-asset-backfill-v1`;
+  const sourceText=robloxStudioAssetDetectionSourceFromRoot(sourceFile(repoRoot,root));
+  const systems=detectRobloxStudioAssetSystems({sourceText});
+  const applicable=Object.keys(systems).filter(family=>systems[family]);
+  const missing=applicable.filter(family=>!robloxStudioAssetFamilyBoundInText(sourceText,family));
+  // 버전·속성 표시가 아니라 실제 기존 시스템의 렌더 소비를 확인한다.
+  if(applicable.length&&!missing.length)return null;
+  const baseId=`${project.gameId}-roblox-studio-asset-backfill-v1`;
+  const prior=(queue.tasks||[]).filter(item=>item.id===baseId||clean(item.id).startsWith(baseId+'-'));
+  if(prior.some(item=>!['verified','cancelled','completed','failed'].includes(clean(item.status).toLowerCase())))return null;
+  const id=prior.length?`${baseId}-${stableHash(sourceText)}-${prior.length+1}`:baseId;
   if(hasTask(queue,id))return null;
   const goal=`[PRESENTATION_PASS:ASSET_ADAPTATION] [ROBLOX_STUDIO_ASSET_BACKFILL]
 게임: ${project.name||project.gameId}
-현재 Roblox 소스에는 최신 Studio Asset Library 선택/전달 바인딩이 없다.
+현재 Roblox 소스에는 실제 Studio Asset Library 소비가 부족하다. 누락 계열: ${missing.join(', ')||'실제 시스템과 적용 근거 확인 필요'}.
 기존 GRAPHICS_PRODUCTION 입력 플래너가 선택한 Game Base Material Loadout과 검증 재사용 후보를 받아 Vibe2/Vibe3가 현재 책임 Luau 소스에 실제 적용한다.
 플래너는 선택·전달만 하며 게임 소스를 직접 수정하지 않는다.
 적용은 현재 게임의 아트 방향, Style Lock, 기존 실루엣/재질/환경/UI 언어를 보존하고 실제 Instance/Model/MeshPart/Material/Sound/Particle/Trail/UI/Animator 표현에 연결한다.
