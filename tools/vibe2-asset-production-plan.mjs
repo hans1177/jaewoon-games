@@ -2913,8 +2913,23 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes,...libraryDerivationTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
+  // [명시 원본 제작] 동일 게임에 이미 재사용 가능한 자산이 있어도, 권리가 확인된
+  // 원본 이미지·모델로 제작을 명시한 작업은 기존 Blender DCC 검증 경로에 유지한다.
+  // 실제 원본 파일·해시·런타임 통과는 이후 실행기에서 별도로 검증한다.
+  const requestedModel=clean(task.assetAuthoring?.sourceModel);
+  const requestedSourceModule=clean(task.assetAuthoring?.module||task.assetModule).toLowerCase();
+  const explicitSourceRequested=Boolean(requestedModel||clean(task.assetAuthoring?.sourceImage)||task.imageToAsset===true);
+  const sourceMotionRequested=/\.fbx$/i.test(requestedModel)||['animation','motion','video'].includes(requestedSourceModule);
+  const sourceHumanRequested=requestedSourceModule==='human';
+  const sourceRequestedDccTypes=explicitSourceRequested&&!internalMotion
+    ?unique((explicitRequestedTypes||[]).map(value=>clean(value).toLowerCase()).filter(type=>
+      GENERIC_NATIVE_DCC_TYPES.includes(type)
+      ||(sourceMotionRequested&&['animation','motion'].includes(type))
+      ||(sourceHumanRequested&&CROSS_PLATFORM_3D_CHARACTER_TYPES.includes(type))))
+    :[];
   const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
-    ?unique([...dccCapableTypes.filter(type=>requestedDccScope.includes(type)),...libraryDerivationTypes])
+    ?unique([...dccCapableTypes.filter(type=>requestedDccScope.includes(type)),
+      ...libraryDerivationTypes,...sourceRequestedDccTypes])
     :[];
   const declaredDccTypes=(engineNativeTarget||webNativeTarget)?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
