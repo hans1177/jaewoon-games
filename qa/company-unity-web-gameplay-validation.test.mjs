@@ -711,3 +711,17 @@ test('Daechung 3D scene work keeps the canonical combat, touch and save authorit
   assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
   assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
 });
+
+
+test('Daechung native 3D GameObjects contain no active 2D gameplay components',()=>{
+  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  const executable=visual.replace(/@?"(?:""|\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,' ');
+  assert.doesNotMatch(executable,/\b(?:SpriteRenderer|Physics2D|Rigidbody2D|Collider2D|Tilemap)\b/);
+  assert.doesNotMatch(visual,/_renderer\.sprite\s*=/);
+  assert.match(visual,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+  assert.match(visual,/_backdrop = sprite/);
+  assert.match(visual,/backdropTexture\.width > 0 && backdropTexture\.height > 0/);
+  assert.match(visual,/HasVisibleVolumetricMesh/);
+  assert.match(visual,/SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH/);
+  assert.match(visual,/worldMeshes3d >= 2 && worldDepthCm >= 50/);
+});
