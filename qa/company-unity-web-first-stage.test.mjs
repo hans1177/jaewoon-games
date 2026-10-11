@@ -394,7 +394,8 @@ test('native asset registry preflight runs before Unity editor and fails closed 
       fs.copyFileSync(relative,dest);
     }
     const cleanRun=invoke();
-    assert.match(cleanRun,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count=3/);
+    assert.match(cleanRun,new RegExp('UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count='
+      +declaration.registryAssetIds.length+'(?:\\r?\\n|$)'));
     const tampered=path.join(root,'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj');
     fs.appendFileSync(tampered,'\n# deliberate SHA256 mismatch\n');
     assert.throws(invoke,error=>{
