@@ -89,7 +89,7 @@ on:
         default: '[]'
         type: string
       publish_to_main:
-        description: 'Create one reviewed PR containing candidate Unity source plus verified WebGL output'
+        description: 'Legacy caller flag; every verified WebGL build now publishes through the reviewed PR'
         required: false
         default: false
         type: boolean
@@ -915,9 +915,12 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Create verified Unity Web readiness PR
+      # Canonical Unity Web publication: a verified build always enters the existing PR,
+      # Cloudflare preview, main deployment and live-browser validation sequence.
+      # The legacy publish_to_main input remains accepted for older Vibe callers.
+      - name: Publish every verified Unity Web build via reviewed PR
         id: publish
-        if: steps.readiness.outcome == 'success' && (github.event_name == 'push' || inputs.publish_to_main == true)
+        if: steps.readiness.outcome == 'success'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
