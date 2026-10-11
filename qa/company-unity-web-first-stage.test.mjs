@@ -145,6 +145,21 @@ test('Fantasy Survival Unity reconnects missing fiber harvesting and restores no
   assert.match(game,/PlaceStructure\(item\.recipeId,item\.position\)/);
 });
 
+test('Fantasy Survival mobile gather control stays separate from movement and attack on compact screens',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const hud=game.slice(game.indexOf('private void OnGUI('),game.indexOf('private void DrawPanel('));
+  assert.match(hud,/new Rect\(w\*\.5f-sz\*\.5f,yy-sz,sz,sz\),"채집"/);
+  assert.match(hud,/GUI\.RepeatButton\(new Rect\(12\+sz\*2,yy,sz,sz\),"◀"\)/);
+  assert.match(hud,/new Rect\(w-sz-14,yy-sz,sz,sz\),"공격"/);
+  for(const width of [240,320,360,390,412]){
+    const size=Math.max(50,Math.min(width*.16,74));
+    const gatherLeft=width*.5-size*.5,gatherRight=gatherLeft+size;
+    const topArrowRight=12+size,attackLeft=width-size-14;
+    assert(gatherLeft>=topArrowRight,'gather must not overlap upward movement control');
+    assert(gatherRight<=attackLeft,'gather must not overlap attack control');
+  }
+});
+
 test('Fantasy Survival removes dead monster touch hitboxes through the existing update flow and retains Vibe repair routing',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const update=game.slice(game.indexOf('private void UpdateMonsters('),game.indexOf('private void HurtMonster('));
