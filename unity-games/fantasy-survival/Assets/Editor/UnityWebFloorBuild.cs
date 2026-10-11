@@ -254,19 +254,16 @@ public static class UnityWebFloorBuild
         var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT");
         if(root==null)root=new GameObject("UNITY_WEB_FLOOR_ROOT");
         if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>();
-        // 물리 · Unity 6은 link.xml만으로 Physics 모듈의 네이티브 빌드 포함을 보장하지 않는다.
-        // 이미 존재하는 씬 루트에 비활성 콜라이더를 직렬화해 실제 Box/Sphere/Capsule 클래스를 빌드에 포함한다.
-        // 충돌판정에는 참여하지 않아 기존 저장·동작·전투 수치에 영향을 주지 않는다.
-        // Editor의 누락 컴포넌트는 관리 참조가 남을 수 있으므로 Unity의 null 비교로 생성 여부를 판단한다.
-        BoxCollider nativeBox=root.GetComponent<BoxCollider>();
-        if(nativeBox==null)nativeBox=root.AddComponent<BoxCollider>();
-        SphereCollider nativeSphere=root.GetComponent<SphereCollider>();
-        if(nativeSphere==null)nativeSphere=root.AddComponent<SphereCollider>();
-        CapsuleCollider nativeCapsule=root.GetComponent<CapsuleCollider>();
-        if(nativeCapsule==null)nativeCapsule=root.AddComponent<CapsuleCollider>();
-        nativeBox.enabled=false;
-        nativeSphere.enabled=false;
-        nativeCapsule.enabled=false;
+        // 물리 · Unity 6 WebGL은 link.xml만으로 Physics 네이티브 타입 포함을 보장하지 않는다.
+        // 비활성 자식에 기존 Box/Sphere/Capsule 타입을 직렬화하고 게임 루트의 충돌판정은 변경하지 않는다.
+        // 루트에 추가한 BoxCollider.enabled 접근이 Unity 6 빌드 중 MissingComponentException을 발생시켰다.
+        Transform physicsTypes=root.transform.Find("UNITY_WEB_PHYSICS_TYPES");
+        GameObject physicsCarrier=physicsTypes!=null?physicsTypes.gameObject:new GameObject("UNITY_WEB_PHYSICS_TYPES");
+        if(physicsTypes==null)physicsCarrier.transform.SetParent(root.transform,false);
+        physicsCarrier.SetActive(false);
+        if(physicsCarrier.GetComponent<BoxCollider>()==null)physicsCarrier.AddComponent<BoxCollider>();
+        if(physicsCarrier.GetComponent<SphereCollider>()==null)physicsCarrier.AddComponent<SphereCollider>();
+        if(physicsCarrier.GetComponent<CapsuleCollider>()==null)physicsCarrier.AddComponent<CapsuleCollider>();
         EditorSceneManager.MarkSceneDirty(scene);
         if(!EditorSceneManager.SaveScene(scene,ScenePath))throw new Exception("SCENE_SAVE_FAILED");
         EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(ScenePath,true)};

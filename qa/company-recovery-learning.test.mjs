@@ -519,3 +519,201 @@ test('fan-in package-review learning error is recovered immediately from the exa
   const stale=escalateRecoveryCandidates({gameQueueInput:{tasks:[{...task,lastOutcome:'DIFFERENT_TASK'}]}});
   assert.equal(stale.queue.tasks.length,0);
 });
+
+
+test('canonical deployment failures are scoped to a real game source and preserve the existing Vibe worker',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const run={
+    name:'Unity Web Development Floor',path:'.github/workflows/unity-web-first-stage-build.yml',
+    conclusion:'failure',id:38121720395,run_attempt:1,head_sha:'a'.repeat(40),
+    head_branch:'main',display_title:'Unity Web Floor fantasy-survival',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={jobs:[{name:'build',conclusion:'failure',
+    steps:[{name:'Mark Unity Web floor repair requirement',conclusion:'failure'}]}],
+    failureMarkers:[
+      'UNITY_WEB_REPAIR_FAILURE_STAGE=UNITY_WEB_CSHARP_COMPILE',
+      'UNITY_WEB_REPAIR_FAILURE_SIGNATURE=UNITY_WEB_CSHARP_COMPILE_ERROR:Assets/Scripts/UnityWebFloorGame.cs:14:CS0246'
+    ]};
+  const catalog={games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  const first=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:catalog});
+  assert.equal(first.added.length,1);
+  assert.equal(first.owner,'VIBE2_VIBE3');
+  assert.equal(first.gameId,'fantasy-survival');
+  assert.deepEqual(first.queue.tasks[0].responsibleFiles,['unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs']);
+  assert.equal(first.queue.tasks[0].maxRetries,null);
+  assert.ok(first.queue.tasks[0].verificationPlan.includes('VERIFY_ACTUAL_DEPLOYMENT_RESULT'));
+  const dispatched=dispatchRecovery({recoveryInput:first.queue,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.gameQueue.tasks.length,1);
+  assert.equal(dispatched.systemAi.tasks.length,0);
+  const task=dispatched.gameQueue.tasks[0];
+  assert.equal(task.status,'queued');
+  assert.equal(task.target,'unity');
+  assert.equal(task.unityWebDevelopment,true);
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(task.sourceMutationRequired,true);
+  assert.equal(task.gameRepairContract.impactRegressionRequired,true);
+  assert.ok(task.acceptanceCriteria.some(value=>value.includes('existing gameplay saves balance')));
+  assert.equal(first.queue.tasks[0].failureStage,'UNITY_WEB_CSHARP_COMPILE');
+  assert.equal(first.queue.tasks[0].failureSignature,'UNITY_WEB_CSHARP_COMPILE_ERROR:Assets/Scripts/UnityWebFloorGame.cs:14:CS0246');
+  const duplicate=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:catalog,recoveryInput:dispatched.recovery});
+  assert.equal(duplicate.queue.tasks.length,1);
+  assert.deepEqual(duplicate.added,[]);
+  assert.deepEqual(duplicate.reactivated,[]);
+  const attemptTwo=escalateDeploymentFailure({event:{workflow_run:{...run,run_attempt:2}},jobsInput:jobs,catalogInput:catalog,recoveryInput:dispatched.recovery});
+  assert.equal(attemptTwo.reactivated.length,1);
+  assert.equal(attemptTwo.queue.tasks[0].status,'queued');
+  assert.equal(attemptTwo.queue.tasks[0].recurrenceCount,2);
+});
+
+test('canonical deployment failure diagnosis falls back to supervised system AI when source cannot be proven',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const {dispatchRecovery}=await import('../tools/company-recovery-dispatch.mjs');
+  const run={
+    name:'Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment',
+    path:'.github/workflows/company-development-roblox-release-promotion.yml',
+    id:38121720400,run_attempt:1,conclusion:'failure',head_sha:'b'.repeat(40),
+    display_title:'Roblox publish · fantasy-survival · final',head_branch:'main',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={jobs:[{name:'deploy',conclusion:'failure',
+    steps:[{name:'Deploy exact F0 passed Roblox artifact',conclusion:'failure'}]}]};
+  const triaged=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]}
+  });
+  assert.equal(triaged.owner,'SYSTEM_AI');
+  assert.equal(triaged.queue.tasks.length,1);
+  const rec=triaged.queue.tasks[0];
+  assert.deepEqual(rec.responsibleFiles,['.github/workflows/company-development-roblox-release-promotion.yml']);
+  assert.ok(rec.evidence.includes('deployment-release-gates:PRESERVED'));
+  const dispatched=dispatchRecovery({recoveryInput:triaged.queue,gameQueueInput:{tasks:[]},systemAiQueueInput:{tasks:[]}});
+  assert.equal(dispatched.gameQueue.tasks.length,0);
+  assert.equal(dispatched.systemAi.tasks.length,1);
+  assert.equal(dispatched.systemAi.tasks[0].retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
+  assert.equal(dispatched.systemAi.tasks[0].supervisorReviewRequired,true);
+  assert.equal(dispatched.recovery.tasks[0].status,'dispatched');
+});
+
+test('deployment failure signals reject success, spoofed workflows and unrelated repositories',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const original={
+    name:'Unity Web Development Floor',path:'.github/workflows/unity-web-first-stage-build.yml',
+    conclusion:'failure',id:100,head_sha:'c'.repeat(40),display_title:'Unity Web Floor fantasy-survival',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  for(const run of [
+    {...original,conclusion:'success'},
+    {...original,path:'.github/workflows/untrusted.yml'},
+    {...original,head_repository:{full_name:'untrusted/repo'}},
+    {...original,id:'$(injection)'},
+    {...original,head_sha:'invalid'}
+  ]){
+    const result=escalateDeploymentFailure({event:{workflow_run:run}});
+    assert.equal(result.queue.tasks.length,0);
+    assert.equal(result.ignored,'NOT_VERIFIED_CANONICAL_DEPLOYMENT_FAILURE');
+  }
+  const unknown=escalateDeploymentFailure({event:{workflow_run:{
+    ...original,name:'Vibe2 Candidate Release Gate',path:'.github/workflows/vibe2-candidate-release.yml',
+    display_title:'Ambiguous unrelated publication'
+  }},jobsInput:{jobs:[{name:'publish',conclusion:'failure',steps:[{name:'Cloudflare Pages deploy',conclusion:'failure'}]}]}});
+  assert.equal(unknown.owner,'SYSTEM_AI');
+  assert.equal(unknown.queue.tasks[0].gameId,null);
+  assert.equal(unknown.queue.tasks[0].responsibleFiles[0],'.github/workflows/vibe2-candidate-release.yml');
+});
+
+
+test('ambiguous Unity Web build failures cannot mutate game source without exact failure evidence',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={
+    name:'Unity Web Development Floor',path:'.github/workflows/unity-web-first-stage-build.yml',
+    conclusion:'failure',id:38121720423,head_sha:'d'.repeat(40),
+    display_title:'Unity Web Floor fantasy-survival',head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={jobs:[{name:'build',conclusion:'failure',
+    steps:[{name:'Mark Unity Web floor repair requirement',conclusion:'failure'}]}]};
+  const catalogInput={games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  const missingMarkers=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput});
+  assert.equal(missingMarkers.owner,'SYSTEM_AI');
+  assert.deepEqual(missingMarkers.queue.tasks[0].responsibleFiles,['.github/workflows/unity-web-first-stage-build.yml']);
+  const publishMarker=escalateDeploymentFailure({event:{workflow_run:run},
+    jobsInput:{...jobs,failureMarkers:['UNITY_WEB_REPAIR_FAILURE_STAGE=UNITY_WEB_BUILD_OR_READINESS']},catalogInput});
+  assert.equal(publishMarker.owner,'SYSTEM_AI');
+  const malformed=escalateDeploymentFailure({event:{workflow_run:run},
+    jobsInput:{...jobs,failureMarkers:['UNITY_WEB_REPAIR_FAILURE_STAGE=$(curl evil)']},catalogInput});
+  assert.equal(malformed.owner,'SYSTEM_AI');
+});
+
+test('fast recovery reuses canonical policies and listens to all three deployment surfaces',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
+  for(const name of ['Vibe2 Candidate Release Gate','Unity Web Development Floor',
+    'Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment','Magic Forest Static Play']){
+    assert.ok(workflow.includes('      - '+name));
+  }
+  assert.match(workflow,/node tools\/company-shared-context\.mjs/);
+  assert.match(workflow,/--deployment-event=\$GITHUB_EVENT_PATH/);
+  assert.match(workflow,/node tools\/company-recovery-dispatch\.mjs --route=all/);
+  assert.match(workflow,/unity-web.*?failure|UNITY_WEB_REPAIR_FAILURE_/s);
+});
+
+test('real Unity missing component exception targets its existing editor source, not the deployment workflow',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={
+    name:'Unity Web Development Floor',path:'.github/workflows/unity-web-first-stage-build.yml',
+    conclusion:'failure',id:38121720395,run_attempt:1,head_sha:'a'.repeat(40),
+    head_branch:'main',display_title:'Unity Web Floor fantasy-survival',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={
+    jobs:[{name:'build',conclusion:'failure',steps:[
+      {name:'Build Unity Web',conclusion:'failure'},
+      {name:'Mark Unity Web floor repair requirement',conclusion:'failure'}
+    ]}],
+    failureMarkers:['UNITY_WEB_REPAIR_FAILURE_STAGE=UNITY_WEB_BUILD_OR_READINESS',
+      'UNITY_WEB_REPAIR_FAILURE_SIGNATURE=REPAIR_REQUIRED'],
+    failureDiagnostics:{
+      classification:'UNITY_MISSING_COMPONENT',
+      sourceFiles:['unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs']
+    }
+  };
+  const result=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,
+    catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]}
+  });
+  assert.equal(result.owner,'VIBE2_VIBE3');
+  assert.equal(result.added.length,1);
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,
+    ['unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs']);
+  assert.ok(result.queue.tasks[0].failureSignature.includes('UNITY_MISSING_COMPONENT'));
+  assert.ok(result.queue.tasks[0].evidence.includes('deployment-causal-error:UNITY_MISSING_COMPONENT'));
+  const replay=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,
+    catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]},
+    recoveryInput:result.queue
+  });
+  assert.equal(replay.added.length,0);
+  assert.equal(replay.queue.tasks.length,1);
+});
+
+test('Roblox F0 script failure scopes repair to existing game scripts, not unrelated deployments',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={
+    name:'Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight',
+    path:'.github/workflows/company-development-roblox-headless-fast-mvp.yml',
+    conclusion:'failure',id:38121720410,run_attempt:1,head_sha:'a'.repeat(40),
+    display_title:'Roblox F0 · fantasy-survival',head_branch:'main',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={jobs:[{name:'verify',conclusion:'failure',
+    steps:[{name:'Validate F0 source contract',conclusion:'failure'}]}]};
+  const result=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,
+    catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]}
+  });
+  assert.equal(result.owner,'VIBE2_VIBE3');
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,[
+    'roblox-games/fantasy-survival/server/Game.server.luau',
+    'roblox-games/fantasy-survival/client/Game.client.luau'
+  ]);
+  assert.equal(result.queue.tasks[0].maxRetries,null);
+});

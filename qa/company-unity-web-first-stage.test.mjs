@@ -984,14 +984,14 @@ test('Fantasy Survival WebGL canonical native physics scene collider references'
   const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   assert.ok(build.includes('if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>()'));
+  assert.ok(build.includes('root.transform.Find("UNITY_WEB_PHYSICS_TYPES")'),'reuse the existing native physics carrier on rebuild');
+  assert.ok(build.includes('physicsCarrier.SetActive(false)'),'native physics references never participate in gameplay collision');
   for(const type of ['Box','Sphere','Capsule']){
-    assert.ok(build.includes('root.AddComponent<'+type+'Collider>()'),'native scene reference: '+type);
-    assert.ok(build.includes('if(native'+type+'==null)native'+type+'=root.AddComponent<'+type+'Collider>()'),
-      'missing native component must use Unity null equality before AddComponent: '+type);
-    assert.ok(!build.includes('root.GetComponent<'+type+'Collider>()??'),
+    assert.ok(build.includes('if(physicsCarrier.GetComponent<'+type+'Collider>()==null)physicsCarrier.AddComponent<'+type+'Collider>()'),
+      'reuse existing native component or create it using Unity null equality: '+type);
+    assert.ok(!build.includes('GetComponent<'+type+'Collider>()??'),
       'CLR null coalescing must not retain an Editor missing-component object: '+type);
     assert.ok(game.includes('obj.AddComponent<'+type+'Collider>()'),'native runtime reference: '+type);
-    assert.ok(build.includes('native'+type+'.enabled=false'),'scene collision stays disabled: '+type);
   }
   assert.ok(game.includes('if(keepCollider && obj.GetComponent<Collider>()==null)'));
   assert.ok(game.includes('if (!keepCollider) Destroy(obj.GetComponent<Collider>())'));
