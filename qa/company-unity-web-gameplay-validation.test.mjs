@@ -640,3 +640,40 @@ test('Unity Web QA deadline writes causal failure evidence even after a stuck br
   assert.equal(received.failureSignature,'UNITY_WEB_QA_DEADLINE_EXCEEDED:actual-play:SAVE_RESTORE_AND_REENTRY:480000');
   assert.equal(received.markers.length,1);
 });
+
+
+test('published Unity WebGL replays mobile gameplay before Vibe acceptance and requeues exact failure',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  assert.match(source,/const publicUrl=String\(args\['public-url'\]\|\|''\)\.trim\(\)/);
+  assert.match(source,/UNITY_WEB_QA_PUBLIC_URL_INVALID/);
+  assert.match(source,/const server=publicUrl\?null:http\.createServer/);
+  assert.match(source,/if\(server\)await new Promise/);
+  assert.match(source,/UNITY_WEB_QA_PUBLIC_HTTP_STATUS_INVALID/);
+  assert.match(source,/CLOUDFLARE_PAGES_MOBILE_EMULATION/);
+  assert.match(source,/realDeviceVerified:false/);
+  const deploy=workflow.indexOf('UNITY_WEB_CLOUDFLARE_MAIN=');
+  const replay=workflow.indexOf('UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=START');
+  const acceptance=workflow.indexOf('vibe2-queue-control.mjs pass');
+  assert.ok(deploy>=0&&replay>deploy&&acceptance>replay);
+  assert.match(workflow,/unity-web-post-deploy-mobile\.json/);
+  assert.match(workflow,/evidence\.saveRestore\?\.pass!==true/);
+  assert.match(workflow,/steps\.publish\.outcome == 'failure'/);
+  assert.match(workflow,/UNITY_WEB_PUBLIC_PHYSICAL_DEVICE_QA=NOT_VERIFIED/);
+  assert.match(source,/previousEvidence\?\.playableBrowserTest===true/);
+  assert.match(source,/observedRuntimeFailure:true/);
+});
+
+test('published Unity WebGL validation permits only exact official game URLs',()=>{
+  const start=source.indexOf('if(publicUrl){');
+  const end=source.indexOf('\nif(!fs.existsSync(source))',start);
+  assert.ok(start>=0&&end>start);
+  const check=new Function('publicUrl','gameId','URL',source.slice(start,end));
+  assert.doesNotThrow(()=>check('https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/','daechung-rpg',URL));
+  for(const url of [
+    'https://bad.example/web-games/daechung-rpg/unity/',
+    'http://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/',
+    'https://jaewoon-games.pages.dev/web-games/other/unity/',
+    'https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/?test=1',
+    'https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/#bad'
+  ])assert.throws(()=>check(url,'daechung-rpg',URL),/UNITY_WEB_QA_PUBLIC_URL_INVALID/);
+});
