@@ -38,3 +38,5 @@ jobs:
         run: node --test qa/jaewoon-graphics-engine.test.cjs
       - name: Unity Web triplanar material regression
         run: node --test --test-name-pattern="Unity monster adventure keeps real UV-less source meshes" qa/company-unity-web-first-stage.test.mjs
+      - name: Fantasy Survival native asset and action-motion source regression
+        run: node --test --test-name-pattern="Fantasy Survival|native asset registry preflight runs before Unity" qa/company-unity-web-first-stage.test.mjs
