@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { promoteVerifiedSystemAiLearning } from '../tools/company-system-ai-learning.mjs';
 import { buildSystemAiLearningContext } from '../tools/company-system-ai-learning-context.mjs';
-import { buildExternalAiLearningFeed } from '../tools/company-system-ai-external-learning-feed.mjs';
+import { buildExternalAiLearningFeed, buildAssistantTraceLearningFeed } from '../tools/company-system-ai-external-learning-feed.mjs';
 
 const systemAiLearningSource=fs.readFileSync('tools/company-system-ai-learning.mjs','utf8');
 
@@ -541,4 +541,32 @@ test('System AI promotes failure-specific successful repair only after independe
   assert.ok(verified.experience.records[0].avoidPatterns.includes('FAILED_STRATEGY_SHA256_'+'a'.repeat(64)));
   assert.ok(verified.library.patterns[0].tags.includes('f0_source_preflight'));
   assert.equal(verified.queue.tasks[0].learningPromotion,'PROMOTED');
+});
+
+
+test('assistant actions enter the existing learning feed automatically and unverified actions never become positive learning',()=>{
+  const trace={id:'assistant-mobile-repair',gameId:'cozy-island',engine:'roblox',actionType:'SOURCE_CHANGE',problem:'mobile overlap',reusablePatterns:['Check actual authored layout across viewport and menu states.'],avoidPatterns:['Do not claim runtime pass from mocked input.'],evidence:['source:commit:abc'],learningState:'VERIFIED_POSITIVE_READY_FOR_EXPERIENCE'};
+  const reviewed={...trace,id:'assistant-reviewed',verification:{independent:true,status:'PASS',method:'source-backed-review',evidence:['source:commit:abc','qa:actual-layout-regression']}};
+  const failed={...reviewed,id:'assistant-failed',verification:{...reviewed.verification,status:'FAIL'}};
+  const result=buildAssistantTraceLearningFeed({records:[trace,reviewed,failed,trace]});
+  assert.equal(result.actions.length,3);
+  assert.equal(result.records.length,1);
+  assert.equal(result.actions.find(x=>x.id===trace.id).state,'VERIFICATION_REQUIRED');
+  assert.ok(result.actions.find(x=>x.id===trace.id).reasons.includes('INDEPENDENT_VERIFICATION_REQUIRED'));
+  assert.equal(result.actions.find(x=>x.id===failed.id).state,'VERIFICATION_REQUIRED');
+  assert.equal(result.records[0].verification.method,'source-backed-review');
+  assert.equal(result.directTrainingSample,false);
+  assert.equal(result.productionPass,false);
+  const feed=buildExternalAiLearningFeed({tasks:[]},{records:[reviewed]});
+  assert.equal(feed.records.length,1);
+  assert.equal(feed.assistantActions.length,1);
+  const changed=buildAssistantTraceLearningFeed({records:[reviewed,{...reviewed,reusablePatterns:['Preserve gameplay callbacks while repairing the layout.']}]});
+  assert.notEqual(changed.records[0].id,changed.records[1].id);
+});
+
+test('existing 24-hour runner reads assistant trace changes through the canonical distillation step',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(workflow,/--assistant-trace=\/tmp\/vibe2-main\/company-learning\/assistant-vibe-coauthoring-log\.json/);
+  assert.match(workflow,/'company-learning\/assistant-vibe-coauthoring-log\.json'/);
+  assert.match(workflow,/--input=\/tmp\/system-ai-external-learning-feed\.json/);
 });
