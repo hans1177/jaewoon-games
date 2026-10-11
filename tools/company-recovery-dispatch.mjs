@@ -136,8 +136,8 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
               repairMode,recurrenceCount,gameRepairContract:{
                 version:1,mode:repairMode,prePatchReproductionRequired:true,causalResponsibleSystemRequired:true,
                 originalScenarioReplayRequired:true,invariantValidationRequired:true,
-                saveMigrationValidationRequired:true,multiplayerLifecycleValidationRequired:true,
-                multiplayerUserAssistanceRequired:false,multiplayerMinimumAutomatedClients:2,
+                saveMigrationValidationRequired:saveRepairRequired,multiplayerLifecycleValidationRequired:multiplayerRepairRequired,
+                multiplayerUserAssistanceRequired:false,multiplayerMinimumAutomatedClients:multiplayerRepairRequired?2:0,
                 impactRegressionRequired:true,fullRegressionFanInRequired:true,
                 repeatedSameApproachWithoutNewCausalEvidenceForbidden:repairMode==='ROOT_CAUSE_MODE'
               },
