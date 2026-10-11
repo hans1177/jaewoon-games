@@ -85055,7 +85055,30 @@
         "runtimeVerificationRequired": true,
         "verifiedPromotionAllowed": false,
         "gameplayAuthority": false
-      }
+      },
+      "ownerWebEditPropagation": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE",
+        "gameId": "daechung-rpg",
+        "sourcePath": "web-games/daechung-rpg",
+        "sourceBefore": "8bed6a8d399c134331400ec523536e0c97cb9ed0",
+        "sourceAfter": "18277e5e4d64f66b54bc70379e0d0007974d0f93",
+        "semanticIntentFingerprint": "ba650ba0b71580e9dbf24ca1892fb2fa0b38c1c16fd95578b71dc3c8419a36f9",
+        "affectedSystems": [
+          "UI_UX"
+        ],
+        "platformTargets": [
+          "ROBLOX"
+        ],
+        "literalWebCodeCrossPlatformCopyForbidden": true,
+        "semanticIntentPropagationRequired": true,
+        "affectedWebQaRequired": true,
+        "affectedPlatformQaRequired": true,
+        "detectedAt": "2026-10-11T11:46:26.994Z",
+        "state": "PLATFORM_PROPAGATION_REQUIRED"
+      },
+      "ownerWebEditPropagationPending": true,
+      "ownerWebEditPropagationUpdatedAt": "2026-10-11T11:46:26.994Z"
     },
     {
       "gameId": "cat-step",
@@ -92222,7 +92245,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-11T11:36:27.934Z",
+  "updatedAt": "2026-10-11T11:46:26.994Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
