@@ -110,11 +110,25 @@ const methodPattern=new RegExp(`(?:class|static\\s+class)\\s+${methodOwner.repla
 const buildMethodPresent=editorFiles.some(file=>methodPattern.test(fs.readFileSync(file,'utf8')));
 if(!buildMethodPresent)throw new Error(`UNITY_WEB_BUILD_METHOD_NOT_FOUND:${buildMethod}`);
 
+// 메인 · 실제 플레이가 아닌 SOURCE_READY_3D 부팅 표식만 있으면 무거운 WebGL 빌드 전에 수리로 돌린다.
+// 정적 PASS 문자열도 검증 증거로 승격하지 않는다. 정상 소스는 기존 실제 브라우저 QA가 판정한다.
 const primitiveSignals=[];
+const authoredBootMarkers=[];
 for(const file of scriptFiles){
   const text=fs.readFileSync(file,'utf8');
   if(/GameObject\.CreatePrimitive\s*\(/.test(text))primitiveSignals.push(file);
+  // 메인 · 주석의 가짜 BOOT/PASS는 인정하지 않고 동일 줄의 실제 로그 호출도 개별 판정한다.
+  // 이것은 F0 실패 비용을 줄이는 정적 검사일 뿐, 실제 브라우저 QA를 통과시키지 않는다.
+  const loggedSource=text.replace(/\/\*[\s\S]*?\*\//g,'')
+    .replace(/(^|[;\t )}])\/\/[^\r\n]*/gm,'$1');
+  for(const call of loggedSource.matchAll(/\bDebug\.Log\s*\(([\s\S]*?)\)\s*;/g)){
+    if(!call[1].includes('JAEWOON_UNITY_WEB_QA BOOT'))continue;
+    const status=call[1].match(/\bstatus=(SOURCE_READY_3D|PASS)\b/);
+    if(status)authoredBootMarkers.push({file,status:status[1]});
+  }
 }
+if(authoredBootMarkers.length>0&&authoredBootMarkers.every(row=>row.status==='SOURCE_READY_3D'))
+  throw new Error('UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED:'+authoredBootMarkers[0].file);
 const metadataPath=path.join(sourceRoot,'prototype-source.json');
 if(fs.existsSync(metadataPath)){
   try{
