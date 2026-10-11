@@ -28,7 +28,17 @@ const gameplayContractText=baseline=>{
     failureRetryRisk:content.failureRetryRisk
   },[]).join(' ').toLowerCase();
 };
-const stripFoundation=server=>String(server||'').split('-- native-foundation-sentinel-v1')[0];
+// 관리되는 기반 검사 블록만 제외하고 그 뒤의 실제 게임 구현은 검사한다.
+function stripFoundation(server){
+  const source=String(server||'');
+  const marker='-- native-foundation-sentinel-v1';
+  const start=source.indexOf(marker);
+  if(start<0)return source;
+  const managed=source.slice(start).match(/^-- native-foundation-sentinel-v1[\s\S]*?\b(?:nativeFoundationRemote|foundationRemote)\.OnServerEvent:Connect\(function\(player, signal\)[\s\S]*?\nend\)(?:\s*game:BindToClose\(function\(\) end\))?/);
+  // 알 수 없는 블록 경계는 기반 검사 코드를 게임 기능으로 인정하지 않는다.
+  if(!managed)return source.slice(0,start);
+  return source.slice(0,start)+source.slice(start+managed[0].length);
+}
 
 function field(config,name){
   const m=String(config||'').match(new RegExp('\\b'+name+'\\s*=\\s*["\\\']([^"\\\']+)["\\\']','i'));

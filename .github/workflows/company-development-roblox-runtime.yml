@@ -1645,6 +1645,11 @@ jobs:
             console.log('ROBLOX_F0_PER_GAME_STALE_RESULT_IGNORED='+process.env.GAME_ID);
             process.exit(0);
           }
+          // 같은 소스라도 최신 소스 재검사가 실패했으면 이전 F0 결과로 복구 요청을 덮지 않는다.
+          if(String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'){
+            console.log('ROBLOX_F0_PER_GAME_SOURCE_REPAIR_PRESERVED='+process.env.GAME_ID);
+            process.exit(0);
+          }
           const alreadyExact=
             item.robloxFoundationF0Passed===true
             &&item.robloxBuildOrPackagePassed===true
@@ -1845,6 +1850,11 @@ jobs:
             const resultSourceRevision=String(result.sourceRevision||'').trim();
             if(boundSourceRevision!==resultSourceRevision){
               console.log(`ROBLOX_PACKAGE_STALE_RESULT_IGNORED=${result.gameId}:${resultSourceRevision||'MISSING'}:${boundSourceRevision||'MISSING'}`);
+              continue;
+            }
+            // 이전 패키지 작업이 뒤늦게 끝나도 현재 소스 수정 단계의 실패와 증거를 유지한다.
+            if(!secondaryOwnerFocus&&String(item.robloxFailureStage||'').toUpperCase()==='TARGET_PLATFORM_SOURCE_BIND'){
+              console.log('ROBLOX_PACKAGE_SOURCE_REPAIR_PRESERVED='+result.gameId);
               continue;
             }
             const alreadyPersistedF0=!secondaryOwnerFocus
