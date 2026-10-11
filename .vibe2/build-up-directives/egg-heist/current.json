@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "egg-heist-build-up-g1-aaa46b78e311",
-  "directiveFingerprint": "aaa46b78e31118ee4e518d2fde6bef19a0fabacbe350574c02ab86226fe3e6bb",
+  "directiveId": "egg-heist-build-up-g1-932bda36b616",
+  "directiveFingerprint": "932bda36b6167eff65376ee8721822cd0d85aa8b1cf595c77d2878af3de9f3f1",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "egg-heist",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/egg-heist",
-  "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+  "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
   "designFingerprint": "5e2690ed41c925e10cddddfa4fb8c6f11a4ae866e89be2d319345f87f6f4e5ee",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+        "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "5e2690ed41c925e10cddddfa4fb8c6f11a4ae866e89be2d319345f87f6f4e5ee",
-    "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+    "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+    "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3891,7 +3891,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -5041,7 +5041,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 142865,
+        "sourceBytes": 143569,
         "largestFileBytes": 85600,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5242,7 +5242,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+    "sourceFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5488,9 +5488,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/egg-heist/client/Game.client.luau",
       "roblox-games/egg-heist/server/Game.server.luau",
       "roblox-games/egg-heist/shared/GameConfig.luau",
-      "roblox-games/egg-heist/client/Game.client.luau",
       "roblox-games/egg-heist/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -5699,7 +5699,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+    "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6142,9 +6142,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/egg-heist/client/Game.client.luau",
         "roblox-games/egg-heist/server/Game.server.luau",
-        "roblox-games/egg-heist/shared/GameConfig.luau",
-        "roblox-games/egg-heist/client/Game.client.luau"
+        "roblox-games/egg-heist/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6695,9 +6695,9 @@
         "GAMEPLAY"
       ],
       "sourceFiles": [
+        "roblox-games/egg-heist/client/Game.client.luau",
         "roblox-games/egg-heist/server/Game.server.luau",
-        "roblox-games/egg-heist/shared/GameConfig.luau",
-        "roblox-games/egg-heist/client/Game.client.luau"
+        "roblox-games/egg-heist/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -6983,7 +6983,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+    "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7426,9 +7426,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/egg-heist/client/Game.client.luau",
         "roblox-games/egg-heist/server/Game.server.luau",
-        "roblox-games/egg-heist/shared/GameConfig.luau",
-        "roblox-games/egg-heist/client/Game.client.luau"
+        "roblox-games/egg-heist/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -7979,9 +7979,9 @@
         "GAMEPLAY"
       ],
       "sourceFiles": [
+        "roblox-games/egg-heist/client/Game.client.luau",
         "roblox-games/egg-heist/server/Game.server.luau",
-        "roblox-games/egg-heist/shared/GameConfig.luau",
-        "roblox-games/egg-heist/client/Game.client.luau"
+        "roblox-games/egg-heist/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8218,9 +8218,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/egg-heist/client/Game.client.luau",
       "roblox-games/egg-heist/server/Game.server.luau",
       "roblox-games/egg-heist/shared/GameConfig.luau",
-      "roblox-games/egg-heist/client/Game.client.luau",
       "roblox-games/egg-heist/default.project.json"
     ],
     "sourceAnchors": [
@@ -8364,9 +8364,9 @@
     "gameId": "egg-heist",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/egg-heist/client/Game.client.luau",
       "roblox-games/egg-heist/server/Game.server.luau",
       "roblox-games/egg-heist/shared/GameConfig.luau",
-      "roblox-games/egg-heist/client/Game.client.luau",
       "roblox-games/egg-heist/default.project.json"
     ],
     "impact": {
@@ -8439,12 +8439,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생활. 업보와 인과응보의 생활 세계에서 사회관계 선택 × 업보와 인과응보과 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5904f15b7e5c10ff862a8e057746147144760a72f0b5f551533cec08c476c64b",
+      "sourceTreeFingerprint": "093241528eba5b3b8b32af0d8b6ae68150c66f755ec15feecc615311ed810618",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8459,8 +8459,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8563,5 +8563,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:31:11.496Z"
+  "generatedAt": "2026-10-11T10:13:20.566Z"
 }

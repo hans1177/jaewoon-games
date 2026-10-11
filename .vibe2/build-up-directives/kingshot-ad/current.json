@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "kingshot-ad-build-up-g1-44e9b74d7b26",
-  "directiveFingerprint": "44e9b74d7b26cb9f3602c5cc3a46b6930f30b74a379cab27aa141e06431cddbc",
+  "directiveId": "kingshot-ad-build-up-g1-b841e495c638",
+  "directiveFingerprint": "b841e495c63855c38a0ed998567c194aa433d4a18eb68e8716acc196f9f0998b",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "kingshot-ad",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/kingshot-ad",
-  "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+  "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
   "designFingerprint": "6d7df87cf4871e87268b2d3425b52f4ac3921309da5b33d421bfe6fc0c5243c1",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+        "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "6d7df87cf4871e87268b2d3425b52f4ac3921309da5b33d421bfe6fc0c5243c1",
-    "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -5083,7 +5083,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 145084,
+        "sourceBytes": 145853,
         "largestFileBytes": 85974,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5284,7 +5284,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+    "sourceFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5530,9 +5530,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -5741,7 +5741,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6223,9 +6223,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/kingshot-ad/client/Game.client.luau",
         "roblox-games/kingshot-ad/server/Game.server.luau",
-        "roblox-games/kingshot-ad/shared/GameConfig.luau",
-        "roblox-games/kingshot-ad/client/Game.client.luau"
+        "roblox-games/kingshot-ad/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6776,9 +6776,9 @@
         "GAMEPLAY"
       ],
       "sourceFiles": [
+        "roblox-games/kingshot-ad/client/Game.client.luau",
         "roblox-games/kingshot-ad/server/Game.server.luau",
-        "roblox-games/kingshot-ad/shared/GameConfig.luau",
-        "roblox-games/kingshot-ad/client/Game.client.luau"
+        "roblox-games/kingshot-ad/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -7064,7 +7064,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7546,9 +7546,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/kingshot-ad/client/Game.client.luau",
         "roblox-games/kingshot-ad/server/Game.server.luau",
-        "roblox-games/kingshot-ad/shared/GameConfig.luau",
-        "roblox-games/kingshot-ad/client/Game.client.luau"
+        "roblox-games/kingshot-ad/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -8099,9 +8099,9 @@
         "GAMEPLAY"
       ],
       "sourceFiles": [
+        "roblox-games/kingshot-ad/client/Game.client.luau",
         "roblox-games/kingshot-ad/server/Game.server.luau",
-        "roblox-games/kingshot-ad/shared/GameConfig.luau",
-        "roblox-games/kingshot-ad/client/Game.client.luau"
+        "roblox-games/kingshot-ad/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8338,9 +8338,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "sourceAnchors": [
@@ -8484,9 +8484,9 @@
     "gameId": "kingshot-ad",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/kingshot-ad/client/Game.client.luau",
       "roblox-games/kingshot-ad/server/Game.server.luau",
       "roblox-games/kingshot-ad/shared/GameConfig.luau",
-      "roblox-games/kingshot-ad/client/Game.client.luau",
       "roblox-games/kingshot-ad/default.project.json"
     ],
     "impact": {
@@ -8564,7 +8564,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a024aaf6a607c05286734721f7880243359ee5dae1748fbd6c4cb78512d96f62",
+      "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8683,5 +8683,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:30:55.850Z"
+  "generatedAt": "2026-10-11T10:13:19.424Z"
 }

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "crystal-defense-build-up-g1-2fc048c01570",
-  "directiveFingerprint": "2fc048c0157014e47940bca46fb6ce29e90f5b712a6b82d59b27b2d32675d620",
+  "directiveId": "crystal-defense-build-up-g1-96206a519111",
+  "directiveFingerprint": "96206a519111793f1a7961516d6a3d87acbce88810f2e9e69c12f84f2d110c97",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "crystal-defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/crystal-defense",
-  "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+  "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
   "designFingerprint": "571b0d15d7a0dcd6ddc4d727d04efee7b0d2b3a9c6e30b6f6be3b6c5f41ef95f",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+        "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "571b0d15d7a0dcd6ddc4d727d04efee7b0d2b3a9c6e30b6f6be3b6c5f41ef95f",
-    "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3925,7 +3925,7 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -5075,7 +5075,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 142665,
+        "sourceBytes": 143384,
         "largestFileBytes": 85348,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5276,7 +5276,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+    "sourceFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5522,9 +5522,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/crystal-defense/client/Game.client.luau",
       "roblox-games/crystal-defense/server/Game.server.luau",
       "roblox-games/crystal-defense/shared/GameConfig.luau",
-      "roblox-games/crystal-defense/client/Game.client.luau",
       "roblox-games/crystal-defense/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -5733,7 +5733,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6210,9 +6210,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/crystal-defense/client/Game.client.luau",
         "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau",
-        "roblox-games/crystal-defense/client/Game.client.luau"
+        "roblox-games/crystal-defense/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6811,9 +6811,9 @@
         "GAMEPLAY"
       ],
       "sourceFiles": [
+        "roblox-games/crystal-defense/client/Game.client.luau",
         "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau",
-        "roblox-games/crystal-defense/client/Game.client.luau"
+        "roblox-games/crystal-defense/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -7099,7 +7099,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7576,9 +7576,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/crystal-defense/client/Game.client.luau",
         "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau",
-        "roblox-games/crystal-defense/client/Game.client.luau"
+        "roblox-games/crystal-defense/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -8177,9 +8177,9 @@
         "GAMEPLAY"
       ],
       "sourceFiles": [
+        "roblox-games/crystal-defense/client/Game.client.luau",
         "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau",
-        "roblox-games/crystal-defense/client/Game.client.luau"
+        "roblox-games/crystal-defense/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8416,9 +8416,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/crystal-defense/client/Game.client.luau",
       "roblox-games/crystal-defense/server/Game.server.luau",
       "roblox-games/crystal-defense/shared/GameConfig.luau",
-      "roblox-games/crystal-defense/client/Game.client.luau",
       "roblox-games/crystal-defense/default.project.json"
     ],
     "sourceAnchors": [
@@ -8562,9 +8562,9 @@
     "gameId": "crystal-defense",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/crystal-defense/client/Game.client.luau",
       "roblox-games/crystal-defense/server/Game.server.luau",
       "roblox-games/crystal-defense/shared/GameConfig.luau",
-      "roblox-games/crystal-defense/client/Game.client.luau",
       "roblox-games/crystal-defense/default.project.json"
     ],
     "impact": {
@@ -8637,12 +8637,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "54a90f130ed2d14b5bba3740487b43d4b40a7dbdf8f3966ac25725669e9a127a",
+      "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8657,8 +8657,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial USABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8761,5 +8761,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:31:09.951Z"
+  "generatedAt": "2026-10-11T10:13:20.409Z"
 }
