@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-simulator-tycoon-i-adopt-me-build-up-g1-de5e2a67c0b7",
-  "directiveFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "seed-roblox-simulator-tycoon-i-adopt-me-build-up-g2-8d937a67945e",
+  "directiveFingerprint": "8d937a67945e0eb08fadc97b7671ebc44435c2a8e4224e2052d906078719488a",
+  "previousDirectiveFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
+  "forbiddenRepeatFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
   "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
   "gameName": "Pocket Foundry",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
-  "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+  "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
   "designFingerprint": "4c8d03dfcc12efa45be32e4f2fdfa3e21fa45e101abcc23214eb750961c49d14",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+        "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "4c8d03dfcc12efa45be32e4f2fdfa3e21fa45e101abcc23214eb750961c49d14",
-    "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3703,9 +3703,9 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 22,
-      "progression": 125,
-      "ai": 20,
+      "combat": 24,
+      "progression": 117,
+      "ai": 18,
       "save": 36,
       "multiplayer": 5,
       "animation": 27,
@@ -3714,22 +3714,22 @@
       "vfx": 15,
       "camera": 25,
       "audio": 0,
-      "audioDynamics": 14,
+      "audioDynamics": 16,
       "ui": 52,
-      "uiFlow": 25,
+      "uiFlow": 27,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 45,
-      "map": 93,
-      "landmark": 0,
+      "map": 91,
+      "landmark": 4,
       "interaction": 30,
       "inventory": 3,
       "equipment": 0,
       "settings": 1,
       "feedback": 66,
       "session": 4,
-      "content": 50,
-      "choice": 11,
+      "content": 48,
+      "choice": 9,
       "connection": 0,
       "performance": 12,
       "lighting": 33,
@@ -3740,7 +3740,7 @@
     "topFiles": [
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/GameConfig.luau",
-        "score": 203
+        "score": 201
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
@@ -3855,7 +3855,13 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "Pocket Foundry을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
+    "previousFocus": "USABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "currentSourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -3965,8 +3971,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REGIONS",
@@ -3975,18 +3981,18 @@
     },
     {
       "domain": "WORLD_DENSITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WORLD_NAVIGATION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "LANDMARKS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TRAVERSAL",
@@ -4405,8 +4411,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵 확장은 면적만 늘리지 말고 새 지역 역할, 연결 경로, 잠금/해금, 랜드마크, 자원·적·이벤트 차이와 기존 지역으로 돌아올 이유를 함께 설계한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4423,8 +4429,8 @@
     },
     {
       "domain": "WORLD_DENSITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "넓은 공간이 비지 않게 탐색 거리마다 기능성 소품·상호작용·조우·자원·환경 이야기 중 게임에 맞는 요소를 배치하고 반복 복제 밀도를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4432,8 +4438,8 @@
     },
     {
       "domain": "WORLD_NAVIGATION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4441,8 +4447,8 @@
     },
     {
       "domain": "LANDMARKS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4919,26 +4925,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "WORLD_DENSITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "WORLD_NAVIGATION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "LANDMARKS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "INVENTORY_USABILITY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5058,8 +5044,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 92536,
-        "largestFileBytes": 37084,
+        "sourceBytes": 92334,
+        "largestFileBytes": 37003,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5091,8 +5077,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5102,9 +5088,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -5140,7 +5127,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 88,
+        "score": 230,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -5159,22 +5146,6 @@
         ]
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 52,
-        "gapDomains": [
-          "MAP_EXPANSION",
-          "WORLD_DENSITY",
-          "LANDMARKS"
-        ]
-      },
-      {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 28,
-        "gapDomains": [
-          "MAP_EXPANSION"
-        ]
-      },
-      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
         "gapDomains": [
@@ -5189,7 +5160,17 @@
         ]
       },
       {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
       }
@@ -5267,12 +5248,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "priorSourceFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -5730,7 +5711,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6972,7 +6953,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -8386,12 +8367,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "Pocket Foundry을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+      "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8406,8 +8387,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial USABILITY build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8447,12 +8428,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -8504,9 +8485,6 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "MAP_EXPANSION",
-      "WORLD_DENSITY",
-      "WORLD_NAVIGATION",
       "INVENTORY_USABILITY",
       "EQUIPMENT_LOADOUT",
       "SYSTEM_CONNECTION",
@@ -8516,5 +8494,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:30:34.572Z"
+  "generatedAt": "2026-10-11T11:12:04.449Z"
 }
