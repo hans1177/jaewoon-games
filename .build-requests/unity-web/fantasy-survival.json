@@ -1,13 +1,13 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-fantasy-unityweb-rebuild-and-auto-deploy-20261011",
+  "requestId": "owner-fantasy-unityweb-repair-native-source-hashes-and-redeploy-20261011",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
   "sourceCommit": "",
   "outputRoot": "web-games/fantasy-survival",
-  "purpose": "REBUILD_CANONICAL_UNITY_WEB_FANTASY_SURVIVAL_AFTER_COMPANY_LIBRARY_ASSETS_UI_ACTION_MOTION; ALWAYS_ATTEMPT_EXISTING_REVIEWED_CLOUDFLARE_DEPLOY_AFTER_VERIFIED_WEBGL_BUILD; KEEP_GAMEPLAY_AND_SAVE_UNCHANGED; RUNTIME_AND_MOBILE_QA_REQUIRED",
+  "purpose": "REBUILD_FANTASY_SURVIVAL_WEBGL_AFTER_VERIFIED_INTERNAL_NATIVE_MESH_HASH_REPAIR; EXISTING_QA_THEN_AUTOMATIC_REVIEWED_CLOUDFLARE_DEPLOY; GAME_LOGIC_BALANCE_SAVE_PRESERVED",
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
@@ -64,5 +64,5 @@
     "unity-fantasy-survival-ui-v1",
     "unity-fantasy-survival-motion-v1"
   ],
-  "registryVersionRequired": 135
+  "registryVersionRequired": 136
 }
