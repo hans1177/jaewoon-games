@@ -55,6 +55,63 @@ test('current-game asset gap selects licensed external source for on-demand PBR 
   assert.equal(buildAssetSupplyDecisionSummary({...params,gameId:''}).selectedOnDemandExternalGapCount,0,'no unidentified game may trigger external acquisition');
 });
 
+// [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
+test('eligible internal 3d asset auto-fill exposes exact native material derivative and unverified assetization',()=>{
+  const original={
+    id:'shared-forest-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
+    path:'/assets/shared/forest-tree.glb',license:'project-original',
+    status:'REPO_ASSET',sourceSha256:'example-source-expected-hash'
+  };
+  const registry={assets:[original],externalSources:[],
+    baseMaterialLibrary:{families:{MATERIAL:['WOOD','MOD_WORN']}}};
+  const plan=buildAssetSupplyDecisionSummary({
+    gameId:'new-forest',target:'unity',request:'나무 재질 자산화',
+    requirements:[{family:'ENVIRONMENT',role:'tree'}],registry
+  });
+  const action=plan.nextActions.find(row=>row.family==='ENVIRONMENT');
+  assert.equal(action.action,'ADAPT');
+  assert.equal(action.libraryReuse.sourceAssetId,original.id);
+  assert.equal(action.libraryReuse.sourceModel,'assets/shared/forest-tree.glb');
+  assert.equal(action.libraryReuse.expectedSourceSha256,original.sourceSha256);
+  assert.equal(action.libraryReuse.sourceFileAndSha256InspectionRequired,true);
+  assert.equal(action.libraryReuse.derivativeCandidateReady,true);
+  assert.equal(action.materialRefinement.mode,'SUBTLE_CONTEXT_PBR_REAUTHOR');
+  assert.deepEqual(action.materialRefinement.availableSemanticAtoms,['WOOD','MOD_WORN']);
+  assert.equal(action.materialRefinement.sourceMaterialModificationPerformed,false);
+  assert.equal(action.assetization.nativeDccScript,'assets/native-authoring/build-game-visual.py');
+  assert.equal(action.assetization.registryWriteOwner,'EXISTING_GRAPHICS_PRODUCTION_SYNC');
+  assert.equal(action.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  assert.equal(action.assetization.productionVerified,false);
+  assert.equal(action.assetization.runtimeVerified,false);
+  assert.equal(plan.productionVerificationGranted,false);
+  assert.match(assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'new-forest',
+    target:'unity',assetSupplySummary:plan}),/COMPANY LIBRARY MATERIAL DERIVATIVE/);
+  const prompt=buildPrompt({target:'unity',gameId:'new-forest',goal:'나무 재질 자산화',
+    assetProduction:{assetSupplySummary:plan,nativeAuthoringExecution:{enabled:false}}},{
+    files:[{path:'Assets/Scripts/World.cs',editable:true,
+      content:'using UnityEngine; public class World : MonoBehaviour {}'}]
+  },['Assets/Scripts/World.cs']);
+  assert.match(prompt,/"onDemandLibrarySupply"/);
+  assert.match(prompt,/"selectedSourceId":"shared-forest-tree"/);
+  assert.match(prompt,/"sourceModel":"assets\\/shared\\/forest-tree\\.glb"/);
+  assert.match(prompt,/"sourceInspectionRequired":true/);
+  assert.match(prompt,/"runtimeVerified":false/);
+});
+
+test('unusable or rights-blocked library sources never become auto-produced models',()=>{
+  const base={id:'tree-source',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',status:'REPO_ASSET'};
+  for(const blocked of [
+    {...base,path:'/assets/shared/tree.png',license:'project-original'},
+    {...base,path:'/assets/shared/tree.glb',license:'CC-BY-NC'},
+    {...base,path:'/assets/shared/tree.glb',license:'unknown'}
+  ]){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'forest-2',target:'roblox',
+      requirements:[{family:'ENVIRONMENT',role:'tree'}],registry:{assets:[blocked],externalSources:[]}});
+    assert.equal(plan.nextActions.some(row=>row.action==='ADAPT'),false,blocked.license);
+    assert.equal(plan.productionVerificationGranted,false);
+  }
+});
+
 test('audio and UI library gap-fill cannot be routed to the 3D Blender material authoring path',()=>{
   const registry={assets:[],externalSources:[
     {id:'ui-source',name:'UI Pack',category:'UI',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
