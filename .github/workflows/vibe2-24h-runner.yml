@@ -13,6 +13,7 @@ on:
       - 'tools/vibe2-authorized-source-memory.mjs'
       - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/company-system-ai-external-learning-feed.mjs'
+      - 'company-learning/assistant-vibe-coauthoring-log.json'
       - 'tools/vibe2-external-ai-distillation.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/company-build-up-directive.mjs'
@@ -514,6 +515,7 @@ jobs:
             node --check /tmp/vibe2-main/tools/vibe2-external-ai-distillation.mjs
             node /tmp/vibe2-main/tools/company-system-ai-external-learning-feed.mjs \
               --queue=.vibe2/system-ai-queue.json \
+              --assistant-trace=/tmp/vibe2-main/company-learning/assistant-vibe-coauthoring-log.json \
               --output=/tmp/system-ai-external-learning-feed.json | tee /tmp/system-ai-external-learning-feed.log
             node /tmp/vibe2-main/tools/vibe2-external-ai-distillation.mjs \
               --input=/tmp/system-ai-external-learning-feed.json \

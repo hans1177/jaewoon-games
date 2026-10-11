@@ -1,6 +1,11 @@
+// 파일명: qa/cozy-rpg-release-hardening.test.mjs
+// 임포트: 게임 계약 및 실제 배치 함수의 Luau 모의 환경 검사.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 
 const read=p=>fs.readFileSync(p,'utf8');
 const json=p=>JSON.parse(read(p));
@@ -49,6 +54,47 @@ test('포근섬 모바일 UI는 채집 버튼 없이 마을 운영과 정복만 
  assert.match(cozyClient,/controls\.Size=UDim2\.fromOffset\(196,56\)/);
  assert.match(cozyClient,/나무\/작물에 가까이 가서 직접 채집/);
  assert.doesNotMatch(cozyClient,/AutoGatherStatus/);
+});
+
+test('포근섬 실제 배치 함수는 가로 화면에서 메뉴와 행동 탭을 겹치지 않게 배치한다',{skip:!process.env.VIBE2_LUAU_BINARY},()=>{
+ const start=cozyClient.indexOf('local function layoutControls()');
+ const end=cozyClient.indexOf('actionPopup:GetPropertyChangedSignal("Visible")',start);
+ assert.ok(start>=0&&end>start);
+ const source=`
+local Vector2={new=function(x,y)return{X=x,Y=y}end,zero={X=0,Y=0}}
+local UDim2={new=function(xs,x,ys,y)return{xs,x,ys,y}end,fromOffset=function(x,y)return{0,x,0,y}end,fromScale=function(x,y)return{x,0,y,0}end}
+local gui={};local hud={};local resources={};local objective={};local gatherHint={}
+local controls={};local actionPopup={Size=UDim2.fromOffset(260,128)}
+local actionButtons={{},{},{},{}};local startupOverlay={};local touchEnabled=true
+${cozyClient.slice(start,end)}
+local function rect(o,w,h)
+ local s=o.Size;local p=o.Position;local a=o.AnchorPoint or Vector2.zero
+ local rw=w*s[1]+s[2];local rh=h*s[3]+s[4]
+ return{x=w*p[1]+p[2]-rw*a.X,y=h*p[3]+p[4]-rh*a.Y,w=rw,h=rh}
+end
+for _,v in ipairs({{320,480},{390,760},{480,270},{568,274},{667,320},{844,350},{1280,720}})do
+ gui.AbsoluteSize=Vector2.new(v[1],v[2])
+ for _,touch in ipairs({true,false})do
+  touchEnabled=touch;startupOverlay.Parent=nil;actionPopup.Visible=true;layoutControls()
+  local menu=rect(actionPopup,v[1],v[2]);local dock=rect(controls,v[1],v[2])
+  for _,r in ipairs({menu,dock})do assert(r.x>=0 and r.y>=0 and r.x+r.w<=v[1] and r.y+r.h<=v[2],'화면 잘림')end
+  assert(menu.x+menu.w<=dock.x or dock.x+dock.w<=menu.x or menu.y+menu.h<=dock.y or dock.y+dock.h<=menu.y,'메뉴와 행동 탭 겹침')
+  assert(dock.w*.46>=44 and dock.h>=52,'터치 영역 부족')
+  assert(not hud.Visible and not objective.Visible and not gatherHint.Visible and controls.Visible)
+  actionPopup.Visible=false;layoutControls();assert(hud.Visible and objective.Visible and controls.Visible)
+  assert(gatherHint.Visible==not touch)
+  startupOverlay.Parent={};actionPopup.Visible=true;layoutControls()
+  assert(not actionPopup.Visible and not controls.Visible and not hud.Visible)
+ end
+end
+print('COZY_LAYOUT_MOCK_PASS:7_VIEWPORTS')
+`;
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'cozy-layout-'));
+ try{
+  const file=path.join(dir,'layout.luau');fs.writeFileSync(file,source);
+  const result=spawnSync(process.env.VIBE2_LUAU_BINARY,[file],{encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stderr||result.stdout||String(result.error));
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
 test('대충 RPG는 마을 허브와 포탈 5개, 440x440 독립 지역을 가진다',()=>{

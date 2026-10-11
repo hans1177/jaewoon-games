@@ -17,3 +17,10 @@
 assets/roblox/world-ghosts/native/mesh/attack.mp4 -filter -diff -merge -text
 assets/roblox/world-ghosts/native/mesh/idle.mp4 -filter -diff -merge -text
 
+# Small CC0 Roblox source meshes and inspection preview are ordinary Git binaries.
+# Preserve the exact downloaded FBX bytes so native authoring can verify their hashes.
+assets/roblox/actors/sources/quaternius-characters/FBX/*.fbx -filter -diff -merge -text
+assets/roblox/actors/sources/quaternius-cute/FBX/*.fbx -filter -diff -merge -text
+assets/roblox/actors/sources/quaternius-monsters/FBX/*.fbx -filter -diff -merge -text
+assets/roblox/actors/native/quaternius-skeleton/preview-motion.mp4 -filter -diff -merge -text
+

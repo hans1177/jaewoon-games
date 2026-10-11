@@ -17,6 +17,7 @@ local Lighting=game:GetService("Lighting")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 local GhostSkinFactory=nil
 local GhostSkinMotion=nil
 local ghostSkinModulesLoading=false
@@ -298,7 +299,7 @@ seal.BackgroundColor3=Color3.fromRGB(97,36,48);seal.Text="M";seal.Font=Enum.Font
 seal.TextColor3=Color3.fromRGB(221,188,133);seal.ZIndex=103;seal.Parent=loadingLayer
 local sealCorner=Instance.new("UICorner");sealCorner.CornerRadius=UDim.new(1,0);sealCorner.Parent=seal
 local border=Instance.new("UIStroke");border.Color=Color3.fromRGB(158,119,65);border.Thickness=1;border.Parent=seal
-local retry=Instance.new("TextButton");retry.Name="ReconnectManor";retry.AnchorPoint=Vector2.new(.5,.5)
+local retry=CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52});retry.Name="ReconnectManor";retry.AnchorPoint=Vector2.new(.5,.5)
 retry.Position=UDim2.fromScale(.5,.82);retry.Size=UDim2.fromOffset(150,44);retry.Text="다시 연결"
 retry.BackgroundColor3=Color3.fromRGB(73,40,45);retry.TextColor3=Color3.fromRGB(235,218,182);retry.TextSize=14
 retry.Font=Enum.Font.Gotham;retry.Visible=false;retry.ZIndex=105;retry.Parent=loadingLayer
@@ -430,14 +431,10 @@ local function outline(target,transparency)
 end
 
 local function makeButton(parent,text,color)
- local b=Instance.new("TextButton")
- b.BackgroundColor3=color
- b.TextColor3=Color3.fromRGB(255,255,255)
- b.Text=text
- b.TextScaled=true
- b.Font=Enum.Font.GothamBold
+ local b=CommonUI.CreatePrimaryButton({text=text,minWidth=44,minHeight=52,textSize=14,theme={Primary=color,PrimaryTop=color,PrimaryBottom=color,TouchHeight=52}})
+ b.ZIndex=parent:IsA("GuiObject")and parent.ZIndex+1 or 1
+ for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
  b.Parent=parent
- roundify(b,13);outline(b,.45)
  return b
 end
 
@@ -917,61 +914,13 @@ for _, descendant in ipairs(verifiedLearningWorkspace:GetDescendants()) do
 end
 verifiedLearningWorkspace.DescendantAdded:Connect(verifiedLearningTryBindMotionInstance)
 
--- Roblox UI / touch / progression guidance.
-local verifiedLearningGuidance = Instance.new("TextLabel")
-verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
-verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-verifiedLearningGuidance.BackgroundTransparency = 1
-verifiedLearningGuidance.TextWrapped = true
-verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
-verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
-  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
-elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
-elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
-elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
-  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
-elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
-  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
-elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
-else
-  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
-end
-verifiedLearningGuidance.Parent = verifiedLearningRoot
-local verifiedLearningRiskCue = Instance.new("TextLabel")
-verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
-verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
-verifiedLearningRiskCue.BackgroundTransparency = 1
-verifiedLearningRiskCue.TextWrapped = true
-verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
-else
-  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
-end
-verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
-verifiedLearningRiskCue.Parent = verifiedLearningRoot
+-- 안내 UI는 게임의 기존 HUD/메뉴가 소유한다. 학습 바인딩은 화면 위에 문구를 추가하지 않는다.
+verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
 
 -- Roblox skill VFX / camera / motion feedback.
-local function playVerifiedLearningActionFeedback(control)
+local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-  verifiedLearningGuidance.Visible = false
 
   if control then
     local scale = control:FindFirstChild("VerifiedLearningMotionScale")
@@ -984,6 +933,11 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  -- 메뉴 클릭은 버튼 응답만. 전투/카메라 연출은 서버가 확인한 해당 행동만 사용한다.
+
+  if serverConfirmed~=true then return end
+  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
   if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
@@ -1038,10 +992,6 @@ local function playVerifiedLearningActionFeedback(control)
   end
   end
 
-  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-    verifiedLearningRiskCue.Visible = true
-    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-  end
 end
 
 local verifiedLearningLastControl = nil
@@ -1065,7 +1015,7 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
@@ -2785,7 +2735,7 @@ local function updateCooldownButton(button,readyAt,readyText,cooldownText,cost,g
  button.BackgroundTransparency=ready and 0 or .28
  if guideProfile then
   local status=not cooldownReady and string.format("%.1f초 남음",left)or not energyReady and"에너지 부족"or"준비"
-  button.Text=abilityGuideText(readyText,guideProfile,need,guideCooldown,status)
+  button.Text=readyText.."\n"..(status=="준비"and(need.."E")or status)
  elseif not cooldownReady then button.Text=string.format("%s %.1f",cooldownText,left)
  elseif not energyReady then button.Text=string.format("%s %dE",cooldownText,need)
  else button.Text=readyText end
@@ -2831,8 +2781,12 @@ RunService.RenderStepped:Connect(function(dt)
 end)
 
 -- 라운드 결과 화면
-local resultPanel=Instance.new("Frame")
+local resultPanel=Instance.new("ScrollingFrame")
 resultPanel.Name="RoundResult"
+resultPanel.CanvasSize=UDim2.fromOffset(0,282)
+resultPanel.ScrollBarThickness=4
+resultPanel.ScrollingDirection=Enum.ScrollingDirection.Y
+resultPanel.Active=true
 resultPanel.AnchorPoint=Vector2.new(.5,.5)
 resultPanel.Position=UDim2.fromScale(.5,.31)
 resultPanel.Size=UDim2.fromOffset(340,282)
@@ -3124,6 +3078,64 @@ spectatorText.Font=Enum.Font.GothamBold
 spectatorText.ZIndex=16
 spectatorText.Parent=spectatorPanel
 
+-- 알림은 기존 상태를 유지하면서 한 스크롤 영역 안에서 차례로 표시한다.
+local matchNotices=Instance.new("ScrollingFrame")
+matchNotices.Name="MatchNotices"
+matchNotices.BackgroundTransparency=1
+matchNotices.BorderSizePixel=0
+matchNotices.AutomaticCanvasSize=Enum.AutomaticSize.Y
+matchNotices.CanvasSize=UDim2.new()
+matchNotices.ScrollBarThickness=3
+matchNotices.Active=true
+matchNotices.ZIndex=15
+matchNotices.Parent=gui
+local noticeList=Instance.new("UIListLayout")
+noticeList.Padding=UDim.new(0,6)
+noticeList.SortOrder=Enum.SortOrder.LayoutOrder
+noticeList.Parent=matchNotices
+aiTeamChatLimit:Destroy()
+for index,label in ipairs({spectatorPanel,pressureLabel,mapContentToast,aiTeamChat,combatActionStatus})do
+ label.Parent=matchNotices
+ label.AnchorPoint=Vector2.zero
+ label.Position=UDim2.new()
+ label.Size=UDim2.new(1,-6,0,label==spectatorPanel and 56 or 44)
+ label.LayoutOrder=index
+ if label:IsA("TextLabel")then
+  label.TextWrapped=true
+  label.AutomaticSize=Enum.AutomaticSize.Y
+ end
+end
+local function layoutMatchHud()
+ local v=gui.AbsoluteSize
+ if v.X<=0 or v.Y<=0 then return end
+ local landscape=v.X>v.Y and v.Y<500
+ local hudWidth=math.min(342,landscape and v.X-308 or v.X-156)
+ hud.AnchorPoint=Vector2.zero;hud.Position=UDim2.fromOffset(8,8)
+ hud.Size=UDim2.fromOffset(hudWidth,128)
+ mapLine.Position=UDim2.fromOffset(8,4);mapLine.Size=UDim2.new(1,-68,0,28)
+ mapLine.TextScaled=false;mapLine.TextSize=12;mapLine.TextWrapped=true
+ roundLine.Position=UDim2.new(1,-56,0,4);roundLine.Size=UDim2.fromOffset(48,28)
+ roleLine.Position=UDim2.fromOffset(8,34);roleLine.Size=UDim2.new(1,-16,0,28);roleLine.TextWrapped=true
+ objectiveLine.Position=UDim2.fromOffset(8,64);objectiveLine.Size=UDim2.new(1,-16,0,30);objectiveLine.TextSize=12;objectiveLine.TextWrapped=true
+ skillGuideLine.Position=UDim2.fromOffset(8,96);skillGuideLine.Size=UDim2.new(1,-16,0,16);skillGuideLine.TextSize=11
+ energyTrack.Position=UDim2.fromOffset(8,118);energyLabel.Position=UDim2.new(1,-78,0,112)
+ actionDock.AnchorPoint=Vector2.new(1,1);actionDock.Position=UDim2.new(1,-8,1,-100)
+ actionDock.Size=UDim2.fromOffset(landscape and 284 or 144,landscape and 56 or 116)
+ for index,button in ipairs({rescueButton,dashButton,humanAbilityButton})do
+  button.Size=UDim2.fromOffset(landscape and 92 or (index==3 and 144 or 69),56)
+  button.Position=UDim2.fromOffset(landscape and (index-1)*96 or (index==2 and 75 or 0),not landscape and index==3 and 60 or 0)
+  button.TextScaled=false;button.TextSize=12;button.TextWrapped=true
+ end
+ infectButton.Size=UDim2.fromOffset(landscape and 140 or 144,56)
+ infectButton.Position=UDim2.fromOffset(0,0)
+ abilityButton.Size=infectButton.Size;abilityButton.Position=UDim2.fromOffset(landscape and 144 or 0,landscape and 0 or 60)
+ matchNotices.Position=UDim2.fromOffset(8,144)
+ matchNotices.Size=UDim2.fromOffset(landscape and math.max(120,v.X-308)or v.X-16,math.max(24,landscape and v.Y-244 or v.Y-368))
+ resultPanel.Position=UDim2.fromScale(.5,.5);resultPanel.Size=UDim2.fromOffset(math.min(340,v.X-16),math.min(282,v.Y-16))
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutMatchHud)
+layoutMatchHud()
+
 local function monsterName()
  local id=p:GetAttribute("MonsterForm")or"DRACULA"
  for _,f in ipairs(C.MonsterForms)do if f.Id==id then return f.Name end end
@@ -3161,11 +3173,11 @@ local function render()
  local objectivesDone=tonumber(p:GetAttribute("ObjectivesDone"))or 0
  local objectivesTotal=math.max(1,tonumber(p:GetAttribute("ObjectivesTotal"))or tonumber(C.ObjectiveCount)or 4)
  if role=="MONSTER"then
-  objectiveLine.Text="목표 · 인간 추적 → 감염 → 전멸"
-  skillGuideLine.Text="스킬 · "..currentAbilityName().." · "..currentAbilityDescription()
+  objectiveLine.Text="인간을 찾아 감염"
+  skillGuideLine.Text=currentAbilityName()
  elseif role=="SURVIVOR"then
-  objectiveLine.Text=string.format("목표 · 단말 %d/%d 작동 → 몬스터 정화 → 탈출",objectivesDone,objectivesTotal)
-  skillGuideLine.Text="스킬 · "..currentHumanAbilityName().." · "..currentHumanAbilityDescription()
+  objectiveLine.Text=string.format("단말 %d/%d · 정화 후 탈출",objectivesDone,objectivesTotal)
+  skillGuideLine.Text=currentHumanAbilityName()
  elseif role=="ELIMINATED"then
   objectiveLine.Text="이번 판 탈락 · 팀 결과를 기다리는 중"
   skillGuideLine.Text="관전 중"
@@ -3197,6 +3209,7 @@ local function render()
  local lobbyWaiting=not running and not resultCode and not spectating
  -- PersonalManorUI owns all lobby graphics and navigation.
  hud.Visible=inMatch
+ matchNotices.Visible=inMatch
  roomBrowserPanel.Visible=false
  roomInfoPanel.Visible=false
  roomSlotsPanel.Visible=false

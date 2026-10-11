@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import {validateExternalAiCandidate} from './vibe2-external-ai-distillation.mjs';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
@@ -70,7 +71,36 @@ function eligible(task={}){
   const model=marker(ev,'external-ai-model:');
   return SHA256.test(sha)&&Boolean(model);
 }
-export function buildExternalAiLearningFeed(queueInput={}){
+export function buildAssistantTraceLearningFeed(traceInput={}){
+  const records=[],actions=[],seen=new Set();
+  for(const trace of traceInput.records||[]){
+    if(!trace||typeof trace!=='object')continue;
+    const id=clean(trace.id);
+    const identity=crypto.createHash('sha256').update(JSON.stringify(trace)).digest('hex');
+    const key=id+':'+identity;
+    if(seen.has(key))continue;
+    seen.add(key);
+    const candidate={
+      id:'assistant-'+(id||'anonymous')+'-'+identity.slice(0,12),sourceKind:'external-ai',
+      provider:'OPENAI_ASSISTANT_TRACE',model:clean(trace.model)||'GPT_ASSISTANT_EXACT_MODEL_UNRECORDED',
+      rawOutputSha256:identity,engine:clean(trace.engine)||'cross-engine',gameId:clean(trace.gameId)||'cross-game',
+      domains:uniq(trace.domains||['DEBUGGING']),
+      distilledPatterns:uniq(trace.reusablePatterns).filter(x=>x.length<=240),
+      cautions:uniq(trace.avoidPatterns).filter(x=>x.length<=240),
+      sourceWrite:false,productionPass:false,authorityExpanded:false,
+      verification:trace.verification||{}
+    };
+    const verdict=validateExternalAiCandidate(candidate);
+    // TRACE_ONLY·학습 상태·자기 보고 QA만으로 검증된 지식에 승격하지 않는다.
+    // 기존 독립 검증 계약을 만족한 기록만 기존 증류 단계에 전달한다.
+    actions.push({id:id||identity,actionType:clean(trace.actionType)||'UNCLASSIFIED',gameId:candidate.gameId,
+      traceSha256:identity,state:verdict.ok?'VERIFIED_DISTILLATION_CANDIDATE':'VERIFICATION_REQUIRED',
+      reasons:verdict.reasons,evidence:uniq(trace.evidence),rawOutputStored:false});
+    if(verdict.ok)records.push(candidate);
+  }
+  return{records,actions,rawOutputStored:false,productionPass:false,directTrainingSample:false};
+}
+export function buildExternalAiLearningFeed(queueInput={},assistantTraceInput={}){
   const records=[];
   for(const task of queueInput.tasks||[]){
     if(!eligible(task))continue;
@@ -108,13 +138,20 @@ export function buildExternalAiLearningFeed(queueInput={}){
       }
     });
   }
-  return{version:1,kind:'company-system-ai-external-learning-feed',records,rawOutputStored:false,verifiedOnly:true};
+  const assistant=buildAssistantTraceLearningFeed(assistantTraceInput);
+  return{version:1,kind:'company-system-ai-external-learning-feed',records:[...records,...assistant.records],
+    assistantActions:assistant.actions,rawOutputStored:false,verifiedOnly:true};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const a=args();
-  const result=buildExternalAiLearningFeed(readJson(clean(a.queue),{tasks:[]}));
+  const traceFile=clean(a['assistant-trace']);
+  const traces=traceFile?JSON.parse(fs.readFileSync(traceFile,'utf8')):{records:[]};
+  if(!Array.isArray(traces.records))throw new Error('ASSISTANT_TRACE_RECORDS_REQUIRED');
+  const result=buildExternalAiLearningFeed(readJson(clean(a.queue),{tasks:[]}),traces);
   writeJson(clean(a.output)||'/tmp/system-ai-external-learning-feed.json',result);
   console.log('SYSTEM_AI_EXTERNAL_LEARNING_FEED=PASS');
   console.log('SYSTEM_AI_EXTERNAL_LEARNING_CANDIDATES='+result.records.length);
+  console.log('ASSISTANT_ACTIONS_CAPTURED='+result.assistantActions.length);
+  console.log('ASSISTANT_ACTIONS_VERIFICATION_REQUIRED='+result.assistantActions.filter(x=>x.state==='VERIFICATION_REQUIRED').length);
   console.log('SYSTEM_AI_EXTERNAL_LEARNING_RAW_OUTPUT_STORED=NO');
 }

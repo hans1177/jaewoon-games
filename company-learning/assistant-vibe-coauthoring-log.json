@@ -2,7 +2,7 @@
   "version": 6,
   "authority": "ASSISTANT_VIBE_COAUTHORING_TRACE",
   "status": "ACTIVE",
-  "recordedAt": "2026-10-01",
+  "recordedAt": "2026-10-12",
   "purpose": "Record every assistant-led Vibe Web coauthoring decision, source change, review, QA result, bottleneck repair, and production lesson as traceable learning evidence without bypassing the existing verified experience and canonical training gates.",
   "policy": {
     "everyAssistantCoauthoringActionMustBeRecorded": true,
@@ -908,6 +908,50 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "APPLY_FIRST_AND_PRECISION_AUTHORING_IMPLEMENTED_ON_PR_BRANCH; LATEST_CI_PENDING; RUNTIME_REOBSERVATION_REQUIRED_BEFORE_QUALITY_CLOSURE"
+    },
+    {
+      "id": "assistant_roblox_mobile_asset_integration_20261012",
+      "date": "2026-10-12",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "PR7620/7630 shared eight files; cozy landscape popup overlapped action dock; registry139 invalidated RPG managed asset fingerprints. Current runtime queue also reports source binding, package, old shared-preflight and real design implementation failures.",
+      "decision": "Preserve existing Vibe2/Vibe3 and F0-F9 flow, gameplay/server/save/balance authority and held Unity/Web development; repair proven source causes and retain unverified runtime states.",
+      "change": "Integrated main7620 into7630; repaired actual cozy layout; completed asset file roles and reusable scope from existing registry sync; updated only canonical RPG asset identity fields. Added two source-verified advisory lessons through the existing external-AI distillation store and tested System AI retrieval in PR7663.",
+      "evidence": [
+        "pull-request:7630",
+        "source-revision:758c1fdaf3b58e512bd868d2e1bc2623aad7cfa8",
+        "merged-main-7620:77395ea67394d73d1e0675ba934bcaf187d8508f",
+        "pull-request:7663",
+        "learning-source-revision:6c4625fd8b2e08e7e5068b6522da758fad07e95a",
+        "qa:qa/cozy-rpg-release-hardening.test.mjs:7-viewports-mocked-Luau-only",
+        "qa:Roblox-related-regression:123-pass",
+        "qa:distillation-and-actual-context-retrieval:36-pass",
+        "artifact:sha256:c24b281f363f3747f6fb4008abbe69495ccbecdafe303bfd6b0e1130bdd4ef54:local-Rojo-only",
+        "runtime-state:company-runtime:7b755dcbcad",
+        "actions-run:38179250793:source-plan-queued"
+      ],
+      "reusablePatterns": [
+        "TEST_EXISTING_LAYOUT_FUNCTION_ACROSS_INPUT_VIEWPORT_MENU_STATES",
+        "DERIVE_BINDING_FINGERPRINTS_FROM_CANONICAL_PLAN",
+        "REVIEW_BINDER_DIFF_TO_PRESERVE_INTENTIONALLY_REMOVED_CLIENT_EFFECTS",
+        "CONNECT_SOURCE_VERIFIED_REPAIRS_TO_EXISTING_ADVISORY_RETRIEVAL"
+      ],
+      "avoidPatterns": [
+        "STAMPING_RUNTIME_PASS_FROM_STATIC_QA",
+        "REPAIRING_DESIGN_IMPLEMENTATION_BY_ONLY_CHANGING_GENRE_LABELS",
+        "RESUMING_HELD_UNITY_DEVELOPMENT_TO_CLEAR_UNRELATED_REGRESSIONS",
+        "CLAIMING_WEIGHT_TRAINING_FROM_KNOWLEDGE_STORE_UPDATE"
+      ],
+      "qa": [
+        "Roblox related regressions 123/123 PASS",
+        "Vibe distillation/retrieval regressions 36/36 PASS",
+        "RPG exact-revision Rojo package PASS; engine NOT_RUN",
+        "main-relative source security findings0",
+        "CI queued/pending; main7630 integration NOT_COMPLETE",
+        "Roblox actual mobile touch/capture/PBR display/F9/release NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "PR7630_SOURCE_REPAIR_AND_PR7663_STATIC_ADVISORY_KNOWLEDGE_PENDING_REQUIRED_CI;NO_TRAINING_SAMPLE_OR_WEIGHT_PROMOTION"
     }
   ]
 }

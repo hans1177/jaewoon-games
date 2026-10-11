@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 const root='assets/roblox/rpg-menu/';
 const model=fs.readFileSync(root+'RPGMenuModel.luau','utf8');
 const menu=fs.readFileSync(root+'RPGMenu.luau','utf8');
+const commonUI=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
 const luau=process.env.VIBE2_LUAU_BINARY;
 function run(source){
  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'rpg-menu-'));
@@ -62,8 +63,9 @@ local function signal()
 end
 local instances={}
 local methods={}
-function methods:IsA(class)return self.ClassName==class or (class=='GuiObject' and (self.ClassName=='Frame' or self.ClassName=='TextLabel' or self.ClassName=='TextButton' or self.ClassName=='TextBox' or self.ClassName=='ScrollingFrame'))end
+function methods:IsA(class)return self.ClassName==class or (class=='GuiObject' and (self.ClassName=='Frame' or self.ClassName=='TextLabel' or self.ClassName=='TextButton' or self.ClassName=='ImageButton' or self.ClassName=='ImageLabel' or self.ClassName=='TextBox' or self.ClassName=='ScrollingFrame'))end
 function methods:GetChildren()return table.clone(self.children)end
+function methods:GetDescendants()local out={};for _,c in ipairs(self.children)do table.insert(out,c);for _,d in ipairs(c:GetDescendants())do table.insert(out,d)end end;return out end
 function methods:GetAttributes()return table.clone(self.attributes)end
 function methods:SetAttribute(k,v)self.attributes[k]=v;self.AttributeChanged:Fire(k)end
 function methods:GetAttribute(k)return self.attributes[k]end
@@ -72,7 +74,7 @@ function methods:FindFirstChildOfClass(class)for _,c in ipairs(self.children)do 
 function methods:Destroy()self.Parent=nil end
 function methods:WaitForChild()return {}end
 local Instance={new=function(class)
- local data={ClassName=class,children={},attributes={},ZIndex=1,Activated=signal(),ChildAdded=signal(),ChildRemoved=signal(),AttributeChanged=signal(),CharacterAdded=signal(),Destroying=signal()}
+ local data={ClassName=class,children={},attributes={},ZIndex=1,Activated=signal(),MouseEnter=signal(),MouseLeave=signal(),MouseButton1Down=signal(),MouseButton1Up=signal(),ChildAdded=signal(),ChildRemoved=signal(),AttributeChanged=signal(),CharacterAdded=signal(),Destroying=signal()}
  local object=setmetatable({},{__index=function(_,k)
   if methods[k] then return methods[k] end
   if data[k]~=nil then return data[k] end
@@ -87,6 +89,8 @@ local Instance={new=function(class)
  end});table.insert(instances,object);return object
 end}
 local Color3={fromRGB=function(...)return{}end,new=function(...)return{}end}
+local ColorSequence={new=function(...)return{}end}
+local ColorSequenceKeypoint={new=function(...)return{}end}
 local Vector2={new=function(x,y)return{X=x,Y=y}end}
 local UDim={new=function(...)return{}end}
 local UDim2={new=function(...)return{}end,fromOffset=function(x,y)return{X=x,Y=y}end,fromScale=function(...)return{}end}
@@ -94,8 +98,9 @@ local Enum=setmetatable({},{__index=function(_,k)return setmetatable({},{__index
 local input={InputBegan=signal(),GamepadEnabled=false,focused=nil,GetFocusedTextBox=function(self)return self.focused end}
 local selection={}
 local game={GetService=function(_,name)return name=='UserInputService' and input or selection end}
-local script={Parent={WaitForChild=function()return {}end}}
-local require=function()return Model end
+local CommonUI=(function()${commonUI}\nend)()
+local script={Parent={WaitForChild=function(_,name)return name end}}
+local require=function(name)return name=="RobloxCommonUI"and CommonUI or Model end
 local task={defer=function(fn,...)fn(...)end}
 local Menu=(function()${menu}\nend)()
 local parent=Instance.new('PlayerGui')
@@ -128,7 +133,7 @@ assert(weaponOrders==1 and armorOrders==1,'shop callbacks belong to client owner
 player:SetAttribute('Gold',0)
 assert(not find('BuyWeapon').Active and not find('BuyArmor').Active,'no client-side false purchase')
 find('Tab1').Activated:Fire()
-local stableSlot=find('InventorySlot1');player:SetAttribute('Gold',10);assert(find('InventorySlot1')==stableSlot)
+local stableSlot=find('InventorySlot1');assert(stableSlot:GetAttribute('StudioAssetPack')=='roblox-common-ui-v1');player:SetAttribute('Gold',10);assert(find('InventorySlot1')==stableSlot)
 find('Filter3').Activated:Fire();find('ItemAction').Activated:Fire();assert(equipped==1 and tool.Parent==character)
 local another=Instance.new('Tool');another.Name='가나다 도구';another.Parent=backpack
 assert(find('InventorySlot1').ItemName.Text=='실제 도구','default equipped-first ordering')
@@ -143,6 +148,23 @@ input.focused={};input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 input.focused=nil;input.InputBegan:Fire({KeyCode='Escape'},false);assert(not api.isOpen() and combat)
 input.InputBegan:Fire({KeyCode='B'},false);assert(api.isOpen())
 find('CloseMenu').Activated:Fire();assert(not api.isOpen() and combat)
+-- Run the shared action-menu owner, including actual callbacks and modal restoration.
+local actionsGui=Instance.new('ScreenGui');actionsGui.AbsoluteSize=Vector2.new(320,568);actionsGui.Parent=parent
+local actionRoot=Instance.new('Frame');actionRoot.Parent=actionsGui
+local actionList=Instance.new('ScrollingFrame');actionList.Parent=actionRoot
+local actionTitle=Instance.new('TextLabel');actionTitle.Parent=actionRoot
+local actionStatus=Instance.new('TextLabel');actionStatus.Parent=actionRoot
+local calls=0
+local actionMenu=CommonUI.AdaptActionMenu(actionsGui,actionRoot,actionList,actionTitle,actionStatus,nil,nil,{label='채집',activate=function()calls+=1 end})
+assert(not actionRoot.Visible and not actionMenu.isOpen())
+find('PrimaryGameAction').Activated:Fire();assert(calls==1)
+find('GameActionsMenu').Activated:Fire();assert(actionMenu.isOpen() and actionRoot.Visible)
+assert(not find('PrimaryGameAction').Visible and not find('MobileGameStatus').Visible)
+assert(find('ActionMenuShade').Visible and actionsGui:GetAttribute('GameMenuOpen')==true)
+find('CloseActionsMenu').Activated:Fire();assert(not actionMenu.isOpen())
+assert(find('PrimaryGameAction').Visible and find('MobileGameStatus').Visible and not find('ActionMenuShade').Visible)
+assert(CommonUI.ActionLabel({Label='광석 판매',Kind='ECONOMY'},1)=='광석 판매')
+assert(CommonUI.ActionLabel({Label=string.rep('긴 설명',20),Kind='BUILD'},2)=='건설 2')
 `));
 
 test('in-game Roblox sorting is touch-accessible and owns no save or inventory state',()=>{
@@ -270,4 +292,42 @@ test('each authored world object uses its existing server action with replicated
  assert.match(client,/BoundInteractionState/);
  assert.match(client,/OwnsGameplayAuthority",false/);
  assert.doesNotMatch(client,/p:SetAttribute\(.*Gold|p:SetAttribute\(.*WeaponTier/);
+});
+
+
+test('HUD regions stay separate on narrow phones and rotation; dialog priority is exclusive',{skip:!luau},()=>run(`
+local Model=(function()${model}\nend)()
+for _,v in ipairs({{320,480},{320,568},{393,852},{568,320},{844,390},{1280,720}})do
+ local layout=Model.hudLayout(v[1],v[2])
+ local ids={'stats','party','menu','village','notice','combat'}
+ for i,id in ipairs(ids)do
+  local a=layout[id]
+  assert(a.x>=0 and a.y>=0 and a.x+a.width<=v[1] and a.y+a.height<=v[2],id..' clipped')
+  for j=i+1,#ids do
+   local b=layout[ids[j]]
+   local intersects=math.min(a.x+a.width,b.x+b.width)>math.max(a.x,b.x) and math.min(a.y+a.height,b.y+b.height)>math.max(a.y,b.y)
+   assert(not intersects,id..' overlaps '..ids[j])
+  end
+ end
+ assert(layout.combat.y+layout.combat.height<=v[2]-96,'native jump space occupied')
+end
+assert(Model.hudMessage(false,false,false,true,true,true,true)=='BOSS')
+assert(Model.hudMessage(false,false,false,false,true,true,true)=='SPEECH')
+assert(Model.hudMessage(false,false,false,false,false,true,true)=='OBJECT')
+assert(Model.hudMessage(false,false,false,false,false,false,true)=='TIPS')
+assert(Model.hudMessage(false,false,false,false,false,false,false)=='OBJECTIVE')
+for _,blocked in ipairs({{true,false,false},{false,true,false},{false,false,true}})do
+ assert(Model.hudMessage(blocked[1],blocked[2],blocked[3],true,true,true,true)=='NONE')
+end
+`));
+
+
+test('three games vendor and call the existing common touch controls',()=>{
+ for(const game of fs.readdirSync('roblox-games').filter(game=>fs.existsSync('roblox-games/'+game+'/client/Game.client.luau'))){
+  assert.equal(fs.readFileSync('roblox-games/'+game+'/shared/RobloxCommonUI.luau','utf8'),commonUI);
+  const client=fs.readFileSync('roblox-games/'+game+'/client/Game.client.luau','utf8');
+  assert.match(client,/CommonUI.CreatePrimaryButton/);
+ }
+ assert.match(menu,/CommonUI.CreateEquipmentSlot/);
+ assert.match(menu,/CommonUI.CreateInventorySlot/);
 });

@@ -1,8 +1,8 @@
 {
-  "version": 138,
+  "version": 139,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-11T09:49:00.000Z",
+  "updatedAt": "2026-10-11T15:26:51.037565+00:00",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -1914,7 +1914,10 @@
         "support": [
           "assets/roblox/rpg-menu/quality-evidence.json"
         ]
-      }
+      },
+      "dependencies": [
+        "roblox-common-ui-v1"
+      ]
     },
     {
       "id": "roblox-insect-spider-hd",
@@ -80367,6 +80370,2591 @@
       "gameplayAuthority": false,
       "saveAuthority": false,
       "cosmeticOnly": true
+    },
+    {
+      "id": "external-actor-barbarian",
+      "title": "barbarian",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/barbarian.glb",
+      "masterGlb": "assets/roblox/actors/native/barbarian.glb",
+      "masterGlbHash": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+      "sourceHash": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+      "sourceFiles": [
+        "assets/roblox/actors/native/barbarian.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "sourcePack": "kaykit-adventurers",
+      "originalSourceHash": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/barbarian.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-knight",
+      "title": "knight",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/knight.glb",
+      "masterGlb": "assets/roblox/actors/native/knight.glb",
+      "masterGlbHash": "d945e019f0e07e34297296c3d982e379051696ecffeba9e9799b64077f7e1155",
+      "sourceHash": "d945e019f0e07e34297296c3d982e379051696ecffeba9e9799b64077f7e1155",
+      "sourceFiles": [
+        "assets/roblox/actors/native/knight.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "sourcePack": "kaykit-adventurers",
+      "originalSourceHash": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/knight.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mage",
+      "title": "mage",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mage.glb",
+      "masterGlb": "assets/roblox/actors/native/mage.glb",
+      "masterGlbHash": "0deafa1e3156705fa617f2a125381792ed58ab4efeeefa8a0f255c37a20cc75c",
+      "sourceHash": "0deafa1e3156705fa617f2a125381792ed58ab4efeeefa8a0f255c37a20cc75c",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mage.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "sourcePack": "kaykit-adventurers",
+      "originalSourceHash": "cf898585da33fab50c724d31605fb931eb2912e6d2280092141e98ca81ad507d",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mage.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-rogue",
+      "title": "rogue",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/rogue.glb",
+      "masterGlb": "assets/roblox/actors/native/rogue.glb",
+      "masterGlbHash": "9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683",
+      "sourceHash": "9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683",
+      "sourceFiles": [
+        "assets/roblox/actors/native/rogue.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "sourcePack": "kaykit-adventurers",
+      "originalSourceHash": "e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/rogue.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-rogue-hooded",
+      "title": "rogue-hooded",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/rogue-hooded.glb",
+      "masterGlb": "assets/roblox/actors/native/rogue-hooded.glb",
+      "masterGlbHash": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
+      "sourceHash": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
+      "sourceFiles": [
+        "assets/roblox/actors/native/rogue-hooded.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "sourcePack": "kaykit-adventurers",
+      "originalSourceHash": "93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/rogue-hooded.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-skeleton-mage",
+      "title": "skeleton-mage",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/skeleton-mage.glb",
+      "masterGlb": "assets/roblox/actors/native/skeleton-mage.glb",
+      "masterGlbHash": "0bc67a2346251675710c65a62e382614eaa4684f22b795a392a7dc846c4850b0",
+      "sourceHash": "0bc67a2346251675710c65a62e382614eaa4684f22b795a392a7dc846c4850b0",
+      "sourceFiles": [
+        "assets/roblox/actors/native/skeleton-mage.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "sourcePack": "kaykit-skeletons",
+      "originalSourceHash": "e05b0f5cfa395271c9f75fd07c0a0613c56f401ece4ab644e080001a79971075",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/skeleton-mage.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-skeleton-minion",
+      "title": "skeleton-minion",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/skeleton-minion.glb",
+      "masterGlb": "assets/roblox/actors/native/skeleton-minion.glb",
+      "masterGlbHash": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
+      "sourceHash": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
+      "sourceFiles": [
+        "assets/roblox/actors/native/skeleton-minion.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "sourcePack": "kaykit-skeletons",
+      "originalSourceHash": "6ffc003f895bed0b074791e0e490846210a2e2f8fc7da300aba53cc185f95968",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/skeleton-minion.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-skeleton-rogue",
+      "title": "skeleton-rogue",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/skeleton-rogue.glb",
+      "masterGlb": "assets/roblox/actors/native/skeleton-rogue.glb",
+      "masterGlbHash": "311e1736e90a666265cf910e9ab6433ec8da960d1dc36501be9fbea4efbe808d",
+      "sourceHash": "311e1736e90a666265cf910e9ab6433ec8da960d1dc36501be9fbea4efbe808d",
+      "sourceFiles": [
+        "assets/roblox/actors/native/skeleton-rogue.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "sourcePack": "kaykit-skeletons",
+      "originalSourceHash": "4003f2b77891bb56f7e0de7d555abcb497aebbcaee35b614211f16275f9ccae3",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/skeleton-rogue.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-skeleton-warrior",
+      "title": "skeleton-warrior",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/skeleton-warrior.glb",
+      "masterGlb": "assets/roblox/actors/native/skeleton-warrior.glb",
+      "masterGlbHash": "c2282ee11d91c645ed597987b5bcebffa1c5f59fe3ffc947a5ba586789c7b318",
+      "sourceHash": "c2282ee11d91c645ed597987b5bcebffa1c5f59fe3ffc947a5ba586789c7b318",
+      "sourceFiles": [
+        "assets/roblox/actors/native/skeleton-warrior.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "sourcePack": "kaykit-skeletons",
+      "originalSourceHash": "178b6fda810b814c250d8a2010c24dfd9b458b9006dd323353e620b7ff118bbe",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/skeleton-warrior.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-female-a",
+      "title": "mini-character-female-a",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-female-a.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-female-a.glb",
+      "masterGlbHash": "78313254b52ad7fc61959218e494e484649eae5fda2cbef2b632ab8b1e371861",
+      "sourceHash": "78313254b52ad7fc61959218e494e484649eae5fda2cbef2b632ab8b1e371861",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-female-a.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "8cfcff43460da8b421f2a7fdfb43ec177321cad2746db9497cbf128d5806e2a8",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-female-a.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-female-b",
+      "title": "mini-character-female-b",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-female-b.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-female-b.glb",
+      "masterGlbHash": "9a363dd0ea450bf9d634dee6b4dae00b3f9f0ee50a4436c73ec000177786e963",
+      "sourceHash": "9a363dd0ea450bf9d634dee6b4dae00b3f9f0ee50a4436c73ec000177786e963",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-female-b.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "2288438e7baf9acc91a870c82dc00d66710bb486592cfc3474ef8ed93a03863a",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-female-b.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-female-c",
+      "title": "mini-character-female-c",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-female-c.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-female-c.glb",
+      "masterGlbHash": "0c3ec9ef1c3e8122ba9e43f9fa9f9fa708369a494f2ca0a1834ccce9ff7a0324",
+      "sourceHash": "0c3ec9ef1c3e8122ba9e43f9fa9f9fa708369a494f2ca0a1834ccce9ff7a0324",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-female-c.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "3cd9e1b5d6409fce0ba1af617d9e008c3069493185a4c100f49fb99a2626a055",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-female-c.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-female-d",
+      "title": "mini-character-female-d",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-female-d.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-female-d.glb",
+      "masterGlbHash": "f4a12b5ebca33dde198f6770b36f6078a4b0d6828841b523406dd275990ca619",
+      "sourceHash": "f4a12b5ebca33dde198f6770b36f6078a4b0d6828841b523406dd275990ca619",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-female-d.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "67f61708743bd34f91a4c2ba8160b61bf2e7d4ec2ca6647dfe99873422561410",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-female-d.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-female-e",
+      "title": "mini-character-female-e",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-female-e.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-female-e.glb",
+      "masterGlbHash": "8b6b73e09e6b7a8751818bb096008b071d4d36fd3b77c7dd17f6ef17cebd87b2",
+      "sourceHash": "8b6b73e09e6b7a8751818bb096008b071d4d36fd3b77c7dd17f6ef17cebd87b2",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-female-e.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "3ee3939f80d718945fcb9199f909a92c39669e38aeec7f544536b5dce6e79f98",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-female-e.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-female-f",
+      "title": "mini-character-female-f",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-female-f.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-female-f.glb",
+      "masterGlbHash": "1f77c1b5a024bae81b97833c7ab05c8164390ab066524a8fba884b29f11f8332",
+      "sourceHash": "1f77c1b5a024bae81b97833c7ab05c8164390ab066524a8fba884b29f11f8332",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-female-f.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "2ff4311897bfaf99be80d2fa13918db30f506607da0291640b2609d82b70e0ca",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-female-f.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-male-a",
+      "title": "mini-character-male-a",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-male-a.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-male-a.glb",
+      "masterGlbHash": "1916c91ef10a37cc3b1d9607acc04df908c9ee72473ae6f204697536287c12e8",
+      "sourceHash": "1916c91ef10a37cc3b1d9607acc04df908c9ee72473ae6f204697536287c12e8",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-male-a.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "77572792bfe2773b715b8cd8e18644b52b3e1f155fe10450254b50f9c364382a",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-male-a.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-male-b",
+      "title": "mini-character-male-b",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-male-b.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-male-b.glb",
+      "masterGlbHash": "2b71dda7d4aebfbe14adcf7cb2e4b54510fbf0e391537bafcd78cad7b53f780e",
+      "sourceHash": "2b71dda7d4aebfbe14adcf7cb2e4b54510fbf0e391537bafcd78cad7b53f780e",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-male-b.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "791fc0c203924c175c0a3d5b60d030daf36797b039506689cf7cd01ef5253b3c",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-male-b.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-male-c",
+      "title": "mini-character-male-c",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-male-c.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-male-c.glb",
+      "masterGlbHash": "e5412d0275ae4076f0f0805bd68645d1295f5a1c5d750460a9ddfb228da6d408",
+      "sourceHash": "e5412d0275ae4076f0f0805bd68645d1295f5a1c5d750460a9ddfb228da6d408",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-male-c.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "672a6506f7475bbd655da1d7ff712c1729a430f134c62385a4e5d3c1378acb40",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-male-c.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-male-d",
+      "title": "mini-character-male-d",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-male-d.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-male-d.glb",
+      "masterGlbHash": "4f0217eac0ee40be36a211bc0d66dd9abe9078282c26eedf394430f988bd9e40",
+      "sourceHash": "4f0217eac0ee40be36a211bc0d66dd9abe9078282c26eedf394430f988bd9e40",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-male-d.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "dd12b2e75ffb1cdb45aaec3916c3d6e732929ccb4a8b89b946f69baaabfa64da",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-male-d.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-male-e",
+      "title": "mini-character-male-e",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-male-e.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-male-e.glb",
+      "masterGlbHash": "ff0df0b52fe9b654f35d7c755ca5534eea90edadbf0006c825a8b257fab18bca",
+      "sourceHash": "ff0df0b52fe9b654f35d7c755ca5534eea90edadbf0006c825a8b257fab18bca",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-male-e.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "cd76681090ce29861b055b0f8b2bdcf84bfccc4ca816f428df42a9bb76d6e1b6",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-male-e.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-mini-character-male-f",
+      "title": "mini-character-male-f",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/actors/native/mini-character-male-f.glb",
+      "masterGlb": "assets/roblox/actors/native/mini-character-male-f.glb",
+      "masterGlbHash": "20f8d462e8c04cf4ad8a34415c0dc718de3e86f4cafb77de732b946f122cbc22",
+      "sourceHash": "20f8d462e8c04cf4ad8a34415c0dc718de3e86f4cafb77de732b946f122cbc22",
+      "sourceFiles": [
+        "assets/roblox/actors/native/mini-character-male-f.glb",
+        "assets/roblox/actors/manifest.json"
+      ],
+      "license": "CC0-1.0",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "sourcePack": "kenney-mini-characters",
+      "originalSourceHash": "ed151fc47c5cd6be9693c524e92f045170c965819f4f81b28ed66dcc3c1085bf",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/mini-character-male-f.glb"
+        ],
+        "support": [
+          "assets/roblox/actors/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-bricks059",
+      "title": "Bricks059",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "88a7b95ee307c6eeafddddefda862a459050228d2a55a80bcd6c4357b9b85103",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Bricks059",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png",
+          "sha256": "b315f2f4b30252e42802e3c14edaa7768e51b67dfcdc5a91ddd2338dd58b4b7d",
+          "bytes": 1900142,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Bricks059_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_NormalGL.png",
+          "sha256": "7e4b25d3fefb49c212d4181e62dae5285c89842e5d90f904dbfc5926596d393e",
+          "bytes": 5483797,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Bricks059_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Roughness.png",
+          "sha256": "0be5554396fbe0962a30b776ab846f4c07c7f434a47e375c2ff7e3cf56981005",
+          "bytes": 580333,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Bricks059_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-bricks079",
+      "title": "Bricks079",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "bf60e550213c702478a6b9630df180b361bd07ec12b8fb69c48c82daa153fb6d",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Bricks079",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Color.png",
+          "sha256": "98301cb09efc2c8727c02582b4a8059efe3ad8770a7594b55c34c59a67cc4dbd",
+          "bytes": 924857,
+          "dimensions": [
+            1024,
+            512
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Bricks079_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_NormalGL.png",
+          "sha256": "baed3a700e53191d527d12b0cb199088865a880600ad838df81b47746ee3d7b5",
+          "bytes": 2612837,
+          "dimensions": [
+            1024,
+            512
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Bricks079_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Roughness.png",
+          "sha256": "88af2f8b17b518e5064e03fa43de0ce165f18166e44617cb15099a4c937c5913",
+          "bytes": 322415,
+          "dimensions": [
+            1024,
+            512
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Bricks079_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-concrete034",
+      "title": "Concrete034",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "d79cbba91fa35bcd491400baf69e4428f60c33522e0221e17b2c0431025d0ecc",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Concrete034",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Color.png",
+          "sha256": "dffbbd0fd7249e938a30b650675262034fe0face516b0d036e9c34cae5a99190",
+          "bytes": 288279,
+          "dimensions": [
+            1024,
+            512
+          ],
+          "mode": "P",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Concrete034_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_NormalGL.png",
+          "sha256": "7378313b5e38d138a2048d0a300194444ba7b205b062751a93a91bde8dfbccf9",
+          "bytes": 2715117,
+          "dimensions": [
+            1024,
+            512
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Concrete034_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Roughness.png",
+          "sha256": "b2f8b937d4c9d1d305fc30b915b28712d166939bba1c3823ad39767dd22e1f07",
+          "bytes": 206202,
+          "dimensions": [
+            1024,
+            512
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Concrete034_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-concrete046",
+      "title": "Concrete046",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "c62d34f7f57b1d1e6a04ee9e4471e1d16b3445737ddd195a3a21ef5a7698a533",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Concrete046",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Color.png",
+          "sha256": "cecef1d44000ecb4b12abd6f2309350e1f00d83c974ec7712f67f399e8c14b85",
+          "bytes": 1521168,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Concrete046_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_NormalGL.png",
+          "sha256": "75ce4fdeba33a32f6cad844cf52f4a7d555ce2b5f36d4a241485d9109ebe84bd",
+          "bytes": 5072111,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Concrete046_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Roughness.png",
+          "sha256": "0bd829037364b14f05f181c607e780aaad4a2a3c15189a50fa201838f3939896",
+          "bytes": 644409,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Concrete046_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-fabric026",
+      "title": "Fabric026",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "6091b906039092fb268a8511ed28e92c6c97ea727db5c67bdd48a3b06cec9276",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Fabric026",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Color.png",
+          "sha256": "b9a14c2468c06f0527f0f9c3c2b17d7d86781846b2475a4b13a8047cf6caf5b1",
+          "bytes": 2034405,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Fabric026_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_NormalGL.png",
+          "sha256": "f7c7d01bb989869a984cbb76a446ca9a0dd0268fe0556f263e01b5e17ab993a1",
+          "bytes": 5658257,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Fabric026_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Roughness.png",
+          "sha256": "e9baf79bcfe3642db545a4fee1d30c65c8a90d8543af75ec553e86e60503a48b",
+          "bytes": 561454,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Fabric026_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-fabric030",
+      "title": "Fabric030",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "1f213d70f235716ba3034aec5b0ae0a2fcfa1e2e915532e08a06a3f171fbbcf3",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Fabric030",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Color.png",
+          "sha256": "23e34d9cdebbab8e8b3f6d90c3385db5484c1d21cad0ebf126d420d91173c550",
+          "bytes": 2495795,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Fabric030_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_NormalGL.png",
+          "sha256": "34b86ebe2b3ad89760b3197df672ce999289a02cfe685182db73ea88ea19cc2a",
+          "bytes": 6151467,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Fabric030_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Roughness.png",
+          "sha256": "9b9bcde3487826c7a6bb589c8865c2fda0c1a7ba90115daf36cea47d005eee7c",
+          "bytes": 844403,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Fabric030_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-grass001",
+      "title": "Grass001",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "43e6807e6fab786978a967a74b0a3abae9b43fadcce0f269e2e8045c758d5a3e",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Grass001",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Color.png",
+          "sha256": "c79fda29c8a1249157e5e90b033cde2b126905ef2961de3edca1255f322e64ae",
+          "bytes": 1937763,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Grass001_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_NormalGL.png",
+          "sha256": "671d017230245d39e16b9a6bdf0b77b4f98f9158850e03745eff0cd7f12a7f5d",
+          "bytes": 5984854,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Grass001_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Roughness.png",
+          "sha256": "badbb391fa314817d71d43f591ddb5c5caecb8f40dc3394bb49b276d30a3f582",
+          "bytes": 797863,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Grass001_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-ground037",
+      "title": "Ground037",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "cbd75f0660870b3299a68c4fe7fd54efb3951cf992d4295961209619eb284c47",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Ground037",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Color.png",
+          "sha256": "d428f7b2ca3c724bb6534ef6313574b4c07712e41bab84be69ba41a0d32e947d",
+          "bytes": 2623699,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Ground037_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_NormalGL.png",
+          "sha256": "163837046d8ea7c15a29f12367b7af90e6509e2e3d6168ecf55824746660b9a7",
+          "bytes": 6073011,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Ground037_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Roughness.png",
+          "sha256": "4cd4057af73842857b529d29ae4a61fa67de8813333eda0c82bbee4d3fc357b7",
+          "bytes": 655735,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Ground037_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-ground054",
+      "title": "Ground054",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "19aafb7d257cff80eca5374b097abacb714149aa899891be82572e82fbac1326",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Ground054",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Color.png",
+          "sha256": "bb3b8b28e2a03f6a448a042880532da732e0b00bb3978b912be98001e85c2151",
+          "bytes": 2088335,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Ground054_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_NormalGL.png",
+          "sha256": "331258541860948a77d1b47f6a2435344fcd0100e6b789208f5637e77b3bc53f",
+          "bytes": 5766891,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Ground054_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Roughness.png",
+          "sha256": "c4a9057826c1f723cc029159c750fd592fe980f406299a61d179ec40f49c1de8",
+          "bytes": 630483,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Ground054_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-leather008",
+      "title": "Leather008",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "5cd4eb36a442911415be8ce3b2ad9f2512d37d2251d68a56518614d21d227962",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Leather008",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Color.png",
+          "sha256": "3562e2273bd12a36b67558f324d83a29ec45d2423cfabe5a97820d415dd57ce4",
+          "bytes": 1712658,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Leather008_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_NormalGL.png",
+          "sha256": "7630b0e92200fb718423c4d240898aed3f9363e690768b7a7922b60a71ab4348",
+          "bytes": 5836324,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Leather008_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Roughness.png",
+          "sha256": "a9f0659549f4ee17219ba9bb291b537d947241ff7047e0bd7d312a5f3792c3bf",
+          "bytes": 620185,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Leather008_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-leather026",
+      "title": "Leather026",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "4b414d8b61fee0bb6b58714facf3ef20010a7b18b6c8d98043994056ed38a8a1",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Leather026",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Color.png",
+          "sha256": "5596ee21d1a43ee57d6d75ae294243aac83e26457ce969ccf8b88ff5fd697598",
+          "bytes": 621438,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "P",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Leather026_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_NormalGL.png",
+          "sha256": "3ad5309aabfc09410ad3150fe60f7673dfac1b9668d551596d7484a9c9c43116",
+          "bytes": 5528963,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Leather026_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Roughness.png",
+          "sha256": "04b7d169d7655f023bfd0d6589069033649dd888cb5134ecfa83dcde6f4cff5d",
+          "bytes": 518098,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Leather026_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-marble012",
+      "title": "Marble012",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "7c733a107be2cc068c8d7a4fb36b548b8e6fdadec5db3dec04b063357078e72b",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Marble012",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Color.png",
+          "sha256": "c3a903a10a1e8273789cd40e3d49fd2cb2e39abcb579294fe8820dc218b55dd6",
+          "bytes": 2046204,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Marble012_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_NormalGL.png",
+          "sha256": "d35c6f6a2c57e1853c92b6131be7943cbb2542c95288c238b9ac84188bbb9552",
+          "bytes": 3488070,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Marble012_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Roughness.png",
+          "sha256": "8c1e88602a73f3cc546bbe9803e5184e32f9f606d293c00023ca8107f52a4d93",
+          "bytes": 496768,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Marble012_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-metal032",
+      "title": "Metal032",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Metalness.png",
+        "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "25acbc15cd3557801c7a45392796b5570e41799a80fb569db0301587ea91292f",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Metal032",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Color.png",
+          "sha256": "216b2e750c79040f9834f906463dc9b7405300b7e701a59fd10b227a7075bb2b",
+          "bytes": 674265,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "P",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Metal032_1K-PNG_Color.png"
+        },
+        "metalness": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Metalness.png",
+          "sha256": "9f3d6c655556225764d94fc504c02300199eff9f6b071aabfadb22fa95231a69",
+          "bytes": 798,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "1",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Metal032_1K-PNG_Metalness.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_NormalGL.png",
+          "sha256": "635697561ea485f3bb28ea216dd1bb9a8682b563e64a159f9937ecc6de04711b",
+          "bytes": 4015982,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Metal032_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Roughness.png",
+          "sha256": "b76b06f59860b436ed56e43c2dfe5d02f065561834b4062262a374dffae67ff1",
+          "bytes": 413781,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Metal032_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Metalness.png",
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-metal046a",
+      "title": "Metal046A",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Metalness.png",
+        "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "48239b857b131c046d2b5a0d58bccfd7b7471cf0cd7bec8435ded7b7da577821",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Metal046A",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Color.png",
+          "sha256": "a25ff683ac0fcac98a57e3cef2f81381a0c9d74d35bbd41957d88f070abeee97",
+          "bytes": 693273,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "P",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Metal046A_1K-PNG_Color.png"
+        },
+        "metalness": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Metalness.png",
+          "sha256": "236f7310f0cfe6ba5cae776556870e1b515c351e32c38ef3ec5af18adafc1d70",
+          "bytes": 3445,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "P",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Metal046A_1K-PNG_Metalness.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_NormalGL.png",
+          "sha256": "e30caad92008799d22cfd67bdaa0f835d58fe24310084a0d5c5bea18b52d4158",
+          "bytes": 5086063,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Metal046A_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Roughness.png",
+          "sha256": "1719d4d5b14f074d26f76c140450b05daa5ab1f8095ef918629225a79e212e22",
+          "bytes": 364976,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Metal046A_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Metalness.png",
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-metalplates006",
+      "title": "MetalPlates006",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Metalness.png",
+        "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "ecf94450f608bf03bfdbefe18a740e7599f17bc199cf082e3c88387b2e7404a0",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/MetalPlates006",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Color.png",
+          "sha256": "37b50aa3635cde294572c8e96441630de28e6ca27b9b28956a1a70974a252e99",
+          "bytes": 474847,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "MetalPlates006_1K-PNG_Color.png"
+        },
+        "metalness": {
+          "path": "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Metalness.png",
+          "sha256": "d13865fac3a43f7ec28a2c0adace823f29ceb4732b3bbacbbed25b0370c6a078",
+          "bytes": 8055,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "MetalPlates006_1K-PNG_Metalness.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_NormalGL.png",
+          "sha256": "e8a7bafa75388df8309ffc08f2c62d19d2d0a10264d538764300f2a9cd5a23e5",
+          "bytes": 4079408,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "MetalPlates006_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Roughness.png",
+          "sha256": "36467c677bb08fe5685634b4f181a9cc7e7752fd9166f9ed1cef4dbe833e20b7",
+          "bytes": 244791,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "MetalPlates006_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Metalness.png",
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-rock030",
+      "title": "Rock030",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "d3e0dc55fc46b093631f4d0009c934003c601e69df9aa4ba41a43db3807056ee",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Rock030",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Color.png",
+          "sha256": "b223d2e16e368a44a45dbd728b0420f82937cda1405d370ebbe5484755f9441e",
+          "bytes": 2242504,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Rock030_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_NormalGL.png",
+          "sha256": "99aa9436f1672e5615bc79a121ebfb86f61d40d8d14b27780543dfa7937ddf8d",
+          "bytes": 6073265,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Rock030_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Roughness.png",
+          "sha256": "4b68b1731f312bb0c292361f0a69cc4322ae140433ec2b9ebcf91ca7184bf737",
+          "bytes": 625764,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Rock030_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-rock035",
+      "title": "Rock035",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "e745b558d754962ac44162ccee8805d7dba84ecdc428a543c3e552bcb28f8b85",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Rock035",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Color.png",
+          "sha256": "dbc4eee8993b141fae0912ea2401971c16ae283737798f396eae1f9b2ca327b7",
+          "bytes": 1983124,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Rock035_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_NormalGL.png",
+          "sha256": "cab0ec9898eb57243bf3eee98552aa745966d959193d822ec3be99c973082e87",
+          "bytes": 6069943,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Rock035_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Roughness.png",
+          "sha256": "6d1550fe6030a866478e69d703aea79de032bfc59bd41ff5751c41a5d166ba39",
+          "bytes": 622442,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Rock035_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-tiles074",
+      "title": "Tiles074",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "de247a2bb6f207586b918c0c60d85f81aef674522933dbb6a55ed0c5fc3a4e89",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Tiles074",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Color.png",
+          "sha256": "751e385a540675c709e8ccdf3fd3cd36e1b0d8e847b0b4ffb0f38705ff126eef",
+          "bytes": 1652956,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Tiles074_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_NormalGL.png",
+          "sha256": "422ebff98ecd30140ffb34b68324d5456c73cdcdad7cc2d93e9763a21f7af739",
+          "bytes": 2928188,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Tiles074_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Roughness.png",
+          "sha256": "f1586a477ec3ef1cb4e0ec53060fa1c234aca8be84b0e31a780d08812026a8d6",
+          "bytes": 435067,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Tiles074_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-wood062",
+      "title": "Wood062",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "c8a4bc95311d31327130248d6a0c3cc2feaa90ca994dc53759ffa4aa90bd5605",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Wood062",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Color.png",
+          "sha256": "c22f7ed9e81741d335c5c868d6a7e0927819d1bf14326d95359fe9faba77e5eb",
+          "bytes": 2297414,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Wood062_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_NormalGL.png",
+          "sha256": "cf1ac8e2915543dc9717d28048ec27ab64c1d715fdc1759b6434c3f6e14d7682",
+          "bytes": 5971402,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Wood062_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Roughness.png",
+          "sha256": "3f61dc4f8799a8fc140a5467b04146f7cc75a1567d13a05c12e76182d252fde4",
+          "bytes": 642709,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Wood062_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-wood066",
+      "title": "Wood066",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "f20ee5aa154b5f6cf653c6dd7649d3a0a468e418328b34599cd879d3fe0be7a9",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/Wood066",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Color.png",
+          "sha256": "85a55fab2810b2d74df288480e5ebdca08c1de6cb744c4e621c4bcf7171ad1bd",
+          "bytes": 2040028,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "Wood066_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_NormalGL.png",
+          "sha256": "92cb589b44a9f0d964b02e93e4b34090cf15a2bbb52eb8d10c4f4ee1b8b32917",
+          "bytes": 4819878,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Wood066_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Roughness.png",
+          "sha256": "e55bdaf34e362b4e53fea928d64f05cf5bc0410f9e428b29a21526a4c0bd601e",
+          "bytes": 378198,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "Wood066_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "ambientcg-woodfloor051",
+      "title": "WoodFloor051",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "status": "REPO_ASSET",
+      "path": "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Color.png",
+      "sourceFiles": [
+        "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Color.png",
+        "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_NormalGL.png",
+        "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Roughness.png",
+        "assets/roblox/common-materials-v1/manifest.json"
+      ],
+      "sourceHash": "bf974d78d8cc9aaf225236b459e301b71e05b85c55fe184e5fa91119802d67a9",
+      "license": "CC0-1.0",
+      "sourceUrl": "https://ambientcg.com/a/WoodFloor051",
+      "sourcePack": "ambientCG",
+      "sourceOriginalPreserved": true,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "normalConvention": "OPENGL_TANGENT_SPACE",
+      "textureMaps": {
+        "color": {
+          "path": "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Color.png",
+          "sha256": "b66fac74fa8fb0e2628dd2259f3290e453149b457bdf24ca46e1bb864168b664",
+          "bytes": 1214049,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "SRGB",
+          "sourceArchiveEntry": "WoodFloor051_1K-PNG_Color.png"
+        },
+        "normal": {
+          "path": "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_NormalGL.png",
+          "sha256": "dcc2639b140a8e32245b83add988f850a98b28adaac474b68468ef1c7d1f677d",
+          "bytes": 4210402,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "RGB",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "WoodFloor051_1K-PNG_NormalGL.png"
+        },
+        "roughness": {
+          "path": "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Roughness.png",
+          "sha256": "43414b6259c7906ace32da13988d928a00dc885b00e284ab805735a3d66750ea",
+          "bytes": 386775,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "mode": "L",
+          "colorSpace": "LINEAR",
+          "sourceArchiveEntry": "WoodFloor051_1K-PNG_Roughness.png"
+        }
+      },
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
+    },
+    {
+      "id": "external-actor-quaternius-skeleton",
+      "title": "Quaternius Skeleton",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "platform": "ROBLOX",
+      "platforms": [
+        "ROBLOX"
+      ],
+      "path": "assets/roblox/actors/native/quaternius-skeleton/master.glb",
+      "masterGlb": "assets/roblox/actors/native/quaternius-skeleton/master.glb",
+      "masterGlbHash": "497a736cf80fdaabd2c8804d3f44d08e25d3cb207820eee3155293b682b55e86",
+      "sourceHash": "497a736cf80fdaabd2c8804d3f44d08e25d3cb207820eee3155293b682b55e86",
+      "sourceFiles": [
+        "assets/roblox/actors/native/quaternius-skeleton/master.glb",
+        "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx",
+        "assets/roblox/actors/native/quaternius-skeleton/application.json",
+        "assets/roblox/actors/native/quaternius-skeleton/evidence.json"
+      ],
+      "sourceUrl": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "license": "CC0-1.0",
+      "sourcePack": "quaternius-monsters",
+      "originalSourceHash": "be0a5992b677e563c6c9601e76fdcb9d50e91c195aebb1eb70604fbfe8fb26d5",
+      "status": "REPO_ASSET",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "nativeBindingRequired": true,
+      "robloxAssetId": null,
+      "companyCommonBase": true,
+      "gameExclusive": false,
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/quaternius-skeleton/master.glb",
+          "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx"
+        ],
+        "support": [
+          "assets/roblox/actors/native/quaternius-skeleton/application.json",
+          "assets/roblox/actors/native/quaternius-skeleton/evidence.json"
+        ]
+      }
     }
   ],
   "research": [
@@ -82226,6 +84814,186 @@
       "runtimeVerificationState": "NOT_STARTED",
       "promotionRequiresRuntimeConsumer": true,
       "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "acquired-quaternius-characters",
+      "name": "quaternius-characters",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://opengameart.org/content/animated-characters-pack",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://opengameart.org/content/animated-characters-pack",
+      "verifiedAt": "2026-10-12",
+      "categories": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
+      "acquisition": "USER_REQUESTED_BATCH",
+      "localManifest": "assets/roblox/actors/manifest.json",
+      "modelCount": 52,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "productionVerified": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true
+    },
+    {
+      "id": "acquired-quaternius-cute",
+      "name": "quaternius-cute",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://opengameart.org/content/textured-cute-monster-pack",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://opengameart.org/content/textured-cute-monster-pack",
+      "verifiedAt": "2026-10-12",
+      "categories": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
+      "acquisition": "USER_REQUESTED_BATCH",
+      "localManifest": "assets/roblox/actors/manifest.json",
+      "modelCount": 21,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "productionVerified": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true
+    },
+    {
+      "id": "acquired-quaternius-monsters",
+      "name": "quaternius-monsters",
+      "source": "Quaternius",
+      "creator": "Quaternius",
+      "sourceUrl": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://opengameart.org/content/lowpoly-animated-monsters",
+      "verifiedAt": "2026-10-12",
+      "categories": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
+      "acquisition": "USER_REQUESTED_BATCH",
+      "localManifest": "assets/roblox/actors/manifest.json",
+      "modelCount": 4,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "productionVerified": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true
+    },
+    {
+      "id": "acquired-kaykit-adventurers",
+      "name": "kaykit-adventurers",
+      "source": "Kay Lousberg",
+      "creator": "Kay Lousberg",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0",
+      "verifiedAt": "2026-10-12",
+      "categories": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
+      "acquisition": "USER_REQUESTED_BATCH",
+      "localManifest": "assets/roblox/actors/manifest.json",
+      "modelCount": 5,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "productionVerified": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true
+    },
+    {
+      "id": "acquired-kaykit-skeletons",
+      "name": "kaykit-skeletons",
+      "source": "Kay Lousberg",
+      "creator": "Kay Lousberg",
+      "sourceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0",
+      "verifiedAt": "2026-10-12",
+      "categories": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
+      "acquisition": "USER_REQUESTED_BATCH",
+      "localManifest": "assets/roblox/actors/manifest.json",
+      "modelCount": 4,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "productionVerified": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true
+    },
+    {
+      "id": "acquired-kenney-mini-characters",
+      "name": "kenney-mini-characters",
+      "source": "Kenney",
+      "creator": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/mini-characters",
+      "license": "CC0",
+      "licenseEvidenceUrl": "https://kenney.nl/assets/mini-characters",
+      "verifiedAt": "2026-10-12",
+      "categories": [
+        "CHARACTER",
+        "CREATURE"
+      ],
+      "platformTargets": [
+        "ROBLOX"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "acquisitionState": "ACQUIRED_ORIGINAL_FILES",
+      "acquisition": "USER_REQUESTED_BATCH",
+      "localManifest": "assets/roblox/actors/manifest.json",
+      "modelCount": 12,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": true,
+      "promotionRequiresRuntimeConsumer": true,
+      "productionVerified": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "automaticAcquisitionWhenSelected": true
     }
   ],
   "unarmedCombat": {

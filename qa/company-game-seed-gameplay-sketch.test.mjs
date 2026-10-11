@@ -401,6 +401,20 @@ test('Vibe native composer computes schema-valid MAIN A B C delve seeds without 
 });
 
 
+test('MAIN topic selects genre-native systems before stale category hints or world materials',()=>{
+  for(const [name,brief,systems]of [
+    ['심야 대탈출','인간과 몬스터의 감염 추격전',['진영 전환과 추격 경로','정화와 팀 대응']],
+    ['포근섬: 작은 왕국 키우기','협동으로 주민을 자동화하고 자원 거점을 점령',['채집과 주민 자동화','병력 편성과 거점 정복']],
+    ['5포탈 RPG: 던전 파티','왕국과 왕조의 소재를 퀘스트와 장비 선택의 인과로 사용',['퀘스트와 인물 관계','전투와 장비 운용']]
+  ]){
+    const result=computeVibeSeedProposal({requestId:'main-topic-'+name,category:'CASUAL',platform:'ROBLOX',gameName:name,ownerBrief:brief,materials:[]});
+    const fusion=result.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
+    assert.equal(fusion.main.name,name);
+    assert.deepEqual(fusion.majorAxes.map(row=>row.systemFamily),systems);
+    assert.notEqual(fusion.majorAxes[0].sourceMaterial,fusion.majorAxes[1].sourceMaterial);
+  }
+});
+
 test('native causal grammar preserves owner game identity and calculates distinct A B C themes',()=>{
   const target={
     requestId:'school-owner-grammar',category:'TYCOON',platform:'ROBLOX',

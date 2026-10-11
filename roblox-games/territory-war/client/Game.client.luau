@@ -5,6 +5,7 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -156,60 +157,11 @@ verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotio
 end
 
 -- Roblox UI / touch / progression guidance.
-local verifiedLearningGuidance = Instance.new("TextLabel")
-verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
-verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-verifiedLearningGuidance.BackgroundTransparency = 1
-verifiedLearningGuidance.TextWrapped = true
-verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
-verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
-  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
-elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
-elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
-elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
-  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
-elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
-  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
-elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
-else
-  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
-end
-verifiedLearningGuidance.Parent = verifiedLearningRoot
-local verifiedLearningRiskCue = Instance.new("TextLabel")
-verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
-verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
-verifiedLearningRiskCue.BackgroundTransparency = 1
-verifiedLearningRiskCue.TextWrapped = true
-verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
-else
-  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
-end
-verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
-verifiedLearningRiskCue.Parent = verifiedLearningRoot
+verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
 
--- Roblox skill VFX / camera / motion feedback.
-local function playVerifiedLearningActionFeedback(control)
+local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-  verifiedLearningGuidance.Visible = false
 
   if control then
     local scale = control:FindFirstChild("VerifiedLearningMotionScale")
@@ -222,6 +174,9 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  if serverConfirmed~=true then return end
+  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
   if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
@@ -276,10 +231,6 @@ local function playVerifiedLearningActionFeedback(control)
   end
   end
 
-  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-    verifiedLearningRiskCue.Visible = true
-    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-  end
 end
 
 local verifiedLearningLastControl = nil
@@ -303,7 +254,7 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
@@ -364,7 +315,7 @@ local actions = {
   {id = Config.Actions.ECONOMY, text = "경제"},
 }
 for index, action in ipairs(actions) do
-  local button = Instance.new("TextButton")
+  local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
   button.Name = action.id
   button.Size = UDim2.new(0.235, 0, 0, 78)
   button.Position = UDim2.new(0.015 + (index - 1) * 0.245, 0, 0, 138)
@@ -394,6 +345,26 @@ multiplayerStatus.BackgroundTransparency = 1
 multiplayerStatus.TextColor3 = Color3.fromRGB(166, 211, 255)
 multiplayerStatus.TextScaled = true
 multiplayerStatus.Parent = root
+
+-- 전선 정보는 위에, 전투 명령은 오른손 위치에 둔다.
+local commandDock=Instance.new("Frame");commandDock.Name="CommandDock";commandDock.BackgroundTransparency=1;commandDock.Parent=gui
+local commandButtons={}
+for _,child in ipairs(root:GetChildren())do if child:IsA("TextButton")then table.insert(commandButtons,child)end end
+table.sort(commandButtons,function(a,b)return a.Position.X.Scale<b.Position.X.Scale end)
+for _,button in ipairs(commandButtons)do button.Parent=commandDock;button.TextScaled=false;button.TextSize=14;button.TextWrapped=true end
+local function layoutOrders()
+ local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
+ gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+ local landscape=v.X>v.Y
+ root.AnchorPoint=Vector2.zero;root.Position=UDim2.fromOffset(8,8);root.Size=UDim2.fromOffset(landscape and v.X-184 or v.X-16,120)
+ status.Position=UDim2.fromOffset(8,6);status.Size=UDim2.new(1,-16,0,54);status.TextScaled=false;status.TextSize=13
+ order.Position=UDim2.fromOffset(8,64);order.Size=UDim2.new(1,-16,0,24);order.TextScaled=false;order.TextSize=13;order.TextTruncate=Enum.TextTruncate.AtEnd
+ multiplayerStatus.Position=UDim2.fromOffset(8,92);multiplayerStatus.Size=UDim2.new(1,-16,0,20);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12
+ hint.Visible=false
+ commandDock.AnchorPoint=Vector2.new(1,1);commandDock.Position=UDim2.new(1,-8,1,-104);commandDock.Size=UDim2.fromOffset(160,112)
+ for i,b in ipairs(commandButtons)do b.Size=UDim2.fromOffset(76,52);b.Position=UDim2.fromOffset(((i-1)%2)*84,math.floor((i-1)/2)*60)end
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutOrders);layoutOrders()
 
 local function render()
   status.Text = string.format(
