@@ -3,49 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-bfvw3p",
-      "worker": "vibe2",
-      "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
-      "gameId": "horror-escape-room",
-      "files": [
-        "roblox-games/horror-escape-room/client/Game.client.luau",
-        "roblox-games/horror-escape-room/shared/VisualStyle.luau",
-        "roblox-games/horror-escape-room/shared/GameConfig.luau",
-        "roblox-games/horror-escape-room/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:37:21.657Z",
-      "expiresAt": "2026-10-11T03:22:21.657Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:horror-escape-room-post-release-focus-4048dd962de0ea8d"
-      ]
-    },
-    {
-      "id": "wl-1eonlmo",
-      "worker": "vibe2",
-      "taskId": "gem-survivor-studio-evolution-roblox-stability-v1",
-      "gameId": "gem-survivor",
-      "files": [
-        "roblox-games/gem-survivor/client/Game.client.luau",
-        "roblox-games/gem-survivor/shared/GameConfig.luau",
-        "roblox-games/gem-survivor/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:37:45.969Z",
-      "expiresAt": "2026-10-11T03:22:45.969Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:gem-survivor-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
       "id": "wl-15cggzd",
       "worker": "vibe2",
       "taskId": "survival2-studio-evolution-roblox-stability-v1",
@@ -584,6 +541,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-mongdal-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1jotj8x",
+      "worker": "vibe2",
+      "taskId": "internal-motion-water-gwisin-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/water-gwisin/init.luau"
+      ],
+      "baseSha": "01b9569c9fe892bf614fcf736f951d82ece72960",
+      "runId": "38104101272",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T03:22:50.878Z",
+      "expiresAt": "2026-10-11T04:07:50.878Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-water-gwisin-walk-v1"
       ]
     }
   ]
