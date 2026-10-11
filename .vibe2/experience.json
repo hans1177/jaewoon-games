@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -19944,39 +19942,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_7d116a0658814adbd5c8f8fd",
-          "taskId": "village-dungeons-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_adb1ce10908e499845334f28",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_768f8bbfda545b8cb89751b2",
-            "capability_ctrace_e985c0d214b8307f1572e929",
-            "capability_ctrace_2fa9b22629238db4c1902074"
-          ],
-          "evidence": [
-            "base-main:d9bf0c6a7e70847ca1934ce994949c26e9d1c8be",
-            "actions-run:37282569963",
-            "reservation-id:37282569963:1",
-            "capability-application-sample:bfe56584760c8baf0ad5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_bdbfbf8b8c6ca65abd7d572f",
           "taskId": "village-dungeons-existing-web-assessment-v1",
           "workKey": null,
@@ -22047,6 +22012,39 @@
             "actions-run:38164182129",
             "reservation-id:38164182129:1",
             "capability-application-sample:690d27b5a58122068475"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1a154290788bed539026184c",
+          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "village-dungeons",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0a17c87ebe16c73e38747aab",
+            "capability_ctrace_9a64f5379b0839afc78d63c3",
+            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
+            "capability_ctrace_adb1ce10908e499845334f28",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:396e7c05ab11d861cff4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -27210,39 +27208,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_afb0ce1dcdd7a7a0bcc208ea",
-          "taskId": "monster-adventure-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "monster-adventure",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_eac47dca37f0da39af4ca5d4",
-            "capability_ctrace_c5fc908e9a7bff302112cbb6",
-            "capability_ctrace_cd82f46339f60a9d3d87c01f",
-            "capability_ctrace_082e03cdb0b308b6ad4453e4"
-          ],
-          "evidence": [
-            "base-main:48b6b87ef0adcf57d2bac581370d9cbd0b317458",
-            "actions-run:37289010778",
-            "reservation-id:37289010778:1",
-            "capability-application-sample:86a711a21a622dfaf5fb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_0e4962722498fdb5e9a370c7",
           "taskId": "monster-adventure-existing-web-assessment-v1",
           "workKey": null,
@@ -29313,6 +29278,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:ada31627ac69ee767857"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2fb57d1893d28ed74db46fcb",
+          "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "monster-adventure",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6fe751612ff3f419ac2aa062",
+            "capability_ctrace_8bf9698cecad317ec8c6b89b",
+            "capability_ctrace_dfe9839c69f33211a439a4d3",
+            "capability_ctrace_d5f1596f6da4a12df001d268",
+            "capability_ctrace_eac47dca37f0da39af4ca5d4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:fc90b951767a833eff0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -92543,39 +92541,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_c2b31846d9e8cd2e50b47068",
-          "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_4e906f223c2a12a7007033ab",
-            "capability_ctrace_d97829ecdc84733c1ef7cfee",
-            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:ae128a3fe26161961429"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_f225d52f727efc142f462b76",
           "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -94646,6 +94611,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:a2cc673c3bb04269192f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d8849c494db5fc18ee83baac",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:56609fe5933576571d76"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -170689,39 +170687,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_8d42a845a45f25802df67642",
-          "taskId": "village-dungeons-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_adb1ce10908e499845334f28",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28",
-            "capability_ctrace_768f8bbfda545b8cb89751b2",
-            "capability_ctrace_e985c0d214b8307f1572e929",
-            "capability_ctrace_2fa9b22629238db4c1902074"
-          ],
-          "evidence": [
-            "base-main:d9bf0c6a7e70847ca1934ce994949c26e9d1c8be",
-            "actions-run:37282569963",
-            "reservation-id:37282569963:1",
-            "capability-application-sample:bfe56584760c8baf0ad5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_0de51318d53dc6ba62fa9688",
           "taskId": "village-dungeons-existing-web-assessment-v1",
           "workKey": null,
@@ -172792,6 +172757,39 @@
             "actions-run:38164182129",
             "reservation-id:38164182129:1",
             "capability-application-sample:690d27b5a58122068475"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_144ca29ae5b0af29dae9fbc8",
+          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "village-dungeons",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0a17c87ebe16c73e38747aab",
+            "capability_ctrace_9a64f5379b0839afc78d63c3",
+            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
+            "capability_ctrace_adb1ce10908e499845334f28",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:396e7c05ab11d861cff4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -194138,39 +194136,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_dbced8e0d1f30f20ea91b566",
-          "taskId": "monster-adventure-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "monster-adventure",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_eac47dca37f0da39af4ca5d4",
-            "capability_ctrace_c5fc908e9a7bff302112cbb6",
-            "capability_ctrace_cd82f46339f60a9d3d87c01f",
-            "capability_ctrace_082e03cdb0b308b6ad4453e4"
-          ],
-          "evidence": [
-            "base-main:48b6b87ef0adcf57d2bac581370d9cbd0b317458",
-            "actions-run:37289010778",
-            "reservation-id:37289010778:1",
-            "capability-application-sample:86a711a21a622dfaf5fb"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b6c21fd3713b26012f210a05",
           "taskId": "monster-adventure-existing-web-assessment-v1",
           "workKey": null,
@@ -196241,6 +196206,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:ada31627ac69ee767857"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3bde1e42e468a2771c482a39",
+          "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "monster-adventure",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6fe751612ff3f419ac2aa062",
+            "capability_ctrace_8bf9698cecad317ec8c6b89b",
+            "capability_ctrace_dfe9839c69f33211a439a4d3",
+            "capability_ctrace_d5f1596f6da4a12df001d268",
+            "capability_ctrace_eac47dca37f0da39af4ca5d4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:fc90b951767a833eff0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -201587,39 +201585,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_f08bcf5d716e61f57d2163f0",
-          "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_4e906f223c2a12a7007033ab",
-            "capability_ctrace_d97829ecdc84733c1ef7cfee",
-            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:ae128a3fe26161961429"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_55044509ba38de81cc4421f2",
           "taskId": "seed-puzzle-chromatic-cascade-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -203690,6 +203655,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:a2cc673c3bb04269192f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_365b30c7edef976c9c00757b",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:56609fe5933576571d76"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -274243,39 +274241,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_e6097b8ff8bfb078509cb62f",
-          "taskId": "survival-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "survival",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
-            "capability_ctrace_f29b84edb2f23dbc509daae3",
-            "capability_ctrace_06719e7d3271fde3c21ad697",
-            "capability_ctrace_6a90e4b0d105e3828406e987",
-            "capability_ctrace_064ab16cff942538f035d864"
-          ],
-          "evidence": [
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "actions-run:37160920381",
-            "reservation-id:37160920381:1",
-            "capability-application-sample:d443186b03a487bd1084"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_10e573c355fabf4640a60051",
           "taskId": "survival-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -276368,6 +276333,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8e72fade47543e8e7d0641b5",
+          "taskId": "survival-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "survival",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
+            "capability_ctrace_f29b84edb2f23dbc509daae3",
+            "capability_ctrace_06719e7d3271fde3c21ad697",
+            "capability_ctrace_6a90e4b0d105e3828406e987",
+            "capability_ctrace_064ab16cff942538f035d864"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:3309ab65d160b7d166a9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -276634,43 +276632,6 @@
       "confirmations": 2,
       "confidence": 0.6667,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_8666c99dfd5daa93fd774477",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
-            "capability_ctrace_27d25ce2856d134c4d526fca",
-            "capability_ctrace_04a692ac18a379bbdc3efe9a",
-            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
-          ],
-          "evidence": [
-            "candidate-sha:b22daab1bbcfb67d511494a9f3b52af8be5fbaba",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:e167ba210c69220b5e9afcd38119fad3f016be56ba1870f85cf0c6ad256181b2",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37156456227",
-            "reservation-id:37156456227:1",
-            "capability-application-sample:bcc598568d4cb998911e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_b6694638766b322eb218d237",
@@ -278767,6 +278728,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:6c2b7e1385651b08a039"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9528915313818ba430e4e2d1",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
+            "capability_ctrace_27d25ce2856d134c4d526fca",
+            "capability_ctrace_04a692ac18a379bbdc3efe9a",
+            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:5db97912a4facdb1d53b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -281479,43 +281473,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_16b45f04c1471ac92069e1b0",
-          "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "monster-adventure",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_6fe751612ff3f419ac2aa062",
-            "capability_ctrace_8bf9698cecad317ec8c6b89b",
-            "capability_ctrace_dfe9839c69f33211a439a4d3",
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_eac47dca37f0da39af4ca5d4"
-          ],
-          "evidence": [
-            "candidate-sha:60652c355403907078f98275c1b81e586811393f",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:ed09a59453c5290e776674bc330ca361cd653b16069a89c734f86a7d6627b857",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37157918464",
-            "reservation-id:37157918464:1",
-            "capability-application-sample:b3136d4eb3077b8d98ad"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5bc885d1ab3fcfb9e61d65c1",
           "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
           "workKey": null,
@@ -283608,6 +283565,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4b895d864b8090facf53aeb8",
+          "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "monster-adventure",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6fe751612ff3f419ac2aa062",
+            "capability_ctrace_8bf9698cecad317ec8c6b89b",
+            "capability_ctrace_dfe9839c69f33211a439a4d3",
+            "capability_ctrace_d5f1596f6da4a12df001d268",
+            "capability_ctrace_eac47dca37f0da39af4ca5d4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:fc90b951767a833eff0b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -283707,39 +283697,6 @@
       "confirmations": 5,
       "confidence": 0.8333,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_d389c9ecd778762b8f0c2d79",
-          "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-casual-realm-weaver",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_97b3f9618abd17da47fcfeff",
-            "capability_ctrace_c03341ac3bc3171120291cb2",
-            "capability_ctrace_5f5381fd1b0cebfd4892a757",
-            "capability_ctrace_8efc3866c60f6b877c9edce4"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:506b754f92ff87dde146"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_0818c122ed6729c4c9b0b758",
@@ -285818,6 +285775,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1b3e78eae1108fb484cb48c8",
+          "taskId": "seed-casual-realm-weaver-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-casual-realm-weaver",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_97b3f9618abd17da47fcfeff",
+            "capability_ctrace_c03341ac3bc3171120291cb2",
+            "capability_ctrace_5f5381fd1b0cebfd4892a757",
+            "capability_ctrace_8efc3866c60f6b877c9edce4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:8c14cdeb1765722317a2"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -285917,39 +285907,6 @@
       "confirmations": 5,
       "confidence": 0.8333,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_5b645291158d86493f0ff51a",
-          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_de59cee9b3cdd18adc8646a3",
-            "capability_ctrace_42bfc771b1c2ba433155d74f",
-            "capability_ctrace_225e903acb5e432626e8c175",
-            "capability_ctrace_6302273f93b5aeb91e76cce4",
-            "capability_ctrace_e829220708a8cd005d123a42"
-          ],
-          "evidence": [
-            "base-main:86fb99e0e1124b2b2c9a135b9c9b60c3c1dbc450",
-            "actions-run:37404694738",
-            "reservation-id:37404694738:1",
-            "capability-application-sample:9ec846e17a4ba12e5b6e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_fceb9ba4f55edad7bcca6e01",
@@ -288028,6 +287985,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3fe2e65c596028acecc04bd7",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_de59cee9b3cdd18adc8646a3",
+            "capability_ctrace_42bfc771b1c2ba433155d74f",
+            "capability_ctrace_225e903acb5e432626e8c175",
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:36f1a100875498b0b39c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -288123,39 +288113,6 @@
       "confirmations": 4,
       "confidence": 0.8,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_6fa7def1dd0cdd539a33c5f9",
-          "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_4e906f223c2a12a7007033ab",
-            "capability_ctrace_d97829ecdc84733c1ef7cfee",
-            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:ae128a3fe26161961429"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_59f0674ffeacf8c14f62406e",
@@ -290228,6 +290185,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:a2cc673c3bb04269192f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2cdac28e83613974b1fe6ef6",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:56609fe5933576571d76"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -292579,43 +292569,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_bd454335eda64ee88f7a5cf4",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
-            "capability_ctrace_27d25ce2856d134c4d526fca",
-            "capability_ctrace_04a692ac18a379bbdc3efe9a",
-            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
-          ],
-          "evidence": [
-            "candidate-sha:b22daab1bbcfb67d511494a9f3b52af8be5fbaba",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:e167ba210c69220b5e9afcd38119fad3f016be56ba1870f85cf0c6ad256181b2",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37156456227",
-            "reservation-id:37156456227:1",
-            "capability-application-sample:bcc598568d4cb998911e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_356ae3ceba46e6ce439ec060",
           "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -294716,6 +294669,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_d46291b604c86d133511c60b",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
+            "capability_ctrace_27d25ce2856d134c4d526fca",
+            "capability_ctrace_04a692ac18a379bbdc3efe9a",
+            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:5db97912a4facdb1d53b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -294809,39 +294795,6 @@
       "confirmations": 3,
       "confidence": 0.75,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_9fdd0e9fdb394e04e2924681",
-          "taskId": "survival-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "survival",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
-            "capability_ctrace_f29b84edb2f23dbc509daae3",
-            "capability_ctrace_06719e7d3271fde3c21ad697",
-            "capability_ctrace_6a90e4b0d105e3828406e987",
-            "capability_ctrace_064ab16cff942538f035d864"
-          ],
-          "evidence": [
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "actions-run:37160920381",
-            "reservation-id:37160920381:1",
-            "capability-application-sample:d443186b03a487bd1084"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_62d60cac91b7becd8c8b6522",
@@ -296936,6 +296889,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c1977044cd7a8eb18c33a935",
+          "taskId": "survival-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "survival",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
+            "capability_ctrace_f29b84edb2f23dbc509daae3",
+            "capability_ctrace_06719e7d3271fde3c21ad697",
+            "capability_ctrace_6a90e4b0d105e3828406e987",
+            "capability_ctrace_064ab16cff942538f035d864"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:3309ab65d160b7d166a9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -297031,43 +297017,6 @@
       "confirmations": 4,
       "confidence": 0.8,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_e4d793a8fe905c85773f329a",
-          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0a17c87ebe16c73e38747aab",
-            "capability_ctrace_9a64f5379b0839afc78d63c3",
-            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
-            "capability_ctrace_adb1ce10908e499845334f28",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
-          ],
-          "evidence": [
-            "candidate-sha:6bd1be9206801cfb3b5d1a57d0664881c1a674c4",
-            "base-main:5cfa784a236faf9c96d7488dabc45df00c2adb8a",
-            "incremental-qa-hash:3b1f174c8f1694f8f81dfd3e8a52c186597056f3b41d707b445e4db7fd681dd6",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37144257216",
-            "reservation-id:37144257216:1",
-            "capability-application-sample:74fecc92b2d72dc501ef"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_178f18033abd68210be7545f",
@@ -299164,6 +299113,39 @@
             "actions-run:38164182129",
             "reservation-id:38164182129:1",
             "capability-application-sample:690d27b5a58122068475"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c657079e337e9f29c87e90db",
+          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "village-dungeons",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0a17c87ebe16c73e38747aab",
+            "capability_ctrace_9a64f5379b0839afc78d63c3",
+            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
+            "capability_ctrace_adb1ce10908e499845334f28",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:396e7c05ab11d861cff4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -303784,39 +303766,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b6a29aae576724305bb86f00",
-          "taskId": "crystal-defense-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "crystal-defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:0e53de8d06f6ac8239094b6679c4c6773cda2728",
-            "actions-run:38157267981",
-            "reservation-id:38157267981:1",
-            "capability-application-sample:13b8106ef4c97a9ae84f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_529c788375ed2027e09a1c22",
           "taskId": "defense-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -305887,6 +305836,39 @@
             "actions-run:38166325327",
             "reservation-id:38166325327:1",
             "capability-application-sample:cb21a2246304111e1631"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_f10be0033f2b478d1d2bcede",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
+            "capability_ctrace_27d25ce2856d134c4d526fca",
+            "capability_ctrace_04a692ac18a379bbdc3efe9a",
+            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:5db97912a4facdb1d53b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -308315,43 +308297,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4e62a1bbabf1148412de2143",
-          "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "monster-adventure",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_6fe751612ff3f419ac2aa062",
-            "capability_ctrace_8bf9698cecad317ec8c6b89b",
-            "capability_ctrace_dfe9839c69f33211a439a4d3",
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_eac47dca37f0da39af4ca5d4"
-          ],
-          "evidence": [
-            "candidate-sha:60652c355403907078f98275c1b81e586811393f",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:ed09a59453c5290e776674bc330ca361cd653b16069a89c734f86a7d6627b857",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37157918464",
-            "reservation-id:37157918464:1",
-            "capability-application-sample:b3136d4eb3077b8d98ad"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_fed60fbe0ad6bb6cefcf8814",
           "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
           "workKey": null,
@@ -310438,6 +310383,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:ada31627ac69ee767857"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4a115682bfbeeb93bfd446bb",
+          "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "monster-adventure",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6fe751612ff3f419ac2aa062",
+            "capability_ctrace_8bf9698cecad317ec8c6b89b",
+            "capability_ctrace_dfe9839c69f33211a439a4d3",
+            "capability_ctrace_d5f1596f6da4a12df001d268",
+            "capability_ctrace_eac47dca37f0da39af4ca5d4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:fc90b951767a833eff0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -312878,39 +312856,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_810688d9649aeb217e544346",
-          "taskId": "defense-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "defense",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:0e53de8d06f6ac8239094b6679c4c6773cda2728",
-            "actions-run:38157267981",
-            "reservation-id:38157267981:1",
-            "capability-application-sample:b11b35fa707919d7da4e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_a842efb9d661e93da6e37e0a",
           "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -314987,6 +314932,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a2ba5feef6b09e76e5a4c12f",
+          "taskId": "seed-casual-realm-weaver-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-casual-realm-weaver",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_97b3f9618abd17da47fcfeff",
+            "capability_ctrace_c03341ac3bc3171120291cb2",
+            "capability_ctrace_5f5381fd1b0cebfd4892a757",
+            "capability_ctrace_8efc3866c60f6b877c9edce4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:8c14cdeb1765722317a2"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -315089,39 +315067,6 @@
       "confirmations": 6,
       "confidence": 0.8571,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_59c4cc4cc2eb9b69176b5f7c",
-          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_de59cee9b3cdd18adc8646a3",
-            "capability_ctrace_42bfc771b1c2ba433155d74f",
-            "capability_ctrace_225e903acb5e432626e8c175",
-            "capability_ctrace_6302273f93b5aeb91e76cce4",
-            "capability_ctrace_e829220708a8cd005d123a42"
-          ],
-          "evidence": [
-            "base-main:86fb99e0e1124b2b2c9a135b9c9b60c3c1dbc450",
-            "actions-run:37404694738",
-            "reservation-id:37404694738:1",
-            "capability-application-sample:9ec846e17a4ba12e5b6e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_11073bb31bdefcc41a7a78b7",
@@ -317200,6 +317145,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_2ed2afc6c2729166486d4b33",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_de59cee9b3cdd18adc8646a3",
+            "capability_ctrace_42bfc771b1c2ba433155d74f",
+            "capability_ctrace_225e903acb5e432626e8c175",
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:36f1a100875498b0b39c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -317303,39 +317281,6 @@
       "confirmations": 6,
       "confidence": 0.8571,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_645de329cba3b20d2388fb37",
-          "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_4e906f223c2a12a7007033ab",
-            "capability_ctrace_d97829ecdc84733c1ef7cfee",
-            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:ae128a3fe26161961429"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_7359d317452e46d035fa9074",
@@ -319408,6 +319353,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:a2cc673c3bb04269192f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_26cd4eb541a427c555791f16",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:56609fe5933576571d76"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -321819,39 +321797,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_696c85229d2238e766c58152",
-          "taskId": "survival-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "survival",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_44fd7d6e2f9274367465034b",
-            "capability_ctrace_07fdc17a5b6f2adbe1dd0bda",
-            "capability_ctrace_09449fb5d893a83015500f7d",
-            "capability_ctrace_485b658bdfe03d2883cd9ec1",
-            "capability_ctrace_5a0f75d5aa2f6dfb31efc293"
-          ],
-          "evidence": [
-            "base-main:e8847a682197d34ac7dbfb7e8743ee0fec5241a2",
-            "actions-run:37293246068",
-            "reservation-id:37293246068:1",
-            "capability-application-sample:02693bcc26ce88fa8eb5"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_713cdc789a2d73ea8b4ebb60",
           "taskId": "survival-existing-web-assessment-v1",
           "workKey": null,
@@ -323928,6 +323873,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4d2530156042e3e4195799ad",
+          "taskId": "survival-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "survival",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
+            "capability_ctrace_f29b84edb2f23dbc509daae3",
+            "capability_ctrace_06719e7d3271fde3c21ad697",
+            "capability_ctrace_6a90e4b0d105e3828406e987",
+            "capability_ctrace_064ab16cff942538f035d864"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:3309ab65d160b7d166a9"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -324027,43 +324005,6 @@
       "confirmations": 5,
       "confidence": 0.8333,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_7815226b05c0aca02d935492",
-          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
-          "workKey": null,
-          "gameId": "village-dungeons",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_0a17c87ebe16c73e38747aab",
-            "capability_ctrace_9a64f5379b0839afc78d63c3",
-            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
-            "capability_ctrace_adb1ce10908e499845334f28",
-            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
-          ],
-          "evidence": [
-            "candidate-sha:6bd1be9206801cfb3b5d1a57d0664881c1a674c4",
-            "base-main:5cfa784a236faf9c96d7488dabc45df00c2adb8a",
-            "incremental-qa-hash:3b1f174c8f1694f8f81dfd3e8a52c186597056f3b41d707b445e4db7fd681dd6",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37144257216",
-            "reservation-id:37144257216:1",
-            "capability-application-sample:74fecc92b2d72dc501ef"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_25724a431067e65997594437",
@@ -326160,6 +326101,39 @@
             "actions-run:38164182129",
             "reservation-id:38164182129:1",
             "capability-application-sample:690d27b5a58122068475"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_fbfb8134674557246bea190d",
+          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "village-dungeons",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0a17c87ebe16c73e38747aab",
+            "capability_ctrace_9a64f5379b0839afc78d63c3",
+            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
+            "capability_ctrace_adb1ce10908e499845334f28",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:396e7c05ab11d861cff4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -328483,43 +328457,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_43f34a3eb05c3e175e8d4fdf",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
-            "capability_ctrace_27d25ce2856d134c4d526fca",
-            "capability_ctrace_04a692ac18a379bbdc3efe9a",
-            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
-          ],
-          "evidence": [
-            "candidate-sha:b22daab1bbcfb67d511494a9f3b52af8be5fbaba",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:e167ba210c69220b5e9afcd38119fad3f016be56ba1870f85cf0c6ad256181b2",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37156456227",
-            "reservation-id:37156456227:1",
-            "capability-application-sample:bcc598568d4cb998911e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_dffc0956f09257048c675cc7",
           "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -330620,6 +330557,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_b4c4ff0af6f17d87dd8aea9f",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
+            "capability_ctrace_27d25ce2856d134c4d526fca",
+            "capability_ctrace_04a692ac18a379bbdc3efe9a",
+            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:5db97912a4facdb1d53b"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -330723,39 +330693,6 @@
       "confirmations": 6,
       "confidence": 0.8571,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_7f134a51c630acc7bb5de5b0",
-          "taskId": "survival-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "survival",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
-            "capability_ctrace_f29b84edb2f23dbc509daae3",
-            "capability_ctrace_06719e7d3271fde3c21ad697",
-            "capability_ctrace_6a90e4b0d105e3828406e987",
-            "capability_ctrace_064ab16cff942538f035d864"
-          ],
-          "evidence": [
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "actions-run:37160920381",
-            "reservation-id:37160920381:1",
-            "capability-application-sample:d443186b03a487bd1084"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_4cb4134d42f78056743d9e4f",
@@ -332844,6 +332781,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:da3e3c942eb52bfbfa8e"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_1c4cde9e84ff972c4f588baf",
+          "taskId": "survival-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "survival",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
+            "capability_ctrace_f29b84edb2f23dbc509daae3",
+            "capability_ctrace_06719e7d3271fde3c21ad697",
+            "capability_ctrace_6a90e4b0d105e3828406e987",
+            "capability_ctrace_064ab16cff942538f035d864"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:3309ab65d160b7d166a9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -364810,43 +364780,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_f81a580fbdd542761f24ee37",
-          "taskId": "monster-adventure-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "monster-adventure",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_6fe751612ff3f419ac2aa062",
-            "capability_ctrace_8bf9698cecad317ec8c6b89b",
-            "capability_ctrace_dfe9839c69f33211a439a4d3",
-            "capability_ctrace_d5f1596f6da4a12df001d268",
-            "capability_ctrace_eac47dca37f0da39af4ca5d4"
-          ],
-          "evidence": [
-            "candidate-sha:60652c355403907078f98275c1b81e586811393f",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:ed09a59453c5290e776674bc330ca361cd653b16069a89c734f86a7d6627b857",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37157918464",
-            "reservation-id:37157918464:1",
-            "capability-application-sample:b3136d4eb3077b8d98ad"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_547f5fca19fc654b89921648",
           "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
           "workKey": null,
@@ -366933,6 +366866,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:ada31627ac69ee767857"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_3b2e44a9b0abaa24e40cdc08",
+          "taskId": "monster-adventure-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "monster-adventure",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_6fe751612ff3f419ac2aa062",
+            "capability_ctrace_8bf9698cecad317ec8c6b89b",
+            "capability_ctrace_dfe9839c69f33211a439a4d3",
+            "capability_ctrace_d5f1596f6da4a12df001d268",
+            "capability_ctrace_eac47dca37f0da39af4ca5d4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:fc90b951767a833eff0b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -376685,39 +376651,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_3948081abe726113bd459eac",
-          "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "seed-casual-realm-weaver",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5f5381fd1b0cebfd4892a757",
-            "capability_ctrace_8efc3866c60f6b877c9edce4",
-            "capability_ctrace_fe9d73e05509e02dee1d9fcf",
-            "capability_ctrace_1ea00c0e95d9b0e3f309afc8",
-            "capability_ctrace_d53413a3527da619fe058aa8"
-          ],
-          "evidence": [
-            "base-main:707531cd85f1212b1069536b20f22966c21d0489",
-            "actions-run:37532540282",
-            "reservation-id:37532540282:1",
-            "capability-application-sample:56855338f036e8a5a741"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_0377b20e9e95648af4dc38de",
           "taskId": "seed-casual-realm-weaver-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -378794,6 +378727,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_32e1b8e86b2d9e96c503de25",
+          "taskId": "seed-casual-realm-weaver-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-casual-realm-weaver",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_97b3f9618abd17da47fcfeff",
+            "capability_ctrace_c03341ac3bc3171120291cb2",
+            "capability_ctrace_5f5381fd1b0cebfd4892a757",
+            "capability_ctrace_8efc3866c60f6b877c9edce4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:8c14cdeb1765722317a2"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -378920,39 +378886,6 @@
       "confirmations": 11,
       "confidence": 0.9167,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_d284156b503442628286f50a",
-          "taskId": "seed-casual-realm-weaver-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "seed-casual-realm-weaver",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5f5381fd1b0cebfd4892a757",
-            "capability_ctrace_8efc3866c60f6b877c9edce4",
-            "capability_ctrace_fe9d73e05509e02dee1d9fcf",
-            "capability_ctrace_1ea00c0e95d9b0e3f309afc8",
-            "capability_ctrace_d53413a3527da619fe058aa8"
-          ],
-          "evidence": [
-            "base-main:707531cd85f1212b1069536b20f22966c21d0489",
-            "actions-run:37532540282",
-            "reservation-id:37532540282:1",
-            "capability-application-sample:56855338f036e8a5a741"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_082e2bd559ca1c2b70506988",
@@ -381031,6 +380964,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_66461a76ea96358fc1610c6b",
+          "taskId": "seed-casual-realm-weaver-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-casual-realm-weaver",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_97b3f9618abd17da47fcfeff",
+            "capability_ctrace_c03341ac3bc3171120291cb2",
+            "capability_ctrace_5f5381fd1b0cebfd4892a757",
+            "capability_ctrace_8efc3866c60f6b877c9edce4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:8c14cdeb1765722317a2"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -381181,39 +381147,6 @@
       "confirmations": 17,
       "confidence": 0.9444,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_9e5ea4602b296751c0be837e",
-          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_de59cee9b3cdd18adc8646a3",
-            "capability_ctrace_42bfc771b1c2ba433155d74f",
-            "capability_ctrace_225e903acb5e432626e8c175",
-            "capability_ctrace_6302273f93b5aeb91e76cce4",
-            "capability_ctrace_e829220708a8cd005d123a42"
-          ],
-          "evidence": [
-            "base-main:86fb99e0e1124b2b2c9a135b9c9b60c3c1dbc450",
-            "actions-run:37404694738",
-            "reservation-id:37404694738:1",
-            "capability-application-sample:9ec846e17a4ba12e5b6e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_29bb1b43abd095e9783099fa",
@@ -383292,6 +383225,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8bdbc49e5fe6f8cf1fdf1ecf",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_de59cee9b3cdd18adc8646a3",
+            "capability_ctrace_42bfc771b1c2ba433155d74f",
+            "capability_ctrace_225e903acb5e432626e8c175",
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:36f1a100875498b0b39c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -384884,39 +384850,6 @@
       "confirmations": 17,
       "confidence": 0.9444,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_cdc9d26b038cea88e484bee8",
-          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_de59cee9b3cdd18adc8646a3",
-            "capability_ctrace_42bfc771b1c2ba433155d74f",
-            "capability_ctrace_225e903acb5e432626e8c175",
-            "capability_ctrace_6302273f93b5aeb91e76cce4",
-            "capability_ctrace_e829220708a8cd005d123a42"
-          ],
-          "evidence": [
-            "base-main:707531cd85f1212b1069536b20f22966c21d0489",
-            "actions-run:37545148101",
-            "reservation-id:37545148101:1",
-            "capability-application-sample:513f9b7e2d2ebc6b4c40"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_b4d288e56ee783838ae70621",
@@ -386995,6 +386928,39 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_c4e6be384e0221edc81e1e53",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_de59cee9b3cdd18adc8646a3",
+            "capability_ctrace_42bfc771b1c2ba433155d74f",
+            "capability_ctrace_225e903acb5e432626e8c175",
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:36f1a100875498b0b39c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -387145,39 +387111,6 @@
       "confirmations": 17,
       "confidence": 0.9444,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_05c6346bf06e525f5c22fba7",
-          "taskId": "seed-puzzle-chromatic-cascade-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-puzzle-chromatic-cascade",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_4e906f223c2a12a7007033ab",
-            "capability_ctrace_d97829ecdc84733c1ef7cfee",
-            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
-            "capability_ctrace_b8d48cb4bef5453d919f5f04",
-            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:ae128a3fe26161961429"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_7fa55561e2c85905bee78a5a",
@@ -389250,6 +389183,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:a2cc673c3bb04269192f"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_11aa08271061cc840243046b",
+          "taskId": "seed-puzzle-chromatic-cascade-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-puzzle-chromatic-cascade",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_4e906f223c2a12a7007033ab",
+            "capability_ctrace_d97829ecdc84733c1ef7cfee",
+            "capability_ctrace_cba0f00e10f9df1dfd440e1b",
+            "capability_ctrace_b8d48cb4bef5453d919f5f04",
+            "capability_ctrace_1f1be9a0c88f2a521e3fb20f"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:56609fe5933576571d76"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -398412,43 +398378,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_8b790c2e4fed19b37550628f",
-          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
-            "capability_ctrace_27d25ce2856d134c4d526fca",
-            "capability_ctrace_04a692ac18a379bbdc3efe9a",
-            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
-          ],
-          "evidence": [
-            "candidate-sha:b22daab1bbcfb67d511494a9f3b52af8be5fbaba",
-            "base-main:d1816f8f0967df460dda045a2cab1a1fbf3cd62e",
-            "incremental-qa-hash:e167ba210c69220b5e9afcd38119fad3f016be56ba1870f85cf0c6ad256181b2",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37156456227",
-            "reservation-id:37156456227:1",
-            "capability-application-sample:bcc598568d4cb998911e"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_853fc587e910e7c7fa384794",
           "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -400543,6 +400472,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:6c2b7e1385651b08a039"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_21d201e0200e4c26fa489b33",
+          "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
+            "capability_ctrace_99bf0a1ba4f5ea5da5a2645f",
+            "capability_ctrace_27d25ce2856d134c4d526fca",
+            "capability_ctrace_04a692ac18a379bbdc3efe9a",
+            "capability_ctrace_d60e31d0a2f8da3e7e8ce4d1"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:5db97912a4facdb1d53b"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -406067,39 +406029,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_86412074e5cdff73c6c3cc5e",
-          "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
-          "workKey": null,
-          "gameId": "core-clash-4v4",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_9038f0e3e454437f6f76db36",
-            "capability_ctrace_f42d2937c4ca20faa336af84",
-            "capability_ctrace_5a61b76e9655b6b7c12be7ed",
-            "capability_ctrace_0a17c87ebe16c73e38747aab"
-          ],
-          "evidence": [
-            "base-main:0e53de8d06f6ac8239094b6679c4c6773cda2728",
-            "actions-run:38157267981",
-            "reservation-id:38157267981:1",
-            "capability-application-sample:dba4837f26ac591e86d0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_adce9005d7ae709514714273",
           "taskId": "crystal-defense-studio-evolution-roblox-usability-v1",
           "workKey": null,
@@ -408170,6 +408099,39 @@
             "actions-run:38166325327",
             "reservation-id:38166325327:1",
             "capability-application-sample:cb21a2246304111e1631"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_731a6fe91d79567e973bf810",
+          "taskId": "village-dungeons-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "village-dungeons",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_0a17c87ebe16c73e38747aab",
+            "capability_ctrace_9a64f5379b0839afc78d63c3",
+            "capability_ctrace_5e8cf230586e9cce6f2c6d6a",
+            "capability_ctrace_adb1ce10908e499845334f28",
+            "capability_ctrace_dd1edc1a11a1e7a360dfda28"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:396e7c05ab11d861cff4"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -478721,39 +478683,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_6effbdb8db283a1ceca8a934",
-          "taskId": "seed-idle-growth-rpg-crystal-bloom-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_de59cee9b3cdd18adc8646a3",
-            "capability_ctrace_42bfc771b1c2ba433155d74f",
-            "capability_ctrace_225e903acb5e432626e8c175",
-            "capability_ctrace_6302273f93b5aeb91e76cce4",
-            "capability_ctrace_e829220708a8cd005d123a42"
-          ],
-          "evidence": [
-            "base-main:707531cd85f1212b1069536b20f22966c21d0489",
-            "actions-run:37545148101",
-            "reservation-id:37545148101:1",
-            "capability-application-sample:513f9b7e2d2ebc6b4c40"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_a1d1ff2af63dd405facb3421",
           "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
           "workKey": null,
@@ -480824,6 +480753,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:26ad787ab3a397b5ad6c"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_640e812b9308259dd93ad17e",
+          "taskId": "seed-idle-growth-rpg-crystal-bloom-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_de59cee9b3cdd18adc8646a3",
+            "capability_ctrace_42bfc771b1c2ba433155d74f",
+            "capability_ctrace_225e903acb5e432626e8c175",
+            "capability_ctrace_6302273f93b5aeb91e76cce4",
+            "capability_ctrace_e829220708a8cd005d123a42"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:36f1a100875498b0b39c"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -489826,39 +489788,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_9173af2107f27c24d16e4649",
-          "taskId": "survival-unity-web-base-implementation-v1",
-          "workKey": null,
-          "gameId": "survival",
-          "engine": "unity",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_064ab16cff942538f035d864",
-            "capability_ctrace_022a84430a6b3865c4f91b40",
-            "capability_ctrace_03231cc55735a225cd661bf6",
-            "capability_ctrace_0e6d3fe3ceb3786a8d9c0d19",
-            "capability_ctrace_604b56a282ccb2ee865d0475"
-          ],
-          "evidence": [
-            "base-main:7af2ffcb82789b871e75921bc5634b86b09367e5",
-            "actions-run:37525702355",
-            "reservation-id:37525702355:1",
-            "capability-application-sample:8c8abd730c31fedde4ce"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_64bdc3cb26b99fe70901bc8c",
           "taskId": "survival-studio-evolution-unity-web-usability-v1",
           "workKey": null,
@@ -491929,6 +491858,39 @@
             "actions-run:38165344708",
             "reservation-id:38165344708:1",
             "capability-application-sample:da3e3c942eb52bfbfa8e"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_13db1fe7d430e1be61212e05",
+          "taskId": "survival-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "survival",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_5a0f75d5aa2f6dfb31efc293",
+            "capability_ctrace_f29b84edb2f23dbc509daae3",
+            "capability_ctrace_06719e7d3271fde3c21ad697",
+            "capability_ctrace_6a90e4b0d105e3828406e987",
+            "capability_ctrace_064ab16cff942538f035d864"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:3309ab65d160b7d166a9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -502929,39 +502891,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_4fe460b8463871d5d14cbff7",
-          "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
-          "workKey": null,
-          "gameId": "seed-casual-realm-weaver",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_033ad5048df964784a0b5c08",
-            "capability_ctrace_97b3f9618abd17da47fcfeff",
-            "capability_ctrace_c03341ac3bc3171120291cb2",
-            "capability_ctrace_5f5381fd1b0cebfd4892a757",
-            "capability_ctrace_8efc3866c60f6b877c9edce4"
-          ],
-          "evidence": [
-            "base-main:e89c9d8bcd019dd802872af99f0e5fe5d24fd4d1",
-            "actions-run:37395132801",
-            "reservation-id:37395132801:1",
-            "capability-application-sample:506b754f92ff87dde146"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_454772f1aa8e751afc366ea0",
           "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
           "workKey": null,
@@ -505032,6 +504961,39 @@
             "actions-run:38169170426",
             "reservation-id:38169170426:1",
             "capability-application-sample:534ed6aa657bd376a6e6"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_54be80aa185125baeb9603f4",
+          "taskId": "seed-casual-realm-weaver-roblox-second-gate-rebuild-v1",
+          "workKey": null,
+          "gameId": "seed-casual-realm-weaver",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_033ad5048df964784a0b5c08",
+            "capability_ctrace_97b3f9618abd17da47fcfeff",
+            "capability_ctrace_c03341ac3bc3171120291cb2",
+            "capability_ctrace_5f5381fd1b0cebfd4892a757",
+            "capability_ctrace_8efc3866c60f6b877c9edce4"
+          ],
+          "evidence": [
+            "base-main:a222ecd52f3dd93c71c896ebaf1d73d9a3f29660",
+            "actions-run:38171255088",
+            "reservation-id:38171255088:1",
+            "capability-application-sample:8c14cdeb1765722317a2"
           ],
           "observedAt": null,
           "rawCodeStored": false,
