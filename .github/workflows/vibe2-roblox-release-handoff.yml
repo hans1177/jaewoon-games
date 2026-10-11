@@ -30,6 +30,8 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+          fetch-tags: false
+          filter: blob:none
 
       - uses: actions/setup-node@v4
         with:
@@ -86,7 +88,7 @@ jobs:
           source_root="roblox-games/$GAME_ID"
           git cat-file -e "${SOURCE_REVISION}^{commit}"
           git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
-          git fetch origin "$CANDIDATE_BRANCH" --quiet
+          git fetch --no-tags --filter=blob:none origin "$CANDIDATE_BRANCH" --quiet
           test "$(git rev-parse FETCH_HEAD)" = "$CANDIDATE_SHA"
           git cat-file -e "${CANDIDATE_SHA}^{commit}"
           test -d "$source_root"
@@ -179,7 +181,7 @@ jobs:
           while true; do
             attempt=$((attempt+1))
             echo "ROBLOX_RELEASE_HANDOFF_RUNTIME_WRITE_ATTEMPT=$attempt"
-            git fetch origin "$COMPANY_RUNTIME_BRANCH" --quiet
+            git fetch --no-tags --filter=blob:none origin "$COMPANY_RUNTIME_BRANCH" --quiet
             work="/tmp/vibe2-roblox-release-handoff-${GITHUB_RUN_ID}-${attempt}"
             rm -rf "$work"
             git worktree prune

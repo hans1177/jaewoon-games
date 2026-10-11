@@ -227,9 +227,9 @@ permissions:
   contents: read
 
 concurrency:
-  # Main churn makes older exact-SHA regressions obsolete; preserve active runs on non-main refs.
+  # New PR revisions and main pushes supersede old QA; preserve manual and unrelated branch runs.
   group: vibe2-core-qa-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
 
 jobs:
   scope:
