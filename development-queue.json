@@ -32477,10 +32477,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
+      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-10T11:00:27.688Z",
-      "updatedAt": "2026-10-11T11:36:27.934Z",
+      "updatedAt": "2026-10-11T11:47:52.670Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -33000,7 +33000,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-f0-gameplay-product-readiness-failed"
+        "roblox-runtime-candidate-deploy-pending"
       ],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "aeaafaf16df0d1feca41f1ec04aac53016261f64",
@@ -33059,30 +33059,30 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": false,
-      "robloxFoundationF0PassedAt": null,
+      "robloxFoundationF0Passed": true,
+      "robloxFoundationF0PassedAt": "2026-10-11T11:47:52.670Z",
       "robloxFoundationF0Evidence": {
         "version": 5,
         "gameId": "zombie-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-11T10:03:48.463Z",
+        "checkedAt": "2026-10-11T11:47:50.076Z",
         "sourcePath": "roblox-games/zombie-survival",
         "sourceRevision": "aeaafaf16df0d1feca41f1ec04aac53016261f64",
         "artifactIdentity": "sha256:bdc25f04c587bbd7b0ed61b8d06c2e40eb1269470f958e9fe1cba59a6781af02",
         "rebuiltArtifactIdentity": "sha256:bdc25f04c587bbd7b0ed61b8d06c2e40eb1269470f958e9fe1cba59a6781af02",
-        "artifactRunId": 38124106303,
-        "buildUpAssetSourceUsageFingerprint": "3ec4e44104b928d825d698ccb260e2827e13385bc027db9e268312c63c286c12",
-        "assetSelectionFingerprint": "3d3376e77b233b8097dfe48a116416f9250027cd9309a748de681b47ebc329f2",
+        "artifactRunId": 38135489225,
+        "buildUpAssetSourceUsageFingerprint": null,
+        "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "3d3376e77b233b8097dfe48a116416f9250027cd9309a748de681b47ebc329f2",
-        "assetLibraryVersion": 137,
+        "assetLibraryVersion": null,
         "observedAssetLibraryVersion": 137,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
         "saveExists": true,
         "multiplayerApplicable": true,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -33100,147 +33100,27 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "zombie-survival",
           "pass": false,
           "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-            "MISSING_GAMEPLAY_CAPABILITY:SAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3"
+            "DESIGN_PLAY_MODE_MISMATCH:SINGLE:COOP",
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "WAVE",
-            "EQUIPMENT",
-            "PROGRESSION",
-            "BOSS",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
+            "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": false,
-            "GATHERING": false,
-            "WAVE": false,
-            "EQUIPMENT": false,
-            "PROGRESSION": false,
-            "BOSS": false,
-            "SAVE": false,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": false
+            "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-              "capabilities": [
-                "COMBAT",
-                "EQUIPMENT",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "BOSS"
-              ],
-              "pass": false
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "업보와 인과응보의 생존 세계",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "탐험과 채집 × 업보와 인과응보",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "name": "제작과 거점 구축 × 신화 속 트릭스터의 질서 역전",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "name": "금기와 기회의 교차",
-              "capabilities": [
-                "WORLD"
-              ],
-              "pass": false
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -33250,11 +33130,11 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "MISSING",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "MISSING",
-            "Progression": "MISSING",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -33265,41 +33145,32 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 0,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": false
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": false
-                }
-              ],
-              "pass": false
+              "rows": [],
+              "pass": true
             },
             "placeholder": {
               "pass": true,
@@ -33310,39 +33181,34 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "WORLD_TOPOLOGY_AND_LANDMARKS",
-              "FIRST_10_MINUTES_FLOW",
-              "MID_LATE_GAME_DEPTH",
-              "SYSTEM_CONNECTION_CHAIN"
+              "FIRST_10_MINUTES_FLOW"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "1407dd68aa6b95b84d18fc45e786d8c7b1082cf12cff1e8b7ca6d5d1576a9473",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": true,
-          "designGenre": "Survival",
+          "designGenre": null,
           "sourceGenre": "Survival",
-          "designPlayMode": "COOP",
+          "designPlayMode": "SINGLE",
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "MISSING",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "MISSING",
-          "Progression": "MISSING",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -33374,39 +33240,37 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": false,
+      "robloxHeadlessFastMvpPassed": true,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "zombie-survival",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-11T10:03:48.463Z",
+        "checkedAt": "2026-10-11T11:47:50.076Z",
         "sourcePath": "roblox-games/zombie-survival",
         "sourceRevision": "aeaafaf16df0d1feca41f1ec04aac53016261f64",
         "artifactIdentity": "sha256:bdc25f04c587bbd7b0ed61b8d06c2e40eb1269470f958e9fe1cba59a6781af02",
         "rebuiltArtifactIdentity": "sha256:bdc25f04c587bbd7b0ed61b8d06c2e40eb1269470f958e9fe1cba59a6781af02",
-        "artifactRunId": 38124106303,
-        "buildUpAssetSourceUsageFingerprint": "3ec4e44104b928d825d698ccb260e2827e13385bc027db9e268312c63c286c12",
-        "assetSelectionFingerprint": "3d3376e77b233b8097dfe48a116416f9250027cd9309a748de681b47ebc329f2",
+        "artifactRunId": 38135489225,
+        "buildUpAssetSourceUsageFingerprint": null,
+        "assetSelectionFingerprint": null,
         "observedAssetSelectionFingerprint": "3d3376e77b233b8097dfe48a116416f9250027cd9309a748de681b47ebc329f2",
-        "assetLibraryVersion": 137,
+        "assetLibraryVersion": null,
         "observedAssetLibraryVersion": 137,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
         "saveExists": true,
         "multiplayerApplicable": true,
-        "sourcePreflightPassed": false,
+        "sourcePreflightPassed": true,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -33424,147 +33288,27 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": false,
+        "protectedStatePreserved": true,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": true,
+        "gameplayProductReadinessRequired": false,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "zombie-survival",
           "pass": false,
           "blockers": [
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-            "MISSING_GAMEPLAY_CAPABILITY:GATHERING",
-            "MISSING_GAMEPLAY_CAPABILITY:WAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:EQUIPMENT",
-            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-            "MISSING_GAMEPLAY_CAPABILITY:BOSS",
-            "MISSING_GAMEPLAY_CAPABILITY:SAVE",
-            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3"
+            "DESIGN_PLAY_MODE_MISMATCH:SINGLE:COOP",
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "SESSION_FLOW",
-            "WORLD",
-            "CONTENT_ENTITY",
-            "COMBAT",
-            "ENEMY_AI",
-            "GATHERING",
-            "WAVE",
-            "EQUIPMENT",
-            "PROGRESSION",
-            "BOSS",
-            "SAVE",
-            "MOBILE_UI",
-            "MULTIPLAYER"
+            "MOBILE_UI"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "SESSION_FLOW": false,
-            "WORLD": false,
-            "CONTENT_ENTITY": false,
-            "COMBAT": false,
-            "ENEMY_AI": false,
-            "GATHERING": false,
-            "WAVE": false,
-            "EQUIPMENT": false,
-            "PROGRESSION": false,
-            "BOSS": false,
-            "SAVE": false,
-            "MOBILE_UI": true,
-            "MULTIPLAYER": false
+            "MOBILE_UI": true
           },
-          "coreLoopTrace": [
-            {
-              "index": 0,
-              "step": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "step": "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-              "capabilities": [
-                "COMBAT",
-                "EQUIPMENT",
-                "PROGRESSION"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "step": "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
-              "capabilities": [
-                "SESSION_FLOW",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "WAVE",
-                "PROGRESSION",
-                "BOSS"
-              ],
-              "pass": false
-            }
-          ],
-          "signatureSystemTrace": [
-            {
-              "index": 0,
-              "name": "업보와 인과응보의 생존 세계",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING"
-              ],
-              "pass": false
-            },
-            {
-              "index": 1,
-              "name": "탐험과 채집 × 업보와 인과응보",
-              "capabilities": [
-                "WORLD",
-                "CONTENT_ENTITY",
-                "COMBAT",
-                "ENEMY_AI",
-                "GATHERING"
-              ],
-              "pass": false
-            },
-            {
-              "index": 2,
-              "name": "제작과 거점 구축 × 신화 속 트릭스터의 질서 역전",
-              "capabilities": [
-                "CORE_GAMEPLAY_STATE"
-              ],
-              "pass": false
-            },
-            {
-              "index": 3,
-              "name": "금기와 기회의 교차",
-              "capabilities": [
-                "WORLD"
-              ],
-              "pass": false
-            }
-          ],
+          "coreLoopTrace": [],
+          "signatureSystemTrace": [],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -33574,11 +33318,11 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "MISSING",
-            "World": "MISSING",
-            "Combat": "MISSING",
-            "AI": "MISSING",
-            "Progression": "MISSING",
+            "Content": "N/A",
+            "World": "N/A",
+            "Combat": "N/A",
+            "AI": "N/A",
+            "Progression": "N/A",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -33589,41 +33333,32 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 0,
-              "pass": false
+              "pass": true
             },
             "combatFeel": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "worldTopology": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": true,
+              "applicable": false,
               "signalCount": 1,
-              "pass": false
+              "pass": true
             },
             "systemConnections": {
-              "rows": [
-                {
-                  "id": "EQUIPMENT_TO_COMBAT",
-                  "pass": false
-                },
-                {
-                  "id": "WORLD_TO_CONTENT",
-                  "pass": false
-                }
-              ],
-              "pass": false
+              "rows": [],
+              "pass": true
             },
             "placeholder": {
               "pass": true,
@@ -33634,39 +33369,34 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "AI_STATE_DEPTH",
-              "COMBAT_FEEL_CHAIN",
-              "WORLD_TOPOLOGY_AND_LANDMARKS",
-              "FIRST_10_MINUTES_FLOW",
-              "MID_LATE_GAME_DEPTH",
-              "SYSTEM_CONNECTION_CHAIN"
+              "FIRST_10_MINUTES_FLOW"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": true,
-            "minimumBasePartCount": 5,
-            "spawnRequired": true,
-            "landmarkRequired": true,
+            "worldRequired": false,
+            "minimumBasePartCount": 1,
+            "spawnRequired": false,
+            "landmarkRequired": false,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "1407dd68aa6b95b84d18fc45e786d8c7b1082cf12cff1e8b7ca6d5d1576a9473",
+          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
           "antiSkeletonPassed": true,
-          "designGenre": "Survival",
+          "designGenre": null,
           "sourceGenre": "Survival",
-          "designPlayMode": "COOP",
+          "designPlayMode": "SINGLE",
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "MISSING",
-          "World": "MISSING",
-          "Combat": "MISSING",
-          "AI": "MISSING",
-          "Progression": "MISSING",
+          "Content": "N/A",
+          "World": "N/A",
+          "Combat": "N/A",
+          "AI": "N/A",
+          "Progression": "N/A",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -33698,14 +33428,12 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": false,
+          "gameplayProductReadiness": true,
           "f0SourceIntegrity": true
         },
-        "pass": false,
-        "state": "BLOCKED",
-        "blockers": [
-          "gameplayProductReadiness"
-        ],
+        "pass": true,
+        "state": "PASS",
+        "blockers": [],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -33737,13 +33465,13 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
       "robloxBuildUpAssetSourceUsageFingerprint": "3ec4e44104b928d825d698ccb260e2827e13385bc027db9e268312c63c286c12",
       "robloxBuildUpAssetSourceUsageLibraryVersion": 137,
       "robloxBuildAssetSelectionFingerprint": "3d3376e77b233b8097dfe48a116416f9250027cd9309a748de681b47ebc329f2",
       "robloxBuildAssetLibraryVersion": 137,
-      "robloxExactRevisionPassed": false,
+      "robloxExactRevisionPassed": true,
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "aeaafaf16df0d1feca41f1ec04aac53016261f64",
       "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
@@ -92245,7 +91973,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-11T11:46:26.994Z",
+  "updatedAt": "2026-10-11T11:47:52.670Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
