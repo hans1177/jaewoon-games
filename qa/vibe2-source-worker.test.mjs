@@ -1201,6 +1201,37 @@ test('Vibe libraries and development tools rematch updated APIs for existing sav
   assert.ok(!unrelated.vibeDynamicToolMatch||!unrelated.vibeDynamicToolMatch.matches.some(row=>row.path==='tools/vibe-combat-quality.mjs'));
 });
 
+// 내부 개발도구: 이름 목록과 실제 제작 구현 문맥을 구분한다.
+test('native game BUILD_UP receives bounded current Vibe tool implementations as read-only source',()=>{
+  const cwd=tempRoot();
+  const paths=['assets/vibe-art-pipeline.js','assets/vibe-environment-director.js',
+    'tools/vibe2-asset-production-plan.mjs','tools/vibe2-auto-planner.mjs','tools/vibe2-incremental-qa.mjs'];
+  for(const [i,file] of paths.entries())write(path.join(cwd,file),
+    `export function inspectMesh${i}(source) { return source.normals.length > ${i}; }\n`);
+  write(path.join(cwd,'assets/native-authoring/build-game-visual.py'),
+    '# internal author\ndef material(name):\n    return name\n# Export only authored asset objects.\nexport_materials = "EXPORT"\n');
+  const input={files:[{path:'Assets/Scripts/Game.cs',editable:true,content:'public void Attack() {}'}],bytes:23};
+  const args={cwd,contract:{target:'unity',selectedSourcePaths:[]},order:{target:'unity',goal:'Preserve combat'}};
+  const first=attachSelectedInternalAssetApiContext(input,args);
+  assert.equal(first.vibeDynamicToolMatch.coreDevelopmentToolMatchedCount,5);
+  assert.ok(first.vibeDevelopmentToolContextBytes>0&&first.vibeDevelopmentToolContextBytes<=12000);
+  assert.ok(first.files.filter(row=>row.developmentToolContext).every(row=>row.editable===false));
+  assert.ok(first.vibeDevelopmentToolContextFiles.includes('assets/native-authoring/build-game-visual.py'));
+  const prompt=buildPrompt(args.order,first,['Assets/Scripts/Game.cs'],{verifiedExternalLearningContract:{block:''}});
+  assert.match(prompt,/return source.normals.length/);
+  assert.match(prompt,/Allowed edit paths: Assets\/Scripts\/Game.cs/);
+  assert.doesNotMatch(prompt,/Allowed edit paths:.*build-game-visual/);
+  const second=attachSelectedInternalAssetApiContext(input,{...args,order:{...args.order,buildUpGeneration:2}});
+  assert.notDeepEqual(first.vibeDevelopmentToolContextFiles,second.vibeDevelopmentToolContextFiles);
+  assert.equal(second.vibeDynamicToolMatch.coreDevelopmentToolMatchedCount,5);
+  assert.equal(first.vibeDynamicToolMatch.runtimeVerified,false);
+  assert.equal(input.files.length,1);
+  write(path.join(cwd,paths[0]),'export function inspectMesh0(source) { return source.verifiedMaterial; }\n');
+  const updated=attachSelectedInternalAssetApiContext(input,args);
+  assert.notEqual(first.vibeDynamicToolMatch.fingerprint,updated.vibeDynamicToolMatch.fingerprint);
+  assert.ok(updated.files.some(row=>row.developmentToolContext&&row.content.includes('source.verifiedMaterial')));
+});
+
 test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{
   const cwd=tempRoot();
   const sourcePaths=[];

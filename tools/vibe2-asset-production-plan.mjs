@@ -2695,6 +2695,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,
     types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     module,sourceModel,meshModel,
+    exportedMotionProvider:clean(recipe?.exportedMotionProvider)||null,externalServiceExecuted:false,
     librarySourceAssetId:clean(recipe?.librarySourceAssetId)||null,
     librarySourceSha256:clean(recipe?.librarySourceSha256)||null,
     automaticLibraryDerivative:recipe?.automaticLibraryDerivative===true,
@@ -2721,8 +2722,14 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     'cad':'design','parametric':'design','prop':'object','game-object':'object','slicer':'medical','anatomy':'medical','medical-3d':'medical',
     'body':'human','humanoid':'human','character':'human',
     'animate':'animation','keyframes':'animation','motion-preview':'animation',
+    'cascadeur':'animation','deepmotion':'animation','deep-motion':'animation','animate-3d':'animation','saymotion':'animation',
     'render-video':'video','movie':'video','cinematic':'video'};
   const intentText=clean(task.goal||task.request).toLowerCase();
+  // [공용 모션 입력] 외부 서비스의 내보내기 파일만 기존 Blender 변환기에 전달한다.
+  // 서비스 실행·계정·과금 권한을 생성하지 않으며 원본 리그·클립 검증은 그대로 유지한다.
+  const exportedMotionProvider=['cascadeur','deepmotion','deep-motion','animate-3d','saymotion'].includes(taskModule)?taskModule:null;
+  if(exportedMotionProvider&&!clean(task.assetAuthoring?.sourceModel||librarySource?.sourceModel))
+    throw new Error('EXTERNAL_MOTION_EXPORTED_SOURCE_REQUIRED:'+exportedMotionProvider);
   const selectedExplicit=aliases[taskModule]||taskModule;
   const inferred=!selectedExplicit&&task.assetAuthoring?.automaticModuleSelection!==false
     ?(/영상.?연출|시네마틱|cinematic|video.?render|영상.?렌더/i.test(intentText)?'video'
@@ -2768,6 +2775,8 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
   const sourceImage=clean(task.assetAuthoring?.sourceImage||task.assetImagePath
     ||imageRow?.path||imageRow?.imageRef||imageRow?.imagePath).replaceAll('\\','/');
   const sourceModel=clean(task.assetAuthoring?.sourceModel||linkedSourceModel).replaceAll('\\','/');
+  if(exportedMotionProvider&&!/\.(?:fbx|glb)$/i.test(sourceModel))
+    throw new Error('EXTERNAL_MOTION_FBX_OR_GLB_REQUIRED:'+exportedMotionProvider);
   const sourceLicense=clean(task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense
     ||task.assetAuthoring?.imageLicense||imageRow?.license);
   const sourceCredit=clean(task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
@@ -2816,6 +2825,7 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
     internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
+    exportedMotionProvider,externalServiceExecuted:false,
     sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,
     librarySourceAssetId:linkedSourceModel?clean(librarySource?.sourceAssetId):null,
     librarySourceSha256:linkedSourceModel?clean(librarySource?.sourceSha256):null,

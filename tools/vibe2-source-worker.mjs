@@ -3498,6 +3498,18 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
       }));
     }
   }
+  // [내부 메시·렌더링 제작도구] 기존 Blender 원본 제작기를 같은 읽기 전용 도구 문맥에 포함한다.
+  // 외부 프로그램 설치·실행은 기존 nativeAuthoringExecution만 담당한다.
+  const nativeAuthorPath='assets/native-authoring/build-game-visual.py';
+  if(['roblox','unity'].includes(target)&&fs.existsSync(path.join(cwd,nativeAuthorPath))
+    &&fs.realpathSync(path.join(cwd,nativeAuthorPath)).startsWith(fs.realpathSync(cwd)+path.sep)){
+    const raw=fs.readFileSync(path.join(cwd,nativeAuthorPath),'utf8');
+    toolMatches.push(Object.freeze({path:nativeAuthorPath,kind:'DEVELOPMENT_TOOL_READ_ONLY',
+      signals:Object.freeze(['ASSET','MOTION']),
+      sha256:crypto.createHash('sha256').update(raw).digest('hex'),
+      exports:Object.freeze([...raw.matchAll(/^def\s+([A-Za-z_][\w]*)\s*\(/gm)].map(row=>row[1]))}));
+    scannedTools++;
+  }
   const toolMatchFingerprint=crypto.createHash('sha256').update(JSON.stringify({
     target,sourceSignals:sourceSignals.map(row=>row[0]),
     matches:toolMatches.map(row=>[row.path,row.sha256,row.signals])
@@ -3544,11 +3556,41 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     remaining-=bytes;
     apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
   }
+  // [개발도구 구현 문맥] 함수 이름만 전달하던 경로를 기존 함수 본문 창으로 보완한다.
+  // 전체 도구 인덱스는 매번 유지하고 상세 구현만 회전해 모델 문맥·비용을 제한한다.
+  const coreTools=toolMatches.filter(row=>vibeDynamicToolMatch.coreDevelopmentToolPaths.includes(row.path));
+  const applicableTools=toolMatches.filter(row=>!coreTools.includes(row)&&row.signals.length);
+  const detailTools=unique([
+    ...Array.from({length:Math.min(2,coreTools.length)},(_,i)=>coreTools[(generation-1+i)%coreTools.length]?.path),
+    applicableTools.length?applicableTools[(generation-1)%applicableTools.length].path:null,
+    ...(toolMatches.some(row=>row.path===nativeAuthorPath)?[nativeAuthorPath]:[])
+  ].filter(Boolean));
+  const toolFiles=[];
+  for(const relative of detailTools){
+    if(existing.has(relative)||apiFiles.some(row=>row.path===relative))continue;
+    const absolute=path.resolve(cwd,relative),root=fs.realpathSync(cwd);
+    if(!fs.existsSync(absolute)||!fs.realpathSync(absolute).startsWith(root+path.sep))continue;
+    const raw=fs.readFileSync(absolute,'utf8'),row=toolMatches.find(item=>item.path===relative);
+    const functions=relative.endsWith('.py')?[]:inspectSourceFunctions(raw,{language:'web'});
+    const callable=functions.filter(fn=>row.exports.includes(fn.name));
+    const selected=callable.length?callable[(generation-1)%callable.length]:null;
+    const nativeSections=relative.endsWith('.py')?[
+      raw.slice(raw.indexOf('def material('),raw.indexOf('def material(')+3600),
+      raw.slice(raw.indexOf('# Export only authored asset objects.'),raw.indexOf('# Export only authored asset objects.')+3600)
+    ].filter(Boolean):[];
+    const body=selected?raw.slice(selected.start,selected.end):nativeSections.length?nativeSections[(generation-1)%nativeSections.length]:raw;
+    const content=boundedPromptText(raw.slice(0,600)+'\n[CURRENT TOOL IMPLEMENTATION '+(selected?.name||'NATIVE_AUTHORING_RECIPE')+']\n'+body,3000);
+    toolFiles.push({path:relative,content,editable:false,truncated:true,developmentToolContext:true,
+      sourceSha256:row.sha256,windowLabel:selected?.name||'NATIVE_AUTHORING_RECIPE'});
+  }
+  const toolBytes=toolFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content,'utf8'),0);
   if(!apiFiles.length&&!apiIndex.text&&!vibeDynamicToolMatch.matchedCount)return context;
   return{
     ...context,
-    files:[...context.files,...apiFiles],
-    bytes:Number(context.bytes||0)+apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
+    files:[...context.files,...apiFiles,...toolFiles],
+    bytes:Number(context.bytes||0)+apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0)+toolBytes,
+    vibeDevelopmentToolContextFiles:toolFiles.map(row=>row.path),
+    vibeDevelopmentToolContextBytes:toolBytes,
     internalAssetApiContextFiles:apiFiles.map(row=>row.path),
     internalAssetApiContextBytes:apiFiles.reduce((sum,row)=>sum+Buffer.byteLength(row.content||'','utf8'),0),
     internalAssetApiContextBounded:true,
@@ -7082,6 +7124,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     vibeDynamicToolMatchCount:Number(context.vibeDynamicToolMatch?.matchedCount||0),
     vibeDynamicToolScanCount:Number(context.vibeDynamicToolMatch?.scannedTools||0),
     vibeDynamicToolMatchedSaveAndCombat:Object.freeze((context.vibeDynamicToolMatch?.sourceSignals||[]).filter(signal=>signal==='SAVE'||signal==='COMBAT')),
+    vibeDevelopmentToolContextFiles:Object.freeze([...(context.vibeDevelopmentToolContextFiles||[])]),
+    vibeDevelopmentToolContextBytes:Number(context.vibeDevelopmentToolContextBytes||0),
     vibeDynamicToolRuntimeVerified:false,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
