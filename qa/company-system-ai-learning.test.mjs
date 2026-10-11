@@ -1,3 +1,4 @@
+import {runInNewContext} from 'node:vm';
 // 파일명: qa/company-system-ai-learning.test.mjs
 // 임포트: 기존 System AI 검증 계약
 import test from 'node:test';
@@ -569,4 +570,19 @@ test('existing 24-hour runner reads assistant trace changes through the canonica
   assert.match(workflow,/--assistant-trace=\/tmp\/vibe2-main\/company-learning\/assistant-vibe-coauthoring-log\.json/);
   assert.match(workflow,/'company-learning\/assistant-vibe-coauthoring-log\.json'/);
   assert.match(workflow,/--input=\/tmp\/system-ai-external-learning-feed\.json/);
+});
+
+
+test('Core QA coalesces obsolete revisions of the same PR and preserves manual and unrelated branch runs',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-core-qa.yml','utf8');
+  const expression=workflow.match(/cancel-in-progress:\s*\$\{\{([^\n]+?)\}\}/)[1].trim();
+  for(const [event_name,ref,expected]of [
+    ['pull_request','refs/pull/7663/merge',true],
+    ['push','refs/heads/main',true],
+    ['push','refs/heads/review-branch',false],
+    ['workflow_dispatch','refs/heads/main',false]
+  ])assert.equal(runInNewContext(expression,{github:{event_name,ref}}),expected,event_name+':'+ref);
+  const group=workflow.match(/group: (vibe2-core-qa-[^\n]+)/)[1];
+  const resolve=ref=>group.replace('${{ github.ref }}',ref);
+  assert.notEqual(resolve('refs/pull/7663/merge'),resolve('refs/pull/7665/merge'));
 });
