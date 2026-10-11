@@ -3,48 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-adlprm",
-      "worker": "vibe2",
-      "taskId": "chess-battle-studio-evolution-roblox-usability-v1",
-      "gameId": "chess-battle",
-      "files": [
-        "roblox-games/chess-battle/client/Game.client.luau",
-        "roblox-games/chess-battle/shared/GameConfig.luau",
-        "roblox-games/chess-battle/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:41:51.070Z",
-      "expiresAt": "2026-10-11T03:26:51.070Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:chess-battle-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1nid58",
-      "worker": "vibe2",
-      "taskId": "kingshot-ad-studio-evolution-roblox-usability-v1",
-      "gameId": "kingshot-ad",
-      "files": [
-        "roblox-games/kingshot-ad/client/Game.client.luau",
-        "roblox-games/kingshot-ad/shared/GameConfig.luau",
-        "roblox-games/kingshot-ad/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:42:04.093Z",
-      "expiresAt": "2026-10-11T03:27:04.093Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:kingshot-ad-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-thql9e",
       "worker": "vibe2",
       "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
@@ -436,6 +394,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-huli-jing-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-zsy7os",
+      "worker": "vibe2",
+      "taskId": "internal-motion-umibozu-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/umibozu/init.luau"
+      ],
+      "baseSha": "01b9569c9fe892bf614fcf736f951d82ece72960",
+      "runId": "38104101272",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T03:27:38.432Z",
+      "expiresAt": "2026-10-11T04:12:38.432Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-umibozu-walk-v1"
       ]
     }
   ]
