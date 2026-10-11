@@ -108,9 +108,8 @@
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
 
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
+        // 모바일: 조작 영역은 유지하고 렌더 해상도만 제한해 초기 GPU 부하를 낮춘다.
+        config.devicePixelRatio = 1;
 
 
       } else {
@@ -122,6 +121,7 @@
 
       var script = document.createElement("script");
       script.src = loaderUrl;
+      script.onerror = () => unityShowBanner("게임 실행 파일을 받지 못했어. 연결을 확인하고 다시 열어줘.", "error");
       script.onload = () => {
         const loadingContainer = document.querySelector("#unity-loading-container");
         const progressBarFull = document.querySelector("#unity-progress-bar-full");
