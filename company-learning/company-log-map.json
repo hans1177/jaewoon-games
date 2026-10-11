@@ -1,5 +1,5 @@
 {
-  "version": 188,
+  "version": 189,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -494,7 +494,7 @@
     "continuousEvolutionEvidenceAllowedAfterInternalAndPublicRelease": true,
     "standaloneReleaseAuthority": false
   },
-  "updatedAt": "2026-10-10",
+  "updatedAt": "2026-10-11",
   "graphicsProductionEvidenceContract": {
     "version": 5,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -3572,5 +3572,30 @@
     "unityAdditionalFields": [
       "sourceHashes"
     ]
+  },
+  "ownerPlatformHoldEvidence": {
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentAccess",
+    "activeTargets": [
+      "ROBLOX"
+    ],
+    "markers": [
+      "UNITY_WEB_OWNER_HOLD",
+      "UNITY_ANDROID_OWNER_HOLD",
+      "VIBE2_QUEUE_OWNER_HOLD_TASKS",
+      "OWNER_DIRECT_DEVELOPMENT_HELD"
+    ],
+    "heldWorkIsNotFailureOrPass": true
+  },
+  "ownerRobloxInternalAssetFocus20261011": {
+    "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.ownerProductionFocus",
+    "executionOwners": [
+      "tools/vibe2-queue-control.mjs",
+      "tools/vibe2-source-worker.mjs",
+      "tools/vibe2-learning-motor.mjs"
+    ],
+    "activeProductionTargets": [
+      "ROBLOX"
+    ],
+    "queueHoldField": "ownerDevelopmentHold"
   }
 }

@@ -128,21 +128,21 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary while assigned e
 
 test('DEVELOPMENT_CONFIRMED permits independent Roblox and Unity Web 3D development without a Unity Web admission gate',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
-  assert.equal(dev.executionMode,'ROBLOX_AND_UNITY_WEB_INDEPENDENT_CONTINUOUS');
+  assert.equal(dev.executionMode,'ROBLOX_ONLY_INDEPENDENT_CONTINUOUS');
   assert.equal(dev.resumeFromLatestEvidence,true);
   assert.equal(dev.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(dev.upperPlatformAdmissionAuthority,'MINIMUM_DESIGN_READY');
   assert.equal(dev.strictDesignScoreRequiredForAdmission,false);
   assert.equal(dev.strictDesignReviewRunsInParallel,true);
   assert.equal(dev.targetPlatformMayRunImmediately,true);
-  assert.equal(dev.unityWebDevelopmentMayRunImmediately,true);
+  assert.equal(dev.unityWebDevelopmentMayRunImmediately,false);
   assert.deepEqual(dev.concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(dev.onePlatformFailureDoesNotCancelOther,true);
   assert.equal(dev.platformSpecificValidationRequired,true);
   assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
   assert.deepEqual(dev.waitingStates,[]);
-  assert.equal(dev.unityWebValidationSurface.enabled,true);
-  assert.equal(dev.unityWebValidationSurface.optional,false);
+  assert.equal(dev.unityWebValidationSurface.enabled,false);
+  assert.equal(dev.unityWebValidationSurface.optional,true);
   assert.equal(dev.unityWebValidationSurface.sameCanonicalUnityProjectRequired,true);
   assert.equal(dev.unityWebValidationSurface.nativeGateAuthority,false);
   assert.equal(dev.unityWebValidationSurface.upperPlatformReadinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
@@ -180,14 +180,14 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
 
-test('Roblox and Unity Web are active while Unity Android and UEFN remain owner-held',()=>{
+test('Roblox alone is active while both Unity targets and UEFN are owner-held',()=>{
   const strategy=directive.platformStrategy;
   assert.equal(strategy.primaryPlatform,'ROBLOX');
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
-  assert.equal(strategy.priorityMeaning,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_ACTIVE_EQUAL_UPPER_TIER');
+  assert.equal(strategy.priorityMeaning,'ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD');
   assert.deepEqual(strategy.developmentAccess,{
     ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',
-    UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'
+    UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'
   });
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
@@ -205,7 +205,7 @@ test('Roblox and Unity Web are active while Unity Android and UEFN remain owner-
   assert.equal(strategy.FORTNITE_UEFN.role,'DEVELOPMENT_PAUSED_SUPPORTED_PLATFORM');
   assert.equal(machinePolicy.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
   assert.equal(machinePolicy.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
-  assert.equal(machinePolicy.developmentAccess.UNITY_WEB,'ALWAYS_ALLOWED');
+  assert.equal(machinePolicy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
   assert.deepEqual(machinePolicy.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
 });
 test('artbook authorship and provenance rules remain unchanged',()=>{

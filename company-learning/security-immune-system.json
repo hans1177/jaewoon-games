@@ -1,5 +1,5 @@
 {
-  "version": 89,
+  "version": 90,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -473,7 +473,7 @@
     "failureAction": "QUARANTINE_AFFECTED_ASSET_OR_SCOPE_AND_ROUTE_ASSET_REPAIR_REQUIRED",
     "wholeCompanyStopDefault": false
   },
-  "updatedAt": "2026-10-10",
+  "updatedAt": "2026-10-11",
   "graphicsProductionUnificationSecurity": {
     "version": 1,
     "centralContract": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification",
@@ -1392,5 +1392,25 @@
     "missingImplementationMustFail": true,
     "staticPassIsActualRuntimePlay": false,
     "lockedF0F9SequenceUnchanged": true
+  },
+  "ownerPlatformHoldBoundary": {
+    "authority": "OWNER_DIRECTIVE_2026-10-11",
+    "policy": "company-learning/platform-release-roadmap.json#developmentAccess",
+    "activeTargets": [
+      "ROBLOX"
+    ],
+    "heldTargets": [
+      "UNITY_WEB",
+      "UNITY_ANDROID",
+      "FORTNITE_UEFN"
+    ],
+    "blockHeldSourceReservationAndBuild": true,
+    "queuedOldRevisionMustReadLatestMainPolicy": true,
+    "preserveExistingGameSourceSaveAndRuntimeEvidence": true,
+    "resumeRequiresOwnerDirective": true,
+    "internalAssetProductionTargets": [
+      "ROBLOX"
+    ],
+    "assetTargetAndSourcePathMustRespectOwnerFocus": true
   }
 }

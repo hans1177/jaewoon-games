@@ -31,7 +31,7 @@ assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roa
 assert.equal(roadmap.humanDocumentRequired,false);
 assert.equal(roadmap.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
 assert.equal(roadmap.developmentAccess.UNITY,'OWNER_HOLD');
-assert.equal(roadmap.developmentAccess.UNITY_WEB,'ALWAYS_ALLOWED');
+assert.equal(roadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
 assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
 assert.equal(roadmap.fortniteUefn.developmentAlwaysAllowed,false);
 assert.equal(roadmap.fortniteUefn.developmentExecutionAllowed,false);

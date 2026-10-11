@@ -9,7 +9,7 @@ const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const architecture=JSON.parse(fs.readFileSync('company-learning/company-architecture-map.json','utf8'));
 const runtime=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
 
-test('canonical policy routes new Roblox and Unity work through the Unity Web readiness floor and keeps UEFN owner-held',()=>{
+test('canonical policy enables Roblox and holds both Unity targets and UEFN',()=>{
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
   assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
   const direct=roadmap.directNativeDualPlatformDevelopment;
@@ -17,8 +17,8 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.equal(direct.mode,'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR');
   assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.equal(direct.webDevelopmentStageRemoved,false);
-  assert.equal(direct.unityWebEnabled,true);
-  assert.equal(direct.unityWebRequired,true);
+  assert.equal(direct.unityWebEnabled,false);
+  assert.equal(direct.unityWebRequired,false);
   assert.equal(direct.unityWebGateRequired,false);
   assert.equal(direct.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(direct.unityWebValidationSurface?.requiredForDevelopmentAdmission,false);
@@ -52,7 +52,7 @@ test('canonical policy routes new Roblox and Unity work through the Unity Web re
   assert.equal(roadmap.developmentSpeedExecution.runtimeWaitMustReleaseIndependentDevelopmentCapacity,true);
   assert.equal(roadmap.developmentSpeedExecution.sharedStateSerializationScope,'ATOMIC_SHARED_STATE_WRITE_CRITICAL_SECTION_ONLY');
   assert.equal(direct.minimumDesignRequired,true);
-  assert.equal(direct.sameGameBothPlatformsRequired,true);
+  assert.equal(direct.sameGameBothPlatformsRequired,false);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
   assert.equal(direct.platformSpecificIndependentQaRequired,true);
   assert.equal(direct.platformSpecificRegressionRequired,true);
@@ -93,18 +93,18 @@ test('lifecycle uses Unity Web as the pre-native development floor and keeps rel
   assert.equal(life.gameDevelopmentAuthority.ownsInternalPlaytestRepair,true);
 });
 
-test('directive mirrors the Unity Web readiness gate without making Web a release platform',()=>{
-  assert.equal(directive.currentExecutionMode,'ROBLOX_AND_UNITY_WEB_ONLY_CONTINUOUS_DEVELOPMENT');
+test('directive mirrors Roblox-only development and holds Unity Web',()=>{
+  assert.equal(directive.currentExecutionMode,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
   assert.equal(Object.hasOwn(directive,'legacyWebFirstPolicy'),false);
   assert.equal(directive.directNativeDualPlatformDevelopment.webDevelopmentStageRemoved,false);
-  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,true);
-  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebRequired,true);
+  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebEnabled,false);
+  assert.equal(directive.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(directive.directNativeDualPlatformDevelopment.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.upperPlatformAdmissionAuthority,'MINIMUM_DESIGN_READY');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.targetPlatformMayRunImmediately,true);
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebDevelopmentMayRunImmediately,true);
+  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebDevelopmentMayRunImmediately,false);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface.nativeGateAuthority,false);
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface.releaseAuthority,false);
   assert.equal(directive.classes.RELEASE_CONFIRMED.webCompanionRequired,false);
@@ -115,7 +115,7 @@ test('directive mirrors the Unity Web readiness gate without making Web a releas
   assert.equal(directive.ai.robloxStudioUndocumentedCliAutomationAllowed,false);
 });
 
-test('architecture and runtime execute Unity Web readiness before new upper-platform dispatch',()=>{
+test('architecture preserves Unity Web adapters behind the owner hold',()=>{
   assert.deepEqual(architecture.executionTopology.web,[
     'UNITY_WEB_FULL_DEVELOPMENT_FLOOR',
     'SAME_CANONICAL_UNITY_PROJECT',
@@ -149,7 +149,7 @@ test('architecture and runtime execute Unity Web readiness before new upper-plat
   assert.match(webWorkflow,/Evaluate upper-platform development readiness/);
   assert.match(webWorkflow,/upper-platform-development-readiness\.json/);
   assert.doesNotMatch(webWorkflow,/Fan verified Unity Web into exact Roblox and Unity development/);
-  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(architecture.concurrentPlatformDevelopment.unityWeb,'OWNER_HOLD');
   assert.doesNotMatch(runtime,/company-development-web-bootstrap\.mjs/);
 });
 
@@ -167,7 +167,7 @@ test('active scheduling cannot silently re-enable UEFN or weaken native evidence
   assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX']]);
   assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX']);
   assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,false);
-  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX']);
   assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.UNITY_ANDROID.developmentExecutionAllowed,false);
   assert.equal(roadmap.platformPriorityInvariant.qualityOrEvidenceGateWeakeningAllowed,false);
   assert.equal(roadmap.directNativeDualPlatformDevelopment.externalRelease.requiresOwnRuntimeQaRegressionAndExplicitPublicExposureEvidence,true);

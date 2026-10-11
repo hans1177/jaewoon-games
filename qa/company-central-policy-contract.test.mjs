@@ -162,14 +162,14 @@ test('DESIGN_ONLY is transient until the minimum dual-platform design contract i
   ]);
   assert.equal(design.readyState,'MINIMUM_DESIGN_READY');
   assert.equal(design.longLivedPromotionGate,false);
-  assert.equal(development.executionMode,'ROBLOX_AND_UNITY_WEB_INDEPENDENT_CONTINUOUS');
+  assert.equal(development.executionMode,'ROBLOX_ONLY_INDEPENDENT_CONTINUOUS');
   assert.equal(development.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(development.strictDesignScoreRequiredForAdmission,false);
   assert.equal(development.strictDesignReviewRunsInParallel,true);
   assert.deepEqual(development.concurrentTargetPlatforms,['ROBLOX','UNITY']);
   assert.equal(development.onePlatformFailureDoesNotCancelOther,true);
   assert.equal(development.targetPlatformMayRunImmediately,true);
-  assert.equal(development.unityWebDevelopmentMayRunImmediately,true);
+  assert.equal(development.unityWebDevelopmentMayRunImmediately,false);
   assert.equal(development.upperPlatformAdmissionAuthority,'MINIMUM_DESIGN_READY');
   for(const token of ['LOAD_MINIMUM_SHARED_DESIGN','UNITY_WEB_CODE_AND_GRAPHICS_DEVELOPMENT','UNITY_WEBGL_BUILD','UNITY_WEB_ACTUAL_BROWSER_PLAY','UNITY_WEB_INDEPENDENT_QA','UNITY_WEB_REGRESSION','UPPER_PLATFORM_DEVELOPMENT_READINESS_EVALUATION','ROBLOX_UNITY_NATIVE_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','INTERNAL_PLATFORM_RELEASE','INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG','TARGETED_REPAIR_AND_REVALIDATION','PUBLIC_RELEASE_READY'])assert.ok(development.requiredFlow.includes(token),token);
   assert.equal(development.presentationSupport.graphicsRoot,'GRAPHICS_PRODUCTION');
@@ -196,7 +196,7 @@ test('Unity Web gates upper-platform development without deployment or release',
     'CAUSAL_REPAIR_AND_REBUILD_WHEN_NOT_READY',
     'HANDOFF_TO_ROBLOX_AND_UNITY_WHEN_READY',
   ];
-  assert.equal(lane?.enabled,true);
+  assert.equal(lane?.enabled,false);
   assert.equal(lane?.role,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(lane?.canonicalSourceRoot,'unity-games/<gameId>/');
   assert.equal(lane?.outputRoot,'web-games/<gameId>/');
@@ -241,12 +241,12 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(directive.gameSeed?.derivedProductionRequirements?.includes('UNITY_WEB_UPPER_PLATFORM_PREDEVELOPMENT_FLOOR'),true);
   assert.equal(directive.gameSeed?.derivedProductionRequirements?.includes('UNITY_WEB_VALIDATION_SURFACE_WHEN_BUILDABLE'),false);
   assert.equal(directive.ai?.audioDepartment?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
-  assert.equal(directive.rules?.includes('owner-development-targets-roblox-and-unity-web-only-unity-android-owner-hold'),true);
+  assert.equal(directive.rules?.includes('owner-development-target-roblox-only-unity-web-and-android-owner-hold'),true);
   assert.equal(directive.rules?.includes('unity-web-is-optional-validation-surface-from-the-same-canonical-unity-project'),false);
   assert.equal(roadmap.unityWebFirstStage?.homepageTestLinkEnabled,true);
   assert.equal(roadmap.unityWebFirstStage?.homepageTestLinkIsNotDeploymentOrRelease,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.admissionAuthority,'MINIMUM_DESIGN_READY');
-  assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWeb,'OWNER_HOLD');
   assert.deepEqual(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.developmentFlow,expectedFlow);
   assert.equal(architecture.concurrentPlatformDevelopment?.upperPlatformDevelopmentReadinessGate?.gateId,'UPPER_PLATFORM_DEVELOPMENT_READY');
   assert.equal(architecture.departmentTopology?.unityWebRole,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
@@ -258,7 +258,7 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.nativeFanOutDoesNotCreateAdmissionAuthority,true);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.newUpperPlatformEntryBlocking,false);
   assert.equal(architecture.concurrentPlatformDevelopment?.unityWebValidationSurface?.existingNativeDevelopmentGrandfathered,true);
-  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.implementationState,'ACTIVE_EXECUTOR_BOUND');
+  assert.equal(architecture.concurrentPlatformDevelopment?.unityWebDevelopmentLane?.implementationState,'OWNER_HOLD');
   assert.equal(roadmap.changeRecord?.unityWebUpperPlatformDevelopmentGate20260925?.implementationState,'CENTRAL_POLICY_ARCHITECTURE_AND_EXECUTOR_BOUND');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
   assert.equal(directive.production.webCompanion?.legacyDirectWebAuthoring,false);
@@ -360,15 +360,15 @@ test('Unity Web is required for new upper-platform entry while native evidence r
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   const release=directive.classes.RELEASE_CONFIRMED;
   const web=development.unityWebValidationSurface;
-  assert.equal(development.executionMode,'ROBLOX_AND_UNITY_WEB_INDEPENDENT_CONTINUOUS');
+  assert.equal(development.executionMode,'ROBLOX_ONLY_INDEPENDENT_CONTINUOUS');
   assert.equal(development.admissionAuthority,'MINIMUM_DUAL_PLATFORM_DESIGN_READY');
   assert.equal(development.upperPlatformAdmissionAuthority,'MINIMUM_DESIGN_READY');
-  assert.equal(development.targetPlatformPurpose,'ROBLOX_AND_UNITY_WEB_ONLY_ANDROID_HELD');
+  assert.equal(development.targetPlatformPurpose,'ROBLOX_ONLY_UNITY_WEB_AND_ANDROID_HELD');
   assert.equal(development.targetPlatformMayRunImmediately,true);
-  assert.equal(development.unityWebDevelopmentMayRunImmediately,true);
+  assert.equal(development.unityWebDevelopmentMayRunImmediately,false);
   assert.equal(development.approvedScopeCompletionRequired,true);
-  assert.equal(web.enabled,true);
-  assert.equal(web.optional,false);
+  assert.equal(web.enabled,false);
+  assert.equal(web.optional,true);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
   assert.equal(web.nativeGateAuthority,false);
   assert.equal(web.upperPlatformReadinessGate,'UPPER_PLATFORM_DEVELOPMENT_READY');
@@ -425,13 +425,13 @@ test('equal-tier scheduling keeps strict design as a parallel quality signal, no
   assert.equal(roadmap.centralDocumentation.legacyPolicyCleanup.status,'REMOVED_FROM_ACTIVE_REPOSITORY');
 });
 
-test('Roblox and Unity Web stay independently active while Unity Android and UEFN are owner-held',()=>{
+test('Roblox stays active while Unity Web, Android and UEFN are owner-held',()=>{
   const strategy=directive.platformStrategy;
   assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
   assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
   assert.deepEqual(strategy.priority,['ROBLOX','UNITY']);
   assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX']]);
-  assert.equal(strategy.priorityMeaning,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_ACTIVE_EQUAL_UPPER_TIER');
+  assert.equal(strategy.priorityMeaning,'ROBLOX_FOCUSED_DEVELOPMENT_UNITY_WEB_AND_ANDROID_OWNER_HOLD');
   assert.equal(strategy.designStabilizationScheduling.unityRobloxEqualPriority,true);
   assert.equal(strategy.designStabilizationScheduling.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,false);
@@ -439,7 +439,7 @@ test('Roblox and Unity Web stay independently active while Unity Android and UEF
   assert.equal(strategy.roadmapPhaseEntryGatesForbidden,false);
   assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
-  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',UNITY_WEB:'ALWAYS_ALLOWED',UNITY_ANDROID:'OWNER_HOLD'});
+  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',FORTNITE_UEFN:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD'});
   assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.activeTargets,['ROBLOX','UNITY_WEB']);
   assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
   assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);

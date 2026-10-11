@@ -100,7 +100,30 @@ permissions:
   actions: write
 
 jobs:
+  owner-policy:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    outputs:
+      allowed: ${{ steps.policy.outputs.allowed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: company-learning
+      - id: policy
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const allowed=policy.developmentAccess?.UNITY_WEB==='ALWAYS_ALLOWED';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'allowed='+allowed+'\n');
+          console.log('UNITY_WEB_OWNER_HOLD='+(!allowed));
+          NODE
+
   build:
+    needs: owner-policy
+    if: needs.owner-policy.outputs.allowed == 'true'
     concurrency:
       group: unity-web-floor-exec-${{ inputs.game_id || inputs.request_file || github.run_id }}
       cancel-in-progress: false

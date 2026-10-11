@@ -275,7 +275,7 @@ test('queue command reads adaptive cap and duplicate fan-in keeps exactly one ne
   const controlFile=path.join(dir,'control.json');
   const batchFile=path.join(dir,'batch.json');
   const fanFile=path.join(dir,'fan.json');
-  const tasks=Array.from({length:32},(_,i)=>({id:`q-${i}`,gameId:`g-${i}`,target:'unity',department:'development',type:'implementation',sourceRoot:`unity-games/g-${i}`,goal:'work',status:'queued',responsibleFiles:[`f-${i}.js`],evidence:['unity-web-first-stage']}));
+  const tasks=Array.from({length:32},(_,i)=>({id:`q-${i}`,gameId:`g-${i}`,target:'roblox',department:'development',type:'implementation',sourceRoot:`roblox-games/g-${i}`,goal:'work',status:'queued',responsibleFiles:[`f-${i}.js`],evidence:[]}));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:32,tasks},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:32},null,2));
   const reserved=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,max:'32',output:batchFile});

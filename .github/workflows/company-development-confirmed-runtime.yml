@@ -162,13 +162,14 @@ jobs:
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const d=r.directNativeDualPlatformDevelopment||{};
           if(d.status!=='OWNER_DIRECT_LOCKED'||d.mode!=='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR')throw new Error('UPPER_PLATFORM_OWNER_LOCK_REQUIRED');
-          if(d.unityWebEnabled!==true||d.unityWebRequired!==true||d.unityWebGateRequired!==false||d.unityWebMode!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR')throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT_REQUIRED');
+          const webActive=r.developmentAccess?.UNITY_WEB==='ALWAYS_ALLOWED';
+          if(d.unityWebEnabled!==webActive||d.unityWebRequired!==webActive||d.unityWebGateRequired!==false||d.unityWebMode!=='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR')throw new Error('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT_REQUIRED');
           const gate=d.upperPlatformDevelopmentReadinessGate||{};
           if(gate.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate.allCriteriaRequired!==true||JSON.stringify(gate.targets)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('UPPER_PLATFORM_READINESS_GATE_REQUIRED');
           const fan=d.unityWebNativeFanOut||{};
           if(fan.enabled!==false||fan.trigger!=='UPPER_PLATFORM_DEVELOPMENT_READY_ON_MAIN'||JSON.stringify(fan.targets)!==JSON.stringify(['ROBLOX','UNITY'])||fan.developmentAdmissionAuthority!==false||fan.directDispatchFromUnityWebBuildForbidden!==true||fan.sourceTreeExactMatchRequired!==true)throw new Error('UPPER_PLATFORM_MAIN_HANDOFF_CONTRACT_REQUIRED');
           if(JSON.stringify(d.supportedDevelopmentPlatforms)!==JSON.stringify(['ROBLOX','UNITY']))throw new Error('ROBLOX_UNITY_PAIR_REQUIRED');
-          if(d.automaticPairing?.ROBLOX?.join(',')!=='ROBLOX,UNITY_WEB_FLOOR'||d.automaticPairing?.UNITY?.join(',')!=='UNITY_WEB_FLOOR')throw new Error('UNITY_WEB_THEN_BIDIRECTIONAL_PAIR_REQUIRED');
+          if(d.automaticPairing?.ROBLOX?.join(',')!==(webActive?'ROBLOX,UNITY_WEB_FLOOR':'ROBLOX')||d.automaticPairing?.UNITY?.join(',')!==(webActive?'UNITY_WEB_FLOOR':''))throw new Error('UNITY_WEB_THEN_BIDIRECTIONAL_PAIR_REQUIRED');
           if(d.development?.noArtificialGlobalGameCountCap!==true||d.development?.globalGameDevelopmentWindow!==null)throw new Error('GLOBAL_GAME_COUNT_CAP_FORBIDDEN');
           if(d.canonicalDevelopmentAdmissionAuthority!==true)throw new Error('DIRECT_NATIVE_ADMISSION_AUTHORITY_REQUIRED');
           if(d.strictDesignScoreRequiredForDevelopmentAdmission!==false)throw new Error('STRICT_DESIGN_ADMISSION_FORBIDDEN');
@@ -318,7 +319,9 @@ jobs:
             }
             if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
             const web=decision.web||{};
-            if(web.state==='UNITY_WEB_FLOOR'){
+            if(web.state==='OWNER_HOLD'){
+              console.log('UNITY_WEB_OWNER_HOLD='+item.gameId);
+            }else if(web.state==='UNITY_WEB_FLOOR'){
               if(activeUnityWebFloor.has(item.gameId))console.log('UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
               else{
                 webIds.push(item.gameId);

@@ -17,6 +17,7 @@ test('practice reuse resolves current verified implementation advice and drops r
 });
 import {
   MASTERY_DOMAINS,
+  refreshLearningMotor,
   classifyLearningDomains,
   createMasteryState,
   applyVerifiedExperienceToMastery,
@@ -2159,4 +2160,15 @@ test('official-source Unity Web and Android coding drills reuse the existing pra
     assert.ok(injected.task.evidence.includes('production-pass:NO'));
     assert.ok(injected.task.completionCriteria.includes('PRODUCTION_PASS_NO'));
   }
+});
+
+test('current owner focus generates internal asset preparation only for Roblox',()=>{
+  const roadmapInput=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  const idle=buildIdlePracticeQueue({}, {}, [], roadmapInput);
+  const library=idle.drills.filter(row=>row.companyGraphicsLibrary);
+  assert.ok(library.length>0);
+  assert.ok(library.every(row=>row.platformProfile==='ROBLOX'));
+  assert.deepEqual(idle.companyGraphicsLibrary24h.platformProfiles,['ROBLOX']);
+  const refreshed=refreshLearningMotor({roadmapInput});
+  assert.ok(refreshed.idlePractice.drills.filter(row=>row.companyGraphicsLibrary).every(row=>row.platformProfile==='ROBLOX'));
 });

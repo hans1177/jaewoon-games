@@ -49,15 +49,15 @@ assert.equal(directive.executionRules.nonVibeGameSourceWriteAllowed,false);
 assert.equal(directive.executionRules.preserveExistingAutomation,true);
 assert.equal(directive.executionRules.preserveExistingSettings,true);
 
-assert.equal(roadmap.currentPhase,'ROBLOX_AND_UNITY_WEB_ONLY_CONTINUOUS_DEVELOPMENT');
+assert.equal(roadmap.currentPhase,'ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT');
 assert.equal(roadmap.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
-assert.equal(roadmap.developmentAccess.UNITY_WEB,'ALWAYS_ALLOWED');
+assert.equal(roadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
 assert.equal(roadmap.developmentAccess.UNITY_ANDROID,'OWNER_HOLD');
 assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.finalGameplayDimension,'3D');
 assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.internalSharedLibraryOnlyForGameplayAssets,true);
 assert.equal(roadmap.ownerUnityWeb3dOnly20261009?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame,true);
 assert.equal(roadmap.finalDevelopmentLock?.sequenceLock?.status,'LOCKED');
-assert.equal(dual.unityWebRequired,true);
+assert.equal(dual.unityWebRequired,false);
 assert.equal(dual.unityWebGateRequired,false);
 assert.deepEqual(dual.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
 

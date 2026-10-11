@@ -1645,7 +1645,7 @@ function practiceInstructionForDrill(drill={}){
   if(kind==='CAPABILITY_GENERALIZATION_SCREEN')return upper(drill.phase4Role)==='CONTROL'?'지정된 holdout 문제를 대상 capability 없이 분석한다. 다른 조건은 challenger와 동일하게 유지하고 대상 capability의 재사용/회피 패턴을 사용하지 않는다.':'같은 holdout 문제를 지정된 capability 하나만 추가한 challenger로 분석한다. 지정되지 않은 capability는 사용하지 않고 control과 다른 조건을 바꾸지 않는다.';
   return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
 }
-function companyGraphicsLibraryDrills(){
+function companyGraphicsLibraryDrills(roadmapInput={}){
   const families=[
     ['character-archetype','CHARACTER_ARCHETYPE_LIBRARY_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
     ['creature-rig','CREATURE_RIG_LIBRARY_DRILL',['ASSET_PRODUCTION','LIVING_MOTION']],
@@ -1679,7 +1679,8 @@ function companyGraphicsLibraryDrills(){
     ['verified-usage','VERIFIED_ASSET_USAGE_FEEDBACK_DRILL',['ASSET_PRODUCTION','ASSET_ADAPTATION']],
     ['genre-world-grammar','GENRE_WORLD_GRAMMAR_DRILL',['WORLD_GENERATION','LEVEL_DESIGN','ROUTE_DESIGN']]
   ];
-  return ['UNITY','ROBLOX'].flatMap(platform=>families.map(([id,kind,domains])=>({
+  const targets=roadmapInput?.assetProductionParallelContract?.activeProductionTargets||['UNITY','ROBLOX'];
+  return targets.filter(platform=>['UNITY','ROBLOX'].includes(platform)).flatMap(platform=>families.map(([id,kind,domains])=>({
     id:`company-graphics-${lower(platform)}-${id}`,
     kind,
     priority:'low',
@@ -1699,7 +1700,7 @@ export function readExternalGameplayPracticeSamples(directory=''){
   });
 }
 
-export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externalRuntimeSamples=[]){
+export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externalRuntimeSamples=[],roadmapInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
@@ -1746,7 +1747,7 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
     priority:'high',productionPreemptible:true,countsAsProductionPass:false,
     domains:row.domains,sourceFailure:sig
   }));
-  const libraryDrills=companyGraphicsLibraryDrills();
+  const libraryDrills=companyGraphicsLibraryDrills(roadmapInput);
   const robloxCurriculum=JSON.parse(fs.readFileSync(new URL('../company-learning/roblox-practice.json',import.meta.url),'utf8'));
   const robloxDrills=robloxCurriculum.drills.map(row=>({id:'roblox-'+row.id,kind:'ROBLOX_CODE_REPAIR',robloxCodePractice:true,robloxPracticeDrill:row.id,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
   const platformDrills=(robloxCurriculum.platformDrills||[]).map(row=>({id:row.id,kind:'PLATFORM_CODE_REPAIR',codingPracticeDrill:row.id,platformProfile:row.platform,level:row.level,sourceFailure:row.failure,domains:row.domains,priority:'high',productionPreemptible:true,countsAsProductionPass:false}));
@@ -1796,7 +1797,7 @@ export function buildIdlePracticeQueue(masteryInput={},benchmarkInput={},externa
   return {
     version:4,kind:'vibe2-idle-practice-queue',
     productionWorkAlwaysPreemptsPractice:false,productionDefaultPriorityHigherThanPractice:true,
-    companyGraphicsLibrary24h:{enabled:true,studioAssetUniverse:true,universalCoverageScanner:true,autonomousGapFill24h:true,drillCount:libraryDrills.length,platformProfiles:['UNITY','ROBLOX'],productionPreemptible:true,noGenerationCap:true,learningLaneConcurrentWithProduction:true},
+    companyGraphicsLibrary24h:{enabled:true,studioAssetUniverse:true,universalCoverageScanner:true,autonomousGapFill24h:true,drillCount:libraryDrills.length,platformProfiles:[...new Set(libraryDrills.map(drill=>drill.platformProfile))],productionPreemptible:true,noGenerationCap:true,learningLaneConcurrentWithProduction:true},
     practiceSignalGenerationAlwaysOn:true,practiceGenerationLimit:null,relearningGenerationLimit:null,
     hypothesisGenerationLimit:null,falsificationGenerationLimit:null,
     previousResultComparisonRequired:true,
@@ -2788,7 +2789,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     graphicsApplied.state.codingConstitution.lastBuiltAt=clean(stateInput?.codingConstitution?.lastBuiltAt)||null;
   }
   const benchmark=buildBenchmarkLadder(graphicsApplied.state,cloudExperience.memory,companyQueueInput);
-  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark,externalRuntimeSamples);
+  const idlePractice=buildIdlePracticeQueue(graphicsApplied.state,benchmark,externalRuntimeSamples,roadmapInput);
   const tournament=enrichQueueForCandidateTournaments(queueInput,graphicsApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {

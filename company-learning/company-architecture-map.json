@@ -1,5 +1,5 @@
 {
-  "version": 336,
+  "version": 337,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3328,7 +3328,11 @@
       "assetSourceOwner": "ASSET_DEVELOPMENT",
       "runtimeVerificationOwner": "EXISTING_TARGET_RUNTIME_QA",
       "responsibilityAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.graphicsProductionUnification.authorityBoundaries"
-    }
+    },
+    "activeProductionTargets": [
+      "ROBLOX"
+    ],
+    "ownerProductionFocusAuthority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.ownerProductionFocus"
   },
   "platformPresentationSeparation": {
     "version": 1,
@@ -3746,8 +3750,8 @@
       "ROBLOX",
       "UNITY"
     ],
-    "trigger": "ROBLOX_UNITY_WEB_INDEPENDENT_GAME_DEVELOPMENT",
-    "executionMode": "ROBLOX_AND_UNITY_WEB_INDEPENDENT_CONTINUOUS_DEVELOPMENT",
+    "trigger": "OWNER_ACTIVE_ROBLOX_GAME_DEVELOPMENT",
+    "executionMode": "ROBLOX_ONLY_CONTINUOUS_DEVELOPMENT",
     "designStructure": {
       "commonCore": "design-revised.json#content",
       "ROBLOX": "design-revised.json#content.platformProfiles.ROBLOX",
@@ -3758,9 +3762,9 @@
     "onePlatformMayReleaseWithoutWaitingForOther": true,
     "globalGameCountCap": null,
     "uefn": "OWNER_HOLD",
-    "unityWeb": "UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR",
+    "unityWeb": "OWNER_HOLD",
     "unityWebValidationSurface": {
-      "enabled": true,
+      "enabled": false,
       "releasePlatform": false,
       "nativeGateAuthority": false,
       "canonicalSource": "unity-games/<gameId>/",
@@ -3884,7 +3888,7 @@
       "retryLimit": null,
       "currentExecutor": ".github/workflows/unity-web-first-stage-build.yml",
       "orchestrationOwner": ".github/workflows/company-development-confirmed-runtime.yml",
-      "implementationState": "ACTIVE_EXECUTOR_BOUND",
+      "implementationState": "OWNER_HOLD",
       "readinessFailNextAction": "NEXT_UNITY_WEB_DEVELOPMENT_FLOOR",
       "readinessPassNextAction": "CONTINUE_UNITY_WEB_BUILD_UP",
       "upperPlatformReadinessGate": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
@@ -3960,18 +3964,18 @@
     "uefnStatusLabel": "개발보류",
     "uefnAutonomousBuildUpAllowed": false,
     "ownerActiveDevelopmentScope20261009": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-09",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY",
       "status": "ACTIVE",
       "activeTargets": [
-        "ROBLOX",
-        "UNITY_WEB"
+        "ROBLOX"
       ],
       "ownerHeldTargets": [
+        "UNITY_WEB",
         "UNITY_ANDROID",
         "FORTNITE_UEFN"
       ],
-      "unityWebDistinctGameTarget": 16,
+      "unityWebDistinctGameTarget": 0,
       "totalDistinctGameDevelopmentTarget": 64,
       "gamePrimaryLogicalWorkers": 128,
       "externalExecutionBatchMax": 256,
@@ -3984,7 +3988,12 @@
       "independentGameExecution": true,
       "sameResponsibleFileWriteConflictSerializes": true,
       "saveAndBalancePreserved": true,
-      "existingPipelineOnly": true
+      "existingPipelineOnly": true,
+      "unityWeb3dOnlyRequired": true,
+      "existingUnityWeb2dGamesMustRebuild3d": true,
+      "allSpatialGameAssetLibraries3dOnly": true,
+      "unityWeb3dRuntimeProofRequired": true,
+      "unityWebDevelopmentAllowed": false
     }
   },
   "releaseExposureLifecycle": {
@@ -4508,7 +4517,7 @@
       ]
     }
   },
-  "updatedAt": "2026-10-10",
+  "updatedAt": "2026-10-11",
   "centralDocumentationTopology": {
     "version": 2,
     "centralPolicy": "company-learning/platform-release-roadmap.json#centralDocumentation",
@@ -4887,10 +4896,10 @@
         "platformSpecificPathsDoNotWakeCentralPortfolioScan": true
       },
       "ownerActiveDevelopmentTargets": [
-        "ROBLOX",
-        "UNITY_WEB"
+        "ROBLOX"
       ],
-      "unityAndroidStatus": "OWNER_HOLD"
+      "unityAndroidStatus": "OWNER_HOLD",
+      "unityWebDevelopmentStatus": "OWNER_HOLD"
     },
     "revisions": {
       "leadPolicy": "ed368aa6e07ba390217a4a841118788e3413b851",
@@ -7431,5 +7440,13 @@
     "runtimeExecutionRequired": false,
     "existingF0F9SequencePreserved": true,
     "noNewPipeline": true
+  },
+  "ownerPlatformHoldExecution": {
+    "centralContract": "company-learning/platform-release-roadmap.json#developmentAccess",
+    "reservationOwner": "tools/vibe2-queue-control.mjs::ownerDevelopmentHeld",
+    "sourceOwner": "tools/vibe2-source-worker.mjs::assertOwnerDevelopmentAvailable",
+    "admissionOwner": "tools/company-upper-platform-admission.mjs::classifyUpperPlatformAdmission",
+    "latestMainBuildPreflightRequired": true,
+    "existingExecutorsOnly": true
   }
 }

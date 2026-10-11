@@ -35,7 +35,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  owner-policy:
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    outputs:
+      allowed: ${{ steps.policy.outputs.allowed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: company-learning
+      - id: policy
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const allowed=policy.developmentAccess?.UNITY_ANDROID==='ALWAYS_ALLOWED';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'allowed='+allowed+'\n');
+          console.log('UNITY_ANDROID_OWNER_HOLD='+(!allowed));
+          NODE
+
   build:
+    needs: owner-policy
+    if: needs.owner-policy.outputs.allowed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 75
     outputs:

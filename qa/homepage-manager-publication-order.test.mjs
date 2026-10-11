@@ -244,8 +244,8 @@ test('PR creation failure remains a blocking publication failure inside Director
 test('Unity Web floor remains independent of native development admission',()=>{
   const dual=roadmap.directNativeDualPlatformDevelopment||{};
   assert.equal(dual.status,'OWNER_DIRECT_LOCKED');
-  assert.equal(dual.unityWebEnabled,true);
-  assert.equal(dual.unityWebRequired,true);
+  assert.equal(dual.unityWebEnabled,false);
+  assert.equal(dual.unityWebRequired,false);
   assert.equal(dual.unityWebGateRequired,false);
   assert.equal(dual.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(dual.upperPlatformAdmission,'MINIMUM_DESIGN_READY');

@@ -17,6 +17,20 @@ const write=(root,rel,data)=>{
   fs.mkdirSync(path.dirname(file),{recursive:true});
   fs.writeFileSync(file,typeof data==='string'?data:JSON.stringify(data,null,2));
 };
+test('owner-held Unity Web cannot create floor or bootstrap work while Roblox admission remains open',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-only-admission-'));
+  try{
+    write(root,'company-learning/platform-release-roadmap.json',{developmentAccess:{UNITY_WEB:'OWNER_HOLD'},unityWebFirstStage:{enabled:false}});
+    const item={gameId:'sample-game',minimumDesignContract:{pass:true},platformDesignProfiles:{ROBLOX:{source:'design.json'},UNITY:{source:'design.json'}},concurrentTargetPlatforms:['ROBLOX','UNITY']};
+    for(const withSource of [false,true]){
+      if(withSource)write(root,'unity-games/sample-game/Assets/Editor/Build.cs','public static class GameBuild { public static void BuildWeb(){} }');
+      const result=classifyUpperPlatformAdmission(item,{repoRoot:root});
+      assert.equal(result.state,'UPPER_PLATFORM');
+      assert.equal(result.web.state,'OWNER_HOLD');
+      assert.equal(result.web.buildMethod,undefined);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 test('Unity multiplayer completes from exact static source and rejects missing receive, stale source and marker-only code',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'multiplayer-static-'));
   const file='unity-games/daechung-rpg/Assets/Scripts/MultiplayerSession.cs';

@@ -9,8 +9,16 @@ import { execFileSync } from 'node:child_process';
 
 const root=process.cwd();
 const worker=path.join(root,'tools','company-development-unity-web-worker.mjs');
-const run=(args,cwd=root)=>execFileSync(process.execPath,[worker,...args],{cwd,encoding:'utf8'});
-const temp=()=>fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-worker-'));
+const run=(args,cwd)=>execFileSync(process.execPath,[worker,...args],{cwd,encoding:'utf8'});
+const temp=()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-worker-'));
+  const policy=JSON.parse(fs.readFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),'utf8'));
+  policy.unityWebFirstStage.enabled=true;
+  policy.developmentAccess.UNITY_WEB='ALWAYS_ALLOWED';
+  policy.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
+  writeJson(path.join(dir,'company-learning/platform-release-roadmap.json'),policy);
+  return dir;
+};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const writeBundle=(web,gameId)=>{
   const build=path.join(web,'Build');fs.mkdirSync(build,{recursive:true});
@@ -26,7 +34,7 @@ test('missing canonical Unity source requests Vibe bootstrap instead of legacy H
     const baseline=path.join(dir,'design-revised.json');
     const output=path.join(dir,'prepare.json');
     fs.writeFileSync(baseline,'{"version":1}\n');
-    run(['prepare','--game-id=missing-unity-web','--source-root=unity-games/missing-unity-web',`--baseline=${baseline}`,`--output=${output}`]);
+    run(['prepare','--game-id=missing-unity-web','--source-root=unity-games/missing-unity-web',`--baseline=${baseline}`,`--output=${output}`],dir);
     const report=JSON.parse(fs.readFileSync(output,'utf8'));
     assert.equal(report.ready,false);
     assert.equal(report.reason,'UNITY_WEB_CANONICAL_SOURCE_MISSING');
@@ -71,7 +79,7 @@ test('complete Unity Web child evidence produces compatibility build evidence wi
       'result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,
       `--baseline=${baseline}`,'--baseline-source=design/worker-pass-game/2026-09-21/design-revised.json',
       '--source-tree=tree123','--build-run-id=123',`--child-root=${child}`,`--output-root=${output}`
-    ]);
+    ],dir);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,true);
     assert.equal(result.update.unityWebValidationSurfacePassed,true);
@@ -105,7 +113,7 @@ test('index-only Unity Web child output is rejected as undeployable',()=>{
     fs.writeFileSync(path.join(web,'index.html'),'<!doctype html><canvas></canvas>\n');
     writeJson(path.join(web,'unity-web-build.json'),{version:1,engine:'UNITY_WEB',gameId,bootSmoke:'PASS'});
     writeJson(path.join(web,'unity-web-gameplay-validation.json'),{version:1,engine:'UNITY_WEB',gameId,pass:true});
-    run(['result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,`--baseline=${baseline}`,'--source-tree=tree','--build-run-id=1',`--child-root=${path.join(dir,'child')}`,`--output-root=${output}`]);
+    run(['result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,`--baseline=${baseline}`,'--source-tree=tree','--build-run-id=1',`--child-root=${path.join(dir,'child')}`,`--output-root=${output}`],dir);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,false);
     assert.match(result.update.unityWebValidationSurfaceFailureReason,/DEPLOY_BUNDLE_INCOMPLETE/);
@@ -134,7 +142,7 @@ test('boolean-only Unity Web evidence cannot satisfy the final gate',()=>{
       'result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,
       `--baseline=${baseline}`,'--baseline-source=design/worker-boolean-only-game/2026-09-21/design-revised.json',
       '--source-tree=tree555','--build-run-id=555',`--child-root=${child}`,`--output-root=${output}`
-    ]);
+    ],dir);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,false);
     assert.match(result.update.unityWebValidationSurfaceFailureReason,/native3d/);
@@ -167,7 +175,7 @@ test('incomplete Unity Web gate fails closed and does not publish build',()=>{
       'result',`--game-id=${gameId}`,`--source-root=unity-games/${gameId}`,
       `--baseline=${baseline}`,'--baseline-source=design/worker-fail-game/2026-09-21/design-revised.json',
       '--source-tree=tree999','--build-run-id=999',`--child-root=${child}`,`--output-root=${output}`
-    ]);
+    ],dir);
     const result=JSON.parse(fs.readFileSync(path.join(output,'results',gameId+'.json'),'utf8'));
     assert.equal(result.pass,false);
     assert.equal(result.update.unityWebValidationSurfacePassed,false);

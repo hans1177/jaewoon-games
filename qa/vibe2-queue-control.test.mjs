@@ -459,13 +459,13 @@ test('game-primary keeps adaptive telemetry but canonical reservation is fixed a
   const controlFile=path.join(dir,'control.json');
   const batchFile=path.join(dir,'batch.json');
   const running=Array.from({length:7},(_,i)=>({
-    id:`running-${i}`,gameId:`running-${i}`,target:'unity',department:'development',type:'implementation',
-    goal:'running',status:'running',sourceRoot:`unity-games/running-${i}`,responsibleFiles:['index.html'],evidence:['unity-web-first-stage'],
+    id:`running-${i}`,gameId:`running-${i}`,target:'roblox',department:'development',type:'implementation',
+    goal:'running',status:'running',sourceRoot:`roblox-games/running-${i}`,responsibleFiles:['index.html'],evidence:[],
     reservationId:'prior:1',reservationRunId:'prior',reservedAt:new Date().toISOString()
   }));
   const queued=Array.from({length:90},(_,i)=>({
-    id:`queued-${i}`,gameId:`queued-${i}`,target:'unity',department:'development',type:'implementation',
-    goal:'queued',status:'queued',sourceRoot:`unity-games/queued-${i}`,responsibleFiles:['index.html'],evidence:['unity-web-first-stage']
+    id:`queued-${i}`,gameId:`queued-${i}`,target:'roblox',department:'development',type:'implementation',
+    goal:'queued',status:'queued',sourceRoot:`roblox-games/queued-${i}`,responsibleFiles:['index.html'],evidence:[]
   }));
   fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[...running,...queued]},null,2));
   fs.writeFileSync(controlFile,JSON.stringify({version:4,currentMax:20,lastDecision:'HOLD'},null,2));
@@ -2538,17 +2538,17 @@ test('Unity Web receives sixteen distinct-game priority slots without a seventee
   assert.ok(result.tasks.some(t=>t.id==='roblox-live'));
 });
 
-test('active owner Unity Web and Roblox reserve real game work without held platforms or file conflicts',()=>{
+test('Roblox-only owner scope reserves real game work while preserving held source and file safety',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const scope=policy.ownerActiveDevelopmentScope20261009;
-  assert.deepEqual(scope.activeTargets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(scope.activeTargets,['ROBLOX']);
   assert.equal(scope.unityAndroidDevelopmentAllowed,false);
   const task=(id,target,unityWeb=false,file='Assets/Scripts/GameCore.cs')=>({
     id,gameId:id,target,goal:'repair actual gameplay source',type:'implementation',department:'development',
     releaseState:'development-confirmed',status:'queued',priority:'high',
     unityWebDevelopment:unityWeb,evidence:unityWeb?['unity-web-first-stage']:[],
     sourceRoot:target==='unity'?'unity-games/'+id:target+'-games/'+id,
-    responsibleFiles:[target==='unity'?'unity-games/'+id+'/'+file:target+'-games/'+id+'/client/Main.luau']
+    responsibleFiles:[target==='unity'?'unity-games/'+id+'/'+file:target+'-games/'+id+'/'+file]
   });
   const items=[
     task('qa-active-unity-web','unity',true),
@@ -2560,13 +2560,13 @@ test('active owner Unity Web and Roblox reserve real game work without held plat
     lane:'game-primary',maxConcurrentTasks:8,policy,
     reservation:{id:'qa-current:1',runId:'qa-current',runAttempt:1,reservedAt:'2026-10-11T00:00:00Z'}
   });
-  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-unity-web','qa-active-roblox']));
-  for(const id of ['qa-held-unity-android','qa-held-legacy-web']){
+  assert.deepEqual(new Set(batch.tasks.map(row=>row.id)),new Set(['qa-active-roblox']));
+  for(const id of ['qa-active-unity-web','qa-held-unity-android','qa-held-legacy-web']){
     const row=batch.queue.tasks.find(t=>t.id===id);
     assert.equal(row.status,'queued');
     assert.equal(row.ownerDevelopmentHold,true);
   }
-  const unity=batch.queue.tasks.find(t=>t.id==='qa-active-unity-web');
+  const unity=batch.queue.tasks.find(t=>t.id==='qa-active-roblox');
   assert.equal(unity.status,'running');
   assert.equal(unity.ownerDevelopmentHold,false);
   assert.equal(verifyVibeWorkerSynchronization(batch.queue,{
@@ -2575,11 +2575,11 @@ test('active owner Unity Web and Roblox reserve real game work without held plat
   }).pass,true);
 
   const sameGame=[
-    task('qa-web-code-a','unity',true,'Assets/Scripts/GameCore.cs'),
-    task('qa-web-code-b','unity',true,'Assets/Scripts/RuntimeBootstrap.cs'),
-    task('qa-web-code-overlap','unity',true,'Assets/Scripts/GameCore.cs')
-  ].map(row=>({...row,gameId:'qa-same-game',sourceRoot:'unity-games/qa-same-game',
-    responsibleFiles:['unity-games/qa-same-game/'+row.responsibleFiles[0].split('/').slice(-2).join('/')]}));
+    task('qa-web-code-a','roblox',false,'Assets/Scripts/GameCore.cs'),
+    task('qa-web-code-b','roblox',false,'Assets/Scripts/RuntimeBootstrap.cs'),
+    task('qa-web-code-overlap','roblox',false,'Assets/Scripts/GameCore.cs')
+  ].map(row=>({...row,gameId:'qa-same-game',sourceRoot:'roblox-games/qa-same-game',
+    responsibleFiles:['roblox-games/qa-same-game/'+row.responsibleFiles[0].split('/').slice(-2).join('/')]}));
   const distinct=reserveVibeTaskBatch(createVibeContinuousQueue({tasks:sameGame,maxConcurrentTasks:8}),{
     lane:'game-primary',maxConcurrentTasks:8,policy
   });
@@ -2588,7 +2588,7 @@ test('active owner Unity Web and Roblox reserve real game work without held plat
   assert.equal(distinct.queue.tasks.filter(row=>row.status==='queued').length,1);
 });
 
-test('owner active scope permits Unity Web Vibe source and Roblox while holding legacy Web and Unity Android',()=>{
+test('owner active scope holds Unity Web, legacy Web and Android while allowing Roblox',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   assert.equal(policy.ownerActiveDevelopmentScope20261009.status,'ACTIVE');
   const make=(gameId,target,evidence=[])=>({
@@ -2601,7 +2601,7 @@ test('owner active scope permits Unity Web Vibe source and Roblox while holding 
     make('native-web','unity',['unity-web-first-stage']),make('native-roblox','roblox')
   ]});
   const result=reserveVibeTaskBatch(queue,{maxConcurrentTasks:8,policy});
-  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-web','native-roblox']));
+  assert.deepEqual(new Set(result.tasks.map(item=>item.id)),new Set(['native-roblox']));
   assert.equal(result.queue.tasks.find(item=>item.id==='legacy-web').ownerDevelopmentHold,true);
   assert.equal(result.queue.tasks.find(item=>item.id==='held-android').ownerDevelopmentHold,true);
 });
@@ -2655,4 +2655,14 @@ test('Unity Web distinct-game floor and independent same-game file safety surviv
   assert.ok(result.webGameFlow.activeGameIds.length>=16,'all sixteen distinct Unity Web slots must be satisfied');
   assert.equal(new Set(result.selected.map(row=>row.gameId)).size,18);
   assert.equal(result.webGameFlow.shortfall,0);
+});
+
+test('Roblox-only asset production holds Unity, web, and mislabeled Unity source work in the existing asset lane',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+  assert.deepEqual(policy.assetProductionParallelContract.activeProductionTargets,['ROBLOX']);
+  const task=(id,target,sourceRoot)=>({id,gameId:'asset-focus',target,sourceRoot,responsibleFiles:[sourceRoot+'/model'],assetProductionLane:true,department:'graphics',type:'implementation',goal:'repair current asset',status:'queued'});
+  const tasks=[task('roblox','roblox','assets/roblox/fixture'),task('unity','unity','assets/unity/fixture'),task('web','web','assets/web/fixture'),task('mislabeled','roblox','assets/unity/fixture'),task('shared-without-consumer','shared','assets/shared/fixture')];
+  const result=reserveVibeTaskBatch({tasks,maxConcurrentTasks:63},{lane:'asset-development',policy});
+  assert.deepEqual(result.tasks.map(row=>row.id),['roblox']);
+  assert.ok(result.queue.tasks.filter(row=>row.id!=='roblox').every(row=>row.ownerDevelopmentHold));
 });

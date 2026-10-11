@@ -120,7 +120,7 @@ test('minimum dual-platform design promotes immediately while strict review stay
 
   const item=read(root,'development-queue.json').items[0];
   assert.deepEqual(item.concurrentTargetPlatforms,['ROBLOX','UNITY']);
-  assert.equal(item.platformExecutionMode,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT');
+  assert.equal(item.platformExecutionMode,'OWNER_ACTIVE_PLATFORMS_SAME_GAME');
   assert.equal(item.requestEitherStartsBoth,false);
   assert.equal(item.currentStep,'TARGET_PLATFORM_SOURCE_BIND');
   assert.equal(item.canonicalState,'PENDING_DUAL_NATIVE_SOURCE_BIND');
@@ -342,7 +342,7 @@ test('promotion sync preserves verified advanced progress while normalizing exec
     const source=writeMinimumDesign(root,'progress-game','2026-09-18');
     write(root,'development-queue.json',{version:1,items:[{
       gameId:'progress-game',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
-      platformExecutionMode:'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT',
+      platformExecutionMode:'OWNER_ACTIVE_PLATFORMS_SAME_GAME',
       concurrentTargetPlatforms:['ROBLOX','UNITY'],
       minimumDesignContract:{pass:true,source},
       currentStep:'POST_F9_CONTINUOUS_EVOLUTION',
@@ -358,7 +358,7 @@ test('promotion sync preserves verified advanced progress while normalizing exec
     assert.equal(item.robloxFoundationF0Passed,true);
     assert.equal(item.robloxFinalReviewPassed,true);
     assert.equal(item.robloxF9ReleaseRegressionPassed,true);
-    assert.equal(item.platformExecutionMode,'UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT');
+    assert.equal(item.platformExecutionMode,'OWNER_ACTIVE_PLATFORMS_SAME_GAME');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

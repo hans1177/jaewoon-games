@@ -440,10 +440,27 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 export function ownerDevelopmentHeld(policy = {}, gameId = '', target = '', task = {}) {
   const id=clean(gameId), exclusive=policy.ownerCanonicalRules?.ownerExclusiveDevelopment;
   const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
-  const targetName=clean(target).toLowerCase();
-  const evidence=(Array.isArray(task?.evidence)?task.evidence:[]).map(clean);
-  const unityWeb=task?.unityWebDevelopment===true||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web')||clean(task?.studioQualityEvolution?.platformLane).toLowerCase()==='unity-web';
-  if(scope?.status==='ACTIVE'&&(targetName==='web'||(targetName==='unity'&&!unityWeb)))return true;
+  const selected=task?.selectedTask||{};
+  const targetName=clean(target||selected.target).toLowerCase();
+  const evidence=[...(Array.isArray(task?.evidence)?task.evidence:[]),...(Array.isArray(selected?.evidence)?selected.evidence:[])].map(clean);
+  const unityWeb=[task,selected].some(row=>row?.unityWebDevelopment===true||row?.firstStageUnityWeb===true||clean(row?.executionSurface).toUpperCase()==='UNITY_WEB'||clean(row?.studioQualityEvolution?.platformLane).toLowerCase()==='unity-web')||evidence.includes('unity-web-first-stage')||evidence.includes('studio-quality-platform-lane:unity-web')||targetName==='unity_web';
+  const platform=targetName==='roblox'?'ROBLOX':['unity','unity_android','unity_web'].includes(targetName)?(unityWeb?'UNITY_WEB':'UNITY_ANDROID'):targetName==='unreal'?'FORTNITE_UEFN':targetName.toUpperCase();
+  const assetTargets=policy.assetProductionParallelContract?.activeProductionTargets;
+  const assetWork=[task,selected].some(row=>row?.assetProductionLane===true||row?.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')||evidence.includes('asset-production-parallel:v1')||evidence.includes('company-graphics-library-24h');
+  if(assetWork&&Array.isArray(assetTargets)){
+    const libraryPlatform=evidence.find(value=>value.startsWith('company-graphics-platform:'))?.split(':')[1];
+    const assetPlatform=clean(libraryPlatform||platform).toUpperCase();
+    if(!assetTargets.includes(assetPlatform))return true;
+    const paths=[task.sourceRoot,task.source?.root,selected.sourceRoot,...(task.responsibleFiles||[]),...(selected.responsibleFiles||[])].map(value=>clean(value).replaceAll('\\','/').replace(/^\.\//,''));
+    if(paths.some(file=>/^(?:unity-games|web-games|assets\/(?:unity|web))(?:\/|$)/.test(file)))return true;
+  }
+  const access=policy.developmentAccess?.[platform]||(platform==='UNITY_ANDROID'?policy.developmentAccess?.UNITY:null);
+  if(access==='OWNER_HOLD')return true;
+  if(scope?.status==='ACTIVE'){
+    if(targetName==='web')return true;
+    const active=Array.isArray(scope.activeTargets)?scope.activeTargets:['ROBLOX','UNITY_WEB'];
+    if(['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN'].includes(platform)&&!active.includes(platform))return true;
+  }
   return Boolean(id && ((clean(exclusive?.status).toUpperCase()==='ACTIVE'
     && (exclusive?.gameIds||[]).includes(id))
     || (clean(target).toLowerCase()==='roblox' && (policy.robloxDevelopmentInvestment?.ownerHoldGameIds||[]).includes(id))));

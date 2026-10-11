@@ -733,9 +733,9 @@ test('placeholder feedback keeps audit evidence while retries receive paths and 
   assert.equal(checkpoint.sliceRepairFeedback[key],undefined);
 });
 
-test('historical three-platform checkpoint migration stays SHA-bound while only Roblox and Unity Web are active',()=>{
+test('historical three-platform checkpoint migration stays SHA-bound while only Roblox is active',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(roadmap.directNativeDualPlatformDevelopment.platformCountingPolicy.targets,['ROBLOX']);
   assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
   const snippet=design.slice(design.indexOf('const checkpointThreePlatformPolicyMigrationEligible='),design.indexOf('const checkpointV3CompatibleEngineMigrationEligible='));
   const prior='0fda28f71ac3a214ad795ba2e2df1e0f6e7da837204b05182cdebecce33c9ade',oldEngine='dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4';
