@@ -22,6 +22,7 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   const mtls=fs.readFileSync(art+'MagicForestMaterials.mtl','utf8');
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   const manifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
   const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
   const companyRegistry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
@@ -93,6 +94,16 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(build,/AssetDatabase\.LoadAssetAtPath<GameObject>\(modelPath\)/);
   assert.match(build,/UNITY_WEB_NATIVE_ASSET_IMPORT_FAILED/);
   assert.match(build,/UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_PATH_INVALID/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
+  assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED/);
+  assert.equal(request.registryVersionRequired,companyRegistry.version);
+  assert.deepEqual(request.registryAssetIds,[
+    'unity-fantasy-survival-tree-trunk-v1',
+    'unity-fantasy-survival-tree-crown-v1',
+    'unity-fantasy-survival-tree-materials-v1'
+  ]);
   assert.match(build,/SOURCE_READY_RUNTIME_UNVERIFIED/,'import preflight cannot claim runtime QA');
   assert.match(build,/mesh\.GetIndexCount\(submesh\)/,'Editor import QA must work with unreadable meshes');
   assert.match(game,/mesh\.GetIndexCount\(submesh\)/,'WebGL runtime must use non-readable-safe mesh index metadata');
