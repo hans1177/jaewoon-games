@@ -5561,7 +5561,7 @@ test('acquired CC0 3D town models remain reusable shared geometry and never clai
     assert.equal(asset.productionVerified,false,asset.id+' cannot self-promote');
     assert.equal(asset.nativeRuntimeVerified,false,asset.id+' needs per-game runtime QA');
     assert.ok(['BUILDING','ENVIRONMENT','PROP'].includes(asset.family),asset.id);
-    const model=path.join(base,asset.path.replace(/^\\//,''));
+    const model=path.join(base,asset.path.replace(/^\//,''));
     assert.ok(fs.existsSync(model),asset.id+' real OBJ missing');
     const content=fs.readFileSync(model,'utf8');
     assert.equal(createHash('sha256').update(content).digest('hex'),asset.sourceHash,asset.id+' source integrity');
@@ -5569,7 +5569,7 @@ test('acquired CC0 3D town models remain reusable shared geometry and never clai
     assert.ok((content.match(/^f /gm)||[]).length>=15,asset.id+' faces');
     const material=path.join(path.dirname(model),path.basename(model,'.obj')+'.mtl');
     assert.ok(fs.existsSync(material),asset.id+' material required for native import');
-    assert.match(content,/^mtllib .+\\.mtl$/m,asset.id+' must reference its native material');
+    assert.match(content,/^mtllib .+\.mtl$/m,asset.id+' must reference its native material');
     assert.ok(asset.sourceObjQa?.status==='OBJ_STATIC_GEOMETRY_PASS');
   }
 });
