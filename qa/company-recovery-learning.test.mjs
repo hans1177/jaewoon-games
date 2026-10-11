@@ -655,3 +655,42 @@ test('fast recovery reuses canonical policies and listens to all three deploymen
   assert.match(workflow,/node tools\/company-recovery-dispatch\.mjs --route=all/);
   assert.match(workflow,/unity-web.*?failure|UNITY_WEB_REPAIR_FAILURE_/s);
 });
+
+test('real Unity missing component exception targets its existing editor source, not the deployment workflow',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={
+    name:'Unity Web Development Floor',path:'.github/workflows/unity-web-first-stage-build.yml',
+    conclusion:'failure',id:38121720395,run_attempt:1,head_sha:'a'.repeat(40),
+    head_branch:'main',display_title:'Unity Web Floor fantasy-survival',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={
+    jobs:[{name:'build',conclusion:'failure',steps:[
+      {name:'Build Unity Web',conclusion:'failure'},
+      {name:'Mark Unity Web floor repair requirement',conclusion:'failure'}
+    ]}],
+    failureMarkers:['UNITY_WEB_REPAIR_FAILURE_STAGE=UNITY_WEB_BUILD_OR_READINESS',
+      'UNITY_WEB_REPAIR_FAILURE_SIGNATURE=REPAIR_REQUIRED'],
+    failureDiagnostics:{
+      classification:'UNITY_MISSING_COMPONENT',
+      sourceFiles:['unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs']
+    }
+  };
+  const result=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,
+    catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]}
+  });
+  assert.equal(result.owner,'VIBE2_VIBE3');
+  assert.equal(result.added.length,1);
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,
+    ['unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs']);
+  assert.ok(result.queue.tasks[0].failureSignature.includes('UNITY_MISSING_COMPONENT'));
+  assert.ok(result.queue.tasks[0].evidence.includes('deployment-causal-error:UNITY_MISSING_COMPONENT'));
+  const replay=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,
+    catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]},
+    recoveryInput:result.queue
+  });
+  assert.equal(replay.added.length,0);
+  assert.equal(replay.queue.tasks.length,1);
+});
