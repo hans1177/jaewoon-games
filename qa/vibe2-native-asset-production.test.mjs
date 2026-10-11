@@ -2220,6 +2220,37 @@ test('Vibe built-in open-source authoring plans preserve human, clothing, object
   assert.match(py,/image_mesh_asset\(\)/);
 });
 
+// 공용 액션 변환: 서비스 실행 없이 권리가 확인된 내보내기 파일을 기존 제작기에 연결한다.
+test('Cascadeur and DeepMotion exports use the same licensed animation converter across platforms',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'shared-motion-export-'));
+  try{
+    const base={repoRoot:root,manifest:{assets:[]},presetCatalog:{presets:[]}};
+    for(const target of ['web','roblox','unity'])for(const provider of ['cascadeur','deepmotion']){
+      const task={gameId:'shared-motion',goal:'3D 소품 애니메이션 제작',
+        assetAuthoring:{module:provider,sourceModel:'assets/shared/owned-action.fbx',sourceLicense:'project-original'}};
+      const plan=buildVibeAssetProductionPlan({...base,target,task});
+      const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+      assert.ok(recipes.length>0,target+':'+provider);
+      for(const recipe of recipes){
+        assert.equal(recipe.module,'animation');
+        assert.equal(recipe.exportedMotionProvider,provider);
+        assert.equal(recipe.externalServiceExecuted,false);
+        assert.equal(recipe.script,'assets/native-authoring/build-game-visual.py');
+        assert.ok(recipe.args.includes('assets/shared/owned-action.fbx'));
+        assert.ok(recipe.outputs.some(file=>file.endsWith('/asset.glb')));
+        assert.equal(recipe.runtimeVerificationRequired,true);
+        assert.equal(recipe.companyPromotionAllowed,false);
+      }
+      for(const assetAuthoring of [
+        {module:provider},
+        {module:provider,sourceModel:'assets/shared/action.obj',sourceLicense:'project-original'},
+        {module:provider,sourceModel:'assets/shared/action.fbx',sourceLicense:'unknown'}
+      ])assert.throws(()=>buildVibeAssetProductionPlan({...base,target,task:{...task,assetAuthoring}}),
+        /EXTERNAL_MOTION_EXPORTED_SOURCE_REQUIRED|EXTERNAL_MOTION_FBX_OR_GLB_REQUIRED|IMAGE_TO_MESH_LICENSE_REQUIRED/);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('animation and video select a real existing Blender DCC authoring recipe with MP4 evidence',()=>{
   const base={target:'roblox',manifest:{assets:[]},presetCatalog:{presets:[]}};
   for(const module of ['animation','video']){
