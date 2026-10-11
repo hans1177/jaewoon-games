@@ -70,13 +70,16 @@ test('실제 플레이 가능한 개발 WebGL만 공개하되 저성능 QA 실�
   assert.match(source,/playableBrowserTest:true/);
   assert.match(source,/reason:framePacingFailed\?'UNITY_WEB_QA_FRAME_PACING_FAILED':/);
   assert.match(source,/bootMilliseconds>90000\?'UNITY_WEB_QA_BOOT_SLOW_FAILED':null/);
-  assert.equal((workflow.match(/continue-on-error: \$\{\{ steps\.request\.outputs\.game_id == 'daechung-rpg' \}\}/g)||[]).length,3);
+  for(const stage of ['Run Unity Web actual browser play','Run Unity Web independent QA','Run Unity Web regression']){
+    const section=workflow.split('      - name: '+stage)[1]?.split('      - name: ')[0]||'';
+    assert.match(section,/continue-on-error: true/,stage);
+  }
   assert.match(workflow,/const playable=checks\.every\(e=>e\.playableBrowserTest===true/);
   assert.match(workflow,/if\(!playable\)throw new Error\('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED'\)/);
   assert.match(workflow,/const gatePass=checks\.every\(e=>e\.pass===true&&e\.performance\?\.pass===true\)/);
   assert.match(workflow,/actualBrowserPlay:gatePass\?'PASS':'PLAYABLE_TEST_ONLY'/);
   assert.match(workflow,/validationSurfaceOnly:!gatePass/);
-  assert.match(workflow,/if: steps\.readiness\.outputs\.pass != 'true'/);
+  assert.match(workflow,/\(steps\.readiness\.outputs\.pass != 'true' \|\| steps\.publish\.outcome == 'failure'\)/);
   assert.match(workflow,/UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED/);
   assert.match(workflow,/UNITY_WEB_SOURCE_SUPERSEDED_BY_NEW_MAIN_REBUILD_REQUIRED/);
   assert.match(workflow,/UNITY_WEB_SOURCE_SUPERSEDED_DURING_PREVIEW_REBUILD_REQUIRED/);
@@ -462,7 +465,10 @@ test('Unity Web 3D gameplay rejects pseudo-depth even when triangles exist',()=>
   const worker=fs.readFileSync(new URL('../tools/company-development-unity-web-worker.mjs',import.meta.url),'utf8');
   assert.match(build,/VerifyNativeSpatialDepth\(\)/);
   assert.match(build,/FindObjectsByType<MeshFilter>/);
-  assert.match(build,/FindObjectsByType<SpriteRenderer>/);
+  assert.match(build,/FindObjectsByType<Renderer>/);
+  assert.match(build,/candidate\.gameObject\.activeInHierarchy/);
+  assert.match(build,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+  assert.match(build,/spriteGameplayActors\+\+/);
   assert.match(worker,/qa\?\.spatialGameplay\?\.depthPass===true/);
   assert.match(worker,/qa\?\.spatialGameplay\?\.spriteGameplayActors===0/);
 });
@@ -613,7 +619,7 @@ test('Unity Web QA deadline writes causal failure evidence even after a stuck br
   const stageBeforeTimeout={version:2,pass:true,gameId};
   received=stageBeforeTimeout;
   const scope={
-    qaDeadlineMs:8*60*1000,scenarioId,qaStage,gameId,output:'/tmp/unity-web-test.json',
+    qaDeadlineMs:8*60*1000,scenarioId,qaStage,gameId,publicUrl:'',output:'/tmp/unity-web-test.json',
     markers:['JAEWOON_UNITY_WEB_QA BOOT game=qa-test-game status=PASS'],
     consoleErrors:[],pageErrors:[],failedRequests:[],
     setTimeout:(fn,ms)=>{scheduled=fn;duration=ms;return{unref(){}};},

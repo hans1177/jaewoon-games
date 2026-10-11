@@ -225,7 +225,8 @@ permissions:
 jobs:
   central-policy-contract:
     runs-on: ubuntu-slim
-    timeout-minutes: 8
+    # Full-policy QA includes real timeout/rejection scenarios; keep every check within the runner's 15-minute budget.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:

@@ -1411,11 +1411,19 @@ test('Roblox gameplay design focus prioritizes server and shared responsibility 
   fs.writeFileSync(path.join(gameRoot,'shared','GameConfig.luau'),'return { Damage = 10, Progression = true }\n','utf8');
   fs.writeFileSync(path.join(gameRoot,'client','Game.client.luau'),'local root = Instance.new("Frame")\nroot.Parent = game.Players.LocalPlayer.PlayerGui\n','utf8');
   writeStudioDesign(root,gameId);
-  const project={gameId,name:'Roblox Design Code Owner',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,playMode:'SINGLE',genre:'RPG'};
+  const project={gameId,name:'Roblox Design Code Owner',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,playMode:'SINGLE',genre:'RPG',ownerFocusedCaretaker:true,focusCompletionContract:{enabled:true}};
   const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
   assert.ok(task);
   assert.equal(task.studioQualityEvolution.focusPillar,'CORE_FUN');
   assert.equal(task.studioQualityEvolution.gameplaySourceDeltaRequired,true);
+  assert.equal(task.priority,'critical');
+  assert.equal(task.focusCompletionContract.enabled,true);
+  const ordinary=findStudioContinuousImprovementTask({...project,ownerFocusedCaretaker:false,focusCompletionContract:null},root,{tasks:[]},'CORE_FUN');
+  assert.match(ordinary.goal,/\[DESIGN_IMPLEMENTATION_FLOW\]/);
+  assert.doesNotMatch(ordinary.goal,/\[FOCUSED_BUILD_COMPLETION\]/);
+
+  assert.match(task.goal,/\[FOCUSED_BUILD_COMPLETION\]/);
+  for(const required of ['MAIN/A/B/c/@','규칙 ID','책임 함수','상태 전이','스토리 진행','그래픽·모션','재도전','F0~F9','runtimeVisualReview','픽셀 검사','연속 프레임','재촬영'])assert.ok(task.goal.includes(required),required);
   const primaryOwners=task.responsibleFiles.slice(0,2);
   assert.ok(primaryOwners.some(file=>file.endsWith('/server/Game.server.luau')));
   assert.ok(primaryOwners.some(file=>file.endsWith('/shared/GameConfig.luau')));
@@ -3531,6 +3539,11 @@ test('Roblox queue projection uses Roblox design genre instead of generic catalo
 test('backlog gate binds queued existing game work to platform-lane-specific BUILD_UP directives',()=>{
   const root=tempRepo();
   const gameId='backlog-build-up';
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({
+    developmentLifecycleMachine:{focusedDevelopmentCaretakers:{enabled:true,targetFocusedGames:3,maxFocusedGames:3,
+      ownerFocusedGameIds:[gameId,'focus-two','focus-three'],completionPursuit:{enabled:true}}}
+  }));
   for(const [dir,file,body] of [
     [`roblox-games/${gameId}/client`,'Visual.client.luau','local camera = workspace.CurrentCamera\n'],
     [`roblox-games/${gameId}/server`,'Combat.server.luau','local Combat = {}\nfunction Combat.resolveAttack(player, enemy) return player ~= nil and enemy ~= nil end\nreturn Combat\n'],
@@ -3583,6 +3596,16 @@ test('backlog gate binds queued existing game work to platform-lane-specific BUI
   assert.ok(rows.every(row=>(row.evidence||[]).includes('build-up-pre-reserve-binding:CHECKED')));
   assert.ok(rows.every(row=>(row.evidence||[]).includes('game-specific-build-up-directive:v2')));
   assert.ok(rows[0].buildUpDirective.responsibleSystemsAndFiles.sourceAnchors.some(row=>row.symbol==='Combat.resolveAttack'));
+  assert.equal(rows[0].focusedCaretaker,true);
+  assert.equal(rows[0].priority,'critical');
+  assert.equal(rows[0].focusCompletionContract.enabled,true);
+  assert.match(rows[0].goal,/runtimeVisualReview/);
+  assert.equal((rows[0].goal.match(/\[FOCUSED_BUILD_COMPLETION\]/g)||[]).length,1);
+  assert.equal(rows[1].focusCompletionContract,null);
+  assert.doesNotMatch(rows[1].goal,/\[FOCUSED_BUILD_COMPLETION\]/);
+  assert.match(rows[0].goal,/\[DESIGN_IMPLEMENTATION_FLOW\]/);
+  assert.doesNotMatch(rows[1].goal,/\[DESIGN_IMPLEMENTATION_FLOW\]/);
+
 });
 
 

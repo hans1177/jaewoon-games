@@ -47,11 +47,11 @@ test('an explicitly malformed gameplay sketch fails instead of being silently ac
   assert.ok(result.errors.some(error=>error.startsWith('GAMEPLAY_SKETCH.expansionPlan')));
 });
 
-test('seed bootstrap asks the model to sketch the world before code and persists it',()=>{
+test('seed bootstrap authors and persists the native causal world sketch before implementation',()=>{
   const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
   assert.match(source,/gameplaySketch:GAMEPLAY_SKETCH_SCHEMA/);
   assert.match(source,/GAMEPLAY_SKETCH:p\.gameplaySketch/);
-  assert.match(source,/코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다/);
+  assert.match(source,/gameplaySketch:\{version:5,source:'VIBE_NATIVE_CAUSAL_COMPOSITION',novelGameGrammar:grammar/);
   assert.match(source,/interactionChains/);
   assert.match(source,/longGoalScenario/);
   assert.match(source,/validationRisks/);
@@ -62,7 +62,8 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/representativeChoice/);
   assert.match(source,/signatureWorldRule/);
   assert.match(source,/genreAdaptationRule/);
-  assert.match(source,/모든 장르/);
+  assert.match(source,/DEFAULT_SEED_CATEGORIES/);
+  assert.match(source,/profileFor\(platform,category\)/);
   assert.match(source,/novelGameGrammar:NOVEL_GAME_GRAMMAR_SCHEMA/);
   assert.match(source,/causalDNA/);
   assert.match(source,/brokenGenreAssumption/);
@@ -173,7 +174,7 @@ test('design cycle preserves v2 sketch and BUILD_UP reuses the full verified des
   const autoPlanner=fs.readFileSync('tools/vibe2-auto-planner.mjs','utf8');
   assert.match(designCycle,/const seedDesignDepthContext=/);
   assert.match(designCycle,/GAME_SEED_DESIGN_DEPTH=/);
-  assert.match(designCycle,/gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch/);
+  assert.match(designCycle,/gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch/);
   assert.match(designCycle,/advancedDesignDepth:advancedSeedDesignDepth/);
   assert.match(autoPlanner,/flowBaseline=designContext\?\{\.\.\.designContext\.record,content:designContent\}/);
   assert.match(autoPlanner,/out\.assetRequirements=flowAssetRequirements/);

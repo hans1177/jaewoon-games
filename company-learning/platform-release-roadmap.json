@@ -1,5 +1,5 @@
 {
-  "version": 563,
+  "version": 565,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -5145,14 +5145,15 @@
       }
     },
     "focusedDevelopmentCaretakers": {
-      "version": 1,
+      "version": 2,
       "enabled": true,
       "ownerFocusedGameIds": [
         "fantasy-survival",
-        "daechung-rpg"
+        "daechung-rpg",
+        "gem-survivor"
       ],
-      "includeAllReleaseConfirmed": true,
-      "includeAllInternalPlatformRelease": true,
+      "includeAllReleaseConfirmed": false,
+      "includeAllInternalPlatformRelease": false,
       "internalPlatformReleaseCountsAsRelease": true,
       "caretakerMode": "PER_GAME_PERSISTENT",
       "oneLogicalCaretakerPerEligibleGame": true,
@@ -5171,11 +5172,57 @@
       },
       "appliesBeforePublicRelease": true,
       "preservesExistingPostReleaseCaretaker": true,
-      "targetGamesMeaning": "OWNER_FOCUSED_PLUS_ALL_INTERNAL_OR_PUBLIC_RELEASED",
+      "targetGamesMeaning": "THREE_OWNER_FOCUSED_BUILD_COMPLETION_GAMES_OTHER_RELEASED_GAMES_KEEP_POST_RELEASE_CARETAKERS",
       "internalPhysicalWorkerCap": null,
       "sameGameNonOverlappingPackagesParallel": true,
       "sourceRootWideLockForbidden": true,
-      "responsibleFileConflictSerializationOnly": true
+      "responsibleFileConflictSerializationOnly": true,
+      "targetFocusedGames": 3,
+      "maxFocusedGames": 3,
+      "completionPursuit": {
+        "enabled": true,
+        "authority": "OWNER_DIRECTIVE_2026-10-11",
+        "targetPlatform": "ROBLOX",
+        "selectionCriteria": [
+          "OWNER_EXISTING_FOCUS_CONTINUITY",
+          "MINIMUM_MAIN_A_B_C_AT_DESIGN_READY",
+          "EXACT_LUAU_SOURCE_AND_BUILD_READINESS",
+          "FEWEST_CAUSAL_BLOCKERS_TO_FIRST_VERIFIED_PLAY",
+          "GAME_SPECIFIC_IDENTITY_AND_CONTENT_COMPLETENESS"
+        ],
+        "retainUntil": "EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED",
+        "rotationRequires": "COMPLETION_OR_DOCUMENTED_UNRESOLVABLE_EXTERNAL_DEPENDENCY_AND_REPLACEMENT_DESIGN_READY",
+        "ordinaryRepairMustNotRotateGame": true,
+        "knownCausalBlockersRepairFirst": true,
+        "unrelatedPolishMustNotReplaceRequiredDesignGap": true,
+        "autoBiomeSource": "SAME_GAME_APPROVED_SPATIAL_LAYOUT_EXISTING_TOOL_AND_LUAU_SOURCE",
+        "missingSpatialDesignAction": "EXISTING_DESIGN_PIPELINE_REPAIR_NO_INVENTED_DEFAULT_WORLD",
+        "nonFocusedDevelopmentContinues": true,
+        "implementationTimeoutMs": 360000,
+        "graphicsTimeoutMs": 600000,
+        "maxPredict": 4096,
+        "zeroOutputWatchdogUnchanged": true,
+        "timeSpentNeverProvesCompletion": true,
+        "requiredImplementationAxes": [
+          "MAIN_A_B_c_AT_GRAMMAR_AND_SHARED_STATE_FLOW",
+          "GENRE_CORE_LOOP",
+          "CONCEPT_WORLD_AND_STORY_PROGRESSION",
+          "GAMEPLAY_SYSTEMS_AND_FAILURE_RECOVERY",
+          "GRAPHICS_MOTION_VFX_AUDIO_UI",
+          "FIRST_PLAY_COMPLETE_SESSION_RETRY_AND_SAVE",
+          "SAME_BUILD_RUNTIME_SCREENSHOT_PIXEL_REVIEW_AND_RECAPTURE"
+        ],
+        "traceabilityRequired": [
+          "DESIGN_BASELINE_REVISION",
+          "DESIGN_RULE_ID",
+          "RESPONSIBLE_LUAU_FILE_AND_FUNCTION",
+          "INPUT_STATE_TRANSITION_OUTPUT",
+          "SAME_BUILD_RUNTIME_SCENARIO_AND_EVIDENCE"
+        ],
+        "sourceOnlyCannotCloseRuntimeGap": true,
+        "verifiedLearningReuseRequiresFreshSameBuildValidation": true,
+        "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow"
+      }
     },
     "directNativeDualPlatformDevelopment": {
       "required": true,
@@ -28013,6 +28060,23 @@
       "validatedMotionLibraryPreferredBeforeAuthoring": true,
       "animatorRigBlendSpeedSyncAndContactRequiredWhenApplicable": true,
       "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+    },
+    "sourceAuthority": {
+      "platform": "ROBLOX",
+      "language": "LUAU",
+      "sourceRoot": "roblox-games/<gameId>/",
+      "designGrammar": "MAIN_A_B_C_AT",
+      "unitySourceIsOriginal": false,
+      "designSystemContentMustBindExistingLuauOwners": true,
+      "sourceDiffAndExactRuntimeEvidenceRequired": true,
+      "basicDesignDetail": {
+        "existingFieldsOnly": true,
+        "firstPlay": "ENTRY_INPUT_CONDITION_SUCCESS_OR_CANCEL_FEEDBACK_NEXT_CHOICE",
+        "systemConnection": "A_OUTPUT_TO_B_INPUT_AND_B_OUTPUT_TO_A_INPUT_WITH_SHARED_STATE_KEYS",
+        "contentExpansion": "PRECONDITION_NEW_CHOICE_EXISTING_RULE_IDS_STATE_CHANGE_FAILURE_RECOVERY_VERIFICATION",
+        "plannedValuesAreRuntimeEvidence": false,
+        "newPipelineOrFloorRequired": false
+      }
     }
   },
   "robloxHomepageThumbnailSyncContract": {
@@ -28598,6 +28662,25 @@
     "missingVerifiedRuntimeVideoState": "CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN"
   },
   "robloxStudioProductionFlowContract": {
+    "designImplementationFlow": {
+      "scope": "ALL_GAMES",
+      "activePlatform": "ROBLOX",
+      "implementationOrder": [
+        "MAIN_FIRST_PLAY",
+        "A_B_SHARED_STATE_CAUSAL_CHOICES",
+        "C_AT_VARIATION_DISCOVERY_AND_GROWTH",
+        "DESIGN_MATCHED_BIOME_BACKGROUND_AND_PRESENTATION"
+      ],
+      "knownCausalBlockersRepairFirst": true,
+      "designRuleToResponsibleSourceAndRuntimeScenarioRequired": true,
+      "firstPlayAndFailureRetryRequired": true,
+      "sameBuildVisualEvidenceRequired": true,
+      "sourceOrPromptOnlyCannotProveImplementation": true,
+      "unknownOrUnimplementedMustRemainGap": true,
+      "allExistingQueuedBuildUpTasksIncluded": true,
+      "focusedGameCountIsResourcePriorityOnly": true,
+      "noShadowPipeline": true
+    },
     "version": 3,
     "status": "ACTIVE_EXECUTABLE_CONTRACT",
     "authority": "OWNER_DIRECTIVE_2026-10-05",

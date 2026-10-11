@@ -1857,7 +1857,7 @@ test('motion planning reuses company clips per state and does not invent coverag
   try{
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[{
       id:'owned-motion',category:'MOTION',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-      license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
+      path:'assets/owned-motion.luau',license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
     }]}));
     const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[
       {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
@@ -1868,23 +1868,23 @@ test('motion planning reuses company clips per state and does not invent coverag
     ]}});
     const motion=plan.decisions.find(row=>row.type==='animation');
     assert.equal(motion.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion','external-motion']);
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,['external-motion']);
-    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['hit','skill','death']);
-    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,['unknown-clips']);
+    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion']);
+    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,[]);
+    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['move','hit','skill','death']);
+    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,[]);
     assert.equal(motion.motionReusePlan.runtimeVerified,false);
     assert.ok(motion.motionReusePlan.stateBindings.every(row=>row.runtimeVerified===false));
     assert.equal(motion.companyCandidates[0].rigType,'R15');
     assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.qualitySelection.selectedAssetId,null);
-    assert.equal(motion.qualitySelection.selectionState,'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON');
-    assert.equal(motion.postDownloadComparison.required,true);
-    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion','unknown-clips']);
-    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,['external-motion']);
-    assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
+    assert.equal(motion.qualitySelection.selectionState,'TARGET_GAME_REVIEW_REQUIRED');
+    assert.equal(motion.postDownloadComparison.required,false);
+    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion']);
+    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,[]);
+    assert.ok(!motion.qualitySelection.compareCandidateIds.includes('external-motion'));
     assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/attack=owned-motion\|external-motion/);
+    assert.match(guidance,/attack=owned-motion/);
     assert.match(guidance,/Asset ID를 지어내지/);
     assert.match(guidance,/MULTIPLAYER_SYNC/);
     assert.match(guidance,/기존 공격 판정/);
@@ -2196,9 +2196,11 @@ test('canonical generic Blender visual recipe is syntax-valid and emits GLB prev
   assert.match(source,/project-original/);
 });
 
-test('generic environment and prop authoring declares task-specific Blender outputs per native platform',()=>{
+test('generic environment and prop authoring declares task-specific Blender outputs per native platform',t=>{
+  const repoRoot=tempRoot();
+  t.after(()=>fs.rmSync(repoRoot,{recursive:true,force:true}));
   const task={gameId:'amusement-tycoon',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 놀이공원 환경 배경 소품을 플랫폼 네이티브 3D 자산으로 개선'};
-  const roblox=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const roblox=buildVibeAssetProductionPlan({repoRoot,target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(roblox.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.deepEqual([...roblox.explicitRequestedTypes].sort(),['background','prop']);
   assert.deepEqual([...roblox.nativeAuthoringExecution.dcc.explicitRequestedTypes].sort(),['background','prop']);
@@ -2213,17 +2215,17 @@ test('generic environment and prop authoring declares task-specific Blender outp
     assert.equal(recipe.targetPlatforms.includes('roblox'),true);
   }
 
-  const unity=buildVibeAssetProductionPlan({target:'unity',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const unity=buildVibeAssetProductionPlan({repoRoot,target:'unity',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(unity.nativeAuthoringExecution.dcc.executionStatus,'READY_FOR_EXISTING_AUTHORING_EXECUTOR');
   assert.ok(unity.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.outputs.every(file=>file.startsWith('assets/generated/unity/amusement-tycoon/'))));
   const robloxOutputs=new Set(roblox.nativeAuthoringExecution.dcc.executionRecipes.flatMap(recipe=>recipe.outputs));
   const unityOutputs=unity.nativeAuthoringExecution.dcc.executionRecipes.flatMap(recipe=>recipe.outputs);
   assert.equal(unityOutputs.some(file=>robloxOutputs.has(file)),false);
 
-  const web=buildVibeAssetProductionPlan({target:'web',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const web=buildVibeAssetProductionPlan({repoRoot,target:'web',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(web.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.ok(web.nativeAuthoringExecution.dcc.executionRecipes.length>0);
-  const twoD=buildVibeAssetProductionPlan({target:'web',task:{gameId:'flat-ui',goal:'2D 소품 아이콘 제작'},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const twoD=buildVibeAssetProductionPlan({repoRoot,target:'web',task:{gameId:'flat-ui',goal:'2D 소품 아이콘 제작'},manifest:{assets:[]},presetCatalog:{presets:[]}});
   assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
 });
 
@@ -2717,7 +2719,7 @@ test('web-only assets are never reused directly by Unity or Roblox',()=>{
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('Roblox planner reuses source-bound same-game assets before cross-game library candidates',()=>{
+test('Roblox planner keeps unregistered source IDs out of internal library candidates',()=>{
   const root=tempRoot();
   try{
     const server=path.join(root,'roblox-games','demo','server');
@@ -2739,18 +2741,14 @@ test('Roblox planner reuses source-bound same-game assets before cross-game libr
       manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
     });
     assert.ok(plan.summary.discoveredSameGameRobloxAssets>=4);
-    assert.ok(plan.summary.sameGameRobloxCandidateTypes>0);
-    assert.ok(plan.decisions.some(row=>row.sameGameCandidates.some(asset=>asset.robloxAssetId==='6933438443')));
-    assert.ok(plan.decisions.some(row=>row.decisionOrder[1]==='REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET'));
+    assert.equal(plan.summary.sameGameRobloxCandidateTypes,0);
+    assert.ok(plan.decisions.every(row=>row.sameGameCandidates.length===0));
     assert.equal(plan.policy.sameGameRobloxAssetIsCandidateOnlyUntilRuntimeVerified,true);
     assert.equal(plan.policy.unverifiedSameGameRobloxAssetDoesNotOutrankVerifiedCompanyAsset,true);
-    const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/REUSE_SAME_GAME_EXISTING_ROBLOX_ASSET/);
-    assert.match(guidance,/6933438443/);
 
     fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
       version:1,
-      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'roblox-games/shared/nature.luau',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
+      assets:[{id:'verified-company-nature',category:'ENVIRONMENT',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,path:'assets/shared/nature.glb',types:['background'],tags:['Nature','background'],platforms:['roblox'],license:'company-owned'}]
     },null,2));
     const withCompany=buildVibeAssetProductionPlan({
       task:{gameId:'demo',goal:'Nature background improvement'},target:'roblox',repoRoot:root,
@@ -3181,7 +3179,7 @@ test('native presentation pass is available to every confirmed project while the
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('fantasy-survival development-confirmed Unity can receive P0 weather work only through owner-authorized company status',()=>{
+test('Unity Android owner hold prevents pilot weather work even with company PASS',()=>{
   const root=tempRoot();
   try{
     const scripts=path.join(root,'unity-games','fantasy-survival','Assets','Scripts');
@@ -3200,16 +3198,13 @@ test('fantasy-survival development-confirmed Unity can receive P0 weather work o
       queue:{maxConcurrentTasks:4,tasks:[]},
       repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
-    assert.equal(result.planned,true);
-    const weather=result.tasks.find(row=>row.id==='fantasy-survival-unity-weather-presentation-v1');
-    assert.ok(weather);
-    assert.equal(weather.priority,'owner-immediate');
-    assert.equal(weather.weatherPresentationLane,true);
-    assert.ok(weather.evidence.includes('weather-presentation:v1'));
+    assert.equal(result.planned,false);
+    assert.equal(result.reason,'NO_CONFIRMED_PRODUCTION_PROJECT');
+    assert.deepEqual(result.tasks,[]);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('development-confirmed existing Unity non-pilot receives holistic backfill before generic presentation and never inherits pilot weather scope',()=>{
+test('Unity Android owner hold prevents non-pilot holistic work',()=>{
   const root=tempRoot();
   try{
     const scripts=path.join(root,'unity-games','other-game','Assets','Scripts');
@@ -3224,10 +3219,9 @@ test('development-confirmed existing Unity non-pilot receives holistic backfill 
       developmentQueue:{items:[]},
       queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4,planningBacklogTarget:4
     });
-    assert.equal(result.planned,true);
-    assert.ok(result.tasks.some(row=>(row.evidence||[]).includes('existing-holistic-backfill:v1')));
-    assert.ok(result.tasks.some(row=>row.studioQualityEvolution?.existingHolisticBackfillRequired===true));
-    assert.equal(result.tasks.some(row=>row.id==='other-game-unity-weather-presentation-v1'),false);
+    assert.equal(result.planned,false);
+    assert.equal(result.reason,'NO_CONFIRMED_PRODUCTION_PROJECT');
+    assert.deepEqual(result.tasks,[]);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -3995,7 +3989,7 @@ test('usable same-game asset is applied before new authoring and weak regions de
     fs.mkdirSync(path.dirname(masterPath),{recursive:true});
     fs.copyFileSync(path.join(process.cwd(),master),masterPath);
     const sameGame={
-      id:'existing-wolf',family:'CREATURE',category:'CREATURE',status:'REPO_ASSET',
+      id:'existing-wolf',family:'CREATURE',category:'CREATURE',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
       path:'roblox-games/apply-first-demo/assets/wolf.glb',types:['enemy'],
       tags:['wolf','enemy'],license:'project-original',platforms:['roblox'],
       sameGameExistingRoblox:true,sourceHash:'wolf-v1',robloxAssetId:'123456',masterGlb:master
@@ -4019,7 +4013,7 @@ test('usable same-game asset is applied before new authoring and weak regions de
     const enemy=plan.decisions.find(row=>row.type==='enemy');
     assert.ok(enemy);
     assert.equal(enemy.applyFirst.enabled,true);
-    assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf');
+    assert.equal(enemy.applyFirst.candidates[0].id,'existing-wolf',JSON.stringify(enemy.applyFirst.candidates));
     assert.equal(enemy.applyFirst.candidates[0].mode,'PATCH_EXISTING_GAME_BINDING');
     assert.equal(enemy.applyFirst.deriveBeforeReplace,true);
     assert.equal(enemy.applyFirst.qualityRescue.axisBased,true);
@@ -4077,7 +4071,7 @@ test('precision production continues from inspection through authoring and appli
   assert.ok(plan.precisionProduction.application.nativeVariantRequirements.includes('IMPORTED_OR_EXISTING_AUTHORIZED_NATIVE_ASSET_ID'));
   assert.equal(plan.precisionProduction.application.preparedAssetIsNotAppliedAsset,true);
   assert.equal(plan.mapDetailReconstruction.productionChain.reportOnlyCompletionForbidden,true);
-  assert.ok(plan.mapDetailReconstruction.regions[0].layers.some(row=>row.productionAction==='CREATE_EDITABLE_NATIVE_ASSET'));
+  assert.ok(plan.mapDetailReconstruction.regions[0].layers.some(row=>row.productionAction==='VERIFY_RIGHTS_AND_CREATE_EDITABLE_NATIVE_3D_ASSET'));
   assert.match(assetProductionGuidance(plan),/PRECISION PRODUCTION CHAIN/);
   const prompt=buildPrompt(
     {target:'roblox',goal:'검사부터 제작 적용까지 진행',assetProduction:plan},
@@ -4146,7 +4140,7 @@ test('low-quality asset rescue preserves strong axes and escalates to full autho
     assert.equal(row.qualityDNA.evidence.verificationStatusIsNotVisualQuality,true);
     assert.equal(row.qualityDNA.rescue.fullReauthorOnlyAfterTargetedRepairFails,true);
     assert.equal(plan.qualityDNA.commonRules.strongAxesLockedDuringRepair,true);
-    assert.equal(plan.qualityDNA.donorAssemblyBeforeFullReauthor,true);
+    assert.equal(plan.qualityDNA.commonRules.donorAssemblyBeforeFullReauthor,true);
     assert.ok(plan.qualityDNA.contracts.some(item=>item.type==='character'&&item.qualityDNA.profile==='HERO_CHARACTER'));
     assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('SCREEN_SPACE_OCCUPANCY'));
     assert.ok(base.detailInvestmentPolicy.prioritySignals.includes('INTERACTION_FREQUENCY'));
@@ -4563,10 +4557,12 @@ test('GLB production inspection rejects poisoned payloads and malformed import b
   finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('native asset recipe preserves explicit concept style over genre words and shares it across platforms',()=>{
+test('native asset recipe preserves explicit concept style over genre words and shares it across platforms',t=>{
+  const repoRoot=tempRoot();
+  t.after(()=>fs.rmSync(repoRoot,{recursive:true,force:true}));
   const task={gameId:'cozy-horror',genre:'HORROR',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] horror 바위 소품 3D 제작',assetSubject:'rock',styleFamily:'COZY'};
   for(const target of ['web','roblox','unity']){
-    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const plan=buildVibeAssetProductionPlan({repoRoot,target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
     const recipe=plan.nativeAuthoringExecution.dcc.executionRecipes.find(row=>row.types.includes('prop'));
     assert(recipe,target);
     const args=recipe.args;

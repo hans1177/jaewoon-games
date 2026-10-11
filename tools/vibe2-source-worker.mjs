@@ -72,6 +72,20 @@ const DEFAULT_TIMEOUT_MS=Math.max(10000,Math.min(300000,Number(process.env.VIBE2
 const MODEL_FIRST_OUTPUT_TIMEOUT_MS=Math.max(30000,Math.min(DEFAULT_TIMEOUT_MS,Number(process.env.VIBE2_MODEL_FIRST_OUTPUT_TIMEOUT_MS||120000)));
 const ZERO_OUTPUT_RETRY_TIMEOUT_MS=120000;
 const DEFAULT_MAX_PREDICT=Math.max(512,Math.min(4096,Number(process.env.VIBE2_MODEL_MAX_PREDICT||3072)));
+export function focusedDevelopmentGenerationBudget({policy={},order={}}={}){
+  const focus=policy?.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+  const completion=focus?.completionPursuit;
+  const gameId=clean(order.gameId||order.selectedTask?.gameId);
+  if(focus?.enabled!==true||completion?.enabled!==true||clean(order.target).toLowerCase()!=='roblox'
+    ||!gameId||!focus.ownerFocusedGameIds?.includes(gameId))return null;
+  const graphics=clean(order.department||order.selectedTask?.department).toLowerCase()==='graphics'
+    ||clean(order.selectedTask?.studioQualityEvolution?.focusPillar).toUpperCase()==='PRESENTATION'
+    ||clean(order.executionLane||order.selectedTask?.executionLane).toUpperCase()==='ASSET_DEVELOPMENT';
+  const timeoutMs=Number(graphics?completion.graphicsTimeoutMs:completion.implementationTimeoutMs);
+  const maxPredict=Number(completion.maxPredict);
+  if(!Number.isFinite(timeoutMs)||timeoutMs<=0||!Number.isFinite(maxPredict)||maxPredict<=0)return null;
+  return Object.freeze({gameId,graphics,timeoutMs,maxPredict,authority:'central-focused-build-completion'});
+}
 const FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES=4200;
 const FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES=6500;
 const FULL_WEB_TIMEOUT_MS=360000;
@@ -2500,7 +2514,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     &&clean(d?.designImplementationContext?.preservationContract?.mode).toUpperCase()!=='PRESERVATION_PRESENTATION_UPGRADE';
   const volumePreferred=focus==='PROGRESSION'
     ?authoredItems.filter(row=>/CONTENT_MILESTONE|VARIETY_REGIONS|VARIETY_OBJECTIVES|NARRATIVE_QUESTSTATES|SYSTEM_CONNECTION/.test(clean(row.family)))
-    :authoredItems.filter(row=>/CORE_LOOP|SIGNATURE_SYSTEM|SYSTEM_CONNECTION|VARIETY_ENEMIESORCHALLENGES|VARIETY_ABILITIES/.test(clean(row.family)));
+    :authoredItems.filter(row=>/PLAYTHROUGH|CORE_LOOP|SIGNATURE_SYSTEM|SYSTEM_CONNECTION|VARIETY_ENEMIESORCHALLENGES|VARIETY_ABILITIES/.test(clean(row.family)));
   const volumePool=volumePreferred.length?volumePreferred:authoredItems;
   const volumeOwned=volumePool.filter(row=>(row.sourceCandidates||[]).some(candidate=>
     responsibleFiles.some(file=>posix(candidate.file)===posix(file)||posix(candidate.file).endsWith('/'+posix(file)))));
@@ -2515,7 +2529,11 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     ['TRIGGER',['trigger','range','rangeUnit','resource','cost','cooldownSeconds','telegraph','avoidance','effect']],
     ['WORLD',['traversal','riskReward','landmark','encounterPattern','resourcePressure','storyContext']],
     ['ENCOUNTER',['behavior','counterplay','positioning','timing','mobility','groupRole','identity','rewardMeaning']],
-    ['PROGRESSION',['milestone','newGameplay','systemImpact','variation','playerChoice','purpose']]
+    ['PROGRESSION',['milestone','newGameplay','systemImpact','variation','playerChoice','purpose','failureRecovery','validationEvidence']],
+    ['PLAY_ENTRY',['phase','entryState','playerChoice']],
+    ['PLAY_ACTION',['actionAndResponse']],
+    ['PLAY_RESULT',['exitState','nextDecision','outcome']],
+    ['PLAY_DESIGN_STATE',['before','after']]
   ];
   const volumeSpecs=chosenVolume?volumeSpecFields.map(([group,keys])=>{
     const detail=chosenVolume.designDetail||{};
@@ -2612,10 +2630,10 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `gameIdentity=${clean(d?.gameIdentityAndNonNegotiables?.identity)}`,
     `designContext=${JSON.stringify(d?.designImplementationContext||{})}`,
     `gameplayContract=${JSON.stringify({coreFun:d?.gameIdentityAndNonNegotiables?.coreFun,coreLoop:d?.gameIdentityAndNonNegotiables?.coreLoop,signatureSystems:d?.gameIdentityAndNonNegotiables?.signatureSystems,systemInterconnections:d?.designImplementationContext?.systemInterconnections,progressionDirection:d?.gameIdentityAndNonNegotiables?.progressionDirection,grammar:d?.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap})}`,
-    `designCodePlatform=${clean(codingTrace.activePlatform)||'UNKNOWN'};source=${clean(codingTrace?.platformCodingPlans?.find(row=>row.platform===codingTrace.activePlatform)?.canonicalGameSourceRoot)};mode=${clean(codingTrace.multiplayerMode)};minPlayers=${Number(codingTrace.minimumParticipants||2)};runtime=UNVERIFIED`,
+    `designCodePlatform=${clean(codingTrace.activePlatform)||'UNKNOWN'};source=${clean(codingTrace?.platformCodingPlans?.find(row=>row.platform===codingTrace.activePlatform)?.canonicalGameSourceRoot)};mode=${clean(codingTrace.multiplayerMode)};minPlayers=${Number(codingTrace.minimumParticipants||2)};original=ROBLOX_LUAU;runtime=UNVERIFIED`,
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
     ...(canonicalUnityWebReference?[
-      'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE; the canonical shared design governs MAIN/A/B/C/@ and all game-rule semantics. Compare exact Unity Web C# input, method and state transitions with existing Roblox server/shared/client source and implement the matching behavior in native Luau owner functions. Do not copy Unity C# or placeholder resource, level or save constants. Preserve current authorized combat/balance, progression, economy, rewards, save keys and network server authority. Optimize Roblox touch, StreamingEnabled, server Remote validation/rate-limits, bounded replication and client visual pooling only when relevant. A source reference or marker is never gameplay parity, synchronization QA or runtime PASS. Missing/unverified Unity Web does not block independent Roblox coding. Do not create a wrapper, alternate queue or shadow pipeline.',
+      'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE; Roblox Luau is the original source language. The approved design and original Roblox server/shared/client source govern MAIN/A/B/C/@ and all game-rule semantics. Unity Web and Android development are on owner hold. C# is optional compatibility evidence only and must not override or become required input for Roblox source. Implement approved design systems and connected content directly in existing Luau owner functions. Do not copy Unity C# or placeholder resource, level or save constants. Preserve current authorized combat/balance, progression, economy, rewards, save keys and network server authority. Optimize Roblox touch, StreamingEnabled, server Remote validation/rate-limits, bounded replication and client visual pooling only when relevant. A source reference or marker is never gameplay parity, synchronization QA or runtime PASS. Missing/unverified Unity Web does not block independent Roblox coding. Do not create a wrapper, alternate queue or shadow pipeline.',
       `unityWebSourceReference=${JSON.stringify(canonicalUnityWebReference)}`
     ]:[]),
     ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status};state=${row.nativeState};missingRead=${row.missingInputs.join(',')||'NONE'};missingWrite=${row.missingOutputs.join(',')||'NONE'}`),
@@ -5662,7 +5680,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-export async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,singleMotionWorkUnit=false}={}){
+export async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,exploration=null,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary',systemAtomicPairRequired=false,multiFilePairRequired=false,verifiedExternalLearningContract=null,singleMotionWorkUnit=false,focusedDevelopmentBudget=null}={}){
   const blueprintFields=requiredBlueprintFieldsFromPrompt(prompt);
   let lastError=null;
   let lastRaw='';
@@ -5882,7 +5900,7 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
       :(assetDevelopmentFocusedGraphics
         ?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_TIMEOUT_MS
         :(robloxRebuildFocused?DEFAULT_TIMEOUT_MS:JSON_FOCUSED_REPLACE_TIMEOUT_MS));
-    const timeoutMs=focusedReplaceOnly&&!systemAtomicPairCompletion
+    let timeoutMs=focusedReplaceOnly&&!systemAtomicPairCompletion
       ?focusedReplaceTimeoutMs
       :(priorFailureClass==='TIMEOUT'&&!clean(lastRaw)
         ?(assetDevelopmentLane&&target==='web'?ASSET_DEVELOPMENT_WEB_TIMEOUT_MS:ZERO_OUTPUT_RETRY_TIMEOUT_MS)
@@ -5891,6 +5909,10 @@ export async function generateCandidateWithRecovery({prompt,model,responseFile='
           :(allowFullRewrite
             ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
             :(systemAtomicPairCompletion?JSON_RETRY_TIMEOUT_MS:(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))))));
+    if(target==='roblox'&&focusedDevelopmentBudget){
+      timeoutMs=Math.max(timeoutMs,focusedDevelopmentBudget.timeoutMs);
+      maxPredict=Math.max(maxPredict,focusedDevelopmentBudget.maxPredict);
+    }
     const baseContextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:((systemAtomicPairCompletion||focusedReplaceOnly)?(systemAtomicPairCompletion?JSON_CONTEXT_WINDOW:(robloxRebuildFocused?JSON_CONTEXT_WINDOW:(assetDevelopmentFocusedGraphics?ASSET_DEVELOPMENT_ROBLOX_FOCUSED_CONTEXT_WINDOW:JSON_FOCUSED_REPLACE_CONTEXT_WINDOW))):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(sourceCandidatePressureInitial?SOURCE_CANDIDATE_COMPACT_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)))));
@@ -6645,6 +6667,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   assertOwnerDevelopmentAvailable({cwd,order});
   const centralPolicyPreflight=assertCompiledWorkContractFresh({cwd,contract:order?.compiledWorkContract||{},phase:'PRE_SOURCE_GENERATION'});
   const target=clean(order.target).toLowerCase();
+  const focusedDevelopmentBudget=focusedDevelopmentGenerationBudget({policy:readJson(path.join(cwd,'company-learning/platform-release-roadmap.json'),{}),order});
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target,order);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
@@ -6980,7 +7003,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       generationSourceRoot=generationBootstrapRoot;
     }
     try{
-      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract,singleMotionWorkUnit:singleMotionPreflight.required});
+      generated=await generateCandidateWithRecovery({prompt,model:effectiveModel,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot:generationSourceRoot,focusedWebRepair,exploration,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant,systemAtomicPairRequired:systemCausalPairRequired,multiFilePairRequired:bootstrap&&target==='unity',verifiedExternalLearningContract,singleMotionWorkUnit:singleMotionPreflight.required,focusedDevelopmentBudget});
     }finally{
       if(generationBootstrapRoot)fs.rmSync(generationBootstrapRoot,{recursive:true,force:true});
     }

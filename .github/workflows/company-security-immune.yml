@@ -272,13 +272,12 @@ jobs:
           fi
           git fetch --no-tags --depth=1 origin "$BASE_SHA"
           git diff --name-only "$BASE_SHA" HEAD > /tmp/central-prune-files.txt
-          if grep -Ev '^(company-learning/(platform-release-roadmap|company-architecture-map|company-log-map)\.json|company-records/operations/[0-9]{4}/[0-9]{4}-[0-9]{2}-[0-9]{2}/company/(central-policy-archive--central-policy-current-use-[a-z0-9-]+|central-document-archive--central-companion-current-use-[a-z0-9-]+)\.json)$' /tmp/central-prune-files.txt | grep -q .; then
+          if grep -Ev '^(company-learning/(platform-release-roadmap|company-architecture-map|company-log-map|security-immune-system)\.json|company-records/operations/[0-9]{4}/[0-9]{4}-[0-9]{2}-[0-9]{2}/company/(central-policy-archive--central-policy-current-use-[a-z0-9-]+|central-document-archive--central-companion-current-use-[a-z0-9-]+)\.json)$' /tmp/central-prune-files.txt | grep -q .; then
             echo 'CENTRAL_AUTO_PRUNE_SECURITY=UNEXPECTED_FILE'
             cat /tmp/central-prune-files.txt
             exit 0
           fi
-          grep -Eq '^company-learning/(platform-release-roadmap|company-architecture-map|company-log-map)\.json$' /tmp/central-prune-files.txt
-          grep -Eq '^company-records/operations/.+/(central-policy-archive--central-policy-current-use-|central-document-archive--central-companion-current-use-).+\.json$' /tmp/central-prune-files.txt
+          grep -Eq '^company-learning/(platform-release-roadmap|company-architecture-map|company-log-map|security-immune-system)\.json$' /tmp/central-prune-files.txt
           node tools/company-records-governance.mjs --central-report
           BASE_SHA="$BASE_SHA" node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -287,11 +286,14 @@ jobs:
 
           const baseSha=process.env.BASE_SHA;
           const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
-          const readBase=p=>JSON.parse(execFileSync('git',['show',baseSha+':'+p],{encoding:'utf8'}));
+          const readBase=p=>JSON.parse(execFileSync('git',['show',baseSha+':'+p],{encoding:'utf8',maxBuffer:8*1024*1024}));
           const changed=fs.readFileSync('/tmp/central-prune-files.txt','utf8').split(/\r?\n/).filter(Boolean);
           const policyPath='company-learning/platform-release-roadmap.json';
           const architecturePath='company-learning/company-architecture-map.json';
           const logMapPath='company-learning/company-log-map.json';
+          const formattingOnly=new Set(changed.filter(p=>p.startsWith('company-learning/')&&JSON.stringify(read(p))===JSON.stringify(readBase(p))));
+          const securityPath='company-learning/security-immune-system.json';
+          if(changed.includes(securityPath)&&!formattingOnly.has(securityPath))throw new Error('AUTO_PRUNE_SECURITY_DATA_MUTATION_FORBIDDEN');
           const policyArchives=changed.filter(x=>x.includes('/central-policy-archive--central-policy-current-use-')).map(read);
           const companionArchives=changed.filter(x=>x.includes('/central-document-archive--central-companion-current-use-')).map(read);
           if(policyArchives.length>1)throw new Error('AUTO_PRUNE_MULTIPLE_POLICY_ARCHIVES_FORBIDDEN');
@@ -318,7 +320,7 @@ jobs:
           };
           const isReferenced=(path,refKeys)=>refKeys.includes('*')||refKeys.some(ref=>ref===path||ref.startsWith(path+'.')||path.startsWith(ref+'.'));
 
-          if(changed.includes(policyPath)){
+          if(changed.includes(policyPath)&&!formattingOnly.has(policyPath)){
             if(policyArchives.length!==1)throw new Error('AUTO_PRUNE_POLICY_ARCHIVE_REQUIRED');
             const archive=policyArchives[0];
             if(archive?.data?.mode!=='AUTO_CURRENT_USE_ONLY')throw new Error('AUTO_PRUNE_POLICY_MODE_REQUIRED');
@@ -346,7 +348,7 @@ jobs:
           const companionChanged=[
             ['architecture',architecturePath],
             ['logMap',logMapPath]
-          ].filter(([,sourcePath])=>changed.includes(sourcePath));
+          ].filter(([,sourcePath])=>changed.includes(sourcePath)&&!formattingOnly.has(sourcePath));
           if(companionChanged.length){
             if(companionArchives.length!==1)throw new Error('AUTO_PRUNE_COMPANION_ARCHIVE_REQUIRED');
             const archive=companionArchives[0];
@@ -379,7 +381,8 @@ jobs:
             throw new Error('AUTO_PRUNE_COMPANION_ARCHIVE_WITHOUT_COMPANION_CHANGE');
           }
 
-          if(!policyArchives.length&&!companionArchives.length)throw new Error('AUTO_PRUNE_ARCHIVE_REQUIRED');
+          if(!policyArchives.length&&!companionArchives.length&&!formattingOnly.size)throw new Error('AUTO_PRUNE_ARCHIVE_OR_IDENTICAL_DATA_REQUIRED');
+          console.log('CENTRAL_AUTO_PRUNE_FORMATTING_DATA_UNCHANGED='+formattingOnly.size);
           console.log('CENTRAL_AUTO_PRUNE_REFERENCED_PATHS_PROTECTED=PASS');
           console.log('CENTRAL_AUTO_PRUNE_ARCHIVE_FIDELITY=PASS');
           console.log('CENTRAL_AUTO_PRUNE_ONLY_ARCHIVAL_MUTATION=PASS');

@@ -23,6 +23,27 @@ import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance, inspectVibeSourceGlb } from '../tools/vibe2-asset-production-plan.mjs';
 import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-worker.mjs';
+import { focusedDevelopmentGenerationBudget } from '../tools/vibe2-source-worker.mjs';
+
+test('three Roblox completion games receive longer source budgets without extending held platforms or unrelated work',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const focus=policy.developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  assert.equal(focus.targetFocusedGames,3);
+  assert.equal(focus.maxFocusedGames,3);
+  assert.equal(new Set(focus.ownerFocusedGameIds).size,3);
+  for(const gameId of focus.ownerFocusedGameIds){
+    const development=focusedDevelopmentGenerationBudget({policy,order:{gameId,target:'roblox',department:'development'}});
+    const graphics=focusedDevelopmentGenerationBudget({policy,order:{gameId,target:'roblox',department:'graphics'}});
+    assert.equal(development.timeoutMs,360000);
+    assert.equal(graphics.timeoutMs,600000);
+    assert.equal(graphics.maxPredict,4096);
+    assert.equal(focusedDevelopmentGenerationBudget({policy,order:{gameId,target:'unity',department:'graphics'}}),null);
+  }
+  assert.equal(focusedDevelopmentGenerationBudget({policy,order:{gameId:'unrelated',target:'roblox'}}),null);
+  assert.equal(focusedDevelopmentGenerationBudget({policy:{},order:{gameId:focus.ownerFocusedGameIds[0],target:'roblox'}}),null);
+  assert.equal(focus.completionPursuit.timeSpentNeverProvesCompletion,true);
+  assert.equal(focus.completionPursuit.sourceOnlyCannotCloseRuntimeGap,true);
+});
 
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
@@ -50,6 +71,8 @@ test('Roblox native coding consumes the existing same-game Unity Web trace witho
   });
   const initial=prompt(order);
   assert.match(initial,/unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE/);
+  assert.match(initial,/Roblox Luau is the original source language/);
+  assert.match(initial,/C# is optional compatibility evidence only/);
   assert.ok(initial.includes(sourceFile));
   assert.ok(initial.includes('0123456789abcdef'));
   assert.ok(initial.includes('ApplyDamage'));
