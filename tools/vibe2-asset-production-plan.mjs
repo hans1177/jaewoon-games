@@ -1542,14 +1542,18 @@ function sourceConsumerManagedTokens(source=''){
   }
   return byFamily;
 }
-function sourceConsumerUsageSource(source=''){
+function sourceConsumerUsageSource(source='',extension=''){
   let out=source.replace(/-- STUDIO_ASSET_BINDING_BEGIN[\s\S]*?-- STUDIO_ASSET_BINDING_END/g,' ');
   if(out===source){
     const start=out.indexOf('StudioAssets');
     const end=start>=0?out.indexOf('-- STUDIO_ASSET_BINDING_END',start):-1;
     if(start>=0&&end>start)out=out.slice(0,start)+' '+out.slice(end+'-- STUDIO_ASSET_BINDING_END'.length);
   }
-  return out;
+  // [소스 소비자] 문자열은 보존하고 주석에만 남은 자산 사용은 제외한다.
+  const comments=/^\.luau?$/.test(extension)
+    ?/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|--\[(=*)\[[\s\S]*?\]\2\]|--[^\r\n]*/g
+    :/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|\/\*[\s\S]*?\*\/|\/\/[^\r\n]*/g;
+  return out.replace(comments,(match,quoted)=>quoted||' ');
 }
 function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   const gameId=clean(game.id||game.gameId);
@@ -1581,13 +1585,16 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         scannedFileCount+=1;scannedBytes+=stat.size;
         const relative=sourceConsumerPath(path.relative(repoRoot,file));
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
-        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
+        const usageSource=sourceConsumerUsageSource(source,path.extname(entry.name).toLowerCase());
+        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(tokens,match[1],relative);
+        for(const match of usageSource.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(usageTokens,match[1],relative);
+        for(const match of usageSource.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }
         // Unity Resources.Load consumes imported assets without their extensions.
         // Resolve only exact existing native files referenced by executable game code.
         // This is source-bound evidence, never proof of an actual rendered frame.
-        if(root.relative.startsWith('unity-games/')){
+        if(root.relative.startsWith('unity-games/')&&path.extname(entry.name).toLowerCase()==='.cs'){
           const resourceRoot=root.relative+'/Assets/Resources/';
           const extensions=['.obj','.fbx','.prefab','.asset','.mat','.png','.jpg','.jpeg','.json','.wav','.ogg','.mp3','.glb','.gltf'];
           const bindResource=resource=>{
@@ -1595,6 +1602,14 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
             for(const extension of extensions){
               const assetPath=sourceConsumerAssetReference({repoRoot,file,raw:resourceRoot+resource+extension});
               addAssetPath(assetPath,relative);
+              // OBJ가 실제 가져오는 재질 파일도 같은 소비자 근거에 연결한다.
+              if(assetPath&&extension==='.obj'){
+                const modelFile=path.join(repoRoot,assetPath);
+                for(const material of fs.readFileSync(modelFile,'utf8').matchAll(/^\s*mtllib\s+([^\r\n]+)$/gm)){
+                  const dependency=sourceConsumerAssetReference({repoRoot,file:modelFile,raw:'./'+material[1].trim()});
+                  addAssetPath(dependency,relative);
+                }
+              }
             }
           };
           for(const match of usageSource.matchAll(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*["']([A-Za-z0-9_/-]+)["']/g)){
@@ -1604,9 +1619,20 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
           // BindCompanyVisual. Bind literal/conditional call sites only when that
           // actual Resources.Load implementation exists in this same source file.
           if(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*["']CompanyAssets\/["']\s*\+\s*/.test(usageSource)){
-            for(const match of usageSource.matchAll(/\bBindCompanyVisual\s*\(\s*(?:[A-Za-z_$][\w$]*\s*\?\s*)?["']([A-Za-z0-9_-]+)["'](?:\s*:\s*["']([A-Za-z0-9_-]+)["'])?/g)){
-              bindResource('CompanyAssets/'+match[1]);
-              if(match[2])bindResource('CompanyAssets/'+match[2]);
+            // 같은 파일의 단일 지역 문자열 선언과 조건식만 해석한다. 미해결 호출은 추측하지 않는다.
+            for(const match of usageSource.matchAll(/\bBindCompanyVisual\s*\(\s*([^,;{}]+),/g)){
+              let expression=match[1].trim(),prefix='';
+              const concatenated=/^"([A-Za-z0-9_-]*)"\s*\+\s*([A-Za-z_$][\w$]*)$/.exec(expression);
+              if(concatenated){prefix=concatenated[1];expression=concatenated[2];}
+              if(/^[A-Za-z_$][\w$]*$/.test(expression)){
+                const declarations=[...usageSource.matchAll(/\b(?:string|var)\s+([A-Za-z_$][\w$]*)\s*=\s*([^;]+);/g)]
+                  .filter(row=>row[1]===expression);
+                if(declarations.length!==1||declarations[0].index>=match.index)continue;
+                expression=declarations[0][2].trim();
+              }
+              const literal=/^"([A-Za-z0-9_-]+)"$/.exec(expression);
+              const values=literal?[literal[1]]:[...expression.matchAll(/[?:]\s*"([A-Za-z0-9_-]*)"(?=\s*(?:[):]|$))/g)].map(row=>row[1]);
+              for(const value of values)if(value)bindResource('CompanyAssets/'+prefix+value);
             }
           }
         }
@@ -4938,23 +4964,9 @@ export function buildVibeAssetProductionPlan({
     ?task.buildUpDirective?.designImplementationContext||null:null;
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
-  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0
-    ?{
-      approvedDesign:true,
-      seed:clean(task.gameId)||'world',
-      width:Math.max(12,Math.min(48,Math.trunc(Number(designSpatial.width||designSpatial.mapWidth||24))||24)),
-      height:Math.max(12,Math.min(48,Math.trunc(Number(designSpatial.height||designSpatial.mapHeight||24))||24)),
-      cellSize:Math.max(1,Math.min(12,Number(designSpatial.cellSize)||3)),
-      density:.4,
-      biome:clean(designSpatial.biome||designSpatial.geography||verifiedDesign.selectedDesignPlan?.biome||task.worldDna?.biome||task.biome)||'TEMPERATE',
-      climate:clean(designSpatial.climate||task.worldDna?.climate||task.climate)||'TEMPERATE',
-      buildingStyle:clean(designSpatial.architecture||designSpatial.buildingStyle||task.worldDna?.architecture||task.buildingStyle)||'LOCAL',
-      era:clean(designSpatial.era||task.worldEra)||'AUTO',
-      waterMode:clean(designSpatial.waterMode||task.worldDna?.waterMode)||'AUTO',
-      ecologyActors:Array.isArray(designSpatial.ecologyActors)?designSpatial.ecologyActors:[],
-      authoredDungeonSites:Array.isArray(designSpatial.authoredDungeonSites)?designSpatial.authoredDungeonSites:[],
-      source:'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
-    }:null;
+  // 승인된 절차형 월드 입력만 재사용한다. 일반 공간 설명이나 최소 설계는 새 맵 생성 승인이 아니다.
+  const automaticWorld=designSpatial?.proceduralWorld?.approvedDesign===true
+    ?designSpatial.proceduralWorld:null;
   const approvedWorld=task.worldDesign?.approvedDesign===true?task.worldDesign:null;
   const existingWorldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
   const biomeToolRequired=Boolean(clean(task.gameId))&&['roblox','unity','web'].includes(resolvedTarget);
@@ -4984,6 +4996,22 @@ export function buildVibeAssetProductionPlan({
       :worldInput===existingWorldInput?'EXISTING_WORLD_REQUEST'
       :biomeToolRequired?'EXISTING_GAME_APPROVED_SPATIAL_DESIGN_REQUIRED':'NO_GAME_SCOPE',
     approvedWorldRequired:true,
+    designInput:freeze({
+      designContextMode:clean(task.buildUpDirective?.designContextMode)||null,
+      designFingerprint:clean(task.buildUpDirective?.designFingerprint)||null,
+      spatialDimension:clean(designSpatial?.dimension||verifiedDesign?.spatialDimension)||null,
+      existingSpatialLayoutPresent:Boolean(designSpatial&&Object.keys(designSpatial).length),
+      approvedProceduralWorldPresent:worldInput?.approvedDesign===true,
+      requiredInputPath:'buildUpDirective.designImplementationContext.spatialLayout.proceduralWorld',
+      missingInputs:freezeList(worldInput?.approvedDesign===true?[]:[
+        'EXPLICIT_APPROVED_PROCEDURAL_WORLD',
+        'SOURCE_BOUND_DIMENSIONS_AND_COORDINATES',
+        'PRESERVED_ROUTES_OBJECTIVES_AND_RESERVED_CELLS',
+        'APPROVED_BIOME_CLIMATE_AND_ARCHITECTURE'
+      ]),
+      existingSourceQualityWorkAllowed:true,
+      layoutMutationAuthorized:worldInput?.approvedDesign===true
+    }),
     missingDesignMustRouteToExistingDesignPipeline:true,
     gameSourceMutationPerformed:false,
     nativeAssetBindingPerformed:false,
@@ -5942,7 +5970,8 @@ export function assetProductionGuidance(plan={}){
     plan.precisionProduction?`[PRECISION PRODUCTION CHAIN] ${JSON.stringify(plan.precisionProduction)}. 검사 결과를 보고서로 끝내지 않는다. 현재 소스와 실제 화면에서 결함을 찾고 정확한 수정 범위를 만든 뒤, 같은 작업에서 editable source와 native derivative를 실제 제작하고 기존 게임 책임 위치에 적용한다. 디테일은 GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 순으로 제작하며 실루엣/구조/재질/접촉을 각각 해결한다. 소품 수나 랜덤 노이즈로 디테일을 대신하지 말고 기능·접촉·날씨·손상 원인을 가진 디테일만 만든다. 제작 성공 후 바로 적용 단계로 넘어가며 검사나 수정 계획만 제출하고 멈추지 않는다. 제작 도구가 없을 때만 정확한 AUTHORING 단계와 필요한 원본을 남기고 완료를 주장하지 않는다.`:'',
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
     plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
-    plan.proceduralWorldLayout?`[CANONICAL NATIVE 3D WORLD CONSTRUCTION] ${JSON.stringify((world=>{
+    plan.autoBiomeEvaluation?`[AUTO BIOME EVALUATION] ${JSON.stringify(plan.autoBiomeEvaluation)}. 승인 입력이 없으면 기존 공간의 자산 연결·표시 품질만 보완하고 좌표·동선·개체 수는 유지한다. 누락 입력은 기존 설계 자료와 소스에서 수집하되 승인 값을 만들지 않는다.`:'',
+    plan.proceduralWorldLayout?.status==='STATIC_LAYOUT_PROPOSED'?`[CANONICAL NATIVE 3D WORLD CONSTRUCTION] ${JSON.stringify((world=>{
       if(!world?.buildings)return{status:world?.status,issues:world?.issues||[],approvedSourceRequired:true,sourceMutationPerformed:false};
       return{
         status:world.status,issues:world.issues,seed:world.seed,size:world.size,dimension:world.dimension,regionalBiome:world.regionalBiome,climate:world.climate,

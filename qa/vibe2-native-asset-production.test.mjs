@@ -4607,3 +4607,35 @@ test('native authoring reviews exported GLB material channels and never executes
   assert.match(source,/modelLicenseRegionBlocked.*SOUTH_KOREA/);
   assert.match(source,/modelRan.*False/);
 });
+
+
+// [오토 바이옴 승인 입력] 최소 설계·공간 설명을 새 월드 생성 승인으로 승격하지 않는다.
+test('auto biome evaluates every game and preserves authored procedural inputs without implicit approval',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'biome-design-input-'));
+  try{
+    const evaluate=(spatialLayout,extra={})=>buildVibeAssetProductionPlan({
+      repoRoot:root,target:'unity',manifest:{assets:[]},presetCatalog:{presets:[]},
+      task:{gameId:'demo',goal:'기존 자산 연결',buildUpDirective:{
+        designContextMode:'APPROVED_OR_MINIMUM_DESIGN',designFingerprint:'design-source',
+        designImplementationContext:{spatialLayout}},...extra}
+    });
+    for(const layout of [{},{dimension:'3D',regions:['existing forest']},{proceduralWorld:{approvedDesign:false}}]){
+      const plan=evaluate(layout);
+      assert.equal(plan.autoBiomeEvaluation.evaluated,true);
+      assert.equal(plan.autoBiomeEvaluation.status,'APPROVED_DESIGN_REQUIRED');
+      assert.equal(plan.autoBiomeEvaluation.designInput.layoutMutationAuthorized,false);
+      assert.ok(plan.autoBiomeEvaluation.designInput.missingInputs.length);
+      assert.doesNotMatch(assetProductionGuidance(plan),/CANONICAL NATIVE 3D WORLD CONSTRUCTION/);
+    }
+    const input={approvedDesign:true,seed:'authored-seed',width:18,height:16,cellSize:4,biome:'ISLAND',climate:'TROPICAL',buildingStyle:'LOCAL',density:.1};
+    const nested=evaluate({dimension:'3D',proceduralWorld:input});
+    const explicit=evaluate({}, {proceduralWorld:input});
+    assert.deepEqual(nested.proceduralWorldLayout,explicit.proceduralWorldLayout);
+    assert.equal(nested.autoBiomeEvaluation.source,'LATEST_VERIFIED_GAME_SPATIAL_DESIGN');
+    assert.equal(nested.proceduralWorldLayout.seed,'authored-seed');
+    assert.equal(nested.autoBiomeEvaluation.runtimeVerified,false);
+    assert.equal(nested.autoBiomeEvaluation.gameSourceMutationPerformed,false);
+    assert.equal(nested.autoBiomeEvaluation.designInput.designFingerprint,'design-source');
+    assert.deepEqual(nested.autoBiomeEvaluation.designInput.missingInputs,[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
