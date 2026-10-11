@@ -3027,7 +3027,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes,...libraryDerivationTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
-  const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
+  const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion&&!selectedCareerRecipe
     ?unique([...dccCapableTypes.filter(type=>requestedDccScope.includes(type)),...libraryDerivationTypes])
     :[];
   const declaredDccTypes=(engineNativeTarget||webNativeTarget)?explicitRecipeTypes:[];
@@ -3051,7 +3051,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ].flatMap(value=>clean(value).toLowerCase().split(/[^a-z0-9가-힣]+/)).filter(value=>value.length>=2&&!genericRecipeTokens.has(value)));
     return rawTokens.some(token=>requestText.includes(token));
   };
-  const registryRecipeRows=(internalMotion?[]:manifestAssets)
+  const registryRecipeRows=(internalMotion||selectedCareerRecipe?[]:manifestAssets)
     .filter(asset=>recipeAssetRelevant(asset))
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{
