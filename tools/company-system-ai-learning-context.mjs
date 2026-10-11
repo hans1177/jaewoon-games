@@ -59,7 +59,7 @@ const BOTTLENECK_METHODS=Object.freeze([
   ['EVENT_DRIVEN_REFILL','완료 micro-fan-in과 slot release를 다음 refill 신호로 사용한다. 결과 없는 control wake는 coalesce하되 결과를 가진 완료 이벤트와 증거는 버리지 않는다.'],
   ['CHECKPOINT_PRESERVING_HANDOFF','runner/infra 실패는 stale reservation을 회수하고 마지막 검증 checkpoint에서 다른 worker로 이어간다. 인프라 실패를 작업 실패나 학습 패널티로 만들지 않는다.'],
   ['REPRESENTATIVE_CANARY_COHORT','공통 failure signature가 반복되면 모든 작업을 동시에 재시도하지 말고 대표 canary 하나에서 원인을 증명한 뒤 동일 cohort를 재배선한다.'],
-  ['STALE_QA_TRIANGULATION','QA 실패는 현재 중앙정책·책임 구현·architecture/log projection·최근 검증 동작을 교차검증한다. 구현이 정책과 맞을 때만 stale QA를 고치고 assertion 약화는 금지한다.'],
+  ['STALE_QA_TRIANGULATION','QA 실패는 최신 main의 중앙정책 4개·책임 구현·Vibe3 실행 계약 투영값·워크플로 검증조건·최근 실행 증거를 동일 리비전으로 교차검증한다. 과거 플랫폼 단계나 Unity Web 선행 입장 조건을 현재 정책에 강제로 되돌리지 않는다. 현재 활성 플랫폼, Android 보류, Unity Web 실제 3D, 고정 논리 슬롯, 브라우저 독립 QA·회귀를 비교한다. 구현이 최신 정책과 맞는 경우에만 오래된 QA 조건을 직접 수정하고 검증 강도와 F0~F9 잠금은 보존한다.'],
   ['MULTI_HYPOTHESIS_CAUSAL_REPAIR','최소 두 개의 원인 가설을 증거로 비교하고 반증된 가설을 버린다. known-good와 이전 실패 strategy fingerprint를 이용해 같은 실패 수리를 반복하지 않는다.'],
   ['WORK_CONSERVING_DISJOINT_PARALLELISM','충돌 없는 고가치 작업은 빈 슬롯을 즉시 채우고 unrelated safe work를 계속 진행한다. 한 lane의 실패가 다른 독립 lane을 막지 않게 한다.'],
   ['SPARE_CAPACITY_HEDGING','추측 실행은 남는 물리 용량에서만, 서로 독립된 후보에 한정한다. primary coverage를 먼저 보존하고 중복 side effect가 생기기 전에 fan-in에서 하나로 수렴한다.'],
