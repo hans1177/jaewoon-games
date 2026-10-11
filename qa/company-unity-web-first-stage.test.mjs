@@ -161,6 +161,20 @@ test('Fantasy Survival Unity reconnects missing fiber harvesting and restores no
   assert.match(game,/PlaceStructure\(item\.recipeId,item\.position\)/);
 });
 
+// [마력숲 저장 회귀] 채집 직후 유지하고 앱이 타이틀인 동안에는 이전 세션을 다시 저장하지 않는다.
+test('Fantasy Survival saves normal gathered fiber immediately and prevents title-screen app lifecycle save overwrite',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const gather=game.slice(game.indexOf('private void Gather()'),game.indexOf('private void LoadNormalCounters()'));
+  assert.match(gather,/materials\[material\]\+\+;/);
+  assert.match(gather,/if\(!creative\)SaveNormalCounters\(\)/);
+  assert.ok(gather.indexOf('materials[material]++')<gather.indexOf('SaveNormalCounters()'));
+  const lifecycle=game.slice(game.indexOf('private void OnApplicationPause('),game.indexOf('private void OnGUI()'));
+  assert.match(lifecycle,/if\(!paused \|\| screenMode!=ScreenMode\.Playing\)return/);
+  assert.match(lifecycle,/if\(screenMode!=ScreenMode\.Playing\)return/);
+  assert.equal((lifecycle.match(/if\(creative\)SaveCreative\(\);/g)||[]).length,2);
+  assert.equal((lifecycle.match(/else SaveNormalCounters\(\);/g)||[]).length,2);
+});
+
 test('Fantasy Survival mobile gather control stays separate from movement and attack on compact screens',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const hud=game.slice(game.indexOf('private void OnGUI('),game.indexOf('private void DrawPanel('));
