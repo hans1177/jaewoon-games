@@ -4244,7 +4244,29 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       motionStyle:order.assetProduction.motionStyle,
       qualityDNA:order.assetProduction.qualityDNA,
       generatedAssetOutputContract:order.assetProduction.generatedAssetOutputContract,
-      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution
+      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution,
+      // 자산 선택기가 확인한 라이선스 원본을 기존 게임 빌드·그래픽 책임자에게 구조화해 전달한다.
+      // 소스 페이지는 다운로드/검증된 원본이 아니므로 게임 모델처럼 직접 바인딩하지 않는다.
+      onDemandLibrarySupply:Object.freeze({
+        selectionIsNotAcquisition:true,
+        nativeBuildRequiresRegisteredAssetAndRealSource:true,
+        sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
+        selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
+          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR')
+          .map(row=>Object.freeze({
+            family:row.family,action:row.action,reason:row.reason,
+            selectedSourceId:row.externalAcquisition?.sourceId||null,
+            sourcePage:row.externalAcquisition?.sourceUrl||null,
+            directDownload:row.externalAcquisition?.downloadUrl||null,
+            acquisitionState:row.externalAcquisition?.acquisitionState||null,
+            license:row.externalAcquisition?.license||null,
+            licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
+            nativeDccScript:row.assetization?.nativeDccScript||null,
+            sourceModelField:row.assetization?.nativeSourceModelField||null,
+            runtimeVerified:false,productionVerified:false,
+            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
+          })))
+      })
     }),
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'

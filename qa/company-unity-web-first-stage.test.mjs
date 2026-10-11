@@ -10,6 +10,62 @@ import {execFileSync} from 'node:child_process';
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 
+// 파일명: qa/company-unity-web-first-stage.test.mjs
+// 그래픽 · 실제 회사 3D OBJ 파생본이 Unity 프로젝트 리소스와 기존 게임 소비자까지 이어지는지 검사한다.
+test('Fantasy Survival reauthored company 3D tree assets reach the canonical Unity Web build and preserve harvest collision',()=>{
+  const art='unity-games/fantasy-survival/Assets/Resources/CompanyAssets/';
+  const sources=['tree_trunk_thick.obj','tree_crown_round.obj'].map(name=>
+    fs.readFileSync('assets/roblox/survival-core-world-v1/'+name,'utf8'));
+  const models=['MagicForestTrunk.obj','MagicForestCrown.obj'].map(name=>
+    fs.readFileSync(art+name,'utf8'));
+  const mtls=fs.readFileSync(art+'MagicForestMaterials.mtl','utf8');
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const manifest=JSON.parse(fs.readFileSync('unity-games/fantasy-survival/Packages/manifest.json','utf8'));
+  const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  for(const [i,obj] of models.entries()){
+    assert.notEqual(obj,sources[i],'native Unity model must be a real derivative, not a cross-platform raw copy');
+    assert.match(obj,/mtllib MagicForestMaterials\.mtl/);
+    assert.match(obj,/Parent Git blob [0-9a-f]{40}/);
+    assert.match(obj,/project-original/);
+    const vertices=obj.split('\n').filter(line=>line.startsWith('v ')).map(line=>line.trim().split(/\s+/).slice(1).map(Number));
+    const faces=obj.split('\n').filter(line=>line.startsWith('f ')).map(line=>line.trim().split(/\s+/).slice(1));
+    assert.ok(vertices.length>=500,'genuine 3D vertices required');
+    assert.ok(faces.length>=350,'genuine geometry faces required');
+    assert.ok(vertices.every(v=>v.length===3&&v.every(Number.isFinite)),'vertex coordinates finite');
+    assert.ok(faces.every(face=>face.length>=3&&face.every(token=>{
+      const n=Number(token.split('/')[0]);
+      return Number.isInteger(n)&&n>0&&n<=vertices.length;
+    })),'face indices must reference native vertices');
+    const spans=[0,1,2].map(k=>Math.max(...vertices.map(v=>v[k]))-Math.min(...vertices.map(v=>v[k])));
+    assert.ok(spans.every(n=>n>.3),'actual volumetric 3D depth, not flat plane');
+    const sourceVertex=sources[i].split('\n').find(line=>line.startsWith('v ')).trim().split(/\s+/).slice(1).map(Number);
+    const targetVertex=vertices[0];
+    const nativeScale=i===0?1.035:.94;
+    assert.ok(Math.abs(targetVertex[1]-sourceVertex[2]*nativeScale)<.00002,'reoriented Unity Y-up native geometry');
+  }
+  assert.match(mtls,/newmtl SURVIVAL_BARK/);
+  assert.match(mtls,/newmtl SURVIVAL_LEAF/);
+  assert.match(mtls,/0\.195 0\.48 0\.235/,'material color was actually altered');
+  assert.match(game,/Resources\.Load<GameObject>\("CompanyAssets\/MagicForestTrunk"\)/);
+  assert.match(game,/Resources\.Load<GameObject>\("CompanyAssets\/MagicForestCrown"\)/);
+  assert.match(game,/Instantiate\(treeTrunkSource, worldRoot\.transform\)/);
+  assert.match(game,/Instantiate\(treeCrownSource, worldRoot\.transform\)/);
+  assert.match(game,/trunk\.GetComponent<Renderer>\(\)\.enabled = false/);
+  assert.match(game,/crown\.GetComponent<Renderer>\(\)\.enabled = false/);
+  assert.match(game,/trunk\.name = i % 4 == 0 \? "Rock" : "Tree"/,'existing harvest target names remain');
+  assert.match(game,/if\(n!="Tree" && n!="Rock"\)continue;/,'existing harvesting logic retained');
+  assert.match(game,/MAGIC_FOREST_NATIVE_ASSET_BINDING=.*ASSET_REPAIR_REQUIRED/,'runtime failure remains visible');
+  assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
+  assert.match(build,/UnityWebFloorBuild/);
+  assert.match(build,/BuildPipeline\.BuildPlayer\(/);
+  assert.equal(manifest.dependencies['com.unity.modules.physics'],'1.0.0');
+  assert.equal(request.gameId,'fantasy-survival');
+  assert.equal(request.projectPath,'unity-games/fantasy-survival');
+  assert.equal(request.buildMethod,'UnityWebFloorBuild.BuildWeb');
+  assert.equal(request.fullGameplayPassAuthority,false,'source and metadata are not runtime pass evidence');
+});
+
 test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-first-stage-'));
   const old=process.cwd();
