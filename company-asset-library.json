@@ -1,5 +1,5 @@
 {
-  "version": 133,
+  "version": 134,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-11T04:01:00.000Z",
@@ -76886,6 +76886,306 @@
       "geometrySourceEvidence": {
         "vertices": 848,
         "faces": 688
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-torso-v1",
+      "title": "마력숲 내부 공용 TRAVELER_TORSO",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "subfamily": "TRAVELER_TORSO",
+      "role": "TRAVELER_TORSO",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/torso_cloth.obj",
+      "sourceParentGitBlobSha": "c956a21963ea233fc4b13bd08a110863f9dc1f6c",
+      "sourceHash": "62c195cd4e81cd121797553b116e0a9fe58ed0c9cf9b419e93ef3b2b1cf7c63f",
+      "sourceSha256": "62c195cd4e81cd121797553b116e0a9fe58ed0c9cf9b419e93ef3b2b1cf7c63f",
+      "nativeArtifactHash": "f95d2ecd3fb4ffa9a63556de8873f21f2bd887bd71cb71ae12f2ad57d4f293d1",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTorso.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/torso_cloth.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTorso.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTorso.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTorso.obj",
+          "artifactSha256": "f95d2ecd3fb4ffa9a63556de8873f21f2bd887bd71cb71ae12f2ad57d4f293d1"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "c956a21963ea233fc4b13bd08a110863f9dc1f6c",
+          "sourceSha256": "62c195cd4e81cd121797553b116e0a9fe58ed0c9cf9b419e93ef3b2b1cf7c63f",
+          "targetSha256": "f95d2ecd3fb4ffa9a63556de8873f21f2bd887bd71cb71ae12f2ad57d4f293d1"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 264,
+        "faces": 218
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-cape-v1",
+      "title": "마력숲 내부 공용 TRAVELER_CAPE",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "subfamily": "TRAVELER_CAPE",
+      "role": "TRAVELER_CAPE",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/back_cape.obj",
+      "sourceParentGitBlobSha": "fa1cab124cf76e0d7a3f01bc802172411463cefb",
+      "sourceHash": "3b40787db5b3d0d92c8580a6498b5c682e172dc07b3acf86e7b27ee3ea3a5933",
+      "sourceSha256": "3b40787db5b3d0d92c8580a6498b5c682e172dc07b3acf86e7b27ee3ea3a5933",
+      "nativeArtifactHash": "0ff6d5dac1511fe211b05edfa62398aebd1aa80d97074d916e9658da11dc2cdb",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/back_cape.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCape.obj",
+          "artifactSha256": "0ff6d5dac1511fe211b05edfa62398aebd1aa80d97074d916e9658da11dc2cdb"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "fa1cab124cf76e0d7a3f01bc802172411463cefb",
+          "sourceSha256": "3b40787db5b3d0d92c8580a6498b5c682e172dc07b3acf86e7b27ee3ea3a5933",
+          "targetSha256": "0ff6d5dac1511fe211b05edfa62398aebd1aa80d97074d916e9658da11dc2cdb"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 232,
+        "faces": 170
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-shoulder-v1",
+      "title": "마력숲 내부 공용 SHOULDER_GEAR",
+      "category": "CHARACTER",
+      "family": "CHARACTER",
+      "subfamily": "SHOULDER_GEAR",
+      "role": "SHOULDER_GEAR",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/shoulder_light.obj",
+      "sourceParentGitBlobSha": "f577b87b5330c8e3f59c3a761808c14cb0e76e66",
+      "sourceHash": "f37024d594163f105538ce23d82a73139f3072391782b5674c8e377e3bedb05d",
+      "sourceSha256": "f37024d594163f105538ce23d82a73139f3072391782b5674c8e377e3bedb05d",
+      "nativeArtifactHash": "3b9d9261e76980cfae310368a63183326d9159057f5cd70d54d550c363b1e38b",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestShoulder.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/shoulder_light.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestShoulder.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestShoulder.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestShoulder.obj",
+          "artifactSha256": "3b9d9261e76980cfae310368a63183326d9159057f5cd70d54d550c363b1e38b"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "f577b87b5330c8e3f59c3a761808c14cb0e76e66",
+          "sourceSha256": "f37024d594163f105538ce23d82a73139f3072391782b5674c8e377e3bedb05d",
+          "targetSha256": "3b9d9261e76980cfae310368a63183326d9159057f5cd70d54d550c363b1e38b"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 284,
+        "faces": 232
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-canine-v1",
+      "title": "마력숲 내부 공용 CANINE_HEAD",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "subfamily": "CANINE_HEAD",
+      "role": "CANINE_HEAD",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/head_canine.obj",
+      "sourceParentGitBlobSha": "e1fb56eb0c2881908c6f1835e4d3f3e56e6cc031",
+      "sourceHash": "860bd932762f319bc55e9a4860a1a4280df651c37613ba71d03b2167edb1e6d0",
+      "sourceSha256": "860bd932762f319bc55e9a4860a1a4280df651c37613ba71d03b2167edb1e6d0",
+      "nativeArtifactHash": "53064cbbee4ef36f0d3f596d0462c82b8ab217b98d88844edb5f1ae4e23c4ae1",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCanine.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/head_canine.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCanine.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCanine.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCanine.obj",
+          "artifactSha256": "53064cbbee4ef36f0d3f596d0462c82b8ab217b98d88844edb5f1ae4e23c4ae1"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "e1fb56eb0c2881908c6f1835e4d3f3e56e6cc031",
+          "sourceSha256": "860bd932762f319bc55e9a4860a1a4280df651c37613ba71d03b2167edb1e6d0",
+          "targetSha256": "53064cbbee4ef36f0d3f596d0462c82b8ab217b98d88844edb5f1ae4e23c4ae1"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 754,
+        "faces": 650
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-claw-v1",
+      "title": "마력숲 내부 공용 CREATURE_CLAW",
+      "category": "CREATURE",
+      "family": "CREATURE",
+      "subfamily": "CREATURE_CLAW",
+      "role": "CREATURE_CLAW",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/claw.obj",
+      "sourceParentGitBlobSha": "17a85c325814283e503583671827e2d660dadd46",
+      "sourceHash": "abcf4b6c22c26eb4eac610df4cd38f580652fb6d92b15333dc45a014487c4e18",
+      "sourceSha256": "abcf4b6c22c26eb4eac610df4cd38f580652fb6d92b15333dc45a014487c4e18",
+      "nativeArtifactHash": "50837d118bb57a6fe05074f1a14877e0d91fd1c242d56144a4e4ea4ac108e37a",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestClaw.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/claw.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestClaw.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestClaw.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestClaw.obj",
+          "artifactSha256": "50837d118bb57a6fe05074f1a14877e0d91fd1c242d56144a4e4ea4ac108e37a"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "17a85c325814283e503583671827e2d660dadd46",
+          "sourceSha256": "abcf4b6c22c26eb4eac610df4cd38f580652fb6d92b15333dc45a014487c4e18",
+          "targetSha256": "50837d118bb57a6fe05074f1a14877e0d91fd1c242d56144a4e4ea4ac108e37a"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 558,
+        "faces": 406
       },
       "originalSourceImmutable": true,
       "intendedConsumerGameIds": [
