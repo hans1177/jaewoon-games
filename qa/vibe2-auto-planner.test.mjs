@@ -2184,12 +2184,24 @@ test('Unity Web 3D source and separate asset responsibilities are scheduled toge
   assert.equal(repair.sourceRoot,assets.sourceRoot);
   assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false);
 
-  // 이미 있는 표현 파일을 3D 원본 수리가 소유하면 자산 작업은 동일 파일을 병행 수정할 수 없다.
+  // 코드에서 사용하지 않는 주석은 2D 게임플레이로 오판하지 않는다.
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private MeshRenderer actor; } // SpriteRenderer in old notes\n');
+  const commentRows=findSafeTasks(project,root,{tasks:[]});
+  const commentRepair=commentRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  assert.equal(commentRepair.responsibleFiles.includes(visualPath),false);
+  assert.equal(commentRepair.evidence.includes('unity-web-native-2d-source-confirmed:YES'),false);
+  assert.ok(commentRows.some(row=>row.assetProductionLane===true&&(row.responsibleFiles||[]).includes(visualPath)));
+
+  // 실제 2D 컴포넌트를 사용하면 원본 시각 책임 함수만 수리 범위에 넣는다.
   fs.writeFileSync(visualFile,
     'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
   const conflictRows=findSafeTasks(project,root,{tasks:[]});
   const conflictRepair=conflictRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
   assert.ok(conflictRepair?.responsibleFiles.includes(visualPath));
+  assert.ok(conflictRepair.evidence.includes('unity-web-native-2d-source-confirmed:YES'));
+  assert.ok(conflictRepair.evidence.includes('unity-web-source-failure:UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D'));
+  assert.match(conflictRepair.goal,/UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D/);
   assert.equal(conflictRows.some(row=>row.assetProductionLane===true
     &&(row.responsibleFiles||[]).includes(visualPath)),false);
 });
