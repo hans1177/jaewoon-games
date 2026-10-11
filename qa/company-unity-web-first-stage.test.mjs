@@ -31,6 +31,25 @@ const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 // 그래픽 · 실제 회사 3D OBJ 파생본이 Unity 프로젝트 리소스와 기존 게임 소비자까지 이어지는지 검사한다.
 // 마력숲 웹 · 공용 3D 자산/오토 바이옴/캐릭터/스킬 모션은 기존 유니티 게임 소스 안에서만 바인딩한다.
+test('Fantasy Survival native Rogue character is the only visible player mesh and keeps all player interactions',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const importer=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs','utf8');
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const playerBlock=game.split('GameObject character = new GameObject("Player_3D");')[1]
+    ?.split('FollowCamera(true);')[0];
+  assert.ok(playerBlock,'actual player creation must remain in the canonical Unity game');
+  assert.match(playerBlock,/BindCompanyVisual\("MagicForestRogue"/);
+  assert.match(playerBlock,/GetComponentInChildren<SkinnedMeshRenderer>\(true\)/);
+  assert.match(playerBlock,/playerSkin\.sharedMesh\.vertexCount<100/);
+  assert.match(playerBlock,/bone\.name=="WeaponGrip"/);
+  assert.match(playerBlock,/MAGIC_FOREST_PLAYER_ROGUE_RIG_OR_MOTION_INVALID/);
+  assert.doesNotMatch(playerBlock,/CreatePart\(character\.transform/,'primitive body/head fallback must not mask the real actor');
+  assert.match(game,/playerActionKind==2\?"ROGUE_TRAP":playerActionKind==3\?"ROGUE_CLOAK"/);
+  assert.match(game,/SyncPlayerWeaponVisual\(\)/,'weapon equip stays on the same rig grip');
+  assert.match(importer,/internal static void Prepare\(\)/,'existing shared skinned actor importer remains canonical');
+  assert.match(build,/UnityCompanyAssets\.Prepare\(\)/,'existing Unity build must materialize skinned prefabs before WebGL');
+});
+
 test('Fantasy Survival Web native 3D auto biome and real skill motion remain cosmetic-only',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
@@ -42,7 +61,7 @@ test('Fantasy Survival Web native 3D auto biome and real skill motion remain cos
   assert.match(game,/MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS/,'five true native 3D biomes are built');
   assert.match(game,/surface\.AddComponent<MeshFilter>\(\)\.sharedMesh=mesh/,'3D ground surfaces have real mesh data');
   assert.match(game,/string\[\] biomeNames=\{"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"\}/);
-  assert.match(game,/BindCompanyVisual\("MagicForestTraveler"/,'player uses real skinned source');
+  assert.match(game,/BindCompanyVisual\("MagicForestRogue"/,'player uses the actual new 3D Rogue skinned actor');
   assert.match(game,/monster\.nativeMotion=rigVisual\.GetComponent<Animation>\(\)/,'monsters use native rig action clips');
   assert.match(game,/ParticleSystemStopAction\.Destroy/,'skill hit particles have bounded lifetimes');
   assert.match(game,/trail\.time=\.30f/,'homing projectiles have visible 3D motion trails');
@@ -283,7 +302,7 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
   assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestMotion"\)/);
   assert.match(game,/BindCompanyVisual\("MagicForestRock"/);
   assert.match(game,/BindCompanyVisual\("MagicForestRoad"/);
-  assert.match(game,/BindCompanyVisual\("MagicForestTorso"/);
+  assert.match(game,/MAGIC_FOREST_PLAYER_CHARACTER=ROGUE_SKINNED_3D_SOURCE_BOUND_RUNTIME_QA_REQUIRED/);
   assert.match(game,/SyncPlayerWeaponVisual\(\)/);
   assert.match(game,/AnimatePlayerPresentation\(movement\.magnitude\)/);
   assert.match(game,/AnimateMonsterPresentation\(m,presentationWalking\)/);
