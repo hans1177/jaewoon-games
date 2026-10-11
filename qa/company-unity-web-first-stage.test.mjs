@@ -664,6 +664,20 @@ test('source-only Unity Web boot fails cheap F0 before Unity editor and preserve
         /UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED:unity-games\/source-only-game\/Assets\/Scripts\/Gameplay\.cs/);
       return true;
     });
+    // 주석에 적힌 가짜 PASS는 실제 SOURCE_READY_3D 로그의 실패를 숨기지 못한다.
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); '+
+      '// Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS");\n } }\n');
+    assert.throws(run,/UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED/);
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); '+
+      '/* Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS"); */ } }\n');
+    assert.throws(run,/UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED/);
+    // 같은 줄의 실제 두 개 로그는 각각 판정하고 실제 브라우저 PASS로 승격하지 않는다.
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); '+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS"); } }\n');
+    assert.match(run(),/UNITY_WEB_SOURCE_PREFLIGHT=PASS/);
     // A native real-world boot source may proceed to QA; F0 alone still cannot claim WebGL PASS.
     fs.writeFileSync(scriptPath,prefix+
       'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS"); } }\n');
