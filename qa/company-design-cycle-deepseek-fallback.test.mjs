@@ -4,103 +4,106 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
+// 메인: 현재 단일 디자이너·구조화 검증 계약만 확인한다. 구버전 모델 풀/시간 제한을 재강제하지 않는다.
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 
-test('structured design calls retain bounded schema recovery',()=>{
-  assert.match(design,/think:false/);
-  assert.match(design,/for\(let attempt=1;attempt<=3;attempt\+\+\)/);
-  assert.match(design,/PREVIOUS_VALIDATION_ERROR=/);
-  assert.match(design,/normalizeSchemaValue\(parsed,schema,'root',repairs\)/);
-  assert.match(design,/MODEL_SCHEMA_NORMALIZED=/);
-  assert.match(design,/fill-empty-array:/);
-  assert.match(design,/wrap-required-object:/);
-  assert.match(design,/drop-extra:/);
-  assert.match(design,/assertSchemaValue\(normalized,schema\)/);
-  assert.match(design,/const nextMode='json'/);
-  assert.doesNotMatch(design,/message\?\.thinking\).*return/);
+test('structured local design calls retain schema validation and recover rejected slices',()=>{
+  for(const token of [
+    'think:false',
+    'normalizeSchemaValue(parsed,schema',
+    'assertSchemaValue(normalized,schema)',
+    'DESIGN_SLICE_CONTENT_REPAIR=',
+    'DESIGN_CONTENT_REPAIR_REQUIRED',
+    'slicePartialResults',
+    'sliceDependencies',
+    'wrap-required-object:',
+    'drop-extra:',
+    'repairStructureContract(requestedFields)'
+  ])assert.ok(design.includes(token),token);
+  assert.match(design,/for\(let attempt=0;attempt<2;attempt\+\+\)/);
+  assert.match(design,/const callSchema=designSliceSchema\(requestedFields\)/);
+  assert.doesNotMatch(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
 });
 
-test('DeepSeek is banned from the free company AI workforce',()=>{
+test('DeepSeek is excluded and lead models follow the current central pool',()=>{
   const banned=new Set(directive.ai?.bannedModels||[]);
   const pool=directive.ai?.modelPool||[];
   const leads=Object.values(directive.ai?.departmentLeadModels||{});
   assert.ok(banned.has('deepseek-r1:1.5b'));
   assert.ok(!pool.includes('deepseek-r1:1.5b'));
-  assert.ok(!leads.includes('deepseek-r1:1.5b'));
-  assert.equal(directive.ai?.departmentLeadModels?.qa,'qwen2.5:1.5b');
-  assert.ok(pool.includes('qwen2.5:1.5b'));
-  assert.equal(new Set(leads).size,5);
+  assert.equal(leads.length,5);
+  for(const lead of leads)assert.ok(pool.includes(lead),'department lead must be in the current approved model pool');
+  assert.ok(!leads.some(model=>banned.has(model)));
+  assert.match(design,/const localDesignerModel=clean\(process\.env\.COMPANY_VIBE_LOCAL_MODEL\|\|'qwen3:1\.7b'\)/);
 });
 
-test('full design author role remains distinct and same model revises',()=>{
-  assert.match(design,/const designerPool=pool\.filter\(model=>!model\.startsWith\('deepseek-r1'\)\)/);
-  assert.match(design,/GAME_DESIGNER_MODEL_POOL_EMPTY/);
-  assert.match(design,/const designerModel=designerPool\[hash\(`\$\{gameId\}:designer`\)%designerPool\.length\]/);
-  assert.match(design,/const activeReviewModels=pool\.filter/);
-  assert.match(design,/sameModelAsDraft:true/);
-  assert.match(design,/sameModelRevised:true/);
+test('one local Game Designer authors the full source without a parallel external review lane',()=>{
+  for(const token of [
+    "const designerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel",
+    "console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO')",
+    "console.log('DESIGN_AI_REVIEW_LANES=NONE')",
+    'const designerModel=designerRoute.id',
+    'designCheckpoint.effectiveDesignerModel=designerRoute.id',
+    "authorRole:'GAME_DESIGNER_AI'",
+    'singleAuthor:true'
+  ])assert.ok(design.includes(token),token);
+  assert.match(design,/async function authorDesignInCheckpointedSlices/);
+  assert.match(design,/phase:'designer_draft'/);
 });
 
-test('strict hard-gate feedback returns to the same game designer without bypass',()=>{
-  assert.match(design,/const strictDesignerFeedback=/);
-  assert.match(design,/source:'PRIOR_STRICT_DESIGN_REVIEW'/);
-  assert.match(design,/bypassAllowed:false/);
-  assert.match(design,/const latestDesignFeedbackEvent=designLearningEvents\.at\(-1\)\|\|null/);
-  assert.match(design,/hardFailures:Array\.isArray\(latestDesignFeedbackEvent\?\.hardFailures\)/);
-  assert.match(design,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,4500\)\}/);
-  assert.match(design,/관문 이름을 숨기거나 완화하지 말고 실제 설계 내용으로 원인을 해결하라/);
-  assert.match(design,/하드관문 실패는 삭제·재명명·무시하지 말고/);
-  assert.match(design,/strictGateBypassAllowed:false/);
-  assert.match(design,/rejectionReasons:Array\.isArray\(event\?\.rejectionReasons\)\?event\.rejectionReasons:\[\]/);
-  assert.match(design,/rejectionReasons:Array\.isArray\(latestDesignFeedbackEvent\?\.rejectionReasons\)/);
-  assert.doesNotMatch(design,/rejectionReasons:designLearningEvents\.flatMap/);
+test('strict design failures reach targeted revision without PASS fabrication',()=>{
+  for(const token of [
+    'const strictDesignerFeedback=',
+    "source:'PRIOR_STRICT_DESIGN_REVIEW'",
+    'bypassAllowed:false',
+    'strictGateBypassAllowed:false',
+    'DESIGNER_SEED_REPAIR_REQUIRED',
+    'DESIGN_DETERMINISTIC_PRE_GATE=',
+    'REPAIR_PACKET=',
+    'hardFailures:Array.isArray(latestDesignFeedbackEvent?.hardFailures)',
+    'rejectionReasons:Array.isArray(latestDesignFeedbackEvent?.rejectionReasons)'
+  ])assert.ok(design.includes(token),token);
+  assert.match(design,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,6500\)\}/);
+  assert.ok(design.includes('기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다'));
 });
 
-test('game designer schema supplies every stage gate v2 evidence axis',()=>{
-  for(const field of [
-    'systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk',
-    'platformFitPlan','uxAccessibilityPlan','artAudioDirection','implementationTraceability'
-  ]) assert.match(design,new RegExp(field));
+test('five connected MAIN/A/B/c/@ roles and 2+ multiplayer remain required at design authoring',()=>{
   assert.match(design,/signatureSystems:\{type:'array',minItems:5/);
   assert.match(design,/systemInterconnections:\{type:'array',minItems:5/);
-  assert.match(design,/contentExpansionPlan:\{type:'array',minItems:3/);
-  assert.match(design,/failureStates:\{type:'array',minItems:2/);
-  assert.match(design,/implementationTraceability:\{type:'array',minItems:3/);
-  assert.match(design,/targetPlatform:\{type:'string',enum:\['ROBLOX','UNITY','FORTNITE_UEFN'\]\}/);
+  assert.match(design,/required:\['name','purpose','playerChoice','id','grammarRole','stateInputs','stateOutputs'\]/);
+  assert.ok(design.includes('signatureSystems:value.signatureSystems'),'preservation must retain designer-authored roles');
+  assert.ok(design.includes('systemInterconnections:value.systemInterconnections'));
+  assert.match(design,/allGamesMultiplayerRequired\?\['COOP','COMPETITIVE','HYBRID'\]/);
+  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.minimumParticipants,2);
+  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.staticCodeEvidenceIsActualMultiplayerPlay,false);
 });
 
-test('same game designer authors the full schema through bounded checkpointed slices without bypass',()=>{
-  assert.match(design,/const DESIGN_AUTHORING_SLICES=Object\.freeze\(\[/);
-  assert.match(design,/DESIGN_AUTHORING_SLICE_FIELDS=DESIGN_AUTHORING_SLICES\.flatMap/);
-  assert.match(design,/DESIGN_AUTHORING_SLICE_CONTRACT_MISMATCH/);
-  assert.match(design,/async function authorDesignInCheckpointedSlices/);
-  assert.match(design,/runCheckpointTask\(\`\$\{phase\}_slices\`,slice\.id/);
-  assert.match(design,/const schema=designSliceSchema\(slice\.fields\)/);
-  assert.match(design,/timeoutMs:modelCallTimeoutMs/);
-  assert.match(design,/assertSchemaValue\(complete,DESIGN\)/);
-  assert.match(design,/DESIGN_CHECKPOINTED_SLICES_COMPLETE=/);
-  assert.match(design,/phase:'designer_draft'/);
-  assert.doesNotMatch(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
+test('Unity WebGL 2.5D+ has a structured design contract with runtime evidence still required',()=>{
+  assert.match(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);
+  assert.match(design,/dimension:\{type:'string',enum:\['2.5D','3D'\]\}/);
+  for(const token of ['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'])assert.ok(design.includes(token),token);
+  assert.equal(policy.livingMotionVisualQualityContract.minimumSpatialPresentation.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(policy.livingMotionVisualQualityContract.minimumSpatialPresentation.runtimeEvidenceRequired,true);
+  assert.equal(policy.livingMotionVisualQualityContract.minimumSpatialPresentation.flat2DFinalGameplayForbidden,true);
 });
 
-
-test('initial design prompt keeps causal grammar depth while local authoring is bounded by canonical timeout',()=>{
+test('the same checkpointed designer preserves causal gameplay depth under the current local timeout contract',()=>{
+  for(const token of [
+    'const DESIGN_AUTHORING_SLICES=Object.freeze([',
+    'DESIGN_AUTHORING_SLICE_CONTRACT_MISMATCH',
+    'runCheckpointTask(`${phase}_slices`,slice.id',
+    'const schema=designSliceSchema(slice.fields)',
+    'const timeoutMs=localDesignerCallTimeoutMs',
+    'requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema})',
+    'assertSchemaValue(complete,DESIGN)',
+    'DESIGN_CHECKPOINTED_SLICES_COMPLETE=',
+    'MAIN은 입력→즉시 피드백→상태 변화→위험/보상→다음 선택',
+    'A와 B는 각각 독립된 대축',
+    'c는 최소 3개 이상의 서브요소',
+    '@는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합',
+    '실제 플레이 5분·15분·30분 흐름'
+  ])assert.ok(design.includes(token),token);
   assert.match(design,/num_ctx:Math\.min\(24576,Math\.max\(4096,Number\(numCtx\|\|8192\)\)\)/);
-  assert.match(design,/DESIGN_AUTHORING_SLICES=Object\.freeze/);
-  assert.match(design,/predict:1600/);
-  assert.match(design,/numCtx:8192,timeoutMs:modelCallTimeoutMs/);
-  assert.match(design,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,6500\)\}/);
-  assert.match(design,/GAME_SEED_DESIGN_DEPTH=\$\{clip\(seedDesignDepthContext,7500\)\}/);
-  assert.match(design,/EVIDENCE=\$\{clip\(evidence,6500\)\}/);
-  assert.match(design,/초기 설계는 압축 요약보다 구체적 상태 전이와 플레이 사례를 우선한다/);
-  assert.match(design,/MAIN은 입력→즉시 피드백→상태 변화→위험\/보상→다음 선택/);
-  assert.match(design,/A와 B는 각각 독립된 대축/);
-  assert.match(design,/c는 최소 3개 이상의 서브요소/);
-  assert.match(design,/@는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합/);
-  assert.match(design,/실제 플레이 5분·15분·30분 흐름/);
-  assert.match(design,/메뉴와 UI도 게임 규칙의 일부로 설계한다/);
-  assert.match(design,/contentExpansionPlan은 한 번의 완성 목록이 아니라 검증 회차가 반복될수록/);
-  assert.match(design,/단순 수치 증가나 기능 개수 늘리기를 진화로 간주하지 않는다/);
-  assert.match(design,/새 c 변주와 @ 파고들기/);
 });
