@@ -114,3 +114,17 @@ test('Unity publication versions every bundle URL and updates it after a rebuild
     }
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('missing Unity assets stay 404 instead of a successful compressed homepage',async()=>{
+  assert.ok(fs.existsSync('404.html'),'Pages needs a root 404 to disable its SPA success fallback');
+  const edge=await import('data:text/javascript;base64,'+Buffer.from(worker).toString('base64'));
+  for(const method of ['GET','HEAD']){
+    const response=await edge.default.fetch(new Request('https://example.test/web-games/demo/Build/demo.data.gz',{method}),{
+      ASSETS:{fetch:async()=>new Response('missing',{status:404,headers:{'Content-Encoding':'gzip','Content-Type':'application/octet-stream'}})}
+    });
+    assert.equal(response.status,404);
+    assert.equal(response.headers.get('Content-Encoding'),null);
+    assert.equal(response.headers.get('Cache-Control'),'no-store');
+    if(method==='HEAD')assert.equal(await response.text(),'');
+  }
+});
