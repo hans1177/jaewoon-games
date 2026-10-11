@@ -4252,7 +4252,8 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         nativeBuildRequiresRegisteredAssetAndRealSource:true,
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
-          .filter(row=>['ADAPT','ACQUIRE_ADAPT','AUTHOR'].includes(row.action))
+          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
+            ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady===true)
           .map(row=>Object.freeze({
             family:row.family,action:row.action,reason:row.reason,
             selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
