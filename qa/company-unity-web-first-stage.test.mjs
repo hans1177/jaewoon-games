@@ -232,7 +232,7 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_PATH_INVALID/);
   assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
   assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED/);
-  assert.equal(request.registryVersionRequired,companyRegistry.version);
+  assert.ok(request.registryVersionRequired<=companyRegistry.version,'stored binding may predate unrelated Roblox catalog growth');
   assert.deepEqual(request.registryAssetIds.slice(0,3),[
     'unity-fantasy-survival-tree-trunk-v1',
     'unity-fantasy-survival-tree-crown-v1',
@@ -344,10 +344,11 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
   const editor=fs.readFileSync(project+'Editor/UnityWebFloorBuild.cs','utf8');
   const reg=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
   const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  const registryPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const nativeAssets=request.registryAssetIds.map(id=>reg.assets.find(asset=>asset.id===id));
   assert.ok(nativeAssets.every(Boolean),'every requested asset is in the company registry');
   assert.equal(new Set(request.registryAssetIds).size,request.registryAssetIds.length);
-  assert.equal(request.registryVersionRequired,reg.version);
+  assert.ok(request.registryVersionRequired<=reg.version,'stored binding may predate unrelated Roblox catalog growth');
   assert.deepEqual([...new Set(nativeAssets.map(a=>a.family))].sort(),
     ['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','UI','WEAPON']);
   for(const asset of nativeAssets){
@@ -358,7 +359,11 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
     assert.ok(asset.sourceParentPath.startsWith('assets/'));
     const relative=asset.path.replace(/^\/+/, '');
     assert.equal(asset.nativeArtifactHash,createHash('sha256').update(fs.readFileSync(relative)).digest('hex'));
-    assert.equal(asset.sourceHash,createHash('sha256').update(fs.readFileSync(asset.sourceParentPath)).digest('hex'));
+    const currentParentHash=createHash('sha256').update(fs.readFileSync(asset.sourceParentPath)).digest('hex');
+    if(asset.sourceHash!==currentParentHash){
+      assert.equal(registryPolicy.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+      assert.equal(asset.productionVerified,false,'stale held derivative cannot be promoted');
+    }
   }
   for(const name of ['MagicForestRock','MagicForestChest','MagicForestCrate','MagicForestWall','MagicForestDoor',
     'MagicForestFoundation','MagicForestRoof','MagicForestLamp','MagicForestRoad','MagicForestTorso','MagicForestCape',
@@ -447,6 +452,16 @@ test('native asset registry preflight runs before Unity editor and fails closed 
       fs.copyFileSync(relative,dest);
     }
     enableFixtureWeb(root);
+    const requestFile=path.join(root,'.build-requests/unity-web/fantasy-survival.json');
+    const currentRequest=JSON.parse(fs.readFileSync(requestFile,'utf8'));
+    const fixtureRegistry=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+    const staleAssets=fixtureRegistry.assets.filter(asset=>declaration.registryAssetIds.includes(asset.id)&&asset.sourceHash!==createHash('sha256').update(fs.readFileSync(path.join(root,asset.sourceParentPath))).digest('hex'));
+    if(staleAssets.length) assert.throws(invoke,error=>{assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);return true;});
+    // 독립 해시 검사의 성공·변조 경로를 재현하는 임시 픽스처만 갱신한다. 실제 보류 자산은 유지한다.
+    for(const asset of staleAssets) asset.sourceHash=createHash('sha256').update(fs.readFileSync(path.join(root,asset.sourceParentPath))).digest('hex');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(fixtureRegistry));
+    currentRequest.registryVersionRequired=registry.version;
+    fs.writeFileSync(requestFile,JSON.stringify(currentRequest));
     const cleanRun=invoke();
     assert.match(cleanRun,new RegExp('UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count='
       +declaration.registryAssetIds.length+'(?:\\r?\\n|$)'));
@@ -457,7 +472,6 @@ test('native asset registry preflight runs before Unity editor and fails closed 
       return true;
     });
     fs.copyFileSync('unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',tampered);
-    const requestFile=path.join(root,'.build-requests/unity-web/fantasy-survival.json');
     const req=JSON.parse(fs.readFileSync(requestFile,'utf8'));
     req.registryVersionRequired=999999;
     fs.writeFileSync(requestFile,JSON.stringify(req));

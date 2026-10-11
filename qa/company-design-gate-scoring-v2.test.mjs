@@ -445,7 +445,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
   assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
   assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
   assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
-  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE']){
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION']){
     const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
     const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
       {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
@@ -461,6 +461,22 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
       INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
     };
+    let sourceText='';
+    if(category==='INFECTION'){
+      const humans=['A','B','C'],monsters=['X','Y','Z'];
+      seed.INITIAL_PLAY_MODE='INFECTION';
+      seed.originalDesignContext={content:{
+        humanRoster:humans.map(id=>({id,tool:'Tool '+id,infectedAbility:'Infected '+id})),
+        monsterRoster:monsters.map(id=>({id})),
+        technicalAssumptions:['TargetPopulation=4','SurvivorSlots=2','MonsterSlots=2','RoundSeconds=240','InfectRange=8','InfectAttackCost=30','InfectAttackCooldown=1.2','PurifyDistance=8','PurifyCooldown=5']
+      }};
+      sourceText='InfectRange=8,InfectAttackCost=30,InfectAttackCooldown=1.2,PurifyDistance=8,PurifyCost=35,PurifyCooldown=5\n'
+        +'HumanForms={\n'+humans.map(id=>`{Id="${id}",ActiveAbility="H_${id}",InfectedAbility="I_${id}"},`).join('\n')+'\n},\n'
+        +'MonsterForms={\n'+monsters.map(id=>`{Id="${id}",Ability="M_${id}"},`).join('\n')+'\n},\n'
+        +'HumanAbilities={\n'+humans.map(id=>`H_${id}={Name="Human ${id}",Range=8,Cost=10,Cooldown=2},`).join('\n')+'\n},\n'
+        +'InfectedAbilities={\n'+humans.map(id=>`I_${id}={Name="Infected ${id}",Range=8,Cost=10,Cooldown=2},`).join('\n')+'\n},\n'
+        +'MonsterAbilities={\n'+monsters.map(id=>`M_${id}={Name="Monster ${id}",Range=8,Cost=10,Cooldown=2},`).join('\n')+'\n},\n';
+    }
     const design=runInNewContext(
       nativeSource.slice(start,end)+String.fromCharCode(10)+'computeVibeNativeDesign()',
       {
@@ -471,7 +487,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         pendingSeedGrammarNotAuthored:false,
         originalMultiplayerMode:proposal.multiplayerDesignMode,
         allGamesMultiplayerRequired:true,
-        playableRequirements:designPlayabilityRequirements(seed),
+        playableRequirements:designPlayabilityRequirements(seed,sourceText),
         designAssetFamilies:[],designAssetLibrary:null,
         seedFlowSystemBlueprint:{},factPack:{},fs,
         computeVibeSeedProposal,repairDesignRequiredFields,buildConceptSystemBlueprint,
@@ -480,9 +496,17 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     );
     const feedback=validateDesignAuthoringContent({
       design,seed,fields:Object.keys(design),
-      multiplayerRequired:true,requirePlayableContract:true
+      multiplayerRequired:true,requirePlayableContract:true,sourceText
     });
     assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
+    if(category==='INFECTION'){
+      assert.equal(design.contentVarietyPlan.roleTransitions.length,3,'every selectable class has a transition');
+      assert.equal(design.selectedDesignPlan.participants.length,4,'class options do not inflate match slots');
+      const corrupted=structuredClone(design);
+      corrupted.selectedDesignPlan.playthrough[2].after.find(row=>row.key==='HumanCount').value+=1;
+      const rejected=validateDesignAuthoringContent({design:corrupted,seed,sourceText,requirePlayableContract:true});
+      assert.ok(rejected.some(row=>row.code==='DESIGN_INFECTION_STATE_INVALID'),'incorrect participant state must fail');
+    }
     const scored=scoreDesignGateV2({
       seed,designRecord:{content:design,sameModelAsDraft:false},
       cycleStatus:{status:'IN_PROGRESS'},
@@ -490,7 +514,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         category,identity:design.identity,coreLoop:design.coreLoop,
         designText:JSON.stringify(design),multiplayerMode:design.multiplayerMode
       }),
-      multiplayerRequired:true,requirePlayableContract:true
+      multiplayerRequired:true,requirePlayableContract:true,sourceText
     });
     assert.equal(scored.hardFailures.length,0,category+': '+scored.hardFailures.join(', '));
     assert.ok(scored.totalScore>=80,category+': '+scored.totalScore);

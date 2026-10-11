@@ -1,7 +1,8 @@
 -- Independent Roblox Studio mobile QA driven from Studio --task RunScript.
 -- It binds a real Studio phone simulation to the exact immutable place package,
 -- launches a fresh server/client session, validates touch/mobile UI geometry,
--- performs an actual simulated touch click, and requires an authoritative server reaction.
+-- performs a simulated pointer click and requires an authoritative server reaction.
+-- A phone simulator plus a mouse event is not evidence of physical touch input.
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -194,15 +195,15 @@ if not hud or not hud.Enabled then
 end
 local root = hud:FindFirstChild("Root")
 local actions = root and root:FindFirstChild("ApprovedActions")
-if not root or not actions or not root.Visible or not actions.Visible then
-    return
-end
-
-local button = nil
-for _, descendant in ipairs(actions:GetDescendants()) do
-    if descendant:IsA("TextButton") and descendant.Visible and descendant.Active then
-        button = descendant
-        break
+local button = hud:FindFirstChild("PrimaryGameAction")
+if not (button and button:IsA("TextButton") and button.Visible and button.Active) then
+    button = nil
+    if not root or not actions or not root.Visible or not actions.Visible then return end
+    for _, descendant in ipairs(actions:GetDescendants()) do
+        if descendant:IsA("TextButton") and descendant.Visible and descendant.Active then
+            button = descendant
+            break
+        end
     end
 end
 if not button then
@@ -250,6 +251,7 @@ end
 if not actionObserved then
     return
 end
+print("ROBLOX_MOBILE_INPUT_EVIDENCE=SIMULATED_POINTER_NOT_PHYSICAL_TOUCH")
 
 local ack = false
 remote.OnClientEvent:Connect(function(message)

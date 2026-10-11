@@ -2,6 +2,7 @@
 -- 역할: 모바일 우선 5×5 보드/손패 UI와 터치 입력
 
 local VerifiedExternalLearningConfig = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("GameConfig"))
+local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = VerifiedExternalLearningConfig.VerifiedExternalLearning or VerifiedExternalLearningConfig.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -62,7 +63,7 @@ gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
-local root = Instance.new("Frame")
+local root = Instance.new("ScrollingFrame")
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
 local verifiedLearningTweenService = game:GetService("TweenService")
@@ -154,60 +155,11 @@ verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotio
 end
 
 -- Roblox UI / touch / progression guidance.
-local verifiedLearningGuidance = Instance.new("TextLabel")
-verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
-verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-verifiedLearningGuidance.BackgroundTransparency = 1
-verifiedLearningGuidance.TextWrapped = true
-verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
-verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
-  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
-elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
-elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
-elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
-  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
-elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
-  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
-elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
-else
-  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
-end
-verifiedLearningGuidance.Parent = verifiedLearningRoot
-local verifiedLearningRiskCue = Instance.new("TextLabel")
-verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
-verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
-verifiedLearningRiskCue.BackgroundTransparency = 1
-verifiedLearningRiskCue.TextWrapped = true
-verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
-else
-  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
-end
-verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
-verifiedLearningRiskCue.Parent = verifiedLearningRoot
+verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
 
--- Roblox skill VFX / camera / motion feedback.
-local function playVerifiedLearningActionFeedback(control)
+local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-  verifiedLearningGuidance.Visible = false
 
   if control then
     local scale = control:FindFirstChild("VerifiedLearningMotionScale")
@@ -220,6 +172,9 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  if serverConfirmed~=true then return end
+  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
   if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
@@ -274,10 +229,6 @@ local function playVerifiedLearningActionFeedback(control)
   end
   end
 
-  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-    verifiedLearningRiskCue.Visible = true
-    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-  end
 end
 
 local verifiedLearningLastControl = nil
@@ -301,7 +252,7 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
@@ -368,7 +319,7 @@ boardGrid.FillDirectionMaxCells = 5
 boardGrid.SortOrder = Enum.SortOrder.LayoutOrder
 boardGrid.Parent = boardFrame
 
-local handFrame = Instance.new("Frame")
+local handFrame = Instance.new("ScrollingFrame")
 handFrame.Name = "Hand"
 handFrame.AnchorPoint = Vector2.new(0.5, 1)
 handFrame.Position = UDim2.fromScale(0.5, 0.91)
@@ -387,12 +338,12 @@ handPadding.Parent = handFrame
 
 local handLayout = Instance.new("UIListLayout")
 handLayout.FillDirection = Enum.FillDirection.Horizontal
-handLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+handLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 handLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-handLayout.Padding = UDim.new(0.012, 0)
+handLayout.Padding = UDim.new(0,8)
 handLayout.Parent = handFrame
 
-local endTurnButton = Instance.new("TextButton")
+local endTurnButton = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
 endTurnButton.Name = "EndTurn"
 endTurnButton.AnchorPoint = Vector2.new(1, 1)
 endTurnButton.Position = UDim2.fromScale(0.97, 0.985)
@@ -415,8 +366,32 @@ local helpLabel = newTextLabel(root, "Help", "유닛 선택 → 빈칸 이동 / 
 helpLabel.TextXAlignment = Enum.TextXAlignment.Left
 helpLabel.TextColor3 = Color3.fromRGB(142, 156, 183)
 
+gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+root.ScrollBarThickness=4;root.ScrollingDirection=Enum.ScrollingDirection.Y;root.CanvasSize=UDim2.fromOffset(0,0)
+handFrame.AutomaticCanvasSize=Enum.AutomaticSize.X;handFrame.CanvasSize=UDim2.fromOffset(0,0);handFrame.ScrollBarThickness=4;handFrame.ScrollingDirection=Enum.ScrollingDirection.X
+boardAspect:Destroy()
+local function layoutCards()
+ local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
+ local landscape=v.X>v.Y
+ local h=landscape and v.Y or math.max(480,v.Y)
+ root.CanvasSize=UDim2.fromOffset(0,h)
+ local board=math.max(248,math.min(landscape and v.Y-16 or v.X-16,landscape and 400 or h-220))
+ local sideX=landscape and board+24 or 8
+ local sideWidth=landscape and v.X-board-32 or v.X-16
+ boardFrame.AnchorPoint=Vector2.zero;boardFrame.Position=UDim2.fromOffset(8,landscape and 8 or 64);boardFrame.Size=UDim2.fromOffset(board,board)
+ boardGrid.CellPadding=UDim2.fromOffset(4,4);boardGrid.CellSize=UDim2.fromOffset((board-28)/5,(board-28)/5)
+ for i,label in ipairs({title,turnLabel,playersLabel,statusLabel})do
+  label.AnchorPoint=Vector2.zero;label.TextScaled=false;label.TextSize=12;label.TextTruncate=Enum.TextTruncate.AtEnd
+  label.Position=UDim2.fromOffset(sideX+(i%2==0 and sideWidth/2 or 0),8+math.floor((i-1)/2)*24);label.Size=UDim2.fromOffset(sideWidth/2-4,22)
+ end
+ handFrame.AnchorPoint=Vector2.zero;handFrame.Position=UDim2.fromOffset(sideX,landscape and 68 or board+72);handFrame.Size=UDim2.fromOffset(sideWidth,90)
+ endTurnButton.AnchorPoint=Vector2.zero;endTurnButton.Position=UDim2.fromOffset(v.X-140,h-60);endTurnButton.Size=UDim2.fromOffset(132,52)
+ helpLabel.AnchorPoint=Vector2.zero;helpLabel.Position=UDim2.fromOffset(sideX,h-60);helpLabel.Size=UDim2.fromOffset(math.max(60,sideWidth-140),52);helpLabel.TextSize=12;helpLabel.TextScaled=false;helpLabel.TextWrapped=true;helpLabel.Text="유닛 선택 → 이동·공격"
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutCards);layoutCards()
+
 local function makeCell(index)
-    local button = Instance.new("TextButton")
+    local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=44})
     button.Name = "Cell" .. index
     button.LayoutOrder = index
     button.AutoButtonColor = false
@@ -506,9 +481,9 @@ local function renderHand()
     handFrame.Visible = true
     local hand = currentState.hand or {}
     for index, card in ipairs(hand) do
-        local button = Instance.new("TextButton")
+        local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
         button.Name = "Card" .. index
-        button.Size = UDim2.new(0.185, 0, 0.9, 0)
+        button.Size = UDim2.fromOffset(88,72)
         button.BackgroundColor3 = index == selectedCardIndex
             and Color3.fromRGB(178, 137, 48)
             or Color3.fromRGB(46, 57, 76)

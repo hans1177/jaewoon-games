@@ -12,8 +12,12 @@ local function signal()
   end
  }
 end
+local CommonUI
 local all={}
 local methods={}
+function methods:SetAttribute(k,v)self._attrs=self._attrs or {};self._attrs[k]=v end
+function methods:GetAttribute(k)return self._attrs and self._attrs[k]end
+function methods:IsA(class)return self.ClassName==class end
 function methods:GetChildren()
  local children={};for _,o in ipairs(all)do if o.Parent==self then table.insert(children,o)end end;return children
 end
@@ -25,8 +29,8 @@ function methods:GetPropertyChangedSignal(key)
  self.PropertySignals[key]=self.PropertySignals[key]or signal();return self.PropertySignals[key]
 end
 Instance={new=function(class)
- local values={ClassName=class,Activated=signal(),MouseEnter=signal(),MouseLeave=signal(),AttributeChanged=signal(),PropertySignals={},Visible=true,Enabled=true,Active=true,GroupTransparency=0,CanvasPosition={X=0,Y=0}}
- local o=setmetatable({}, {__index=function(_,k)return methods[k]or values[k]end,__newindex=function(_,k,v)
+ local values={ClassName=class,ZIndex=1,AbsoluteSize={X=390,Y=760},CharacterAdded=signal(),CharacterRemoving=signal(),Activated=signal(),MouseEnter=signal(),MouseLeave=signal(),MouseButton1Down=signal(),MouseButton1Up=signal(),AttributeChanged=signal(),PropertySignals={},Visible=true,Enabled=true,Active=true,GroupTransparency=0,CanvasPosition={X=0,Y=0}}
+ local o=setmetatable({}, {__index=function(_,k)if values[k]~=nil then return values[k]end;return methods[k]end,__newindex=function(_,k,v)
   local changed=values[k]~=v;values[k]=v
   if changed and values.PropertySignals[k]then values.PropertySignals[k]:Fire()end
  end})
@@ -40,6 +44,8 @@ Vector2={new=function(x,y)return {X=x,Y=y}end,zero={X=0,Y=0}}
 Vector3={new=function(...)return {...}end}
 CFrame={lookAt=function(...)return {...}end}
 TweenInfo={new=function(...)return {...}end}
+ColorSequence={new=function(...)return {...}end}
+ColorSequenceKeypoint={new=function(...)return {...}end}
 Color3={fromRGB=function(...)return {...}end,new=function(...)return {...}end}
 local deferred={}
 task={spawn=function(fn)fn()end,defer=function(fn)table.insert(deferred,fn)end,delay=function()end,wait=function()end}
@@ -58,21 +64,23 @@ function p:SetAttribute(key,value)
  if changes[key]then changes[key]:Fire()end;self.AttributeChanged:Fire(key)
 end
 p.PlayerScripts={WaitForChild=function()return "PLAYER_MODULE"end}
+p.Character=Instance.new("Model")
+p.Character:SetAttribute("SpawnGroundedAt",1);p.Character:SetAttribute("SpawnGroundedSequence",1);p.Character:SetAttribute("SpawnGroundingSequence",1);p.Character:SetAttribute("SpawnGroundingScope","LOBBY")
 local controls={Enable=function()end,Disable=function()end}
 local remote={OnClientEvent=signal(),sent={}}
 function remote:FireServer(action,value)table.insert(self.sent,{action,value})end
 local C={RemoteName="GameEvent",Actions=setmetatable({}, {__index=function(_,k)return k end}),Maps={{Id="SCHOOL",Name="학교"}},GhostCatalog={{Id="BRIDE",Name="처녀귀신",Origin="한국",Map="SCHOOL",Weight=46}},MonsterForms={{Id="DRACULA",Name="드라큘라",UnlockXP=0}},Cosmetics={{Id="DEFAULT",Name="기본",Price=0}}}
-local RS={Shared={GameConfig="CONFIG",ManorAssets="ASSETS",MonsterStories="STORIES"},WaitForChild=function()return remote end}
+local RS={Shared={GameConfig="CONFIG",ManorAssets="ASSETS",RobloxCommonUI="COMMON_UI",MonsterStories="STORIES"},WaitForChild=function()return remote end}
 local otherAttrs={ManorVisibility="PUBLIC",RoomServer=false,RoundState="ROOM_BROWSER"}
 local other={UserId=8,DisplayName="PublicOwner",Name="PublicOwner"}
 function other:GetAttribute(key)return otherAttrs[key]end
 local playerList={p,other}
 local Lighting={FindFirstChildOfClass=function()return nil end}
-local services={Players={LocalPlayer=p,GetPlayers=function()return playerList end},ReplicatedStorage=RS,Lighting=Lighting,TweenService=TweenService,RunService={RenderStepped=signal(),Heartbeat=signal()}}
+local services={UserInputService={TouchEnabled=true},Players={LocalPlayer=p,GetPlayers=function()return playerList end},ReplicatedStorage=RS,Lighting=Lighting,TweenService=TweenService,RunService={RenderStepped=signal(),Heartbeat=signal()}}
 game={GetService=function(_,name)return services[name]end}
 workspace={CurrentCamera={ViewportSize=Vector2.new(390,760)},GetAttribute=function(_,key)return key=="PhysicalLobbyReady"end,GetAttributeChangedSignal=function()return signal()end}
 local function require(id)
- if id=="CONFIG"then return C elseif id=="ASSETS"then return {IconsId=1} elseif id=="PLAYER_MODULE"then return {GetControls=function()return controls end}else return {}end
+ if id=="COMMON_UI"then return CommonUI elseif id=="CONFIG"then return C elseif id=="ASSETS"then return {IconsId=1} elseif id=="PLAYER_MODULE"then return {GetControls=function()return controls end}else return {}end
 end
 local function alive(o)
  while o do if o==p.PlayerGui then return true end;o=o.Parent end;return false
@@ -81,32 +89,33 @@ local function find(text)
  for i=#all,1,-1 do local o=all[i];if alive(o)and o.Text==text then return o end end
 end
 local function click(text)
- local o=assert(find(text),"Missing button: "..text);assert(o.ClassName=="TextButton");o.Activated:Fire();flush();return o
+ local o=assert(find(text),"Missing button: "..text);while o and o.ClassName~="TextButton"do o=o.Parent end;assert(o,"Missing button ancestor: "..text);o.Activated:Fire();flush();return o
 end
 local function open(key)remote.OnClientEvent:Fire("MANOR_MENU",key);flush()end
 local function sent(action)assert(remote.sent[#remote.sent][1]==action,"Incorrect remote action")end
+-- __COMMON_UI_SOURCE__
 -- __MANOR_CLIENT_SOURCE__
 click("저택 들어가기")
 local named={};for _,o in ipairs(all)do if o.Name then named[o.Name]=o end end
 assert(named.FamilyNotebook.Visible==false,"Navigation obscures the lobby before user opens it")
-click("수첩");assert(named.FamilyNotebook.Visible==true)
-click("수첩");assert(named.FamilyNotebook.Visible==false)
-click("출정");assert(find("오늘 밤의 출정"))
+click("   메뉴");assert(named.FamilyNotebook.Visible==true)
+click("   메뉴");assert(named.FamilyNotebook.Visible==false)
+click("   출정");assert(find("출정 지도"))
 local function bounds(o,width,height)
  if not o or o.ClassName=="ScreenGui"or o==p.PlayerGui then return {x=0,y=0,w=width,h=height}end
  local parent=bounds(o.Parent,width,height);local size=o.Size or{0,0,0,0};local pos=o.Position or{0,0,0,0};local anchor=o.AnchorPoint or Vector2.zero
  local w=parent.w*size[1]+size[2];local h=parent.h*size[3]+size[4]
- for _,child in ipairs(o:GetChildren())do if child.ClassName=="UISizeConstraint"then w=math.min(w,child.MaxSize.X);h=math.min(h,child.MaxSize.Y)end end
+ for _,child in ipairs(o:GetChildren())do if child.ClassName=="UISizeConstraint"then w=math.max(child.MinSize and child.MinSize.X or 0,math.min(w,child.MaxSize and child.MaxSize.X or math.huge));h=math.max(child.MinSize and child.MinSize.Y or 0,math.min(h,child.MaxSize and child.MaxSize.Y or math.huge))end end
  return{x=parent.x+parent.w*pos[1]+pos[2]-w*anchor.X,y=parent.y+parent.h*pos[3]+pos[4]-h*anchor.Y,w=w,h=h}
 end
 for _,viewport in ipairs({{320,520},{390,760},{740,274},{844,320},{1024,640}})do
- workspace.CurrentCamera.ViewportSize=Vector2.new(viewport[1],viewport[2]);services.RunService.RenderStepped:Fire();flush()
+ workspace.CurrentCamera.ViewportSize=Vector2.new(viewport[1],viewport[2]);named.PersonalManorUI.AbsoluteSize=workspace.CurrentCamera.ViewportSize;services.RunService.RenderStepped:Fire();flush()
  local head=bounds(named.ManorNameplate,viewport[1],viewport[2]);local commands=bounds(named.ManorCommands,viewport[1],viewport[2])
  assert(head.x+head.w<=commands.x,"Mobile header and controls overlap")
  assert(commands.y+commands.h<=64,"Controls obscure gameplay")
- local panel=find("오늘 밤의 출정").Parent;local rect=bounds(panel,viewport[1],viewport[2])
+ local panel=find("출정 지도").Parent;local rect=bounds(panel,viewport[1],viewport[2])
  assert(rect.x>=0 and rect.y>=0 and rect.x+rect.w<=viewport[1] and rect.y+rect.h<=viewport[2],"Menu clips the viewport")
- assert(rect.y>=commands.y+commands.h+8,"Menu overlaps mobile commands")
+ assert(not named.ManorCommands.Visible and not named.ManorNameplate.Visible,"Modal menu must hide background commands and header")
  local close=bounds(find("×"),viewport[1],viewport[2]);assert(close.w>=48 and close.h>=48,"Close target too small for touch")
 end
 print("MANOR_MOBILE_LAYOUT_QA=PASS:5")
@@ -152,14 +161,14 @@ remote.OnClientEvent:Fire("MANOR_RANKING",{})
 assert(not find("1. 수집가  ·  완성 2 / 발견 5"),"Ranking rows accumulated")
 click("×");remote.OnClientEvent:Fire("MANOR_RANKING",{{Name="늦은 응답",Complete=0,Seen=1}})
 assert(not find("1. 늦은 응답  ·  완성 0 / 발견 1"),"Closed menu accepted a late response")
-open("PLAY");click("친구 경기 만들기");sent("CREATE_ROOM");assert(remote.sent[#remote.sent][2]=="FRIENDS")
+open("PLAY");click("친구방 만들기");sent("CREATE_ROOM");assert(remote.sent[#remote.sent][2]=="FRIENDS")
 p:SetAttribute("RoomFeedback","ERROR:예약 서버 생성 실패");flush();assert(named.NotebookPage.Visible,"Connection failure did not reopen departure controls")
 p:SetAttribute("RoomServer",true);p:SetAttribute("RoomState","ROOM_WAITING");p:SetAttribute("RoomIsHost",true);p:SetAttribute("RoomAutoStart",false);p:SetAttribute("RoomCode","123456");p:SetAttribute("RoomMemberCount",2);flush()
-open("PLAY");assert(find("친구 준비 완료 · 출정 시작"));assert(not find("친구 경기 만들기"));click("친구 준비 완료 · 출정 시작");sent("START_ROOM")
-click("방 나가기 · 저택으로");sent("LEAVE_ROOM")
-p:SetAttribute("RoomIsHost",false);flush();assert(not find("친구 준비 완료 · 출정 시작"));assert(find("방장이 출정을 시작할 때까지 기다려줘."))
-p:SetAttribute("RoomAutoStart",true);flush();assert(find("참가자 연결 후 곧 출정해."));assert(not find("친구 준비 완료 · 출정 시작"))
-p:SetAttribute("RoomState","INTERMISSION");p:SetAttribute("TimeLeft",2);flush();assert(not find("방 나가기 · 저택으로"));assert(find("출정까지 2초"))
+open("PLAY");assert(find("출정 시작"));assert(not find("친구방 만들기"));click("출정 시작");sent("START_ROOM")
+click("방 나가기");sent("LEAVE_ROOM")
+p:SetAttribute("RoomIsHost",false);flush();assert(not find("출정 시작"));assert(find("방장이 출정을 시작할 때까지 기다려줘."))
+p:SetAttribute("RoomAutoStart",true);flush();assert(find("참가자 연결 후 곧 출정해."));assert(not find("출정 시작"))
+p:SetAttribute("RoomState","INTERMISSION");p:SetAttribute("TimeLeft",2);flush();assert(not find("방 나가기"));assert(find("출정까지 2초"))
 open("DRESS");assert(find("인간 모습 · 선택 중"));assert(find("드라큘라 · 선택"));click("드라큘라 · 선택");sent("SELECT_LOBBY_FORM")
 p:SetAttribute("LobbyAppearance","MONSTER");flush();assert(find("드라큘라 · 선택 중"));assert(find("인간 모습"))
 local body=assert(find("드라큘라 · 선택 중")).Parent;body.CanvasPosition=Vector2.new(0,280)

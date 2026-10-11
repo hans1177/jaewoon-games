@@ -2,6 +2,7 @@
 -- 임포트: 장비·퀘스트·파티의 서버 상태를 표시한다.
 -- Responsive RPG menu; all progression comes from replicated state or real Tools.
 local Model = require(script.Parent:WaitForChild("RPGMenuModel"))
+local CommonUI = require(script.Parent:WaitForChild("RobloxCommonUI"))
 local Input = game:GetService("UserInputService")
 local GuiService = game:GetService("GuiService")
 local Menu = {}
@@ -21,8 +22,11 @@ local function label(parent,name,text,size)
  return make("TextLabel",parent,name,{BackgroundTransparency=1,Text=text,TextSize=size or 16,TextColor3=colors.text,Font=Enum.Font.Gotham,TextXAlignment=Enum.TextXAlignment.Left,TextWrapped=true})
 end
 local function button(parent,name,text)
- local b=make("TextButton",parent,name,{Text=text,TextSize=16,Font=Enum.Font.GothamBold,TextColor3=colors.text,BackgroundColor3=colors.card,BorderSizePixel=0,AutoButtonColor=true,Size=UDim2.fromOffset(108,52)})
- round(b);return b
+ local b=CommonUI.CreatePrimaryButton({name=name,text=text,minWidth=44,minHeight=44,textSize=16,
+  size=UDim2.fromOffset(108,52),theme={Primary=colors.card,PrimaryTop=colors.card,PrimaryBottom=colors.panel,Text=colors.text,TouchHeight=44}})
+ b.ZIndex=parent:IsA("GuiObject")and parent.ZIndex+1 or 1
+ for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
+ b.Parent=parent;return b
 end
 
 -- 메인: 메뉴와 입력·상태 갱신 연결.
@@ -85,7 +89,7 @@ function Menu.install(config,gui,player,options)
  local empty=label(items,"EmptyInventory","표시할 아이템이 없어.",15);empty.Size=UDim2.fromOffset(140,110)
  local details=make("ScrollingFrame",inventory,"ItemDetails",{BackgroundColor3=colors.panel,BorderSizePixel=0,ScrollBarThickness=4,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y});round(details)
  local detailTitle=label(details,"SelectedItemName","아이템을 선택해",19);detailTitle.Font=Enum.Font.GothamBold;detailTitle.Position=UDim2.fromOffset(14,14);detailTitle.Size=UDim2.new(1,-28,0,50)
- local detailText=label(details,"SelectedItemDescription","보유 장비와 실제 배낭 속 도구를 확인할 수 있어.",15);detailText.TextColor3=colors.muted;detailText.TextYAlignment=Enum.TextYAlignment.Top;detailText.Position=UDim2.fromOffset(14,72);detailText.Size=UDim2.new(1,-28,0,130)
+ local detailText=label(details,"SelectedItemDescription","아이템을 눌러 장착해.",15);detailText.TextColor3=colors.muted;detailText.TextYAlignment=Enum.TextYAlignment.Top;detailText.Position=UDim2.fromOffset(14,72);detailText.Size=UDim2.new(1,-28,0,130)
  local itemAction=button(details,"ItemAction","착용 중");itemAction.Position=UDim2.fromOffset(14,218);itemAction.Size=UDim2.new(1,-28,0,52);itemAction.Visible=false
  local function selectItem(row)
   selectedId=row.id;selectedTool=row.tool
@@ -93,7 +97,7 @@ function Menu.install(config,gui,player,options)
   detailText.Text=row.description or "배낭에 보관 중인 도구야. 장착한 뒤 월드에서 사용할 수 있어."
   itemAction.Visible=true;itemAction.Active=row.tool~=nil;itemAction.AutoButtonColor=row.tool~=nil
   itemAction.Text=row.tool and (row.equipped and "장착 해제" or "장착") or "현재 착용 중"
-  for id,b in pairs(itemButtons)do b.BackgroundColor3=id==row.id and Color3.fromRGB(73,65,48) or colors.card end
+  for id,b in pairs(itemButtons)do b.BackgroundColor3=id==row.id and Color3.fromRGB(73,65,48) or colors.card;b.SelectedRing.Visible=id==row.id end
  end
  itemAction.Activated:Connect(function()
   if not selectedTool then return end
@@ -116,7 +120,7 @@ function Menu.install(config,gui,player,options)
  -- 캐릭터 및 상점: 표시 데이터는 서버 Player Attributes / 원본 GameConfig에서만 동기화한다.
  local characterText=label(content["캐릭터"],"CharacterSummary","",17)
  characterText.Size=UDim2.new(1,-8,0,300);characterText.TextYAlignment=Enum.TextYAlignment.Top
- local characterHint=label(content["캐릭터"],"CharacterSource","서버에서 확인된 직업·장비·경험치만 표시해.",14)
+ local characterHint=label(content["캐릭터"],"CharacterSource","장비를 바꾸면 능력치가 갱신돼.",14)
  characterHint.Size=UDim2.new(1,-8,0,52);characterHint.TextColor3=colors.muted
  local shopSummary=label(content["상점"],"ShopSummary","",16)
  shopSummary.Size=UDim2.new(1,-8,0,68);shopSummary.TextYAlignment=Enum.TextYAlignment.Top
@@ -125,7 +129,7 @@ function Menu.install(config,gui,player,options)
  local armorOffer=label(content["상점"],"ArmorOffer","",17);armorOffer.Size=UDim2.new(1,-8,0,74)
  local buyArmor=button(content["상점"],"BuyArmor","다음 방어구 구매");buyArmor.Size=UDim2.new(1,-8,0,52)
  local saleNotice=label(content["상점"],"SaleNotice",
-  "티어 장비 재판매 가격은 기존 규칙에 없어 판매할 수 없어.\n구매는 마을 상인 가까이에서 서버가 확인해.",14)
+  "티어 장비 재판매 가격은 기존 규칙에 없어 판매할 수 없어.\n마을 상인 가까이에서 구매해.",14)
  saleNotice.Size=UDim2.new(1,-8,0,94);saleNotice.TextColor3=colors.muted
  buyWeapon.Activated:Connect(function()
   local offer=Model.shop(player:GetAttributes(),config,type(options.merchantAccess)=="function"and options.merchantAccess()or nil).weapon
@@ -155,7 +159,7 @@ function Menu.install(config,gui,player,options)
  end)
  local tips=button(content["설정"],"ToggleWorldTips","조작 안내 켜기 / 끄기");tips.Size=UDim2.new(1,-8,0,52)
  tips.Activated:Connect(function()if options.toggleTips then options.toggleTips()end end)
- local help=label(content["설정"],"MenuControls","B : 배낭 열기\n닫기 / Esc : 게임으로 돌아가기\n게임패드 Y : 메뉴 · B : 닫기\n\n메뉴를 열어도 게임은 계속돼. 안전한 장소에서 확인해.\n효과음 설정은 이번 접속 동안 유지돼.",16);help.Size=UDim2.new(1,-8,0,200);help.TextYAlignment=Enum.TextYAlignment.Top;help.TextColor3=colors.muted
+ local help=label(content["설정"],"MenuControls","B : 배낭 열기\n닫기 / Esc : 게임으로 돌아가기\n게임패드 Y : 메뉴 · B : 닫기\n\n메뉴를 열어도 전투는 계속돼.\n효과음 설정은 이번 접속 동안 유지돼.",16);help.AutomaticSize=Enum.AutomaticSize.Y;help.Size=UDim2.new(1,-8,0,200);help.TextYAlignment=Enum.TextYAlignment.Top;help.TextColor3=colors.muted
 
  local function switchTab(name)
   activeTab=name
@@ -192,7 +196,12 @@ function Menu.install(config,gui,player,options)
    itemRows[id]=row
    local b=itemButtons[id]
    if not b then
-    b=button(items,"InventorySlot"..index,"");itemButtons[id]=b
+    local makeSlot=row.category=="장비"and CommonUI.CreateEquipmentSlot or CommonUI.CreateInventorySlot
+    b=makeSlot({name="InventorySlot"..index,role=tostring(row.id),theme={PanelInset=colors.card,Text=colors.text,PrimaryTop=colors.gold}})
+    b.ZIndex=items.ZIndex+1
+    for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
+    b.Icon.Visible=false;b.Quantity.Visible=false;b.SelectedRing.Visible=false
+    b.Parent=items;itemButtons[id]=b
     local icon=label(b,"ItemIcon",row.icon,28);icon.Font=Enum.Font.GothamBold;icon.TextColor3=colors.gold;icon.TextXAlignment=Enum.TextXAlignment.Center;icon.Position=UDim2.fromOffset(4,6);icon.Size=UDim2.new(1,-8,0,36)
     local name=label(b,"ItemName",row.name,13);name.TextXAlignment=Enum.TextXAlignment.Center;name.Position=UDim2.fromOffset(4,45);name.Size=UDim2.new(1,-8,0,34)
     local badge=label(b,"ItemState","",11);badge.TextColor3=colors.gold;badge.TextXAlignment=Enum.TextXAlignment.Center;badge.Position=UDim2.fromOffset(4,82);badge.Size=UDim2.new(1,-8,0,18)
@@ -231,8 +240,8 @@ function Menu.install(config,gui,player,options)
   local shopLocation=not offers.inVillage and "상점 이용은 마을에서만 가능"
    or offers.proximityObserved and not offers.weapon.nearMerchant and not offers.armor.nearMerchant
       and "마을 상인 가까이로 이동하면 구매할 수 있어"
-   or "현재 위치의 상인에게서 구매할 수 있어"
-  shopSummary.Text=string.format("골드 %d    ·    %s\n실제 구매 조건은 서버에서 다시 확인해.",
+   or "상점 이용 가능"
+  shopSummary.Text=string.format("골드 %d    ·    %s\n상인을 찾으면 구매할 수 있어.",
    offers.gold,shopLocation)
   weaponOffer.Text=offers.weapon.price and
    string.format("무기 T%d → T%d   ·   %dG",offers.weapon.tier,offers.weapon.nextTier,offers.weapon.price) or
@@ -267,6 +276,9 @@ function Menu.install(config,gui,player,options)
  relayout=function()
   local size=gui.AbsoluteSize
   local layout=Model.layout(size.X,size.Y)
+  local hud=Model.hudLayout(size.X,size.Y)
+  toggle.Position=UDim2.fromOffset(hud.menu.x,hud.menu.y)
+  toggle.Size=UDim2.fromOffset(hud.menu.width,hud.menu.height)
   panel.Size=UDim2.fromOffset(layout.width,layout.height)
   local availableWidth=layout.width-30
   local availableHeight=math.max(350,layout.height-190)
@@ -286,7 +298,7 @@ function Menu.install(config,gui,player,options)
  setOpen=function(value)
   if value==opened then return end
   if value and options.canOpen and not options.canOpen()then return end
-  opened=value;overlay.Visible=value;gui:SetAttribute("RPGMenuOpen",value)
+  opened=value;overlay.Visible=value;toggle.Visible=not value;gui:SetAttribute("RPGMenuOpen",value)
   if options.onOpen then options.onOpen(value)end
   if value then previousSelection=GuiService.SelectedObject;refresh();if Input.GamepadEnabled then GuiService.SelectedObject=tabButtons[activeTab]end
   else GuiService.SelectedObject=previousSelection and previousSelection.Parent and previousSelection or nil end

@@ -619,7 +619,7 @@ test('Unity Web QA deadline writes causal failure evidence even after a stuck br
   const stageBeforeTimeout={version:2,pass:true,gameId};
   received=stageBeforeTimeout;
   const scope={
-    qaDeadlineMs:8*60*1000,scenarioId,qaStage,gameId,publicUrl:'',output:'/tmp/unity-web-test.json',
+    qaDeadlineMs:8*60*1000,scenarioId,qaStage,gameId,publicUrl:'',source:'web-games/qa-test-game',output:'/tmp/unity-web-test.json',
     markers:['JAEWOON_UNITY_WEB_QA BOOT game=qa-test-game status=PASS'],
     consoleErrors:[],pageErrors:[],failedRequests:[],
     setTimeout:(fn,ms)=>{scheduled=fn;duration=ms;return{unref(){}};},

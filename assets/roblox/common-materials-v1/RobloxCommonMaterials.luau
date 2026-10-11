@@ -103,7 +103,7 @@ local PRESETS = table.freeze({
       WORN = table.freeze({material = Enum.Material.Asphalt, color = Color3.fromRGB(89, 88, 83), reflectance = 0.00}),
       PALE = table.freeze({material = Enum.Material.Pavement, color = Color3.fromRGB(128, 126, 119), reflectance = 0.00}),
     }),
-  }),,
+  }),
   SKIN = table.freeze({
     defaultVariant = "WARM",
     variants = table.freeze({
@@ -261,17 +261,21 @@ local function resolvePreset(atomId, variant)
 end
 
 local function tag(part, atomId, variantId)
-  part:SetAttribute("StudioAssetId", atomId)
-  part:SetAttribute("StudioAssetVariant", variantId)
-  part:SetAttribute("StudioAssetPack", "roblox-common-materials-v1")
-  part:SetAttribute("StudioAssetFamily", "MATERIAL")
-  part:SetAttribute("CompanyCommonBase", true)
-  part:SetAttribute("CompatibleGameScope", "ALL_ROBLOX_GAMES_WHEN_ROLE_STYLE_AND_PLATFORM_MATCH")
-  part:SetAttribute("ThemeAdaptationRequiredPerGame", true)
-  part:SetAttribute("ProductionVerified", false)
-  part:SetAttribute("RuntimeVerificationState", "PENDING_STUDIO")
-  part:SetAttribute("GameplayAuthority", false)
-  part:SetAttribute("PreservesPhysicalProperties", true)
+  part:SetAttribute("MaterialAssetId",atomId)
+  part:SetAttribute("MaterialAssetVariant",variantId)
+  part:SetAttribute("MaterialAssetPack","roblox-common-materials-v1")
+  part:SetAttribute("MaterialProductionVerified",false)
+  part:SetAttribute("MaterialRuntimeVerificationState","PENDING_STUDIO")
+  part:SetAttribute("PreservesPhysicalProperties",true)
+  -- A material must not overwrite the mesh/weapon/character's source identity.
+  if part:GetAttribute("StudioAssetId")==nil then
+    part:SetAttribute("StudioAssetId",atomId)
+    part:SetAttribute("StudioAssetVariant",variantId)
+    part:SetAttribute("StudioAssetPack","roblox-common-materials-v1")
+    part:SetAttribute("StudioAssetFamily","MATERIAL")
+    part:SetAttribute("ProductionVerified",false)
+    part:SetAttribute("RuntimeVerificationState","PENDING_STUDIO")
+  end
 end
 
 function RobloxCommonMaterials.Describe(atomId)
@@ -300,7 +304,8 @@ function RobloxCommonMaterials.Apply(part, atomId, options)
   local preservePhysics = options.preservePhysics ~= false
   local physicalBefore = preservePhysics and clonePhysicalProperties(part.CurrentPhysicalProperties) or nil
 
-  part.Material = preset.material
+  local originalMaterial = part.Material
+  part.Material = options.preserveBaseMaterial and originalMaterial or preset.material
 
   local baseColor = preset.color
   if typeof(options.tint) == "Color3" then
@@ -323,6 +328,17 @@ function RobloxCommonMaterials.Apply(part, atomId, options)
     part.CustomPhysicalProperties = physicalBefore
   end
 
+  -- Map properties belong to imported MaterialVariant instances, not runtime scripts.
+  local pbr=options.materialVariant
+  if type(pbr)=="string" and pbr~="" then
+    local variant=game:GetService("MaterialService"):FindFirstChild(pbr)
+    if variant and variant:IsA("MaterialVariant") and variant.BaseMaterial==part.Material then
+      part.MaterialVariant=pbr
+      part:SetAttribute("PBRBindingState","NATIVE_VARIANT_BOUND_REVIEW_PENDING")
+    else
+      part:SetAttribute("PBRBindingState","NATIVE_VARIANT_REQUIRED")
+    end
+  end
   tag(part, id, variantId)
   part:SetAttribute("PhysicalPropertiesCapturedBeforeVisualMaterial", preservePhysics and physicalBefore ~= nil)
   return part
@@ -336,6 +352,31 @@ function RobloxCommonMaterials.ApplyMany(parts, atomId, options)
     end
   end
   return table.freeze(applied)
+end
+
+-- Imported mesh PBR and atlas UVs remain authoritative for those objects.
+local ROLE_MATERIALS={Wood="WOOD",WoodPlanks="WOOD",Slate="STONE",Rock="STONE",Limestone="STONE",Cobblestone="STONE",Concrete="STONE",Marble="STONE",Brick="BRICK",Metal="METAL",CorrodedMetal="CORROSION",DiamondPlate="METAL",Fabric="FABRIC",Ground="GROUND",Grass="MOSS",LeafyGrass="MOSS",Mud="MUD",Sand="SAND",Sandstone="SAND",Snow="SNOW",Ice="ICE",Glacier="ICE",Asphalt="ASPHALT",Pavement="ASPHALT"}
+local PBR_SOURCES={Wood="Wood062",WoodPlanks="WoodFloor051",Slate="Rock035",Rock="Rock030",Limestone="Rock030",Cobblestone="Rock035",Concrete="Concrete034",Marble="Marble012",Brick="Bricks059",Metal="Metal046A",CorrodedMetal="Metal032",DiamondPlate="MetalPlates006",Fabric="Fabric026",Ground="Ground037",Grass="Grass001",LeafyGrass="Grass001",Mud="Ground054"}
+function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)
+ if not part:IsA("BasePart") or part.Transparency>=1 or part:GetAttribute("PreserveAuthoredMaterial")==true then return false end
+ if part:IsA("MeshPart") and (part:FindFirstChildOfClass("SurfaceAppearance") or part.TextureID~="")then return false end
+ if part.MaterialVariant~=""then return false end
+ local materialName=part.Material.Name
+ local atom=part:GetAttribute("SurfaceRole") or ROLE_MATERIALS[materialName]
+ if not atom or not PRESETS[atom]then return false end
+ local source=PBR_SOURCES[materialName]
+ if style=="HORROR"then
+  if materialName=="WoodPlanks"then source="Wood062"elseif materialName=="Concrete"then source="Concrete046"elseif materialName=="Brick"then source="Bricks079"end
+ elseif style=="COZY" and materialName=="Fabric"then source="Fabric030"end
+ local name=string.lower(part.Name)
+ if atom=="FABRIC" and (name:find("boot",1,true) or name:find("pouch",1,true) or name:find("belt",1,true))then atom="LEATHER_LIKE";source=style=="HORROR"and"Leather026"or"Leather008"end
+ local transparency=part.Transparency
+ RobloxCommonMaterials.Apply(part,atom,{tint=part.Color,tintStrength=1,preservePhysics=true,preserveBaseMaterial=true,
+   materialVariant=source and("Vibe_"..materialName.."_"..source)or nil})
+ part.Transparency=transparency
+ part:SetAttribute("MaterialSourceId",source)
+ part:SetAttribute("MaterialStyle",style)
+ return true
 end
 
 function RobloxCommonMaterials.Audit()

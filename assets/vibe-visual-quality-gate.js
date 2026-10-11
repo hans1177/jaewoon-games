@@ -33,11 +33,11 @@ export function auditVibeGoldenSceneEvidence(evidence={}){
     if(!capture){missing.push(role);continue;}
     const source=String(capture.source||'').trim().toLowerCase();
     const artifact=String(capture.artifactId||capture.captureId||capture.path||'').trim();
-    const revision=String(capture.candidateRevision||candidateRevision||'').trim();
+    const revision=String(capture.candidateRevision||'').trim();
     const observed=capture.observed===true;
     const reviewed=capture.reviewed===true;
     const comparisonPass=capture.comparison?.pass===true;
-    if(!RUNTIME_CAPTURE_SOURCES.has(source)||!artifact||!revision||!observed||!reviewed||!comparisonPass)invalid.push(role);
+    if(!RUNTIME_CAPTURE_SOURCES.has(source)||!artifact||!revision||revision!==candidateRevision||!observed||!reviewed||!comparisonPass)invalid.push(role);
   }
   const markerOnly=captures.some(c=>c?.markerOnly===true||String(c?.source||'').toLowerCase()==='source-marker');
   return Object.freeze({
@@ -119,8 +119,8 @@ export function auditVibeHighEndTargetFrameEvidence(evidence={}){
     if(!capture){missing.push(role);continue;}
     const source=String(capture.source||'').trim().toLowerCase();
     const artifact=String(capture.artifactId||capture.captureId||capture.path||'').trim();
-    const revision=String(capture.candidateRevision||candidateRevision||'').trim();
-    if(!RUNTIME_CAPTURE_SOURCES.has(source)||!artifact||!revision||capture.observed!==true||capture.reviewed!==true||capture.comparison?.pass!==true)invalid.push(role);
+    const revision=String(capture.candidateRevision||'').trim();
+    if(!RUNTIME_CAPTURE_SOURCES.has(source)||!artifact||!revision||revision!==candidateRevision||capture.observed!==true||capture.reviewed!==true||capture.comparison?.pass!==true)invalid.push(role);
   }
   const markerOnly=captures.some(c=>c?.markerOnly===true||String(c?.source||'').toLowerCase()==='source-marker');
   return Object.freeze({
@@ -189,9 +189,70 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   const presentation=evidence.presentation||{};
   const interfaceCoverage=evidence.interfaceCoverage&&typeof evidence.interfaceCoverage==='object'?evidence.interfaceCoverage:{};
   const declaredInterfaceSurfaces=[...new Set((Array.isArray(evidence.requiredInterfaceSurfaces)?evidence.requiredInterfaceSurfaces:Object.entries(interfaceCoverage).filter(([,row])=>row&&typeof row==='object'&&row.required===true).map(([key])=>key)).map(value=>String(value||'').trim().toUpperCase()).filter(Boolean))];
+  // 인터페이스 검증: 썸네일/불리언 통과 대신 같은 소스의 실제 캡처와 측정된 터치 영역을 확인한다.
+  const interfaceFailures={};
   const missingInterfaceSurfaces=declaredInterfaceSurfaces.filter(surface=>{
     const row=interfaceCoverage?.[surface]??interfaceCoverage?.[surface.toLowerCase()];
-    return !(row&&typeof row==='object'&&row.pass===true&&row.observed===true&&row.reviewed===true);
+    const failures=[];
+    if(!(row&&row.pass===true&&row.observed===true&&row.reviewed===true))failures.push('review-missing-or-failed');
+    const captures=Array.isArray(row?.captures)?row.captures:[];
+    for(const orientation of ['PORTRAIT','LANDSCAPE']){
+      const capture=captures.find(item=>item?.orientation===orientation);
+      const viewport=capture?.viewport||{};
+      const width=viewport.width,height=viewport.height;
+      const validSize=Number.isFinite(width)&&Number.isFinite(height)&&width>0&&height>0;
+      if(!capture||!validSize||(orientation==='PORTRAIT'?height<width:width<=height)){
+        failures.push(orientation+':viewport-missing-or-invalid');continue;
+      }
+      const revision=String(capture.candidateRevision||'').trim();
+      if(!RUNTIME_CAPTURE_SOURCES.has(String(capture.source||'').toLowerCase())
+        ||capture.runtimeScreenshot!==true||capture.markerOnly===true
+        ||!revision||revision!==String(evidence.candidateRevision||'').trim()
+        ||!String(capture.artifactId||'').trim()||!/^[a-f0-9]{64}$/i.test(String(capture.imageSha256||''))
+        ||capture.reviewed!==true||capture.pixelReview?.pass!==true
+        ||capture.pixelReview?.imageSha256!==capture.imageSha256
+        ||capture.touchInputObserved!==true){
+        failures.push(orientation+':exact-runtime-image-or-touch-unverified');
+      }
+      const insets=capture.safeInsets||{};
+      const insetKeys=['left','right','top','bottom'];
+      const validInsets=insetKeys.every(key=>Number.isFinite(insets[key])&&insets[key]>=0)
+        &&insets.left+insets.right<width&&insets.top+insets.bottom<height;
+      if(!validInsets)failures.push(orientation+':safe-area-unmeasured');
+      const elements=(Array.isArray(capture.elements)?capture.elements:[]).filter(item=>item&&item.visible!==false);
+      if(!elements.length)failures.push(orientation+':visible-elements-unmeasured');
+      const parents=new Map(elements.map(item=>[String(item.id||''),String(item.parentId||'')]));
+      const ancestor=(parent,child)=>{
+        const visited=new Set();let current=parents.get(String(child));
+        while(current&&!visited.has(current)){
+          if(current===String(parent))return true;
+          visited.add(current);current=parents.get(current);
+        }
+        return false;
+      };
+      const boxes=[];
+      for(const item of elements){
+        const r=item.rect||{};
+        const id=String(item.id||'unknown');
+        if(!['x','y','width','height'].every(key=>Number.isFinite(r[key]))||r.width<=0||r.height<=0){
+          failures.push(orientation+':'+id+':bounds-invalid');continue;
+        }
+        if(validInsets&&(r.x<insets.left||r.y<insets.top||r.x+r.width>width-insets.right||r.y+r.height>height-insets.bottom))failures.push(orientation+':'+id+':clipped');
+        if(item.interactive===true&&(r.width<44||r.height<44||item.hitTestPassed!==true))failures.push(orientation+':'+id+':touch-target-invalid');
+        if(item.textPresent===true&&(item.textFits!==true||item.textReadable!==true))failures.push(orientation+':'+id+':text-unreadable');
+        // 포함 관계는 부모/자식 ID가 명시된 경우에만 허용한다.
+        for(const other of boxes){
+          const q=other.rect;
+          const related=ancestor(other.id,id)||ancestor(id,other.id);
+          if(!related&&Math.min(r.x+r.width,q.x+q.width)>Math.max(r.x,q.x)&&Math.min(r.y+r.height,q.y+q.height)>Math.max(r.y,q.y)){
+            failures.push(orientation+':'+other.id+'+'+id+':overlap');
+          }
+        }
+        boxes.push({...item,id,rect:r});
+      }
+    }
+    if(failures.length)interfaceFailures[surface]=Object.freeze([...new Set(failures)]);
+    return failures.length>0;
   });
   const sceneObjectCoverage=evidence.sceneObjectCoverage&&typeof evidence.sceneObjectCoverage==='object'?evidence.sceneObjectCoverage:{};
   const sceneRequirements=(Array.isArray(sceneObjectCoverage.requirements)?sceneObjectCoverage.requirements:[]).map(row=>typeof row==='string'?{id:row,required:true}:row).filter(row=>row&&String(row.id||'').trim()&&row.required!==false);
@@ -237,7 +298,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
   for(const id of missingEnvironment)repairTargets.push(Object.freeze({surface:'ENVIRONMENT',id,scope:'PRESENTATION_ONLY',evidenceRequired:'SAME_ROLE_RUNTIME_RECAPTURE'}));
   for(const id of missingCohesion)repairTargets.push(Object.freeze({surface:'COHESION',id,scope:'ART_STYLE_ONLY',evidenceRequired:'SAME_CAMERA_LIGHTING_COMPARISON'}));
   for(const id of missingPresentation)repairTargets.push(Object.freeze({surface:'PRESENTATION',id,scope:'PRESENTATION_ONLY',evidenceRequired:'RUNTIME_EVENT_CAPTURE'}));
-  for(const id of missingInterfaceSurfaces)repairTargets.push(Object.freeze({surface:'INTERFACE',id,scope:'HUD_MENU_MINIMAP_INTERACTION_PRESENTATION',evidenceRequired:'MOBILE_RUNTIME_CAPTURE'}));
+  for(const id of missingInterfaceSurfaces)repairTargets.push(Object.freeze({surface:'INTERFACE',id,scope:'HUD_MENU_MINIMAP_INTERACTION_PRESENTATION',evidenceRequired:'EXACT_SOURCE_PORTRAIT_LANDSCAPE_IMAGE_AND_TOUCH_BOUNDS',findings:interfaceFailures[id]}));
   for(const id of missingSceneObjects)repairTargets.push(Object.freeze({surface:'SCENE_OBJECT',id,scope:'DECLARED_VISUAL_OBJECT_BINDING',evidenceRequired:'RUNTIME_VISIBLE_AND_BOUND_CAPTURE'}));
   if(highEndRequired&&!visualRegressionPassed)repairTargets.push(Object.freeze({surface:'VISUAL_REGRESSION',id:'BEFORE_AFTER',scope:'CHANGED_VISUAL_RESPONSIBILITY_ONLY',evidenceRequired:detailedVisualRegression?'DISTINCT_STABLE_RUNTIME_BEFORE_AFTER_CAPTURE':'EXISTING_VISUAL_REGRESSION_EVIDENCE'}));
   return Object.freeze({
@@ -257,6 +318,7 @@ export function auditVibeRuntimeVisualEvidence(evidence={}){
     interfaceCoverage:Object.freeze({
       required:Object.freeze(declaredInterfaceSurfaces),
       missing:Object.freeze(missingInterfaceSurfaces),
+      findings:Object.freeze(interfaceFailures),
       complete:missingInterfaceSurfaces.length===0
     }),
     sceneObjectCoverage:Object.freeze({

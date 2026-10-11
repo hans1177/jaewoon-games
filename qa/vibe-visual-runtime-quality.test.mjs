@@ -32,6 +32,18 @@ function captures(revision='a'.repeat(40)){
   }));
 }
 
+// Synthetic fixtures exercise evidence validation; these are not live Roblox captures.
+function interfaceEvidence(revision){
+ return {required:true,pass:true,observed:true,reviewed:true,captures:['PORTRAIT','LANDSCAPE'].map((orientation,index)=>({
+  orientation,viewport:index?{width:844,height:390}:{width:393,height:852},
+  source:'roblox-runtime-capture',runtimeScreenshot:true,artifactId:'fixture-'+orientation,
+  candidateRevision:revision,imageSha256:String(index+1).repeat(64),reviewed:true,
+  pixelReview:{pass:true,imageSha256:String(index+1).repeat(64)},touchInputObserved:true,
+  safeInsets:{left:0,right:0,top:24,bottom:24},
+  elements:[{id:'action',visible:true,interactive:true,hitTestPassed:true,textPresent:true,textFits:true,textReadable:true,rect:{x:16,y:80,width:60,height:52}}]
+ }))};
+}
+
 test('art pipeline uses verified asset acquisition before primitive fallback and requires golden scenes',()=>{
   const plan=createVibeArtPipeline({request:'로블록스 카툰 캐릭터 그래픽 고퀄 개선',target:'roblox',quality:2});
   assert.deepEqual([...plan.assetAcquisition.order],[...VIBE_ASSET_ACQUISITION_ORDER]);
@@ -152,9 +164,9 @@ test('declared interface and scene object gaps become localized runtime repair t
     primaryActors:[{id:'player',presentation:'rigged-mesh'}],
     requiredInterfaceSurfaces:['HUD','MINIMAP','INTERACTION'],
     interfaceCoverage:{
-      HUD:{required:true,pass:true,observed:true,reviewed:true},
+      HUD:interfaceEvidence(revision),
       MINIMAP:{required:true,pass:false,observed:true,reviewed:true},
-      INTERACTION:{required:true,pass:true,observed:true,reviewed:true}
+      INTERACTION:interfaceEvidence(revision)
     },
     sceneObjectCoverage:{
       requirements:[{id:'village-shop',required:true},{id:'quest-board',required:true}],
@@ -192,4 +204,33 @@ test('graphics production binds character identity environment detail and runtim
   assert.equal(production.engineMeasurementCapture.required,true);
   assert.equal(production.policy.runtimeVisualRepairLoopRequired,true);
   assert.equal(production.policy.declaredInterfaceSurfacesRequireMobileRuntimeEvidence,true);
+});
+
+
+test('mobile visual audit rejects stale, thumbnail, unreviewed, clipped and overlapping evidence',()=>{
+ const revision='f'.repeat(40);
+ const audit=(row)=>auditVibeRuntimeVisualEvidence({stage:'INTERNAL_PLAYTEST',candidateRevision:revision,captures:captures(revision),requiredInterfaceSurfaces:['HUD'],interfaceCoverage:{HUD:row}});
+ assert.equal(audit(interfaceEvidence(revision)).pass,true);
+ const mutations=[
+  row=>delete row.captures,
+  row=>row.captures.pop(),
+  row=>row.captures[0].candidateRevision='old',
+  row=>row.captures[0].source='roblox-thumbnail-api',
+  row=>row.captures[0].runtimeScreenshot=false,
+  row=>row.captures[0].pixelReview.imageSha256='0'.repeat(64),
+  row=>row.captures[0].touchInputObserved=false,
+  row=>delete row.captures[0].safeInsets,
+  row=>row.captures[0].elements[0].rect.width=32,
+  row=>row.captures[0].elements[0].rect.y=0,
+  row=>row.captures[0].elements[0].textFits=false,
+  row=>row.captures[0].elements.push({...row.captures[0].elements[0],id:'dialog'}),
+ ];
+ for(const mutate of mutations){
+  const row=interfaceEvidence(revision);mutate(row);const result=audit(row);
+  assert.equal(result.pass,false,String(mutate));
+  assert.deepEqual([...result.interfaceCoverage.missing],['HUD']);
+  assert.ok(result.repairTargets[0].findings.length>0);
+ }
+ const stale=captures(revision);delete stale[0].candidateRevision;
+ assert.equal(auditVibeGoldenSceneEvidence({candidateRevision:revision,captures:stale}).pass,false);
 });

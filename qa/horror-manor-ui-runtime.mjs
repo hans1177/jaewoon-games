@@ -4,9 +4,25 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+const commonUI=fs.readFileSync('assets/roblox/common-ui-v1/RobloxCommonUI.luau','utf8');
 const source=fs.readFileSync('roblox-games/horror-escape-room/client/ManorLobby.client.luau','utf8');
 const server=fs.readFileSync('roblox-games/horror-escape-room/server/Game.server.luau','utf8');
 const gameClient=fs.readFileSync('roblox-games/horror-escape-room/client/Game.client.luau','utf8');
+// UI-only mode executes the full current lobby client without unrelated server excerpts.
+if(process.argv.includes('--ui-only')){
+ const harness=fs.readFileSync('qa/horror-manor-ui-harness.luau','utf8');
+ const end=harness.indexOf('print("MANOR_UI_RUNTIME_QA=PASS:22")');
+ if(end<0)throw Error('UI harness boundary not found');
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'manor-ui-qa-'));
+ try{
+  const file=path.join(dir,'run.luau');
+  fs.writeFileSync(file,harness.slice(0,end+'print("MANOR_UI_RUNTIME_QA=PASS:22")'.length).replace('-- __COMMON_UI_SOURCE__',()=>`CommonUI=(function()${commonUI}\nend)()`).replace('-- __MANOR_CLIENT_SOURCE__',()=>`do\n${source}\nend`));
+  const result=spawnSync(process.env.LUAU_BIN||'luau',[file],{encoding:'utf8'});
+  if(result.error)throw result.error;
+  process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
+  process.exitCode=result.status??1;
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+}else{
 const loadingStart=gameClient.indexOf('task.spawn(function()\n -- 음악은');
 const loadingStop=gameClient.indexOf('task.spawn(function()\n for _=1,20',loadingStart);
 if(loadingStart<0||loadingStop<=loadingStart)throw Error('Loading flow source not found');
@@ -29,3 +45,5 @@ try{
  process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
  process.exitCode=result.status??1;
 }finally{fs.rmSync(dir,{recursive:true,force:true});}
+
+}

@@ -8,6 +8,7 @@ local Lighting=game:GetService("Lighting")
 local UserInputService=game:GetService("UserInputService")
 local p=Players.LocalPlayer
 local C=require(RS.Shared.GameConfig)
+local CommonUI=require(RS.Shared.RobloxCommonUI)
 local Assets=require(RS.Shared.ManorAssets)
 local Stories=require(RS.Shared.MonsterStories)
 local remote=RS:WaitForChild(C.RemoteName)
@@ -62,7 +63,7 @@ local function label(parent,text,height,size,color)
  x.TextXAlignment=Enum.TextXAlignment.Left;x.Parent=parent;return x
 end
 local function button(parent,text,fn,color)
- local x=Instance.new("TextButton");x.Size=UDim2.new(1,-12,0,54);x.BackgroundColor3=color or wood
+ local x=CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52});x.Size=UDim2.new(1,-12,0,54);x.BackgroundColor3=color or wood
  x.Text=text;x.TextColor3=ivory;x.TextSize=15;x.TextWrapped=true;x.Font=Enum.Font.Antique;x.AutoButtonColor=false
  x.Parent=parent;corner(x,1)
  local left=Instance.new("Frame");left.BackgroundColor3=brass;left.BackgroundTransparency=.08;left.BorderSizePixel=0
@@ -121,8 +122,8 @@ local status=label(header,"괴물 가족의 저택",22,10,parchment);status.Posi
 local commands=Instance.new("Frame");commands.Name="ManorCommands";commands.AnchorPoint=Vector2.new(1,0)
 commands.Position=UDim2.new(1,-10,0,6);commands.Size=UDim2.fromOffset(162,54);commands.BackgroundTransparency=1;commands.Parent=gui
 
-local nav=Instance.new("Frame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,62)
-nav.Size=UDim2.fromOffset(84,274);nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1);gothicCorners(nav)
+local nav=Instance.new("ScrollingFrame");nav.Name="FamilyNotebook";nav.AnchorPoint=Vector2.new(1,0);nav.Position=UDim2.new(1,-10,0,62)
+nav.Size=UDim2.fromOffset(84,274);nav.AutomaticCanvasSize=Enum.AutomaticSize.Y;nav.CanvasSize=UDim2.new();nav.ScrollBarThickness=3;nav.ScrollingDirection=Enum.ScrollingDirection.Y;nav.BackgroundColor3=leather;nav.BackgroundTransparency=.01;nav.Visible=false;nav.Parent=gui;corner(nav,1);gothicCorners(nav)
 local navItems={}
 local compactMobile=false
 local depart,notebook
@@ -159,28 +160,29 @@ local layout=Instance.new("UIListLayout");layout.Padding=UDim.new(0,8);layout.So
 
 local lastViewport=Vector2.zero
 local function applyManorLayout()
- local camera=workspace.CurrentCamera;local v=camera and camera.ViewportSize or Vector2.new(1280,720)
+ local v=gui.AbsoluteSize
+ if v.X<=0 or v.Y<=0 then return end
  if v==lastViewport then return end;lastViewport=v
  compactMobile=UserInputService.TouchEnabled or v.X<900 or v.Y<600
  if compactMobile then
-  header.Position=UDim2.fromOffset(8,6);header.Size=UDim2.fromOffset(math.min(218,math.max(188,v.X-160)),48)
+  header.Position=UDim2.fromOffset(8,6);header.Size=UDim2.fromOffset(math.min(218,math.max(120,v.X-156)),48)
   title.TextSize=14;title.Position=UDim2.fromOffset(10,1);title.Size=UDim2.new(1,-20,0,21)
   status.TextSize=9;status.Position=UDim2.fromOffset(10,25);status.Size=UDim2.new(1,-20,0,18)
-  commands.Position=UDim2.new(1,-8,0,6);commands.Size=UDim2.fromOffset(132,44)
-  if depart then depart.Size=UDim2.fromOffset(62,42)end
-  if notebook then notebook.Size=UDim2.fromOffset(62,42);notebook.Position=UDim2.fromOffset(68,0)end
-  nav.Position=UDim2.new(1,-8,0,56);nav.Size=UDim2.fromOffset(74,236)
+  commands.Position=UDim2.new(1,-8,0,6);commands.Size=UDim2.fromOffset(132,52)
+  if depart then depart.Size=UDim2.fromOffset(62,52)end
+  if notebook then notebook.Size=UDim2.fromOffset(62,52);notebook.Position=UDim2.fromOffset(68,0)end
+  nav.Position=UDim2.new(1,-8,0,66);nav.Size=UDim2.fromOffset(84,math.min(294,v.Y-82))
   navPadding.PaddingTop=UDim.new(0,5);navPadding.PaddingBottom=UDim.new(0,5);navPadding.PaddingLeft=UDim.new(0,5);navPadding.PaddingRight=UDim.new(0,5)
   navList.Padding=UDim.new(0,4)
   for _,row in ipairs(navItems)do
-   row.item.Size=UDim2.new(1,0,0,40);row.icon.Size=UDim2.fromOffset(17,17);row.icon.Position=UDim2.new(.5,0,0,3)
+   row.item.Size=UDim2.new(1,0,0,52);row.icon.Size=UDim2.fromOffset(17,17);row.icon.Position=UDim2.new(.5,0,0,3)
    row.text.TextSize=10;row.text.Position=UDim2.fromOffset(0,22);row.text.Size=UDim2.new(1,0,0,16)
   end
   panel.AnchorPoint=Vector2.new(.5,1);panel.Position=UDim2.new(.5,0,1,-8)
-  panel.Size=UDim2.new(1,-16,0,math.floor(math.min(420,v.Y*.64)))
+  panel.Size=UDim2.new(1,-16,0,math.floor(math.min(520,v.Y-16)))
   local limit=panel:FindFirstChild("MobileWidthLimit")or Instance.new("UISizeConstraint")
-  limit.Name="MobileWidthLimit";limit.MaxSize=Vector2.new(460,430);limit.MinSize=Vector2.new(300,250);limit.Parent=panel
-  panelTitle.TextSize=18;close.Size=UDim2.fromOffset(48,48);close.Position=UDim2.new(1,-55,0,4)
+  limit.Name="MobileWidthLimit";limit.MaxSize=Vector2.new(460,520);limit.MinSize=Vector2.new(0,0);limit.Parent=panel
+  panelTitle.TextSize=18;close.Size=UDim2.fromOffset(52,52);close.Position=UDim2.new(1,-55,0,4)
   body.Position=UDim2.fromOffset(22,60);body.Size=UDim2.new(1,-32,1,-70)
  else
   header.Position=UDim2.fromOffset(10,6);header.Size=UDim2.fromOffset(238,56)
@@ -204,6 +206,7 @@ local function applyManorLayout()
  end
 end
 applyManorLayout()
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(applyManorLayout)
 local function clear()for _,x in ipairs(body:GetChildren())do if x~=layout then x:Destroy()end end end
 local function progress()
  local r={};for id,n in string.gmatch(tostring(p:GetAttribute("GhostProgress")or""),"([^:,]+):(%d+)")do r[id]=tonumber(n)or 0 end;return r
@@ -510,6 +513,17 @@ local enter=artbookButton(card,"저택 들어가기","Version 77 앞마당에서
  releaseMainCamera()
  if visibility then visibility()end
 end,wine,3);enter.Position=UDim2.fromOffset(18,184);enter.Size=UDim2.new(1,-36,0,62)
+local function resizeWelcome()
+ local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
+ local height=math.min(260,v.Y-16)
+ card.Position=UDim2.fromScale(.5,.5);card.Size=UDim2.fromOffset(math.min(430,v.X-24),height)
+ mainTitle.Position=UDim2.fromOffset(12,8);mainTitle.Size=UDim2.new(1,-24,0,36);mainTitle.TextSize=22
+ subtitle.Position=UDim2.fromOffset(12,46);subtitle.Size=UDim2.new(1,-24,0,30)
+ greeting.Position=UDim2.fromOffset(12,82);greeting.Size=UDim2.new(1,-24,0,math.max(20,height-154));greeting.TextSize=12
+ wax.Visible=height>=250
+ enter.Position=UDim2.fromOffset(18,height-68);enter.Size=UDim2.new(1,-36,0,60)
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(resizeWelcome);resizeWelcome()
 local oldLighting=nil
 local atmosphere=nil
 local oldAtmosphere=nil

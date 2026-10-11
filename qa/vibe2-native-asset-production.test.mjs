@@ -1489,6 +1489,21 @@ test('master GLB rejects broken accessor skin node and animation sampler lineage
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('master GLB rejects fully invisible materials before any runtime promotion',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'invisible-master-glb-'));
+ try{
+  const original=fs.readFileSync('assets/roblox/world-ghosts/native/spider/spider.glb');
+  const length=original.readUInt32LE(12),document=JSON.parse(original.subarray(20,20+length));
+  for(const material of document.materials){material.alphaMode='MASK';material.pbrMetallicRoughness={...material.pbrMetallicRoughness,baseColorFactor:[.8,.7,.6,0]};}
+  const json=Buffer.from(JSON.stringify(document));const padded=Buffer.alloc(Math.ceil(json.length/4)*4,32);json.copy(padded);
+  const rest=original.subarray(20+length),out=Buffer.alloc(20+padded.length+rest.length);
+  original.subarray(0,20).copy(out);out.writeUInt32LE(out.length,8);out.writeUInt32LE(padded.length,12);padded.copy(out,20);rest.copy(out,20+padded.length);
+  fs.writeFileSync(path.join(root,'invisible.glb'),out);
+  const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',source:{path:'invisible.glb'}});
+  assert.equal(result.pass,false);assert.ok(result.blockers.includes('MASTER_GLB_VISIBLE_MATERIAL_REQUIRED'));
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('master GLB rejects zero skin-weight data even when JOINTS and WEIGHTS accessors exist',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'zero-weight-master-glb-'));
   try{
@@ -1754,8 +1769,10 @@ test('master GLB evidence is never exposed as a platform-native binding or promo
   assert.deepEqual([...rows],[]);
 });
 
-test('apply-first rejects a 3D enemy that has no compliant master GLB',()=>{
-  const plan=buildVibeAssetProductionPlan({
+test('apply-first rejects a 3D enemy that has no compliant master GLB',(t)=>{
+  const root=tempRoot();
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const plan=buildVibeAssetProductionPlan({repoRoot:root,
     target:'roblox',
     task:{gameId:'master-glb-apply-first',goal:'enemy monster 3D 모델을 실제 게임에 적용'},
     manifest:{assets:[{
@@ -1855,36 +1872,37 @@ test('customization and detailed style instructions reach the existing asset wor
 test('motion planning reuses company clips per state and does not invent coverage or runtime proof',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-reuse-'));
   try{
-    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets:[{
-      id:'owned-motion',category:'MOTION',status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
-      path:'assets/owned-motion.luau',license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'
-    }]}));
-    const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[
-      {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
+    const assets=[
+      {id:'owned-motion',category:'MOTION',types:['animation'],status:'VERIFIED_COMPANY_ASSET',verifiedCompanyReusable:true,
+        path:'roblox-games/demo/owned.json',license:'company-owned',platforms:['roblox'],states:['idle','attack'],rigType:'R15'},
+      {id:'external-motion',types:['animation'],license:'CC0',platforms:['roblox'],path:'assets/motion.json',sourceUrl:'https://example.invalid/clips',downloaded:false,animations:['attack','move']},
       {id:'unknown-clips',types:['animation'],license:'project-original',platforms:['roblox'],path:'roblox-games/demo/clips.json'},
-      {id:'reference-motion',referenceOnly:true,types:['animation'],license:'project-original',platforms:['roblox'],states:['death']},
-      {id:'wrong-platform',types:['animation'],license:'CC0',platforms:['unity'],states:['death']},
-      {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],states:['skill']}
-    ]}});
+      {id:'reference-motion',referenceOnly:true,types:['animation'],license:'project-original',platforms:['roblox'],path:'assets/reference.json',states:['death']},
+      {id:'wrong-platform',types:['animation'],license:'CC0',platforms:['unity'],path:'unity-games/demo/motion.json',states:['death']},
+      {id:'blocked-license',types:['animation'],license:'CC-BY-NC',platforms:['roblox'],path:'assets/blocked.json',states:['skill']}
+    ];
+    for(const asset of assets){const file=path.join(root,asset.path);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify({states:asset.states||asset.animations||[]}));}
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({assets}));
+    const plan=buildVibeAssetProductionPlan({repoRoot:root,target:'roblox',task:{gameId:'demo',goal:'공격 모션'},presetCatalog:{presets:[]},manifest:{assets:[]}});
     const motion=plan.decisions.find(row=>row.type==='animation');
     assert.equal(motion.decisionOrder[1],'REUSE_VERIFIED_COMPANY_ASSET');
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion']);
-    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,[]);
-    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['move','hit','skill','death']);
-    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,[]);
+    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='attack').candidateIds,['owned-motion','external-motion']);
+    assert.deepEqual(motion.motionReusePlan.stateBindings.find(row=>row.state==='move').candidateIds,['external-motion']);
+    assert.deepEqual(motion.motionReusePlan.unresolvedStates,['hit','skill','death']);
+    assert.deepEqual(motion.motionReusePlan.coverageUnknownCandidateIds,['unknown-clips']);
     assert.equal(motion.motionReusePlan.runtimeVerified,false);
     assert.ok(motion.motionReusePlan.stateBindings.every(row=>row.runtimeVerified===false));
     assert.equal(motion.companyCandidates[0].rigType,'R15');
     assert.equal(motion.decisionOrder[0],'COMPARE_TARGET_GAME_QUALITY');
     assert.equal(motion.qualitySelection.selectedAssetId,null);
-    assert.equal(motion.qualitySelection.selectionState,'TARGET_GAME_REVIEW_REQUIRED');
-    assert.equal(motion.postDownloadComparison.required,false);
-    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion']);
-    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,[]);
-    assert.ok(!motion.qualitySelection.compareCandidateIds.includes('external-motion'));
+    assert.equal(motion.qualitySelection.selectionState,'DOWNLOAD_REQUIRED_BEFORE_INTERNAL_COMPARISON');
+    assert.equal(motion.postDownloadComparison.required,true);
+    assert.deepEqual(motion.postDownloadComparison.internalBaselineCandidateIds,['owned-motion','unknown-clips']);
+    assert.deepEqual(motion.postDownloadComparison.pendingDownloadCandidateIds,['external-motion']);
+    assert.ok(motion.qualitySelection.compareCandidateIds.includes('external-motion'));
     assert.ok(!motion.qualitySelection.compareCandidateIds.includes('reference-motion'));
     const guidance=assetProductionGuidance(plan);
-    assert.match(guidance,/attack=owned-motion/);
+    assert.match(guidance,/attack=owned-motion\|external-motion/);
     assert.match(guidance,/Asset ID를 지어내지/);
     assert.match(guidance,/MULTIPLAYER_SYNC/);
     assert.match(guidance,/기존 공격 판정/);
@@ -3968,7 +3986,7 @@ test('runtime visual defects flow from asset planning into the source worker pro
   const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'runtime-visual-demo',goal:'로블록스 UI와 월드 디테일 보완',runtimeVisualEvidence}});
   assert.equal(plan.runtimeVisualAudit.pass,false);
   assert.equal(plan.runtimeVisualRepair.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
-  assert.deepEqual([...plan.runtimeVisualRepair.interfaceMissing],['MINIMAP']);
+  assert.deepEqual([...plan.runtimeVisualRepair.interfaceMissing],['HUD','MINIMAP']);
   assert.deepEqual([...plan.runtimeVisualRepair.sceneObjectsMissing],['quest-board']);
   assert.equal(plan.runtimeVisualRepair.declarationOnlyClosureForbidden,true);
   assert.match(assetProductionGuidance(plan),/RUNTIME VISUAL REPAIR LOOP/);
@@ -4039,13 +4057,15 @@ test('usable same-game asset is applied before new authoring and weak regions de
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('precision production continues from inspection through authoring and application',()=>{
+test('precision production continues from inspection through authoring and application',(t)=>{
+  const root=tempRoot();
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
   const asset={
     id:'hero-body',family:'CHARACTER',types:['character'],tags:['character'],
     license:'project-original',sourceHash:'hero-v1',
     customization:{controls:{jaw:{kind:'MORPH',axis:'FACE',target:'Jaw',min:0,max:1}}}
   };
-  const plan=buildVibeAssetProductionPlan({
+  const plan=buildVibeAssetProductionPlan({repoRoot:root,
     target:'roblox',manifest:{assets:[asset]},presetCatalog:{presets:[]},
     task:{
       gameId:'precision-demo',goal:'캐릭터와 마을을 정밀하게 실제 제작해서 적용',

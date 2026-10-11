@@ -1298,6 +1298,13 @@ function computeVibeNativeDesign(){
   ];
   const rules=rulePlan.slice(0,12);
   const roles=Object.fromEntries(rules.filter(row=>['MAIN','A','B','DELVE'].includes(row.grammarRole)).map(row=>[row.grammarRole,row]));
+  const participantStateKeys=playableRequirements.infection?['HumanCount','MonsterCount','EliminatedCount']:[];
+  if(participantStateKeys.length){
+    for(const role of [roles.MAIN,roles.A,roles.B]){
+      role.stateInputs=[...new Set([...role.stateInputs,...participantStateKeys])];
+      role.stateOutputs=[...new Set([...role.stateOutputs,...participantStateKeys])];
+    }
+  }
   const stateNames=[...new Set(rules.flatMap(row=>[...(row.stateInputs||[]),...(row.stateOutputs||[])]))];
   const handoffs=[];
   for(const from of rules)for(const to of rules){
@@ -1314,8 +1321,9 @@ function computeVibeNativeDesign(){
     trigger:shorten(`${edge.from.name}의 선택: ${edge.from.playerChoice} 기존 선행조건을 만족해 ${edge.keys.join('·')} 출력이 확정됐을 때 ${edge.to.name}이 같은 키를 읽는다.`,280),
     stateChange:shorten(`${edge.from.id} 출력 ${edge.keys.join('·')} → ${edge.to.id} 입력. 후속 선택: ${edge.to.playerChoice} 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다.`,350)
   }));
-  const baseLoop=Array.isArray(seed.CORE_LOOP)&&seed.CORE_LOOP.length>=3
-    ?seed.CORE_LOOP.slice(0,8):computed.coreLoop;
+  // 접수용 반복문을 설계 원본으로 승격하지 않는다. 문법 검증된 원본 또는 현재 문법 연산의 루프만 사용한다.
+  const baseLoop=preserved&&originalRoles&&Array.isArray(original.coreLoop)&&original.coreLoop.length>=3
+    ?original.coreLoop.slice(0,8):computed.coreLoop;
   const coreLoop=baseLoop.map(value=>shorten(value,330));
   const identity=shorten(`${name}. ${grammar.emergentGenre.name}. ${mainName}에서 ${a.name}과 ${b.name}이 서로 결과를 되돌려 바꾸며 ${c.genres[0].name}·${c.genres[1].name}의 판단이 실제 세계 상태를 변화시킨다.`,950);
   const creativeGrammar=preserved&&originalRoles?structuredClone(original.creativeGrammar):{
@@ -1362,7 +1370,10 @@ function computeVibeNativeDesign(){
     telegraph:'기존 전조와 판정 타이밍을 그대로 사용한다.',avoidance:'기존 회피 입력과 반응 규칙을 보존한다.',
     effect:'원본 설정에 정의된 대상 상태 변화만 발생한다.',
     stateInputs:[roles.B.stateInputs[0]],stateOutputs:[roles.B.stateOutputs[0]],
-    source:'현재 원본 구현의 대응 능력 정의',rangeKey:'',costKey:'',cooldownKey:''
+    source:'현재 원본 구현의 대응 능력 정의',
+    rangeKey:row.kind==='INFECTION'?'InfectRange':row.kind==='PURIFICATION'?'PurifyDistance':'',
+    costKey:row.kind==='INFECTION'?'InfectAttackCost':'',
+    cooldownKey:row.kind==='INFECTION'?'InfectAttackCooldown':row.kind==='PURIFICATION'?'PurifyCooldown':''
   }));
   if(!abilities.length)abilities.push(
     {id:'VIBE_CHOOSE',name:'첫 시스템의 경로 선택',kind:'INTERACTION',ownerId:'PLAYER',ruleId:roles.A.id,
@@ -1382,6 +1393,18 @@ function computeVibeNativeDesign(){
       trigger:'플레이어가 다른 선택으로 위험을 줄일 조건을 확인할 때 실행한다.',
       source:'기존 시스템의 대안 입력에 대한 설계 요청 (구현 전)'});
   }
+  // 문법의 상태 전이에 기존 직업의 실제 능력 ID를 연결한다. 누락된 능력을 만들어 채우지 않는다.
+  const roleTransitions=playableRequirements.humanRoster.map(human=>{
+    const before=abilities.find(row=>row.kind==='HUMAN'&&row.ownerId===human.id);
+    const after=abilities.find(row=>row.kind==='INFECTED'&&row.ownerId===human.id);
+    if(!before||!after)throw new Error('DESIGN_NATIVE_ROLE_ABILITY_MISSING:'+human.id);
+    return {
+      humanId:human.id,humanTool:human.tool,humanAbilityId:before.id,infectedAbilityId:after.id,
+      retainedState:'플레이어의 연결된 진행·위치·저장 상태를 서버 권한 아래 유지한다.',
+      removedState:`인간 도구 ${human.tool}의 행동 권한과 ${before.name} 사용 가능 상태를 제거한다.`,
+      changedChoice:`${before.name}으로 인간 목표를 수행하던 선택이 ${after.name}을 사용해 반대 진영을 추격하는 선택으로 전환된다.`
+    };
+  });
   const regionIds=['VIBE_ORIGIN','VIBE_REVISIT'];
   const regions=[
     {id:regionIds[0],ruleIds:[roles.MAIN.id,roles.A.id],name:`${a.sourceMaterial}의 첫 선택 공간`,
@@ -1429,13 +1452,46 @@ function computeVibeNativeDesign(){
   const phases=playableRequirements.phases||['OPENING','DEVELOPMENT','RESOLUTION'];
   const roundSeconds=Number(playableRequirements.lockedNumbers?.RoundSeconds)||Math.max(180,phases.length*60);
   const phaseSeconds=roundSeconds/phases.length;
+  const participants=playableRequirements.infection?[
+    ...playableRequirements.humanRoster.slice(0,playableRequirements.lockedNumbers.SurvivorSlots).map(human=>({id:'H_'+human.id,role:'HUMAN',classId:human.id})),
+    ...playableRequirements.monsterRoster.slice(0,playableRequirements.lockedNumbers.MonsterSlots).map(monster=>({id:'M_'+monster.id,role:'MONSTER',classId:monster.id}))
+  ]:[];
+  const actorState=new Map(participants.map(row=>[row.id,{...row,infected:false}]));
+  const humans=participants.filter(row=>row.role==='HUMAN'),monsters=participants.filter(row=>row.role==='MONSTER');
+  if(playableRequirements.infection&&(humans.length<2||!monsters.length
+    ||humans.length!==playableRequirements.lockedNumbers.SurvivorSlots
+    ||monsters.length!==playableRequirements.lockedNumbers.MonsterSlots))throw new Error('DESIGN_NATIVE_PARTICIPANT_CONTRACT_MISSING');
   // 설계 시뮬레이션은 규칙의 출력 상태만 갱신한다. 원본 게임 수치나 런타임 검증으로 위장하지 않는다.
   // 이전 장면의 출력이 다음 장면의 입력으로 이어지는지 정확히 확인할 수 있게 보존한다.
   const planState=Object.fromEntries(stateNames.map(key=>[key,0]));
+  const syncParticipantState=()=>{
+    if(!playableRequirements.infection)return;
+    for(const [key,role]of [['HumanCount','HUMAN'],['MonsterCount','MONSTER'],['EliminatedCount','ELIMINATED']]){
+      planState[key]=[...actorState.values()].filter(row=>row.role===role).length;
+    }
+  };
+  syncParticipantState();
   const stateSnapshot=()=>stateNames.map(key=>({key,value:planState[key]}));
   const playthrough=phases.map((phase,index)=>{
     const phaseRule=index===0?roles.A:index===phases.length-1?roles.DELVE:roles.B;
-    const phaseAbility=abilities.find(row=>row.ruleId===phaseRule.id)||abilities[index%abilities.length];
+    let phaseAbility=abilities.find(row=>row.ruleId===phaseRule.id)||abilities[index%abilities.length];
+    let actorId='PLAYER',targetId='WORLD',hit=false;
+    if(playableRequirements.infection){
+      const first=humans[0],counter=humans[1],monster=monsters[0];
+      const event={
+        START:{kind:'HUMAN',actor:first,target:monster},
+        FIRST_CONTACT:{kind:'MONSTER',actor:monster,target:first},
+        FIRST_INFECTION:{kind:'INFECTION',actor:monster,target:first,hit:true},
+        IMBALANCE:{kind:'INFECTED',actor:first,target:counter},
+        COMEBACK:{kind:'PURIFICATION',actor:counter,target:first,hit:true},
+        RESOLUTION:{kind:'HUMAN',actor:counter,target:monster}
+      }[phase];
+      if(!event)throw new Error('DESIGN_NATIVE_INFECTION_PHASE_UNKNOWN:'+phase);
+      phaseAbility=abilities.find(row=>row.kind===event.kind
+        &&(['INFECTION','PURIFICATION'].includes(event.kind)||row.ownerId===event.actor.classId));
+      if(!phaseAbility)throw new Error('DESIGN_NATIVE_PHASE_ABILITY_MISSING:'+phase);
+      actorId=event.actor.id;targetId=event.target.id;hit=event.hit===true;
+    }
     const before=stateSnapshot();
     const reads=phaseRule.stateInputs.filter(key=>Object.hasOwn(planState,key));
     const outputs=phaseRule.stateOutputs.filter(key=>Object.hasOwn(planState,key));
@@ -1444,7 +1500,12 @@ function computeVibeNativeDesign(){
     const downstream=handoffs.filter(row=>row.from.id===phaseRule.id).flatMap(row=>row.keys||[row.key]);
     const changed=outputs.filter(key=>downstream.includes(key));
     const stateChangeKeys=changed.length?changed:outputs;
-    for(const key of stateChangeKeys)planState[key]+=1;
+    for(const key of stateChangeKeys)if(!playableRequirements.infection||!['HumanCount','MonsterCount','EliminatedCount'].includes(key))planState[key]+=1;
+    if(hit&&phaseAbility.kind==='INFECTION'){
+      actorState.get(targetId).role='MONSTER';actorState.get(targetId).infected=true;
+    }
+    if(hit&&phaseAbility.kind==='PURIFICATION')actorState.get(targetId).role='ELIMINATED';
+    syncParticipantState();
     const after=stateSnapshot();
     const entryState=index
       ?`직전 단계 ${phases[index-1]}의 상태 변화에서 이어진다.`
@@ -1461,11 +1522,13 @@ function computeVibeNativeDesign(){
       nextDecision,startSeconds:phaseSeconds*index,endSeconds:phaseSeconds*(index+1),
       timeReason:`${phase}에서 ${reads.join('·')} 입력과 ${stateChangeKeys.join('·')} 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.`,
       before,after,
-      actions:[{abilityId:phaseAbility.id,actorId:'PLAYER',targetId:'WORLD',atSeconds:phaseSeconds*(index+0.5),
-        distance:0,energyBefore,energyAfter:energyBefore-(Number(phaseAbility.cost)||0),hit:false,
-        response:`${phaseRule.name}의 상태 출력 ${stateChangeKeys.join('·')}가 다음 시스템의 선택 조건에 전달된다.`}],
+      actions:[{abilityId:phaseAbility.id,actorId,targetId,atSeconds:phaseSeconds*(index+0.5),
+        distance:0,energyBefore,energyAfter:energyBefore-(Number(phaseAbility.cost)||0),hit,
+        response:`${actorId}가 ${phaseAbility.name}을 사용한다. ${hit?'서버 판정이 성공해 대상 진영·인원이 변화한다.':'상대 대응을 관찰하고 확정 타격 없이 다음 선택으로 이어진다.'} ${phaseRule.name}의 상태 출력 ${stateChangeKeys.join('·')}가 다음 시스템의 선택 조건에 전달된다.`.slice(0,490)}],
       ruleIds:[...new Set([phaseRule.id,phaseAbility.ruleId])],
-      outcome:index===phases.length-1?'SUCCESS':'ONGOING'
+      outcome:playableRequirements.infection
+        ?(planState.HumanCount===0?'MONSTER_WIN':planState.MonsterCount===0?'HUMAN_WIN':index===phases.length-1?'DRAW':'ONGOING')
+        :index===phases.length-1?'SUCCESS':'ONGOING'
     };
   });
   for(let i=1;i<playthrough.length;i++)playthrough[i].entryState=playthrough[i-1].exitState;
@@ -1578,6 +1641,7 @@ function computeVibeNativeDesign(){
       reversibility:'새 설계는 후보이며 기존 코드·밸런스·저장은 수정하거나 버리지 않는다.',
       playthrough,
       roundSeconds,sessionSeconds:Math.max(1800,roundSeconds),
+      ...(playableRequirements.infection?{participants}:{}),
       durationRationale:'한 판의 상태 전이를 연속된 장면으로 나누고 30분 세션의 탐색·반작용·발견을 분리한다. 시간 배분은 설계 가정이며 실제 플레이 측정 전이다.'
     },
     contentVarietyPlan:{
@@ -1594,7 +1658,7 @@ function computeVibeNativeDesign(){
         {role:'B의 반작용',variation:`${b.playerChoice}가 다시 A의 안전·정보 선택을 변화시키는지 확인한다.`}
       ],
       antiMonotonyRule:'같은 적 체력이나 수치만 반복하지 않고 접근 경로·정보·인물 관계·대응 규칙이 초중후반에 변한다.',
-      abilities,roleTransitions:[]
+      abilities,roleTransitions
     },
     narrativeDialoguePlan:{
       applicable:true,worldRules:[grammar.worldRule],characterGoals:[grammar.storyWorldBindings.emotionalConflict],
