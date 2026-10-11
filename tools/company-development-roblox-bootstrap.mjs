@@ -54,7 +54,7 @@ function stripManagedRobloxStudioAssetDetectionSource(text=''){
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/g,' ')
     .replace(/--[^\n]*/g,' ');
 }
-export function robloxStudioAssetDetectionSourceFromRoot(root=''){
+export function robloxStudioAssetDetectionSourceFromRoot(root='',{onSource=null}={}){
   const base=path.resolve(root),rows=[],stack=[base];
   while(stack.length){
     const current=stack.pop();
@@ -73,9 +73,10 @@ export function robloxStudioAssetDetectionSourceFromRoot(root=''){
       rows.push({relative,text:fs.readFileSync(absolute,'utf8')});
     }
   }
-  return stripManagedRobloxStudioAssetDetectionSource(
-    rows.sort((a,b)=>a.relative.localeCompare(b.relative)).map(row=>row.text).join('\n')
-  );
+  rows.sort((a,b)=>a.relative.localeCompare(b.relative));
+  // 기존 한 번의 소스 관측에서 실제 책임 파일도 전달한다. 서버/중첩 모듈을 누락하지 않는다.
+  if(typeof onSource==='function')for(const row of rows)onSource({...row,text:stripManagedRobloxStudioAssetDetectionSource(row.text)});
+  return stripManagedRobloxStudioAssetDetectionSource(rows.map(row=>row.text).join('\n'));
 }
 
 function robloxStudioAssetSystemNearby(source='',semanticPattern,nativePattern,window=1200){
@@ -138,7 +139,9 @@ function stripRobloxStudioAssetBindingDeclarations(text=''){
     .replace(/\bSTUDIO_ASSET_SELECTION\s*=\s*\{[\s\S]*?\n\}/g,' ');
 }
 export function robloxStudioAssetFamilyBoundInText(text='',family=''){
-  const raw=stripRobloxStudioAssetBindingDeclarations(text);
+  // 실제 선택값의 소비만 추적한다. 목록 존재 검사와 주석은 자산 적용이 아니다.
+  const raw=stripRobloxStudioAssetBindingDeclarations(text)
+    .replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|--\[(=*)\[[\s\S]*?\]\2\]|--[^\n]*/g,(match,literal)=>literal||' ');
   const nativePattern=ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS[family];
   if(!nativePattern)return false;
   const renderSink=/(?:\.(?:Color|BackgroundColor3|TextColor3|ImageColor3|Material|MaterialVariant|TextureID|MeshId|Transparency|Size|CFrame|Position|Orientation|Rotation|LightEmission|Rate|Volume|PlaybackSpeed|AnimationId|Transform|Thickness|CornerRadius)\s*=|TweenService\s*:\s*Create\s*\(|:\s*Create\s*\([^\n]*(?:TweenInfo|Position|Rotation|Transform)|Instance\.new\s*\(\s*["'](?:UIStroke|UICorner|UIGradient|SurfaceAppearance|ParticleEmitter|Beam|Trail|PointLight|SpotLight|SurfaceLight)["']\s*\))/i;
@@ -149,6 +152,8 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     const statementEndCandidates=[raw.indexOf(';',index),raw.indexOf('\n',index)].filter(value=>value>=0);
     const statementEnd=statementEndCandidates.length?Math.min(...statementEndCandidates):raw.length;
     const statement=raw.slice(statementStart,statementEnd);
+    const prefix=raw.slice(statementStart,index);
+    if(/#\s*\(*\s*$/.test(prefix))continue;
     if(renderSink.test(statement)&&nativePattern.test(raw.slice(Math.max(0,index-500),Math.min(raw.length,index+1200))))return true;
 
     const lineStart=raw.lastIndexOf('\n',index)+1;
@@ -162,14 +167,20 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
       if(renderSink.test(guardedBlock)&&nativePattern.test(guardedBlock))return true;
     }
 
-    const assignmentPrefix=raw.slice(statementStart,index).match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/);
+    const assignmentPrefix=prefix.match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/);
     if(!assignmentPrefix)continue;
     const aliases=new Set([assignmentPrefix[1]]);
     for(let pass=0;pass<statements.length;pass++){
       let changed=false;
       for(const row of statements){
-        if(![...aliases].some(alias=>new RegExp('\\b'+alias+'\\b').test(row)))continue;
-        if(renderSink.test(row)&&nativePattern.test(row))return true;
+        const sink=row.match(renderSink);
+        const value=sink?row.slice(sink.index+sink[0].length):row.slice(row.indexOf('=')+1);
+        const consumesValue=[...aliases].some(alias=>{
+          const withoutCount=value.replace(new RegExp('#\\s*\\(*\\s*'+alias+'\\b','g'),'');
+          return new RegExp('\\b'+alias+'\\b(?!\\s*\\.(?:length|Length|Count)\\b)').test(withoutCount);
+        });
+        if(!consumesValue)continue;
+        if(sink&&nativePattern.test(raw))return true;
         const derived=row.match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*[^=]/);
         if(derived&&!aliases.has(derived[1])){aliases.add(derived[1]);changed=true;}
       }

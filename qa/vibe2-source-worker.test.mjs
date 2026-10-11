@@ -1024,6 +1024,39 @@ test('Unity dynamic asset binding requires actual native family consumption inst
   assert.ok(rejected.blockers.includes('ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:UI'));
 });
 
+test('Unity binding follows registered Resources values and the existing native visual loader',()=>{
+  const cwd=tempRoot(),root=path.join(cwd,'unity-games/demo');
+  write(path.join(root,'Assets/Resources/CompanyAssets/Menu.png'),'source fixture');
+  write(path.join(root,'Assets/Resources/CompanyAssets/Crate.obj'),'source fixture');
+  const bindingPlan={required:true,familyCandidates:{
+    UI:[{path:'unity-games/demo/Assets/Resources/CompanyAssets/Menu.png'}],
+    PROP:[{nativeArtifacts:['unity-games/demo/Assets/Resources/CompanyAssets/Crate.obj']}]
+  }};
+  const evaluate=(source,plan=bindingPlan,file='Assets/Game.cs')=>evaluateAllGameDynamicAssetBindingCandidate({
+    sourceRoot:root,target:'unity',bindingPlan:plan,candidate:{newFiles:[{path:file,content:source}]}
+  });
+  const ui='Image menu; void Draw(){ var selected = Resources.Load<Sprite>("CompanyAssets/Menu"); menu.sprite = selected; }';
+  assert.equal(evaluate(ui).familyResults.find(row=>row.family==='UI').actualBinding,true);
+  for(const source of [
+    ui.replace('menu.sprite = selected','Debug.Log(selected)'),
+    ui.replace('CompanyAssets/Menu','CompanyAssets/Unknown'),
+    'Image menu; // menu.sprite = Resources.Load<Sprite>("CompanyAssets/Menu");'
+  ])assert.equal(evaluate(source).familyResults.find(row=>row.family==='UI').actualBinding,false);
+  assert.equal(evaluate(ui,{required:true,familyCandidates:{UI:[{path:'unity-games/other/Assets/Resources/CompanyAssets/Menu.png'}]}}).familyResults.find(row=>row.family==='UI').actualBinding,false);
+  assert.equal(evaluate(ui,bindingPlan,'Assets/Editor/Preview.cs').appliedCount,0);
+  const loader=[
+    'GameObject BindCompanyVisual(string assetId, Transform parent){',
+    '  var source = Resources.Load<GameObject>("CompanyAssets/" + assetId);',
+    '  return Instantiate(source,parent);',
+    '}',
+    'void Draw(){ GameObject prop = BindCompanyVisual("Crate",transform); }'
+  ].join('\n');
+  assert.equal(evaluate(loader).familyResults.find(row=>row.family==='PROP').actualBinding,true);
+  for(const source of [loader.replace('return Instantiate(source,parent)','return null'),loader.replace('"Crate"','"Unknown"'),loader.replace('GameObject prop = BindCompanyVisual("Crate",transform);','')]){
+    assert.equal(evaluate(source).familyResults.find(row=>row.family==='PROP').actualBinding,false);
+  }
+});
+
 test('Web dynamic asset binding requires actual DOM Canvas or WebAudio family consumption',()=>{
   const cwd=tempRoot();
   const root=path.join(cwd,'web-games/demo');
@@ -1096,7 +1129,7 @@ test('Roblox internal asset family binding requires actual family use and reject
     'local root = Instance.new("Frame")',
     'local stroke = Instance.new("UIStroke")',
     'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
-    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end'
+    'stroke.Thickness = studioAssetFamily("UI")[1] == "FRAME_PANEL" and 2 or 1'
   ].join('\n');
   const pass=evaluateRobloxInternalAssetFamilyBindingCandidate({
     sourceRoot:root,expectedFamilies,
@@ -1125,7 +1158,7 @@ test('Roblox internal asset family binding requires actual family use and reject
 
   const markerOnly=appliedUi
     .replace('local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }','local STUDIO_ASSET_SELECTION = { UI = {"UI_ATOM"} }')
-    .replace('if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end','stroke.Thickness = 2');
+    .replace('stroke.Thickness = studioAssetFamily("UI")[1] == "FRAME_PANEL" and 2 or 1','stroke.Thickness = 2');
   const rejected=evaluateRobloxInternalAssetFamilyBindingCandidate({
     sourceRoot:root,expectedFamilies,
     candidate:{edits:[],newFiles:[],replaceFiles:[{path:'client/Game.client.luau',content:markerOnly}]}
@@ -1352,7 +1385,8 @@ test('native DCC authoring stays incomplete until every required DCC type has ex
   assert.equal(complete.dccTypeCoveragePass,true);
   assert.deepEqual([...complete.dccCoveredTypes].sort(),['background','prop']);
   assert.equal(complete.dccAuthored,true);
-  assert.equal(complete.generatedAssetBindingApplied,true);
+  assert.equal(complete.generatedAssetBindingApplied,false);
+  assert.equal(complete.status,'GENERATED_ASSET_BINDING_REQUIRED');
 });
 
 test('generated native asset binding requires exact artifact path hash and engine-native source',()=>{
@@ -1393,14 +1427,14 @@ test('generated native asset binding requires exact artifact path hash and engin
     'const string source = "assets/unity/demo/native/boss/boss.glb";',
     'const string sourceSha256 = "abc123";'
   ].join('\n')}]}});  
-  assert.equal(exact.generatedAssetBindingApplied,true);
-  assert.deepEqual([...exact.boundGeneratedArtifacts],['assets/unity/demo/native/boss/boss.glb']);
-  assert.equal(exact.generatedAssetIdentityBindings[0].artifactHash,'abc123');
+  assert.equal(exact.generatedAssetBindingApplied,false);
+  assert.deepEqual([...exact.boundGeneratedArtifacts],[]);
+  assert.equal(exact.status,'GENERATED_ASSET_BINDING_REQUIRED');
   assert.equal(exact.runtimeVerified,false);
 });
 
 
-test('persisted Roblox DCC assets bind exact path and hash before local-model retry',()=>{
+test('persisted Roblox DCC assets cannot bypass native conversion with HUD metadata',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'roblox-games/demo');
   const relative='client/Game.client.luau';
@@ -1483,31 +1517,17 @@ test('persisted Roblox DCC assets bind exact path and hash before local-model re
     generatedAssetBindings:bindings,
     allowAssetDevelopment:true
   });
-  assert.ok(generated);
-  assert.equal(generated.generation.mode,'DETERMINISTIC_GENERATED_ASSET_BINDING');
-  assert.equal(generated.generation.attempts,0);
-  assert.equal(generated.generation.generatedAssetBindingCount,3);
-
-  const changed=generated.candidate.edits.map(row=>row.replace).join('\n');
-  for(const binding of bindings){
-    assert.ok(changed.includes(binding.path));
-    assert.ok(changed.includes(binding.artifactHash));
-  }
-  assert.match(changed,/game:GetService\("Lighting"\)/);
-  assert.match(changed,/TweenService/);
-
-  const authored=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:generated.candidate});
+  assert.equal(generated,null,'asset source generation must use the existing model recovery path');
+  const fake={edits:[{replace:[
+    'local part = Instance.new("Part")', 'part.Parent = workspace',
+    ...bindings.flatMap(row=>[`part:SetAttribute("Path", "${row.path}")`,`part:SetAttribute("Hash", "${row.artifactHash}")`])
+  ].join('\n')}]};
+  const authored=evaluateNativeAssetAuthoringCandidate({order:workOrder,candidate:fake});
   assert.equal(authored.dccAuthored,true);
-  assert.equal(authored.nativeTextAuthored,true);
-  assert.equal(authored.generatedAssetBindingApplied,true);
-  assert.deepEqual([...authored.boundGeneratedArtifacts].sort(),bindings.map(row=>row.path).sort());
-  assert.equal(authored.runtimeVerified,false);
+  assert.equal(authored.generatedAssetBindingApplied,false);
+  assert.deepEqual([...authored.boundGeneratedArtifacts],[]);
+  assert.equal(collectNativeAssetRuntimePromotionCandidates({order:workOrder,candidate:fake}).length,0);
 
-  const promotion=collectNativeAssetRuntimePromotionCandidates({order:workOrder,candidate:generated.candidate});
-  assert.equal(promotion.length,3);
-  assert.ok(promotion.every(row=>row.candidateSourceBindingVerified===true));
-  assert.ok(promotion.every(row=>row.runtimeVerificationRequired===true));
-  assert.ok(promotion.every(row=>row.promotionState==='PENDING_EXACT_NATIVE_RUNTIME'));
 });
 
 function dccFixtureGlb({grounded=false}={}){
@@ -3538,7 +3558,7 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
     'root.BackgroundColor3 = Color3.fromRGB(22,34,58)',
     'root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)',
     'root:SetAttribute("StudioAssetAtoms", table.concat(STUDIO_ASSET_SELECTION.UI, ","))',
-    'if #studioAssetFamily("UI") > 0 then stroke.Thickness = 2 end',
+    'stroke.Thickness = studioAssetFamily("UI")[1] == "FRAME_PANEL" and 2 or 1',
     'root.Parent = gui'
   ].join('\n');
   write(good,JSON.stringify({
@@ -3554,6 +3574,31 @@ test('Roblox internal asset handoff rejects config-only candidate without requir
   assert.match(candidate,/STUDIO_ASSET_FAMILY_STATUS\s*=\s*\{/);
   assert.match(candidate,/studioAssetFamily\("UI"\)/);
   assert.match(candidate,/StudioAssetAtoms/);
+});
+
+test('Roblox handoff repairs a nested server consumer without duplicating existing selection metadata',async()=>{
+  const cwd=tempRoot(),root='roblox-games/demo',owner='server/world/Menu.luau';
+  const workOrder=order({target:'roblox',root,responsibleFiles:[`${root}/${owner}`],taskId:'server-native-binding'});
+  workOrder.assetProduction={baseMaterialLoadout:{families:{UI:['FRAME_PANEL']},
+    robloxSelectionHandoff:{handoffRequired:true,downstreamApplicationRequired:true,bindingVersion:2}}};
+  const statuses=ROBLOX_INTERNAL_ASSET_FAMILIES.map(family=>`${family} = "${family==='UI'?'APPLIED':'NOT_APPLICABLE'}"`).join(', ');
+  write(path.join(cwd,root,'shared/GameConfig.luau'),'return { StudioAssets = { Families = { UI = { "FRAME_PANEL" } } } }');
+  write(path.join(cwd,root,owner),[
+    'local studioAssetFamilies = { UI = { "FRAME_PANEL" } }',
+    'local function studioAssetFamily(family) return studioAssetFamilies[family] or {} end',
+    'local STUDIO_ASSET_BINDING_VERSION = 2',
+    'local STUDIO_ASSET_SELECTION = { UI = studioAssetFamily("UI") }',
+    `local STUDIO_ASSET_FAMILY_STATUS = { ${statuses} }`,
+    'local root = Instance.new("Frame")',
+    'root.BackgroundColor3 = Color3.new(1,1,1)'
+  ].join('\n'));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder));
+  const response=path.join(cwd,'native.json');
+  write(response,JSON.stringify({edits:[{path:owner,find:'root.BackgroundColor3 = Color3.new(1,1,1)',
+    replace:'root.BackgroundColor3 = studioAssetFamily("UI")[1] == "FRAME_PANEL" and Color3.fromRGB(22,34,58) or Color3.new(1,1,1)'}]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile:response});
+  assert.deepEqual(result.changedFiles,[owner]);
+  assert.equal(result.generation.attempts,1);
 });
 
 test('Roblox internal asset handoff automatically expands general BUILD_UP responsibility to an existing visual owner',()=>{

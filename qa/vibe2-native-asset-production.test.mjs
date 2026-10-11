@@ -1161,7 +1161,7 @@ test('Vibe source rotates detailed API context while keeping the full eligibilit
   assert.match(source,/matching RobloxCommonUI Create\* factory first/);
 });
 
-test('persisted DCC asset binding does not depend on duplicate presentation metadata',()=>{
+test('persisted DCC assets require native consumption instead of deterministic metadata',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'dcc-binding-candidate-'));
   try{
     const sourceRoot=path.join(root,'roblox-games','demo');
@@ -1186,12 +1186,7 @@ test('persisted DCC asset binding does not depend on duplicate presentation meta
       generatedAssetBindings:generated,
       allowAssetDevelopment:true
     });
-    assert.ok(result);
-    assert.equal(result.generation.deterministicGeneratedAssetBinding,true);
-    const text=result.candidate.edits.map(row=>row.replace).join('\n');
-    assert.match(text,/GeneratedNativeAssetPath1/);
-    assert.ok(text.includes(generated[0].path));
-    assert.ok(text.includes(generated[0].artifactHash));
+    assert.equal(result,null);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
