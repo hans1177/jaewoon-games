@@ -925,7 +925,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             ||equippedWeapon.Contains("blade")||equippedWeapon.Contains("cleaver")
             ||equippedWeapon.Contains("saber")||equippedWeapon.Contains("greatsword");
         playerWeaponVisual=BindCompanyVisual(blade?"MagicForestSword":"MagicForestGrip",playerWeaponGrip,
-            new Vector3(0,-.08f,0),Vector3.one*(blade?.24f:.33f),Quaternion.identity);
+            new Vector3(0,-.08f,0),Vector3.one * (blade ? 0.24f : 0.33f),Quaternion.identity);
     }
 
     // 모션 · 같은 가디언 리그에서 이동/채집/제작/피격/공격을 직접 재생한다.
