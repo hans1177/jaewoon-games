@@ -3664,8 +3664,13 @@ function universalAssetWorkerGuidance(order={}) {
   const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
   const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
   const customization=order?.assetProduction?.assetCustomization;
+  const automaticBinding=order?.assetProduction?.automaticAssetBindingWork||null;
   return [
     '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    automaticBinding?.enabled===true
+      ?'[AUTOMATIC ASSET BINDING / CANONICAL VIBE] '+JSON.stringify(automaticBinding)+
+       '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
+      :'',
     'All 12 asset families MUST be evaluated: '+families.join(','),
     'Selected loadout: '+(selected||'NONE'),
     customization?`커마 최소 기준=${customization.minimumQuality?.label||'상급 조형'}; 시각 기준=${customization.minimumQuality?.referencePath||'승인 기준 화면'}; style=${order.assetProduction.styleBible?.profileKey||'GAME_STYLE_LOCK'}. 캐릭터·몬스터·배경·모든 오브젝트·UI·아이콘·모션에 같은 마감 기준을 적용한다. 초벌 조립 후 얼굴/접합부/재질/마모/연기/동작 연결을 집중 수정하고 실제 표시 크기와 실게임 카메라로 비교한다.`:'',
