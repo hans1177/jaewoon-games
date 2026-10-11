@@ -42,13 +42,14 @@ export function normalizeExactEdits(raw=[],assertPath=v=>posix(v)){
   });
 }
 
-export function applyExactEdits(root,edits=[],{dryRun=false}={}){
+export function applyExactEdits(root,edits=[],{dryRun=false,documents=null}={}){
   const changed=new Set();
   const simulated=new Map();
+  const markers=[];
   for(const edit of edits){
     const target=path.join(root,edit.path);
-    if(!fs.existsSync(target)||!fs.statSync(target).isFile())throw new Error(`edit 대상 없음: ${edit.path}`);
-    const before=simulated.has(edit.path)?simulated.get(edit.path):fs.readFileSync(target,'utf8');
+    if(documents instanceof Map?!documents.has(edit.path):!fs.existsSync(target)||!fs.statSync(target).isFile())throw new Error(`edit 대상 없음: ${edit.path}`);
+    const before=simulated.has(edit.path)?simulated.get(edit.path):documents instanceof Map?documents.get(edit.path):fs.readFileSync(target,'utf8');
     let first=before.indexOf(edit.find);
     let end=first<0?-1:first+edit.find.length;
     if(first>=0&&before.indexOf(edit.find,end)>=0)throw new Error(`edit find 다중일치: ${edit.path}`);
@@ -79,7 +80,7 @@ export function applyExactEdits(root,edits=[],{dryRun=false}={}){
       if(matches.length>1)throw new Error(`edit find 다중일치: ${edit.path}`);
       if(matches.length===0)throw new Error(`edit find 불일치: ${edit.path}`);
       ({first,end}=matches[0]);
-      if(!dryRun)console.log(`VIBE2_EDIT_MATCH=TRIMMED_LINES:${edit.path}`);
+      markers.push(`VIBE2_EDIT_MATCH=TRIMMED_LINES:${edit.path}`);
     }
 
     let after=before.slice(0,first)+edit.replace+before.slice(end);
@@ -90,11 +91,19 @@ export function applyExactEdits(root,edits=[],{dryRun=false}={}){
     if(beforeBreaks<=1&&afterBreaks>beforeBreaks){
       const preservedEol=before.endsWith('\r\n')?'\r\n':before.endsWith('\n')?'\n':'';
       after=after.slice(0,after.length-afterTail.length)+preservedEol;
-      if(!dryRun)console.log(`VIBE2_EDIT_EOF_BLANK_LINES_NORMALIZED:${edit.path}`);
+      markers.push(`VIBE2_EDIT_EOF_BLANK_LINES_NORMALIZED:${edit.path}`);
     }
     simulated.set(edit.path,after);
-    if(!dryRun)fs.writeFileSync(target,after,'utf8');
     changed.add(edit.path);
+  }
+  // 모든 앵커의 순차 적용을 먼저 검증한다. 뒤쪽 불일치로 앞쪽 파일만 바뀌는 것을 막는다.
+  // 자산 검사도 같은 변환 함수를 사용해 줄바꿈·들여쓰기·달러 문자열 처리 차이를 없앤다.
+  if(!dryRun){
+    for(const [relative,after] of simulated){
+      if(documents instanceof Map)documents.set(relative,after);
+      else fs.writeFileSync(path.join(root,relative),after,'utf8');
+    }
+    if(!(documents instanceof Map))for(const marker of markers)console.log(marker);
   }
   return [...changed];
 }

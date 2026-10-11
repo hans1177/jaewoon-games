@@ -1185,17 +1185,13 @@ function robloxInternalAssetSourceDocuments(sourceRoot=''){
 }
 function robloxInternalAssetApplyCandidateDocuments(documents,candidate={}){
   const out=new Map(documents);
-  for(const edit of candidate?.edits||[]){
-    const relative=posix(edit.path),before=String(out.get(relative)||'');
-    const find=String(edit.find||''),replace=String(edit.replace||'');
-    if(!find||before.split(find).length-1!==1)continue;
-    out.set(relative,before.replace(find,replace));
-  }
+  const edits=(candidate?.edits||[]).map(edit=>({...edit,path:posix(edit.path)})).filter(edit=>out.has(edit.path));
+  applyExactEdits('',edits,{documents:out});
   for(const file of candidate?.newFiles||[])out.set(posix(file.path),String(file.content||''));
   for(const file of candidate?.replaceFiles||[])out.set(posix(file.path),String(file.content||''));
   return out;
 }
-export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={},expectedSelectionFingerprint='',expectedLibraryVersion=0}={}){
+export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},sourceRoot='',expectedFamilies={},expectedSelectionFingerprint='',expectedLibraryVersion=0,requireChangedBinding=true}={}){
   const base=robloxInternalAssetSourceDocuments(sourceRoot);
   const result=robloxInternalAssetApplyCandidateDocuments(base,candidate);
   const touched=new Set([
@@ -1252,7 +1248,7 @@ export function evaluateRobloxInternalAssetFamilyBindingCandidate({candidate={},
       actualBinding,changedBinding,boundFiles:Object.freeze(boundFiles)
     }));
   }
-  if(changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
+  if(appliedCount===0||requireChangedBinding&&changedAppliedFamilyCount===0)blockers.push('ROBLOX_INTERNAL_ASSET_NO_APPLICABLE_FAMILY_BOUND_IN_CANDIDATE');
   return Object.freeze({
     pass:blockers.length===0,
     requiredFamilies:ROBLOX_INTERNAL_ASSET_FAMILIES,
@@ -1451,7 +1447,7 @@ export function evaluateAllGameDynamicAssetBindingCandidate({candidate={},source
     const boundFiles=[...sourceDocuments.entries()].filter(([,text])=>allGameInternalAssetFamilyBoundInText(text,family,resolved,{candidates:bindingPlan?.familyCandidates?.[family]||[],sourceRoot})).map(([relative])=>relative);
     const actualBinding=boundFiles.length>0;
     const changedBinding=boundFiles.some(relative=>touched.has(relative));
-    const status=systemPresent?'APPLIED':'NOT_APPLICABLE';
+    const status=systemPresent?(actualBinding?'APPLIED':'ASSET_REPAIR_REQUIRED'):'NOT_APPLICABLE';
     if(systemPresent&&!actualBinding)blockers.push('ALL_GAME_APPLICABLE_ASSET_FAMILY_NOT_BOUND:'+family);
     if(systemPresent&&actualBinding){appliedCount+=1;if(changedBinding)changedAppliedFamilyCount+=1;}
     else if(!systemPresent)notApplicableCount+=1;
@@ -3049,7 +3045,9 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
         nativeArtifacts:Object.freeze(unique(row?.nativeArtifacts||[]).map(posix).filter(Boolean).sort()),
         fileRoles:Object.freeze(Object.fromEntries(Object.entries(row?.fileRoles||{}).map(([role,files])=>[role,Object.freeze(unique(files).map(posix).filter(Boolean).sort())]))),
         path:posix(row?.path)||null,
-        sourceTier:clean(row?.applicationMode)||null
+        sourceTier:clean(row?.applicationMode)||null,
+        sourceHash:clean(row?.sourceHash)||null,
+        artifactHash:clean(row?.artifactHash)||null
       }));
     }
   }
@@ -3078,6 +3076,8 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     const prior=sourcesByAssetId.get(row.assetId);
     sourcesByAssetId.set(row.assetId,prior?Object.freeze({
       ...prior,...row,
+      sourceHash:row.sourceHash||prior.sourceHash||null,
+      artifactHash:row.artifactHash||prior.artifactHash||null,
       sourceFiles:Object.freeze(unique([...prior.sourceFiles,...row.sourceFiles]).sort()),
       nativeArtifacts:Object.freeze(unique([...prior.nativeArtifacts,...row.nativeArtifacts]).sort()),
       fileRoles:Object.freeze(Object.fromEntries(unique([...Object.keys(prior.fileRoles),...Object.keys(row.fileRoles)]).sort().map(role=>[
@@ -3144,7 +3144,7 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     }
     return Object.freeze({path:relative,sha256:digest,status:'SOURCE_HASHED'});
   }));
-  const libraryVersion=Number(loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
+  const libraryVersion=Number(dynamicLibraryBinding?.libraryVersion||loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
   const selectionFingerprint=clean(loadout?.selectionFingerprint||loadout?.robloxSelectionFingerprint);
   const payload={
     version:5,target,gameId,libraryVersion,selectionFingerprint,selectedSourceHashes,
@@ -4877,7 +4877,7 @@ export function generationFailureClass(error){
   if(/WEB_SOURCE_STRUCTURAL_CONTINUITY/i.test(message))return'WEB_STRUCTURAL_CONTINUITY';
   if(/ROBLOX_SOURCE_STRUCTURAL_CONTINUITY/i.test(message))return'ROBLOX_STRUCTURAL_CONTINUITY';
   if(/DIAGNOSTIC_POSTCONDITION_MISSING/i.test(message))return'DIAGNOSTIC_POSTCONDITION';
-  if(/ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)/i.test(message))return'ROBLOX_INTERNAL_ASSET_APPLICATION';
+  if(/ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED|FAMILY_BINDING_REQUIRED)/i.test(message))return'ROBLOX_INTERNAL_ASSET_APPLICATION';
   if(/ROBLOX_ASSET_ADAPTATION_DOMAINS_REQUIRED/i.test(message))return'ROBLOX_VISUAL_DOMAINS';
   if(/ROBLOX_ASSET_ADAPTATION_MOTION_REQUIRED/i.test(message))return'ROBLOX_VISUAL_MOTION';
   if(/PRESENTATION_PATCH_DELTA_REQUIRED/i.test(message))return'PRESENTATION_PATCH_DELTA';
@@ -4897,7 +4897,7 @@ function fullWebFinalRetryAllowed(error){return['SPATIAL_BLUEPRINT','INTERFACE_B
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   if(/(?:SPATIAL|INTERFACE)_BLUEPRINT_INVALID/i.test(message))return true;
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|ALL_GAME_DYNAMIC_ASSET_BINDING_REQUIRED|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|잘못된 상대 경로|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|focused replace (?:비어 있음|placeholder 금지)|SEMANTIC_DIFF_BUDGET_VIOLATION|PRESENTATION_PATCH_DELTA_REQUIRED|GRAPHICS_REPLACEMENT_REPORT_REQUIRED|ROBLOX_ASSET_ADAPTATION_(?:DOMAINS_REQUIRED|MOTION_REQUIRED)|STUDIO_QUALITY_DELTA_REQUIRED|CANDIDATE_SELF_REVIEW_REQUIRED|DIAGNOSTIC_POSTCONDITION_MISSING|ROBLOX_(?:STUDIO|INTERNAL)_ASSET_(?:VISUAL_OWNER_REQUIRED|APPLICATION_REQUIRED|FAMILY_BINDING_REQUIRED)|UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED|Unity Web source bootstrap는 GameCore\.cs와 RuntimeBootstrap\.cs 실제 편집을 모두 요구|SYSTEM_CAUSAL_TEST_REQUIRED|SYSTEM_CANDIDATE_SYNTAX_INVALID|WEB_SOURCE_STRUCTURAL_CONTINUITY|ROBLOX_SOURCE_STRUCTURAL_CONTINUITY|ALL_GAME_DYNAMIC_ASSET_BINDING_REQUIRED|GENERATED_ASSET_BINDING_REQUIRED|WEB_NATIVE_AUTHORING_DELTA_REQUIRED|prediction aborted|token repeat limit/i.test(message);
 }
 export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[],preferredTargets=[]}={}){
   const raw=String(prompt??'');
@@ -6746,6 +6746,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const robloxInternalAssetApplicationRequired=target==='roblox'&&order?.source?.internalAssetMotion!==true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.handoffRequired===true
     &&order?.assetProduction?.baseMaterialLoadout?.robloxSelectionHandoff?.downstreamApplicationRequired===true;
+  const robloxInternalAssetBindingRequired=target==='roblox'&&order?.source?.internalAssetMotion!==true
+    &&(allGameDynamicAssetBinding.required===true||robloxInternalAssetApplicationRequired);
   const robloxInternalAssetVisualOwners=robloxInternalAssetApplicationRequired?responsibleFiles.filter(file=>
     /\.lua[u]?$/i.test(clean(file))&&!/(?:^|\/)GameConfig\.luau$/i.test(clean(file))
   ):[];
@@ -6833,15 +6835,18 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       if(!Object.values(detectRobloxStudioAssetSystems({sourceText:visualChangeText})).some(Boolean)){
         throw new Error('ROBLOX_INTERNAL_ASSET_APPLICATION_REQUIRED:NATIVE_PRESENTATION_DELTA_REQUIRED');
       }
-      const familyBinding=evaluateRobloxInternalAssetFamilyBindingCandidate({
+    }
+    // 모든 정식 게임 후보의 기존 연결까지 검증한다. 정상 연결의 불필요한 재편집은 요구하지 않는다.
+    const robloxInternalAssetFamilyBinding=robloxInternalAssetBindingRequired
+      ?evaluateRobloxInternalAssetFamilyBindingCandidate({
         candidate,sourceRoot,
         expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
         expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
-        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
-      });
-      if(!familyBinding.pass){
-        throw new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+familyBinding.blockers.join(','));
-      }
+        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0,
+        requireChangedBinding:robloxInternalAssetApplicationRequired
+      }):null;
+    if(robloxInternalAssetFamilyBinding&&!robloxInternalAssetFamilyBinding.pass){
+      throw new Error('ROBLOX_INTERNAL_ASSET_FAMILY_BINDING_REQUIRED:'+robloxInternalAssetFamilyBinding.blockers.join(','));
     }
     if(bootstrap&&target==='unity'){
       for(const relative of responsibleFiles)if(!touched.has(relative))throw new Error('UNITY_WEB_BOOTSTRAP_GAME_SOURCE_PAIR_REQUIRED:'+relative);
@@ -6932,14 +6937,6 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(robloxDesignGrounding.required&&!robloxDesignGrounding.pass){
       throw new Error('ROBLOX_DESIGN_IMPLEMENTATION_GROUNDING_REQUIRED:'+robloxDesignGrounding.reason);
     }
-    const robloxInternalAssetFamilyBinding=robloxInternalAssetApplicationRequired
-      ?evaluateRobloxInternalAssetFamilyBindingCandidate({
-        candidate,sourceRoot,
-        expectedFamilies:order?.assetProduction?.baseMaterialLoadout?.families||{},
-        expectedSelectionFingerprint:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionFingerprint||'',
-        expectedLibraryVersion:order?.assetProduction?.baseMaterialLoadout?.robloxSelectionLibraryVersion||0
-      })
-      :null;
     return{...result,sourceSyntax,blueprintContracts,spatialBlueprintValidation,interfaceBlueprintValidation,candidateSelfReview,diagnosticPostcondition,presentationDelta,graphicsReplacementReport,studioQualityDelta,robloxDesignGrounding,studioAssetQualityAxes,allGameDynamicFamilyBinding,robloxInternalAssetFamilyBinding,singleMotionCheck};
   };
   const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
