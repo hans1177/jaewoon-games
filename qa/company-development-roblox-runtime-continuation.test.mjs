@@ -283,3 +283,40 @@ test('post-package Roblox preflight dispatch dedupes against fetched current mai
   });
   assert.deepEqual(printed,['daechung-rpg','fantasy-survival']);
 });
+// Older continuation jobs must reuse pending F0 runs from the actual main they dispatch.
+test('F0 follow-up dispatch matches the fetched main SHA and never cancels an existing pending game F0',()=>{
+  const step='      - name: Dispatch exact-package F0 source preflight';
+  const start=preflight.indexOf(step);
+  assert.ok(start>=0);
+  const block=preflight.slice(start);
+  assert.ok(block.includes('current_main="$(git rev-parse origin/main)"'));
+  assert.ok(block.includes('runs?per_page=100&head_sha=$current_main'));
+  const header='CURRENT_MAIN_SHA="$current_main" node <<\'NODE\' > /tmp/roblox-f0-active-ids';
+  assert.ok(block.includes(header));
+  assert.ok(block.includes("const currentSha=String(process.env.CURRENT_MAIN_SHA||'').trim()"));
+  assert.ok(!block.includes("const currentSha=String(process.env.GITHUB_SHA||'').trim()"));
+  assert.ok(block.includes('ROBLOX_F0_SOURCE_PREFLIGHT_DISPATCH=DEDUPED_CURRENT_MAIN:$id:$current_main'));
+  assert.ok(block.includes('gh workflow run company-development-roblox-headless-fast-mvp.yml --repo'));
+  const scriptStart=block.indexOf(header)+header.length+1;
+  const scriptEnd=block.indexOf('\n          NODE',scriptStart);
+  assert.ok(scriptEnd>scriptStart);
+  const script=block.slice(scriptStart,scriptEnd);
+  const current='b'.repeat(40),initiating='a'.repeat(40);
+  const runs=[
+    {display_title:'Roblox F0 · daechung-rpg',head_sha:current,status:'pending'},
+    {display_title:'Roblox F0 · daechung-rpg',head_sha:initiating,status:'in_progress'},
+    {display_title:'Roblox F0 · seed-casual-realm-weaver',head_sha:current,status:'queued'},
+    {display_title:'Roblox F0 · fantasy-survival',head_sha:current,status:'completed'},
+    {display_title:'Roblox shared preflight · seed-puzzle-chromatic-cascade',head_sha:current,status:'in_progress'}
+  ];
+  const printed=[];
+  runInNewContext(script,{
+    require:name=>{
+      assert.equal(name,'fs');
+      return {readFileSync:()=>JSON.stringify({workflow_runs:runs})};
+    },
+    process:{env:{CURRENT_MAIN_SHA:current,GITHUB_SHA:initiating}},
+    console:{log:gameId=>printed.push(gameId)}
+  });
+  assert.deepEqual(printed,['daechung-rpg','seed-casual-realm-weaver']);
+});
