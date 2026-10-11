@@ -285,6 +285,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         public GameObject obj;
         // 그래픽 · 공용 네이티브 외형과 동작은 AI/충돌/체력과 분리한다.
         public Transform nativePose;
+        public Animation nativeMotion;
         public readonly List<Transform> limbs = new List<Transform>();
         public readonly List<Quaternion> restPoses = new List<Quaternion>();
         public float attackPoseUntil, hitPoseUntil;
@@ -411,6 +412,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private LibraryMotion motionProfile = new LibraryMotion();
     private Transform playerLeftArm,playerRightArm,playerLeftLeg,playerRightLeg,playerNativeTorso;
     private GameObject playerWeaponVisual;
+    private Animation playerNativeMotion;
     private string displayedWeaponId = "";
     private float playerActionStart,playerActionUntil,playerActionDuration;
     private int playerActionKind;
@@ -638,7 +640,23 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             new Vector3(.37f,.42f,.38f),Quaternion.identity);
         BindCompanyVisual("MagicForestShoulder",character.transform,new Vector3(.44f,1.43f,0),
             new Vector3(.26f,.26f,.26f),Quaternion.Euler(0,90f,0));
-        Debug.Log("MAGIC_FOREST_INTERNAL_LIBRARY=UNITY_NATIVE_MODELS_UI_MOTION_SOURCE_BOUND_RUNTIME_QA_REQUIRED");
+        // 캐릭터 · 공용 GLB의 스킨/관절/액션을 Unity가 변환한 프리팹으로 실제 렌더링.
+        GameObject nativeActor=BindCompanyVisual("MagicForestTraveler",character.transform,
+            Vector3.zero,Vector3.one*1.12f,Quaternion.identity);
+        if(nativeActor!=null)
+        {
+            playerNativeMotion=nativeActor.GetComponent<Animation>();
+            if(playerNativeMotion!=null)
+            {
+                foreach(Renderer oldRenderer in character.GetComponentsInChildren<Renderer>())
+                    if(!oldRenderer.transform.IsChildOf(nativeActor.transform))oldRenderer.enabled=false;
+                foreach(Transform bone in nativeActor.GetComponentsInChildren<Transform>())
+                    if(bone.name=="WeaponGrip"){playerRightArm=bone;break;}
+                PlayNativeMotion(playerNativeMotion,"IDLE_BREATH");
+            }
+        }
+        Debug.Log("MAGIC_FOREST_INTERNAL_LIBRARY="+(playerNativeMotion!=null
+            ? "UNITY_SKINNED_ACTOR_UI_MOTION_SOURCE_BOUND_RUNTIME_QA_REQUIRED":"ASSET_REPAIR_REQUIRED"));
         FollowCamera(true);
     }
 
@@ -739,6 +757,14 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         GUI.skin.textField.normal.textColor=Color.white;
     }
 
+    // 모션 · 게임 로직을 변경하지 않고 실제 공용 관절 클립만 재생한다.
+    private static void PlayNativeMotion(Animation motion,string state)
+    {
+        if(motion==null || string.IsNullOrEmpty(state) || motion[state]==null)return;
+        if(motion.IsPlaying(state))return;
+        motion.CrossFade(state,.11f);
+    }
+
     private void BeginPlayerAction(int kind)
     {
         playerActionKind=kind;
@@ -761,14 +787,28 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         bool blade=equippedWeapon.Contains("sword")||equippedWeapon.Contains("dagger")
             ||equippedWeapon.Contains("blade")||equippedWeapon.Contains("cleaver")
             ||equippedWeapon.Contains("saber")||equippedWeapon.Contains("greatsword");
+        // 장비 · 기존 하나만 장착 규칙 유지, 공용 실제 메시를 애니메이션 WeaponGrip 본에 고정.
+        bool skinned=playerNativeMotion!=null;
         playerWeaponVisual=BindCompanyVisual(blade?"MagicForestSword":"MagicForestGrip",playerRightArm,
-            new Vector3(0,-.25f,.16f),new Vector3(1.45f,.80f,1.45f),Quaternion.Euler(-85f,0,25f));
+            skinned?new Vector3(0,-.08f,0):new Vector3(0,-.25f,.16f),
+            skinned?Vector3.one*(blade?.24f:.33f):new Vector3(1.45f,.80f,1.45f),
+            skinned?Quaternion.identity:Quaternion.Euler(-85f,0,25f));
     }
 
     private void AnimatePlayerPresentation(float movement)
     {
         if(playerLeftArm==null || playerRightArm==null)return;
         SyncPlayerWeaponVisual();
+        if(playerNativeMotion!=null)
+        {
+            // 이동·채집·제작·공격·피격은 전부 동일한 스킨드 캐릭터 애니메이션을 소비.
+            string state=Time.time<playerActionUntil
+                ? playerActionKind==2?"TRAVELER_PICKUP":playerActionKind==3?"TRAVELER_INTERACT":
+                    playerActionKind==4?"HIT_FRONT":playerActionKind==5?"ATTACK_HEAVY":"ATTACK_LIGHT_SLASH"
+                : movement>.12f?"RUN":"IDLE_BREATH";
+            PlayNativeMotion(playerNativeMotion,state);
+            return;
+        }
         float cycle=Time.time*(2f*Mathf.PI/Mathf.Max(.3f,motionProfile.walkSeconds));
         float stride=movement>.02f?Mathf.Sin(cycle)*29f*movement:0f;
         playerLeftLeg.localRotation=Quaternion.Euler(stride,0f,0f);
@@ -801,6 +841,16 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
 
     private void AnimateMonsterPresentation(Monster monster,bool isMoving)
     {
+        if(monster.nativeMotion!=null)
+        {
+            string action=monster.hitPoseUntil>Time.time?"HIT_FRONT":
+                monster.attackPoseUntil>Time.time?"ATTACK_A":
+                isMoving?"RUN":"IDLE_BREATH";
+            if(monster.nativeMotion[action]==null)
+                action=action=="ATTACK_A"?"ATTACK_LIGHT_SLASH":"IDLE_BREATH";
+            PlayNativeMotion(monster.nativeMotion,action);
+            return;
+        }
         float phase=Time.time*(Mathf.PI*2f/Mathf.Max(.3f,motionProfile.walkSeconds));
         float attack=monster.attackPoseUntil>Time.time?
             Mathf.Sin(Mathf.PI*Mathf.Clamp01(1f-(monster.attackPoseUntil-Time.time)/Mathf.Max(.15f,motionProfile.attackSeconds))):0f;
@@ -979,27 +1029,53 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 new Vector3(0f,scale*1.82f,0f),new Vector3(scale*.43f,scale*.15f,scale*.43f),
                 new Color(.89f,.67f,.22f),false);
         }
-        // 내부 원본의 캐릭터/크리처/환경 메시를 같은 몬스터 객체의 시각 자식에만 적용한다.
-        string nativeId=humanoid?"MagicForestTorso":
-            spirit?"MagicForestRock":plant?"MagicForestCrown":
-            (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"MagicForestCanine":
-            (insect||fourLeg||serpent)?"MagicForestClaw":"";
-        if(nativeId!="")
+        // 몬스터 · 실제 공용 3D 리그/액션을 AI/히트박스 원본 객체 아래에 적용한다.
+        // 서로 다른 종의 수치/공격/드랍은 변경하지 않는다. 맞는 형태의 자산이 없으면 기존 표현 유지.
+        string actorKey=humanoid?(name.Contains("archer")?"Archer":
+                name.Contains("goblin")?"Rogue":name.Contains("mummy")?"Guardian":"Guardian"):
+            spirit?"Golem":spider?"Spider":serpent?"Serpent":
+            insect?"Beetle":
+            (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"Wolf":"";
+        if(actorKey!="")
         {
-            GameObject nativePart=BindCompanyVisual(nativeId,root.transform,
-                new Vector3(0,scale*.45f,(fourLeg ? 0.32f:0f)*scale),
-                Vector3.one*scale*(nativeId=="MagicForestTorso" ? 0.52f:
-                    nativeId=="MagicForestCanine" ? 0.48f:nativeId=="MagicForestClaw" ? 0.32f:.40f),
-                Quaternion.identity);
-            if(nativePart!=null)
+            GameObject rigVisual=BindCompanyVisual("MagicForest"+actorKey,root.transform,
+                new Vector3(0f,0f,0f),Vector3.one*scale*(humanoid?.90f:1.0f),
+                Quaternion.Euler(0f,humanoid?0f:180f,0f));
+            if(rigVisual!=null)
             {
-                monster.nativePose=nativePart.transform;
-                if(humanoid)body.GetComponent<Renderer>().enabled=false;
+                monster.nativeMotion=rigVisual.GetComponent<Animation>();
+                if(monster.nativeMotion!=null)
+                {
+                    foreach(Renderer oldRenderer in root.GetComponentsInChildren<Renderer>())
+                        if(!oldRenderer.transform.IsChildOf(rigVisual.transform))oldRenderer.enabled=false;
+                    PlayNativeMotion(monster.nativeMotion,"IDLE_BREATH");
+                }
             }
         }
-        if((spec.mood=="boss"||name.Contains("leader"))&&humanoid)
-            BindCompanyVisual("MagicForestCape",root.transform,new Vector3(0,.30f*scale,-.25f*scale),
-                Vector3.one*scale*.38f,Quaternion.identity);
+        if(monster.nativeMotion==null)
+        {
+            // 해당 종의 전용 스킨드 모델이 준비되기 전에는 기존 직접 파생 메시를 보존.
+            string nativeId=humanoid?"MagicForestTorso":
+                spirit?"MagicForestRock":plant?"MagicForestCrown":
+                (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"MagicForestCanine":
+                (insect||fourLeg||serpent)?"MagicForestClaw":"";
+            if(nativeId!="")
+            {
+                GameObject nativePart=BindCompanyVisual(nativeId,root.transform,
+                    new Vector3(0,scale*.45f,(fourLeg ? 0.32f:0f)*scale),
+                    Vector3.one*scale*(nativeId=="MagicForestTorso" ? 0.52f:
+                        nativeId=="MagicForestCanine" ? 0.48f:nativeId=="MagicForestClaw" ? 0.32f:.40f),
+                    Quaternion.identity);
+                if(nativePart!=null)
+                {
+                    monster.nativePose=nativePart.transform;
+                    if(humanoid)body.GetComponent<Renderer>().enabled=false;
+                }
+            }
+            if((spec.mood=="boss"||name.Contains("leader"))&&humanoid)
+                BindCompanyVisual("MagicForestCape",root.transform,new Vector3(0,.30f*scale,-.25f*scale),
+                    Vector3.one*scale*.38f,Quaternion.identity);
+        }
         monster.obj=root;
         monsters.Add(monster);
         return monster;
@@ -1143,6 +1219,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private System.Collections.IEnumerator PlayNativeDeathMotion(GameObject body)
     {
         if(body==null)yield break;
+        // 플레이 판정에서는 즉시 제거됐으며 사망 스킨드 모션만 시각적으로 재생한다.
+        Animation native=body.GetComponentInChildren<Animation>();
+        if(native!=null && (native["DEATH"]!=null || native["DEATH_FRONT"]!=null))
+        {
+            string clip=native["DEATH"]!=null?"DEATH":"DEATH_FRONT";
+            float durationNative=Mathf.Clamp(motionProfile.deathSeconds,.45f,2f);
+            native[clip].speed=Mathf.Max(.2f,native[clip].length/durationNative);
+            native.CrossFade(clip,.06f);
+            yield return new WaitForSeconds(durationNative);
+            if(body!=null){fallenVisuals.Remove(body);Destroy(body);}
+            yield break;
+        }
         float duration=Mathf.Clamp(motionProfile.deathSeconds*.52f,.38f,.85f);
         float elapsed=0f;
         Quaternion original=body.transform.rotation;
