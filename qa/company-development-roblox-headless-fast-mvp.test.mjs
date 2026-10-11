@@ -12,7 +12,7 @@ test('per-game F0 persistence checks uploaded identity and never demotes a newer
   const section=workflow.slice(workflow.indexOf("Persist this game's F0 result immediately"));
   const code=section.match(/node <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
-  const evidence={gameId:'garden',pass:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:200};
+  const evidence={gameId:'garden',pass:true,sourceRevision:revision,artifactIdentity:artifact,artifactRunId:200,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}};
   const execute=(item,proof=evidence,env={})=>{
     const writes=new Map(),exit=Symbol('exit');
     const original={items:[item,{gameId:'other',robloxRuntimePassed:true,currentStep:'F9'}]};
@@ -27,10 +27,37 @@ test('per-game F0 persistence checks uploaded identity and never demotes a newer
   assert.deepEqual(passed.items[1],{gameId:'other',robloxRuntimePassed:true,currentStep:'F9'});
   for(const proof of [null,{...evidence,gameId:'other'},{...evidence,artifactIdentity:'wrong'}])assert.equal(execute(item,proof).items[0].robloxFoundationF0Passed,false);
   assert.equal(execute(item,evidence,{PACKAGE_ARTIFACT_READY:'false'}).items[0].robloxFoundationF0Passed,false);
+  assert.equal(execute(item,{...evidence,gameplayProductReadinessRequired:false}).items[0].robloxFoundationF0Passed,false);
+  assert.equal(execute(item,{...evidence,gameplayProductReadiness:{pass:false}}).items[0].robloxFoundationF0Passed,false);
   const newer={...item,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{...evidence,artifactRunId:201},robloxRuntimePassed:true,currentStep:'F9'};
   assert.deepEqual(execute(newer,null).items[0],newer);
   const stale={...item,robloxSourceCommit:'c'.repeat(40)};
   assert.deepEqual(execute(stale).items[0],stale);
+  const productProof={...evidence,pass:false,rebuiltArtifactIdentity:artifact,nativeLanguageCompilePassed:true,
+    f0SourceIntegrityPassed:true,gameplayProductReadinessRequired:true,
+    gameplayProductReadiness:{pass:false,blockers:['MISSING_GAMEPLAY_CAPABILITY:WORLD','CORE_LOOP_STEP_UNIMPLEMENTED:0']}};
+  const failed=execute(item,productProof,{PACKAGE_ARTIFACT_READY:'false'}).items[0];
+  assert.equal(failed.robloxFoundationF0Passed,false);
+  assert.equal(failed.robloxRuntimePassed,false);
+  assert.equal(failed.robloxInternalReleaseReady,false);
+  assert.equal(failed.robloxQualityBuildUpRequired,true);
+  assert.equal(failed.robloxQualityBuildUpEvidence.authority,'roblox-f0-gameplay-product-readiness-failure');
+  assert.equal(failed.robloxQualityBuildUpEvidence.runtimeVerified,false);
+  assert.equal(failed.robloxQualityBuildUpEvidence.workflowRunId,200);
+  assert.deepEqual(failed.robloxQualityBuildUpEvidence.qualityFailureKinds,productProof.gameplayProductReadiness.blockers);
+  assert.deepEqual(failed.robloxFoundationF0Evidence,productProof);
+  for(const patch of [{gameId:'other'},{sourceRevision:'c'.repeat(40)},{artifactIdentity:'wrong'},
+    {rebuiltArtifactIdentity:'wrong'},{artifactRunId:199},{nativeLanguageCompilePassed:false},
+    {f0SourceIntegrityPassed:false},{gameplayProductReadinessRequired:false}]){
+    assert.notEqual(execute(item,{...productProof,...patch}).items[0].robloxQualityBuildUpRequired,true);
+  }
+  assert.deepEqual(execute(newer,productProof).items[0],newer);
+  assert.deepEqual(execute(stale,productProof).items[0],stale);
+  assert.equal(execute(failed,null).items[0].robloxQualityBuildUpRequired,true,'infrastructure failure cannot erase a proven gameplay gap');
+  const repaired=execute(failed,{...evidence,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}}).items[0];
+  assert.equal(repaired.robloxQualityBuildUpRequired,false);
+  const otherAuthority={...failed,robloxQualityBuildUpEvidence:{...failed.robloxQualityBuildUpEvidence,authority:'roblox-official-studio-mcp-product-quality-failure'}};
+  assert.equal(execute(otherAuthority,{...evidence,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}}).items[0].robloxQualityBuildUpRequired,true);
   assert.match(workflow,/if: \$\{\{ success\(\) && steps\.persist\.outcome == 'success' \}\}/);
 });
 
@@ -470,4 +497,35 @@ test('amusement-tycoon Luau source compiles with the pinned native compiler', {
  const result=spawnSync(compiler,[file],{encoding:'utf8',maxBuffer:4*1024*1024});
  assert.equal(result.error,undefined,result.error?.message);
  assert.equal(result.status,0,'Luau compile failed: '+(result.stderr||result.stdout||result.signal||'unknown'));
+});
+
+
+test('every production F0 entry binds a design baseline and missing CLI baseline fails closed',()=>{
+  for(const file of ['company-development-roblox-runtime.yml','company-development-roblox-headless-fast-mvp.yml','vibe2-candidate-release.yml']){
+    const workflow=fs.readFileSync('.github/workflows/'+file,'utf8');
+    const command=workflow.replace(/\\\r?\n\s*/g,' ').split('\n').find(line=>line.includes('node tools/company-development-roblox-headless-fast-mvp.mjs'));
+    assert.ok(command,file+': F0 command missing');
+    assert.match(command,/--baseline=/,file+': design baseline must reach the actual F0 invocation');
+  }
+  const result=spawnSync(process.execPath,['tools/company-development-roblox-headless-fast-mvp.mjs'],{encoding:'utf8'});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/approved design baseline required for F0/);
+});
+
+
+test('F0 planning rechecks legacy evidence and waits for current source gameplay repair',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-headless-fast-mvp.yml','utf8');
+  const code=[...workflow.matchAll(/node <<'NODE'\n([\s\S]*?)\n          NODE/g)].map(match=>match[1].replace(/^          /gm,'')).find(code=>code.includes('ROBLOX_F0_PREFLIGHT_TARGETS='));
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const item={status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true};
+  const queue={items:[
+    {...item,gameId:'legacy',robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact}},
+    {...item,gameId:'repair-current',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision},
+    {...item,gameId:'repair-stale',robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:'c'.repeat(40)},
+    {...item,gameId:'verified',robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact,gameplayProductReadinessRequired:true,gameplayProductReadiness:{pass:true}}}
+  ]};
+  let output='';
+  vm.runInNewContext(code,{require:()=>({readFileSync:file=>JSON.stringify(file.includes('development-queue')?queue:{roblox:{validationMode:'HEADLESS_FAST_MVP'}}),appendFileSync:(_,text)=>{output+=text;},existsSync:()=>false}),process:{env:{GITHUB_OUTPUT:'output'}},console:{log:()=>{}}});
+  const matrix=JSON.parse(output.split('\n').find(line=>line.startsWith('matrix=')).slice(7));
+  assert.deepEqual(matrix.include.map(row=>row.gameId),['legacy','repair-stale']);
 });

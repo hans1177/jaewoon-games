@@ -2490,9 +2490,11 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
   if(platformLane!=='roblox'||project.queueRobloxQualityBuildUpRequired!==true)return directive;
   const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
   const packageFailure=studioQualityFailure?.authority==='roblox-package-asset-binding-failure';
-  const runtimeObserved=!packageFailure;
+  const f0Failure=studioQualityFailure?.authority==='roblox-f0-gameplay-product-readiness-failure';
+  const runtimeObserved=!packageFailure&&!f0Failure;
   const reason=packageFailure
     ?'current source package asset binding failure requires game-side source repair; internal assets must remain unchanged'
+    :f0Failure?'current source F0 design-bound gameplay gaps require source repair before real runtime testing'
     :'current source Studio product-quality failure requires source repair before another observation';
   return{
     ...directive,
@@ -2652,6 +2654,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const roblox=platform==='ROBLOX';
   const qualityFailure=roblox&&project?.queueRobloxQualityBuildUpRequired===true;
   const packageAssetFailure=qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-package-asset-binding-failure';
+  const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
     platform,
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
@@ -2661,7 +2664,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(samePlatform?project?.queueRoutingBlockers||[]:[]),
       ...(qualityFailure?project?.queueRobloxQualityFailureKinds||[]:[])
     ].map(clean).filter(Boolean),
-    runtimeObserved:!packageAssetFailure&&((samePlatform&&project?.queueRuntimeObserved===true)
+    runtimeObserved:!sourceOnlyQualityFailure&&((samePlatform&&project?.queueRuntimeObserved===true)
       ||(roblox&&project?.queueRobloxRuntimeObserved===true)||qualityFailure),
     runtimePassed:!qualityFailure&&(samePlatform&&project?.queueRuntimeObserved===true
       ?project?.queueRuntimePassed===true:(roblox&&project?.queueRobloxRuntimePassed===true)),
@@ -3404,7 +3407,9 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       const repairRequired=project.queueRobloxQualityBuildUpRequired===true;
       const staleDecision=repairRequired&&(candidate.buildUpDirective.nextActionDecision?.action!=='CAUSAL_REPAIR'
         ||candidate.buildUpDirective.effectivenessMeasurement?.previousGeneration?.classification!=='REGRESSION');
-      if(staleDecision||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
+      const staleSourceObservation=repairRequired&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(studioQualityFailure?.authority)
+        &&candidate.buildUpDirective.playtestRuntimeFindings?.runtimeObserved!==false;
+      if(staleDecision||staleSourceObservation||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
         candidate=bindSharedBuildUpDirective(candidate,applyRobloxQualityRepairDirective({
           ...candidate.buildUpDirective,
           playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}

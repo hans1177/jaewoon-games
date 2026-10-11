@@ -5169,3 +5169,27 @@ test('current-use internal motion planning accepts dynamically source-bound cons
     assert.ok(tasks[0].evidence.includes('asset-current-consumer:horror-escape-room'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+
+test('F0 source gameplay gaps request causal source repair without claiming runtime observation',()=>{
+  const root=tempRepo(),gameId='f0-gameplay-repair';
+  const source=path.join(root,'roblox-games',gameId);
+  for(const dir of ['server','client','shared'])fs.mkdirSync(path.join(source,dir),{recursive:true});
+  fs.writeFileSync(path.join(source,'server','Game.server.luau'),'local state = {}\nfunction resolvePrimaryAction(player) state.last=player end\n');
+  fs.writeFileSync(path.join(source,'client','Game.client.luau'),'local input = {}\nfunction dispatchPrimaryAction() return true end\n');
+  fs.writeFileSync(path.join(source,'shared','GameConfig.luau'),'return {RoundSeconds=90}\n');
+  writeStudioDesign(root,gameId,{coreFun:'추격 중 타이밍을 읽고 주 행동으로 상대 상태를 바꾸는 재미'});
+  const project={gameId,name:'F0 Gameplay Repair',engine:'roblox',releaseState:'development-confirmed',projectPath:`roblox-games/${gameId}`,
+    queueRobloxQualityBuildUpRequired:true,queueRobloxQualityBuildUpSourceRevision:'a'.repeat(40),
+    queueRobloxQualityBuildUpEvidence:{authority:'roblox-f0-gameplay-product-readiness-failure',sourceRevision:'a'.repeat(40),
+      qualityFailureKinds:['MISSING_GAMEPLAY_CAPABILITY:WORLD'],repairSurfaces:['WORLD_MAP'],
+      qualityFailureDetails:[{id:'MISSING_GAMEPLAY_CAPABILITY:WORLD',repairSurface:'WORLD_MAP',observed:{implemented:false}}]}};
+  const task=findStudioContinuousImprovementTask(project,root,{tasks:[]},'CORE_FUN');
+  assert.ok(task);
+  assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
+  assert.equal(task.studioQualityEvolution.phase,'REPAIR');
+  assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
+  assert.equal(task.buildUpDirective.playtestRuntimeFindings.runtimePassed,false);
+  assert.equal(task.buildUpDirective.effectivenessMeasurement.previousGeneration.runtimeObserved,false);
+  assert.match(task.buildUpDirective.nextActionDecision.reason,/F0 design-bound gameplay gaps/);
+});
