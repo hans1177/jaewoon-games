@@ -1290,7 +1290,61 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const action=ASSET_SUPPLY_DECISIONS.includes(row.action)?row.action:'HOLD';
     const key=[action,row.assetId||'',row.family||'',row.reason||''].join('|');
     if(actionKeys.has(key))return;actionKeys.add(key);
-    actions.push(Object.freeze({...row,action}));
+    // [라이브러리 재사용] 기존 선택 자산을 버리지 않고 검증 가능한 원본만 파생 제작 후보로 연결한다.
+    // 선택·재질 조정 계획은 실제 파일 제작이나 런타임 승격을 의미하지 않는다.
+    let adaptation=null;
+    if(action==='ADAPT'&&assetById.has(clean(row.assetId))){
+      const base=assetById.get(clean(row.assetId));
+      const family=clean(row.family).toUpperCase(),spatial=spatialFamilies.has(family);
+      const sourceFiles=unique([
+        base?.masterGlb,base?.masterSourcePath,base?.path,
+        ...(Array.isArray(base?.sourceFiles)?base.sourceFiles:[]),
+        ...(Array.isArray(base?.nativeArtifacts)?base.nativeArtifacts:[])
+      ]).map(value=>value.replace(/^\/+/, ''));
+      const sourceModel=spatial?sourceFiles.find(value=>
+        /^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(value)&&!value.split('/').includes('..'))||null:null;
+      const license=clean(base?.license).toLowerCase();
+      const credit=clean(base?.sourceCredit||base?.attribution||base?.credit)||null;
+      const rightsValid=['project-original','cc0','cc-by'].includes(license)
+        &&(license!=='cc-by'||Boolean(credit));
+      const modelReady=Boolean(sourceModel&&rightsValid);
+      const pbr=spatial||family==='MATERIAL';
+      adaptation={
+        libraryReuse:freeze({
+          sourceAssetId:clean(base?.id),sourceModel,
+          sourceLicense:rightsValid?license:null,sourceCredit:credit,
+          expectedSourceSha256:clean(base?.sourceSha256||base?.sha256)||null,
+          sourceFileAndSha256InspectionRequired:true,
+          sourceRoleEvidence:row.roleEvidence||null,
+          derivativeCandidateReady:modelReady,
+          originalImmutable:true,
+          catalogSelectionIsNotNativeArtifact:true
+        }),
+        materialRefinement:freeze({
+          mode:pbr?'SUBTLE_CONTEXT_PBR_REAUTHOR':'NATIVE_FAMILY_ADAPT_NO_PBR',
+          sourceMaterialModificationPerformed:false,
+          allowedAxes:freezeList(pbr?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
+          availableSemanticAtoms:freezeList(pbr?registry?.baseMaterialLibrary?.families?.MATERIAL||[]:[]),
+          paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+          geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true
+        }),
+        assetization:freeze({
+          mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
+          nativeDccScript:modelReady?'assets/native-authoring/build-game-visual.py':null,
+          nativeSourceModelField:modelReady?'task.assetAuthoring.sourceModel':null,
+          nativeSourceLicenseField:modelReady?'task.assetAuthoring.sourceLicense':null,
+          nativeSourceCreditField:modelReady?'task.assetAuthoring.sourceCredit':null,
+          sourceInspectionRequired:true,sourceAndDerivativeSha256Required:true,
+          originalAndTransformHistoryRequired:true,
+          registryWriteOwner:'EXISTING_GRAPHICS_PRODUCTION_SYNC',
+          gameSourceWorkerMayEditCentralRegistry:false,
+          candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
+          nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,
+          newPipelineOrQueueCreated:false
+        })
+      };
+    }
+    actions.push(Object.freeze({...row,...(adaptation||{}),action}));
   };
   for(const repair of qualityActions){
     pushAction({
