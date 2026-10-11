@@ -4645,6 +4645,45 @@ export function buildVibeAssetProductionPlan({
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
   });
+  // [모든 게임 자산 자동 연결] 기존 BUILD_UP 선택/실소비자 증거를 한 작업 단위로 결합한다.
+  // 현재 게임에 승인된 자산 요구만 처리하고, 이미 연결된 자산은 중복 제작하지 않는다.
+  const actualGameConsumerIds=new Set((librarySync.sourceConsumerBindings||[])
+    .filter(row=>row.gameId===currentGameId&&row.sourceBound===true)
+    .map(row=>clean(row.assetId)));
+  const automaticBindingTargets=(studioUniversePlan?.loadout?.selections||[])
+    .filter(row=>row.required!==false)
+    .map(row=>{
+      const assetId=clean(row.assetId),sourceBound=Boolean(assetId&&actualGameConsumerIds.has(assetId));
+      const status=!assetId||row.unresolved===true?'AUTHORING_REQUIRED'
+        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :row.sourceFilesPresent===false||!(row.sourceFiles||[]).length?'SOURCE_ASSET_REQUIRED'
+        :'NATIVE_SOURCE_BINDING_REQUIRED';
+      return freeze({
+        requirementId:clean(row.requirementId)||null,assetId:assetId||null,
+        family:clean(row.family),role:clean(row.role)||null,status,
+        sourceBound,sourceFiles:freezeList(row.sourceFiles||[]),
+        sourceHash:clean(row.sourceHash)||null,libraryVersion:Number(row.libraryVersion||0),
+        nativeRuntimeVerified:false,
+        repairOwner:status==='AUTHORING_REQUIRED'||status==='SOURCE_ASSET_REQUIRED'
+          ?'EXISTING_ASSET_DEVELOPMENT':'EXISTING_GAME_SOURCE_WORKER',
+        protectedGameplayAuthority:true
+      });
+    });
+  const automaticAssetBindingWork=freeze({
+    version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
+    trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
+    sourceConsumerScanCompleted:librarySync.sourceConsumerSync?.scannedGameCount>0,
+    actualSourceBoundCount:actualGameConsumerIds.size,
+    selectedRequirementCount:automaticBindingTargets.length,
+    pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
+    authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
+    runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
+    targets:freezeList(automaticBindingTargets),
+    selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
+    existingGraphicsProductionAndBuildUp:true,
+    preserveGameRulesSaveAndNetwork:true,sourceOnlyCannotProveRuntime:true,
+    verifiedRuntimeEvidenceRequiredBeforePositiveLearning:true
+  });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
@@ -5354,6 +5393,7 @@ export function buildVibeAssetProductionPlan({
     internalLibraryEvolution:effectiveInternalLibraryEvolution,
     flowAssetRequirements,
     assetSupplySummary,
+    automaticAssetBindingWork,
     genreMenuRecommendations,
     registrySync:freeze({
       changed:librarySync.changed===true,
@@ -5915,6 +5955,10 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.automaticAssetBindingWork?.enabled
+      ?'[VIBE AUTOMATIC GAME ASSET BINDING] '+JSON.stringify(plan.automaticAssetBindingWork)+
+       '. 기존 BUILD_UP에서 매 회차 실제 게임 소스 소비와 현재 내부 라이브러리 선택을 자동 대조한다. NATIVE_SOURCE_BINDING_REQUIRED는 현재 게임 책임 함수에만 역할·권리·플랫폼 호환 내부 자산을 직접 연결하고, SOURCE_BOUND_RUNTIME_QA_REQUIRED는 중복 재제작하지 않고 실제 엔진·모바일 표시 증거를 확인한다. SOURCE_ASSET_REQUIRED와 AUTHORING_REQUIRED는 기존 ASSET_DEVELOPMENT에서 원본·파생 제작으로 해결한다. 현재 적용된 게임 규칙, 저장, 멀티 권한은 유지한다. 변경 성공은 소스 해시/QA/런타임 검증까지 확인한 뒤 기존 학습 모터에만 전달하며 미확인 결과는 긍정 학습이나 완료 판정에 넣지 않는다. 기존 GRAPHICS_PRODUCTION·BUILD_UP 단계, 기존 권한 범위만 사용하고 별도 큐나 파이프라인을 만들지 않는다.'
+      :'',
     // 중앙 3D 전용 정책을 공용 에셋 제작·재사용·검수 가이드에 같은 책임 경로로 전달한다.
     '[OWNER 3D SPATIAL ASSET CONTRACT] 캐릭터·NPC·몬스터·보스·월드·지형·건축물·무기·소품 등 공간 게임 에셋은 실제 3D 메시/삼각형/깊이/재질이 있는 native asset으로만 신규 제작하거나 기존 2D/2.5D 원본을 파생·재모델링한다. 2D 스프라이트, 평면 이미지, 카드, 2.5D 시차 효과, 메타데이터 3D 태그는 최종 공간 자산으로 승격할 수 없다. 기존 내부 3D 메시와 권리·해시가 검증된 원본을 우선 재사용하고, 누락은 기존 ASSET_DEVELOPMENT 책임 작업으로 3D authoring/repair한다. UI·HUD·아이콘·텍스처·오디오 자체는 2D·비공간 보조 자원으로 유지하되 월드 오브젝트를 대체하지 않는다. Unity Web은 원본 Unity 프로젝트에서 실제 MeshFilter/SkinnedMeshRenderer와 삼각형·재질·텍스처의 게임 내 런타임 증거를 확인하고, 모바일 브라우저·저장·회귀검증 전엔 PASS/productionVerified/공용 승격 금지. 승인된 게임 밸런스, 전투 판정, 진척도, 세이브, 멀티 권한 보존. 새 우회·래퍼·그림자 라이브러리 생성 금지.',
 
