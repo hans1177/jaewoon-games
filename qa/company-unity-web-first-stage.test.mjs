@@ -117,6 +117,22 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
 });
 
 // [마력숲 Vibe 회귀] 웹 원본의 섬유·제작/저장 의미를 Unity 네이티브 책임 함수에서 보존한다.
+
+// [마력숲 기동 회귀] 원본 Unity 월드가 실제로 준비됐을 때만 부팅 표식을 기록한다.
+test('Fantasy Survival bootstrap boot marker follows the actual camera/player/world readiness gate',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const awake=game.slice(game.indexOf('private void Awake()'),game.indexOf('private static float ParseFloat('));
+  assert.match(awake,/BuildWorld\(\);/);
+  assert.match(awake,/worldRoot == null \|\| !worldRoot\.activeInHierarchy \|\| player == null/);
+  assert.match(awake,/mainCamera == null \|\| !mainCamera\.isActiveAndEnabled \|\| species\.Count == 0 \|\| recipes\.Count == 0/);
+  assert.match(awake,/status=REPAIR_REQUIRED reason=NATIVE_WORLD_BOOT_INCOMPLETE/);
+  assert.match(awake,/throw new InvalidOperationException\("MAGIC_FOREST_NATIVE_WORLD_BOOT_INCOMPLETE"\)/);
+  assert.match(awake,/JAEWOON_UNITY_WEB_QA BOOT game=.*status=PASS/);
+  assert.ok(awake.indexOf('BuildWorld();')<awake.indexOf('worldRoot == null'));
+  assert.ok(awake.indexOf('worldRoot == null')<awake.indexOf('status=PASS'));
+  assert.match(game,/if\(material==""\)\{info="가까운 나무·돌·섬유가 없어\.";return;\}/);
+});
+
 test('Fantasy Survival Unity reconnects missing fiber harvesting and restores normal equipment and structures',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const web=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
