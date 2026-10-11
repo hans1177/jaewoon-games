@@ -3,9 +3,9 @@
   "gameId": "fantasy-survival",
   "date": "2026-10-12",
   "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "fingerprint": "6340b83ec86af8c62bb521f4cfd9368c255cfb8b15e7c7e689b82245b2b20c58",
-  "policyDigest": "782c54a0f2a7fddaf4c1d4b95fbf0ae4b6fe799989dc180b855ca97cf18108ca",
-  "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
+  "fingerprint": "b68acd0ac613c335313ef694093e377b48aae8e239a265b8101f04a68de4a207",
+  "policyDigest": "18928150ea90665761586c5f946f910b7f469cca8389e51f542eab5f814385c5",
+  "engineDigest": "55a13b04795194c55a7d68b603a3371017b7a7caa34b1b1db95fb4d5d6588fbf",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
@@ -387,14 +387,14 @@
         "playthrough": [
           {
             "phase": "OPENING",
-            "entryState": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+            "entryState": "시작 위치: 서사시의 추방과 귀환의 첫 선택 공간. 안내: 서사시의 추방과 귀환의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다. 현재 목표와 가능한 첫 행동을 확인한다.",
             "playerChoice": "식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.",
-            "actionAndResponse": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환의 RouteState·RiskState 입력을 확인하고 RiskState 출력만 변경한다. 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 따라서 환경 탐색과 자원 확보의 경로와 비용이 바뀐다.",
+            "actionAndResponse": "입력: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 실행 전에 접근 가능성과 비용을 확인한다. 판정: RouteState·RiskState의 기존 접근·비용 조건을 확인한다. 성공: RiskState·ResourceState 출력과 환경 탐색과 자원 확보 × 서사시의 추방과 귀환의 피드백을 함께 보여준다. 실패·취소: 기존 상태를 보존하고 다른 경로를 선택하거나 실행하지 않고 되돌아간다. 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 따라서 환경 탐색과 자원 확보의 경로와 비용이 바뀐다.",
             "exitState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
-            "nextDecision": "DEVELOPMENT에서 변경된 RiskState가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.",
+            "nextDecision": "DEVELOPMENT에서 변경된 RiskState·ResourceState가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.",
             "startSeconds": 0,
             "endSeconds": 60,
-            "timeReason": "OPENING에서 RouteState·RiskState 입력과 RiskState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
+            "timeReason": "OPENING에서 RouteState·RiskState 입력과 RiskState·ResourceState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
             "before": [
               {
                 "key": "WorldAccessState",
@@ -436,7 +436,7 @@
               },
               {
                 "key": "ResourceState",
-                "value": 0
+                "value": 1
               }
             ],
             "actions": [
@@ -449,7 +449,7 @@
                 "energyBefore": 10,
                 "energyAfter": 10,
                 "hit": false,
-                "response": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환의 상태 출력 RiskState가 다음 시스템의 선택 조건에 전달된다."
+                "response": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환의 상태 출력 RiskState·ResourceState가 다음 시스템의 선택 조건에 전달된다."
               }
             ],
             "ruleIds": [
@@ -461,12 +461,12 @@
             "phase": "DEVELOPMENT",
             "entryState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
             "playerChoice": "남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.",
-            "actionAndResponse": "제작과 방어 거점 관리 × 민속 금기와 전염의 RiskState·ResourceState 입력을 확인하고 RouteState 출력만 변경한다. 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다. 따라서 제작과 방어 거점 관리의 정보·대응이 바뀐다.",
+            "actionAndResponse": "입력: 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다. 실행 전에 A의 이전 결과를 읽는다. 판정: RiskState·ResourceState의 기존 접근·비용 조건을 확인한다. 성공: RouteState·RiskState 출력과 제작과 방어 거점 관리 × 민속 금기와 전염의 피드백을 함께 보여준다. 실패·취소: 기존 상태를 보존하고 대응을 취소하고 이전 안전 단계로 돌아간다. 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다. 따라서 제작과 방어 거점 관리의 정보·대응이 바뀐다.",
             "exitState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
-            "nextDecision": "RESOLUTION에서 변경된 RouteState가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.",
+            "nextDecision": "RESOLUTION에서 변경된 RouteState·RiskState가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.",
             "startSeconds": 60,
             "endSeconds": 120,
-            "timeReason": "DEVELOPMENT에서 RiskState·ResourceState 입력과 RouteState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
+            "timeReason": "DEVELOPMENT에서 RiskState·ResourceState 입력과 RouteState·RiskState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
             "before": [
               {
                 "key": "WorldAccessState",
@@ -486,7 +486,7 @@
               },
               {
                 "key": "ResourceState",
-                "value": 0
+                "value": 1
               }
             ],
             "after": [
@@ -504,11 +504,11 @@
               },
               {
                 "key": "RiskState",
-                "value": 1
+                "value": 2
               },
               {
                 "key": "ResourceState",
-                "value": 0
+                "value": 1
               }
             ],
             "actions": [
@@ -521,7 +521,7 @@
                 "energyBefore": 10,
                 "energyAfter": 10,
                 "hit": false,
-                "response": "제작과 방어 거점 관리 × 민속 금기와 전염의 상태 출력 RouteState가 다음 시스템의 선택 조건에 전달된다."
+                "response": "제작과 방어 거점 관리 × 민속 금기와 전염의 상태 출력 RouteState·RiskState가 다음 시스템의 선택 조건에 전달된다."
               }
             ],
             "ruleIds": [
@@ -533,12 +533,12 @@
             "phase": "RESOLUTION",
             "entryState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
             "playerChoice": "서사시의 추방과 귀환의 제약과 민속 금기와 전염의 대응을 같은 지역에서 순서대로 시험한다.",
-            "actionAndResponse": "금기와 기회의 교차의 RouteState·RiskState 입력을 확인하고 WorldAccessState 출력만 변경한다. 환경 탐색과 자원 확보에서 평소에는 불가능했던 대안 경로와 선택을 연다.",
+            "actionAndResponse": "입력: 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 실행 전에 접근 가능성과 비용을 확인한다. 판정: RouteState·RiskState의 기존 접근·비용 조건을 확인한다. 성공: WorldAccessState·IntentState 출력과 금기와 기회의 교차의 피드백을 함께 보여준다. 실패·취소: 기존 상태를 보존하고 다른 경로를 선택하거나 실행하지 않고 되돌아간다. 환경 탐색과 자원 확보에서 평소에는 불가능했던 대안 경로와 선택을 연다.",
             "exitState": "한 판의 결과와 다음 선택을 기록한다.",
             "nextDecision": "이전에 변한 세계 상태와 발견 정보를 비교하고 새로운 접근 경로 또는 재시작 방법을 고른다.",
             "startSeconds": 120,
             "endSeconds": 180,
-            "timeReason": "RESOLUTION에서 RouteState·RiskState 입력과 WorldAccessState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
+            "timeReason": "RESOLUTION에서 RouteState·RiskState 입력과 WorldAccessState·IntentState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
             "before": [
               {
                 "key": "WorldAccessState",
@@ -554,11 +554,11 @@
               },
               {
                 "key": "RiskState",
-                "value": 1
+                "value": 2
               },
               {
                 "key": "ResourceState",
-                "value": 0
+                "value": 1
               }
             ],
             "after": [
@@ -568,7 +568,7 @@
               },
               {
                 "key": "IntentState",
-                "value": 0
+                "value": 1
               },
               {
                 "key": "RouteState",
@@ -576,11 +576,11 @@
               },
               {
                 "key": "RiskState",
-                "value": 1
+                "value": 2
               },
               {
                 "key": "ResourceState",
-                "value": 0
+                "value": 1
               }
             ],
             "actions": [
@@ -593,7 +593,7 @@
                 "energyBefore": 10,
                 "energyAfter": 10,
                 "hit": false,
-                "response": "금기와 기회의 교차의 상태 출력 WorldAccessState가 다음 시스템의 선택 조건에 전달된다."
+                "response": "금기와 기회의 교차의 상태 출력 WorldAccessState·IntentState가 다음 시스템의 선택 조건에 전달된다."
               }
             ],
             "ruleIds": [
@@ -610,9 +610,9 @@
     },
     "designer_draft_slices::platform-profiles": {
       "platformFitPlan": {
-        "targetPlatform": "UNITY",
+        "targetPlatform": "ROBLOX",
         "inputModel": "이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.",
-        "performanceBudget": "로블록스 모바일과 유니티 웹용 각각의 렌더·메모리·화면 내 오브젝트 예산을 실기기 측정으로 확정한다.",
+        "performanceBudget": "원본 Roblox Luau 서버·클라이언트의 복제·물리·렌더·메모리·화면 내 오브젝트 예산을 모바일 런타임 측정으로 확정한다.",
         "sessionConstraints": "1분 첫 행동, 5분 첫 인과 피드백, 15분 교차 선택, 30분 이상 발견의 실제 지속성은 런타임에서 측정한다."
       },
       "platformProfiles": {
@@ -623,10 +623,10 @@
           "multiplayerRuntime": "Roblox server-authoritative HYBRID replication with join/leave sync and RemoteEvent validation.",
           "performanceBudget": "Roblox mobile-first budget with bounded parts, draw calls, effects, replication traffic, memory and streaming distance.",
           "uiUx": "Roblox ScreenGui/CoreGui-safe layout with mobile safe zones, readable touch actions, social/player-list compatibility.",
-          "saveAndNetwork": "Roblox DataStore-backed versioned save meaning plus server-validated remotes and rate limits when persistence/networking is required.",
-          "platformContentAdaptation": "Preserve 환경 탐색과 자원 확보의 결과를 제작과 방어 거점 관리로 전환하고 달라진 조건을 다시 활용한다. 식량과 재료를 확보할 위험 구역을 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다. 이후 플레이어가 환경 탐색과 자원 확보을 선택하면 서사시의 추방과 귀환의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 그 결과 남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택하면서 강력한 행동이 지역 규칙·NPC 반응·몬스터 생태를 함께 오염시킨다.가 바뀌고 플레이어가 제작과 방어 거점 관리을 선택하면 민속 금기와 전염의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 다시 A의 선택 조건이 달라진다. 생존 장르의 주 목표를 진행하는 동안 호러 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 호러를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.; adapt pacing, avatar scale, social discovery and short-session Roblox conventions without changing core rules.",
+          "saveAndNetwork": "Luau 서버가 판정·보상·진행·저장을 소유하고 RemoteEvent 입력을 검증한다. 기존 DataStore 키와 저장 구조 및 멀티 권한을 보존한다.",
+          "platformContentAdaptation": "게임 원본은 roblox-games/fantasy-survival/의 Luau다. 설계 문법의 상태 입출력·시스템 연결·콘텐츠를 기존 서버·공유·클라이언트 함수에 직접 구현한다. C# 변환 결과를 원본으로 사용하지 않는다.",
           "internalReleaseTarget": "Private or restricted Roblox experience that the owner/testers can launch in the Roblox app before public release.",
-          "validationEvidence": "Roblox publish identity + exact source revision + real runtime + independent QA + regression + private-play evidence."
+          "validationEvidence": "설계 문법별 책임 함수·실제 상태 변경·콘텐츠 소스 차이를 연결해 기존 F0~F9 및 Roblox 클라우드 API 런타임에서 검증한다. 정적 검사와 실제 실행 증거를 구분한다."
         },
         "UNITY": {
           "platform": "UNITY",
@@ -1007,7 +1007,7 @@
     "designer_draft_slices::traceability": {
       "technicalAssumptions": [
         "설계 인과 원형 EXILE_RETURN·TABOO_POLLUTION·SACRIFICE_SUBSTITUTION의 선택과 세계 반응을 독자적으로 적용한다.",
-        "원본의 전투·보상·저장·멀티 권한은 기존 책임 함수가 가진다. 설계 계획 상태는 새 저장 키가 아니며 실제 구현 전 소스 확인이 필요하다.",
+        "원본 언어는 Roblox Luau이며 roblox-games/fantasy-survival/의 전투·보상·저장·멀티 권한은 기존 서버·공유·클라이언트 책임 함수가 가진다. 설계 계획 상태는 새 저장 키가 아니며 실제 구현 전 소스 확인이 필요하다.",
         "기존 검토 가능한 모듈 assets/inventory-equipment.js, assets/economy-loot-shop.js, assets/crafting-recipes.js, assets/targeting-system.js, assets/quest-dialogue.js, assets/common-ai.js, assets/skill-effects.js은 라이선스·역할·실제 코드와 일치할 때만 사용한다. 신규 외부 복사는 금지한다.",
         "현재 문서는 모델 출력이나 실행 확인이 아닌 바이브 설계 함수의 계산 후보이며 실제 게임 플레이 검증과 구별한다."
       ],
@@ -1019,12 +1019,12 @@
       "implementationTraceability": [
         {
           "designElement": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환",
-          "responsibleSystem": "환경 탐색과 자원 확보 × 서사시의 추방과 귀환의 기존 책임 함수와 코드 모듈",
+          "responsibleSystem": "roblox-games/fantasy-survival/에서 환경 탐색과 자원 확보 × 서사시의 추방과 귀환의 기존 Luau 책임 함수와 코드 모듈",
           "validationEvidence": "같은 조건의 입력 전후 위험·세계 상태 값과 다음 B의 선택 변화를 비교한다."
         },
         {
           "designElement": "제작과 방어 거점 관리 × 민속 금기와 전염",
-          "responsibleSystem": "제작과 방어 거점 관리 × 민속 금기와 전염의 기존 책임 함수와 코드 모듈",
+          "responsibleSystem": "roblox-games/fantasy-survival/에서 제작과 방어 거점 관리 × 민속 금기와 전염의 기존 Luau 책임 함수와 코드 모듈",
           "validationEvidence": "B의 반작용 이전/이후 A의 다음 경로·비용·행동 가능성을 비교한다."
         },
         {
@@ -1044,13 +1044,13 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-11T22:23:47.077Z",
-  "updatedAt": "2026-10-11T22:23:47.178Z",
+  "createdAt": "2026-10-11T23:14:20.974Z",
+  "updatedAt": "2026-10-11T23:14:21.101Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
     "version": 138,
-    "sha256": "dd3c9d26faf58172ed4da5ef1202d904018a02c985eadc569a77c32b8097bc26",
+    "sha256": "d429a55676b17318098f242715c9800b92400a824609bdb747328c8d648a8b82",
     "inventoryCount": 799,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
@@ -3202,15 +3202,15 @@
   "sliceDependencies": {
     "designer_draft_slices::identity-core": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
     "designer_draft_slices::systems-progression": "09726e2efe62958a13ac4c05a5109bbc30146adde73f764acac6a1bad60e58d8",
-    "designer_draft_slices::content-rules": "ebff934885befc2f7931e9b1989524b77d7ce359bb3fc5193429789206f12344",
-    "designer_draft_slices::alternatives": "17b4435ed713959df67e0883eed92e6dac38eaf0e6279725bbc38f05857420de",
-    "designer_draft_slices::selection-variety": "2a3d25dc8fe341dd6cb1070799e0f5f0d9b49bd436705f9aaf90cd8d73b9d461",
-    "designer_draft_slices::platform-profiles": "1ed3d8eb3a90066a8540f3dcc326077606bf8137ac3e89b4da985c2f638d6a7a",
-    "designer_draft_slices::ux-presentation": "1ed3d8eb3a90066a8540f3dcc326077606bf8137ac3e89b4da985c2f638d6a7a",
-    "designer_draft_slices::market-multiplayer": "1ed3d8eb3a90066a8540f3dcc326077606bf8137ac3e89b4da985c2f638d6a7a",
-    "designer_draft_slices::narrative-homage": "1ed3d8eb3a90066a8540f3dcc326077606bf8137ac3e89b4da985c2f638d6a7a",
-    "designer_draft_slices::integrity-stability": "1ed3d8eb3a90066a8540f3dcc326077606bf8137ac3e89b4da985c2f638d6a7a",
-    "designer_draft_slices::traceability": "1ed3d8eb3a90066a8540f3dcc326077606bf8137ac3e89b4da985c2f638d6a7a"
+    "designer_draft_slices::content-rules": "8b1ee594ed0fe71a2c276954c5c2d1baccdf6fb18769ccd76be869e2d48123ca",
+    "designer_draft_slices::alternatives": "637230e436fdfcba3cc6e05c1a6cb0bb4fce3884f0aff7e0603d57091eaae121",
+    "designer_draft_slices::selection-variety": "a4d66b4d44d4a8c1981dea418c5301a6d37278d236c2f7a3e227d61f2a133a25",
+    "designer_draft_slices::platform-profiles": "b5048aa270b7a2c7ee316fb4495543903c56e8c6147b4fb6bb4b2a19f04a216d",
+    "designer_draft_slices::ux-presentation": "b5048aa270b7a2c7ee316fb4495543903c56e8c6147b4fb6bb4b2a19f04a216d",
+    "designer_draft_slices::market-multiplayer": "b5048aa270b7a2c7ee316fb4495543903c56e8c6147b4fb6bb4b2a19f04a216d",
+    "designer_draft_slices::narrative-homage": "b5048aa270b7a2c7ee316fb4495543903c56e8c6147b4fb6bb4b2a19f04a216d",
+    "designer_draft_slices::integrity-stability": "b5048aa270b7a2c7ee316fb4495543903c56e8c6147b4fb6bb4b2a19f04a216d",
+    "designer_draft_slices::traceability": "b5048aa270b7a2c7ee316fb4495543903c56e8c6147b4fb6bb4b2a19f04a216d"
   },
   "sliceRepairFeedback": {
     "designer_draft_slices::systems-progression": [
