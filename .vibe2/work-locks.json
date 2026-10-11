@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-12rcvxc",
+      "worker": "vibe2",
+      "taskId": "village-dungeons-unity-web-base-implementation-v1",
+      "gameId": "village-dungeons",
+      "files": [
+        "unity-games/village-dungeons/Assets/Scripts/GameCore.cs",
+        "unity-games/village-dungeons/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "e764fe5c274a99e5f192500fc7e27861b60eb09d",
+      "runId": "38129872250",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T10:55:40.416Z",
+      "expiresAt": "2026-10-11T11:40:40.416Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:village-dungeons-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
