@@ -3585,6 +3585,8 @@ function internalAssetApiIndexGuidance(context={}){
       'Every game source BUILD_UP must consume the existing Vibe development-tool APIs. Always evaluate the current game with the existing asset production planner, environment director Auto Biome, visual coordination and targeted QA tools; do not create a second engine or workflow. Auto Biome must respect the same game verified spatial design and return APPROVED_DESIGN_REQUIRED when there is no approved map rather than inventing one.',
       'These are updated, read-only API references, not code to copy blindly. Inspect matching existing implementation and use only verified-compatible functions in the current responsible source. Development tools are NOT game runtime imports and cannot grant new source mutation, release, save, economy, combat or network authority.',
       'Apply relevant reusable implementation during this authorized coding task; retain each existing game save key, schema, migration requirement, HP, damage, hitbox, cooldown, drop, reward, AI and combat rules. Reuse safe algorithms without rewriting their gameplay meaning. No gameplay/save/combat system is invented solely because a tool matches.',
+      'Teach Vibe from actual source-bound examples: identify the registered internal asset ID and source hash, locate its existing Roblox or Unity consumer API, apply only a compatible change in that responsible game source, and replay targeted QA. Registered config atoms are never proof of actual in-game use.',
+      'For each missed binding, classify the cause as missing source, incompatible role or platform, rights restriction, missing verified spatial input, or unverified engine rendering. Feed only independently verified results to the existing Vibe learning-motor; keep unverified attempts as repair candidates, never gameplay or runtime PASS.',
       'Each coding cycle rematches updated library/tool exports and content hashes. Reuse unchanged correct bindings; modify only affected responsible code when a compatible update improves it. Design stage, existing BUILD_UP/F0-F9 chain and QA/runtime authority remain unchanged.',
       '[END VIBE LIBRARY AND DEVELOPMENT TOOL DYNAMIC MATCH]'
     ]:[])
@@ -3662,8 +3664,13 @@ function universalAssetWorkerGuidance(order={}) {
   const families=['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','SKILL','MATERIAL','AUDIO','VFX','UI','MOTION','PROP'];
   const selected=Object.entries(loadout?.families||{}).map(([family,atoms])=>family+'='+((atoms||[]).map(clean).filter(Boolean).join('|')||'NONE')).join('; ');
   const customization=order?.assetProduction?.assetCustomization;
+  const automaticBinding=order?.assetProduction?.automaticAssetBindingWork||null;
   return [
     '[UNIVERSAL ASSET-FIRST UPGRADE CONTRACT]',
+    automaticBinding?.enabled===true
+      ?'[AUTOMATIC ASSET BINDING / CANONICAL VIBE] '+JSON.stringify(automaticBinding)+
+       '. Follow the existing asset selection and exact current game source consumers on EVERY BUILD_UP. Apply NATIVE_SOURCE_BINDING_REQUIRED only to compatible existing ownership in this task writable scope; reuse SOURCE_BOUND_RUNTIME_QA_REQUIRED without duplicate recreation. Route AUTHORING_REQUIRED or SOURCE_ASSET_REQUIRED to the existing asset authoring responsibility, never fabricate a native file. Preserve source hashes, saved game, combat, progression and server authority. Runtime and positive-learning PASS require exact artifact and independent engine evidence. Do not create a separate runner, queue, wrapper or shadow pipeline.'
+      :'',
     'All 12 asset families MUST be evaluated: '+families.join(','),
     'Selected loadout: '+(selected||'NONE'),
     customization?`커마 최소 기준=${customization.minimumQuality?.label||'상급 조형'}; 시각 기준=${customization.minimumQuality?.referencePath||'승인 기준 화면'}; style=${order.assetProduction.styleBible?.profileKey||'GAME_STYLE_LOCK'}. 캐릭터·몬스터·배경·모든 오브젝트·UI·아이콘·모션에 같은 마감 기준을 적용한다. 초벌 조립 후 얼굴/접합부/재질/마모/연기/동작 연결을 집중 수정하고 실제 표시 크기와 실게임 카메라로 비교한다.`:'',
