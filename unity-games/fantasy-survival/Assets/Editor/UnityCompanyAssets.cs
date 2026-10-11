@@ -324,6 +324,8 @@ internal static class UnityCompanyAssets
             skinned.rootBone = nodes[skin.skeleton];
             skinned.updateWhenOffscreen = false;
             var animation = root.AddComponent<Animation>();
+            // 모션 · 동적 AddClip 상태만이 아니라 프리팹 직렬화 대상 클립 배열을 직접 저장한다.
+            var actionClips = new List<AnimationClip>();
             foreach (Motion action in doc.animations)
             {
                 if (string.IsNullOrEmpty(action.name)) continue;
@@ -332,8 +334,14 @@ internal static class UnityCompanyAssets
                 if (AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath) != null) AssetDatabase.DeleteAsset(clipPath);
                 AssetDatabase.CreateAsset(clip, clipPath);
                 animation.AddClip(clip, action.name);
-                if (animation.clip == null || action.name == "IDLE_BREATH") animation.clip = clip;
+                actionClips.Add(clip);
             }
+            // 에디터 메모리에만 존재하는 AnimationState가 빌드 시 유실되지 않도록
+            // 기존 Animation 컴포넌트의 직렬화된 참조를 정식 Editor API로 고정한다.
+            if (actionClips.Count != doc.animations.Length)
+                throw new Exception("UNITY_COMPANY_ACTION_CLIP_COUNT_MISMATCH:" + key);
+            AnimationUtility.SetAnimationClips(animation, actionClips.ToArray());
+            animation.clip = actionClips.Find(clip => clip.name == "IDLE_BREATH") ?? actionClips[0];
             animation.playAutomatically = true;
             if (animation.clip == null) throw new Exception("UNITY_COMPANY_IDLE_CLIP_MISSING:" + key);
             GameObject native = PrefabUtility.SaveAsPrefabAsset(root, prefab);
@@ -346,6 +354,16 @@ internal static class UnityCompanyAssets
                 importer.SaveAndReimport();
             }
             else Debug.LogWarning("MAGIC_FOREST_NATIVE_CACHE_METADATA_MISSING key=" + key);
+            // 프리팹을 저장하고 재임포트한 뒤에도 실제 모든 액션 참조가 남았는지 검증.
+            GameObject persisted = AssetDatabase.LoadAssetAtPath<GameObject>(prefab);
+            Animation persistedAnimation = persisted != null ? persisted.GetComponent<Animation>() : null;
+            AnimationClip[] persistedClips = persisted != null
+                ? AnimationUtility.GetAnimationClips(persisted) : Array.Empty<AnimationClip>();
+            if (persistedAnimation == null || persistedClips.Length < actionClips.Count)
+                throw new Exception("UNITY_COMPANY_PERSISTED_ACTION_CLIPS_MISSING:" + key);
+            foreach (AnimationClip actionClip in actionClips)
+                if (Array.Find(persistedClips, clip => clip != null && clip.name == actionClip.name) == null)
+                    throw new Exception("UNITY_COMPANY_PERSISTED_ACTION_CLIP_MISSING:" + key + ":" + actionClip.name);
             Debug.Log("MAGIC_FOREST_NATIVE_SKINNED_ACTION=SOURCE_READY_RUNTIME_QA_PENDING key=" + key
                 + " vertices=" + mesh.vertexCount + " joints=" + bones.Length
                 + " actions=" + doc.animations.Length);
