@@ -13,6 +13,27 @@ const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 // 그래픽 · 실제 회사 3D OBJ 파생본이 Unity 프로젝트 리소스와 기존 게임 소비자까지 이어지는지 검사한다.
+// 마력숲 웹 · 공용 3D 자산/오토 바이옴/캐릭터/스킬 모션은 기존 유니티 게임 소스 안에서만 바인딩한다.
+test('Fantasy Survival Web native 3D auto biome and real skill motion remain cosmetic-only',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const registered=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const village=registered.assets.filter(row=>row.id?.startsWith('external-tinytreats-'));
+  assert.equal(village.length,32,'acquired shared 3D models must remain available');
+  assert.match(build,/ImportSharedVillageModels\(\)/,'same Unity web build must import real shared meshes');
+  assert.match(build,/MAGIC_FOREST_SHARED_SOURCE_HASH_MISMATCH/,'source hashes are checked');
+  assert.match(game,/MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS/,'five true native 3D biomes are built');
+  assert.match(game,/surface\.AddComponent<MeshFilter>\(\)\.sharedMesh=mesh/,'3D ground surfaces have real mesh data');
+  assert.match(game,/string\[\] biomeNames=\{"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"\}/);
+  assert.match(game,/BindCompanyVisual\("MagicForestTraveler"/,'player uses real skinned source');
+  assert.match(game,/monster\.nativeMotion=rigVisual\.GetComponent<Animation>\(\)/,'monsters use native rig action clips');
+  assert.match(game,/ParticleSystemStopAction\.Destroy/,'skill hit particles have bounded lifetimes');
+  assert.match(game,/trail\.time=\.30f/,'homing projectiles have visible 3D motion trails');
+  assert.match(game,/StyleHomingProjectile\(sphere,sand\)/,'spell VFX is applied to the actual projectile');
+  assert.match(game,/target\.hp=Mathf\.Max\(0f,target\.hp-Mathf\.Max\(0f,damage\)\)/,'existing damage logic unchanged');
+  assert.match(game,/private const string SavePrefix = "fantasy_survival_webfloor_"/,'save namespace remains stable');
+});
+
 test('Fantasy Survival reauthored company 3D tree assets reach the canonical Unity Web build and preserve harvest collision',()=>{
   const art='unity-games/fantasy-survival/Assets/Resources/CompanyAssets/';
   const sources=['tree_trunk_thick.obj','tree_crown_round.obj'].map(name=>
