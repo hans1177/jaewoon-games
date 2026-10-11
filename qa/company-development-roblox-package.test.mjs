@@ -89,8 +89,8 @@ test('asset failure survives worker recording and exact-source persistence while
   assert.equal(record(failure,{SUPERSEDED:'true'}).assetBindingFailed,false);
 
   const sibling={gameId:'unrelated',robloxSourceCommit:'c'.repeat(40),robloxRuntimePassed:true,otherWork:'preserve'};
-  const persist=(currentRevision)=>{
-    const queue={items:[{gameId,robloxSourceCommit:currentRevision},sibling]};
+  const persist=(currentRevision,currentFields={})=>{
+    const queue={items:[{gameId,robloxSourceCommit:currentRevision,...currentFields},sibling]};
     const files=new Map([['development-queue.json',JSON.stringify(queue)],[`/tmp/roblox-technical-batch/results/${gameId}.result.json`,JSON.stringify(result)]]);
     const mockFs={existsSync:()=>true,readdirSync:()=>[`${gameId}.result.json`],readFileSync:p=>files.get(p),writeFileSync:(p,v)=>files.set(p,v)};
     runInNewContext(nodeStep('Persist exact Roblox build package evidence'),{
@@ -116,6 +116,19 @@ test('asset failure survives worker recording and exact-source persistence while
   for(const key of ['robloxBuildOrPackagePassed','robloxFoundationF0Passed','robloxRuntimePassed','robloxFinalReviewPassed'])assert.equal(item[key],false,key);
   assert.deepEqual(persisted.items[1],sibling);
   assert.deepEqual(persist('d'.repeat(40)).items,[{gameId,robloxSourceCommit:'d'.repeat(40)},sibling]);
+  const sourceRepair={currentStep:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureSignature:'existing-source-static-revalidation-failed',robloxSourceBootstrapFailedAt:'2026-10-11T13:10:28Z',routingBlockers:['SOURCE_SERVER_MISSING']};
+  assert.deepEqual(persist(revision,sourceRepair).items,[{gameId,robloxSourceCommit:revision,...sourceRepair},sibling],'late package failure must not replace current source repair');
+  const successfulResult={...result,pass:true,f0Pass:true,preflightPass:true,artifactIdentity:'sha256:'+'f'.repeat(64)};
+  const preserved={gameId,robloxSourceCommit:revision,...sourceRepair};
+  const files=new Map([['development-queue.json',JSON.stringify({items:[preserved,sibling]})],['result.json',JSON.stringify(successfulResult)]]);
+  const stop=new Error('source repair preserved');
+  let wrote=false;
+  assert.throws(()=>runInNewContext(nodeStep('Persist successful F0 checkpoint immediately per game'),{
+    require:()=>({readFileSync:p=>files.get(p),writeFileSync(){wrote=true;}}),console:{log(){}},
+    process:{env:{GAME_ID:gameId,RESULT_FILE:'result.json'},exit(){throw stop;}}
+  }),error=>error===stop);
+  assert.equal(wrote,false,'late successful F0 must not bypass newer source repair either');
+
   assert.match(workflow,/\['roblox-f0-gameplay-product-readiness-failure','roblox-package-asset-binding-failure'\]\.includes/);
 });
 

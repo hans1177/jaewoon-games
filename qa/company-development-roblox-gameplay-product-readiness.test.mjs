@@ -542,3 +542,29 @@ test('Roblox survival object gathering keeps legacy reward and save rules until 
   assert.match(source,/store:UpdateAsync\("player:"/);
   assert.match(source,/if not saved or blockedRecord then warn\("SURVIVAL_SAVE_WRITE_REPAIR_REQUIRED"\) end/);
 });
+
+test('managed foundation in the middle must not hide real gameplay or generic skeleton debt',()=>{
+  const source=fs.readFileSync('roblox-games/simple-rpg/server/Game.server.luau','utf8');
+  const start=source.indexOf('-- native-foundation-sentinel-v1');
+  const end=source.indexOf('local lastAction = {}',start);
+  assert.ok(start>=0&&end>start);
+  const foundation=source.slice(start,end);
+  const args={gameId:'foundation-boundary',baseline:{content:{...survivalBaseline.content,identity:survivalBaseline.content.identity+' Explore the world.'}},
+    config:'Genre="Survival", PlayMode="SINGLE"',client:mobileClient,project};
+  const gameplay='local function startWave() end\nlocal function nextDay() end\nlocal function buildWorld() local x=Instance.new("Model") end';
+  const expected=evaluateRobloxGameplayProductReadiness({...args,server:gameplay});
+  for(const server of [foundation+gameplay,gameplay+foundation]){
+    const actual=evaluateRobloxGameplayProductReadiness({...args,server});
+    assert.deepEqual(actual.implementedCapabilities,expected.implementedCapabilities);
+    assert.deepEqual(actual.placeholderDebt,expected.placeholderDebt);
+    assert.equal(actual.pass,false,'missing survival systems must still fail');
+  }
+  const onlyFoundation=evaluateRobloxGameplayProductReadiness({...args,server:foundation});
+  assert.equal(onlyFoundation.implementedCapabilities.WORLD,false);
+  assert.equal(onlyFoundation.implementedCapabilities.CORE_GAMEPLAY_STATE,false);
+  const skeleton=evaluateRobloxGameplayProductReadiness({...args,server:source});
+  assert.equal(skeleton.pass,false);
+  assert.equal(skeleton.antiSkeletonPassed,false);
+  assert.ok(skeleton.blockers.includes('GENERIC_SCOPE_HANDLER_SKELETON'));
+  assert.ok(skeleton.placeholderDebt.genericScopeHandlerCount>=3);
+});

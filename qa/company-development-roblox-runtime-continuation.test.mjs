@@ -283,3 +283,28 @@ test('post-package Roblox preflight dispatch dedupes against fetched current mai
   });
   assert.deepEqual(printed,['daechung-rpg','fantasy-survival']);
 });
+
+test('owner-active Roblox lane retries platform-only failures while Unity remains held',()=>{
+  const item={
+    gameId:'gem-survivor',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    platformExecutionMode:'OWNER_ACTIVE_PLATFORMS_SAME_GAME',concurrentTargetPlatforms:['ROBLOX'],
+    robloxSourceCommit:'a'.repeat(40),robloxBuildSourceRevision:'a'.repeat(40),
+    robloxBuildOrPackagePassed:true,robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    robloxBuildPassedAt:'2026-10-11T10:00:00Z',robloxBuildPreflightFailedAt:'2026-10-11T11:00:00Z',
+    robloxBuildPreflightEvidence:{blockers:['roblox-platform-required']}
+  };
+  assert.equal(inspectRobloxBuildPreflight({item,directive}).pass,true);
+  assert.equal(inspectRobloxBuildPreflight({item:{...item,concurrentTargetPlatforms:['UNITY']},directive}).pass,false);
+  assert.equal(inspectRobloxBuildPreflight({item:{...item,robloxBuildSourceRevision:'c'.repeat(40)},directive}).pass,false);
+  const block=preflight.slice(preflight.indexOf('const rows=[];'),preflight.indexOf('const f0Ready='));
+  const plan=rows=>runInNewContext(block+'\nJSON.stringify(rows)',{
+    q:{items:rows},requested:'',roadmap:{},console:{log(){}},ownerFocusedSecondaryPlatformEligible:()=>false
+  });
+  assert.equal(JSON.parse(plan([item])).length,1);
+  assert.equal(JSON.parse(plan([{...item,concurrentTargetPlatforms:['ROBLOX','UNITY']}])).length,1);
+  assert.equal(JSON.parse(plan([{...item,concurrentTargetPlatforms:['UNITY']}])).length,0);
+  assert.equal(JSON.parse(plan([{...item,robloxBuildPreflightEvidence:{blockers:['artifact-identity-invalid']}}])).length,0);
+  assert.equal(JSON.parse(plan([{...item,robloxBuildSourceRevision:'c'.repeat(40)}])).length,0);
+  assert.equal(item.selectedPlatform,'UNITY');
+});
