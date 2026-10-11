@@ -952,3 +952,18 @@ test('Unity Web verified builds automatically enter the existing reviewed Cloudf
   assert.match(publish,/UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=PASS/,'mobile gameplay validation remains required');
   assert.match(workflow,/repair-vibe2:/,'failed build and deployment continue through existing causal repair');
 });
+
+test('Fantasy Survival WebGL preserves native colliders and persisted guardian actions through Unity linker',()=>{
+  const linker=fs.readFileSync('unity-games/fantasy-survival/Assets/link.xml','utf8');
+  const importer=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs','utf8');
+  const nativeGame=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  for(const type of ['UnityEngine.BoxCollider','UnityEngine.SphereCollider','UnityEngine.CapsuleCollider',
+    'UnityEngine.Animation','UnityEngine.AnimationClip','UnityEngine.AnimationState']){
+    assert.ok(linker.includes('fullname="'+type+'" preserve="all"'),type+' cannot be removed by WebGL stripping');
+  }
+  assert.ok(importer.includes('AnimationUtility.SetAnimationClips(animation, actionClips.ToArray())'));
+  assert.ok(importer.includes('AnimationUtility.GetAnimationClips(persisted)'));
+  assert.ok(importer.includes('UNITY_COMPANY_PERSISTED_ACTION_CLIP_MISSING'));
+  assert.ok(nativeGame.includes('MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING'));
+  assert.ok(nativeGame.includes('GameObject.CreatePrimitive(primitive)'));
+});

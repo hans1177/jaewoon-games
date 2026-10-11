@@ -1,1 +1,16 @@
-<linker><assembly fullname="UnityEngine.CoreModule" preserve="all" /></linker>
+<linker>
+  <!-- Unity 기본 메시·렌더 모듈 보존: 기존 정책 유지 -->
+  <assembly fullname="UnityEngine.CoreModule" preserve="all" />
+  <!-- CreatePrimitive의 실제 충돌체는 리플렉션 생성되므로 WebGL 링크에서 제거하지 않는다 -->
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.BoxCollider" preserve="all" />
+    <type fullname="UnityEngine.SphereCollider" preserve="all" />
+    <type fullname="UnityEngine.CapsuleCollider" preserve="all" />
+  </assembly>
+  <!-- 프리팹에 저장된 실제 Legacy 동작 클립·상태를 WebGL 런타임까지 보존 -->
+  <assembly fullname="UnityEngine.AnimationModule">
+    <type fullname="UnityEngine.Animation" preserve="all" />
+    <type fullname="UnityEngine.AnimationClip" preserve="all" />
+    <type fullname="UnityEngine.AnimationState" preserve="all" />
+  </assembly>
+</linker>
