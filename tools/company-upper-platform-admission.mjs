@@ -667,6 +667,13 @@ export function classifyUpperPlatformAdmission(item,{repoRoot='.',grandfatherGam
   if(!targets.has('ROBLOX')||!targets.has('UNITY'))return{gameId,state:'BLOCKED',reason:'DUAL_NATIVE_TARGETS_REQUIRED'};
   const nativeStarted=nativeUpperPlatformAlreadyStarted(item);
   const grandfathered=new Set((Array.isArray(grandfatherGameIds)?grandfatherGameIds:[]).map(clean));
+  const policyFile=path.join(repoRoot,'company-learning/platform-release-roadmap.json');
+  const policy=fs.existsSync(policyFile)?JSON.parse(fs.readFileSync(policyFile,'utf8')):{};
+  if(policy.developmentAccess?.UNITY_WEB==='OWNER_HOLD'||policy.unityWebFirstStage?.enabled===false){
+    return{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted,
+      grandfatherSource:nativeStarted?'DURABLE_NATIVE_PROGRESS_EVIDENCE':null,
+      web:{state:'OWNER_HOLD',reason:'UNITY_WEB_DEVELOPMENT_PAUSED_BY_OWNER'}};
+  }
   const readiness=readUpperPlatformReadiness(repoRoot,gameId);
   const method=readiness.pass?null:discoverUnityWebBuildMethod(repoRoot,gameId);
   const web=readiness.pass?{state:'UNITY_WEB_VERIFIED',reason:'CURRENT_UNITY_WEB_QA_VERIFIED',readiness}

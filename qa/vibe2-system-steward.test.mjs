@@ -234,7 +234,7 @@ test('Vibe canonical queue serialization is lossless and compact without changin
     'tools/vibe2-auto-planner.mjs',
     'tools/vibe2-system-steward.mjs'
   ]){
-    const source=fs.readFileSync(sourceFile,'utf8');
+    const source=fs.readFileSync(new URL('../'+sourceFile,import.meta.url),'utf8');
     const writerLine=source.split('\n').find(line=>line.startsWith('function writeJson(')||line.startsWith('const writeJson='));
     assert.ok(writerLine,sourceFile);
     let captured=null;
@@ -249,10 +249,10 @@ test('Vibe canonical queue serialization is lossless and compact without changin
     writer('/tmp/vibe2-control/.vibe2/parallelism-control.json',{fixedSlots:128});
     assert.equal(captured.body,JSON.stringify({fixedSlots:128},null,2)+'\n',sourceFile);
   }
-  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
   assert.match(workflow,/const afterText = `\$\{JSON\.stringify\(normalized\)\}\\n`;/);
   assert.doesNotMatch(workflow,/const afterText = `\$\{JSON\.stringify\(normalized, null, 2\)\}/);
-  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const roadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
   assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
   assert.equal(roadmap.finalDevelopmentLock.sequenceLock.status,'LOCKED');
 });

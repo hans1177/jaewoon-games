@@ -47,7 +47,7 @@ test('promotion source has one direct-native admission path and no Web-first or 
   assert.match(source,/MINIMUM_DUAL_PLATFORM_DESIGN_READY/);
   assert.match(source,/strictDesignReviewRequiredForAdmission:false/);
   assert.match(source,/concurrentTargetPlatforms:\['ROBLOX','UNITY'\]/);
-  assert.match(source,/UNITY_WEB_ROLE=REQUIRED_UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR/);
+  assert.match(source,/UNITY_WEB_ROLE=OWNER_POLICY_CONTROLLED_DEVELOPMENT_LANE/);
   assert.doesNotMatch(source,/DESIGN_PASS_THRESHOLD/);
   assert.doesNotMatch(source,/bindRequiredWebStage/);
   assert.doesNotMatch(source,/WEB_PLAYABLE_BOOTSTRAP/);

@@ -464,7 +464,7 @@ test('homepage exposes only verified native 3D Unity WebGL as a development link
   assert.equal(listing.cardVisibilityRequiresRunnableTarget,false);
   assert.equal(listing.titleOnlyCardExposureForbidden,false);
   assert.equal(snap.unityWebEnabled,true);
-  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,true);
+  assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
   assert.equal(web.requiredForDevelopmentAdmission,false);

@@ -27,6 +27,39 @@ import {createHash} from 'node:crypto';
 
 const repo=process.cwd();
 const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
+test('held Unity Web and Android jobs consult current main and skip heavy builds without repair dispatch',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-owner-hold-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    for(const [file,platform,job] of [
+      ['unity-web-first-stage-build.yml','UNITY_WEB','build'],
+      ['unity-web-floor-source-bootstrap.yml','UNITY_WEB','bootstrap'],
+      ['unity-cloud-android-test.yml','UNITY_ANDROID','build']
+    ]){
+      const workflow=fs.readFileSync(path.join(repo,'.github/workflows',file),'utf8');
+      const gate=workflow.split('  owner-policy:\n')[1].split('\n  '+job+':')[0];
+      assert.match(gate,/ref: main/);
+      assert.match(workflow,new RegExp('  '+job+':\\n    needs: owner-policy\\n    if: needs\\.owner-policy\\.outputs\\.allowed'));
+      const script=gate.match(/node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^          /gm,'');
+      for(const allowed of [false,true]){
+        fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({developmentAccess:{[platform]:allowed?'ALWAYS_ALLOWED':'OWNER_HOLD'}}));
+        const output=path.join(root,'output');fs.writeFileSync(output,'');
+        execFileSync(process.execPath,['--input-type=module','--eval',script],{cwd:root,env:{...process.env,GITHUB_OUTPUT:output}});
+        assert.equal(fs.readFileSync(output,'utf8'),'allowed='+allowed+'\n');
+      }
+    }
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({developmentAccess:{UNITY_WEB:'OWNER_HOLD'}}));
+    assert.throws(()=>execFileSync(process.execPath,[tool,'--game-id=hold-probe'],{cwd:root,stdio:'pipe'}),/UNITY_WEB_OWNER_HOLD/);
+    assert.equal(fs.existsSync(path.join(root,'.build-requests')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+function enableFixtureWeb(root){
+  const file=path.join(root,'company-learning/platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(file,'utf8'));
+  policy.unityWebFirstStage.enabled=true;policy.developmentAccess.UNITY_WEB='ALWAYS_ALLOWED';
+  fs.writeFileSync(file,JSON.stringify(policy));
+}
+
 
 // 변환 · 실제 공유 모델의 금속/비금속과 모션 곡선은 엔진 임포트에서 검증한다.
 test('Fantasy Survival native importer retains authored PBR and validates animation interpolation in Unity',()=>{
@@ -413,6 +446,7 @@ test('native asset registry preflight runs before Unity editor and fails closed 
       fs.mkdirSync(path.dirname(dest),{recursive:true});
       fs.copyFileSync(relative,dest);
     }
+    enableFixtureWeb(root);
     const cleanRun=invoke();
     assert.match(cleanRun,new RegExp('UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count='
       +declaration.registryAssetIds.length+'(?:\\r?\\n|$)'));
@@ -439,6 +473,7 @@ test('Unity Web first-stage request binds canonical Unity source and Web output'
   const old=process.cwd();
   try{
     fs.cpSync(path.join(repo,'company-learning'),path.join(tmp,'company-learning'),{recursive:true});
+    enableFixtureWeb(tmp);
     const root=path.join(tmp,'unity-games','sample-game');
     fs.mkdirSync(path.join(root,'Assets','Scripts'),{recursive:true});
     fs.mkdirSync(path.join(root,'Assets','Editor'),{recursive:true});
@@ -591,6 +626,7 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
   const old=process.cwd();
   try{
     fs.cpSync(path.join(repo,'company-learning'),path.join(tmp,'company-learning'),{recursive:true});
+    enableFixtureWeb(tmp);
     const root=path.join(tmp,'unity-games','sample-game');
     fs.mkdirSync(path.join(root,'Assets','Scripts'),{recursive:true});
     fs.mkdirSync(path.join(root,'Assets','Editor'),{recursive:true});
@@ -925,6 +961,7 @@ test('source-only Unity Web boot fails cheap F0 before Unity editor and preserve
     fs.mkdirSync(path.join(tmp,'company-learning'),{recursive:true});
     fs.copyFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),
       path.join(tmp,'company-learning','platform-release-roadmap.json'));
+    enableFixtureWeb(tmp);
     fs.writeFileSync(path.join(root,'Packages','manifest.json'),
       JSON.stringify({dependencies:{'com.unity.modules.physics':'1.0.0'}}));
     fs.writeFileSync(path.join(root,'ProjectSettings','ProjectVersion.txt'),

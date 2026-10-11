@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 
-test('Unity Web has independent build and QA obligations without blocking Roblox admission or substituting for native completion quality',()=>{
+test('held Unity Web preserves source without blocking Roblox admission or replacing native completion quality',()=>{
   assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
   assert.equal(Object.hasOwn(directive.stageGateScoringV2.currentThresholds,'webPlatformPromotion'),false);
@@ -14,10 +14,10 @@ test('Unity Web has independent build and QA obligations without blocking Roblox
 
   const web=roadmap.directNativeDualPlatformDevelopment.unityWebValidationSurface;
   assert.equal(web.requiredForDevelopmentAdmission,false);
-  assert.equal(web.enabled,true);
-  assert.equal(web.optional,false);
+  assert.equal(web.enabled,false);
+  assert.equal(web.optional,true);
   assert.equal(web.sameCanonicalUnityProjectRequired,true);
-  assert.equal(web.missingOrFailedWebBuildAction,'REPAIR_UNITY_WEB_INDEPENDENTLY');
+  assert.equal(web.missingOrFailedWebBuildAction,'PRESERVE_SOURCE_AND_WAIT_FOR_OWNER_RESUME');
   assert.equal(roadmap.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
   assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);

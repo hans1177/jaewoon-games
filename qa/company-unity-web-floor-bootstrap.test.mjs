@@ -298,7 +298,7 @@ test('Unity Web bootstrap promotes only verified same-scope PR and wakes the exa
 
 test('Unity Web source bootstrap uses slim control capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
-  assert.match(workflow,/\n  bootstrap:\n\s+concurrency:\n\s+group: unity-web-bootstrap-source-\$\{\{ inputs\.game_id \}\}\n\s+cancel-in-progress: false\n\s+runs-on: ubuntu-slim/);
+  assert.match(workflow,/\n  bootstrap:\n\s+needs: owner-policy\n\s+if: needs\.owner-policy\.outputs\.allowed == 'true'\n\s+concurrency:\n\s+group: unity-web-bootstrap-source-\$\{\{ inputs\.game_id \}\}\n\s+cancel-in-progress: false\n\s+runs-on: ubuntu-slim/);
   assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
 });
 

@@ -6635,7 +6635,7 @@ export function assertOwnerDevelopmentAvailable({cwd=process.cwd(),order={}}={})
   const policy=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{};
   const sourceGame=posix(order?.source?.root).match(/^(?:roblox|unity|web)-games\/([^/]+)$/)?.[1];
   const ids=unique([order.gameId,order.selectedTask?.gameId,sourceGame]);
-  for(const id of ids)if(ownerDevelopmentHeld(policy,id,order.target))throw new Error(`OWNER_DIRECT_DEVELOPMENT_HELD:${id}`);
+  for(const id of ids.length?ids:['asset-library'])if(ownerDevelopmentHeld(policy,id,order.target,order))throw new Error(`OWNER_DIRECT_DEVELOPMENT_HELD:${id}`);
 }
 
 export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',responseFiles=[],applySource=false,luauCompiler=clean(process.env.VIBE2_LUAU_COMPILER)}={}){

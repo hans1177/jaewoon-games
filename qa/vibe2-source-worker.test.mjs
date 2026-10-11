@@ -8649,3 +8649,34 @@ test('asset optimization compares decoded pixels across PNG filters and rejects 
   assert.throws(()=>compareVibeAssetPreviewPng(baseline,baseline.subarray(0,30)),/TRUNCATED/);
   const corrupt=Buffer.from(baseline);corrupt[29]^=1;assert.throws(()=>compareVibeAssetPreviewPng(baseline,corrupt),/CHECKSUM_INVALID/);
 });
+import {assertOwnerDevelopmentAvailable} from '../tools/vibe2-source-worker.mjs';
+
+test('source execution rechecks held native and stale Unity Web orders before source mutation',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-only-source-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    const policy={developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD',UNITY_ANDROID:'OWNER_HOLD',UNITY_WEB:'OWNER_HOLD'},ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX']}};
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
+    const gameId='hold-probe';
+    assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{gameId,target:'roblox'}}));
+    for(const selectedTask of [{},{firstStageUnityWeb:true},{unityWebDevelopment:true},{evidence:['unity-web-first-stage']}]){
+      assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{gameId,target:'unity',selectedTask}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
+    }
+    policy.developmentAccess.UNITY_WEB='ALWAYS_ALLOWED';policy.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(policy));
+    assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{gameId,target:'unity',selectedTask:{firstStageUnityWeb:true}}}));
+    assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{gameId,target:'unity'}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('internal library source execution honors Roblox asset focus without a game id',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-asset-only-'));
+  try{
+    fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+    fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify({assetProductionParallelContract:{activeProductionTargets:['ROBLOX']}}));
+    const order={target:'roblox',source:{root:'assets/roblox/fixture'},selectedTask:{assetProductionLane:true}};
+    assert.doesNotThrow(()=>assertOwnerDevelopmentAvailable({cwd:root,order}));
+    assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{...order,target:'unity'}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
+    assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{...order,source:{root:'assets/unity/fixture'}}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});

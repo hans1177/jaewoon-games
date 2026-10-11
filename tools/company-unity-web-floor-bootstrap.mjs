@@ -10,6 +10,9 @@ const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')
   return i>0?[raw.slice(2,i),raw.slice(i+1)]:[raw.slice(2),'true'];
 }));
 const gameId=String(args['game-id']||'').trim();
+const policyFile=path.resolve('company-learning/platform-release-roadmap.json');
+const policy=fs.existsSync(policyFile)?JSON.parse(fs.readFileSync(policyFile,'utf8')):{};
+if(policy.developmentAccess?.UNITY_WEB==='OWNER_HOLD'||policy.unityWebFirstStage?.enabled===false)throw new Error('UNITY_WEB_OWNER_HOLD');
 const gameName=String(args['game-name']||gameId).trim();
 const baselinePath=String(args.baseline||'').trim();
 const output=String(args.output||`unity-games/${gameId}`).replaceAll('\\','/').trim();

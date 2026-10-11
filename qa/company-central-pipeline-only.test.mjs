@@ -61,14 +61,14 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
-test('owner policy counts only Roblox and Unity Web development while retaining legacy native adapters',()=>{
+test('owner policy counts only Roblox development while retaining paused Unity adapters',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const direct=roadmap.directNativeDualPlatformDevelopment;
   const targets=direct.platformCountingPolicy;
-  assert.equal(targets.authority,'OWNER_DIRECTIVE_2026-10-09');
-  assert.equal(targets.targetCount,2);
-  assert.deepEqual(targets.targets,['ROBLOX','UNITY_WEB']);
-  assert.deepEqual(targets.ownerHeldTargets,['UNITY_ANDROID']);
+  assert.equal(targets.authority,'OWNER_DIRECTIVE_2026-10-11_ROBLOX_ONLY');
+  assert.equal(targets.targetCount,1);
+  assert.deepEqual(targets.targets,['ROBLOX']);
+  assert.deepEqual(targets.ownerHeldTargets,['UNITY_WEB','UNITY_ANDROID']);
   assert.equal(targets.unityAndroidDevelopmentPaused,true);
   assert.deepEqual(targets.existingExecutionBindings,{
     ROBLOX:'ROBLOX',UNITY_ANDROID:'UNITY',UNITY_WEB:'UNITY_WEB_FLOOR'
@@ -119,8 +119,8 @@ test('central production runtime keeps independent Roblox and Unity Web QA witho
   assert.equal(direct.mode,'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR');
   assert.deepEqual(direct.supportedDevelopmentPlatforms,['ROBLOX','UNITY']);
   assert.equal(direct.webDevelopmentStageRemoved,false);
-  assert.equal(direct.unityWebEnabled,true);
-  assert.equal(direct.unityWebRequired,true);
+  assert.equal(direct.unityWebEnabled,false);
+  assert.equal(direct.unityWebRequired,false);
   assert.equal(direct.unityWebGateRequired,false);
   assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
   assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
@@ -726,7 +726,7 @@ test('Unity Web floor serializes only the same game while independent games rema
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const workflow=read('.github/workflows/unity-web-first-stage-build.yml');
   assert.match(development,/dispatch-unity-web-floor:[\s\S]*?group: unity-web-floor-call-\$\{\{ matrix\.game_id \}\}[\s\S]*?cancel-in-progress: false/);
-  assert.match(workflow,/build:\n\s+concurrency:\n\s+group: unity-web-floor-exec-\$\{\{ inputs\.game_id \|\| inputs\.request_file \|\| github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
+  assert.match(workflow,/build:\n\s+needs: owner-policy\n\s+if: needs\.owner-policy\.outputs\.allowed == 'true'\n\s+concurrency:\n\s+group: unity-web-floor-exec-\$\{\{ inputs\.game_id \|\| inputs\.request_file \|\| github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
   assert.doesNotMatch(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
   assert.doesNotMatch(development,/strategy:[\s\S]{0,160}?max-parallel:/);
 });

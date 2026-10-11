@@ -4659,7 +4659,8 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
     status:{projects:[]},
     catalog:plannerCatalog,
     developmentQueue,
-    queue:createVibeContinuousQueue({tasks:[occupied],maxConcurrentTasks:256}),
+    // Internal library repairs have their own lane; exercise game BUILD_UP after those tasks are queued.
+    queue:createVibeContinuousQueue({tasks:[occupied,...findSafeTasks(robloxProject,repoRoot,emptyQueue).filter(task=>task.assetProductionLane)],maxConcurrentTasks:256}),
     repoRoot,
     maxConcurrentTasks:20,
     queueMaxConcurrentTasks:256,
@@ -4682,28 +4683,18 @@ test('owner-direct unfinished games bypass a full normal backlog and keep genera
   assert.ok(resumed.evidence.includes('owner-resumable-build-up:YES'));
 });
 
-test('actual fantasy-survival routes future source development to canonical Unity Web 3D instead of legacy HTML',()=>{
+test('actual fantasy-survival preserves Unity sources while only Roblox development is active',()=>{
   const root=path.resolve(process.cwd());
   const oldWeb=path.join(root,'web-games','fantasy-survival','index.html');
   const unitySource=path.join(root,'unity-games','fantasy-survival','Assets','Scripts','UnityWebFloorGame.cs');
-  assert.ok(fs.existsSync(oldWeb),'previous web version stays playable while 3D redevelopment proceeds');
-  assert.ok(fs.statSync(oldWeb).size>100000);
-  assert.ok(fs.existsSync(unitySource),'existing Unity gameplay source must be preserved');
-
+  assert.ok(fs.statSync(oldWeb).size>100000,'existing playable version is preserved');
+  assert.ok(fs.existsSync(unitySource),'held Unity gameplay source is preserved');
   const catalogData=JSON.parse(fs.readFileSync(path.join(root,'game-catalog.json'),'utf8'));
   const game=(catalogData.games||[]).find(row=>row.id==='fantasy-survival');
   assert.ok(game);
   const projects=collectProjects({projects:[]},{games:[game]},root,{items:[]});
-  const project=projects.find(row=>row.gameId==='fantasy-survival'&&row.engine==='unity'&&row.firstStageUnityWeb===true);
-  assert.ok(project,'actual fantasy-survival must be in the canonical Unity Web development lane');
-  assert.equal(project.projectPath,'unity-games/fantasy-survival');
-
-  const work=findSafeTasks(project,root,{tasks:[]});
-  assert.ok(work.length>0,'existing Unity Web must have a real source repair or implementation task');
-  const unity3d=work.find(row=>row.target==='unity'&&(row.responsibleFiles||[]).includes('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs'));
-  assert.ok(unity3d,'legacy Unity Web gameplay must be repaired in place rather than a separate HTML authoring path');
-  assert.match(unity3d.goal,/SPATIAL_DEPTH/);
-  assert.match(unity3d.goal,/company-asset-library\.json/);
+  assert.equal(projects.some(row=>row.engine==='unity'||row.engine==='web'),false);
+  assert.ok(projects.some(row=>row.gameId==='fantasy-survival'&&row.engine==='roblox'));
 });
 
 test('queued Web assessment with PRESENTATION generation is repaired into graphics BUILD_UP',()=>{
