@@ -15,6 +15,7 @@ const gameId=String(args['game-id']||'').trim();
 const source=String(args.source||`web-games/${gameId}`).replaceAll('\\','/').replace(/^\/+|\/+$/g,'');
 const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
+const hostedUrlInput=String(args['deployed-url']||'').trim();
 if(screenshot&&!/\.png$/i.test(screenshot))throw new Error('UNITY_WEB_QA_SCREENSHOT_PNG_REQUIRED');
 const port=Number(args.port||4187);
 const scenarioId=String(args.scenario||'actual-play').trim();
@@ -32,6 +33,16 @@ if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3
 
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
+// 메인 · 검증 대상으로 현재 회사의 Unity WebGL 공개 주소만 허용한다.
+let hostedUrl='';
+if(hostedUrlInput){
+  const target=new URL(hostedUrlInput);
+  if(target.protocol!=='https:'||target.hostname!=='jaewoon-games.pages.dev'
+    ||target.pathname!==`/web-games/${gameId}/unity/`||target.search||target.hash
+    ||target.port||target.username||target.password)
+    throw new Error('UNITY_WEB_HOSTED_CANONICAL_URL_REQUIRED');
+  hostedUrl=target.href;
+}
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
 if(!fs.existsSync(path.join(source,'index.html')))throw new Error('UNITY_WEB_INDEX_MISSING');
 const manifestPath=path.join(source,'unity-web-deploy-manifest.json');
@@ -98,6 +109,7 @@ const markers=[];
 const consoleErrors=[];
 const pageErrors=[];
 const failedRequests=[];
+const hostedAssetChecks=[];
 let browser=null;
 
 // 메인: 10분짜리 정식 브라우저 QA 단계보다 먼저, 멈춘 WebGL 실기동을
@@ -108,6 +120,7 @@ const qaDeadline=setTimeout(()=>{
   const failureSignature='UNITY_WEB_QA_DEADLINE_EXCEEDED:'+scenarioId+':'+qaStage+':'+qaDeadlineMs;
   const failureEvidence={
     version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
+    hostedUrl:hostedUrl||null,
     observedRuntimeFailure:true,
     failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
     failureSignature,markers,consoleErrors,pageErrors,failedRequests,
@@ -149,7 +162,29 @@ try{
     return at>0?[token.slice(0,at),token.slice(at+1)]:null;
   }).filter(Boolean));
   const volatileStateKeys=new Set(['game','region','enemy','enemyHp','hp','maxHp','x','y','z','cameraX','cameraY','cameraZ']);
-  const url=`http://127.0.0.1:${port}/${source}/?qa=1`;
+  // 메인 · 공개된 압축 자산을 실제 브라우저 요청으로 검사한다. 로컬 응답이 공개 서버 오류를 가리지 않게 한다.
+  if(hostedUrl){
+    qaStage='HOSTED_WEBGL_ASSET_HEADERS';
+    console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
+    const groups=deployManifest.requiredGroups||{};
+    for(const [group,mime] of [
+      ['loader','javascript'],['framework','javascript'],['wasm','application/wasm'],['data','application/octet-stream']
+    ]){
+      const files=groups[group];
+      if(!Array.isArray(files)||files.length!==1||!/^Build\/[A-Za-z0-9._-]+$/.test(files[0]))
+        throw new Error('UNITY_WEB_HOSTED_ASSET_MANIFEST_INVALID:'+group);
+      const assetUrl=new URL(files[0],hostedUrl).href;
+      const response=await page.request.get(assetUrl,{timeout:45000});
+      const encoding=response.headers()['content-encoding']||'';
+      const contentType=response.headers()['content-type']||'';
+      const expectedEncoding=files[0].endsWith('.gz')?'gzip':files[0].endsWith('.br')?'br':'';
+      if(!response.ok()||!contentType.includes(mime)||(expectedEncoding&&encoding!==expectedEncoding))
+        throw new Error('UNITY_WEB_HOSTED_ASSET_RESPONSE_INVALID:'+group+':'+response.status()+':'+encoding+':'+contentType);
+      hostedAssetChecks.push({group,path:files[0],status:response.status(),encoding,contentType});
+    }
+    console.log('UNITY_WEB_HOSTED_ASSET_HEADERS=PASS:'+gameId);
+  }
+  const url=hostedUrl?new URL('?qa=1',hostedUrl).href:`http://127.0.0.1:${port}/${source}/?qa=1`;
   const bootStartedAt=Date.now();
   qaStage='WEBGL_BOOT';
   console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
@@ -745,6 +780,7 @@ try{
       bootMilliseconds,fatalRuntimeErrorCount:fatal.length,framePacing,
       measurementSurface:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION',realDeviceVerified:false},
     noCriticalRuntimeError:fatal.length===0,
+    hostedMobilePlay:hostedUrl?{url:hostedUrl,realDeviceVerified:false,assetChecks:hostedAssetChecks,playback:'PLAYWRIGHT_MOBILE_BROWSER_EMULATION'}:null,
     markers,
     generatedAt:new Date().toISOString(),
   };
@@ -777,7 +813,8 @@ try{
     const failureEvidence={
       version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
       observedRuntimeFailure:true,
-      failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
+      failureStage:hostedUrl?'UNITY_WEB_HOSTED_MOBILE_'+scenarioId.toUpperCase().replaceAll('-','_'):'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
+      hostedUrl:hostedUrl||null,hostedAssetChecks,
       failureSignature,markers,consoleErrors,pageErrors,failedRequests,
       generatedAt:new Date().toISOString(),
     };
