@@ -227,8 +227,13 @@ public sealed class UnityWebFloorGame : MonoBehaviour
             if (size.x >= 0.02f && size.y >= 0.02f && size.z >= 0.02f) gameplayActors3d++;
         }
         int spriteGameplayActors = 0;
-        foreach (SpriteRenderer sprite in FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None))
-            if (sprite != null && sprite.gameObject.activeInHierarchy) spriteGameplayActors++;
+        // 3D 검증: Renderer 전체에서 2D 배우를 계수하되 2D 게임 컴포넌트는 사용하지 않는다.
+        foreach (Renderer candidate in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+        {
+            if (candidate != null && candidate.gameObject.activeInHierarchy
+                && candidate.GetType().Name == "SpriteRenderer")
+                spriteGameplayActors++;
+        }
         int worldDepthCm = worldMeshes3d >= 2 ? Mathf.RoundToInt(Mathf.Max(0f, zMax - zMin) * 100f) : 0;
         int cameraPerspective = Camera.main != null && !Camera.main.orthographic ? 1 : 0;
         bool pass = cameraPerspective == 1 && worldMeshes3d >= 2 && worldDepthCm >= 50
