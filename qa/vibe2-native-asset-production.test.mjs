@@ -125,6 +125,8 @@ test('existing native DCC automatically derives only role-matched internal sourc
     assert.equal(derived.librarySourceAssetId,'shared-tree');
     assert.equal(derived.librarySourceSha256,sha);
     assert.equal(derived.sourceLicense,'project-original');
+    assert.equal(derived.args[derived.args.indexOf('--library-parent-id')+1],'shared-tree');
+    assert.equal(derived.args[derived.args.indexOf('--library-source-sha256')+1],sha);
     assert.ok(derived.args.includes('--source-model'));
     assert.equal(derived.companyPromotionAllowed,false);
     assert.equal(derived.runtimeVerificationRequired,true);
@@ -132,6 +134,39 @@ test('existing native DCC automatically derives only role-matched internal sourc
     const changed=build();
     assert.equal(changed.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.automaticLibraryDerivative),false,
       'stale source hashes must never auto-generate a derivative');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [원자적 제작] 원본이 계획 이후 바뀌면 기존 Blender 실행 전 중단한다.
+test('library derivative refuses changed parent bytes without invoking Blender authoring',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-parent-atomic-'));
+  try{
+    execFileSync('git',['init','-q'],{cwd:root});
+    fs.mkdirSync(path.join(root,'assets','shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','native-authoring'),{recursive:true});
+    const sourcePath=path.join(root,'assets','shared','tree.obj');
+    const source='v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n';
+    fs.writeFileSync(sourcePath,source);
+    const expected=createHash('sha256').update(source).digest('hex');
+    fs.appendFileSync(sourcePath,'# changed\n');
+    fs.writeFileSync(path.join(root,'assets/native-authoring/build-game-visual.py'),'# fixture\n');
+    const fake=path.join(root,'fake-blender.sh');
+    fs.writeFileSync(fake,'#!/bin/sh\nif [ "$1" = "--version" ]; then exit 0; fi\ntouch invoked\nexit 0\n');
+    fs.chmodSync(fake,0o755);
+    const recipe={
+      id:'derived-tree',executor:'BLENDER_PYTHON',runMode:'VERIFY_ONLY',
+      script:'assets/native-authoring/build-game-visual.py',
+      automaticLibraryDerivative:true,librarySourceAssetId:'shared-tree',
+      librarySourceSha256:expected,sourceModel:'assets/shared/tree.obj',
+      args:['--source-model','assets/shared/tree.obj','--library-parent-id','shared-tree','--library-source-sha256',expected],
+      outputs:['assets/generated/unity/demo/environment/asset.glb']
+    };
+    const order={evidence:['asset-production-parallel:v1'],assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[recipe]}}}};
+    assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({
+      cwd:root,order,blenderExecutable:fake,persistCandidateOutputs:false
+    }),/NATIVE_DCC_LIBRARY_SOURCE_CHANGED/);
+    assert.equal(fs.existsSync(path.join(root,'invoked')),false);
+    assert.equal(fs.existsSync(path.join(root,recipe.outputs[0])),false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -4177,6 +4212,7 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const staleProp={...parent,id:'stale-prop',sourceSha256:'f'.repeat(64)};
     const registry={version:1,assets:[environmentPack,genericPropPack,staleProp,parent],externalSources:[]};
     const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
+      libraryParentAssetId:'shared-source',
       sourceFileImmutable:true,license:'project-original',
       transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
     const evidence={version:1,assetId:'demo-prop',family:'PROP',
@@ -4215,6 +4251,13 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const second=sync(first.registry);
     assert.equal(second.derivedSync.registered,0,'unchanged source and outputs must not register twice');
     assert.equal(second.changed,false,'idempotent sync must not mutate canonical registry');
+    provenance.libraryParentAssetId='environment-pack';
+    writeEvidence();
+    const mismatchedParent=sync();
+    assert.equal(mismatchedParent.derivedSync.registered,0);
+    assert.equal(mismatchedParent.derivedSync.rejected,1,'wrong family parent cannot be registered');
+    provenance.libraryParentAssetId='shared-source';
+    writeEvidence();
     evidence.companyPromotionEligible=true;
     writeEvidence();
     const unsafePromotion=sync();
@@ -4227,6 +4270,31 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const staleParent=sync();
     assert.equal(staleParent.derivedSync.registered,0);
     assert.equal(staleParent.derivedSync.rejected,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [원자적 등록] 실패 시 기존 원장 보존, 재시도 시 완전한 JSON 한 번에 반영.
+test('company asset registry publish uses an exclusive lock and atomic rename',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-atomic-sync-'));
+  try{
+    const registryPath=path.join(root,'company-asset-library.json');
+    const original=JSON.stringify({version:1,assets:[],externalSources:[]})+'\n';
+    fs.writeFileSync(registryPath,original);
+    fs.writeFileSync(registryPath+'.lock','other-writer');
+    const blocked=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(blocked.changed,true);
+    assert.equal(blocked.persisted,false);
+    assert.ok(blocked.persistError);
+    assert.equal(fs.readFileSync(registryPath,'utf8'),original,'lock failure must not overwrite canonical bytes');
+    assert.equal(fs.readFileSync(registryPath+'.lock','utf8'),'other-writer');
+    fs.rmSync(registryPath+'.lock');
+    const committed=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(committed.persisted,true,committed.persistError||'');
+    assert.equal(JSON.parse(fs.readFileSync(registryPath,'utf8')).version,2);
+    assert.equal(fs.existsSync(registryPath+'.lock'),false);
+    assert.equal(fs.readdirSync(root).some(name=>name.startsWith('company-asset-library.json.tmp-')),false);
+    const next=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(next.changed,false,'published registry should remain idempotent');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
