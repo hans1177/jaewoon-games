@@ -1,4 +1,4 @@
-// UnityWebFloorGame.cs
+// 파일명: unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs
 // 임포트 · 3D 마력숲 게임 소스
 using System;
 using System.Collections.Generic;
@@ -283,6 +283,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         public int allyTargetId = -1;
         public int opponentId = -1;
         public GameObject obj;
+        // 그래픽 · 공용 네이티브 외형과 동작은 AI/충돌/체력과 분리한다.
+        public Transform nativePose;
+        public Animation nativeMotion;
+        public readonly List<Transform> limbs = new List<Transform>();
+        public readonly List<Quaternion> restPoses = new List<Quaternion>();
+        public float attackPoseUntil, hitPoseUntil;
     }
 
     // 투사체 · 유도 공격은 기존 몬스터 체력과 타겟을 직접 사용한다.
@@ -307,6 +313,11 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     {
         public float x, z, hp;
         public int progress, level, resource, actions, wood, stone;
+        // 저장 · 같은 기존 키에서 누락된 필드를 선택적으로 확장한다. 구버전 데이터의 null은 허용.
+        public int fiber;
+        public List<string> crafted;
+        public string equippedWeapon;
+        public List<BuildingRecord> buildings;
         public LegacyBlock[] blocks;
         public LegacyMonster[] monsters;
     }
@@ -359,6 +370,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private readonly List<Species> species = new List<Species>();
     private readonly List<Recipe> recipes = new List<Recipe>();
     private readonly List<Monster> monsters = new List<Monster>();
+    private readonly List<GameObject> fallenVisuals = new List<GameObject>();
     private readonly List<HomingSpell> homingSpells = new List<HomingSpell>();
     private readonly List<SpawnBlock> blocks = new List<SpawnBlock>();
     private readonly List<string> crafted = new List<string>();
@@ -377,12 +389,34 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private int nextId = 1, selectedMonsterId = -1, aggroMonsterId = -1;
     private int selectedSpeciesIndex, spawnCount = 1, speciesPage, craftPage;
     private string spawnCountText = "1", equippedWeapon = "", info = "";
-    private Vector2 moveFromButtons, craftScroll;
+    private Vector2 moveFromButtons, craftScroll, bagScroll;
     private float lastTapTime, touchStartTime;
     private int lastTapId = -1, pointerMonsterId = -1, pointerBlockId = -1;
     private bool holdTriggered, pointerActive;
     private Vector2 pointerOrigin;
     private int progress, level = 1, resource = 10, actions;
+
+    // 자산 · 공용 라이브러리 모델을 Unity Resources 네이티브 파생본으로 소비한다.
+    [Serializable] private sealed class LibraryUiTheme
+    {
+        public string panel="#1F242B",raised="#2C333D",inset="#15191E",text="#F0F3F7",primary="#4C78B7",accent="#6CAEE1";
+    }
+    [Serializable] private sealed class LibraryMotion
+    {
+        public float idleSeconds=3.2f, walkSeconds=1f, runSeconds=.60f, attackSeconds=.46f,
+            heavySeconds=.88f, gatherSeconds=.74f, craftSeconds=1.25f, hitSeconds=.52f, deathSeconds=1.65f;
+    }
+    private readonly Dictionary<string,GameObject> nativeAssetCache = new Dictionary<string,GameObject>();
+    private readonly HashSet<string> missingNativeAssets = new HashSet<string>();
+    private LibraryUiTheme uiTheme = new LibraryUiTheme();
+    private LibraryMotion motionProfile = new LibraryMotion();
+    private Transform playerLeftArm,playerRightArm,playerLeftLeg,playerRightLeg,playerNativeTorso;
+    private GameObject playerWeaponVisual;
+    private Animation playerNativeMotion;
+    private string displayedWeaponId = "";
+    private float playerActionStart,playerActionUntil,playerActionDuration;
+    private int playerActionKind;
+    private Texture2D uiPanelTexture,uiButtonTexture,uiButtonActiveTexture,uiInsetTexture;
 
     // 메인 · 초기화
     private void Awake()
@@ -390,11 +424,21 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ReadGameData();
+        LoadCompanyPresentation();
         LoadNormalCounters();
         cameraDistance = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "camera_distance", 14f), 8f, 24f);
         moveSpeed = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "move_speed", 5.8f), 3f, 9f);
         BuildWorld();
-        Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=SOURCE_READY_3D");
+        // 시작 · 실제 Unity 월드와 카메라/플레이어가 생성된 뒤에만 부팅 완료를 기록한다.
+        // 이 표식은 브라우저의 채집·전투·저장·모바일 QA 통과를 대체하지 않는다.
+        if (worldRoot == null || !worldRoot.activeInHierarchy || player == null ||
+            mainCamera == null || !mainCamera.isActiveAndEnabled || species.Count == 0 || recipes.Count == 0)
+        {
+            Debug.LogError("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId +
+                " status=REPAIR_REQUIRED reason=NATIVE_WORLD_BOOT_INCOMPLETE");
+            throw new InvalidOperationException("MAGIC_FOREST_NATIVE_WORLD_BOOT_INCOMPLETE");
+        }
+        Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
     }
 
     private static float ParseFloat(string value)
@@ -507,6 +551,13 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             trunk.transform.position = new Vector3(x, i % 4 == 0 ? .55f : 1.4f, z);
             trunk.transform.localScale = i % 4 == 0 ? new Vector3(1.5f, 1f, 1.3f) : new Vector3(.5f, 1.4f, .5f);
             Tint(trunk, i % 4 == 0 ? new Color(.48f,.51f,.53f) : new Color(.4f,.27f,.16f));
+            if (i % 4 == 0)
+            {
+                // 자원 판정은 원래 Rock 충돌체가 담당하고 네이티브 메시에는 충돌체를 두지 않는다.
+                GameObject nativeRock = BindCompanyVisual("MagicForestRock", trunk.transform,
+                    new Vector3(0f,-.35f,0f),new Vector3(.85f,1.05f,.85f),Quaternion.Euler(0,i*41f,0));
+                if (nativeRock != null) trunk.GetComponent<Renderer>().enabled = false;
+            }
             if (i % 4 != 0)
             {
                 GameObject crown = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -546,15 +597,66 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         Debug.Log("MAGIC_FOREST_NATIVE_ASSET_BINDING=" + (treeNativeReady ? "SOURCE_BOUND_RUNTIME_QA_REQUIRED" : "ASSET_REPAIR_REQUIRED")
             + " prefab=CompanyAssets/MagicForestTrunk+MagicForestCrown nativeTreeCount=" + nativeTreeCount);
+        // 환경 · 라이브러리 길 메시에는 콜라이더를 만들지 않고 원래 이동 규칙을 유지한다.
+        for(int i=0;i<5;i++)
+            BindCompanyVisual("MagicForestRoad",worldRoot.transform,
+                new Vector3((i-2)*14f,-.005f,6.5f),new Vector3(1.12f,.44f,1.12f),
+                Quaternion.Euler(0f,(i%2)*180f,0f));
+        // 자원 · 원본 웹의 섬유 노드를 3D 채집 대상으로 연결한다. 기존 나무/돌 보상은 불변.
+        for (int i = 0; i < 36; i++)
+        {
+            float x = (i * 29 % 69) - 34f;
+            float z = (i * 37 % 69) - 34f;
+            if (Mathf.Abs(x) < 5f && Mathf.Abs(z) < 5f) continue;
+            GameObject fiberNode=CreatePart(worldRoot.transform, PrimitiveType.Capsule, "Fiber",
+                new Vector3(x, .42f, z), new Vector3(.48f, .60f, .48f),
+                new Color(.30f, .59f, .34f), true);
+            GameObject nativeHerb=BindCompanyVisual("MagicForestCrown", fiberNode.transform,
+                new Vector3(0,-.26f,0),new Vector3(.17f,.12f,.17f),Quaternion.Euler(0,i*19f,0));
+            if(nativeHerb!=null)fiberNode.GetComponent<Renderer>().enabled=false;
+        }
         GameObject character = new GameObject("Player_3D");
         character.transform.SetParent(worldRoot.transform);
         character.transform.position = Vector3.zero;
         player = character.transform;
-        CreatePart(character.transform, PrimitiveType.Capsule, "Body", Vector3.up * 1f, new Vector3(.7f,.82f,.52f), new Color(.33f,.65f,.51f), false);
-        CreatePart(character.transform, PrimitiveType.Sphere, "Head", Vector3.up * 2.07f, Vector3.one * .63f, new Color(.90f,.75f,.61f), false);
-        CreatePart(character.transform, PrimitiveType.Cube, "Bag", new Vector3(0,1.25f,-.36f), new Vector3(.64f,.68f,.22f), new Color(.36f,.24f,.15f), false);
-        CreatePart(character.transform, PrimitiveType.Capsule, "LeftArm", new Vector3(-.55f,1.32f,0), new Vector3(.24f,.48f,.24f), new Color(.30f,.53f,.38f), false);
-        CreatePart(character.transform, PrimitiveType.Capsule, "RightArm", new Vector3(.55f,1.32f,0), new Vector3(.24f,.48f,.24f), new Color(.30f,.53f,.38f), false);
+        GameObject playerBody=CreatePart(character.transform, PrimitiveType.Capsule, "Body",
+            Vector3.up * 1f, new Vector3(.7f,.82f,.52f), new Color(.33f,.65f,.51f), false);
+        CreatePart(character.transform, PrimitiveType.Sphere, "Head", Vector3.up * 2.07f,
+            Vector3.one * .63f, new Color(.90f,.75f,.61f), false);
+        CreatePart(character.transform, PrimitiveType.Cube, "Bag", new Vector3(0,1.25f,-.36f),
+            new Vector3(.64f,.68f,.22f), new Color(.36f,.24f,.15f), false);
+        playerLeftArm=CreatePart(character.transform, PrimitiveType.Capsule, "LeftArm",
+            new Vector3(-.55f,1.32f,0),new Vector3(.24f,.48f,.24f),new Color(.30f,.53f,.38f),false).transform;
+        playerRightArm=CreatePart(character.transform, PrimitiveType.Capsule, "RightArm",
+            new Vector3(.55f,1.32f,0),new Vector3(.24f,.48f,.24f),new Color(.30f,.53f,.38f),false).transform;
+        playerLeftLeg=CreatePart(character.transform,PrimitiveType.Capsule,"LeftLeg",
+            new Vector3(-.24f,.43f,0),new Vector3(.25f,.64f,.30f),new Color(.29f,.42f,.36f),false).transform;
+        playerRightLeg=CreatePart(character.transform,PrimitiveType.Capsule,"RightLeg",
+            new Vector3(.24f,.43f,0),new Vector3(.25f,.64f,.30f),new Color(.29f,.42f,.36f),false).transform;
+        GameObject torso=BindCompanyVisual("MagicForestTorso",character.transform,
+            new Vector3(0,.32f,0),new Vector3(.43f,.43f,.43f),Quaternion.identity);
+        if(torso!=null){playerNativeTorso=torso.transform;playerBody.GetComponent<Renderer>().enabled=false;}
+        BindCompanyVisual("MagicForestCape",character.transform,new Vector3(0,.34f,-.27f),
+            new Vector3(.37f,.42f,.38f),Quaternion.identity);
+        BindCompanyVisual("MagicForestShoulder",character.transform,new Vector3(.44f,1.43f,0),
+            new Vector3(.26f,.26f,.26f),Quaternion.Euler(0,90f,0));
+        // 캐릭터 · 공용 GLB의 스킨/관절/액션을 Unity가 변환한 프리팹으로 실제 렌더링.
+        GameObject nativeActor=BindCompanyVisual("MagicForestTraveler",character.transform,
+            Vector3.zero,Vector3.one*1.12f,Quaternion.identity);
+        if(nativeActor!=null)
+        {
+            playerNativeMotion=nativeActor.GetComponent<Animation>();
+            if(playerNativeMotion!=null)
+            {
+                foreach(Renderer oldRenderer in character.GetComponentsInChildren<Renderer>())
+                    if(!oldRenderer.transform.IsChildOf(nativeActor.transform))oldRenderer.enabled=false;
+                foreach(Transform bone in nativeActor.GetComponentsInChildren<Transform>())
+                    if(bone.name=="WeaponGrip"){playerRightArm=bone;break;}
+                PlayNativeMotion(playerNativeMotion,"IDLE_BREATH");
+            }
+        }
+        Debug.Log("MAGIC_FOREST_INTERNAL_LIBRARY="+(playerNativeMotion!=null
+            ? "UNITY_SKINNED_ACTOR_UI_MOTION_SOURCE_BOUND_RUNTIME_QA_REQUIRED":"ASSET_REPAIR_REQUIRED"));
         FollowCamera(true);
     }
 
@@ -574,6 +676,195 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     {
         Renderer rr = obj.GetComponent<Renderer>();
         if (rr != null) rr.material.color = color;
+    }
+
+    // 그래픽 · 기존 GameObject/Collider 생성 함수의 비충돌 시각 자산 경로
+    private GameObject BindCompanyVisual(string assetId,Transform parent,Vector3 position,Vector3 scale,Quaternion rotation)
+    {
+        GameObject source;
+        if(!nativeAssetCache.TryGetValue(assetId,out source))
+        {
+            source=Resources.Load<GameObject>("CompanyAssets/"+assetId);
+            nativeAssetCache[assetId]=source;
+            if(source==null && missingNativeAssets.Add(assetId))
+                Debug.LogWarning("MAGIC_FOREST_NATIVE_ASSET_REPAIR_REQUIRED missing="+assetId);
+        }
+        if(source==null)return null;
+        GameObject model=Instantiate(source,parent,false);
+        model.name="Library_"+assetId;
+        model.transform.localPosition=position;
+        model.transform.localScale=scale;
+        model.transform.localRotation=rotation;
+        foreach(Collider extra in model.GetComponentsInChildren<Collider>(true))
+            Destroy(extra);
+        return model;
+    }
+
+    private void LoadCompanyPresentation()
+    {
+        TextAsset ui=Resources.Load<TextAsset>("CompanyAssets/MagicForestUI");
+        if(ui!=null)
+        {
+            try{uiTheme=JsonUtility.FromJson<LibraryUiTheme>(ui.text)??new LibraryUiTheme();}
+            catch(Exception){Debug.LogWarning("MAGIC_FOREST_UI_SOURCE_REPAIR_REQUIRED");}
+        }
+        else Debug.LogWarning("MAGIC_FOREST_UI_SOURCE_REPAIR_REQUIRED missing=MagicForestUI");
+        TextAsset motion=Resources.Load<TextAsset>("CompanyAssets/MagicForestMotion");
+        if(motion!=null)
+        {
+            try{motionProfile=JsonUtility.FromJson<LibraryMotion>(motion.text)??new LibraryMotion();}
+            catch(Exception){Debug.LogWarning("MAGIC_FOREST_MOTION_SOURCE_REPAIR_REQUIRED");}
+        }
+        else Debug.LogWarning("MAGIC_FOREST_MOTION_SOURCE_REPAIR_REQUIRED missing=MagicForestMotion");
+    }
+
+    private static Color ColorFromLibrary(string html,Color fallback)
+    {
+        Color result;
+        return ColorUtility.TryParseHtmlString(html??"",out result)?result:fallback;
+    }
+
+    private static Texture2D NativeUiTexture(Color color)
+    {
+        Texture2D texture=new Texture2D(2,2,TextureFormat.RGBA32,false);
+        texture.SetPixels(new[]{color,color,color,color});
+        texture.wrapMode=TextureWrapMode.Clamp;
+        texture.filterMode=FilterMode.Bilinear;
+        texture.Apply(false,true);
+        texture.hideFlags=HideFlags.DontSave;
+        return texture;
+    }
+
+    private void ApplyCompanyUiSkin()
+    {
+        if(uiPanelTexture==null)
+        {
+            uiPanelTexture=NativeUiTexture(ColorFromLibrary(uiTheme.panel,new Color(.12f,.15f,.17f)));
+            uiButtonTexture=NativeUiTexture(ColorFromLibrary(uiTheme.primary,new Color(.28f,.45f,.69f)));
+            uiButtonActiveTexture=NativeUiTexture(ColorFromLibrary(uiTheme.raised,new Color(.17f,.21f,.25f)));
+            uiInsetTexture=NativeUiTexture(ColorFromLibrary(uiTheme.inset,new Color(.09f,.10f,.12f)));
+        }
+        GUI.skin.box.normal.background=uiPanelTexture;
+        GUI.skin.box.normal.textColor=ColorFromLibrary(uiTheme.text,Color.white);
+        GUI.skin.button.normal.background=uiButtonTexture;
+        GUI.skin.button.hover.background=uiButtonActiveTexture;
+        GUI.skin.button.active.background=uiButtonActiveTexture;
+        GUI.skin.button.normal.textColor=ColorFromLibrary(uiTheme.text,Color.white);
+        GUI.skin.button.hover.textColor=Color.white;
+        GUI.skin.button.active.textColor=Color.white;
+        GUI.skin.label.normal.textColor=ColorFromLibrary(uiTheme.text,Color.white);
+        GUI.skin.textField.normal.background=uiInsetTexture;
+        GUI.skin.textField.normal.textColor=Color.white;
+    }
+
+    // 모션 · 게임 로직을 변경하지 않고 실제 공용 관절 클립만 재생한다.
+    private static void PlayNativeMotion(Animation motion,string state)
+    {
+        if(motion==null || string.IsNullOrEmpty(state) || motion[state]==null)return;
+        if(motion.IsPlaying(state))return;
+        motion.CrossFade(state,.11f);
+    }
+
+    private void BeginPlayerAction(int kind)
+    {
+        playerActionKind=kind;
+        playerActionStart=Time.time;
+        playerActionDuration=Mathf.Max(.15f,kind==2?motionProfile.gatherSeconds:
+            kind==3?motionProfile.craftSeconds:kind==4?motionProfile.hitSeconds:
+            kind==5?motionProfile.heavySeconds:motionProfile.attackSeconds);
+        playerActionUntil=playerActionStart+playerActionDuration;
+    }
+
+    private void SyncPlayerWeaponVisual()
+    {
+        if(displayedWeaponId==equippedWeapon)return;
+        if(playerWeaponVisual!=null)Destroy(playerWeaponVisual);
+        playerWeaponVisual=null;
+        displayedWeaponId=equippedWeapon;
+        if(playerRightArm==null || string.IsNullOrEmpty(equippedWeapon))return;
+        Recipe weapon=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+        if(weapon==null)return;
+        bool blade=equippedWeapon.Contains("sword")||equippedWeapon.Contains("dagger")
+            ||equippedWeapon.Contains("blade")||equippedWeapon.Contains("cleaver")
+            ||equippedWeapon.Contains("saber")||equippedWeapon.Contains("greatsword");
+        // 장비 · 기존 하나만 장착 규칙 유지, 공용 실제 메시를 애니메이션 WeaponGrip 본에 고정.
+        bool skinned=playerNativeMotion!=null;
+        playerWeaponVisual=BindCompanyVisual(blade?"MagicForestSword":"MagicForestGrip",playerRightArm,
+            skinned?new Vector3(0,-.08f,0):new Vector3(0,-.25f,.16f),
+            skinned?Vector3.one*(blade ? 0.24f:.33f):new Vector3(1.45f,.80f,1.45f),
+            skinned?Quaternion.identity:Quaternion.Euler(-85f,0,25f));
+    }
+
+    private void AnimatePlayerPresentation(float movement)
+    {
+        if(playerLeftArm==null || playerRightArm==null)return;
+        SyncPlayerWeaponVisual();
+        if(playerNativeMotion!=null)
+        {
+            // 이동·채집·제작·공격·피격은 전부 동일한 스킨드 캐릭터 애니메이션을 소비.
+            string state=Time.time<playerActionUntil
+                ? playerActionKind==2?"TRAVELER_PICKUP":playerActionKind==3?"TRAVELER_INTERACT":
+                    playerActionKind==4?"HIT_FRONT":playerActionKind==5?"ATTACK_HEAVY":"ATTACK_LIGHT_SLASH"
+                : movement>.12f?"RUN":"IDLE_BREATH";
+            PlayNativeMotion(playerNativeMotion,state);
+            return;
+        }
+        float cycle=Time.time*(2f*Mathf.PI/Mathf.Max(.3f,motionProfile.walkSeconds));
+        float stride=movement>.02f?Mathf.Sin(cycle)*29f*movement:0f;
+        playerLeftLeg.localRotation=Quaternion.Euler(stride,0f,0f);
+        playerRightLeg.localRotation=Quaternion.Euler(-stride,0f,0f);
+        playerLeftArm.localRotation=Quaternion.Euler(-stride*.7f,0f,-8f);
+        playerRightArm.localRotation=Quaternion.Euler(stride*.7f,0f,8f);
+        if(playerNativeTorso!=null)
+            playerNativeTorso.localRotation=Quaternion.Euler(movement>.02f?Mathf.Sin(cycle*2f)*2.4f:Mathf.Sin(Time.time*1.9f)*.7f,0f,0f);
+        if(Time.time<playerActionUntil)
+        {
+            float phase=Mathf.Clamp01((Time.time-playerActionStart)/Mathf.Max(.15f,playerActionDuration));
+            float strike=Mathf.Sin(phase*Mathf.PI);
+            if(playerActionKind==4)
+            {
+                playerLeftArm.localRotation=Quaternion.Euler(-35f*strike,0,-17f);
+                playerRightArm.localRotation=Quaternion.Euler(-35f*strike,0,17f);
+            }
+            else if(playerActionKind==3)
+            {
+                playerLeftArm.localRotation=Quaternion.Euler(-45f+15f*strike,0,-15f);
+                playerRightArm.localRotation=Quaternion.Euler(-55f+25f*strike,0,15f);
+            }
+            else
+            {
+                playerRightArm.localRotation=Quaternion.Euler(-18f-105f*strike,0,8f);
+                playerLeftArm.localRotation=Quaternion.Euler(20f*strike,0,-8f);
+            }
+        }
+    }
+
+    private void AnimateMonsterPresentation(Monster monster,bool isMoving)
+    {
+        if(monster.nativeMotion!=null)
+        {
+            string action=monster.hitPoseUntil>Time.time?"HIT_FRONT":
+                monster.attackPoseUntil>Time.time?"ATTACK_A":
+                isMoving?"RUN":"IDLE_BREATH";
+            if(monster.nativeMotion[action]==null)
+                action=action=="ATTACK_A"?"ATTACK_LIGHT_SLASH":"IDLE_BREATH";
+            PlayNativeMotion(monster.nativeMotion,action);
+            return;
+        }
+        float phase=Time.time*(Mathf.PI*2f/Mathf.Max(.3f,motionProfile.walkSeconds));
+        float attack=monster.attackPoseUntil>Time.time?
+            Mathf.Sin(Mathf.PI*Mathf.Clamp01(1f-(monster.attackPoseUntil-Time.time)/Mathf.Max(.15f,motionProfile.attackSeconds))):0f;
+        float hit=monster.hitPoseUntil>Time.time?1f:0f;
+        for(int i=0;i<monster.limbs.Count;i++)
+        {
+            Transform limb=monster.limbs[i];
+            if(limb==null)continue;
+            float walking=isMoving?Mathf.Sin(phase+i*Mathf.PI*.85f)*25f:0f;
+            limb.localRotation=monster.restPoses[i]*Quaternion.Euler(walking-attack*31f+hit*12f,0f,0f);
+        }
+        if(monster.nativePose!=null)
+            monster.nativePose.localRotation=Quaternion.Euler(hit*9f,0f,
+                attack*11f+(isMoving?Mathf.Sin(phase*2f)*2f:0f));
     }
 
     private void FollowCamera(bool instant)
@@ -600,6 +891,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         materials["stone"] = 0;
         materials["fiber"] = 0;
         equippedWeapon = "";
+        displayedWeaponId = "__reset__";
+        playerActionUntil=0f;
         if (creative)
         {
             LoadCreative();
@@ -613,12 +906,15 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             info = "일반 모드 · 전투, 채집, 제작";
         }
         screenMode = ScreenMode.Playing;
+        SyncPlayerWeaponVisual();
         FollowCamera(true);
     }
 
     private void ClearEntities()
     {
         foreach (Monster m in monsters) if (m.obj != null) Destroy(m.obj);
+        foreach(GameObject corpse in fallenVisuals)if(corpse!=null)Destroy(corpse);
+        fallenVisuals.Clear();
         foreach (HomingSpell spell in homingSpells) if (spell.obj != null) Destroy(spell.obj);
         homingSpells.Clear();
         foreach (BuiltStructure building in buildings) if (building.obj != null) Destroy(building.obj);
@@ -675,6 +971,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                     new Vector3(side*scale*.39f,scale*.26f,(row==0?-.30f:.31f)*scale),
                     new Vector3(scale*.16f,scale*.52f,scale*.16f),baseColor*.78f,false);
                 if(insect)leg.transform.localRotation=Quaternion.Euler(0f,0f,side*27f);
+                monster.limbs.Add(leg.transform);
+                monster.restPoses.Add(leg.transform.localRotation);
             }
             if(insect)
             {
@@ -689,8 +987,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             CreatePart(root.transform,PrimitiveType.Sphere,"Head",new Vector3(0f,scale*1.67f,scale*.06f),
                 Vector3.one*scale*.57f,baseColor*1.12f,false);
             for(int side=-1;side<=1;side+=2)
-                CreatePart(root.transform,PrimitiveType.Capsule,"Arm_"+side,new Vector3(side*scale*.65f,scale*.83f,0f),
+            {
+                GameObject arm=CreatePart(root.transform,PrimitiveType.Capsule,"Arm_"+side,new Vector3(side*scale*.65f,scale*.83f,0f),
                     new Vector3(scale*.26f,scale*.90f,scale*.28f),baseColor*.78f,false);
+                monster.limbs.Add(arm.transform);
+                monster.restPoses.Add(arm.transform.localRotation);
+            }
         }
         else if(spirit || plant)
         {
@@ -726,6 +1028,53 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             CreatePart(root.transform,PrimitiveType.Cylinder,"Crown",
                 new Vector3(0f,scale*1.82f,0f),new Vector3(scale*.43f,scale*.15f,scale*.43f),
                 new Color(.89f,.67f,.22f),false);
+        }
+        // 몬스터 · 실제 공용 3D 리그/액션을 AI/히트박스 원본 객체 아래에 적용한다.
+        // 서로 다른 종의 수치/공격/드랍은 변경하지 않는다. 맞는 형태의 자산이 없으면 기존 표현 유지.
+        string actorKey=humanoid?(name.Contains("archer")?"Archer":
+                name.Contains("goblin")?"Rogue":name.Contains("mummy")?"Guardian":"Guardian"):
+            spirit?"Golem":spider?"Spider":serpent?"Serpent":
+            insect?"Beetle":
+            (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"Wolf":"";
+        if(actorKey!="")
+        {
+            GameObject rigVisual=BindCompanyVisual("MagicForest"+actorKey,root.transform,
+                new Vector3(0f,0f,0f),Vector3.one*scale*(humanoid ? 0.90f:1.0f),
+                Quaternion.Euler(0f,humanoid?0f:180f,0f));
+            if(rigVisual!=null)
+            {
+                monster.nativeMotion=rigVisual.GetComponent<Animation>();
+                if(monster.nativeMotion!=null)
+                {
+                    foreach(Renderer oldRenderer in root.GetComponentsInChildren<Renderer>())
+                        if(!oldRenderer.transform.IsChildOf(rigVisual.transform))oldRenderer.enabled=false;
+                    PlayNativeMotion(monster.nativeMotion,"IDLE_BREATH");
+                }
+            }
+        }
+        if(monster.nativeMotion==null)
+        {
+            // 해당 종의 전용 스킨드 모델이 준비되기 전에는 기존 직접 파생 메시를 보존.
+            string nativeId=humanoid?"MagicForestTorso":
+                spirit?"MagicForestRock":plant?"MagicForestCrown":
+                (name.Contains("wolf")||name.Contains("hound")||name.Contains("fox"))?"MagicForestCanine":
+                (insect||fourLeg||serpent)?"MagicForestClaw":"";
+            if(nativeId!="")
+            {
+                GameObject nativePart=BindCompanyVisual(nativeId,root.transform,
+                    new Vector3(0,scale*.45f,(fourLeg ? 0.32f:0f)*scale),
+                    Vector3.one*scale*(nativeId=="MagicForestTorso" ? 0.52f:
+                        nativeId=="MagicForestCanine" ? 0.48f:nativeId=="MagicForestClaw" ? 0.32f:.40f),
+                    Quaternion.identity);
+                if(nativePart!=null)
+                {
+                    monster.nativePose=nativePart.transform;
+                    if(humanoid)body.GetComponent<Renderer>().enabled=false;
+                }
+            }
+            if((spec.mood=="boss"||name.Contains("leader"))&&humanoid)
+                BindCompanyVisual("MagicForestCape",root.transform,new Vector3(0,.30f*scale,-.25f*scale),
+                    Vector3.one*scale*.38f,Quaternion.identity);
         }
         monster.obj=root;
         monsters.Add(monster);
@@ -792,7 +1141,21 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             if(m.ally && FindMonster(m.allyTargetId)==null)m.hp=0f;
             if(m.hp<=0)
             {
-                if(m.obj!=null)Destroy(m.obj);
+                if(m.obj!=null)
+                {
+                    // 충돌체 맵의 죽은 몬스터 참조까지 함께 지운다.
+                    foreach(Collider collider in m.obj.GetComponentsInChildren<Collider>())
+                    {
+                        monsterColliders.Remove(collider);
+                        collider.enabled=false;
+                    }
+                    if(m.ally)Destroy(m.obj);
+                    else
+                    {
+                        fallenVisuals.Add(m.obj);
+                        StartCoroutine(PlayNativeDeathMotion(m.obj));
+                    }
+                }
                 monsters.RemoveAt(i);
                 continue;
             }
@@ -800,6 +1163,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             {
                 m.attackPlayer=false;
                 m.opponentId=-1;
+                AnimateMonsterPresentation(m,false);
                 continue;
             }
             Monster opponent=m.ally?FindMonster(m.allyTargetId):(m.creative?FindMonster(m.opponentId):null);
@@ -820,13 +1184,15 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Transform target=opponent!=null?opponent.obj.transform:
                 ((!m.creative&&!m.ally&&m.spec.mood=="aggressive") ||
                  (m.creative&&m.attackPlayer) ? player : null);
-            if(target==null)continue;
+            if(target==null){AnimateMonsterPresentation(m,false);continue;}
             Vector3 delta=target.position-m.obj.transform.position;
             delta.y=0f;
             float distanceToTarget=delta.magnitude;
             float reach=opponent!=null?1.4f:.95f;
+            bool presentationWalking=false;
             if(distanceToTarget>reach && distanceToTarget < (m.creative?18f:24f))
             {
+                presentationWalking=true;
                 float slowFactor=Time.time<m.slowedUntil? .7f:1f;
                 float move=Mathf.Clamp(m.spec.speed/35f,.75f,5f)*slowFactor;
                 m.obj.transform.position+=delta.normalized*move*dt;
@@ -836,13 +1202,52 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             else if(distanceToTarget<=reach && Time.time>=m.nextAttack)
             {
                 m.nextAttack=Time.time+(m.ally?2f:1f);
+                m.attackPoseUntil=Time.time+motionProfile.attackSeconds;
                 if(opponent!=null)HurtMonster(opponent,m.spec.damage);
                 else if(m.spec.damage>0f)
                 {
                     currentHp=Mathf.Max(0f,currentHp-m.spec.damage);
+                    BeginPlayerAction(4);
                     if(currentHp<=0f){player.position=Vector3.zero;currentHp=100f;info="쓰러져 시작 위치로 돌아왔어.";}
                 }
             }
+            AnimateMonsterPresentation(m,presentationWalking);
+        }
+    }
+
+    // 모션 · 사망 몬스터의 충돌/AI는 즉시 제거하고 시각 자산만 짧게 넘어지게 한다.
+    private System.Collections.IEnumerator PlayNativeDeathMotion(GameObject body)
+    {
+        if(body==null)yield break;
+        // 플레이 판정에서는 즉시 제거됐으며 사망 스킨드 모션만 시각적으로 재생한다.
+        Animation native=body.GetComponentInChildren<Animation>();
+        if(native!=null && (native["DEATH"]!=null || native["DEATH_FRONT"]!=null))
+        {
+            string clip=native["DEATH"]!=null?"DEATH":"DEATH_FRONT";
+            float durationNative=Mathf.Clamp(motionProfile.deathSeconds,.45f,2f);
+            native[clip].speed=Mathf.Max(.2f,native[clip].length/durationNative);
+            native.CrossFade(clip,.06f);
+            yield return new WaitForSeconds(durationNative);
+            if(body!=null){fallenVisuals.Remove(body);Destroy(body);}
+            yield break;
+        }
+        float duration=Mathf.Clamp(motionProfile.deathSeconds*.52f,.38f,.85f);
+        float elapsed=0f;
+        Quaternion original=body.transform.rotation;
+        Vector3 originalScale=body.transform.localScale;
+        while(elapsed<duration && body!=null)
+        {
+            elapsed+=Mathf.Min(Time.deltaTime,.05f);
+            float t=Mathf.Clamp01(elapsed/duration);
+            float easing=Mathf.Sin(t*Mathf.PI*.5f);
+            body.transform.rotation=original*Quaternion.Euler(0f,0f,76f*easing);
+            body.transform.localScale=Vector3.Scale(originalScale,new Vector3(1f,1f-t*.22f,1f));
+            yield return null;
+        }
+        if(body!=null)
+        {
+            fallenVisuals.Remove(body);
+            Destroy(body);
         }
     }
 
@@ -851,6 +1256,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     {
         if(target==null||target.hp<=0f)return;
         target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
+        target.hitPoseUntil=Time.time+motionProfile.hitSeconds;
         if(target.hp<=0f)
         {
             if(!target.ally)
@@ -908,6 +1314,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             id=="sunstone-greatsword"?1.2f:id=="sunstone-dagger"? .35f:
             id=="sunstone-scorpion-blade"? .85f:.65f;
         attackCooldown=Time.time+cooldown;
+        BeginPlayerAction(id=="sunstone-greatsword"?5:1);
         float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:
             id=="sunstone-dagger"?2.0f:mummy?3.5f:2.8f;
         Monster target=null;
@@ -971,6 +1378,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 player.position=new Vector3(Mathf.Clamp(player.position.x,-38f,38f),0,Mathf.Clamp(player.position.z,-38f,38f));
                 player.rotation=Quaternion.Slerp(player.rotation,Quaternion.LookRotation(direct),dt*9f);
             }
+            AnimatePlayerPresentation(movement.magnitude);
             UpdateMonsters(dt);
             UpdateHomingSpells(dt);
             ReadWorldPointer();
@@ -1079,6 +1487,27 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         holdTriggered=false;
     }
 
+    // 건축물 · 제작과 일반/크리에이티브 복원은 동일한 실물 생성 함수를 사용한다.
+    private void PlaceStructure(string recipeId, Vector3 location)
+    {
+        GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
+        building.name="Built_"+recipeId;
+        building.transform.SetParent(worldRoot.transform);
+        building.transform.position=location;
+        building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
+        Tint(building,new Color(.55f,.4f,.27f));
+        string nativeStructure=recipeId.Contains("chest")?"MagicForestChest":
+            recipeId.Contains("door")?"MagicForestDoor":
+            recipeId.Contains("wall")?"MagicForestWall":
+            recipeId.Contains("torch")?"MagicForestLamp":
+            recipeId.Contains("bench")?"MagicForestCrate":
+            recipeId.Contains("tower")?"MagicForestRoof":"MagicForestFoundation";
+        GameObject nativeVisual=BindCompanyVisual(nativeStructure,building.transform,
+            new Vector3(0,-.53f,0),new Vector3(.45f,.45f,.45f),Quaternion.identity);
+        if(nativeVisual!=null)building.GetComponent<Renderer>().enabled=false;
+        buildings.Add(new BuiltStructure { recipeId=recipeId, obj=building });
+    }
+
     // 메인 · 제작 (크리에이티브에서는 재료를 사용하지 않는다)
     private void Craft(Recipe recipe)
     {
@@ -1104,19 +1533,13 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             }
         }
         crafted.Add(recipe.id);
-        if(recipe.kind=="weapon")equippedWeapon=recipe.id;
+        if(recipe.kind=="weapon"){equippedWeapon=recipe.id;SyncPlayerWeaponVisual();}
+        BeginPlayerAction(3);
         if(recipe.kind=="structure")
-        {
-            GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
-            building.name="Built_"+recipe.id;
-            building.transform.SetParent(worldRoot.transform);
-            building.transform.position=player.position+player.forward*2.5f+Vector3.up*.65f;
-            building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
-            Tint(building,new Color(.55f,.4f,.27f));
-            buildings.Add(new BuiltStructure { recipeId=recipe.id, obj=building });
-        }
+            PlaceStructure(recipe.id,player.position+player.forward*2.5f+Vector3.up*.65f);
         info=recipe.name+" 제작 완료";
         if(creative)SaveCreative();
+        else SaveNormalCounters();
     }
 
     private void Gather()
@@ -1127,14 +1550,17 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         foreach(Collider col in Physics.OverlapSphere(position,3.1f))
         {
             string n=col.gameObject.name;
-            if(n!="Tree" && n!="Rock")continue;
+            if(n!="Tree" && n!="Rock" && n!="Fiber")continue;
             float d=Vector3.Distance(position,col.transform.position);
-            if(d<nearest){nearest=d;material=n=="Tree"?"wood":"stone";}
+            if(d<nearest){nearest=d;material=n=="Tree"?"wood":n=="Rock"?"stone":"fiber";}
         }
-        if(material==""){info="가까운 나무나 돌이 없어.";return;}
+        if(material==""){info="가까운 나무·돌·섬유가 없어.";return;}
         if(!materials.ContainsKey(material))materials[material]=0;
         materials[material]++;
-        info=(material=="wood"?"나무":"돌")+" 1개 채집";
+        BeginPlayerAction(2);
+        info=(material=="wood"?"나무":material=="stone"?"돌":"섬유")+" 1개 채집";
+        // 저장 · 브라우저 재진입 전에 채집 결과를 기존 world_v1 키에 바로 확정한다.
+        if(!creative)SaveNormalCounters();
     }
 
     // 저장 · 크리에이티브 데이터는 기존 일반 저장 키에 쓰지 않는다
@@ -1158,6 +1584,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             currentHp=Mathf.Clamp(old.hp,1f,100f);
             materials["wood"]=Mathf.Max(0,old.wood);
             materials["stone"]=Mathf.Max(0,old.stone);
+            materials["fiber"]=Mathf.Max(0,old.fiber);
+            if(old.crafted!=null)
+                foreach(string id in old.crafted)
+                    if(recipes.Exists(r=>r.id==id))crafted.Add(id);
+            if(!string.IsNullOrEmpty(old.equippedWeapon)
+                && crafted.Contains(old.equippedWeapon)
+                && recipes.Exists(r=>r.id==old.equippedWeapon && r.kind=="weapon"))
+                equippedWeapon=old.equippedWeapon;
+            if(old.buildings!=null)
+                foreach(BuildingRecord entry in old.buildings)
+                    if(entry!=null && buildings.Count<300 && recipes.Exists(r=>r.id==entry.recipeId && r.kind=="structure"))
+                        PlaceStructure(entry.recipeId,entry.position);
         }
         catch(Exception){info="기존 일반 저장 읽기 실패 · 새 게임 진행";}
     }
@@ -1174,8 +1612,15 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             progress=progress,level=level,resource=resource,actions=actions,
             wood=materials.ContainsKey("wood")?materials["wood"]:0,
             stone=materials.ContainsKey("stone")?materials["stone"]:0,
+            fiber=materials.ContainsKey("fiber")?materials["fiber"]:0,
+            crafted=new List<string>(crafted),
+            equippedWeapon=equippedWeapon,
+            buildings=new List<BuildingRecord>(),
             blocks=new LegacyBlock[0],monsters=new LegacyMonster[0]
         };
+        foreach(BuiltStructure built in buildings)
+            if(built.obj!=null)
+                data.buildings.Add(new BuildingRecord { recipeId=built.recipeId, position=built.obj.transform.position });
         PlayerPrefs.SetString(LegacyNormalSaveKey,JsonUtility.ToJson(data));
         PlayerPrefs.Save();
     }
@@ -1243,13 +1688,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         {
             if(buildings.Count>=300)break;
             if(recipes.Find(x=>x.id==item.recipeId && x.kind=="structure")==null)continue;
-            GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
-            building.name="Built_"+item.recipeId;
-            building.transform.SetParent(worldRoot.transform);
-            building.transform.position=item.position;
-            building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
-            Tint(building,new Color(.55f,.4f,.27f));
-            buildings.Add(new BuiltStructure { recipeId=item.recipeId, obj=building });
+            PlaceStructure(item.recipeId,item.position);
         }
         if(record.blocks!=null)foreach(BlockRecord b in record.blocks)
         {
@@ -1274,13 +1713,26 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         nextId=maxId;
     }
 
-    private void OnApplicationPause(bool paused){if(paused){if(creative)SaveCreative();else if(screenMode==ScreenMode.Playing)SaveNormalCounters();}}
-    private void OnApplicationQuit(){if(creative)SaveCreative();else if(screenMode==ScreenMode.Playing)SaveNormalCounters();}
+    // 저장 · 타이틀/모드 선택 화면에서는 앱 중단·종료로 직전 세션을 다시 쓰지 않는다.
+    private void OnApplicationPause(bool paused)
+    {
+        if(!paused || screenMode!=ScreenMode.Playing)return;
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
+
+    private void OnApplicationQuit()
+    {
+        if(screenMode!=ScreenMode.Playing)return;
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
 
     // 화면 · 모바일 터치 조작과 메뉴
     private void OnGUI()
     {
         float w=Screen.width,h=Screen.height;
+        ApplyCompanyUiSkin();
         GUI.skin.button.fontSize=Mathf.Clamp(Mathf.RoundToInt(w/29f),12,20);
         GUI.skin.label.fontSize=Mathf.Clamp(Mathf.RoundToInt(w/31f),12,18);
         if(screenMode==ScreenMode.Title || screenMode==ScreenMode.SelectMode)
@@ -1315,7 +1767,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(GUI.Button(new Rect(w-sz-14,yy-sz,sz,sz),"공격"))Attack();
         if(GUI.Button(new Rect(w-sz*2-19,yy,sz,sz),"가방"))panel=Panel.Bag;
         if(GUI.Button(new Rect(w-sz-14,yy,sz,sz),"제작")){craftPage=0;panel=Panel.Craft;}
-        if(GUI.Button(new Rect(w*.42f,yy,sz,sz),"채집"))Gather();
+        // 모바일 · 아래쪽 방향 버튼과 채집 버튼이 겹치지 않도록 채집은 윗줄 중앙에 둔다.
+        if(GUI.Button(new Rect(w*.5f-sz*.5f,yy-sz,sz,sz),"채집"))Gather();
     }
 
     private void DrawPanel(float w,float h)
@@ -1343,7 +1796,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             AudioListener.volume=musicVolume;
             if(GUILayout.Button("타이틀로",GUILayout.Height(48)))
             {
-                if(creative)SaveCreative();
+                // 옵션은 타이틀에서도 열리므로 실제 게임 중일 때만 현재 모드를 저장한다.
+                if(screenMode==ScreenMode.Playing)
+                {
+                    if(creative)SaveCreative();
+                    else SaveNormalCounters();
+                }
                 panel=Panel.None;
                 screenMode=ScreenMode.Title;
                 GUILayout.EndArea();
@@ -1352,14 +1810,35 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         else if(panel==Panel.Bag)
         {
-            GUILayout.Label("장착 무기: "+(equippedWeapon==""?"맨손":equippedWeapon));
+            // UI · 기존 장비/재료/제작 데이터를 회사 공용 패널·슬롯 스타일로 표시한다.
+            // 표시만 확장하며 장착·소비·보상·저장 규칙은 바꾸지 않는다.
+            Recipe equipped=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+            GUILayout.Box("장착 무기   "+(equipped==null?"맨손":equipped.name),GUILayout.Height(44));
             if(creative)
             {
-                GUILayout.Label("몬스터 스폰 블록 ×무제한");
+                GUILayout.Box("몬스터 스폰 블록   무제한",GUILayout.Height(38));
                 if(GUILayout.Button("몬스터 스폰 블록 설치",GUILayout.Height(52))){placingBlock=true;panel=Panel.None;info="설치할 땅을 눌러."; }
             }
-            else GUILayout.Label("나무 "+materials["wood"]+" · 돌 "+materials["stone"]+" · 섬유 "+materials["fiber"]);
-            GUILayout.Label("제작 완료 "+crafted.Count+"개");
+            else
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Box("나무\n"+materials["wood"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.Box("돌\n"+materials["stone"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.Box("섬유\n"+materials["fiber"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Label("제작한 아이템 "+crafted.Count+"개");
+            bagScroll=GUILayout.BeginScrollView(bagScroll,GUILayout.Height(Mathf.Max(95f,rect.height*.34f)));
+            int lastIndex=Mathf.Max(0,crafted.Count-80);
+            for(int i=crafted.Count-1;i>=lastIndex;i--)
+            {
+                Recipe item=recipes.Find(r=>r.id==crafted[i]);
+                if(item==null)continue;
+                string label=(crafted[i]==equippedWeapon?"[장착] ":"")
+                    +item.name+"   "+item.kind;
+                GUILayout.Box(label,GUILayout.Height(40));
+            }
+            GUILayout.EndScrollView();
         }
         else if(panel==Panel.Craft)
         {

@@ -51,14 +51,61 @@ public static class UnityWebFloorBuild
         if(report.summary.result!=BuildResult.Succeeded)throw new Exception("ANDROID_BUILD_FAILED:"+report.summary.result);
     }
 
+
+    // 자산 · 얇은 도로 메시는 X/Z 면적과 최소 높이를 따로 검사한다.
+    private static bool RoadHasDepth(GameObject model)
+    {
+        foreach (MeshFilter filter in model.GetComponentsInChildren<MeshFilter>(true))
+        {
+            if (filter == null || filter.sharedMesh == null) continue;
+            Vector3 size = filter.sharedMesh.bounds.size;
+            if (size.x > .2f && size.z > .2f && size.y > .002f) return true;
+        }
+        return false;
+    }
+
     private static void EnsureScene()
     {
+        // 그래픽 · 공용 스킨드 GLB의 실제 본/액션 클립을 기존 Unity 빌드 진입점에서 변환한다.
+        // 변환 실패는 웹 빌드를 중단하며 준비된 소스만으로 출시 PASS를 만들지 않는다.
+        UnityCompanyAssets.Prepare();
+        foreach(string role in new[]{"Traveler","Rogue","Guardian","Archer","Mage",
+            "Wolf","Golem","Spider","Serpent","Beetle"})
+        {
+            string prefab="Assets/Resources/CompanyAssets/MagicForest"+role+".prefab";
+            GameObject actor=AssetDatabase.LoadAssetAtPath<GameObject>(prefab);
+            if(actor==null || actor.GetComponent<Animation>()==null)
+                throw new Exception("UNITY_COMPANY_ACTOR_ANIMATION_MISSING:"+role);
+            SkinnedMeshRenderer skin=actor.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if(skin==null || skin.sharedMesh==null || skin.sharedMesh.vertexCount<100 || skin.bones.Length<3)
+                throw new Exception("UNITY_COMPANY_ACTOR_SKIN_MISSING:"+role);
+            int clipCount=0;
+            foreach(AnimationState state in actor.GetComponent<Animation>())if(state.clip!=null)clipCount++;
+            if(clipCount<5)throw new Exception("UNITY_COMPANY_ACTOR_ACTION_COVERAGE_MISSING:"+role);
+            Debug.Log("UNITY_COMPANY_ACTOR_SKINNED_ACTION=SOURCE_READY_RUNTIME_UNVERIFIED:"+role+":clips="+clipCount);
+        }
         // Build 전 검사 · 기존 Unity 프로젝트에 실제 네이티브 3D 자산이 임포트됐는지 확인한다.
         // 파일명이나 원장 메타데이터만으로 메시 품질 및 배포 통과로 인정하지 않는다.
         string[] modelPaths =
         {
             "Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
-            "Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+            "Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+            "Assets/Resources/CompanyAssets/MagicForestRock.obj",
+            "Assets/Resources/CompanyAssets/MagicForestRoad.obj",
+            "Assets/Resources/CompanyAssets/MagicForestChest.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCrate.obj",
+            "Assets/Resources/CompanyAssets/MagicForestWall.obj",
+            "Assets/Resources/CompanyAssets/MagicForestDoor.obj",
+            "Assets/Resources/CompanyAssets/MagicForestFoundation.obj",
+            "Assets/Resources/CompanyAssets/MagicForestRoof.obj",
+            "Assets/Resources/CompanyAssets/MagicForestLamp.obj",
+            "Assets/Resources/CompanyAssets/MagicForestTorso.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCape.obj",
+            "Assets/Resources/CompanyAssets/MagicForestShoulder.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCanine.obj",
+            "Assets/Resources/CompanyAssets/MagicForestClaw.obj",
+            "Assets/Resources/CompanyAssets/MagicForestSword.obj",
+            "Assets/Resources/CompanyAssets/MagicForestGrip.obj"
         };
         foreach (string modelPath in modelPaths)
         {
@@ -77,7 +124,9 @@ public static class UnityWebFloorBuild
                     if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
                         triangles += (int)(mesh.GetIndexCount(submesh) / 3);
                 Vector3 bounds = mesh.bounds.size;
-                if (bounds.x > .1f && bounds.y > .1f && bounds.z > .1f) hasDepth = true;
+                // 얇은 길/장식은 입체 메시의 두께를 따로 검증한다.
+                float minimumHeight=modelPath.EndsWith("MagicForestRoad.obj") ? 0.012f:.08f;
+                if (bounds.x > .1f && bounds.y > minimumHeight && bounds.z > .1f) hasDepth = true;
             }
             foreach (Renderer renderer in renderers)
             {
@@ -85,11 +134,21 @@ public static class UnityWebFloorBuild
                 foreach (Material material in renderer.sharedMaterials)
                     if (material != null && material.shader != null) hasMaterial = true;
             }
-            if (triangles < 150 || !hasDepth || !hasMaterial)
+            int minimumTriangles=modelPath.EndsWith("MagicForestTrunk.obj")
+                ||modelPath.EndsWith("MagicForestCrown.obj")?150:16;
+            if (triangles < minimumTriangles || !hasDepth || !hasMaterial)
                 throw new Exception("UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED:" + modelPath
                     + ":triangles=" + triangles + ":depth=" + hasDepth + ":material=" + hasMaterial);
             Debug.Log("UNITY_WEB_NATIVE_ASSET_IMPORT=SOURCE_READY_RUNTIME_UNVERIFIED:"
                 + modelPath + ":triangles=" + triangles);
+        }
+        foreach(string sourceName in new[]{"MagicForestUI","MagicForestMotion"})
+        {
+            string sourcePath="Assets/Resources/CompanyAssets/"+sourceName+".json";
+            TextAsset nativeConfig=AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
+            if(nativeConfig==null || string.IsNullOrWhiteSpace(nativeConfig.text))
+                throw new Exception("UNITY_WEB_NATIVE_PRESENTATION_SOURCE_MISSING:"+sourcePath);
+            Debug.Log("UNITY_WEB_NATIVE_PRESENTATION_SOURCE=SOURCE_READY_RUNTIME_UNVERIFIED:"+sourcePath);
         }
         if(!AssetDatabase.IsValidFolder(SceneFolder))AssetDatabase.CreateFolder("Assets","Scenes");
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
