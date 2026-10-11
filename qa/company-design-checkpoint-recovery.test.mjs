@@ -91,7 +91,7 @@ test('checkpoint with hard failures cannot be promoted by deterministic recovery
 test('workflow reuses verified checkpoints before local authoring and never requires an external key',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const baseline=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
-  const recoverAt=workflow.indexOf('Recover verified deterministic design checkpoint before external model wait');
+  const recoverAt=workflow.indexOf('Recover verified deterministic design checkpoint before native recomputation');
   const authorAt=workflow.indexOf('Resolve local design authoring from the current checkpoint');
   assert(recoverAt>=0&&authorAt>recoverAt);
   assert.match(workflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
