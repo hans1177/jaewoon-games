@@ -156,15 +156,33 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     if(/#\s*\(*\s*$/.test(prefix))continue;
     if(renderSink.test(statement)&&nativePattern.test(raw.slice(Math.max(0,index-500),Math.min(raw.length,index+1200))))return true;
 
-    const lineStart=raw.lastIndexOf('\n',index)+1;
-    const lineEnd=raw.indexOf('\n',index);
-    const line=raw.slice(lineStart,lineEnd<0?raw.length:lineEnd);
-    if(/\b(?:if|elseif)\b[\s\S]*\bthen\b/.test(line)){
-      const after=raw.slice(lineEnd<0?raw.length:lineEnd+1,Math.min(raw.length,(lineEnd<0?raw.length:lineEnd+1)+1800));
-      const blockEnd=after.search(/\n\s*end\b/);
+    // Luau 조건은 여러 줄일 수 있다. 선택값이 지배하는 then 분기만 읽고
+    // else/end 뒤의 무관한 렌더링을 연결 증거로 사용하지 않는다.
+    const guard=[...raw.slice(Math.max(0,index-1200),index).matchAll(/\b(?:if|elseif)\b/g)].at(-1);
+    const guardStart=guard?Math.max(0,index-1200)+guard.index:-1;
+    const conditionPrefix=guardStart>=0?raw.slice(guardStart,index):'';
+    if(/#\s*\(*\s*$/.test(conditionPrefix))continue;
+    const thenMatch=raw.slice(index,index+1200).match(/\bthen\b/);
+    if(guardStart>=0&&thenMatch&&!/\b(?:then|else|end|function|return)\b/.test(conditionPrefix)
+      &&!/\b(?:if|elseif|else|end|function|return)\b/.test(raw.slice(index,index+thenMatch.index))){
+      const bodyStart=index+thenMatch.index+thenMatch[0].length;
+      const after=raw.slice(bodyStart,bodyStart+1800);
+      const blockEnd=after.search(/\b(?:else|elseif|end)\b/);
       const block=blockEnd>=0?after.slice(0,blockEnd):after;
-      const guardedBlock=line+'\n'+block;
-      if(renderSink.test(guardedBlock)&&nativePattern.test(guardedBlock))return true;
+      const guardedBlock=raw.slice(guardStart,bodyStart)+block;
+      if(renderSink.test(block)){
+        if(nativePattern.test(guardedBlock))return true;
+        // 같은 객체의 직전 조기 반환형 타입 검사도 보존한다. 다른 객체,
+        // 재할당, 함수/분기 경계를 넘은 타입 표시는 증거로 인정하지 않는다.
+        const before=raw.slice(Math.max(0,guardStart-700),guardStart);
+        for(const typed of before.matchAll(/\bif\s+not\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*IsA\s*\(\s*["'][A-Za-z]+["']\s*\)\s*(?:or\b[^\n]*?)?\bthen\s+return\s+end\b/g)){
+          const receiver=typed[1],tail=before.slice(typed.index+typed[0].length);
+          if(!nativePattern.test(typed[0])||/\b(?:function|if|elseif|else|end|for|while|repeat|return)\b/.test(tail)
+            ||new RegExp('\\b'+receiver+'\\s*=').test(tail+block))continue;
+          const receiverUse=new RegExp('\\b'+receiver+'\\s*(\\.[^\\n;]*)','g');
+          if([...block.matchAll(receiverUse)].some(use=>renderSink.test(use[1])))return true;
+        }
+      }
     }
 
     const assignmentPrefix=prefix.match(/\b(?:local\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*$/);
