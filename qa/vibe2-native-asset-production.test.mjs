@@ -7,12 +7,116 @@ import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+// 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
+test('current-game asset gap selects licensed external source for on-demand PBR derivative, not a verified asset',()=>{
+  const external={
+    id:'kenney-building-test',name:'Building Kit',category:'BUILDING',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0',
+    sourceUrl:'https://kenney.nl/assets/building-kit',
+    licenseEvidenceUrl:'https://kenney.nl/assets/building-kit',
+    verifiedAt:'2026-10-01',platformTargets:['UNITY','ROBLOX'],
+    automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,
+    capabilities:['GLB','FBX'],prefetchAllowed:false
+  };
+  const registry={assets:[],externalSources:[external],
+    baseMaterialLibrary:{families:{MATERIAL:['WOOD','STONE','MOD_WORN']}}};
+  const params={gameId:'home-game',target:'unity',request:'village building',
+    requirements:[{family:'BUILDING',role:'house'}],registry};
+  const plan=buildAssetSupplyDecisionSummary(params);
+  const action=plan.nextActions.find(row=>row.family==='BUILDING');
+  assert.equal(action.action,'ACQUIRE_ADAPT');
+  assert.equal(action.assetId,null);
+  assert.equal(action.externalAcquisition.sourceId,'kenney-building-test');
+  assert.equal(action.externalAcquisition.acquisitionState,'SOURCE_PAGE_RESOLUTION_REQUIRED');
+  assert.equal(action.externalAcquisition.downloadUrl,null,'source landing page is not a downloadable 3D file');
+  assert.equal(action.externalAcquisition.onDemandOnly,true);
+  assert.equal(action.externalAcquisition.bulkPrefetchForbidden,true);
+  assert.equal(action.externalAcquisition.sourceFileMustBeReal3d,true);
+  assert.equal(action.roleEvidence.verifiedRoleMatch,false,'catalog categories cannot verify individual geometry roles');
+  assert.equal(action.materialRefinement.originalAssetImmutable,true);
+  assert.deepEqual(action.materialRefinement.availableSemanticAtoms,['WOOD','STONE','MOD_WORN']);
+  assert.equal(action.materialRefinement.sourceMaterialModificationPerformed,false);
+  assert.equal(action.assetization.registerOnlyAfterActualBinaryAndLicenseAndStaticQa,true);
+  assert.equal(action.assetization.nativeDccScript,'assets/native-authoring/build-game-visual.py');
+  assert.equal(action.assetization.nativeSourceModelField,'task.assetAuthoring.sourceModel');
+  assert.equal(action.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  assert.equal(action.assetization.productionVerified,false);
+  assert.equal(plan.selectedOnDemandExternalGapCount,1);
+  assert.equal(plan.runtimeVerificationGranted,false);
+  assert.equal(plan.productionVerificationGranted,false);
+  assert.match(assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'home-game',target:'unity',assetSupplySummary:plan}),/ON-DEMAND LICENSED ASSET GAP FILL/);
+  assert.equal(buildAssetSupplyDecisionSummary({...params,gameId:''}).selectedOnDemandExternalGapCount,0,'no unidentified game may trigger external acquisition');
+});
+
+test('audio and UI library gap-fill cannot be routed to the 3D Blender material authoring path',()=>{
+  const registry={assets:[],externalSources:[
+    {id:'ui-source',name:'UI Pack',category:'UI',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+      sourceUrl:'https://kenney.nl/assets/ui-pack',licenseEvidenceUrl:'https://kenney.nl/assets/ui-pack',
+      verifiedAt:'2026-10-01',license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true},
+    {id:'sound-source',name:'Impact Sounds',category:'AUDIO',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+      sourceUrl:'https://kenney.nl/assets/impact-sounds',licenseEvidenceUrl:'https://kenney.nl/assets/impact-sounds',
+      verifiedAt:'2026-10-01',license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true}
+  ]};
+  for(const family of ['UI','AUDIO']){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'asset-test',target:'unity',requirements:[{family,role:'generic'}],registry});
+    const candidate=plan.nextActions.find(row=>row.family===family);
+    assert.equal(candidate.action,'ACQUIRE_ADAPT');
+    assert.equal(candidate.materialRefinement.mode,'NATIVE_FAMILY_ADAPT_NO_PBR');
+    assert.deepEqual(candidate.materialRefinement.allowedAxes,[]);
+    assert.equal(candidate.assetization.nativeDccScript,null);
+    assert.equal(candidate.assetization.nativeSourceModelField,null);
+    assert.deepEqual(candidate.assetization.nativeOutputFiles,[]);
+    assert.equal(candidate.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  }
+});
+
+test('blocked, manual or unverified external catalogs cannot authorize asset acquisition',()=>{
+  const base={id:'test-source',name:'Forest Asset',category:'ENVIRONMENT',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourceUrl:'https://example.org/forest',
+    licenseEvidenceUrl:'https://example.org/license',verifiedAt:'2026-10-01',
+    license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true};
+  const unsafe=[
+    {...base,license:'CC-BY-NC',commercialUseAllowed:true,derivativesAllowed:true},
+    {...base,license:'UNKNOWN'},
+    {...base,status:'RESEARCH_ONLY'},
+    {...base,sourceUrl:'http://example.org/forest'},
+    {...base,sourceUrl:'https://127.0.0.1/internal'},
+    {...base,licenseEvidenceUrl:'https://localhost/license'},
+    {...base,derivativesAllowed:false},
+    {...base,automaticAcquisitionWhenSelected:false},
+    {...base,platformTargets:['ROBLOX']}
+  ];
+  for(const source of unsafe){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'forest-game',target:'unity',request:'forest',
+      requirements:[{family:'ENVIRONMENT',role:'tree'}],registry:{assets:[],externalSources:[source]}});
+    assert.equal(plan.selectedOnDemandExternalGapCount,0,JSON.stringify(source));
+    assert.equal(plan.nextActions.find(row=>row.family==='ENVIRONMENT').action,'AUTHOR');
+  }
+});
+
+test('2D references never count as ready spatial assets, while current real 3D remains preferred over external acquisition',()=>{
+  const external={id:'safe-3d',name:'Building Models',category:'BUILDING',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourceUrl:'https://example.org/buildings',
+    licenseEvidenceUrl:'https://example.org/rights',verifiedAt:'2026-10-01',
+    license:'CC0',automaticAcquisitionWhenSelected:true,platformTargets:['UNITY']};
+  const params={gameId:'village-game',target:'unity',request:'village',requirements:[{family:'BUILDING',role:'cabin'}]};
+  const ref2d={id:'old-reference',family:'BUILDING',license:'project-original',
+    status:'REPO_ASSET',path:'/assets/village.webp',consumerGameIds:['village-game']};
+  const fallback=buildAssetSupplyDecisionSummary({...params,registry:{assets:[ref2d],externalSources:[external]}});
+  assert.equal(fallback.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT');
+  const actual3d={...ref2d,id:'reusable-model',path:'assets/shared/village.glb',platform:'SHARED_MASTER'};
+  const preferred=buildAssetSupplyDecisionSummary({...params,registry:{assets:[actual3d],externalSources:[external]}});
+  assert.equal(preferred.selectedOnDemandExternalGapCount,0);
+  assert.equal(preferred.nextActions.find(row=>row.family==='BUILDING').assetId,'reusable-model');
+  assert.ok(['USE','ADAPT'].includes(preferred.nextActions.find(row=>row.family==='BUILDING').action));
+});
 
 test('five common monster body plans bake reproducible skinned GLBs and actual attack skill joints',()=>{
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');

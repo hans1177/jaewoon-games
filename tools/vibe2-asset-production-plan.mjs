@@ -1117,7 +1117,7 @@ function sourceConsumerPath(value=''){
 function currentAssetConsumerIds(asset={}){
   return unique([...(asset.consumerGameIds||[]),...(asset.sourceBoundConsumerGameIds||[])]);
 }
-const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','AUTHOR','HOLD']);
+const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','ACQUIRE_ADAPT','AUTHOR','HOLD']);
 const ASSET_DOMAIN_TO_FAMILIES=Object.freeze({
   CHARACTER_GEAR:Object.freeze(['CHARACTER']),
   CREATURE:Object.freeze(['CREATURE']),
@@ -1176,6 +1176,7 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
 function assetSupplyCandidateAllowed(asset={},target=''){
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
+  if(internalAssetHardBlockReason(asset))return false;
   return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
 }
 export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null}={}){
@@ -1187,6 +1188,51 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const roleEvidenceById=new Map(),unresolvedFamilies=new Set();
   const requestedRolesByFamily=new Map(requiredFamilies.map(family=>[family,unique((requirements||[]).filter(row=>clean(row?.family).toUpperCase()===family).flatMap(row=>[row.role,row.assetRole,row.systemRole,...(Array.isArray(row.roles)?row.roles:[])])).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))]));
   const requestText=clean(request).toLowerCase();
+  // 기존 원장만 조회한다. 소스 선정은 후보 계획이며 다운/변형/등록은 기존 ASSET_DEVELOPMENT에서 한다.
+  const externalSources=Array.isArray(registry?.externalSources)?registry.externalSources:[];
+  const platform=clean(target).toUpperCase();
+  const spatialFamilies=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+  const publicHttps=value=>{
+    try{
+      const url=new URL(clean(value));
+      return url.protocol==='https:'&&!url.username&&!url.password&&Boolean(url.hostname)
+        &&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(url.hostname)
+        &&!/^(\d{1,3}\.){3}\d{1,3}$/.test(url.hostname)&&!url.hostname.includes(':');
+    }catch{return false;}
+  };
+  const externalSourceCandidatesFor=(family,roles=[])=>{
+    const candidates=[];
+    for(const row of externalSources){
+      if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE')continue;
+      if(row?.automaticAcquisitionWhenSelected!==true||row?.commercialUseAllowed===false||row?.derivativesAllowed===false)continue;
+      if(!clean(row.id)||!publicHttps(row.sourceUrl)||!publicHttps(row.licenseEvidenceUrl)||!clean(row.verifiedAt))continue;
+      const license=clean(row.license).toUpperCase().replaceAll('_','-');
+      const freeRights=/^(CC0(?:-1\.0)?|PUBLIC-DOMAIN)$/.test(license);
+      const explicitRights=row.commercialUseAllowed===true&&row.derivativesAllowed===true&&Boolean(license)
+        &&!/NON.?COMMERCIAL|NO.?DERIVATIVES|UNKNOWN|UNVERIFIED|(?:^|-)NC(?:-|$)|(?:^|-)ND(?:-|$)/.test(license);
+      if(!freeRights&&!explicitRights)continue;
+      const targets=unique(row.platformTargets||[]).map(value=>value.toUpperCase());
+      const categories=unique([row.category,...(row.categories||[])]).map(value=>value.toUpperCase());
+      if(!targets.includes(platform)||!categories.includes(family))continue;
+      const terms=[row.name,row.id,...(row.capabilities||[]),...(row.tags||[])]
+        .map(value=>clean(value).toLowerCase().replace(/[_-]/g,' ')).join(' ');
+      const matchedRoles=roles.filter(role=>terms.includes(role.replaceAll('_',' ')));
+      const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
+      const direct=clean(row.downloadUrl||row.assetUrl||row.archiveUrl);
+      const hasSafeDirect=publicHttps(direct)&&/\.(?:glb|gltf|fbx|obj|zip)$/i.test(new URL(direct).pathname);
+      candidates.push(freeze({
+        sourceId:clean(row.id),sourceName:clean(row.name),family,license:clean(row.license),
+        sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+        licenseSnapshotDate:clean(row.verifiedAt),downloadUrl:hasSafeDirect?direct:null,
+        acquisitionState:hasSafeDirect?'SELECTED_DIRECT_DOWNLOAD_PENDING':'SOURCE_PAGE_RESOLUTION_REQUIRED',
+        matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
+        categoryMatchVerified:true,sourceHash:null,downloaded:false,runtimeVerified:false,
+        rawRedistributionAllowed:row.rawRedistributionAllowed===true,
+        roleScore:matchedRoles.length*10+nameFit,spatial3dSourceRequired:spatialFamilies.has(family)
+      }));
+    }
+    return freezeList(candidates.sort((a,b)=>b.roleScore-a.roleScore||a.sourceId.localeCompare(b.sourceId)));
+  };
   const roleEvidence=asset=>{
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const roles=unique([asset.role,asset.subfamily,...(Array.isArray(asset.tags)?asset.tags:[])]).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'));
@@ -1213,7 +1259,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const roleFit=roleEvidence(asset);
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
-    if(current){
+    if(current&&assetSupplyCandidateAllowed(asset,target)){
       currentAssets.push(asset);
       currentAssetIds.add(assetId);
       if(family){
@@ -1282,8 +1328,56 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       });
     }else{
       const roles=requestedRolesByFamily.get(family)||[];
-      const unresolved=unresolvedFamilies.has(family)||roles.length===0;
-      pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+      const externalCandidates=id?externalSourceCandidatesFor(family,roles):freezeList([]);
+      if(externalCandidates.length){
+        const selected=externalCandidates[0];
+        const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
+        pushAction({
+          action:'ACQUIRE_ADAPT',assetId:null,family,
+          reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
+            verifiedRoleMatch:false,requiresActualSourceInspection:true}),
+          externalAcquisition:freeze({
+            sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
+            downloadUrl:selected.downloadUrl,license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
+            licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
+            candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
+            sourceHashRequired:true,rightsRevalidationRequired:true,downloadFileIntegrityRequired:true,
+            archiveScriptExecutionForbidden:true,sourceFileMustBeReal3d:spatialFamilies.has(family),
+            staticMeshQaRequired:spatialFamilies.has(family),nativePlatformConversionRequired:true
+          }),
+          materialRefinement:freeze({
+            mode:pbrApplicable?'SUBTLE_CONTEXT_PBR_REAUTHOR':'NATIVE_FAMILY_ADAPT_NO_PBR',
+            sourceMaterialModificationPerformed:false,
+            allowedAxes:freezeList(pbrApplicable?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
+            availableSemanticAtoms:freezeList(pbrApplicable?(registry?.baseMaterialLibrary?.families?.MATERIAL||[]):[]),
+            paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+            derivedAssetPathRequired:true,derivedParentSourceId:selected.sourceId,
+            sourceAndDerivativeSha256Required:true,
+            geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true,
+            modelMetadataIsNotProducedFile:true
+          }),
+          assetization:freeze({
+            mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
+            registerOnlyAfterActualBinaryAndLicenseAndStaticQa:true,
+            requiredFields:freezeList(['id','family','path','license','sourceUrl','sourceHash','parentSourceId','transformHistory','platformVariants']),
+            nativeDccScript:spatial?'assets/native-authoring/build-game-visual.py':null,
+            nativeSourceModelField:spatial?'task.assetAuthoring.sourceModel':null,
+            nativeSourceLicenseField:spatial?'task.assetAuthoring.sourceLicense':null,
+            nativeSourceCreditField:spatial?'task.assetAuthoring.sourceCredit':null,
+            nativeOutputFiles:freezeList(spatial?['master.glb','asset.glb','application.json','evidence.json','preview.png']:[]),
+            nativeModelMustBeDownloadedIntoAssets:spatial,
+            generatorEvidenceMustMatchSelectedSourceSha256:true,
+            registryWriteOwner:'EXISTING_GRAPHICS_PRODUCTION_SYNC',
+            gameSourceWorkerMayEditCentralRegistry:false,
+            candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
+            nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,newPipelineOrQueueCreated:false
+          })
+        });
+      }else{
+        const unresolved=unresolvedFamilies.has(family)||roles.length===0;
+        pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+      }
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1313,6 +1407,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
+    selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
     intendedConsumerIsNotCurrentUse:true,
@@ -5474,6 +5570,14 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.baseMotionQualityWorkSession?.defaultMinutes?`[BASE MOTION QUALITY WORK] ${JSON.stringify(plan.companyGraphicsLibrary.baseMotionQualityWorkSession)}. 현재 승인된 내부 자산 모션 수정 1회차는 기존 오브젝트 1개와 기존 동작 1개만 선택한다. task.motionRepairWorkUnit에 실제 objectId/clipId/책임 sourcePath/현재 sourceHash/정확한 sourceWindow와 원본 바인딩 근거를 고정한다. 약 60분은 준비·검수·보고를 제외한 실제 수정 작업량의 추정치다. 같은 동작 안에서 자세·체중 15분, 관절 곡선·접촉 20분, 후행·반동·복귀·루프 15분, 남은 디테일 재수정 10분 분량을 계획한다. 여러 오브젝트나 여러 동작의 수정량을 합산하지 않는다. 같은 대상을 검토가 끝날 때까지 유지하고 별도 워커나 큐를 만들지 않는다. 기존 책임 경로 밖 원본이나 지원하지 않는 authoring 도구가 필요하면 정확한 단계로 남기며 새 권한을 만들지 않는다. 대기나 호출 반복으로 시간을 채우지 않는다. 준비→중심 이동→접촉→반동→회복을 기존 책임 함수에서 수정하고 클립 길이와 기존 판정 이벤트 시점은 보존한다. owner나 ChatGPT를 기다리지 않고 같은 ASSET_DEVELOPMENT 작업을 진행한다. 경과시간·키프레임 수는 품질 증거가 아니며 같은 조건의 전후 비교와 실제 native 재생 전에는 품질 통과나 제작 완료를 주장하지 않는다.`:'',
     plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(internalLibraryEvolutionGuidanceSummary(plan.internalLibraryEvolution))}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 기존 안전 자산의 품질 작업이 있으면 권장 수량과 무관하게 QUALITY_UP_1000을 우선한다. 현재 로블록스 출시·출시 준비 게임에서 실제 사용하는 자산의 최약 축부터 개선하며 신규 수량은 현재 게임에 필요한 결손을 기존 자산 재사용으로 해결할 수 없을 때만 늘린다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 기존 자산 품질 작업이 생기면 즉시 QUALITY_UP_1000 최약 축 개선으로 돌아간다. 작업 수나 내부 점수는 실제 게임 품질 통과 증거가 아니다.`:'',
+    ...(plan.assetSupplySummary?.nextActions||[]).filter(row=>row.action==='ACQUIRE_ADAPT').map(row=>
+      '[ON-DEMAND LICENSED ASSET GAP FILL] '+JSON.stringify({
+        gameId:plan.gameId,target:plan.target,family:row.family,
+        requiredRoles:row.roleEvidence?.requestedRoles||[],
+        externalAcquisition:row.externalAcquisition,
+        materialRefinement:row.materialRefinement,assetization:row.assetization
+      })+
+      '. 현재 게임의 실제 결손만 회사 원장에 등록된 출처에서 보충한다. 원본 소스 페이지가 실제 다운로드 링크가 아니면 공식 다운로드 링크 확인 전에는 취득 성공을 주장하지 않는다. 다운 전 최신 라이선스·상업 이용/수정/재배포 조건·출처와 해시를 확인한다. 불분명하거나 NC/ND 또는 스크립트/실행파일 포함 위험 자산은 차단한다. 캐릭터·생물·건물·환경·무기·소품은 실제 3D 메시와 재질이 있는 파일만 받고 정적 구조와 모바일 예산을 검사한다. 기존 원본은 불변으로 보관하고 3D 공간 자산에 한해 기존 ASSET_DEVELOPMENT의 assets/native-authoring/build-game-visual.py를 재사용한다. 다운로드한 로컬 3D 파일은 task.assetAuthoring.sourceModel, 권리는 sourceLicense, 필요 시 출처 표기는 sourceCredit으로 기존 Blender 제작 레시피에 입력한다. 해당 원본은 불변으로 보관하고 실제 PBR 색상·거칠기·금속성·사용감만 현재 게임 Style Lock에 맞춰 소폭 바꾼 별도 파생 모델을 생성한다. 오디오·UI·일반 텍스처 등 비공간 자산은 블렌더 모델로 위장하지 말고 기존 해당 family 원본 처리·네이티브 변형 책임에서 처리한다. 원본·파생 SHA256, 출처·라이선스 증거, 부모 sourceId, 변경 이력, 네이티브 산출물을 확인한 후 기존 GRAPHICS_PRODUCTION의 원장 동기화 책임에서만 company-asset-library.json에 PREPARED 후보로 등록한다. 개별 게임 소스 워커는 중앙 자산 원장을 직접 수정하지 않는다. 다운로드 또는 실제 3D 파생 파일이 없다면 자산을 등록하거나 생성 성공으로 표시하지 않는다. 파일이 생겼더라도 기존 실제 게임 담당 C#/Luau 렌더러와 프리팹에 연결하고 독립 모바일·런타임·회귀 검증 전에는 productionVerified나 품질 PASS로 승격하지 않는다. 역할 호환이 안 되면 다른 검증 후보를 검토한 후에만 신규 제작으로 진행한다. 게임 판정·밸런스·저장·네트워크 권한을 변경하지 않고 새 파이프라인/큐/래퍼 없이 기존 Vibe 제작 경로를 그대로 사용한다.'),
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
