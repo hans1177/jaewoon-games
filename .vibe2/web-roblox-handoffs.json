@@ -441,7 +441,7 @@
       "WEB_BASELINE": {
         "required": true,
         "state": "PENDING",
-        "sourcePath": "unity-games/gem-survivor",
+        "sourcePath": "roblox-games/gem-survivor",
         "evidencePath": null,
         "sourceIndexSha256": null,
         "designBaselineSha256": null,
@@ -888,7 +888,7 @@
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-      "PROJECT_PHASE": "TARGET_PLATFORM_SOURCE_BIND",
+      "PROJECT_PHASE": "TARGET_PLATFORM_RUNTIME",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -937,7 +937,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "COMPLETE_VERIFIED_WEB_TO_ROBLOX_HANDOFF_CONTEXT"
+      "NEXT_MACHINE_ACTION": "RUN_TARGET_PLATFORM_RUNTIME"
     },
     {
       "gameId": "defense",
