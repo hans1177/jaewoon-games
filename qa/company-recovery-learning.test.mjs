@@ -694,3 +694,26 @@ test('real Unity missing component exception targets its existing editor source,
   assert.equal(replay.added.length,0);
   assert.equal(replay.queue.tasks.length,1);
 });
+
+test('Roblox F0 script failure scopes repair to existing game scripts, not unrelated deployments',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const run={
+    name:'Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight',
+    path:'.github/workflows/company-development-roblox-headless-fast-mvp.yml',
+    conclusion:'failure',id:38121720410,run_attempt:1,head_sha:'a'.repeat(40),
+    display_title:'Roblox F0 · fantasy-survival',head_branch:'main',
+    head_repository:{full_name:'hans1177/jaewoon-games'}
+  };
+  const jobs={jobs:[{name:'verify',conclusion:'failure',
+    steps:[{name:'Validate F0 source contract',conclusion:'failure'}]}]};
+  const result=escalateDeploymentFailure({
+    event:{workflow_run:run},jobsInput:jobs,
+    catalogInput:{games:[{id:'fantasy-survival',productionClass:'DEVELOPMENT_CONFIRMED'}]}
+  });
+  assert.equal(result.owner,'VIBE2_VIBE3');
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,[
+    'roblox-games/fantasy-survival/server/Game.server.luau',
+    'roblox-games/fantasy-survival/client/Game.client.luau'
+  ]);
+  assert.equal(result.queue.tasks[0].maxRetries,null);
+});
