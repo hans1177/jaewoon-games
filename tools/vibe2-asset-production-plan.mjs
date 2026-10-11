@@ -1117,7 +1117,7 @@ function sourceConsumerPath(value=''){
 function currentAssetConsumerIds(asset={}){
   return unique([...(asset.consumerGameIds||[]),...(asset.sourceBoundConsumerGameIds||[])]);
 }
-const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','AUTHOR','HOLD']);
+const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','ACQUIRE_ADAPT','AUTHOR','HOLD']);
 const ASSET_DOMAIN_TO_FAMILIES=Object.freeze({
   CHARACTER_GEAR:Object.freeze(['CHARACTER']),
   CREATURE:Object.freeze(['CREATURE']),
@@ -1176,6 +1176,7 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
 function assetSupplyCandidateAllowed(asset={},target=''){
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
+  if(internalAssetHardBlockReason(asset))return false;
   return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
 }
 export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null}={}){
@@ -1187,6 +1188,51 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const roleEvidenceById=new Map(),unresolvedFamilies=new Set();
   const requestedRolesByFamily=new Map(requiredFamilies.map(family=>[family,unique((requirements||[]).filter(row=>clean(row?.family).toUpperCase()===family).flatMap(row=>[row.role,row.assetRole,row.systemRole,...(Array.isArray(row.roles)?row.roles:[])])).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))]));
   const requestText=clean(request).toLowerCase();
+  // 기존 원장만 조회한다. 소스 선정은 후보 계획이며 다운/변형/등록은 기존 ASSET_DEVELOPMENT에서 한다.
+  const externalSources=Array.isArray(registry?.externalSources)?registry.externalSources:[];
+  const platform=clean(target).toUpperCase();
+  const spatialFamilies=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+  const publicHttps=value=>{
+    try{
+      const url=new URL(clean(value));
+      return url.protocol==='https:'&&!url.username&&!url.password&&Boolean(url.hostname)
+        &&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(url.hostname)
+        &&!/^(\d{1,3}\.){3}\d{1,3}$/.test(url.hostname)&&!url.hostname.includes(':');
+    }catch{return false;}
+  };
+  const externalSourceCandidatesFor=(family,roles=[])=>{
+    const candidates=[];
+    for(const row of externalSources){
+      if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE')continue;
+      if(row?.automaticAcquisitionWhenSelected!==true||row?.commercialUseAllowed===false||row?.derivativesAllowed===false)continue;
+      if(!clean(row.id)||!publicHttps(row.sourceUrl)||!publicHttps(row.licenseEvidenceUrl)||!clean(row.verifiedAt))continue;
+      const license=clean(row.license).toUpperCase().replaceAll('_','-');
+      const freeRights=/^(CC0(?:-1\.0)?|PUBLIC-DOMAIN)$/.test(license);
+      const explicitRights=row.commercialUseAllowed===true&&row.derivativesAllowed===true&&Boolean(license)
+        &&!/NON.?COMMERCIAL|NO.?DERIVATIVES|UNKNOWN|UNVERIFIED|(?:^|-)NC(?:-|$)|(?:^|-)ND(?:-|$)/.test(license);
+      if(!freeRights&&!explicitRights)continue;
+      const targets=unique(row.platformTargets||[]).map(value=>value.toUpperCase());
+      const categories=unique([row.category,...(row.categories||[])]).map(value=>value.toUpperCase());
+      if(!targets.includes(platform)||!categories.includes(family))continue;
+      const terms=[row.name,row.id,...(row.capabilities||[]),...(row.tags||[])]
+        .map(value=>clean(value).toLowerCase().replace(/[_-]/g,' ')).join(' ');
+      const matchedRoles=roles.filter(role=>terms.includes(role.replaceAll('_',' ')));
+      const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
+      const direct=clean(row.downloadUrl||row.assetUrl||row.archiveUrl);
+      const hasSafeDirect=publicHttps(direct)&&/\.(?:glb|gltf|fbx|obj|zip)$/i.test(new URL(direct).pathname);
+      candidates.push(freeze({
+        sourceId:clean(row.id),sourceName:clean(row.name),family,license:clean(row.license),
+        sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+        licenseSnapshotDate:clean(row.verifiedAt),downloadUrl:hasSafeDirect?direct:null,
+        acquisitionState:hasSafeDirect?'SELECTED_DIRECT_DOWNLOAD_PENDING':'SOURCE_PAGE_RESOLUTION_REQUIRED',
+        matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
+        categoryMatchVerified:true,sourceHash:null,downloaded:false,runtimeVerified:false,
+        rawRedistributionAllowed:row.rawRedistributionAllowed===true,
+        roleScore:matchedRoles.length*10+nameFit,spatial3dSourceRequired:spatialFamilies.has(family)
+      }));
+    }
+    return freezeList(candidates.sort((a,b)=>b.roleScore-a.roleScore||a.sourceId.localeCompare(b.sourceId)));
+  };
   const roleEvidence=asset=>{
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const roles=unique([asset.role,asset.subfamily,...(Array.isArray(asset.tags)?asset.tags:[])]).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'));
@@ -1213,7 +1259,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const roleFit=roleEvidence(asset);
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
-    if(current){
+    if(current&&assetSupplyCandidateAllowed(asset,target)){
       currentAssets.push(asset);
       currentAssetIds.add(assetId);
       if(family){
@@ -1282,8 +1328,45 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       });
     }else{
       const roles=requestedRolesByFamily.get(family)||[];
-      const unresolved=unresolvedFamilies.has(family)||roles.length===0;
-      pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+      const externalCandidates=id?externalSourceCandidatesFor(family,roles):freezeList([]);
+      if(externalCandidates.length){
+        const selected=externalCandidates[0];
+        pushAction({
+          action:'ACQUIRE_ADAPT',assetId:null,family,
+          reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
+            verifiedRoleMatch:false,requiresActualSourceInspection:true}),
+          externalAcquisition:freeze({
+            sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
+            downloadUrl:selected.downloadUrl,license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
+            licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
+            candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
+            sourceHashRequired:true,rightsRevalidationRequired:true,downloadFileIntegrityRequired:true,
+            archiveScriptExecutionForbidden:true,sourceFileMustBeReal3d:spatialFamilies.has(family),
+            staticMeshQaRequired:spatialFamilies.has(family),nativePlatformConversionRequired:true
+          }),
+          materialRefinement:freeze({
+            mode:'SUBTLE_CONTEXT_PBR_REAUTHOR',sourceMaterialModificationPerformed:false,
+            allowedAxes:freezeList(['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']),
+            availableSemanticAtoms:freezeList(registry?.baseMaterialLibrary?.families?.MATERIAL||[]),
+            paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+            derivedAssetPathRequired:true,derivedParentSourceId:selected.sourceId,
+            sourceAndDerivativeSha256Required:true,
+            geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true,
+            modelMetadataIsNotProducedFile:true
+          }),
+          assetization:freeze({
+            mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
+            registerOnlyAfterActualBinaryAndLicenseAndStaticQa:true,
+            requiredFields:freezeList(['id','family','path','license','sourceUrl','sourceHash','parentSourceId','transformHistory','platformVariants']),
+            candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
+            nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,newPipelineOrQueueCreated:false
+          })
+        });
+      }else{
+        const unresolved=unresolvedFamilies.has(family)||roles.length===0;
+        pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+      }
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1313,6 +1396,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
+    selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
     intendedConsumerIsNotCurrentUse:true,
