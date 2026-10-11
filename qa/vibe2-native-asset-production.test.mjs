@@ -4171,7 +4171,11 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     const parent={id:'shared-source',title:'Source',family:'PROP',role:'environment-prop',
       path:'assets/shared/source.glb',sourceFiles:['assets/shared/source.glb'],
       sourceSha256:sourceHash,license:'project-original',status:'REPO_ASSET'};
-    const registry={version:1,assets:[parent],externalSources:[]};
+    // 동일 GLB를 환경 팩/소품 팩/개별 소품이 공유해도 올바른 계열과 원본 계보를 선택해야 한다.
+    const environmentPack={...parent,id:'environment-pack',family:'ENVIRONMENT',role:'',sourceFiles:['assets/shared/source.glb']};
+    const genericPropPack={...parent,id:'generic-prop-pack',role:'',sourceFiles:['assets/shared/source.glb','assets/shared/unused.glb']};
+    const staleProp={...parent,id:'stale-prop',sourceSha256:'f'.repeat(64)};
+    const registry={version:1,assets:[environmentPack,genericPropPack,staleProp,parent],externalSources:[]};
     const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
       sourceFileImmutable:true,license:'project-original',
       transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
