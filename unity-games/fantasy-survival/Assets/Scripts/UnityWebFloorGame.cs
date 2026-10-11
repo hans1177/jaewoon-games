@@ -512,6 +512,10 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                     // 채집/상호작용 영역의 물리 콜라이더를 삭제하지 않는다.
                     trunk.GetComponent<Renderer>().enabled = false;
                     crown.GetComponent<Renderer>().enabled = false;
+                    // 원래 잎구체의 보이지 않는 충돌체가 실제 나무 채집 Raycast를 막지 않게 한다.
+                    // Tree 몸통의 기존 콜라이더와 자원 판정은 그대로 유지한다.
+                    Collider oldCrownCollider = crown.GetComponent<Collider>();
+                    if (oldCrownCollider != null) Destroy(oldCrownCollider);
                     nativeTreeCount++;
                 }
             }
