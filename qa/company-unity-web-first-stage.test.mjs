@@ -86,7 +86,7 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(game,/Collider oldCrownCollider = crown\.GetComponent<Collider>\(\)/);
   assert.match(game,/Destroy\(oldCrownCollider\)/,'hidden canopy collider must not block resource raycast');
   assert.match(game,/trunk\.name = i % 4 == 0 \? "Rock" : "Tree"/,'existing harvest target names remain');
-  assert.match(game,/if\(n!="Tree" && n!="Rock"\)continue;/,'existing harvesting logic retained');
+  assert.match(game,/if\(n!="Tree" && n!="Rock" && n!="Fiber"\)continue;/,'existing tree/rock harvesting retained and missing fiber reconnected');
   assert.match(game,/MAGIC_FOREST_NATIVE_ASSET_BINDING=.*ASSET_REPAIR_REQUIRED/,'runtime failure remains visible');
   assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
   assert.match(build,/UnityWebFloorBuild/);
