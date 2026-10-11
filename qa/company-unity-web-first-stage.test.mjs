@@ -31,6 +31,20 @@ const tool=path.join(repo,'tools/company-unity-web-first-stage.mjs');
 // 파일명: qa/company-unity-web-first-stage.test.mjs
 // 그래픽 · 실제 회사 3D OBJ 파생본이 Unity 프로젝트 리소스와 기존 게임 소비자까지 이어지는지 검사한다.
 // 마력숲 웹 · 공용 3D 자산/오토 바이옴/캐릭터/스킬 모션은 기존 유니티 게임 소스 안에서만 바인딩한다.
+test('Fantasy Survival Unity Web validates imported skinned action assets instead of inactive prefab AnimationState enumeration',()=>{
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const importer=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs','utf8');
+  assert.match(build,/UnityCompanyAssets\.Prepare\(\)/);
+  assert.match(build,/AssetDatabase\.FindAssets\("t:AnimationClip"/);
+  assert.match(build,/clipPath\.StartsWith\(clipPrefix,StringComparison\.Ordinal\)/);
+  assert.match(build,/clip!=null && clip\.legacy && !clip\.empty/);
+  assert.doesNotMatch(build,/foreach\(AnimationState state in actor\.GetComponent<Animation>\(\)\)/);
+  assert.match(build,/UNITY_COMPANY_GUARDIAN_ACTION_CLIP_MISSING/);
+  assert.match(build,/if\(clipCount<5\)throw new Exception\("UNITY_COMPANY_ACTOR_ACTION_COVERAGE_MISSING:/);
+  assert.match(importer,/var clip = new AnimationClip \{ name = source\.name, legacy = true/);
+  assert.match(importer,/AssetDatabase\.CreateAsset\(clip, clipPath\)/);
+});
+
 test('Fantasy Survival Web native 3D auto biome and real skill motion remain cosmetic-only',()=>{
   const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
   const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
