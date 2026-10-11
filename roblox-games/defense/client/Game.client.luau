@@ -6,6 +6,15 @@ local STUDIO_ASSET_BINDING_VERSION = 2
 local player = Players.LocalPlayer
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
+local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
+local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
+local verifiedExternalLearningPrinciples = verifiedExternalLearningContext.ApplicationPrinciples or {}
+local verifiedExternalGameDevelopmentPrinciples = verifiedExternalLearningContext.GameDevelopmentPrinciples or {}
+local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpecificSemanticMappings or {}
+local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
+
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 local foundationRemote = ReplicatedStorage:WaitForChild("RuntimeFoundationReport")
 local nativeTouchEnabled = UserInputService.TouchEnabled
@@ -21,6 +30,20 @@ end
 task.defer(reportNativeFoundationReady)
 
 local gui = Instance.new("ScreenGui")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_BEGIN
+gui:SetAttribute("VerifiedExternalLearningCoveragePct", verifiedExternalLearningContext.CoveragePct or 0)
+gui:SetAttribute("VerifiedExternalLearningContentComplete", verifiedExternalLearningContext.ContentComplete == true)
+gui:SetAttribute("VerifiedExternalLearningCount", #verifiedExternalLearningIds)
+gui:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedExternalLearningPrinciples)
+gui:SetAttribute("VerifiedExternalLearningFingerprint", verifiedExternalLearningContext.MemoryFingerprint or "")
+gui:SetAttribute("VerifiedExternalGameDevelopmentPrincipleCount", #verifiedExternalGameDevelopmentPrinciples)
+gui:SetAttribute("VerifiedExternalLearningSemanticMappingVersion", verifiedExternalLearningContext.SemanticMappingVersion or 0)
+gui:SetAttribute("VerifiedExternalLearningSemanticMappingFingerprint", verifiedExternalLearningContext.SemanticMappingFingerprint or "")
+gui:SetAttribute("VerifiedExternalLearningDispositionCount", #verifiedExternalLearningDispositions)
+gui:SetAttribute("VerifiedExternalLearningMappingCount", #verifiedExternalLearningMappings)
+gui:SetAttribute("VerifiedLearningSemanticVariant", verifiedExternalLearningContext.SemanticVariant or "")
+-- VERIFIED_EXTERNAL_LEARNING_CLIENT_RUNTIME_END
+
 gui.Name = "ApprovedScopeHud"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
@@ -178,7 +201,7 @@ local verifiedLearningContext = Config.VerifiedExternalLearning or Config.Learni
 local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples or {}
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
-local verifiedLearningRoot = root
+local verifiedLearningRoot = gui
 local verifiedLearningSemanticVariant = "DEFENSE_WAVE"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
 local verifiedLearningSemanticColor = Color3.fromRGB(255, 148, 74)

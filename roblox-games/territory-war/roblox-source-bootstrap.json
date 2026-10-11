@@ -124,11 +124,11 @@
   "verifiedExternalLearningRetrievedCount": 7,
   "verifiedExternalLearningAppliedCount": 7,
   "serverTouchedByVerifiedExternalLearningSweep": false,
-  "verifiedExternalLearningSweepAt": "2026-10-08T11:30:05.682Z",
+  "verifiedExternalLearningSweepAt": "2026-10-11T10:47:21.683Z",
   "semanticMappingVersion": 1,
-  "semanticMappingFingerprint": "1iey60i",
-  "semanticVariant": "OBJECTIVE_GOAL",
-  "coreKind": "OBJECTIVE",
+  "semanticMappingFingerprint": "16tau5r",
+  "semanticVariant": "DEFENSE_WAVE",
+  "coreKind": "DEFENSE",
   "gameSpecificSemanticMappings": [
     {
       "principleId": "compact-tactical-state-with-immediate-feedback",
@@ -136,7 +136,7 @@
       "sourceLearningIds": [
         "external-black-box-cavern-cravers-run-47"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-interaction",
       "domains": [
@@ -147,9 +147,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "CORE_GAMEPLAY_FEEL",
-      "mapping": "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.",
-      "implementation": "variant-specific action cue bound to LastApprovedScope",
-      "variant": "OBJECTIVE_GOAL",
+      "mapping": "Keep wave and placement state beside the active tower action and acknowledge the server-confirmed action immediately.",
+      "implementation": "variant-specific wave/base cue bound to LastApprovedScope",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
     },
     {
@@ -158,7 +158,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-ui",
       "domains": [
@@ -167,9 +167,9 @@
         "REWARD_AND_EVENT_PRESENTATION"
       ],
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep level, progression, and next-step context visible around the primary action.",
+      "mapping": "Keep wave, base and placement navigation visible beside the defense action.",
       "implementation": "persistent context cue uses existing Config.Actions and replicated player attributes",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
     },
     {
@@ -178,7 +178,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-progression-observation",
       "domains": [
@@ -187,9 +187,9 @@
         "VISIBLE_ACTION_FEEDBACK"
       ],
       "domain": "PROGRESSION_RISK_READABILITY",
-      "mapping": "Show level and risk context before the next action is committed.",
+      "mapping": "Show wave and base-health risk before tower placement is committed.",
       "implementation": "pre-action risk cue reads existing replicated state; it never grants authority",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
     },
     {
@@ -198,7 +198,7 @@
       "sourceLearningIds": [
         "external-black-box-luanti-run-10"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-3d-controls",
       "domains": [
@@ -210,7 +210,7 @@
       "domain": "PLAYER_INPUT_AND_TOUCH",
       "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
       "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
     },
     {
@@ -219,7 +219,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-mobile-ux",
       "domains": [
@@ -230,7 +230,7 @@
       "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
       "mapping": "Keep the core state visible while the game world remains readable.",
       "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
     },
     {
@@ -239,7 +239,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-input-feedback",
       "domains": [
@@ -251,7 +251,7 @@
       "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
       "mapping": "Show the player action transition immediately after input.",
       "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
     },
     {
@@ -260,7 +260,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-interaction-observation",
       "domains": [
@@ -271,7 +271,7 @@
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
       "mapping": "Keep contextual actions anchored beside the active game state.",
       "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
     },
     {
@@ -280,7 +280,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-feedback-observation",
       "domains": [
@@ -291,7 +291,7 @@
       "domain": "PLAYER_INPUT_AND_TOUCH",
       "mapping": "Anchor input feedback to the active game control.",
       "implementation": "control-local motion cue is separate from server authority and save state",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
     },
     {
@@ -300,7 +300,7 @@
       "sourceLearningIds": [
         "external-black-box-shattered-pixel-dungeon-run-4"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-onboarding-observation",
       "domains": [
@@ -311,7 +311,7 @@
       "domain": "CONTEXTUAL_ONBOARDING",
       "mapping": "Place the first-play instruction beside the first game action.",
       "implementation": "contextual instruction is rendered in the game-specific HUD variant",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
     }
   ],
@@ -374,7 +374,7 @@
       "sourceLearningIds": [
         "external-black-box-cavern-cravers-run-47"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-interaction",
       "domains": [
@@ -385,9 +385,9 @@
         "MOBILE_READABILITY_AND_RESPONSE"
       ],
       "domain": "CORE_GAMEPLAY_FEEL",
-      "mapping": "Keep the primary game state beside the active action and acknowledge the server-confirmed action immediately.",
-      "implementation": "variant-specific action cue bound to LastApprovedScope",
-      "variant": "OBJECTIVE_GOAL",
+      "mapping": "Keep wave and placement state beside the active tower action and acknowledge the server-confirmed action immediately.",
+      "implementation": "variant-specific wave/base cue bound to LastApprovedScope",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=compact-tactical-state-with-immediate-feedback; scope=mobile-rpg-interaction; lesson=The verified dungeon state presents a compact set of actionable gameplay choices, and a successful action immediately changes the visible board state in the same gameplay context.; apply=For a Roblox RPG, make bounded tactical actions produce prompt, legible state feedback without requiring the player to leave the core encounter view."
     },
     {
@@ -422,7 +422,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-rpg-ui",
       "domains": [
@@ -431,9 +431,9 @@
         "REWARD_AND_EVENT_PRESENTATION"
       ],
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
-      "mapping": "Keep level, progression, and next-step context visible around the primary action.",
+      "mapping": "Keep wave, base and placement navigation visible beside the defense action.",
       "implementation": "persistent context cue uses existing Config.Actions and replicated player attributes",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=persistent-primary-rpg-navigation; scope=mobile-rpg-ui; lesson=The verified gameplay state exposes persistent primary destinations such as skills, combat, home, quests and profile, allowing a player to move between major RPG systems without leaving the core game shell.; apply=For a Roblox RPG, keep high-frequency progression systems easy to reach and verify that each navigation action produces an immediate, legible state change."
     },
     {
@@ -442,7 +442,7 @@
       "sourceLearningIds": [
         "external-black-box-idle-fantasy-run-42"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-progression-observation",
       "domains": [
@@ -451,9 +451,9 @@
         "VISIBLE_ACTION_FEEDBACK"
       ],
       "domain": "PROGRESSION_RISK_READABILITY",
-      "mapping": "Show level and risk context before the next action is committed.",
+      "mapping": "Show wave and base-health risk before tower placement is committed.",
       "implementation": "pre-action risk cue reads existing replicated state; it never grants authority",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=danger-and-level-gating-visible-before-commitment; scope=rpg-progression-observation; lesson=The verified Combat screen shows dungeon names together with level requirements and visible danger guidance before a run is chosen.; apply=Expose progression requirements and risk cues before players commit to a dangerous activity, while independently validating the actual balance in the target game."
     },
     {
@@ -488,7 +488,7 @@
       "sourceLearningIds": [
         "external-black-box-luanti-run-10"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-3d-controls",
       "domains": [
@@ -500,7 +500,7 @@
       "domain": "PLAYER_INPUT_AND_TOUCH",
       "mapping": "Give spatial feedback at the moment the touch action is confirmed.",
       "implementation": "variant-specific camera or spatial cue follows LastApprovedScope",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=touch-look-produces-immediate-spatial-feedback; scope=mobile-3d-controls; lesson=A short horizontal touch gesture on the first-person play surface produced an immediate, clearly visible camera-orientation change while the movement and action HUD remained available.; apply=For Roblox mobile 3D controls, validate look gestures with before/after scene framing while preserving consistent movement and action affordances."
     },
     {
@@ -535,7 +535,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-mobile-ux",
       "domains": [
@@ -546,7 +546,7 @@
       "domain": "WORLD_AND_BACKGROUND_PRESENTATION",
       "mapping": "Keep the core state visible while the game world remains readable.",
       "implementation": "world-view cue reuses the existing HUD state and does not replace the game camera",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=persistent-core-state-around-world-view; scope=rpg-mobile-ux; lesson=The verified gameplay view keeps the world map, player marker, health readout, inventory access and primary action controls visible together, reducing context switching during basic play.; apply=For a Roblox RPG, keep essential player state and high-frequency actions legible around the core world view without copying this game's visual design."
     },
     {
@@ -555,7 +555,7 @@
       "sourceLearningIds": [
         "external-black-box-revengate-run-59"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "rpg-input-feedback",
       "domains": [
@@ -567,7 +567,7 @@
       "domain": "CHARACTER_NPC_CREATURE_ANIMATION",
       "mapping": "Show the player action transition immediately after input.",
       "implementation": "variant-specific motion response is client feedback only and follows authoritative state",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=movement-needs-immediate-visible-response; scope=rpg-input-feedback; lesson=A bounded gameplay input produced an immediate visible player-position change in the same world view.; apply=For mobile Roblox RPG movement, bind successful input to prompt and unambiguous world-state feedback, then validate it with semantic before and after frames."
     },
     {
@@ -589,7 +589,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-interaction-observation",
       "domains": [
@@ -600,7 +600,7 @@
       "domain": "HUD_AND_CONTEXTUAL_GUIDANCE",
       "mapping": "Keep contextual actions anchored beside the active game state.",
       "implementation": "touch-sized contextual buttons remain bound to existing RemoteEvent action ids",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=persistent-contextual-action-controls; scope=mobile-interaction-observation; lesson=The verified puzzle state keeps the numeric action controls visible beside the active play surface so the next valid interaction is immediately available without reopening a separate menu.; apply=When appropriate for a Roblox mobile interaction, keep the small set of context-relevant actions directly available near the active gameplay state instead of adding unnecessary navigation layers."
     },
     {
@@ -609,7 +609,7 @@
       "sourceLearningIds": [
         "external-black-box-sgtpuzzles-run-29"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-feedback-observation",
       "domains": [
@@ -620,7 +620,7 @@
       "domain": "PLAYER_INPUT_AND_TOUCH",
       "mapping": "Anchor input feedback to the active game control.",
       "implementation": "control-local motion cue is separate from server authority and save state",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=immediate-spatially-anchored-input-feedback; scope=mobile-feedback-observation; lesson=The exercised input produces an immediate visible value change in the affected board cell, making the result of the touch easy to associate with the selected target.; apply=For Roblox mobile controls, prefer visible feedback at or near the affected gameplay object so the user can confirm that the touch produced the intended state change."
     },
     {
@@ -655,7 +655,7 @@
       "sourceLearningIds": [
         "external-black-box-shattered-pixel-dungeon-run-4"
       ],
-      "coreKind": "OBJECTIVE",
+      "coreKind": "DEFENSE",
       "disposition": "APPLIED_GAME_SOURCE",
       "scope": "mobile-onboarding-observation",
       "domains": [
@@ -666,7 +666,7 @@
       "domain": "CONTEXTUAL_ONBOARDING",
       "mapping": "Place the first-play instruction beside the first game action.",
       "implementation": "contextual instruction is rendered in the game-specific HUD variant",
-      "variant": "OBJECTIVE_GOAL",
+      "variant": "DEFENSE_WAVE",
       "raw": "id=touch-instruction-near-first-play-state; scope=mobile-onboarding-observation; lesson=The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.; apply=For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
     },
     {
