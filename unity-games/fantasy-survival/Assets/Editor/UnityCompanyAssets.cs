@@ -129,8 +129,6 @@ internal static class UnityCompanyAssets
         mesh.SetVertices(vertices);
         mesh.SetNormals(normals);
         mesh.SetUVs(0, uv);
-        // 렌더링 · GLB 노멀/UV를 이용한 조명 접선은 메시 생성 시 한 번만 계산한다.
-        mesh.RecalculateTangents();
         mesh.boneWeights = weights.ToArray();
         Skin skin = doc.skins[0];
         var bindposes = new Matrix4x4[skin.joints.Length];
@@ -152,6 +150,8 @@ internal static class UnityCompanyAssets
         mesh.bindposes = bindposes;
         mesh.subMeshCount = groups.Count;
         for (int i = 0; i < groups.Count; i++) mesh.SetTriangles(groups[i], i, false);
+        // 렌더링 · 전체 서브메시 삼각형이 설정된 뒤 접선을 생성한다.
+        mesh.RecalculateTangents();
         mesh.RecalculateBounds();
         if (mesh.vertexCount < 100 || mesh.boneWeights.Length != mesh.vertexCount)
             throw new Exception("UNITY_COMPANY_ACTOR_GEOMETRY_OR_WEIGHTS_INVALID:" + key);
