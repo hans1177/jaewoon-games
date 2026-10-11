@@ -852,3 +852,22 @@ test('source-only Unity Web boot fails cheap F0 before Unity editor and preserve
     assert.doesNotMatch(verifiedSource,/UNITY_WEB_RUNTIME=PASS/);
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
+
+ 
+// [유니티 웹 자동 배포 회귀] 수동 입력값 때문에 성공한 빌드가 배포 없이 종료되지 않게 한다.
+test('Unity Web verified builds automatically enter the existing reviewed Cloudflare deployment sequence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  const start=workflow.indexOf('      - name: Publish every verified Unity Web build via reviewed PR');
+  const end=workflow.indexOf('      - name: Mark Unity Web floor repair requirement',start);
+  assert.ok(start>0&&end>start,'the existing verified build publication stage must remain in the canonical workflow');
+  const publish=workflow.slice(start,end);
+  assert.match(publish,/if: steps\.readiness\.outcome == 'success'/);
+  assert.doesNotMatch(publish,/github\.event_name == 'push' \|\| inputs\.publish_to_main/,'manual and workflow_call builds must not silently skip reviewed publication');
+  assert.match(publish,/UNITY_WEB_SOURCE_SUPERSEDED_BY_NEW_MAIN_REBUILD_REQUIRED/,'do not deploy stale Unity source');
+  assert.match(publish,/gh pr create --repo/,'reviewed PR remains required');
+  assert.match(publish,/UNITY_WEB_CLOUDFLARE_PREVIEW=/,'Cloudflare preview proof remains required');
+  assert.match(publish,/gh pr merge "\$pr_url"/,'reuse existing automatic main promotion');
+  assert.match(publish,/UNITY_WEB_CLOUDFLARE_MAIN=/,'actual main deployment remains required');
+  assert.match(publish,/UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=PASS/,'mobile gameplay validation remains required');
+  assert.match(workflow,/repair-vibe2:/,'failed build and deployment continue through existing causal repair');
+});
