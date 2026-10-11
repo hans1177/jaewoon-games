@@ -389,7 +389,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private int nextId = 1, selectedMonsterId = -1, aggroMonsterId = -1;
     private int selectedSpeciesIndex, spawnCount = 1, speciesPage, craftPage;
     private string spawnCountText = "1", equippedWeapon = "", info = "";
-    private Vector2 moveFromButtons, craftScroll;
+    private Vector2 moveFromButtons, craftScroll, bagScroll;
     private float lastTapTime, touchStartTime;
     private int lastTapId = -1, pointerMonsterId = -1, pointerBlockId = -1;
     private bool holdTriggered, pointerActive;
@@ -1810,14 +1810,35 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         else if(panel==Panel.Bag)
         {
-            GUILayout.Label("장착 무기: "+(equippedWeapon==""?"맨손":equippedWeapon));
+            // UI · 기존 장비/재료/제작 데이터를 회사 공용 패널·슬롯 스타일로 표시한다.
+            // 표시만 확장하며 장착·소비·보상·저장 규칙은 바꾸지 않는다.
+            Recipe equipped=recipes.Find(r=>r.id==equippedWeapon && r.kind=="weapon");
+            GUILayout.Box("장착 무기   "+(equipped==null?"맨손":equipped.name),GUILayout.Height(44));
             if(creative)
             {
-                GUILayout.Label("몬스터 스폰 블록 ×무제한");
+                GUILayout.Box("몬스터 스폰 블록   무제한",GUILayout.Height(38));
                 if(GUILayout.Button("몬스터 스폰 블록 설치",GUILayout.Height(52))){placingBlock=true;panel=Panel.None;info="설치할 땅을 눌러."; }
             }
-            else GUILayout.Label("나무 "+materials["wood"]+" · 돌 "+materials["stone"]+" · 섬유 "+materials["fiber"]);
-            GUILayout.Label("제작 완료 "+crafted.Count+"개");
+            else
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Box("나무\n"+materials["wood"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.Box("돌\n"+materials["stone"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.Box("섬유\n"+materials["fiber"],GUILayout.MinHeight(58),GUILayout.ExpandWidth(true));
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Label("제작한 아이템 "+crafted.Count+"개");
+            bagScroll=GUILayout.BeginScrollView(bagScroll,GUILayout.Height(Mathf.Max(95f,rect.height*.34f)));
+            int lastIndex=Mathf.Max(0,crafted.Count-80);
+            for(int i=crafted.Count-1;i>=lastIndex;i--)
+            {
+                Recipe item=recipes.Find(r=>r.id==crafted[i]);
+                if(item==null)continue;
+                string label=(crafted[i]==equippedWeapon?"[장착] ":"")
+                    +item.name+"   "+item.kind;
+                GUILayout.Box(label,GUILayout.Height(40));
+            }
+            GUILayout.EndScrollView();
         }
         else if(panel==Panel.Craft)
         {
