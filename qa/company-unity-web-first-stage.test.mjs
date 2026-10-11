@@ -42,13 +42,42 @@ test('Fantasy Survival Web native 3D auto biome and real skill motion remain cos
   assert.match(game,/MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS/,'five true native 3D biomes are built');
   assert.match(game,/surface\.AddComponent<MeshFilter>\(\)\.sharedMesh=mesh/,'3D ground surfaces have real mesh data');
   assert.match(game,/string\[\] biomeNames=\{"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"\}/);
-  assert.match(game,/BindCompanyVisual\("MagicForestTraveler"/,'player uses real skinned source');
+  assert.match(game,/BindCompanyVisual\("MagicForestGuardian"/,'player uses the 3D guardian skinned model');
   assert.match(game,/monster\.nativeMotion=rigVisual\.GetComponent<Animation>\(\)/,'monsters use native rig action clips');
   assert.match(game,/ParticleSystemStopAction\.Destroy/,'skill hit particles have bounded lifetimes');
   assert.match(game,/trail\.time=\.30f/,'homing projectiles have visible 3D motion trails');
   assert.match(game,/StyleHomingProjectile\(sphere,sand\)/,'spell VFX is applied to the actual projectile');
   assert.match(game,/target\.hp=Mathf\.Max\(0f,target\.hp-Mathf\.Max\(0f,damage\)\)/,'existing damage logic unchanged');
   assert.match(game,/private const string SavePrefix = "fantasy_survival_webfloor_"/,'save namespace remains stable');
+});
+
+// 캐릭터 · 실제 공용 GLB 본·애니메이션과 교체된 Unity 3D 플레이어 생성 경로 검증.
+test('Fantasy Survival replaces primitive avatar with actual guardian native skinned rig',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const importer=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs','utf8');
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const glb=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/MagicForestGuardian.bytes');
+  assert.equal(glb.toString('ascii',0,4),'glTF','character source must be native 3D GLB');
+  assert.equal(glb.readUInt32LE(4),2,'native character GLB version required');
+  const jsonLength=glb.readUInt32LE(12);
+  const model=JSON.parse(glb.subarray(20,20+jsonLength).toString('utf8'));
+  assert.ok(model.meshes?.[0]?.primitives?.length>=1,'character must have real mesh');
+  assert.ok(model.skins?.[0]?.joints?.length>=3,'character must have a real bone rig');
+  assert.ok(model.nodes?.some(node=>node.name==='WeaponGrip'),'existing weapon attaches to the model');
+  for(const clip of ['IDLE_BREATH','RUN','ATTACK_LIGHT_SLASH','ATTACK_HEAVY','HIT_FRONT','GUARDIAN_REVIVE','GUARDIAN_PARRY'])
+    assert.ok(model.animations?.some(action=>action.name===clip),'missing real guardian action '+clip);
+  assert.match(importer,/"Traveler", "Rogue", "Guardian"/,'original common importer must prepare real guardian prefab');
+  assert.match(build,/UnityCompanyAssets\.Prepare\(\)/,'original WebGL build consumes the imported model');
+  assert.match(game,/MAGIC_FOREST_PLAYER_GUARDIAN_SKIN_OR_MOTION_INVALID/,'cannot fall back to primitive actor');
+  assert.match(game,/playerWeaponGrip=bone/,'weapon remains bound to actual rig');
+  const actorStart=game.indexOf('GameObject character = new GameObject("Player_3D")');
+  const actorEnd=game.indexOf('FollowCamera(true);',actorStart);
+  assert.ok(actorStart>=0&&actorEnd>actorStart);
+  const playerBlock=game.slice(actorStart,actorEnd);
+  assert.match(playerBlock,/BindCompanyVisual\("MagicForestGuardian"/);
+  assert.doesNotMatch(playerBlock,/CreatePart\(/,'no placeholder capsule player remains');
+  assert.doesNotMatch(playerBlock,/MagicForestTraveler/,'old traveler model cannot appear as the player');
+  assert.match(game,/private const string SavePrefix = "fantasy_survival_webfloor_"/,'save keys are unchanged');
 });
 
 test('Fantasy Survival reauthored company 3D tree assets reach the canonical Unity Web build and preserve harvest collision',()=>{
@@ -283,7 +312,7 @@ test('Fantasy Survival Unity Web uses real shared library meshes, UI and action 
   assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestMotion"\)/);
   assert.match(game,/BindCompanyVisual\("MagicForestRock"/);
   assert.match(game,/BindCompanyVisual\("MagicForestRoad"/);
-  assert.match(game,/BindCompanyVisual\("MagicForestTorso"/);
+  assert.match(game,/BindCompanyVisual\("MagicForestGuardian"/);
   assert.match(game,/SyncPlayerWeaponVisual\(\)/);
   assert.match(game,/AnimatePlayerPresentation\(movement\.magnitude\)/);
   assert.match(game,/AnimateMonsterPresentation\(m,presentationWalking\)/);
