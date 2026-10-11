@@ -3,6 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 
 const source=fs.readFileSync(new URL('../tools/company-unity-web-gameplay-validation.mjs',import.meta.url),'utf8');
 
@@ -572,4 +573,70 @@ test('stalled browser frame sampling fails with a bounded causal signature and c
   assert.match(source,/observedRuntimeFailure:true/);
   assert.match(source,/playableBrowserTest:false/);
   assert.match(source,/throw error;/);
+});
+
+
+test('Unity Web real browser QA bounds hung WebGL operations and emits fail-closed stage evidence',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const start=source.indexOf('const qaDeadline=setTimeout(');
+  const end=source.indexOf('qaDeadline.unref()',start);
+  assert.ok(start>0&&end>start,'the real browser QA must own its hard deadline');
+  const deadline=source.slice(start,end);
+  const minutes=Number(source.match(/const qaDeadlineMs=(\d+)\*60\*1000/)?.[1]);
+  assert.equal(minutes,8);
+  assert.match(workflow,/Run Unity Web actual browser play\n\s*timeout-minutes: 10/);
+  assert.match(deadline,/UNITY_WEB_QA_DEADLINE_EXCEEDED/);
+  assert.match(deadline,/observedRuntimeFailure:true/);
+  assert.match(deadline,/pass:false,playableBrowserTest:false/);
+  assert.match(deadline,/failureStage:'UNITY_WEB_ACTUAL_BROWSER_'/);
+  assert.match(deadline,/fs\.writeFileSync\(output,JSON\.stringify\(failureEvidence,null,2\)\+'\\n'\)/);
+  assert.match(deadline,/process\.exit\(124\)/);
+  assert.match(source,/qaStage='WEBGL_BOOT'/);
+  assert.match(source,/qaStage='GAMEPLAY_TOUCH_AND_ACTION'/);
+  assert.match(source,/qaStage='LIVE_CANVAS_VISUAL_QA'/);
+  assert.match(source,/qaStage='SAVE_RESTORE_AND_REENTRY'/);
+  assert.match(source,/qaStage='BROWSER_CLOSE'/);
+  assert.match(source,/qaStage='HTTP_SERVER_CLOSE'/);
+  assert.match(source,/server\.closeAllConnections\(\)/);
+  assert.match(source,/clearTimeout\(qaDeadline\)/);
+  assert.match(source,/throw new Error\('UNITY_WEB_QA_FRAME_PACING_FAILED:'/);
+  assert.match(source,/UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED/);
+});
+
+
+test('Unity Web QA deadline writes causal failure evidence even after a stuck browser has staged evidence',()=>{
+  const start=source.indexOf('const qaDeadline=setTimeout(');
+  const end=source.indexOf('qaDeadline.unref()',start);
+  assert.ok(start>=0&&end>start);
+  let scheduled=null,duration=null,received=null;
+  const scenarioId='actual-play',qaStage='SAVE_RESTORE_AND_REENTRY',gameId='qa-test-game';
+  const stageBeforeTimeout={version:2,pass:true,gameId};
+  received=stageBeforeTimeout;
+  const scope={
+    qaDeadlineMs:8*60*1000,scenarioId,qaStage,gameId,output:'/tmp/unity-web-test.json',
+    markers:['JAEWOON_UNITY_WEB_QA BOOT game=qa-test-game status=PASS'],
+    consoleErrors:[],pageErrors:[],failedRequests:[],
+    setTimeout:(fn,ms)=>{scheduled=fn;duration=ms;return{unref(){}};},
+    fs:{
+      mkdirSync(){},
+      writeFileSync(file,body){
+        assert.equal(file,'/tmp/unity-web-test.json');
+        received=JSON.parse(body);
+      }
+    },
+    path:{dirname:()=>'/tmp'},
+    process:{exit(code){throw new Error('QA_DEADLINE_EXIT:'+code);}},
+    console:{error(){}}
+  };
+  runInNewContext(source.slice(start,end+'qaDeadline.unref()'.length),scope);
+  assert.equal(duration,480000);
+  assert.equal(typeof scheduled,'function');
+  assert.throws(()=>scheduled(),/QA_DEADLINE_EXIT:124/);
+  assert.equal(received.pass,false);
+  assert.equal(received.playableBrowserTest,false);
+  assert.equal(received.observedRuntimeFailure,true);
+  assert.equal(received.gameId,gameId);
+  assert.equal(received.failureStage,'UNITY_WEB_ACTUAL_BROWSER_ACTUAL_PLAY');
+  assert.equal(received.failureSignature,'UNITY_WEB_QA_DEADLINE_EXCEEDED:actual-play:SAVE_RESTORE_AND_REENTRY:480000');
+  assert.equal(received.markers.length,1);
 });
