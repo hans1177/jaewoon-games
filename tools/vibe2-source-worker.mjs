@@ -550,7 +550,11 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           ||clean(argument('--library-source-sha256')).toLowerCase()!==expected)
           throw new Error('NATIVE_DCC_LIBRARY_PARENT_CONTRACT_INVALID:'+clean(recipe.id));
         const full=path.resolve(cwd,model);
-        const assetsRoot=fs.realpathSync(path.join(cwd,'assets'));
+        const assetsDirectory=path.join(cwd,'assets');
+        const assetsRoot=fs.realpathSync(assetsDirectory);
+        if(fs.lstatSync(assetsDirectory).isSymbolicLink()
+          ||!assetsRoot.startsWith(fs.realpathSync(cwd)+path.sep))
+          throw new Error('NATIVE_DCC_LIBRARY_SOURCE_ROOT_INVALID:'+clean(recipe.id));
         if(!fs.existsSync(full)||!fs.statSync(full).isFile()
           ||fs.lstatSync(full).isSymbolicLink()
           ||!fs.realpathSync(full).startsWith(assetsRoot+path.sep)
