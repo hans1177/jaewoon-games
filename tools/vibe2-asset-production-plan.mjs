@@ -1136,6 +1136,11 @@ const ASSET_DOMAIN_TO_FAMILIES=Object.freeze({
   PRESENTATION:Object.freeze(['UI','VFX','AUDIO'])
 });
 const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
+  // 캐릭터·액션·스킬·모션을 기존 게임의 실제 시각 수요로 해석한다. 게임 규칙에는 관여하지 않는다.
+  Object.freeze({re:/(?:character|avatar|humanoid|hero|npc|캐릭터|케릭터|플레이어|주인공|동료)/i,families:Object.freeze(['CHARACTER','MOTION'])}),
+  Object.freeze({re:/(?:skill|spell|ability|casting|스킬|마법|주문|시전|특수기)/i,families:Object.freeze(['SKILL','MOTION','VFX','AUDIO'])}),
+  Object.freeze({re:/(?:action|combo|dodge|dash|parry|액션|콤보|회피|구르기|돌진|패링|막기)/i,families:Object.freeze(['MOTION','VFX'])}),
+  Object.freeze({re:/(?:motion|animat|모션|애니메이션|동작|걷기|달리기|점프|피격|사망)/i,families:Object.freeze(['MOTION'])}),
   Object.freeze({re:/(?:monster|enemy|creature|몬스터|적|몹|생물)/i,families:Object.freeze(['CREATURE','MOTION','VFX','AUDIO'])}),
   Object.freeze({re:/(?:boss|보스)/i,families:Object.freeze(['CREATURE','MOTION','SKILL','VFX','AUDIO'])}),
   Object.freeze({re:/(?:combat|attack|hit|battle|전투|공격|타격|피격)/i,families:Object.freeze(['WEAPON','MOTION','VFX','AUDIO'])}),
@@ -1144,6 +1149,15 @@ const ASSET_REQUIREMENT_FAMILY_RULES=Object.freeze([
   Object.freeze({re:/(?:explor|adventure|탐험|탐색)/i,families:Object.freeze(['ENVIRONMENT','BUILDING','PROP','VFX','AUDIO'])}),
   Object.freeze({re:/(?:ui|hud|menu|interface|버튼|메뉴|인벤토리|인터페이스)/i,families:Object.freeze(['UI','AUDIO','MOTION'])})
 ]);
+// 역할명이 없는 일반 요청에서도 호환되는 등록 자산을 먼저 재사용한다.
+// 요구사항에 구체적 역할이 있으면 이 일반 매칭은 사용하지 않는다.
+const ASSET_GENERIC_DEMAND_TERMS=Object.freeze({
+  CHARACTER:Object.freeze(['character','avatar','humanoid','캐릭터','케릭터','플레이어','주인공']),
+  MOTION:Object.freeze(['motion','animation','action','모션','애니메이션','액션']),
+  SKILL:Object.freeze(['skill','spell','ability','스킬','마법','특수기']),
+  VFX:Object.freeze(['vfx','effect','이펙트','효과','스킬','액션']),
+  AUDIO:Object.freeze(['audio','sound','효과음','사운드'])
+});
 function assetRuntimeConsumerVerified(asset={}){
   const state=clean(asset.runtimeVerificationState).toUpperCase();
   return asset.productionVerified===true
@@ -1188,6 +1202,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const roleEvidenceById=new Map(),unresolvedFamilies=new Set();
   const requestedRolesByFamily=new Map(requiredFamilies.map(family=>[family,unique((requirements||[]).filter(row=>clean(row?.family).toUpperCase()===family).flatMap(row=>[row.role,row.assetRole,row.systemRole,...(Array.isArray(row.roles)?row.roles:[])])).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))]));
   const requestText=clean(request).toLowerCase();
+  const genericFamilyDemand=new Set(Object.entries(ASSET_GENERIC_DEMAND_TERMS)
+    .filter(([,terms])=>terms.some(term=>requestText.includes(term))).map(([family])=>family));
   // 기존 원장만 조회한다. 소스 선정은 후보 계획이며 다운/변형/등록은 기존 ASSET_DEVELOPMENT에서 한다.
   const externalSources=Array.isArray(registry?.externalSources)?registry.externalSources:[];
   const platform=clean(target).toUpperCase();
@@ -1241,7 +1257,9 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const inferred=roles.filter(role=>role.length>=3&&role!==family.toLowerCase()&&requestText.includes(role.replaceAll('_',' ')));
     const matched=required.length?explicit:inferred;
     const bound=currentAssetConsumerIds(asset).includes(id);
-    const evidence={requestedRoles:required,matchedRoles:matched,currentSourceBound:bound,verifiedRoleMatch:matched.length>0||bound};
+    const generalFamilyRequest=required.length===0&&genericFamilyDemand.has(family);
+    const evidence={requestedRoles:required,matchedRoles:matched,currentSourceBound:bound,
+      genericFamilyRequest:generalFamilyRequest,verifiedRoleMatch:matched.length>0||bound||generalFamilyRequest};
     roleEvidenceById.set(clean(asset.id),evidence);
     return evidence;
   };
