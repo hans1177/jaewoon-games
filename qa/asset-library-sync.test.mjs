@@ -1,7 +1,9 @@
+// 파일명: qa/asset-library-sync.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {createHash} from 'node:crypto';
 
 test('asset homepage automatically publishes new entries, preserves selection, excludes retired previews and recovers from outage',async()=>{
  const elements=new Map(),intervals=[],listeners={},requests=[];
@@ -582,4 +584,54 @@ test('canonical asset library previews actual local skinned GLB and animation cl
     assert.notEqual(record.productionVerified,true);
   }
   assert.match(library,/런타임|검증/);
+});
+
+test('license-verified 3D game assets remain prepared until real native runtime QA',()=>{
+  // 메인: 기존 중앙 라이브러리의 실제 바이너리와 라이선스·원본 해시를 교차검증한다.
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const ledger=JSON.parse(fs.readFileSync('assets/asset-license-ledger.json','utf8'));
+  const models=registry.assets.filter(row=>/^(cc0-kaykit|cc0-cc0tree)-/.test(String(row.id||'')));
+  const evidence=new Map(ledger.entries.map(row=>[row.id,row]));
+  assert.equal(models.length,38);
+  assert.equal(models.filter(row=>String(row.path).endsWith('.glb')).length,26);
+  assert.equal(models.filter(row=>String(row.path).endsWith('.fbx')).length,12);
+  assert.equal(evidence.size,38);
+  assert.equal(registry.externalSources.find(row=>row.id==='meshy-public-community-cc0')?.acquisitionState,
+    'NOT_DOWNLOADED_ACCOUNT_REQUIRED');
+  for(const row of models){
+    const local=String(row.path||'').replace(/^\//,'');
+    assert.match(local,/^assets\/shared\/free3d\/[a-z0-9-]+\.(glb|fbx)$/);
+    const bytes=fs.readFileSync(local);
+    assert.ok(bytes.length>1024,row.id);
+    const sha=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+    assert.equal(sha,row.sourceProvenance?.sourceGitBlobSha,row.id+': raw source hash');
+    assert.equal(sha,evidence.get(row.id)?.sourceBlobSha,row.id+': license ledger hash');
+    assert.equal(row.sourceBytes,bytes.length,row.id+': source length');
+    assert.equal(row.license,'CC0',row.id);
+    assert.equal(evidence.get(row.id)?.license,'CC0-1.0',row.id);
+    assert.equal(evidence.get(row.id)?.commercialUse,true,row.id);
+    assert.equal(evidence.get(row.id)?.modificationUse,true,row.id);
+    assert.equal(evidence.get(row.id)?.redistributionUse,true,row.id);
+    assert.equal(row.sourceProvenance?.originalAssetImmutable,true,row.id);
+    assert.ok(fs.readFileSync(row.sourceProvenance.licenseSnapshot,'utf8').includes('CC0'),row.id);
+    assert.notEqual(row.productionVerified,true,row.id);
+    assert.notEqual(row.nativeRuntimeVerified,true,row.id);
+    assert.notEqual(row.verifiedCompanyReusable,true,row.id);
+    if(local.endsWith('.glb')){
+      assert.equal(bytes.subarray(0,4).toString(),'glTF',row.id);
+      assert.equal(bytes.readUInt32LE(4),2,row.id);
+      assert.equal(bytes.readUInt32LE(8),bytes.length,row.id);
+      assert.equal(bytes.subarray(16,20).toString(),'JSON',row.id);
+      const jsonLength=bytes.readUInt32LE(12);
+      assert.ok(jsonLength>0&&jsonLength+20<=bytes.length,row.id);
+      const scene=JSON.parse(bytes.subarray(20,20+jsonLength).toString('utf8'));
+      assert.equal(scene.asset?.version,'2.0',row.id);
+      assert.ok(Array.isArray(scene.meshes)&&scene.meshes.some(mesh=>mesh.primitives?.length>0),row.id);
+    }else{
+      assert.ok(bytes.subarray(0,24).toString('utf8').startsWith('Kaydara FBX Binary'),row.id);
+    }
+  }
+  const viewer=fs.readFileSync('assets/asset-library.js','utf8');
+  assert.match(viewer,/nativeGLB=value.*free3d/);
+  assert.match(viewer,/\^\\\/assets\\\/shared/);
 });

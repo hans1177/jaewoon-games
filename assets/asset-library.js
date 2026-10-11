@@ -18,7 +18,8 @@ let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-
 const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
-const nativeGLB=value=>typeof value==='string'&&/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(value)?value:'';
+// 메인: 검증 가능한 원본 공유 폴더와 CC0 공용 3D 자료 하위 폴더만 직접 프리뷰한다.
+const nativeGLB=value=>typeof value==='string'&&/^\/assets\/shared\/(?:free3d\/)?[a-z0-9-]+\.glb$/.test(value)?value:'';
 let nativeClip='';
 function nativeClipName(name){
  const key=String(name).toLowerCase();
