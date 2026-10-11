@@ -912,7 +912,8 @@ test('Unity Web actual play supplies boot proof without a duplicate browser smok
   assert.match(web,/UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED/);
   assert.match(web,/checks\.some\(e=>e\.playableBrowserTest!==true\|\|e\.boot\?\.pass!==true\)/);
   assert.match(web,/UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE/);
-  assert.match(web,/const checks=\[play,independent,regression\];/);
+  assert.match(web,/const checks=scenarios\.map\(\(\[scenario,file\]\)=>\{/);
+  assert.match(web,/const \[play,independent,regression\]=checks;/);
   assert.match(web,/bootSmoke:'PASS'/);
   assert.match(web,/Run Unity Web actual browser play/);
 });
