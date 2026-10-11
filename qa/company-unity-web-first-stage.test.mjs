@@ -977,6 +977,10 @@ test('Fantasy Survival WebGL preserves native colliders and persisted guardian a
   assert.ok(importer.includes('AnimationUtility.GetAnimationClips(persisted)'));
   assert.ok(importer.includes('UNITY_COMPANY_PERSISTED_ACTION_CLIP_MISSING'));
   assert.ok(nativeGame.includes('MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING'));
+  assert.ok(nativeGame.includes('Resources.Load<AnimationClip>("CompanyAssets/MagicForestGuardian_"+action)'));
+  assert.ok(nativeGame.includes('playerNativeMotion.AddClip(clip,action)'));
+  assert.ok(nativeGame.includes('clip==null || !clip.legacy || clip.empty'));
+  assert.ok(nativeGame.includes('MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_BINDING_FAILED:'));
   assert.ok(nativeGame.includes('GameObject.CreatePrimitive(primitive)'));
 });
 

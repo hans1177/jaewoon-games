@@ -1960,9 +1960,11 @@ test('candidate result workflows use direct repository-dispatch refill instead o
 
 
 // 메인 · 같은 리비전의 아직 시작하지 않은 게임 호출만 기존 큐에 유지한다.
-test('24H preplan deduplicates queued same-main game-primary wake without cross-game cancellation',()=>{
+test('24H preplan deduplicates queued same-main production wakes without cross-lane cancellation',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-  const start=workflow.indexOf('          queued_exact_wake="$(CURRENT_MAIN_SHA=');
+  for(const lane of ['game-primary','asset-development']){
+  const variable=lane==='game-primary'?'queued_exact_wake':'queued_asset_wake';
+  const start=workflow.indexOf('          '+variable+'="$(CURRENT_MAIN_SHA=');
   const a=workflow.indexOf("          const fs=require('fs');",start);
   const b=workflow.indexOf('\n          NODE',a);
   assert.ok(start>0&&a>start&&b>a);
@@ -1985,7 +1987,7 @@ test('24H preplan deduplicates queued same-main game-primary wake without cross-
   const main='f'.repeat(40),previous='a'.repeat(40);
   const wake={id:751,path:'.github/workflows/vibe2-continuous-core.yml',
     event:'workflow_dispatch',head_sha:main,status:'queued',
-    display_title:'Vibe2 Continuous Core · workflow_dispatch · game-primary'};
+    display_title:'Vibe2 Continuous Core · workflow_dispatch · '+lane};
   assert.equal(evaluate([wake],main),'751');
   assert.equal(evaluate([{...wake,status:'pending'}],main),'751');
   assert.equal(evaluate([{...wake,status:'requested'}],main),'751');
@@ -1994,11 +1996,16 @@ test('24H preplan deduplicates queued same-main game-primary wake without cross-
   assert.equal(evaluate([{...wake,head_sha:previous}],main),'');
   assert.equal(evaluate([{...wake,event:'push'}],main),'');
   assert.equal(evaluate([{...wake,path:'.github/workflows/vibe2-recovery-fast.yml'}],main),'');
-  assert.equal(evaluate([{...wake,display_title:'Vibe2 Continuous Core · workflow_dispatch · asset-development'}],main),'');
+  assert.equal(evaluate([{...wake,display_title:'Vibe2 Continuous Core · workflow_dispatch · '+(lane==='game-primary'?'asset-development':'game-primary')}],main),'');
   assert.equal(evaluate([{...wake,head_sha:previous},wake],main),'751');
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
   assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
+  }
+  assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
+  const assetStart=workflow.indexOf('          queued_asset_wake=');
+  const assetEnd=workflow.indexOf('          if [ "$game_queued"',assetStart);
+  assert.equal(workflow.slice(assetStart,assetEnd).includes('exit 0'),false,'asset wake reuse must not suppress independent game dispatch');
 });
 
 test('24H plan uses optimistic writes while reserve stays lightweight and fan-in stays run-unique',()=>{

@@ -235,7 +235,26 @@ jobs:
           echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_ACTIVE=$asset_active"
           echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_FREE_SLOTS=$asset_free"
 
-          if [ "$asset_queued" -gt 0 ] && [ "$asset_free" -gt 0 ]; then
+          current_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha' 2>/dev/null || true)"
+          queued_asset_wake=''
+          if [[ "$preplan_pressure" =~ ^[0-9]+$ && "$current_main_sha" =~ ^[a-f0-9]{40}$ ]]; then
+            queued_asset_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
+          const fs=require('fs');
+          const snapshot=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
+          const queued=new Set(['queued','pending','requested']);
+          const wake=(snapshot.workflow_runs||[]).find(run=>
+            run.path==='.github/workflows/vibe2-continuous-core.yml'
+            &&run.event==='workflow_dispatch'
+            &&run.head_sha===process.env.CURRENT_MAIN_SHA
+            &&queued.has(String(run.status||'').toLowerCase())
+            &&run.display_title==='Vibe2 Continuous Core · workflow_dispatch · asset-development');
+          process.stdout.write(wake?String(wake.id):'');
+          NODE
+            )"
+          fi
+          if [[ "$queued_asset_wake" =~ ^[0-9]+$ ]]; then
+            echo "VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=COALESCED_QUEUED_EXACT_MAIN:$queued_asset_wake:$current_main_sha"
+          elif [ "$asset_queued" -gt 0 ] && [ "$asset_free" -gt 0 ]; then
             burst_max="${VIBE2_ASSET_PRIORITY_BURST_MAX:-8}"
             asset_burst="$asset_free"
             if [ "$asset_burst" -gt "$asset_queued" ]; then asset_burst="$asset_queued"; fi
@@ -262,7 +281,6 @@ jobs:
 
           # 메인 · 아직 시작하지 않은 정확히 같은 main의 GAME_PRIMARY 호출만 재사용한다.
           # 다른 SHA·실행 중 작업·자산 작업은 유지하고, 조회 실패 때는 기존 호출을 진행한다.
-          current_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha' 2>/dev/null || true)"
           if [[ "$preplan_pressure" =~ ^[0-9]+$ && "$current_main_sha" =~ ^[a-f0-9]{40}$ ]]; then
             queued_exact_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
           const fs=require('fs');
