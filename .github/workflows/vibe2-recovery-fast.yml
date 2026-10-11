@@ -117,42 +117,42 @@ jobs:
               # Extract only bounded diagnostic classifications and tracked source paths.
               # Raw build logs are never written to the recovery queue or uploaded as artifacts.
               node --input-type=module <<'NODE'
-              import fs from 'node:fs';
-              const file='/tmp/vibe2-recovery-fast/deployment-jobs.json';
-              const data=JSON.parse(fs.readFileSync(file,'utf8'));
-              const job=(data.jobs||[]).find(x=>x.conclusion==='failure'&&Number.isSafeInteger(Number(x.id)));
-              if(job){
-                try{
-                  const res=await fetch('https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/actions/jobs/'+job.id+'/logs',{
-                    headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+process.env.GH_TOKEN},
-                    signal:AbortSignal.timeout(12000)
-                  });
-                  if(res.ok&&Number(res.headers.get('content-length')||0)<2000000){
-                    const logs=await res.text();
-                    if(logs.length<2000000){
-                      const markers=[...logs.matchAll(/UNITY_WEB_REPAIR_FAILURE_(?:STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}/g)]
-                        .map(x=>x[0]).slice(-4);
-                      const exceptionAt=logs.lastIndexOf('MissingComponentException');
-                      const errorAt=logs.search(/Assets\/[A-Za-z0-9_./-]+\.cs\([0-9]+,[0-9]+\): error CS[0-9]+/);
-                      const excerpt=exceptionAt>=0?logs.slice(exceptionAt,exceptionAt+3500)
-                        :errorAt>=0?logs.slice(errorAt,errorAt+1600):'';
-                      const repoPaths=[...excerpt.matchAll(/(?:unity|roblox|web)-games\/[a-z0-9-]+\/[A-Za-z0-9_./-]+\.(?:cs|luau|lua|js|html)/g)]
-                        .map(x=>x[0]);
-                      const unityPaths=[...excerpt.matchAll(/Assets\/[A-Za-z0-9_./-]+\.cs/g)].map(x=>x[0]);
-                      const classification=exceptionAt>=0?'UNITY_MISSING_COMPONENT':
-                        errorAt>=0?'UNITY_CSHARP_COMPILE':'';
-                      data.failureMarkers=[...new Set(markers)];
-                      data.failureDiagnostics={classification,
-                        sourceFiles:[...new Set([...repoPaths,...unityPaths])].slice(0,3)};
-                      fs.writeFileSync(file,JSON.stringify(data),'utf8');
-                      console.log('DEPLOYMENT_CAUSAL_DIAGNOSTIC='+((classification||'STAGE_ONLY')));
-                    }
-                  }
-                }catch(error){
-                  console.log('DEPLOYMENT_CAUSAL_DIAGNOSTIC=JOB_STEPS_ONLY');
+          import fs from 'node:fs';
+          const file='/tmp/vibe2-recovery-fast/deployment-jobs.json';
+          const data=JSON.parse(fs.readFileSync(file,'utf8'));
+          const job=(data.jobs||[]).find(x=>x.conclusion==='failure'&&Number.isSafeInteger(Number(x.id)));
+          if(job){
+            try{
+              const res=await fetch('https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/actions/jobs/'+job.id+'/logs',{
+                headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+process.env.GH_TOKEN},
+                signal:AbortSignal.timeout(12000)
+              });
+              if(res.ok&&Number(res.headers.get('content-length')||0)<2000000){
+                const logs=await res.text();
+                if(logs.length<2000000){
+                  const markers=[...logs.matchAll(/UNITY_WEB_REPAIR_FAILURE_(?:STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}/g)]
+                    .map(x=>x[0]).slice(-4);
+                  const exceptionAt=logs.lastIndexOf('MissingComponentException');
+                  const errorAt=logs.search(/Assets\/[A-Za-z0-9_./-]+\.cs\([0-9]+,[0-9]+\): error CS[0-9]+/);
+                  const excerpt=exceptionAt>=0?logs.slice(exceptionAt,exceptionAt+3500)
+                    :errorAt>=0?logs.slice(errorAt,errorAt+1600):'';
+                  const repoPaths=[...excerpt.matchAll(/(?:unity|roblox|web)-games\/[a-z0-9-]+\/[A-Za-z0-9_./-]+\.(?:cs|luau|lua|js|html)/g)]
+                    .map(x=>x[0]);
+                  const unityPaths=[...excerpt.matchAll(/Assets\/[A-Za-z0-9_./-]+\.cs/g)].map(x=>x[0]);
+                  const classification=exceptionAt>=0?'UNITY_MISSING_COMPONENT':
+                    errorAt>=0?'UNITY_CSHARP_COMPILE':'';
+                  data.failureMarkers=[...new Set(markers)];
+                  data.failureDiagnostics={classification,
+                    sourceFiles:[...new Set([...repoPaths,...unityPaths])].slice(0,3)};
+                  fs.writeFileSync(file,JSON.stringify(data),'utf8');
+                  console.log('DEPLOYMENT_CAUSAL_DIAGNOSTIC='+((classification||'STAGE_ONLY')));
                 }
               }
-              NODE
+            }catch(error){
+              console.log('DEPLOYMENT_CAUSAL_DIAGNOSTIC=JOB_STEPS_ONLY');
+            }
+          }
+          NODE
               deployment_args=("--deployment-event=$GITHUB_EVENT_PATH" "--deployment-jobs=/tmp/vibe2-recovery-fast/deployment-jobs.json")
             fi
             node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" --catalog=game-catalog.json "${deployment_args[@]}" | tee /tmp/vibe2-recovery-fast/escalation.log
