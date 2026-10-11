@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Security.Cryptography;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -215,13 +216,37 @@ internal static class UnityCompanyAssets
         string source = "Assets/Editor/MagicForest" + key + ".bytes";
         string output = "Assets/Resources/CompanyAssets/MagicForest" + key;
         string prefab = output + ".prefab";
-        // 재빌드 시 이전 메시·애니메이션 프리팹을 무조건 재생성한다.
-        // 원본 GLB가 바뀐 경우 기존 프리팹 재사용은 실제 소스 불일치를 숨긴다.
-        // 다른 게임이나 제작/저장 데이터는 건드리지 않는다.
+        // 임포트 · 원본 GLB와 변환 책임 코드의 실제 해시를 프리팹 임포터에 고정한다.
+        // 콘텐츠·임포터가 바뀌면 반드시 다시 변환하고, 동일한 정상 리그/클립은 재사용한다.
         string project = Directory.GetParent(Application.dataPath).FullName;
         string physical = Path.Combine(project, source);
         if (!File.Exists(physical)) throw new Exception("UNITY_COMPANY_MASTER_NOT_FOUND:" + source);
         byte[] glb = File.ReadAllBytes(physical);
+        string importerSource = Path.Combine(project, "Assets/Editor/UnityCompanyAssets.cs");
+        if (!File.Exists(importerSource)) throw new Exception("UNITY_COMPANY_IMPORTER_SOURCE_MISSING");
+        string sourceIdentity;
+        using (SHA256 sha = SHA256.Create())
+        {
+            byte[] modelDigest = sha.ComputeHash(glb);
+            byte[] importerDigest = sha.ComputeHash(File.ReadAllBytes(importerSource));
+            sourceIdentity = "MAGIC_FOREST_SKINNED_GLBSHA256_V1:"
+                + BitConverter.ToString(modelDigest).Replace("-", "")
+                + ":" + BitConverter.ToString(importerDigest).Replace("-", "");
+        }
+        GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(prefab);
+        AssetImporter existingImporter = AssetImporter.GetAtPath(prefab);
+        Animation existingMotion = existing != null ? existing.GetComponent<Animation>() : null;
+        SkinnedMeshRenderer existingSkin = existing != null
+            ? existing.GetComponentInChildren<SkinnedMeshRenderer>(true) : null;
+        if (existingImporter != null && existingImporter.userData == sourceIdentity
+            && existingMotion != null && existingMotion.GetClipCount() >= 5
+            && existingSkin != null && existingSkin.sharedMesh != null
+            && existingSkin.sharedMesh.vertexCount >= 100 && existingSkin.bones != null
+            && existingSkin.bones.Length >= 3 && existingSkin.sharedMesh.bindposes.Length >= 3)
+        {
+            Debug.Log("MAGIC_FOREST_NATIVE_SKINNED_CACHE=SOURCE_HASH_MATCH_RUNTIME_QA_PENDING key=" + key);
+            return;
+        }
         if (glb.Length < 32 || BitConverter.ToUInt32(glb, 0) != 0x46546C67u
             || BitConverter.ToUInt32(glb, 4) != 2 || BitConverter.ToUInt32(glb, 16) != 0x4E4F534Au)
             throw new Exception("UNITY_COMPANY_INVALID_GLB:" + key);
@@ -314,6 +339,13 @@ internal static class UnityCompanyAssets
             GameObject native = PrefabUtility.SaveAsPrefabAsset(root, prefab);
             if (native == null || native.GetComponentInChildren<SkinnedMeshRenderer>() == null)
                 throw new Exception("UNITY_COMPANY_PREFAB_INVALID:" + key);
+            AssetImporter importer = AssetImporter.GetAtPath(prefab);
+            if (importer != null)
+            {
+                importer.userData = sourceIdentity;
+                importer.SaveAndReimport();
+            }
+            else Debug.LogWarning("MAGIC_FOREST_NATIVE_CACHE_METADATA_MISSING key=" + key);
             Debug.Log("MAGIC_FOREST_NATIVE_SKINNED_ACTION=SOURCE_READY_RUNTIME_QA_PENDING key=" + key
                 + " vertices=" + mesh.vertexCount + " joints=" + bones.Length
                 + " actions=" + doc.animations.Length);
