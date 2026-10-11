@@ -3775,7 +3775,8 @@ function enemyAttackReady(e,now,fallback=900){
 }
 function markEnemyAttack(e,now){
  e.attackAt=now;playGameSfx('monsterAttack',e.type);
- if(e.type.id==='lakecroc')e.nextAttackAt=now+rand(2000,3000);
+ if(e.type.goblinOutpost&&Number(e.type.attackCooldown)>0)e.nextAttackAt=now+Number(e.type.attackCooldown);
+ else if(e.type.id==='lakecroc')e.nextAttackAt=now+rand(2000,3000);
  else if(e.type.id==='gorilla')e.nextAttackAt=now+3500;
  else if(['giantleech','anaconda','mudwalker','yetileader'].includes(e.type.id))e.nextAttackAt=now+3000;
  else if(e.type.id==='yeticub')e.nextAttackAt=now+2000;
@@ -4544,6 +4545,7 @@ function updateProjectiles(dt,now){
    else if(q.kind==='poisonArrow'){p.templeSlowUntil=Math.max(p.templeSlowUntil||0,now+2000);p.attackBlockedUntil=Math.max(p.attackBlockedUntil||0,now+2000);showNotice('독화살 적중 · 50 피해 · 이동속도 30% 감소 · 2초 공격 불가')}
    else if(q.kind==='templeSpear')showNotice('원시인 창 적중 · 30 피해');
    else if(q.kind==='swampOutpostArrow')showNotice('늪 전초기지 화살 적중 · '+Math.round(q.damage)+' 피해');
+   else if(q.kind==='goblinCrossbowArrow')showNotice('쇠뇌 숲 고블린 화살 적중 · '+Math.round(q.damage)+' 피해');
    else if(q.kind==='scorpionSting'){applyScorpionStingPoison(p,5000);showNotice('맹독 전갈 독침 · 45 피해 · 독 '+p.scorpionStingPoisonExpiries.length+'/3중첩')}
    else showNotice('수정 투척 적중 · 78 데미지');
    state.projectiles.splice(i,1);continue
