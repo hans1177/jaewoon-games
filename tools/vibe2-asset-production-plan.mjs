@@ -1805,10 +1805,12 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
 
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true,consumerGameIds=null}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
-  // [원장 원자성] 읽기 시점 스냅샷을 고정해 동시 동기화의 덮어쓰기를 방지한다.
-  const registrySnapshotHash=persist&&fs.existsSync(registryPath)
-    ?crypto.createHash('sha256').update(fs.readFileSync(registryPath)).digest('hex'):null;
-  const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
+  // [원자적 읽기] 같은 원장 바이트를 한 번만 읽어 해시 및 파싱에 공유한다.
+  const registrySnapshot=persist&&fs.existsSync(registryPath)?fs.readFileSync(registryPath,'utf8'):null;
+  const registrySnapshotHash=registrySnapshot===null?null
+    :crypto.createHash('sha256').update(registrySnapshot).digest('hex');
+  const original=registry||(registrySnapshot===null
+    ?readJson(registryPath,{version:0,assets:[],externalSources:[]}):JSON.parse(registrySnapshot));
   // 동기화는 asset top-level 필드만 직접 수정하고 중첩 계약은 교체/읽기만 한다. 3MB registry 전체 JSON deep-copy를 피한다.
   const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
