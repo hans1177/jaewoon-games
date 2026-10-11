@@ -59,7 +59,8 @@ function verifiedRecoveryKey(task={}) {
   // 오래된 QA 조건의 성공적 수리를 학습하려면 최신 정책·구현 대조와
   // 독립 QA 검토에서 강도 저하가 없었다는 검증 표식이 먼저 필요하다.
   if(staleQa&&!(evidence.has('qa-contract-drift:VERIFIED')
-    &&evidence.has('current-policy-implementation-agreement:PASS')
+    &&(evidence.has('current-policy-implementation-agreement:PASS')
+      ||evidence.has('system-ai-qa-contract-review:PASS'))
     &&evidence.has('qa-gate-weakening:NO')))return null;
   const stage=upper(task.failureStage).replace(/[^A-Z0-9_]/g,'_').slice(0,80);
   const signature=upper(task.failureSignature).replace(/[^A-Z0-9_]/g,'_').slice(0,100);
