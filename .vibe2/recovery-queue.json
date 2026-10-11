@@ -19912,7 +19912,7 @@
       "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
       "maxRetries": null,
       "createdAt": "2026-09-21T07:09:50.145Z",
-      "updatedAt": "2026-10-11T14:11:32.017Z"
+      "updatedAt": "2026-10-11T14:22:13.902Z"
     },
     {
       "id": "recovery-1a7c19f867897d239f7d",
@@ -164985,6 +164985,68 @@
       "maxRetries": null,
       "createdAt": "2026-10-11T13:05:38.417Z",
       "updatedAt": "2026-10-11T14:06:40.157Z"
+    },
+    {
+      "id": "recovery-0e1c423b973d4359f88d",
+      "status": "dispatched",
+      "priority": "critical",
+      "sourceQueue": "deployment",
+      "sourceTaskId": "deployment:.github/workflows/magic-forest-pages.yml:6127c7f1583043521c6e6e9a765ab47cd6f3796d:fantasy-survival",
+      "gameId": "fantasy-survival",
+      "responsibleFiles": [
+        ".github/workflows/magic-forest-pages.yml"
+      ],
+      "contextFiles": [
+        ".github/workflows/magic-forest-pages.yml",
+        "web-games/fantasy-survival"
+      ],
+      "goal": "Analyze the exact failed WEB deployment stage ENABLE_BRANCH_BASED_GITHUB_PAGES for fantasy-survival using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.",
+      "relatedTaskIds": [],
+      "failureStage": "DEPLOYMENT_WEB_ENABLE_BRANCH_BASED_GITHUB_PAGES",
+      "failureSignature": "WORKFLOW_FAILED_ENABLE_BRANCH_BASED_GITHUB_PAGES",
+      "blastRadius": "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+      "checkpoint": "6127c7f1583043521c6e6e9a765ab47cd6f3796d",
+      "sourceMutationRequired": true,
+      "sourceMutationBaseline": "6127c7f1583043521c6e6e9a765ab47cd6f3796d",
+      "evidence": [
+        "deployment-failure-run:38145872683:1",
+        "deployment-workflow:.github/workflows/magic-forest-pages.yml",
+        "deployment-platform:WEB",
+        "deployment-game:fantasy-survival",
+        "deployment-head-sha:6127c7f1583043521c6e6e9a765ab47cd6f3796d",
+        "deployment-production-class:DEVELOPMENT_CONFIRMED",
+        "deployment-failed-job:DEPLOY",
+        "deployment-failed-step:ENABLE_BRANCH_BASED_GITHUB_PAGES",
+        "deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/38145872683",
+        "deployment-failure-triage:WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE",
+        "deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY",
+        "deployment-release-gates:PRESERVED",
+        "source-mutation-required:YES",
+        "primary-ai-collaboration:REQUESTED"
+      ],
+      "recoveryStrategy": "SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY",
+      "verificationPlan": [
+        "IDENTIFY_EXACT_FAILURE_CAUSE",
+        "VERIFY_RESPONSIBLE_SOURCE_MUTATION",
+        "RERUN_EXACT_FAILED_STAGE",
+        "REVALIDATE_RELEVANT_QA_AND_REGRESSION",
+        "CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES",
+        "VERIFY_ACTUAL_DEPLOYMENT_RESULT"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "recurrenceCount": 1,
+      "retries": 0,
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "maxRetries": null,
+      "createdAt": "2026-10-11T14:22:13.405Z",
+      "updatedAt": "2026-10-11T14:22:14.831Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-10-11T14:22:14.831Z"
+      ]
     }
   ]
 }
