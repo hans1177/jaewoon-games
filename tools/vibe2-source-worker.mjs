@@ -40,6 +40,13 @@ const MIN_FULL_REWRITE_BYTES=1800;
 const FULL_WEB_GENERATION_TARGET_MIN_BYTES=12000;
 const FULL_WEB_GENERATION_TARGET_MAX_BYTES=24000;
 const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+// 자산 · 동일 실행 프로세스에서 여러 게임이 참조하는 동일 원본은 재해시/전체 API 재파싱하지 않는다.
+// 크기, 생성 시각, 수정 시각, inode, device가 달라지면 다음 요청에서 다시 읽는다.
+// 원본 SHA-256 및 동일 원본 선택/권한/QA 계약은 유지한다. 파일 복제/우회 임포터는 만들지 않는다.
+const INTERNAL_ASSET_SOURCE_HASH_CACHE=new Map();
+const INTERNAL_ASSET_API_SIGNATURE_CACHE=new Map();
+const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
+const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
 function assertGameDevelopmentAuthority(){
   const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
   const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'LOCAL_OLLAMA').toUpperCase();
@@ -3092,12 +3099,25 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     &&!file.split('/').includes('..')
     &&/^assets\//.test(file)
   )).sort();
+  const canonicalRoot=fs.realpathSync(cwd)+path.sep;
   const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
-    const absolute=path.resolve(cwd,relative),root=fs.realpathSync(cwd)+path.sep;
-    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
+    const absolute=path.resolve(cwd,relative);
+    if(!fs.existsSync(absolute))return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
+    const stat=fs.statSync(absolute);
+    if(!stat.isFile())return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
     const real=fs.realpathSync(absolute);
-    if(!real.startsWith(root))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
-    return Object.freeze({path:relative,sha256:crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex'),status:'SOURCE_HASHED'});
+    if(!real.startsWith(canonicalRoot))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
+    const stamp=[stat.size,stat.mtimeMs,stat.ctimeMs,stat.ino,stat.dev].join(':');
+    const cached=INTERNAL_ASSET_SOURCE_HASH_CACHE.get(real);
+    let digest;
+    if(cached&&cached.stamp===stamp)digest=cached.sha256;
+    else{
+      digest=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+      INTERNAL_ASSET_SOURCE_HASH_CACHE.set(real,{stamp,sha256:digest});
+      if(INTERNAL_ASSET_SOURCE_HASH_CACHE.size>INTERNAL_ASSET_CACHE_MAX_ENTRIES)
+        INTERNAL_ASSET_SOURCE_HASH_CACHE.delete(INTERNAL_ASSET_SOURCE_HASH_CACHE.keys().next().value);
+    }
+    return Object.freeze({path:relative,sha256:digest,status:'SOURCE_HASHED'});
   }));
   const libraryVersion=Number(loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
   const selectionFingerprint=clean(loadout?.selectionFingerprint||loadout?.robloxSelectionFingerprint);
@@ -3357,12 +3377,18 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
       continue;
     }
     availableSourceCount+=1;
-    const raw=fs.readFileSync(absolute,'utf8');
-    const signatures=[];
+    // 같은 API 코드를 수백 게임마다 중복 파싱하지 않는다. 파일이 바뀌면 즉시 재탐색한다.
+    const stat=fs.statSync(absolute);
+    const key=fs.realpathSync(absolute);
+    const stamp=[stat.size,stat.mtimeMs,stat.ctimeMs,stat.ino,stat.dev].join(':');
+    const cached=INTERNAL_ASSET_API_SIGNATURE_CACHE.get(key);
+    const signatures=cached&&cached.stamp===stamp?[...cached.signatures]:[];
     const add=value=>{
       const normalized=String(value||'').replace(/\s+/g,' ').trim();
       if(normalized&&!signatures.includes(normalized))signatures.push(normalized);
     };
+    if(!cached||cached.stamp!==stamp){
+    const raw=fs.readFileSync(absolute,'utf8');
     if(/\.(?:lua|luau)$/i.test(relative)){
       for(const match of raw.matchAll(/^\s*function\s+([A-Za-z_][\w]*\.[A-Za-z_][\w.]*)\s*\(([^)]*)\)/gm)){
         add('function '+match[1]+'('+match[2]+')');
@@ -3379,6 +3405,10 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
       for(const match of raw.matchAll(/^\s*export\s+const\s+([A-Za-z_][\w]*)/gm)){
         add('export const '+match[1]);
       }
+    }
+    INTERNAL_ASSET_API_SIGNATURE_CACHE.set(key,{stamp,signatures:Object.freeze([...signatures])});
+    if(INTERNAL_ASSET_API_SIGNATURE_CACHE.size>INTERNAL_ASSET_CACHE_MAX_ENTRIES)
+      INTERNAL_ASSET_API_SIGNATURE_CACHE.delete(INTERNAL_ASSET_API_SIGNATURE_CACHE.keys().next().value);
     }
     signatureCount+=signatures.length;
     rows.push(relative+' :: '+(signatures.length?signatures.join(' | '):'NO_PUBLIC_API_SIGNATURE_DISCOVERED'));
@@ -3435,15 +3465,25 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
       const platformName=/(?:^|[-_.])(roblox|unity|godot|unreal)(?:[-_.]|$)/i.exec(name)?.[1]?.toLowerCase();
       if(platformName&&platformName!==target)continue;
       const relative=folder+'/'+entry.name,absolute=path.join(directory,entry.name);
-      const raw=fs.readFileSync(absolute,'utf8');
-      const exported=[...raw.matchAll(/^\s*export\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let)\s+([A-Za-z_$][\w$]*)/gm)].map(row=>row[1]);
-      const apiNames=unique(exported).sort();
+      const stat=fs.statSync(absolute);
+      const real=fs.realpathSync(absolute);
+      const stamp=[stat.size,stat.mtimeMs,stat.ctimeMs,stat.ino,stat.dev].join(':');
+      const prior=INTERNAL_ASSET_TOOL_EXPORT_CACHE.get(real);
+      let apiNames,sha256;
+      if(prior&&prior.stamp===stamp){apiNames=prior.exports;sha256=prior.sha256;}
+      else{
+        const raw=fs.readFileSync(real,'utf8');
+        apiNames=unique([...raw.matchAll(/^\s*export\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let)\s+([A-Za-z_$][\w$]*)/gm)].map(row=>row[1])).sort();
+        sha256=crypto.createHash('sha256').update(raw).digest('hex');
+        INTERNAL_ASSET_TOOL_EXPORT_CACHE.set(real,{stamp,exports:apiNames,sha256});
+        if(INTERNAL_ASSET_TOOL_EXPORT_CACHE.size>INTERNAL_ASSET_CACHE_MAX_ENTRIES)
+          INTERNAL_ASSET_TOOL_EXPORT_CACHE.delete(INTERNAL_ASSET_TOOL_EXPORT_CACHE.keys().next().value);
+      }
       if(!apiNames.length)continue;
       const searchText=name+' '+apiNames.join(' ');
       const matchedSignals=sourceSignals.filter(([, ,toolPattern])=>toolPattern.test(searchText)).map(row=>row[0]);
       const coreTool=/^(?:vibe-(?:workbench|engine-adapter|core-runtime)|game-kit|company-vibe2-(?:coding-architecture|expert-development)|vibe2-(?:incremental-qa|learning-motor))\.(?:m?js)$/i.test(name);
       if(!matchedSignals.length&&!coreTool)continue;
-      const sha256=crypto.createHash('sha256').update(raw).digest('hex');
       toolMatches.push(Object.freeze({
         path:relative,kind:folder==='tools'?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY',
         signals:Object.freeze(matchedSignals),sha256,
