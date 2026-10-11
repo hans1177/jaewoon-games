@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-survival-horror-es-doors-build-up-g2-9bdd7400535a",
-  "directiveFingerprint": "9bdd7400535a813242f6be1d70c055619073f75ae9061a5fbb92869e21fc9132",
+  "directiveId": "seed-roblox-survival-horror-es-doors-build-up-g2-54f956c43e35",
+  "directiveFingerprint": "54f956c43e351fbba614ee65913fb6b7ab3b2211887d274cdcc0ac8b8af53661",
   "previousDirectiveFingerprint": "6036ccae7719a935ae31770b17e8aba2c22bfbca331590387dce6d52394533b5",
   "forbiddenRepeatFingerprint": "6036ccae7719a935ae31770b17e8aba2c22bfbca331590387dce6d52394533b5",
   "gameId": "seed-roblox-survival-horror-es-doors",
@@ -10,7 +10,7 @@
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-survival-horror-es-doors",
@@ -3849,9 +3849,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-verified-external-learning-required",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -3859,12 +3861,12 @@
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -8379,8 +8381,8 @@
       "sourceTreeFingerprint": "c54427c002b2c64a39c584e7e6477fc178522d1e1365b7a9c50b62f7ec401455",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-verified-external-learning-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8500,5 +8502,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T11:12:04.811Z"
+  "generatedAt": "2026-10-11T12:00:44.116Z"
 }

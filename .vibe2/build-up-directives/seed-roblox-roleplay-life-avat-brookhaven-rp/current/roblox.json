@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g2-54aef54a30b0",
-  "directiveFingerprint": "54aef54a30b062d41b76d35f1d7b39811466d3e021c1000da01c0a55f55e9a41",
+  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g2-4439d5eeab78",
+  "directiveFingerprint": "4439d5eeab78b3c7a07e25418cd037d97bc4d376cc620b0a1991c6b0bcb4d513",
   "previousDirectiveFingerprint": "019dacdbf9e2b674d7e8bbca46cc0bed5331b3067d31db2d4b34810ec7df84a0",
   "forbiddenRepeatFingerprint": "019dacdbf9e2b674d7e8bbca46cc0bed5331b3067d31db2d4b34810ec7df84a0",
   "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -10,7 +10,7 @@
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -3866,9 +3866,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-verified-external-learning-required",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -3876,12 +3878,12 @@
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -8572,8 +8574,8 @@
       "sourceTreeFingerprint": "58693bcc979ccc09039d95debfaa471ff7ed42bd3c21448acde7ea69bce41500",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-verified-external-learning-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8696,5 +8698,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T11:12:04.264Z"
+  "generatedAt": "2026-10-11T12:00:43.762Z"
 }

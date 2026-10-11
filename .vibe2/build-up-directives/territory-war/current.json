@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "territory-war-build-up-g1-f368974aa428",
-  "directiveFingerprint": "f368974aa4280daacca0f36da108ad424910466515756562fa8b14afc616d63c",
+  "directiveId": "territory-war-build-up-g1-4a74247cfdcd",
+  "directiveFingerprint": "4a74247cfdcde57d6ef4dc02e9f662f78fdd751eaa135b10812223f967e9c853",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "territory-war",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/territory-war",
-  "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+  "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
   "designFingerprint": "bc1990aff1360a0cf76b198ab6d1cab5ad9b27aa58587e090ddff1292874598c",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+        "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "bc1990aff1360a0cf76b198ab6d1cab5ad9b27aa58587e090ddff1292874598c",
-    "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+    "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+    "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3703,8 +3703,8 @@
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 40,
-      "progression": 115,
+      "combat": 42,
+      "progression": 128,
       "ai": 18,
       "save": 42,
       "multiplayer": 26,
@@ -3716,12 +3716,12 @@
       "audio": 0,
       "audioDynamics": 16,
       "ui": 46,
-      "uiFlow": 29,
+      "uiFlow": 31,
       "entryFlow": 6,
       "loadingFlow": 0,
       "input": 44,
       "map": 92,
-      "landmark": 0,
+      "landmark": 4,
       "interaction": 28,
       "inventory": 2,
       "equipment": 0,
@@ -3740,7 +3740,7 @@
     "topFiles": [
       {
         "file": "roblox-games/territory-war/shared/GameConfig.luau",
-        "score": 210
+        "score": 208
       },
       {
         "file": "roblox-games/territory-war/server/Game.server.luau",
@@ -3908,9 +3908,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-verified-external-learning-required",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -3918,12 +3920,12 @@
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -4013,8 +4015,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REGIONS",
@@ -4023,18 +4025,18 @@
     },
     {
       "domain": "WORLD_DENSITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "WORLD_NAVIGATION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "LANDMARKS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "TRAVERSAL",
@@ -4453,8 +4455,8 @@
     },
     {
       "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "맵 확장은 면적만 늘리지 말고 새 지역 역할, 연결 경로, 잠금/해금, 랜드마크, 자원·적·이벤트 차이와 기존 지역으로 돌아올 이유를 함께 설계한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4471,8 +4473,8 @@
     },
     {
       "domain": "WORLD_DENSITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "넓은 공간이 비지 않게 탐색 거리마다 기능성 소품·상호작용·조우·자원·환경 이야기 중 게임에 맞는 요소를 배치하고 반복 복제 밀도를 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4480,8 +4482,8 @@
     },
     {
       "domain": "WORLD_NAVIGATION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4489,8 +4491,8 @@
     },
     {
       "domain": "LANDMARKS",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "주요 랜드마크는 거리에서도 실루엣과 기능이 구별되고 탐색·방향 판단·목표 기억에 쓰이도록 배치하며 단순 장식물로 끝내지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4967,26 +4969,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "MAP_EXPANSION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "WORLD_DENSITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "WORLD_NAVIGATION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "LANDMARKS",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "INVENTORY",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5116,8 +5098,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 99109,
-        "largestFileBytes": 37540,
+        "sourceBytes": 99022,
+        "largestFileBytes": 37516,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5218,22 +5200,6 @@
         ]
       },
       {
-        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
-        "score": 52,
-        "gapDomains": [
-          "MAP_EXPANSION",
-          "WORLD_DENSITY",
-          "LANDMARKS"
-        ]
-      },
-      {
-        "theme": "MID_LATE_ENDGAME_COMPLETION",
-        "score": 28,
-        "gapDomains": [
-          "MAP_EXPANSION"
-        ]
-      },
-      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
         "gapDomains": [
@@ -5248,7 +5214,17 @@
         ]
       },
       {
+        "theme": "WORLD_ECOLOGY_STORY_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
         "gapDomains": []
       }
@@ -5329,7 +5305,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+    "sourceFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5578,9 +5554,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
       "roblox-games/territory-war/shared/GameConfig.luau",
-      "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -5789,7 +5765,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+    "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6256,9 +6232,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/territory-war/client/Game.client.luau",
         "roblox-games/territory-war/server/Game.server.luau",
-        "roblox-games/territory-war/shared/GameConfig.luau",
-        "roblox-games/territory-war/client/Game.client.luau"
+        "roblox-games/territory-war/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6890,9 +6866,9 @@
         "SHOP_UI"
       ],
       "sourceFiles": [
+        "roblox-games/territory-war/client/Game.client.luau",
         "roblox-games/territory-war/server/Game.server.luau",
-        "roblox-games/territory-war/shared/GameConfig.luau",
-        "roblox-games/territory-war/client/Game.client.luau"
+        "roblox-games/territory-war/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -7305,7 +7281,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+    "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7772,9 +7748,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/territory-war/client/Game.client.luau",
         "roblox-games/territory-war/server/Game.server.luau",
-        "roblox-games/territory-war/shared/GameConfig.luau",
-        "roblox-games/territory-war/client/Game.client.luau"
+        "roblox-games/territory-war/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -8406,9 +8382,9 @@
         "SHOP_UI"
       ],
       "sourceFiles": [
+        "roblox-games/territory-war/client/Game.client.luau",
         "roblox-games/territory-war/server/Game.server.luau",
-        "roblox-games/territory-war/shared/GameConfig.luau",
-        "roblox-games/territory-war/client/Game.client.luau"
+        "roblox-games/territory-war/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8772,9 +8748,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
       "roblox-games/territory-war/shared/GameConfig.luau",
-      "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/default.project.json"
     ],
     "sourceAnchors": [
@@ -8921,9 +8897,9 @@
     "gameId": "territory-war",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/server/Game.server.luau",
       "roblox-games/territory-war/shared/GameConfig.luau",
-      "roblox-games/territory-war/client/Game.client.luau",
       "roblox-games/territory-war/default.project.json"
     ],
     "impact": {
@@ -9006,11 +8982,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "7d70f1039839a8cc31c63ed426e23729e74acd95f1b710a500dda7a21320c20a",
+      "sourceTreeFingerprint": "d3ea6e3192228934bb7bba241a5d556389de34eec79c140f6a13f0b74715ac76",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-verified-external-learning-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -9119,9 +9095,6 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "MAP_EXPANSION",
-      "WORLD_DENSITY",
-      "WORLD_NAVIGATION",
       "INVENTORY",
       "INVENTORY_USABILITY",
       "EQUIPMENT_LOADOUT",
@@ -9133,5 +9106,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:31:04.700Z"
+  "generatedAt": "2026-10-11T12:00:43.468Z"
 }

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-simulator-tycoon-i-adopt-me-build-up-g2-8d937a67945e",
-  "directiveFingerprint": "8d937a67945e0eb08fadc97b7671ebc44435c2a8e4224e2052d906078719488a",
+  "directiveId": "seed-roblox-simulator-tycoon-i-adopt-me-build-up-g2-33f97b8acacd",
+  "directiveFingerprint": "33f97b8acacd88156f4c188630bdf05d0a392d7e5bf5530fa880d92aac142310",
   "previousDirectiveFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
   "forbiddenRepeatFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
   "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
@@ -10,7 +10,7 @@
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "blocked",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
@@ -3866,9 +3866,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-verified-external-learning-required",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -3876,12 +3878,12 @@
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -8375,8 +8377,8 @@
       "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-verified-external-learning-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8494,5 +8496,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T11:12:04.449Z"
+  "generatedAt": "2026-10-11T12:00:43.923Z"
 }
