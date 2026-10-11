@@ -251,7 +251,8 @@ public static class UnityWebFloorBuild
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
             ?EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single)
             :EditorSceneManager.OpenScene(ScenePath,OpenSceneMode.Single);
-        var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT")??new GameObject("UNITY_WEB_FLOOR_ROOT");
+        var root=GameObject.Find("UNITY_WEB_FLOOR_ROOT");
+        if(root==null)root=new GameObject("UNITY_WEB_FLOOR_ROOT");
         if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>();
         // 물리 · Unity 6 WebGL은 link.xml만으로 Physics 네이티브 타입 포함을 보장하지 않는다.
         // 비활성 자식에 기존 Box/Sphere/Capsule 타입을 직렬화하고 게임 루트의 충돌판정은 변경하지 않는다.
