@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "realistic-builder-build-up-g1-c4c871c63cea",
-  "directiveFingerprint": "c4c871c63cea8ac0f065c6dc794031d0e5b261015e49170be6e67c768dfcf7e8",
+  "directiveId": "realistic-builder-build-up-g1-ba06cc2dd059",
+  "directiveFingerprint": "ba06cc2dd0598e62d1ab4d41b43477efcd7a2d82077b976022c4bd807fc95813",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "realistic-builder",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/realistic-builder",
-  "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+  "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
   "designFingerprint": "f9377ba28128c8bd91b2847136bd20d21d673e6dca0ab2ad320c962f85ff7e7d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "제작과 거점 구축의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+        "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "f9377ba28128c8bd91b2847136bd20d21d673e6dca0ab2ad320c962f85ff7e7d",
-    "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+    "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+    "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -5105,7 +5105,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 145389,
+        "sourceBytes": 146163,
         "largestFileBytes": 86026,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5309,7 +5309,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+    "sourceFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5555,9 +5555,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
-      "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -5766,7 +5766,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+    "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6265,9 +6265,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/realistic-builder/client/Game.client.luau",
         "roblox-games/realistic-builder/server/Game.server.luau",
-        "roblox-games/realistic-builder/shared/GameConfig.luau",
-        "roblox-games/realistic-builder/client/Game.client.luau"
+        "roblox-games/realistic-builder/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6894,9 +6894,9 @@
         "CRAFT_UI"
       ],
       "sourceFiles": [
+        "roblox-games/realistic-builder/client/Game.client.luau",
         "roblox-games/realistic-builder/server/Game.server.luau",
-        "roblox-games/realistic-builder/shared/GameConfig.luau",
-        "roblox-games/realistic-builder/client/Game.client.luau"
+        "roblox-games/realistic-builder/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -7182,7 +7182,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+    "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7681,9 +7681,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/realistic-builder/client/Game.client.luau",
         "roblox-games/realistic-builder/server/Game.server.luau",
-        "roblox-games/realistic-builder/shared/GameConfig.luau",
-        "roblox-games/realistic-builder/client/Game.client.luau"
+        "roblox-games/realistic-builder/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -8310,9 +8310,9 @@
         "CRAFT_UI"
       ],
       "sourceFiles": [
+        "roblox-games/realistic-builder/client/Game.client.luau",
         "roblox-games/realistic-builder/server/Game.server.luau",
-        "roblox-games/realistic-builder/shared/GameConfig.luau",
-        "roblox-games/realistic-builder/client/Game.client.luau"
+        "roblox-games/realistic-builder/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8549,9 +8549,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
-      "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "sourceAnchors": [
@@ -8695,9 +8695,9 @@
     "gameId": "realistic-builder",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/server/Game.server.luau",
       "roblox-games/realistic-builder/shared/GameConfig.luau",
-      "roblox-games/realistic-builder/client/Game.client.luau",
       "roblox-games/realistic-builder/default.project.json"
     ],
     "impact": {
@@ -8775,7 +8775,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5b39641c8ca57496b05e61947f3a1c099d52d540ef3ecc03110342c1a6bd28fe",
+      "sourceTreeFingerprint": "9e922207690f1bb2c93e83518f6ec9873c66b1c9ebaeb16f46efbb698b2bc5b1",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8895,5 +8895,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:30:58.843Z"
+  "generatedAt": "2026-10-11T05:19:08.792Z"
 }

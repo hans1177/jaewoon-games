@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "human-go-temp-build-up-g1-a83476fa2c7d",
-  "directiveFingerprint": "a83476fa2c7dd134f90f2cd1b8c04c6fc56fdebb1f496683e6889a920aa1de14",
+  "directiveId": "human-go-temp-build-up-g1-9ff989a4fc8a",
+  "directiveFingerprint": "9ff989a4fc8a68d70db5549ae4d47ddf2167eb1a3030960ffd2ae627235c5967",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "human-go-temp",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/human-go-temp",
-  "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+  "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
   "designFingerprint": "ec74b0842d59d8aa07cdfeebd68aae14c18f5f17afca3a1a051dbd5505d81337",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "제작과 거점 구축의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+        "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -259,7 +259,7 @@
       "unityWebScriptCount": 0,
       "sourceFiles": [],
       "sourceMethods": [],
-      "referenceStatus": "SOURCE_NOT_AVAILABLE",
+      "referenceStatus": "GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY",
       "verificationTransferred": false,
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "ec74b0842d59d8aa07cdfeebd68aae14c18f5f17afca3a1a051dbd5505d81337",
-    "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+    "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+    "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -5083,7 +5083,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 145329,
+        "sourceBytes": 146093,
         "largestFileBytes": 85988,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5284,7 +5284,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+    "sourceFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5530,9 +5530,9 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
+      "roblox-games/human-go-temp/client/Game.client.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
-      "roblox-games/human-go-temp/client/Game.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "sourceSymbolsOrStateAnchors": [
@@ -5741,7 +5741,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+    "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6223,9 +6223,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/human-go-temp/client/Game.client.luau",
         "roblox-games/human-go-temp/server/Game.server.luau",
-        "roblox-games/human-go-temp/shared/GameConfig.luau",
-        "roblox-games/human-go-temp/client/Game.client.luau"
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6852,9 +6852,9 @@
         "CRAFT_UI"
       ],
       "sourceFiles": [
+        "roblox-games/human-go-temp/client/Game.client.luau",
         "roblox-games/human-go-temp/server/Game.server.luau",
-        "roblox-games/human-go-temp/shared/GameConfig.luau",
-        "roblox-games/human-go-temp/client/Game.client.luau"
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -7140,7 +7140,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+    "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7622,9 +7622,9 @@
         ]
       },
       "sourceFiles": [
+        "roblox-games/human-go-temp/client/Game.client.luau",
         "roblox-games/human-go-temp/server/Game.server.luau",
-        "roblox-games/human-go-temp/shared/GameConfig.luau",
-        "roblox-games/human-go-temp/client/Game.client.luau"
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -8251,9 +8251,9 @@
         "CRAFT_UI"
       ],
       "sourceFiles": [
+        "roblox-games/human-go-temp/client/Game.client.luau",
         "roblox-games/human-go-temp/server/Game.server.luau",
-        "roblox-games/human-go-temp/shared/GameConfig.luau",
-        "roblox-games/human-go-temp/client/Game.client.luau"
+        "roblox-games/human-go-temp/shared/GameConfig.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8490,9 +8490,9 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
+      "roblox-games/human-go-temp/client/Game.client.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
-      "roblox-games/human-go-temp/client/Game.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "sourceAnchors": [
@@ -8636,9 +8636,9 @@
     "gameId": "human-go-temp",
     "platform": "ROBLOX",
     "plannedFiles": [
+      "roblox-games/human-go-temp/client/Game.client.luau",
       "roblox-games/human-go-temp/server/Game.server.luau",
       "roblox-games/human-go-temp/shared/GameConfig.luau",
-      "roblox-games/human-go-temp/client/Game.client.luau",
       "roblox-games/human-go-temp/default.project.json"
     ],
     "impact": {
@@ -8716,7 +8716,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "a650d07a49639561d5a3a30513fb71c519c4f34c4d1df5875e0633b66813ee5c",
+      "sourceTreeFingerprint": "0b6c3ec5488ea4458250ad0248dce43757b1844cf9334bb62a10347904b07c54",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": null,
@@ -8835,5 +8835,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-10T19:30:52.739Z"
+  "generatedAt": "2026-10-11T05:19:08.454Z"
 }
