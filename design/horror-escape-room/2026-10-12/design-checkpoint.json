@@ -3,9 +3,9 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-12",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "2a0791f040b8249509ae6af7cde87c52e98a520f2fbf938ad96b750d992a0f27",
-  "policyDigest": "782c54a0f2a7fddaf4c1d4b95fbf0ae4b6fe799989dc180b855ca97cf18108ca",
-  "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
+  "fingerprint": "4d180e02253a17661debde2cc86bb57435c372f42d375ca4dc2a515a9e3c3698",
+  "policyDigest": "18928150ea90665761586c5f946f910b7f469cca8389e51f542eab5f814385c5",
+  "engineDigest": "55a13b04795194c55a7d68b603a3371017b7a7caa34b1b1db95fb4d5d6588fbf",
   "status": "IN_PROGRESS",
   "completedPhases": [],
   "phases": {},
@@ -176,52 +176,56 @@
           ],
           "fromSystem": "심야 대탈출",
           "toSystem": "사회관계 선택 × 증언과 합의된 현실",
-          "trigger": "사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-          "stateChange": "RouteState의 결과를 사회관계 선택 × 증언과 합의된 현실의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+          "trigger": "심야 대탈출의 선택: 사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 기존 선행조건을 만족해 RouteState 출력이 확정됐을 때 사회관계 선택 × 증언과 합의된 현실이 같은 키를 읽는다.",
+          "stateChange": "VIBE_MAIN 출력 RouteState → VIBE_A 입력. 후속 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 증언과 합의된 현실의 제약을 감수할지 결정한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
         },
         {
           "fromId": "VIBE_A",
           "toId": "VIBE_B",
           "stateKeys": [
-            "RiskState"
+            "RiskState",
+            "ResourceState"
           ],
           "fromSystem": "사회관계 선택 × 증언과 합의된 현실",
           "toSystem": "생활 공간 탐색 × 오만과 응보",
-          "trigger": "인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 증언과 합의된 현실의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-          "stateChange": "RiskState의 결과를 생활 공간 탐색 × 오만과 응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+          "trigger": "사회관계 선택 × 증언과 합의된 현실의 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 증언과 합의된 현실의 제약을 감수할지 결정한다. 기존 선행조건을 만족해 RiskState·ResourceState 출력이 확정됐을 때 생활 공간 탐색 × 오만과 응보이 같은 키를 읽는다.",
+          "stateChange": "VIBE_A 출력 RiskState·ResourceState → VIBE_B 입력. 후속 선택: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다. 오만과 응보의 반작용을 선택한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
         },
         {
           "fromId": "VIBE_B",
           "toId": "VIBE_A",
           "stateKeys": [
-            "RouteState"
+            "RouteState",
+            "RiskState"
           ],
           "fromSystem": "생활 공간 탐색 × 오만과 응보",
           "toSystem": "사회관계 선택 × 증언과 합의된 현실",
-          "trigger": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다. 오만과 응보의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-          "stateChange": "RouteState의 결과를 사회관계 선택 × 증언과 합의된 현실의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+          "trigger": "생활 공간 탐색 × 오만과 응보의 선택: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다. 오만과 응보의 반작용을 선택한다. 기존 선행조건을 만족해 RouteState·RiskState 출력이 확정됐을 때 사회관계 선택 × 증언과 합의된 현실이 같은 키를 읽는다.",
+          "stateChange": "VIBE_B 출력 RouteState·RiskState → VIBE_A 입력. 후속 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 증언과 합의된 현실의 제약을 감수할지 결정한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
         },
         {
           "fromId": "VIBE_B",
           "toId": "VIBE_DELVE",
           "stateKeys": [
-            "RouteState"
+            "RouteState",
+            "RiskState"
           ],
           "fromSystem": "생활 공간 탐색 × 오만과 응보",
           "toSystem": "금기와 기회의 교차",
-          "trigger": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다. 오만과 응보의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-          "stateChange": "RouteState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+          "trigger": "생활 공간 탐색 × 오만과 응보의 선택: 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다. 오만과 응보의 반작용을 선택한다. 기존 선행조건을 만족해 RouteState·RiskState 출력이 확정됐을 때 금기와 기회의 교차이 같은 키를 읽는다.",
+          "stateChange": "VIBE_B 출력 RouteState·RiskState → VIBE_DELVE 입력. 후속 선택: 증언과 합의된 현실의 제약과 오만과 응보의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
         },
         {
           "fromId": "VIBE_DELVE",
           "toId": "VIBE_MAIN",
           "stateKeys": [
-            "WorldAccessState"
+            "WorldAccessState",
+            "IntentState"
           ],
           "fromSystem": "금기와 기회의 교차",
           "toSystem": "심야 대탈출",
-          "trigger": "증언과 합의된 현실의 제약과 오만과 응보의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 때문에 WorldAccessState가 변한 순간 다음 시스템이 반응한다.",
-          "stateChange": "WorldAccessState의 결과를 심야 대탈출의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+          "trigger": "금기와 기회의 교차의 선택: 증언과 합의된 현실의 제약과 오만과 응보의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 기존 선행조건을 만족해 WorldAccessState·IntentState 출력이 확정됐을 때 심야 대탈출이 같은 키를 읽는다.",
+          "stateChange": "VIBE_DELVE 출력 WorldAccessState·IntentState → VIBE_MAIN 입력. 후속 선택: 사회관계 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
         },
         {
           "fromId": "VIBE_A",
@@ -231,8 +235,8 @@
           ],
           "fromSystem": "사회관계 선택 × 증언과 합의된 현실",
           "toSystem": "금기와 기회의 교차",
-          "trigger": "인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 증언과 합의된 현실의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-          "stateChange": "RiskState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
+          "trigger": "사회관계 선택 × 증언과 합의된 현실의 선택: 인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다. 증언과 합의된 현실의 제약을 감수할지 결정한다. 기존 선행조건을 만족해 RiskState 출력이 확정됐을 때 금기와 기회의 교차이 같은 키를 읽는다.",
+          "stateChange": "VIBE_A 출력 RiskState → VIBE_DELVE 입력. 후속 선택: 증언과 합의된 현실의 제약과 오만과 응보의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다."
         }
       ],
       "progressionDirection": "성장하면 과거의 선택을 재해석하고 새로운 우회 경로·관계·숙련 조합을 연다. 사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다.",
@@ -245,22 +249,80 @@
         {
           "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
           "newGameplay": "사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-          "systemImpact": "이전 생활 공간 탐색 × 오만과 응보 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "기존 첫 진입 조건을 만족하고 심야 대탈출의 목표를 확인한 뒤 사회관계 선택 × 증언과 합의된 현실의 접근 가능한 선택을 제시한다.",
+          "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 사회관계 선택 × 증언과 합의된 현실의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
           "newGameplay": "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-          "systemImpact": "이전 사회관계 선택 × 증언과 합의된 현실 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 생활 공간 탐색 × 오만과 응보의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
           "newGameplay": "역사적 세력 균형과 업보와 인과응보의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-          "systemImpact": "이전 생활 공간 탐색 × 오만과 응보 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "증언과 합의된 현실의 제약과 오만과 응보의 대응을 같은 지역에서 순서대로 시험한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 사회관계 선택 × 증언과 합의된 현실의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
           "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-          "systemImpact": "이전 사회관계 선택 × 증언과 합의된 현실 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 플레이어가 채택한 기록과 증언이 월드 규칙·NPC 기억·접근 가능성을 바꾼다.와 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 강해질수록 특정 세계 압력·적응·반작용이 증가해 성공 방식 자체를 바꾼다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 생활 공간 탐색 × 오만과 응보의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         }
       ],
       "failureRetryRisk": {
@@ -277,13 +339,13 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-11T22:14:10.901Z",
-  "updatedAt": "2026-10-11T22:14:10.954Z",
+  "createdAt": "2026-10-11T23:12:43.119Z",
+  "updatedAt": "2026-10-11T23:12:43.173Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
     "version": 138,
-    "sha256": "dd3c9d26faf58172ed4da5ef1202d904018a02c985eadc569a77c32b8097bc26",
+    "sha256": "d429a55676b17318098f242715c9800b92400a824609bdb747328c8d648a8b82",
     "inventoryCount": 799,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
