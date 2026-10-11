@@ -5601,3 +5601,81 @@ test('company catalog revision only claims synchronized common packs and retains
     assert.ok(Number(maintenance.assetCount||0)<=packs.length,'unrefreshed maintenance cannot invent current asset count');
   }
 });
+
+
+// [네이티브 소비자 회귀] 실제 Unity 파일과 호출만 추적하고 주석·미존재 자산은 제외한다.
+test('Unity native consumer scan resolves Resources and conditional CompanyAssets without losing Roblox identities',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-consumers-'));
+  try{
+    const gameRoot=path.join(root,'unity-games/demo');
+    const resourceRoot=path.join(gameRoot,'Assets/Resources/CompanyAssets');
+    fs.mkdirSync(resourceRoot,{recursive:true});
+    fs.mkdirSync(path.join(gameRoot,'Assets/Scripts'),{recursive:true});
+    const files=['hero.obj','enemy.prefab','hut.obj','Prefixwolf.obj','unused.obj','commented.obj','surface.mtl'];
+    for(const file of files)fs.writeFileSync(path.join(resourceRoot,file),'native fixture');
+    fs.writeFileSync(path.join(resourceRoot,'hut.obj'),'mtllib surface.mtl\nv 0 0 0');
+    const script=path.join(gameRoot,'Assets/Scripts/Game.cs');
+    fs.writeFileSync(script,[
+      'var hero = Resources.Load<GameObject>("CompanyAssets/hero");',
+      'BindCompanyVisual(boss ? "enemy" : "missing", root);',
+      'string building = kind.Contains("unused") ? "hut" : "missing";',
+      'BindCompanyVisual(building, root);',
+      'string actor = isWolf ? "wolf" : "";',
+      'BindCompanyVisual("Prefix" + actor, root);',
+      'GameObject BindCompanyVisual(string name) { return Resources.Load<GameObject>("CompanyAssets/" + name); }',
+      '// Resources.Load<GameObject>("CompanyAssets/commented");',
+      '/* BindCompanyVisual("unused", root); */'
+    ].join('\n'));
+    const registry={assets:files.map(file=>({id:file,family:'CHARACTER',sourceFiles:['unity-games/demo/Assets/Resources/CompanyAssets/'+file]}))};
+    const gameCatalog={games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]};
+    const first=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry,gameCatalog});
+    assert.deepEqual(first.bindings.map(row=>row.assetId).sort(),['Prefixwolf.obj','enemy.prefab','hero.obj','hut.obj','surface.mtl']);
+    assert.ok(first.bindings.every(row=>row.productionVerified===false&&row.runtimeVerified===false));
+    assert.ok(first.bindings.every(row=>row.evidenceFiles.includes('unity-games/demo/Assets/Scripts/Game.cs')));
+    fs.writeFileSync(script,'// Resources.Load<GameObject>("CompanyAssets/hero");');
+    const second=synchronizeSourceBoundAssetConsumers({repoRoot:root,registry:first.registry,gameCatalog});
+    assert.equal(second.bindings.length,0,'removed calls must invalidate prior source consumers');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+// [실제 게임 소스] 기존 마력숲 자산을 재작성하지 않고 22개 등록 자산의 사용 근거를 복원한다.
+test('real fantasy-survival shared imports track only the 14 selected originals without runtime promotion',()=>{
+  const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repo,'company-asset-library.json'),'utf8'));
+  const importer='unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs';
+  const source=fs.readFileSync(path.join(repo,importer),'utf8');
+  const selected=['house','house_door','house_chimney','fence_straight','fence_corner',
+    'gate_single','bench_A','tree','tree_large','foliage_A','foliage_B','cobblestones','package','mailbox'];
+  for(const name of selected){
+    const original='assets/shared/homely-house/'+name+'.obj';
+    assert.ok(source.includes('"'+original+'"'));
+    const asset=registry.assets.find(row=>row.path==='/'+original);
+    assert.ok(asset,'selected original must be registered: '+name);
+    assert.equal(asset.sourceHash,createHash('sha256').update(fs.readFileSync(path.join(repo,original))).digest('hex'));
+  }
+  assert.match(source,/foreach \(string original in VillageSourcePaths\)/);
+  assert.match(source,/string name = Path.GetFileNameWithoutExtension\(original\)/);
+  const result=synchronizeSourceBoundAssetConsumers({repoRoot:repo,registry,
+    gameCatalog:{games:[{id:'fantasy-survival',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}});
+  const imports=result.bindings.filter(row=>row.assetId.startsWith('external-tinytreats-'));
+  assert.deepEqual(imports.map(row=>row.assetId).sort(),selected.map(name=>'external-tinytreats-'+name.toLowerCase().replaceAll('_','-')+'-v1').sort());
+  assert.ok(imports.every(row=>row.evidenceFiles.includes(importer)));
+  assert.ok(imports.every(row=>row.runtimeVerified===false&&row.productionVerified===false));
+});
+
+// [실제 게임 소스] 기존 빌드 요청의 네이티브 입력을 모두 보존한다.
+test('real fantasy-survival resolves every registered native build input without runtime promotion',()=>{
+  const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repo,'company-asset-library.json'),'utf8'));
+  const request=JSON.parse(fs.readFileSync(path.join(repo,'.build-requests/unity-web/fantasy-survival.json'),'utf8'));
+  const result=synchronizeSourceBoundAssetConsumers({repoRoot:repo,registry,
+    gameCatalog:{games:[{id:'fantasy-survival',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED'}]}});
+  for(const id of request.registryAssetIds){
+    const binding=result.bindings.find(row=>row.assetId===id);
+    assert.ok(binding,id);
+    assert.ok(binding.evidenceFiles.includes('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs'),id);
+    assert.equal(binding.runtimeVerified,false,id);
+    assert.equal(binding.productionVerified,false,id);
+  }
+});

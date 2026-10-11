@@ -53,6 +53,10 @@ public static class UnityWebFloorBuild
 
     private static void EnsureScene()
     {
+        UnityCompanyAssets.Prepare(
+            new[] { "Environment", "Equipment", "Identity", "Character", "Enemy" },
+            new[] { "unity-fantasy-survival-foundation-v1", "unity-fantasy-survival-crate-v1", "external-tinytreats-bench-b-v1", "shared-humanoid-traveler-actions", "shared-humanoid-guardian-actions" },
+            new[] { "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestFoundation.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrate.obj", "assets/shared/homely-house/bench_B.obj", "assets/shared/humanoid-traveler-actions.glb", "assets/shared/humanoid-guardian-actions.glb" });
         if(!AssetDatabase.IsValidFolder(SceneFolder))AssetDatabase.CreateFolder("Assets","Scenes");
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
             ?EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single)

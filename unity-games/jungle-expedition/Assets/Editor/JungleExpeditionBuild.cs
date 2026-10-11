@@ -83,6 +83,10 @@ namespace JaewoonGames.JungleExpedition.Editor
 
         private static void EnsureScene()
         {
+            UnityCompanyAssets.Prepare(
+                new[] { "Explorer", "Serpent", "Spider", "Guardian", "Trunk", "Crown", "Rock", "Foundation", "Wall", "Crate", "Sword", "Chest" },
+                new[] { "shared-humanoid-traveler-actions", "shared-creature-serpent-actions", "shared-creature-spider-actions", "shared-creature-golem-actions", "unity-fantasy-survival-tree-trunk-v1", "unity-fantasy-survival-tree-crown-v1", "unity-fantasy-survival-rock-v1", "unity-fantasy-survival-foundation-v1", "unity-fantasy-survival-wall-v1", "unity-fantasy-survival-crate-v1", "unity-fantasy-survival-sword-v1", "unity-fantasy-survival-chest-v1" },
+                new[] { "assets/shared/humanoid-traveler-actions.glb", "assets/shared/creature-serpent-actions.glb", "assets/shared/creature-spider-actions.glb", "assets/shared/creature-golem-actions.glb", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestRock.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestFoundation.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestWall.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrate.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestSword.obj", "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestChest.obj" });
             if (!AssetDatabase.IsValidFolder(SceneFolder)) AssetDatabase.CreateFolder("Assets", "Scenes");
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             if (!EditorSceneManager.SaveScene(scene, ScenePath))

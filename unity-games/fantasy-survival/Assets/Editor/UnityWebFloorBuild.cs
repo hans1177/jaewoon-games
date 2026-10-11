@@ -16,10 +16,22 @@ public static class UnityWebFloorBuild
 
     // 외부 CC0 공용 메시의 일부만 마력숲 숲마을·캠프·길의 실제 3D 소비처에 연결한다.
     // 임의 다운로드/새 파이프라인 없이 기존 공용 자산 원본과 등록 해시를 사용한다.
-    private static readonly string[] VillageModelNames = {
-        "house", "house_door", "house_chimney", "fence_straight", "fence_corner",
-        "gate_single", "bench_A", "tree", "tree_large", "foliage_A", "foliage_B",
-        "cobblestones", "package", "mailbox"
+    // 실제 공용 원본 경로를 명시해 기존 소비자 추적과 파일 해시 조사에 연결한다.
+    private static readonly string[] VillageSourcePaths = {
+        "assets/shared/homely-house/house.obj",
+        "assets/shared/homely-house/house_door.obj",
+        "assets/shared/homely-house/house_chimney.obj",
+        "assets/shared/homely-house/fence_straight.obj",
+        "assets/shared/homely-house/fence_corner.obj",
+        "assets/shared/homely-house/gate_single.obj",
+        "assets/shared/homely-house/bench_A.obj",
+        "assets/shared/homely-house/tree.obj",
+        "assets/shared/homely-house/tree_large.obj",
+        "assets/shared/homely-house/foliage_A.obj",
+        "assets/shared/homely-house/foliage_B.obj",
+        "assets/shared/homely-house/cobblestones.obj",
+        "assets/shared/homely-house/package.obj",
+        "assets/shared/homely-house/mailbox.obj"
     };
 
     [Serializable] private sealed class SharedRegistry { public SharedAsset[] assets; }
@@ -42,9 +54,9 @@ public static class UnityWebFloorBuild
             throw new Exception("MAGIC_FOREST_COMMON_REGISTRY_INVALID");
         string folder = "Assets/Resources/CompanyAssets/";
         int imported = 0;
-        foreach (string name in VillageModelNames)
+        foreach (string original in VillageSourcePaths)
         {
-            string original = "assets/shared/homely-house/" + name + ".obj";
+            string name = Path.GetFileNameWithoutExtension(original);
             SharedAsset entry = Array.Find(registry.assets, row => row != null
                 && row.id == "external-tinytreats-" + name.ToLowerInvariant().Replace('_', '-') + "-v1");
             if (entry == null || entry.path != "/" + original || entry.license != "CC0"
@@ -71,8 +83,9 @@ public static class UnityWebFloorBuild
             imported++;
         }
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-        foreach (string name in VillageModelNames)
+        foreach (string original in VillageSourcePaths)
         {
+            string name = Path.GetFileNameWithoutExtension(original);
             string modelPath = folder + "MagicForestVillage_" + name + ".obj";
             GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             if (model == null) throw new Exception("MAGIC_FOREST_SHARED_MESH_IMPORT_FAILED:" + name);

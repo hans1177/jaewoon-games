@@ -1,4 +1,4 @@
-// 파일명: unity-games/fantasy-survival/Assets/Editor/UnityCompanyAssets.cs
+// 파일명: assets/shared/Editor/UnityCompanyAssets.cs
 // 임포트 · 기존 UnityWebFloorBuild가 호출하는 회사 공용 스킨드 GLB → Unity 리그/모션 변환.
 // 게임 로직·세이브·히트박스·전투 수치에는 접근하지 않는다.
 #if UNITY_EDITOR
@@ -11,7 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-internal static class UnityCompanyAssets
+public static class UnityCompanyAssets
 {
     [Serializable] private class Document
     {
@@ -211,18 +211,15 @@ internal static class UnityCompanyAssets
         return clip;
     }
 
-    private static void PrepareActor(string key)
+    private static void PrepareActor(string key, string physical, string output)
     {
-        string source = "Assets/Editor/MagicForest" + key + ".bytes";
-        string output = "Assets/Resources/CompanyAssets/MagicForest" + key;
         string prefab = output + ".prefab";
         // 임포트 · 원본 GLB와 변환 책임 코드의 실제 해시를 프리팹 임포터에 고정한다.
         // 콘텐츠·임포터가 바뀌면 반드시 다시 변환하고, 동일한 정상 리그/클립은 재사용한다.
         string project = Directory.GetParent(Application.dataPath).FullName;
-        string physical = Path.Combine(project, source);
-        if (!File.Exists(physical)) throw new Exception("UNITY_COMPANY_MASTER_NOT_FOUND:" + source);
+        if (!File.Exists(physical)) throw new Exception("UNITY_COMPANY_MASTER_NOT_FOUND:" + physical);
         byte[] glb = File.ReadAllBytes(physical);
-        string importerSource = Path.Combine(project, "Assets/Editor/UnityCompanyAssets.cs");
+        string importerSource = Path.GetFullPath(Path.Combine(project, "../../assets/shared/Editor/UnityCompanyAssets.cs"));
         if (!File.Exists(importerSource)) throw new Exception("UNITY_COMPANY_IMPORTER_SOURCE_MISSING");
         string sourceIdentity;
         using (SHA256 sha = SHA256.Create())
@@ -371,12 +368,116 @@ internal static class UnityCompanyAssets
         finally { UnityEngine.Object.DestroyImmediate(root); }
     }
 
-    // 메인 · 기존 프로젝트의 네이티브 빌드 절차가 직접 호출. 로블록스 런타임 자산 재사용 금지.
-    internal static void Prepare()
+    // 원장 · 등록된 실물·권리·해시 검증. 생성 결과를 런타임 통과로 승격하지 않는다.
+    [Serializable] private sealed class Registry { public AssetRecord[] assets; }
+    [Serializable] private sealed class AssetRecord
     {
-        foreach (string key in new[] { "Traveler", "Rogue", "Guardian", "Archer", "Mage",
-            "Wolf", "Golem", "Spider", "Serpent", "Beetle" })
-            PrepareActor(key);
+        public string id, path, license, sourceHash, nativeArtifactHash, masterGlbGitBlobSha, sourceGitBlobSha;
+    }
+
+    private static void ValidateSource(Registry registry, string assetId, string sourcePath, byte[] bytes)
+    {
+        AssetRecord entry = Array.Find(registry.assets, row => row != null && row.id == assetId);
+        if (entry == null || entry.path != "/" + sourcePath
+            || (entry.license != "project-original" && entry.license != "CC0"))
+            throw new Exception("UNITY_COMPANY_REGISTERED_SOURCE_REQUIRED:" + assetId);
+        string expected = !string.IsNullOrEmpty(entry.nativeArtifactHash) ? entry.nativeArtifactHash : entry.sourceHash;
+        if (!string.IsNullOrEmpty(expected))
+        {
+            using (SHA256 sha = SHA256.Create())
+                if (!String.Equals(BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", ""), expected, StringComparison.OrdinalIgnoreCase))
+                    throw new Exception("UNITY_COMPANY_SOURCE_HASH_MISMATCH:" + assetId);
+        }
+        else
+        {
+            expected = !string.IsNullOrEmpty(entry.masterGlbGitBlobSha) ? entry.masterGlbGitBlobSha : entry.sourceGitBlobSha;
+            if (string.IsNullOrEmpty(expected)) throw new Exception("UNITY_COMPANY_SOURCE_HASH_REQUIRED:" + assetId);
+            byte[] header = Encoding.UTF8.GetBytes("blob " + bytes.Length + "\0");
+            byte[] gitBlob = new byte[header.Length + bytes.Length];
+            Buffer.BlockCopy(header, 0, gitBlob, 0, header.Length);
+            Buffer.BlockCopy(bytes, 0, gitBlob, header.Length, bytes.Length);
+            using (SHA1 sha = SHA1.Create())
+                if (!String.Equals(BitConverter.ToString(sha.ComputeHash(gitBlob)).Replace("-", ""), expected, StringComparison.OrdinalIgnoreCase))
+                    throw new Exception("UNITY_COMPANY_SOURCE_BLOB_MISMATCH:" + assetId);
+        }
+    }
+
+    // 임포트 · 기존 Unity 기본 OBJ 임포터와 원본 재질을 사용한다. 게임의 충돌체는 수정하지 않는다.
+    private static void PrepareObject(string key, string physical, string project)
+    {
+        string folder = "Assets/Resources/CompanyAssets/" + key + "Source";
+        string absolute = Path.Combine(project, folder);
+        Directory.CreateDirectory(absolute);
+        string target = Path.Combine(absolute, Path.GetFileName(physical));
+        if (!File.Exists(target) || File.ReadAllText(target) != File.ReadAllText(physical)) File.Copy(physical, target, true);
+        foreach (string line in File.ReadAllLines(physical))
+        {
+            string text = line.Trim();
+            if (!text.StartsWith("mtllib ")) continue;
+            string name = text.Substring(7).Trim();
+            if (Path.GetFileName(name) != name || String.IsNullOrEmpty(name))
+                throw new Exception("UNITY_COMPANY_MATERIAL_PATH_INVALID:" + key);
+            string material = Path.Combine(Path.GetDirectoryName(physical), name);
+            if (!File.Exists(material)) throw new Exception("UNITY_COMPANY_MATERIAL_MISSING:" + key);
+            // 현재 선택 모델은 정점색·단색 재질만 사용한다. 텍스처 의존성이 생기면 조용히 누락하지 않는다.
+            foreach (string materialLine in File.ReadAllLines(material))
+                if (System.Text.RegularExpressions.Regex.IsMatch(materialLine.Trim(), @"^(map_|bump |disp |decal )"))
+                    throw new Exception("UNITY_COMPANY_TEXTURE_DEPENDENCY_REQUIRES_IMPORT:" + key);
+            string copy = Path.Combine(absolute, name);
+            if (!File.Exists(copy) || File.ReadAllText(copy) != File.ReadAllText(material)) File.Copy(material, copy, true);
+        }
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(folder + "/" + Path.GetFileName(physical));
+        if (model == null || model.GetComponentInChildren<MeshFilter>(true) == null)
+            throw new Exception("UNITY_COMPANY_IMPORTED_MESH_REQUIRED:" + key);
+        GameObject instance = UnityEngine.Object.Instantiate(model);
+        try
+        {
+            instance.name = key;
+            foreach (Collider collider in instance.GetComponentsInChildren<Collider>(true)) UnityEngine.Object.DestroyImmediate(collider);
+            if (PrefabUtility.SaveAsPrefabAsset(instance, "Assets/Resources/CompanyAssets/" + key + ".prefab") == null)
+                throw new Exception("UNITY_COMPANY_OBJECT_PREFAB_FAILED:" + key);
+        }
+        finally { UnityEngine.Object.DestroyImmediate(instance); }
+    }
+
+    // 메인 · 기존 게임 빌드 함수가 선택한 자산만 임포트한다. 마력숲의 기존 무인자 호출도 보존한다.
+    public static void Prepare(string[] keys = null, string[] assetIds = null, string[] sourcePaths = null)
+    {
+        string project = Directory.GetParent(Application.dataPath).FullName;
+        string repo = Path.GetFullPath(Path.Combine(project, "..", ".."));
+        Directory.CreateDirectory(Path.Combine(project, "Assets/Resources/CompanyAssets"));
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        if (keys == null)
+        {
+            foreach (string key in new[] { "Traveler", "Rogue", "Guardian", "Archer", "Mage",
+                "Wolf", "Golem", "Spider", "Serpent", "Beetle" })
+                PrepareActor(key, Path.Combine(project, "Assets/Editor/MagicForest" + key + ".bytes"),
+                    "Assets/Resources/CompanyAssets/MagicForest" + key);
+        }
+        else
+        {
+            if (assetIds == null || sourcePaths == null || keys.Length != assetIds.Length || keys.Length != sourcePaths.Length)
+                throw new Exception("UNITY_COMPANY_SELECTION_LENGTH_MISMATCH");
+            Registry registry = JsonUtility.FromJson<Registry>(File.ReadAllText(Path.Combine(repo, "company-asset-library.json")));
+            if (registry == null || registry.assets == null) throw new Exception("UNITY_COMPANY_REGISTRY_REQUIRED");
+            var used = new HashSet<string>();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                string key = keys[i], source = sourcePaths[i];
+                if (String.IsNullOrEmpty(key) || !System.Text.RegularExpressions.Regex.IsMatch(key, "^[A-Za-z][A-Za-z0-9_]*$") || !used.Add(key))
+                    throw new Exception("UNITY_COMPANY_RESOURCE_KEY_INVALID:" + key);
+                if (String.IsNullOrEmpty(source) || source.Contains("..") || source.Contains("\\")
+                    || !(source.StartsWith("assets/") || source.StartsWith("unity-games/")))
+                    throw new Exception("UNITY_COMPANY_SOURCE_PATH_INVALID:" + source);
+                string physical = Path.Combine(repo, source);
+                ValidateSource(registry, assetIds[i], source, File.ReadAllBytes(physical));
+                if (source.EndsWith(".glb", StringComparison.OrdinalIgnoreCase))
+                    PrepareActor(key, physical, "Assets/Resources/CompanyAssets/" + key);
+                else if (source.EndsWith(".obj", StringComparison.OrdinalIgnoreCase)) PrepareObject(key, physical, project);
+                else throw new Exception("UNITY_COMPANY_SOURCE_FORMAT_UNSUPPORTED:" + source);
+            }
+        }
         AssetDatabase.SaveAssets();
     }
 }

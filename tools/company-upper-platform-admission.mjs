@@ -22,6 +22,37 @@ export function unitySourceTreeSha256(root){
   for(const rel of files){
     hash.update(rel);hash.update('\0');hash.update(fs.readFileSync(path.join(root,rel)));hash.update('\0');
   }
+  // 공용 네이티브 패키지와 선택 원본도 빌드 입력이다. 프로젝트만 같은 오래된 빌드는 재사용하지 않는다.
+  const manifestPath=path.join(root,'Packages/manifest.json');
+  const manifest=fs.existsSync(manifestPath)?JSON.parse(fs.readFileSync(manifestPath,'utf8')):{};
+  if(manifest.dependencies?.['com.jaewoon.assets']){
+    const repo=path.resolve(root,'../..');
+    const packageRoot=path.resolve(root,'Packages',manifest.dependencies['com.jaewoon.assets'].replace(/^file:/,''));
+    if(packageRoot!==path.join(repo,'assets/shared'))throw new Error('UNITY_SHARED_PACKAGE_PATH_INVALID');
+    const dependencies=new Set(['company-asset-library.json']);
+    const collect=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())collect(full);
+      else if(entry.isFile())dependencies.add(path.relative(repo,full).replaceAll('\\','/'));
+    }};
+    collect(packageRoot);
+    for(const rel of files.filter(file=>/^Assets\/Editor\/.+\.cs$/.test(file))){
+      const source=fs.readFileSync(path.join(root,rel),'utf8');
+      for(const match of source.matchAll(/"((?:assets|unity-games)\/[A-Za-z0-9_./-]+\.(?:obj|glb))"/g)){
+        const file=match[1];
+        if(file.split('/').includes('..'))throw new Error('UNITY_SHARED_SOURCE_PATH_INVALID');
+        dependencies.add(file);
+        if(file.endsWith('.obj'))for(const material of fs.readFileSync(path.join(repo,file),'utf8').matchAll(/^mtllib\s+([^\r\n]+)$/gm)){
+          const name=material[1].trim();
+          if(path.basename(name)!==name)throw new Error('UNITY_SHARED_MATERIAL_PATH_INVALID');
+          dependencies.add(path.posix.join(path.posix.dirname(file),name));
+        }
+      }
+    }
+    for(const rel of [...dependencies].sort()){
+      hash.update('@shared/'+rel);hash.update('\0');hash.update(fs.readFileSync(path.join(repo,rel)));hash.update('\0');
+    }
+  }
   return hash.digest('hex');
 }
 

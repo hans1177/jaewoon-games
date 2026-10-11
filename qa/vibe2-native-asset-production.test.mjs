@@ -1135,7 +1135,32 @@ test('Vibe source rotates detailed API context while keeping the full eligibilit
   assert.match(source,/apiContextPerFileMaxBytes:4500/);
   assert.match(source,/apiContextRotationByBuildUpGeneration:true/);
   assert.match(source,/allSelectedApiSourcesRemainEligibleAcrossCycles:true/);
-  assert.match(source,/const start=\(\(generation-1\)\*batchSize\)%allSelectedPaths\.length/);
+  // 빈 선택 목록에서도 핵심 도구를 찾고, 세대별 상세 API 순환이 전체 인덱스를 줄이지 않아야 한다.
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-api-rotation-'));
+  try{
+    fs.mkdirSync(path.join(root,'assets'));
+    const selectedSourcePaths=Array.from({length:6},(_,i)=>`assets/selected-${i}.mjs`);
+    for(const [i,file] of selectedSourcePaths.entries())fs.writeFileSync(path.join(root,file),`export function SelectedApi${i}() {}\n`);
+    fs.writeFileSync(path.join(root,'assets/vibe-environment-director.js'),'export function createVibeProceduralWorldLayout() {}\n');
+    const context={files:[{path:'unity-games/demo/Assets/Scripts/Game.cs',editable:true,content:'public class Game {}'}]};
+    const contract={target:'unity',selectedSourcePaths,synchronization:{apiContextBatchSize:4}};
+    for(const [generation,expected] of [[1,[0,1,2,3]],[2,[4,5,0,1]]]){
+      const result=attachSelectedInternalAssetApiContext(context,{cwd:root,contract,order:{target:'unity',buildUpGeneration:generation}});
+      assert.deepEqual(result.internalAssetApiContextFiles,expected.map(i=>selectedSourcePaths[i]));
+      assert.equal(result.internalAssetApiContextEligibleSourceCount,6);
+      assert.equal(result.internalAssetApiIndexRepresentedSourceCount,6);
+      assert.equal(result.internalAssetApiIndexAllSelectedSourcesEveryBuildUp,true);
+      for(let i=0;i<6;i++)assert.ok(result.internalAssetApiIndex.includes(`SelectedApi${i}`));
+      assert.ok(result.files.filter(row=>row.internalAssetApiContext).every(row=>row.editable===false));
+    }
+    const empty=attachSelectedInternalAssetApiContext(context,{cwd:root,contract:{...contract,selectedSourcePaths:[]},order:{target:'unity',buildUpGeneration:2}});
+    assert.deepEqual(empty.internalAssetApiContextFiles,[]);
+    assert.equal(empty.internalAssetApiContextEligibleSourceCount,0);
+    assert.equal(empty.internalAssetApiContextRotationStart,0);
+    assert.equal(empty.vibeDynamicToolMatch.coreDevelopmentToolMatchedCount,1);
+    assert.equal(empty.vibeDynamicToolMatch.sourceMutationPerformed,false);
+    assert.equal(empty.vibeDynamicToolMatch.runtimeVerified,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
   assert.match(source,/internalAssetApiContextEligibleSourceCount:allSelectedPaths\.length/);
   assert.match(source,/internalAssetApiContext:true/);
   assert.match(source,/editable:false/);
@@ -4606,4 +4631,36 @@ test('native authoring reviews exported GLB material channels and never executes
   assert.match(source,/TEXCOORD_0/);
   assert.match(source,/modelLicenseRegionBlocked.*SOUTH_KOREA/);
   assert.match(source,/modelRan.*False/);
+});
+
+
+// [오토 바이옴 승인 입력] 최소 설계·공간 설명을 새 월드 생성 승인으로 승격하지 않는다.
+test('auto biome evaluates every game and preserves authored procedural inputs without implicit approval',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'biome-design-input-'));
+  try{
+    const evaluate=(spatialLayout,extra={})=>buildVibeAssetProductionPlan({
+      repoRoot:root,target:'unity',manifest:{assets:[]},presetCatalog:{presets:[]},
+      task:{gameId:'demo',goal:'기존 자산 연결',buildUpDirective:{
+        designContextMode:'APPROVED_OR_MINIMUM_DESIGN',designFingerprint:'design-source',
+        designImplementationContext:{spatialLayout}},...extra}
+    });
+    for(const layout of [{},{dimension:'3D',regions:['existing forest']},{proceduralWorld:{approvedDesign:false}}]){
+      const plan=evaluate(layout);
+      assert.equal(plan.autoBiomeEvaluation.evaluated,true);
+      assert.equal(plan.autoBiomeEvaluation.status,'APPROVED_DESIGN_REQUIRED');
+      assert.equal(plan.autoBiomeEvaluation.designInput.layoutMutationAuthorized,false);
+      assert.ok(plan.autoBiomeEvaluation.designInput.missingInputs.length);
+      assert.doesNotMatch(assetProductionGuidance(plan),/CANONICAL NATIVE 3D WORLD CONSTRUCTION/);
+    }
+    const input={approvedDesign:true,seed:'authored-seed',width:18,height:16,cellSize:4,biome:'ISLAND',climate:'TROPICAL',buildingStyle:'LOCAL',density:.1};
+    const nested=evaluate({dimension:'3D',proceduralWorld:input});
+    const explicit=evaluate({}, {proceduralWorld:input});
+    assert.deepEqual(nested.proceduralWorldLayout,explicit.proceduralWorldLayout);
+    assert.equal(nested.autoBiomeEvaluation.source,'LATEST_VERIFIED_GAME_SPATIAL_DESIGN');
+    assert.equal(nested.proceduralWorldLayout.seed,'authored-seed');
+    assert.equal(nested.autoBiomeEvaluation.runtimeVerified,false);
+    assert.equal(nested.autoBiomeEvaluation.gameSourceMutationPerformed,false);
+    assert.equal(nested.autoBiomeEvaluation.designInput.designFingerprint,'design-source');
+    assert.deepEqual(nested.autoBiomeEvaluation.designInput.missingInputs,[]);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
