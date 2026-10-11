@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-amz98z",
+      "worker": "vibe2",
+      "taskId": "seed-roblox-story-rpg-adventur-blox-fruits-studio-evolution-roblox-usability-v1",
+      "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+      "files": [
+        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/client/Game.client.luau",
+        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/server/Game.server.luau"
+      ],
+      "baseSha": "e764fe5c274a99e5f192500fc7e27861b60eb09d",
+      "runId": "38129872250",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T10:51:32.875Z",
+      "expiresAt": "2026-10-11T11:36:32.875Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-roblox-story-rpg-adventur-blox-fruits-studio-evolution-roblox-usability-v1"
+      ]
+    }
+  ]
 }
