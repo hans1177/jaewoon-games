@@ -156,8 +156,11 @@ function deploymentSourceFiles(platform,gameId,linkedTask,diagnosticFiles=[]){
     return files.length===1?files:[];
   }
   if(platform==='ROBLOX'){
-    const files=[root+'/server/Game.server.luau',root+'/client/Game.client.luau'].filter(file=>fs.existsSync(file));
-    return files.length===1?files:[];
+    // F0 source failures can span canonical server and client scripts; Work Lock and the causal
+    // repair gate choose the actual responsible source after reproduction.
+    const files=[root+'/server/Game.server.luau',root+'/client/Game.client.luau']
+      .filter(file=>fs.existsSync(file)&&fs.statSync(file).isFile());
+    return files;
   }
   return[];
 }
