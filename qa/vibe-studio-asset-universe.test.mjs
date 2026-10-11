@@ -5511,7 +5511,7 @@ test('character action skill and motion requests reuse registered cross-game ass
     {id:'shared-vfx',family:'VFX',role:'IMPACT_PRESENTATION',license:'project-original',status:'REPO_ASSET',platform:'SHARED'},
     {id:'shared-audio',family:'AUDIO',role:'SKILL_SOUND',license:'project-original',status:'REPO_ASSET',platform:'SHARED'}
   ],externalSources:[{id:'unneeded-external',name:'Extern',category:'CHARACTER',license:'CC0',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,sourceUrl:'https://example.org/source',licenseEvidenceUrl:'https://example.org/license',verifiedAt:'2026-10-11',platformTargets:['UNITY']}]};
-  const summary=buildAssetSupplyDecisionSummary({gameId:'fantasy-survival',target:'unity',request:'캐릭터 액션 스킬 모션 이펙트 개선',registry,executionPlan:{}});
+  const summary=buildAssetSupplyDecisionSummary({gameId:'fantasy-survival',target:'unity',request:'캐릭터 액션 스킬 모션 이펙트 효과음 개선',registry,executionPlan:{}});
   for(const family of ['CHARACTER','MOTION','SKILL','VFX','AUDIO']){
     assert.ok(summary.requiredFamilies.includes(family),family+' must be requested');
     assert.ok(summary.nextActions.some(a=>a.family===family&&a.assetId?.startsWith('shared-')&&a.action==='ADAPT'),family+' must reuse internal library');
@@ -5542,6 +5542,37 @@ test('asset supply summary indexes registry and quality lookups instead of neste
 });
 
 
+
+test('acquired CC0 3D town models remain reusable shared geometry and never claim gameplay runtime PASS',()=>{
+  const base=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(base,'company-asset-library.json'),'utf8'));
+  const ledger=JSON.parse(fs.readFileSync(path.join(base,'assets/asset-license-ledger.json'),'utf8'));
+  const acquired=registry.assets.filter(row=>row.id?.startsWith('external-tinytreats-'));
+  assert.equal(acquired.length,32,'all 32 real CC0 models must be in the existing common asset registry');
+  assert.equal(new Set(acquired.map(row=>row.id)).size,32);
+  const rights=ledger.entries.find(row=>row.id==='tinytreats-homely-house-cc0-v1');
+  assert.equal(rights?.license,'CC0');
+  assert.equal(rights?.commercialUse,true);
+  assert.equal(rights?.modificationUse,true);
+  for(const asset of acquired){
+    assert.equal(asset.companyCommonBase,true,asset.id);
+    assert.equal(asset.license,'CC0',asset.id);
+    assert.equal(asset.originalSourceImmutable,true,asset.id);
+    assert.equal(asset.productionVerified,false,asset.id+' cannot self-promote');
+    assert.equal(asset.nativeRuntimeVerified,false,asset.id+' needs per-game runtime QA');
+    assert.ok(['BUILDING','ENVIRONMENT','PROP'].includes(asset.family),asset.id);
+    const model=path.join(base,asset.path.replace(/^\\//,''));
+    assert.ok(fs.existsSync(model),asset.id+' real OBJ missing');
+    const content=fs.readFileSync(model,'utf8');
+    assert.equal(createHash('sha256').update(content).digest('hex'),asset.sourceHash,asset.id+' source integrity');
+    assert.ok((content.match(/^v /gm)||[]).length>=24,asset.id+' vertices');
+    assert.ok((content.match(/^f /gm)||[]).length>=15,asset.id+' faces');
+    const material=path.join(path.dirname(model),path.basename(model,'.obj')+'.mtl');
+    assert.ok(fs.existsSync(material),asset.id+' material required for native import');
+    assert.match(content,/^mtllib .+\\.mtl$/m,asset.id+' must reference its native material');
+    assert.ok(asset.sourceObjQa?.status==='OBJ_STATIC_GEOMETRY_PASS');
+  }
+});
 
 test('company catalog revision only claims synchronized common packs and retains pending maintenance debt',()=>{
   const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
