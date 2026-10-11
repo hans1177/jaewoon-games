@@ -36,7 +36,11 @@ internal static class UnityCompanyAssets
     [Serializable] private class Accessor { public int bufferView, byteOffset, componentType, count; public string type; }
     [Serializable] private class BufferView { public int byteOffset, byteLength, byteStride; }
     [Serializable] private class MaterialData { public string name; public Pbr pbrMetallicRoughness; }
-    [Serializable] private class Pbr { public float[] baseColorFactor; }
+    [Serializable] private class Pbr
+    {
+        public float[] baseColorFactor;
+        public float metallicFactor = 1f, roughnessFactor = 1f;
+    }
     [Serializable] private class Motion { public string name; public Sampler[] samplers; public Channel[] channels; }
     [Serializable] private class Sampler { public int input, output; public string interpolation; }
     [Serializable] private class Channel { public int sampler; public Target target; }
@@ -168,14 +172,17 @@ internal static class UnityCompanyAssets
             if (channel.target == null || channel.target.node < 0 || channel.target.node >= nodes.Length
                 || channel.sampler < 0 || channel.sampler >= source.samplers.Length) continue;
             Sampler sampler = source.samplers[channel.sampler];
-            if (sampler.interpolation != "LINEAR" && sampler.interpolation != "STEP")
+            string interpolation = string.IsNullOrEmpty(sampler.interpolation) ? "LINEAR" : sampler.interpolation;
+            if (interpolation != "LINEAR" && interpolation != "STEP")
                 throw new Exception("UNITY_COMPANY_ACTION_INTERPOLATION_INVALID:" + source.name);
             int count = doc.accessors[sampler.input].count;
             if (count != doc.accessors[sampler.output].count)
                 throw new Exception("UNITY_COMPANY_ACTION_FRAME_COUNT_INVALID:" + source.name);
             bool rotated = channel.target.path == "rotation";
-            if (!rotated && channel.target.path != "translation") continue;
-            string property = rotated ? "localRotation." : "localPosition.";
+            bool scaled = channel.target.path == "scale";
+            if (!rotated && !scaled && channel.target.path != "translation")
+                throw new Exception("UNITY_COMPANY_ACTION_CHANNEL_UNSUPPORTED:" + source.name);
+            string property = rotated ? "localRotation." : scaled ? "localScale." : "localPosition.";
             var curves = new AnimationCurve[rotated ? 4 : 3];
             for (int i = 0; i < curves.Length; i++) curves[i] = new AnimationCurve();
             Quaternion previous = Quaternion.identity;
@@ -197,7 +204,7 @@ internal static class UnityCompanyAssets
                 }
                 else
                 {
-                    values[0] = -Number(doc, bytes, sampler.output, i, 0);
+                    values[0] = (scaled ? 1f : -1f) * Number(doc, bytes, sampler.output, i, 0);
                     values[1] = Number(doc, bytes, sampler.output, i, 1);
                     values[2] = Number(doc, bytes, sampler.output, i, 2);
                 }
@@ -205,7 +212,27 @@ internal static class UnityCompanyAssets
             }
             string path = AnimationUtility.CalculateTransformPath(nodes[channel.target.node], root);
             for (int k = 0; k < curves.Length; k++)
+            {
+                // 원본 STEP은 고정 포즈, LINEAR는 직선 보간. 기본 0 탄젠트의 가감속을 덧씌우지 않는다.
+                var tangent = interpolation == "STEP" ? AnimationUtility.TangentMode.Constant
+                    : AnimationUtility.TangentMode.Linear;
+                for (int i = 0; i < count; i++)
+                {
+                    AnimationUtility.SetKeyBroken(curves[k], i, true);
+                    AnimationUtility.SetKeyLeftTangentMode(curves[k], i, tangent);
+                    AnimationUtility.SetKeyRightTangentMode(curves[k], i, tangent);
+                }
                 clip.SetCurve(path, typeof(Transform), property + "xyzw"[k], curves[k]);
+                // 실제 Unity 커브를 중간 시점에 평가해 텍스트 표기만으로 보간 통과를 만들지 않는다.
+                for (int i = 1; i < count; i++)
+                {
+                    Keyframe left = curves[k].keys[i - 1], right = curves[k].keys[i];
+                    float sampleTime = Mathf.Lerp(left.time, right.time, .25f);
+                    float expected = interpolation == "STEP" ? left.value : Mathf.Lerp(left.value, right.value, .25f);
+                    if (Mathf.Abs(curves[k].Evaluate(sampleTime) - expected) > .0001f)
+                        throw new Exception("UNITY_COMPANY_ACTION_INTERPOLATION_LOSS:" + source.name);
+                }
+            }
         }
         if (clip.empty) throw new Exception("UNITY_COMPANY_EMPTY_ACTION:" + source.name);
         return clip;
@@ -303,15 +330,31 @@ internal static class UnityCompanyAssets
                 MaterialData row = matIndex >= 0 && matIndex < doc.materials.Length ? doc.materials[matIndex] : null;
                 string matPath = output + "Material" + i + ".mat";
                 if (AssetDatabase.LoadAssetAtPath<Material>(matPath) != null) AssetDatabase.DeleteAsset(matPath);
-                Shader shader = Shader.Find("Standard") ?? Shader.Find("Universal Render Pipeline/Lit")
-                    ?? Shader.Find("Unlit/Color");
+                // 재질 · 활성 렌더러에 맞는 PBR 셰이더와 원본 금속성/거칠기를 보존한다.
+                bool universal = GraphicsSettings.currentRenderPipeline != null;
+                Shader shader = Shader.Find(universal ? "Universal Render Pipeline/Lit" : "Standard");
                 if (shader == null) throw new Exception("UNITY_COMPANY_NATIVE_SHADER_MISSING");
                 var mat = new Material(shader) { name = key + "_" + i };
                 float[] rgb = row != null && row.pbrMetallicRoughness != null
                     ? row.pbrMetallicRoughness.baseColorFactor : null;
                 mat.color = rgb != null && rgb.Length >= 3
                     ? new Color(rgb[0], rgb[1], rgb[2], rgb.Length > 3 ? rgb[3] : 1f) : Color.white;
+                Pbr pbr = row != null ? row.pbrMetallicRoughness : null;
+                float metallic = pbr != null ? pbr.metallicFactor : 1f;
+                float roughness = pbr != null ? pbr.roughnessFactor : 1f;
+                if (float.IsNaN(metallic) || float.IsNaN(roughness)
+                    || metallic < 0f || metallic > 1f || roughness < 0f || roughness > 1f)
+                    throw new Exception("UNITY_COMPANY_PBR_FACTOR_INVALID:" + key);
+                mat.SetFloat("_Metallic", metallic);
+                string smoothnessProperty = universal ? "_Smoothness" : "_Glossiness";
+                mat.SetFloat(smoothnessProperty, 1f - roughness);
                 AssetDatabase.CreateAsset(mat, matPath);
+                Material persistedMaterial = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+                if (persistedMaterial == null || !persistedMaterial.HasProperty("_Metallic")
+                    || !persistedMaterial.HasProperty(smoothnessProperty)
+                    || Mathf.Abs(persistedMaterial.GetFloat("_Metallic") - metallic) > .0001f
+                    || Mathf.Abs(persistedMaterial.GetFloat(smoothnessProperty) - (1f - roughness)) > .0001f)
+                    throw new Exception("UNITY_COMPANY_PBR_CONVERSION_LOSS:" + key);
                 materials.Add(mat);
             }
             Skin skin = doc.skins[0];

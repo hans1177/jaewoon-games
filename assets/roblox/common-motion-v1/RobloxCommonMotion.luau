@@ -780,14 +780,15 @@ local function makeGather(sequence,row)
 end
 
 local function makeCraft(sequence,row)
-	for i=0,4 do
-		local t=row.duration*i/4
-		local a=math.sin(i*math.pi)
+	-- 모션 · 반주기 간격은 sin(n*pi)=0으로 모든 손동작을 없앤다. 한 주기를 8등분한다.
+	for i=0,8 do
+		local t=row.duration*i/8
+		local a=math.sin(i*math.pi/4)
 		addFrame(sequence,t,{
 			UpperTorso=angles(6,a*5,0),Head=angles(4,-a*4,0),
 			LeftUpperArm=angles(-48+a*12,-10,-14),LeftLowerArm=angles(-58-a*18,0,-8),
 			RightUpperArm=angles(-48-a*12,10,14),RightLowerArm=angles(-58+a*18,0,8),
-		},i==0 and "LoopStart" or i==4 and "LoopEnd" or nil)
+		},i==0 and "LoopStart" or i==8 and "LoopEnd" or nil)
 	end
 end
 

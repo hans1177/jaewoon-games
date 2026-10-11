@@ -1,13 +1,13 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-fantasy-unityweb-scene-collider-repair-20261011",
+  "requestId": "owner-fantasy-asset-motion-quality-20261011",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
   "sourceCommit": "",
   "outputRoot": "web-games/fantasy-survival",
-  "purpose": "REBUILD_EXISTING_CANONICAL_MAGIC_FOREST_UNITY_WEBGL_AFTER_SCENE_BUILD_FAILURE_38121720395; USE_UNITY_NATIVE_NULL_EQUALITY_TO_CREATE_MISSING_DISABLED_SCENE_COLLIDERS; RETAIN_MERGED_ANIMATION_MODULE_AND_VERIFIED_NATIVE_ASSET_HASHES; REQUIRE_MOBILE_BROWSER_PLAY_QA_REGRESSION_AND_VERIFIED_CLOUDFLARE_DEPLOY; PRESERVE_GAMEPLAY_SAVE_BALANCE_MULTIPLAYER",
+  "purpose": "REBUILD_EXISTING_CANONICAL_MAGIC_FOREST_UNITY_WEBGL_AFTER_SCENE_BUILD_FAILURE_38121720395; USE_UNITY_NATIVE_NULL_EQUALITY_TO_CREATE_MISSING_DISABLED_SCENE_COLLIDERS; RETAIN_MERGED_ANIMATION_MODULE_AND_VERIFIED_NATIVE_ASSET_HASHES; REQUIRE_MOBILE_BROWSER_PLAY_QA_REGRESSION_AND_VERIFIED_CLOUDFLARE_DEPLOY; PRESERVE_GAMEPLAY_SAVE_BALANCE_MULTIPLAYER; PRESERVE_AUTHORED_PBR_METALLIC_ROUGHNESS_AND_STEP_LINEAR_SCALE_ANIMATION; CHECK_EXACT_CONVERTED_MATERIALS_AND_CURVES_IN_UNITY_EDITOR",
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
@@ -38,7 +38,7 @@
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json",
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json"
   ],
-  "assetValidationStatus": "COMMON_CC0_3D_VILLAGE_SKINNED_CHARACTER_AND_SKILL_EFFECT_READY_FOR_INDEPENDENT_WEB_RUNTIME_QA",
+  "assetValidationStatus": "PBR_AND_MOTION_CONVERSION_REPAIR_SOURCE_READY_NATIVE_RUNTIME_QA_PENDING",
   "productionVerified": false,
   "registryAssetIds": [
     "unity-fantasy-survival-tree-trunk-v1",

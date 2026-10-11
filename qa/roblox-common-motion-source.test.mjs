@@ -417,6 +417,13 @@ test('authored R15 poses preserve timing, root authority, loop seams and action 
   for(const id of ['IDLE_RELAXED','WALK','JOG','RUN','SPRINT','SLOPE_ASCEND','SLOPE_DESCEND','INJURED_WALK']){
     const frames=data[id].frames;samePose(frames[0],frames.at(-1),id+' loop');
   }
+  // 제작 동작이 전부 sin(n*pi)=0으로 굳는 회귀를 실제 Luau 관절 결과에서 잡는다.
+  const craft=data.CRAFT_LOOP.frames;
+  samePose(craft[0],craft.at(-1),'CRAFT_LOOP seam');
+  for(const joint of ['LeftUpperArm','RightUpperArm','LeftLowerArm','RightLowerArm']){
+    const angles=craft.map(frame=>Math.atan2(frame.joints[joint].matrix[7],frame.joints[joint].matrix[4]));
+    assert.ok(Math.max(...angles)-Math.min(...angles)>.25,joint+' crafting articulation must actually move');
+  }
   for(const [from,to] of [['START','WALK'],['JUMP_START','LAND'],['LIGHT_ATTACK_1','LIGHT_ATTACK_1'],['HEAVY_ATTACK_1','HEAVY_ATTACK_1']]){
     samePose(data[from].frames.at(-1),data[to].frames[0],from+' -> '+to);
   }

@@ -1385,6 +1385,41 @@ function anonymizeAnimationNamesInGlb(sourceFile,targetFile){
   rewriteAnimationNamesInGlb(sourceFile,targetFile,index=>'clip_'+String(index).padStart(4,'0'));
 }
 
+// 공용 인물·몬스터 검사: 이름/클립 수가 남아도 모든 관절이 굳으면 제작 수리로 돌린다.
+test('master GLB measures real articulation and rejects frozen or root-only named motions',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-articulation-'));
+  try{
+    for(const source of ['assets/shared/humanoid-guardian-actions.glb','assets/shared/creature-wolf-actions.glb']){
+      const original=fs.readFileSync(source),jsonLength=original.readUInt32LE(12);
+      const doc=JSON.parse(original.subarray(20,20+jsonLength).toString('utf8'));
+      const baseline=inspectVibeSourceGlb({repoRoot:process.cwd(),source:{path:source}});
+      assert.ok(baseline.inventory.articulatedMovingJointCount>2,source);
+      const parents=new Map(doc.nodes.flatMap((node,i)=>(node.children||[]).map(child=>[child,i])));
+      const jointIds=new Set(doc.skins.flatMap(skin=>skin.joints));
+      for(const mode of ['frozen','opposite-quaternion-sign','root-only','nonfinite']){
+        const bytes=Buffer.from(original),binaryOffset=28+jsonLength;
+        for(const animation of doc.animations)for(const channel of animation.channels){
+          const sampler=animation.samplers[channel.sampler],a=doc.accessors[sampler.output],v=doc.bufferViews[a.bufferView];
+          const size=a.type==='VEC4'?4:3,stride=v.byteStride||size*4;
+          const begin=binaryOffset+(v.byteOffset||0)+(a.byteOffset||0);
+          if(mode==='root-only'&&jointIds.has(channel.target.node)&&!jointIds.has(parents.get(channel.target.node)))continue;
+          for(let frame=1;frame<a.count;frame++)for(let c=0;c<size;c++){
+            let value=bytes.readFloatLE(begin+c*4);
+            if(mode==='opposite-quaternion-sign'&&channel.target.path==='rotation'&&frame%2)value=-value;
+            if(mode==='nonfinite')value=NaN;
+            bytes.writeFloatLE(value,begin+frame*stride+c*4);
+          }
+        }
+        const filename=mode+'.glb';fs.writeFileSync(path.join(root,filename),bytes);
+        const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,source:{path:filename},family:'CHARACTER'});
+        assert.equal(result.pass,false,source+':'+mode);
+        if(mode==='nonfinite')assert.ok(result.blockers.includes('GLB_ANIMATION_SAMPLER_BINDING_INVALID'));
+        else assert.ok(result.blockers.includes('MASTER_GLB_ARTICULATED_JOINT_MOTION_REQUIRED'),JSON.stringify(result.blockers));
+      }
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('master GLB rejects broken accessor skin node and animation sampler lineage',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'broken-master-glb-'));
   try{
