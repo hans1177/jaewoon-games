@@ -1354,7 +1354,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(GUI.Button(new Rect(w-sz-14,yy-sz,sz,sz),"공격"))Attack();
         if(GUI.Button(new Rect(w-sz*2-19,yy,sz,sz),"가방"))panel=Panel.Bag;
         if(GUI.Button(new Rect(w-sz-14,yy,sz,sz),"제작")){craftPage=0;panel=Panel.Craft;}
-        if(GUI.Button(new Rect(w*.42f,yy,sz,sz),"채집"))Gather();
+        // 모바일 · 아래쪽 방향 버튼과 채집 버튼이 겹치지 않도록 채집은 윗줄 중앙에 둔다.
+        if(GUI.Button(new Rect(w*.5f-sz*.5f,yy-sz,sz,sz),"채집"))Gather();
     }
 
     private void DrawPanel(float w,float h)
