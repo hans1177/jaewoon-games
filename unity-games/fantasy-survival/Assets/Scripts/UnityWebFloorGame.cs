@@ -396,6 +396,17 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private Vector2 pointerOrigin;
     private int progress, level = 1, resource = 10, actions;
 
+    // 시각 · 인스턴스마다 재질을 복제하지 않고 같은 공용 3D 지오메트리를 지역별 색감으로 보정한다.
+    private static void TintCompanyMesh(GameObject visual,Color tint)
+    {
+        if(visual==null)return;
+        var block=new MaterialPropertyBlock();
+        block.SetColor("_Color",tint);
+        block.SetColor("_BaseColor",tint);
+        foreach(Renderer renderer in visual.GetComponentsInChildren<Renderer>(true))
+            if(renderer!=null)renderer.SetPropertyBlock(block);
+    }
+
     // 자산 · 공용 라이브러리 모델을 Unity Resources 네이티브 파생본으로 소비한다.
     [Serializable] private sealed class LibraryUiTheme
     {
@@ -417,6 +428,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private float playerActionStart,playerActionUntil,playerActionDuration;
     private int playerActionKind;
     private Texture2D uiPanelTexture,uiButtonTexture,uiButtonActiveTexture,uiInsetTexture;
+    // 스킬 연출 전용 공용 재질은 전투 판정·네트워크·저장 상태와 무관하다.
+    private Material combatFxMaterial;
 
     // 메인 · 초기화
     private void Awake()
@@ -476,6 +489,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         mainCamera.clearFlags = CameraClearFlags.SolidColor;
         mainCamera.backgroundColor = new Color(0.065f, 0.16f, 0.14f);
         mainCamera.fieldOfView = 57f;
+        // 환경 · 실제 3D 수목과 지역 실루엣이 구분되도록 기존 월드 조명만 보정한다.
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Exponential;
+        RenderSettings.fogDensity = .012f;
+        RenderSettings.fogColor = new Color(.15f,.24f,.22f);
+        RenderSettings.ambientLight = new Color(.57f,.65f,.62f);
 
         if (FindFirstObjectByType<Light>() == null)
         {
@@ -483,15 +502,23 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Light sunlight = source.AddComponent<Light>();
             sunlight.type = LightType.Directional;
             sunlight.intensity = 1.15f;
+            sunlight.color = new Color(.99f,.94f,.79f);
             source.transform.rotation = Quaternion.Euler(46f, -25f, 0f);
         }
 
+        // 오토 바이옴 · 기존 5개 지역의 월드 충돌과 좌표는 그대로 둔다.
+        // 승인된 세계지형의 숲·협곡·호숫가·설원·황무지 유형을 실제 Unity 3D 메시로 표현한다.
+        // 고정 시드의 시각용 지형에는 Collider를 추가하지 않아 이동/채집/세이브가 바뀌지 않는다.
         Color[] regionColors =
         {
-            new Color(.16f,.39f,.21f), new Color(.35f,.30f,.25f),
-            new Color(.22f,.34f,.42f), new Color(.25f,.28f,.37f),
+            new Color(.40f,.35f,.30f), new Color(.22f,.38f,.43f),
+            new Color(.17f,.39f,.22f), new Color(.69f,.76f,.81f),
             new Color(.55f,.37f,.20f)
         };
+        string[] biomeNames={"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"};
+        Shader biomeShader=Shader.Find("Standard")??Shader.Find("Universal Render Pipeline/Lit")
+            ??Shader.Find("Unlit/Color");
+        if(biomeShader==null)throw new InvalidOperationException("MAGIC_FOREST_AUTOBIOME_SHADER_MISSING");
         for (int i = 0; i < regionColors.Length; i++)
         {
             GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -500,7 +527,69 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             ground.transform.position = new Vector3((i - 2) * 16f, -.45f, 0f);
             ground.transform.localScale = new Vector3(16f, .9f, 80f);
             Tint(ground, regionColors[i]);
+            // 기존 땅의 Collider는 유지하고 단조로운 평면 그래픽만 네이티브 메시로 대체한다.
+            ground.GetComponent<Renderer>().enabled=false;
+            const int widthSegments=16, lengthSegments=48;
+            var vertices=new Vector3[(widthSegments+1)*(lengthSegments+1)];
+            var triangles=new int[widthSegments*lengthSegments*6];
+            for(int z=0;z<=lengthSegments;z++)
+            for(int x=0;x<=widthSegments;x++)
+            {
+                float px=x*16f/widthSegments-8f,pz=z*80f/lengthSegments-40f;
+                float noise=Mathf.PerlinNoise((x+i*23f)*.22f,(z+i*31f)*.19f);
+                float detail=Mathf.PerlinNoise((x+i*17f)*.69f,(z+i*11f)*.51f);
+                float elevation=-.035f+noise*.045f+detail*.018f;
+                if(i==0)elevation+=Mathf.Pow(Mathf.Abs(px)/8f,3f)*.095f;
+                if(i==1)elevation-=Mathf.Clamp01((18f-Mathf.Abs(pz-24f))/18f)*.014f;
+                if(i==3)elevation+=Mathf.Abs(px)*.0035f;
+                vertices[z*(widthSegments+1)+x]=new Vector3(px,elevation,pz);
+            }
+            int triangle=0;
+            for(int z=0;z<lengthSegments;z++)
+            for(int x=0;x<widthSegments;x++)
+            {
+                int lower=z*(widthSegments+1)+x,upper=lower+widthSegments+1;
+                triangles[triangle++]=lower;
+                triangles[triangle++]=upper;
+                triangles[triangle++]=lower+1;
+                triangles[triangle++]=lower+1;
+                triangles[triangle++]=upper;
+                triangles[triangle++]=upper+1;
+            }
+            var mesh=new Mesh{name="MagicForest_AutoBiome_"+biomeNames[i]};
+            mesh.vertices=vertices;
+            mesh.triangles=triangles;
+            mesh.RecalculateNormals();
+            GameObject surface=new GameObject("NativeAutoBiome_"+biomeNames[i]);
+            surface.transform.SetParent(worldRoot.transform);
+            surface.transform.position=new Vector3((i-2)*16f,0f,0f);
+            surface.AddComponent<MeshFilter>().sharedMesh=mesh;
+            Material biomeMaterial=new Material(biomeShader);
+            biomeMaterial.color=regionColors[i];
+            surface.AddComponent<MeshRenderer>().sharedMaterial=biomeMaterial;
+            Debug.Log("MAGIC_FOREST_AUTOBIOME_REGION="+biomeNames[i]+" triangles="+triangles.Length/3
+                +" status=SOURCE_BOUND_RUNTIME_QA_REQUIRED");
+            // 지역별 랜드마크는 기존 모델 바인더에서만 생성한다. 실제 전투/충돌 루프에 영향 없음.
+            for(int prop=0;prop<10;prop++)
+            {
+                float azimuth=prop*2.39996f+i*.71f;
+                float distance=9.2f+(prop%4)*2.8f;
+                Vector3 pos=new Vector3((i-2)*16f+Mathf.Cos(azimuth)*Mathf.Min(6f,distance*.36f),
+                    .015f,Mathf.Sin(azimuth)*distance*2.1f);
+                if(Mathf.Abs(pos.x)<3f && Mathf.Abs(pos.z)<6f)continue;
+                string asset=i==0?"MagicForestRock":i==1?"MagicForestVillage_cobblestones":
+                    i==2?(prop%3==0?"MagicForestVillage_tree_large":"MagicForestVillage_tree"):
+                    i==3?(prop%3==0?"MagicForestRock":"MagicForestVillage_tree"):
+                    (prop%3==0?"MagicForestVillage_foliage_A":"MagicForestRock");
+                GameObject scenery=BindCompanyVisual(asset,worldRoot.transform,pos,
+                    Vector3.one*(i==3?.74f:i==0?1.30f:.91f),Quaternion.Euler(0f,prop*61f,0f));
+                if(scenery!=null)TintCompanyMesh(scenery,
+                    i==3?new Color(.78f,.83f,.88f):i==0?new Color(.60f,.52f,.45f):
+                    i==1?new Color(.44f,.59f,.64f):i==4?new Color(.67f,.51f,.34f):
+                    new Color(.37f,.62f,.37f));
+            }
         }
+        Debug.Log("MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS_SOURCE_BOUND_RUNTIME_QA_REQUIRED");
         // 그래픽 · 공용 3D OBJ 원본에서 Unity Y축/재질에 맞춰 파생 제작한 실제 메시를 연결한다.
         // 기존 Tree/Rock 콜라이더와 채집 판정은 그대로 두고, 시각 모델만 교체한다.
         GameObject treeTrunkSource = Resources.Load<GameObject>("CompanyAssets/MagicForestTrunk");
@@ -602,6 +691,71 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             BindCompanyVisual("MagicForestRoad",worldRoot.transform,
                 new Vector3((i-2)*14f,-.005f,6.5f),new Vector3(1.12f,.44f,1.12f),
                 Quaternion.Euler(0f,(i%2)*180f,0f));
+        // 마을 · 검증된 외부 CC0 모델을 기존 공용 Unity Resources 로더로 직접 배치한다.
+        // 건물/길/울타리는 시각 전용이고 전투 판정·채집·충돌·저장에는 개입하지 않는다.
+        Vector3[] villageLocations={new Vector3(-27f,0f,21f),new Vector3(26f,0f,-23f),new Vector3(21f,0f,29f)};
+        int villageHouses=0,villageDetailCount=0;
+        for(int area=0;area<villageLocations.Length;area++)
+        {
+            Vector3 center=villageLocations[area];
+            Quaternion direction=Quaternion.Euler(0f,area==1?180f:0f,0f);
+            Color wallTint=area==1?new Color(.68f,.64f,.56f):new Color(.83f,.70f,.55f);
+            GameObject house=BindCompanyVisual("MagicForestVillage_house",worldRoot.transform,
+                center+new Vector3(0f,-.23f,0f),Vector3.one*(area==1?.88f:.96f),direction);
+            if(house==null)continue;
+            TintCompanyMesh(house,wallTint);
+            villageHouses++;
+            GameObject door=BindCompanyVisual("MagicForestVillage_house_door",worldRoot.transform,
+                center+direction*new Vector3(0f,-.14f,-2.65f),Vector3.one*.9f,direction);
+            if(door!=null){TintCompanyMesh(door,new Color(.57f,.38f,.26f));villageDetailCount++;}
+            GameObject chimney=BindCompanyVisual("MagicForestVillage_house_chimney",worldRoot.transform,
+                center+direction*new Vector3(1.7f,.7f,1.0f),Vector3.one*.95f,direction);
+            if(chimney!=null){TintCompanyMesh(chimney,new Color(.68f,.66f,.65f));villageDetailCount++;}
+            GameObject gate=BindCompanyVisual("MagicForestVillage_gate_single",worldRoot.transform,
+                center+direction*new Vector3(-3.3f,.05f,-5.0f),Vector3.one*.98f,direction);
+            if(gate!=null){TintCompanyMesh(gate,new Color(.59f,.42f,.27f));villageDetailCount++;}
+            for(int side=-1;side<=1;side+=2)
+            {
+                GameObject fence=BindCompanyVisual("MagicForestVillage_fence_straight",worldRoot.transform,
+                    center+direction*new Vector3(side*4.2f,.02f,-4.2f),new Vector3(2.0f,1.0f,1.15f),direction);
+                if(fence!=null){TintCompanyMesh(fence,new Color(.50f,.38f,.27f));villageDetailCount++;}
+                GameObject corner=BindCompanyVisual("MagicForestVillage_fence_corner",worldRoot.transform,
+                    center+direction*new Vector3(side*5.7f,.02f,-3.2f),Vector3.one*1.1f,direction);
+                if(corner!=null){TintCompanyMesh(corner,new Color(.49f,.36f,.26f));villageDetailCount++;}
+            }
+            GameObject bench=BindCompanyVisual("MagicForestVillage_bench_A",worldRoot.transform,
+                center+direction*new Vector3(3.8f,0f,2.3f),Vector3.one*1.05f,direction);
+            if(bench!=null){TintCompanyMesh(bench,new Color(.56f,.42f,.29f));villageDetailCount++;}
+            GameObject parcel=BindCompanyVisual("MagicForestVillage_package",worldRoot.transform,
+                center+direction*new Vector3(2.4f,0f,-2.0f),Vector3.one*.85f,direction);
+            if(parcel!=null){TintCompanyMesh(parcel,new Color(.78f,.67f,.43f));villageDetailCount++;}
+            GameObject mailbox=BindCompanyVisual("MagicForestVillage_mailbox",worldRoot.transform,
+                center+direction*new Vector3(-3.8f,0f,-2.2f),Vector3.one*1.05f,direction);
+            if(mailbox!=null){TintCompanyMesh(mailbox,new Color(.46f,.49f,.47f));villageDetailCount++;}
+            for(int pathTile=0;pathTile<4;pathTile++)
+            {
+                GameObject cobble=BindCompanyVisual("MagicForestVillage_cobblestones",worldRoot.transform,
+                    center+direction*new Vector3(0f,.02f,-4f-pathTile*1.65f),Vector3.one*1.35f,direction);
+                if(cobble!=null){TintCompanyMesh(cobble,new Color(.66f,.63f,.55f));villageDetailCount++;}
+            }
+            for(int grove=0;grove<4;grove++)
+            {
+                float theta=grove*Mathf.PI*.65f+area*.5f;
+                Vector3 outside=center+new Vector3(Mathf.Cos(theta)*9f,0f,Mathf.Sin(theta)*8.2f);
+                string treeName=grove%2==0?"MagicForestVillage_tree_large":"MagicForestVillage_tree";
+                GameObject nativeTree=BindCompanyVisual(treeName,worldRoot.transform,
+                    outside,Vector3.one*(1.0f+grove*.11f),Quaternion.Euler(0f,area*31f+grove*83f,0f));
+                if(nativeTree!=null){TintCompanyMesh(nativeTree,new Color(.42f,.60f,.43f));villageDetailCount++;}
+                string foliageName=grove%2==0?"MagicForestVillage_foliage_A":"MagicForestVillage_foliage_B";
+                GameObject foliage=BindCompanyVisual(foliageName,worldRoot.transform,
+                    outside+new Vector3(1.2f,0f,-.8f),Vector3.one*1.15f,Quaternion.Euler(0f,grove*43f,0f));
+                if(foliage!=null){TintCompanyMesh(foliage,new Color(.49f,.68f,.44f));villageDetailCount++;}
+            }
+        }
+        Debug.Log("MAGIC_FOREST_WEB_CC0_VILLAGES="+villageHouses+" details="+villageDetailCount
+            +" status="+(villageHouses==villageLocations.Length?"SOURCE_BOUND_RUNTIME_QA_REQUIRED":"REPAIR_REQUIRED"));
+        if(villageHouses!=villageLocations.Length || villageDetailCount<60)
+            throw new InvalidOperationException("MAGIC_FOREST_WEB_CC0_VILLAGE_ASSET_MISSING");
         // 자원 · 원본 웹의 섬유 노드를 3D 채집 대상으로 연결한다. 기존 나무/돌 보상은 불변.
         for (int i = 0; i < 36; i++)
         {
@@ -1048,6 +1202,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 {
                     foreach(Renderer oldRenderer in root.GetComponentsInChildren<Renderer>())
                         if(!oldRenderer.transform.IsChildOf(rigVisual.transform))oldRenderer.enabled=false;
+                    if(name.Contains("crystal")||name.Contains("fire")||name.Contains("ice")||
+                        name.Contains("frost")||name.Contains("sand")||name.Contains("toxic"))
+                        TintCompanyMesh(rigVisual,baseColor);
                     PlayNativeMotion(monster.nativeMotion,"IDLE_BREATH");
                 }
             }
@@ -1251,12 +1408,88 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
     }
 
+    // 스킬 · 원래 피해 이벤트만 관찰하여 입자·타격감을 재생한다. 추가 피격/드랍 판정 없음.
+    private Material CombatFxMaterial()
+    {
+        if(combatFxMaterial!=null)return combatFxMaterial;
+        Shader shader=Shader.Find("Particles/Standard Unlit")??Shader.Find("Sprites/Default")
+            ??Shader.Find("Unlit/Color");
+        if(shader==null)return null;
+        combatFxMaterial=new Material(shader){name="MagicForest_CombatPresentation"};
+        return combatFxMaterial;
+    }
+
+    private void SpawnImpactEffect(Vector3 position,Color color,float size)
+    {
+        Material material=CombatFxMaterial();
+        if(material==null || worldRoot==null)return;
+        GameObject effect=new GameObject("MagicForest_NativeHitVFX");
+        effect.transform.SetParent(worldRoot.transform,false);
+        effect.transform.position=position;
+        ParticleSystem particles=effect.AddComponent<ParticleSystem>();
+        var main=particles.main;
+        main.duration=.32f;
+        main.loop=false;
+        main.playOnAwake=false;
+        main.startLifetime=new ParticleSystem.MinMaxCurve(.12f,.27f);
+        main.startSpeed=new ParticleSystem.MinMaxCurve(1.6f*size,3.2f*size);
+        main.startSize=new ParticleSystem.MinMaxCurve(.08f*size,.20f*size);
+        main.startColor=color;
+        main.simulationSpace=ParticleSystemSimulationSpace.World;
+        main.maxParticles=18;
+        main.stopAction=ParticleSystemStopAction.Destroy;
+        var emission=particles.emission;
+        emission.rateOverTime=0f;
+        emission.SetBursts(new[]{new ParticleSystem.Burst(0f,14)});
+        var shape=particles.shape;
+        shape.shapeType=ParticleSystemShapeType.Sphere;
+        shape.radius=.16f*size;
+        ParticleSystemRenderer renderer=effect.GetComponent<ParticleSystemRenderer>();
+        renderer.sharedMaterial=material;
+        particles.Play();
+    }
+
+    // 유도 스킬의 실제 3D 탄체에 잔상/빛을 부여하며 명중 판정은 기존 UpdateHomingSpells만 담당한다.
+    private void StyleHomingProjectile(GameObject projectile,bool sand)
+    {
+        if(projectile==null)return;
+        Color color=sand?new Color(1f,.75f,.32f):new Color(.65f,.43f,1f);
+        Renderer core=projectile.GetComponent<Renderer>();
+        if(core!=null)
+        {
+            core.material.color=color;
+            core.material.EnableKeyword("_EMISSION");
+            core.material.SetColor("_EmissionColor",color*.85f);
+        }
+        Material material=CombatFxMaterial();
+        if(material!=null)
+        {
+            TrailRenderer trail=projectile.AddComponent<TrailRenderer>();
+            trail.sharedMaterial=material;
+            trail.time=.30f;
+            trail.minVertexDistance=.08f;
+            trail.startWidth=sand?.32f:.29f;
+            trail.endWidth=.015f;
+            trail.startColor=color;
+            trail.endColor=new Color(color.r,color.g,color.b,0f);
+        }
+        Light glow=projectile.AddComponent<Light>();
+        glow.type=LightType.Point;
+        glow.color=color;
+        glow.intensity=.9f;
+        glow.range=2.4f;
+        glow.shadows=LightShadows.None;
+    }
+
     // 전투 · 기존 처치/진행 처리는 유지하고 아군 소환수 처치는 제외한다.
     private void HurtMonster(Monster target,float damage)
     {
         if(target==null||target.hp<=0f)return;
         target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
         target.hitPoseUntil=Time.time+motionProfile.hitSeconds;
+        if(target.obj!=null && damage>0f)
+            SpawnImpactEffect(target.obj.transform.position+Vector3.up*.95f,
+                target.hp<=0f?new Color(1f,.75f,.32f):new Color(.96f,.42f,.29f),1f);
         if(target.hp<=0f)
         {
             if(!target.ally)
@@ -1287,6 +1520,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             if(towards.sqrMagnitude<=step*step || towards.magnitude<=.85f)
             {
                 HurtMonster(target,spell.damage);
+                SpawnImpactEffect(destination,spell.sandEffect?new Color(.95f,.78f,.36f):
+                    new Color(.75f,.50f,1f),1.5f);
                 if(spell.sandEffect && target.hp>0f && UnityEngine.Random.value<.30f)
                 {
                     target.slowedUntil=Mathf.Max(target.slowedUntil,Time.time+3f);
@@ -1337,6 +1572,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Tint(sphere,sand?new Color(.89f,.73f,.33f):new Color(.74f,.49f,.98f));
             Collider collider=sphere.GetComponent<Collider>();
             if(collider!=null)Destroy(collider);
+            StyleHomingProjectile(sphere,sand);
             homingSpells.Add(new HomingSpell{targetId=target.runtimeId,
                 damage=damage,speed=sand?18f:21f,expiresAt=Time.time+3.5f,
                 sandEffect=sand,obj=sphere});
@@ -1711,6 +1947,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         foreach(Monster m in monsters)maxId=Mathf.Max(maxId,m.runtimeId+1);
         foreach(SpawnBlock b in blocks)maxId=Mathf.Max(maxId,b.id+1);
         nextId=maxId;
+    }
+
+    // 메모리 · 재사용한 이펙트 재질만 종료 시 정리한다.
+    private void OnDestroy()
+    {
+        if(combatFxMaterial!=null)Destroy(combatFxMaterial);
     }
 
     // 저장 · 타이틀/모드 선택 화면에서는 앱 중단·종료로 직전 세션을 다시 쓰지 않는다.

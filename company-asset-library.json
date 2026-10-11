@@ -1,8 +1,8 @@
 {
-  "version": 136,
+  "version": 137,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-11T05:21:14.118Z",
+  "updatedAt": "2026-10-11T05:48:00.000Z",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -77490,6 +77490,2709 @@
       "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
       "gameplayAuthority": false,
       "saveAuthority": false
+    },
+    {
+      "id": "external-tinytreats-bench-a-v1",
+      "title": "Tiny Treats · bench A",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "BENCH",
+      "role": "BENCH",
+      "tags": [
+        "bench",
+        "bench a",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "e047c05af2f7c8f35d8dacbaa3dcd66f1298b6c3",
+      "sourceHash": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+      "sourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+      "sourceParentPath": "assets/shared/homely-house/bench_A.obj",
+      "masterSourcePath": "assets/shared/homely-house/bench_A.obj",
+      "path": "/assets/shared/homely-house/bench_A.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/bench_A.obj",
+        "assets/shared/homely-house/bench_A.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/bench_A.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/bench_A.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 372,
+        "faces": 362,
+        "sourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/bench_A.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "e047c05af2f7c8f35d8dacbaa3dcd66f1298b6c3",
+          "sourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/bench_A.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-bench-b-v1",
+      "title": "Tiny Treats · bench B",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "BENCH",
+      "role": "BENCH",
+      "tags": [
+        "bench",
+        "bench b",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "a0e2965101c91989657e80295697ad5503474fe3",
+      "sourceHash": "d7a373ea5018733d6e254f12457caa46840a91fe760d17f8cb04377eda94b8de",
+      "sourceSha256": "d7a373ea5018733d6e254f12457caa46840a91fe760d17f8cb04377eda94b8de",
+      "sourceParentPath": "assets/shared/homely-house/bench_B.obj",
+      "masterSourcePath": "assets/shared/homely-house/bench_B.obj",
+      "path": "/assets/shared/homely-house/bench_B.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/bench_B.obj",
+        "assets/shared/homely-house/bench_B.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/bench_B.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/bench_B.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 124,
+        "faces": 118,
+        "sourceSha256": "d7a373ea5018733d6e254f12457caa46840a91fe760d17f8cb04377eda94b8de"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/bench_B.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "a0e2965101c91989657e80295697ad5503474fe3",
+          "sourceSha256": "d7a373ea5018733d6e254f12457caa46840a91fe760d17f8cb04377eda94b8de",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/bench_B.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-boots-v1",
+      "title": "Tiny Treats · boots",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "BOOTS",
+      "role": "BOOTS",
+      "tags": [
+        "boots",
+        "boots",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "4b1eb358770b33906c5719fd8dab539980c1573b",
+      "sourceHash": "c7f6da18403d4c10f8063eb2fdc0fc08196258bb60c1f1fe2baea33d5d0ed6a1",
+      "sourceSha256": "c7f6da18403d4c10f8063eb2fdc0fc08196258bb60c1f1fe2baea33d5d0ed6a1",
+      "sourceParentPath": "assets/shared/homely-house/boots.obj",
+      "masterSourcePath": "assets/shared/homely-house/boots.obj",
+      "path": "/assets/shared/homely-house/boots.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/boots.obj",
+        "assets/shared/homely-house/boots.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/boots.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/boots.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 326,
+        "faces": 358,
+        "sourceSha256": "c7f6da18403d4c10f8063eb2fdc0fc08196258bb60c1f1fe2baea33d5d0ed6a1"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/boots.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "4b1eb358770b33906c5719fd8dab539980c1573b",
+          "sourceSha256": "c7f6da18403d4c10f8063eb2fdc0fc08196258bb60c1f1fe2baea33d5d0ed6a1",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/boots.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-cobblestones-v1",
+      "title": "Tiny Treats · cobblestones",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "COBBLESTONES",
+      "role": "COBBLESTONES",
+      "tags": [
+        "cobblestones",
+        "cobblestones",
+        "environment",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을",
+        "nature",
+        "forest",
+        "숲"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "155cd9d7000ea912f85fcaad0e1ec8f1f9b5dca7",
+      "sourceHash": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+      "sourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+      "sourceParentPath": "assets/shared/homely-house/cobblestones.obj",
+      "masterSourcePath": "assets/shared/homely-house/cobblestones.obj",
+      "path": "/assets/shared/homely-house/cobblestones.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/cobblestones.obj",
+        "assets/shared/homely-house/cobblestones.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/cobblestones.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/cobblestones.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 250,
+        "faces": 276,
+        "sourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/cobblestones.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "155cd9d7000ea912f85fcaad0e1ec8f1f9b5dca7",
+          "sourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/cobblestones.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-doormat-v1",
+      "title": "Tiny Treats · doormat",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "DOORMAT",
+      "role": "DOORMAT",
+      "tags": [
+        "doormat",
+        "doormat",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "25786bdffacc790d3097c50e17eb56859d329739",
+      "sourceHash": "c6ec2321df01bd68d1bd2729689d3e7afc9f66df4fdd8ed799649b283dc54f20",
+      "sourceSha256": "c6ec2321df01bd68d1bd2729689d3e7afc9f66df4fdd8ed799649b283dc54f20",
+      "sourceParentPath": "assets/shared/homely-house/doormat.obj",
+      "masterSourcePath": "assets/shared/homely-house/doormat.obj",
+      "path": "/assets/shared/homely-house/doormat.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/doormat.obj",
+        "assets/shared/homely-house/doormat.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/doormat.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/doormat.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 92,
+        "faces": 96,
+        "sourceSha256": "c6ec2321df01bd68d1bd2729689d3e7afc9f66df4fdd8ed799649b283dc54f20"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/doormat.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "25786bdffacc790d3097c50e17eb56859d329739",
+          "sourceSha256": "c6ec2321df01bd68d1bd2729689d3e7afc9f66df4fdd8ed799649b283dc54f20",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/doormat.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-corner-v1",
+      "title": "Tiny Treats · fence corner",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence corner",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "1c951f7ff1664218a768261af59009b0064fa3d0",
+      "sourceHash": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+      "sourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+      "sourceParentPath": "assets/shared/homely-house/fence_corner.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_corner.obj",
+      "path": "/assets/shared/homely-house/fence_corner.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_corner.obj",
+        "assets/shared/homely-house/fence_corner.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_corner.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_corner.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 214,
+        "faces": 182,
+        "sourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_corner.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "1c951f7ff1664218a768261af59009b0064fa3d0",
+          "sourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_corner.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-open-long-v1",
+      "title": "Tiny Treats · fence open long",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence open long",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "a4cf7a5d229e62f5fecd0a63afe0ffe8e85944d6",
+      "sourceHash": "daf827920aa501c9ed0a637b17a37fb435df7656110c4d4ac132bee5ef0a4521",
+      "sourceSha256": "daf827920aa501c9ed0a637b17a37fb435df7656110c4d4ac132bee5ef0a4521",
+      "sourceParentPath": "assets/shared/homely-house/fence_open_long.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_open_long.obj",
+      "path": "/assets/shared/homely-house/fence_open_long.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_open_long.obj",
+        "assets/shared/homely-house/fence_open_long.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_open_long.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_open_long.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 92,
+        "faces": 76,
+        "sourceSha256": "daf827920aa501c9ed0a637b17a37fb435df7656110c4d4ac132bee5ef0a4521"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_open_long.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "a4cf7a5d229e62f5fecd0a63afe0ffe8e85944d6",
+          "sourceSha256": "daf827920aa501c9ed0a637b17a37fb435df7656110c4d4ac132bee5ef0a4521",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_open_long.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-open-wide-long-v1",
+      "title": "Tiny Treats · fence open wide long",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence open wide long",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "987ace62a845b2a3845dc476ef715f25d3bc76ce",
+      "sourceHash": "6199ecb9bac5212925e93431a8d8bdf3088572c08d6ed687a434608ddef5f561",
+      "sourceSha256": "6199ecb9bac5212925e93431a8d8bdf3088572c08d6ed687a434608ddef5f561",
+      "sourceParentPath": "assets/shared/homely-house/fence_open_wide_long.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_open_wide_long.obj",
+      "path": "/assets/shared/homely-house/fence_open_wide_long.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_open_wide_long.obj",
+        "assets/shared/homely-house/fence_open_wide_long.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_open_wide_long.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_open_wide_long.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 62,
+        "faces": 46,
+        "sourceSha256": "6199ecb9bac5212925e93431a8d8bdf3088572c08d6ed687a434608ddef5f561"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_open_wide_long.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "987ace62a845b2a3845dc476ef715f25d3bc76ce",
+          "sourceSha256": "6199ecb9bac5212925e93431a8d8bdf3088572c08d6ed687a434608ddef5f561",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_open_wide_long.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-open-v1",
+      "title": "Tiny Treats · fence open",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence open",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "658a3b8498921a5ec7900633d0331d81edb86ed6",
+      "sourceHash": "0bb2b63064ab11194c1db9addaae6e0daae68859b2cd428e536008f361937414",
+      "sourceSha256": "0bb2b63064ab11194c1db9addaae6e0daae68859b2cd428e536008f361937414",
+      "sourceParentPath": "assets/shared/homely-house/fence_open.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_open.obj",
+      "path": "/assets/shared/homely-house/fence_open.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_open.obj",
+        "assets/shared/homely-house/fence_open.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_open.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_open.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 62,
+        "faces": 46,
+        "sourceSha256": "0bb2b63064ab11194c1db9addaae6e0daae68859b2cd428e536008f361937414"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_open.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "658a3b8498921a5ec7900633d0331d81edb86ed6",
+          "sourceSha256": "0bb2b63064ab11194c1db9addaae6e0daae68859b2cd428e536008f361937414",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_open.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-post-v1",
+      "title": "Tiny Treats · fence post",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence post",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "3fbe6c3effda6becfd91c34cccffc169bdec12e1",
+      "sourceHash": "2e2a3db7c553d012a6d939a26209de54a36886acf9c4499b5ad933f4d0768eac",
+      "sourceSha256": "2e2a3db7c553d012a6d939a26209de54a36886acf9c4499b5ad933f4d0768eac",
+      "sourceParentPath": "assets/shared/homely-house/fence_post.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_post.obj",
+      "path": "/assets/shared/homely-house/fence_post.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_post.obj",
+        "assets/shared/homely-house/fence_post.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_post.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_post.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 30,
+        "faces": 30,
+        "sourceSha256": "2e2a3db7c553d012a6d939a26209de54a36886acf9c4499b5ad933f4d0768eac"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_post.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "3fbe6c3effda6becfd91c34cccffc169bdec12e1",
+          "sourceSha256": "2e2a3db7c553d012a6d939a26209de54a36886acf9c4499b5ad933f4d0768eac",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_post.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-rails-long-v1",
+      "title": "Tiny Treats · fence rails long",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence rails long",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "f9386a08e678db7d01888602b9a91fa292b398e1",
+      "sourceHash": "262fe6426ee603fa08d438049f3ce88566340d902c6070552e5256592c3bbb0b",
+      "sourceSha256": "262fe6426ee603fa08d438049f3ce88566340d902c6070552e5256592c3bbb0b",
+      "sourceParentPath": "assets/shared/homely-house/fence_rails_long.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_rails_long.obj",
+      "path": "/assets/shared/homely-house/fence_rails_long.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_rails_long.obj",
+        "assets/shared/homely-house/fence_rails_long.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_rails_long.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_rails_long.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 32,
+        "faces": 16,
+        "sourceSha256": "262fe6426ee603fa08d438049f3ce88566340d902c6070552e5256592c3bbb0b"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_rails_long.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "f9386a08e678db7d01888602b9a91fa292b398e1",
+          "sourceSha256": "262fe6426ee603fa08d438049f3ce88566340d902c6070552e5256592c3bbb0b",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_rails_long.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-rails-v1",
+      "title": "Tiny Treats · fence rails",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence rails",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "a99e70ccf9d1ef25ddc88bc3ad624e162c230c06",
+      "sourceHash": "b8ccc29030233bcd9a09f8329aea4197e5bf4a7eab8cf4ef1785a3ceee706148",
+      "sourceSha256": "b8ccc29030233bcd9a09f8329aea4197e5bf4a7eab8cf4ef1785a3ceee706148",
+      "sourceParentPath": "assets/shared/homely-house/fence_rails.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_rails.obj",
+      "path": "/assets/shared/homely-house/fence_rails.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_rails.obj",
+        "assets/shared/homely-house/fence_rails.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_rails.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_rails.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 32,
+        "faces": 16,
+        "sourceSha256": "b8ccc29030233bcd9a09f8329aea4197e5bf4a7eab8cf4ef1785a3ceee706148"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_rails.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "a99e70ccf9d1ef25ddc88bc3ad624e162c230c06",
+          "sourceSha256": "b8ccc29030233bcd9a09f8329aea4197e5bf4a7eab8cf4ef1785a3ceee706148",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_rails.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-straight-long-v1",
+      "title": "Tiny Treats · fence straight long",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence straight long",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "8a6a048e6b95b362d0dcc6a49ae251e2d9f86063",
+      "sourceHash": "9a88c4d05b24507ce7563ddbabac5f5c268cf6bca4d5d8b31e22a7c3ceba4548",
+      "sourceSha256": "9a88c4d05b24507ce7563ddbabac5f5c268cf6bca4d5d8b31e22a7c3ceba4548",
+      "sourceParentPath": "assets/shared/homely-house/fence_straight_long.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_straight_long.obj",
+      "path": "/assets/shared/homely-house/fence_straight_long.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_straight_long.obj",
+        "assets/shared/homely-house/fence_straight_long.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_straight_long.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_straight_long.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 122,
+        "faces": 106,
+        "sourceSha256": "9a88c4d05b24507ce7563ddbabac5f5c268cf6bca4d5d8b31e22a7c3ceba4548"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_straight_long.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "8a6a048e6b95b362d0dcc6a49ae251e2d9f86063",
+          "sourceSha256": "9a88c4d05b24507ce7563ddbabac5f5c268cf6bca4d5d8b31e22a7c3ceba4548",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_straight_long.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-straight-v1",
+      "title": "Tiny Treats · fence straight",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence straight",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "d30c0e309e9e07aef88597f6e5a1310ffef515fe",
+      "sourceHash": "d0423955b5584af172044493b29ac1db2b02bf34fb84a6ba5c6b5b2280e4bb5c",
+      "sourceSha256": "d0423955b5584af172044493b29ac1db2b02bf34fb84a6ba5c6b5b2280e4bb5c",
+      "sourceParentPath": "assets/shared/homely-house/fence_straight.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_straight.obj",
+      "path": "/assets/shared/homely-house/fence_straight.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_straight.obj",
+        "assets/shared/homely-house/fence_straight.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_straight.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_straight.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 92,
+        "faces": 76,
+        "sourceSha256": "d0423955b5584af172044493b29ac1db2b02bf34fb84a6ba5c6b5b2280e4bb5c"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_straight.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "d30c0e309e9e07aef88597f6e5a1310ffef515fe",
+          "sourceSha256": "d0423955b5584af172044493b29ac1db2b02bf34fb84a6ba5c6b5b2280e4bb5c",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_straight.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-fence-wide-long-v1",
+      "title": "Tiny Treats · fence wide long",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "FENCE",
+      "role": "FENCE",
+      "tags": [
+        "fence",
+        "fence wide long",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "b76056b2e09070f2f502759aa895088aab45816d",
+      "sourceHash": "0e4a6805afe4a42cffba0cdc516c165c68180e5086c5109403395d29e9d30c47",
+      "sourceSha256": "0e4a6805afe4a42cffba0cdc516c165c68180e5086c5109403395d29e9d30c47",
+      "sourceParentPath": "assets/shared/homely-house/fence_wide_long.obj",
+      "masterSourcePath": "assets/shared/homely-house/fence_wide_long.obj",
+      "path": "/assets/shared/homely-house/fence_wide_long.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/fence_wide_long.obj",
+        "assets/shared/homely-house/fence_wide_long.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/fence_wide_long.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/fence_wide_long.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 92,
+        "faces": 76,
+        "sourceSha256": "0e4a6805afe4a42cffba0cdc516c165c68180e5086c5109403395d29e9d30c47"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/fence_wide_long.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "b76056b2e09070f2f502759aa895088aab45816d",
+          "sourceSha256": "0e4a6805afe4a42cffba0cdc516c165c68180e5086c5109403395d29e9d30c47",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/fence_wide_long.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-floor-base-v1",
+      "title": "Tiny Treats · floor base",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "GROUND_TILE",
+      "role": "GROUND_TILE",
+      "tags": [
+        "ground_tile",
+        "floor base",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "603be3b91a8b9817f0b554e28155ea71b6936535",
+      "sourceHash": "5cb3f33b9999ab14808d2b9ee803332ed253784ef2a96457f58f3476785025e1",
+      "sourceSha256": "5cb3f33b9999ab14808d2b9ee803332ed253784ef2a96457f58f3476785025e1",
+      "sourceParentPath": "assets/shared/homely-house/floor_base.obj",
+      "masterSourcePath": "assets/shared/homely-house/floor_base.obj",
+      "path": "/assets/shared/homely-house/floor_base.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/floor_base.obj",
+        "assets/shared/homely-house/floor_base.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/floor_base.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/floor_base.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 100,
+        "faces": 98,
+        "sourceSha256": "5cb3f33b9999ab14808d2b9ee803332ed253784ef2a96457f58f3476785025e1"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/floor_base.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "603be3b91a8b9817f0b554e28155ea71b6936535",
+          "sourceSha256": "5cb3f33b9999ab14808d2b9ee803332ed253784ef2a96457f58f3476785025e1",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/floor_base.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-foliage-a-v1",
+      "title": "Tiny Treats · foliage A",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "FOLIAGE",
+      "role": "FOLIAGE",
+      "tags": [
+        "foliage",
+        "foliage a",
+        "environment",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을",
+        "nature",
+        "forest",
+        "숲"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "20f0e36bb84e3c141cc2048cbbbd980ddd8c0cea",
+      "sourceHash": "6b8620a47dd815ca5ed3b02567ad78b3ed395758a47b81eb89a5b1b5ce2460d4",
+      "sourceSha256": "6b8620a47dd815ca5ed3b02567ad78b3ed395758a47b81eb89a5b1b5ce2460d4",
+      "sourceParentPath": "assets/shared/homely-house/foliage_A.obj",
+      "masterSourcePath": "assets/shared/homely-house/foliage_A.obj",
+      "path": "/assets/shared/homely-house/foliage_A.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/foliage_A.obj",
+        "assets/shared/homely-house/foliage_A.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/foliage_A.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/foliage_A.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 134,
+        "faces": 136,
+        "sourceSha256": "6b8620a47dd815ca5ed3b02567ad78b3ed395758a47b81eb89a5b1b5ce2460d4"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/foliage_A.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "20f0e36bb84e3c141cc2048cbbbd980ddd8c0cea",
+          "sourceSha256": "6b8620a47dd815ca5ed3b02567ad78b3ed395758a47b81eb89a5b1b5ce2460d4",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/foliage_A.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-foliage-b-v1",
+      "title": "Tiny Treats · foliage B",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "FOLIAGE",
+      "role": "FOLIAGE",
+      "tags": [
+        "foliage",
+        "foliage b",
+        "environment",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을",
+        "nature",
+        "forest",
+        "숲"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "eec283a693aed57e1362afa0d4939d30942b0def",
+      "sourceHash": "392aa2cb2d2b26eb654225e45c95e99a35c7fa552333828d0202b674fd825fac",
+      "sourceSha256": "392aa2cb2d2b26eb654225e45c95e99a35c7fa552333828d0202b674fd825fac",
+      "sourceParentPath": "assets/shared/homely-house/foliage_B.obj",
+      "masterSourcePath": "assets/shared/homely-house/foliage_B.obj",
+      "path": "/assets/shared/homely-house/foliage_B.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/foliage_B.obj",
+        "assets/shared/homely-house/foliage_B.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/foliage_B.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/foliage_B.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 201,
+        "faces": 204,
+        "sourceSha256": "392aa2cb2d2b26eb654225e45c95e99a35c7fa552333828d0202b674fd825fac"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/foliage_B.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "eec283a693aed57e1362afa0d4939d30942b0def",
+          "sourceSha256": "392aa2cb2d2b26eb654225e45c95e99a35c7fa552333828d0202b674fd825fac",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/foliage_B.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-gate-double-left-v1",
+      "title": "Tiny Treats · gate double left",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "GATE",
+      "role": "GATE",
+      "tags": [
+        "gate",
+        "gate double left",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "4660deca3deea5f081577f67b2914af7c631d811",
+      "sourceHash": "5a07d99579576ae7521747b1ab0103d2b4490c3b7061f2e0412f587c74202b88",
+      "sourceSha256": "5a07d99579576ae7521747b1ab0103d2b4490c3b7061f2e0412f587c74202b88",
+      "sourceParentPath": "assets/shared/homely-house/gate_double_left.obj",
+      "masterSourcePath": "assets/shared/homely-house/gate_double_left.obj",
+      "path": "/assets/shared/homely-house/gate_double_left.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/gate_double_left.obj",
+        "assets/shared/homely-house/gate_double_left.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/gate_double_left.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/gate_double_left.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 220,
+        "faces": 196,
+        "sourceSha256": "5a07d99579576ae7521747b1ab0103d2b4490c3b7061f2e0412f587c74202b88"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/gate_double_left.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "4660deca3deea5f081577f67b2914af7c631d811",
+          "sourceSha256": "5a07d99579576ae7521747b1ab0103d2b4490c3b7061f2e0412f587c74202b88",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/gate_double_left.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-gate-double-right-v1",
+      "title": "Tiny Treats · gate double right",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "GATE",
+      "role": "GATE",
+      "tags": [
+        "gate",
+        "gate double right",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "3dbd84430b64de76a520e0b31b50799305ee33ea",
+      "sourceHash": "9711fd80065192f2196cd3904c0a6bf63149a19a510664640eb5ff9faa6e1836",
+      "sourceSha256": "9711fd80065192f2196cd3904c0a6bf63149a19a510664640eb5ff9faa6e1836",
+      "sourceParentPath": "assets/shared/homely-house/gate_double_right.obj",
+      "masterSourcePath": "assets/shared/homely-house/gate_double_right.obj",
+      "path": "/assets/shared/homely-house/gate_double_right.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/gate_double_right.obj",
+        "assets/shared/homely-house/gate_double_right.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/gate_double_right.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/gate_double_right.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 220,
+        "faces": 196,
+        "sourceSha256": "9711fd80065192f2196cd3904c0a6bf63149a19a510664640eb5ff9faa6e1836"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/gate_double_right.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "3dbd84430b64de76a520e0b31b50799305ee33ea",
+          "sourceSha256": "9711fd80065192f2196cd3904c0a6bf63149a19a510664640eb5ff9faa6e1836",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/gate_double_right.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-gate-single-v1",
+      "title": "Tiny Treats · gate single",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "GATE",
+      "role": "GATE",
+      "tags": [
+        "gate",
+        "gate single",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "136701f78fef2e69a873bc426587a51fbd8718cb",
+      "sourceHash": "f8be65e712f4837498a4fa6c6ebce16ffb330c7491ee707d020c8912bdb585e4",
+      "sourceSha256": "f8be65e712f4837498a4fa6c6ebce16ffb330c7491ee707d020c8912bdb585e4",
+      "sourceParentPath": "assets/shared/homely-house/gate_single.obj",
+      "masterSourcePath": "assets/shared/homely-house/gate_single.obj",
+      "path": "/assets/shared/homely-house/gate_single.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/gate_single.obj",
+        "assets/shared/homely-house/gate_single.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/gate_single.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/gate_single.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 260,
+        "faces": 244,
+        "sourceSha256": "f8be65e712f4837498a4fa6c6ebce16ffb330c7491ee707d020c8912bdb585e4"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/gate_single.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "136701f78fef2e69a873bc426587a51fbd8718cb",
+          "sourceSha256": "f8be65e712f4837498a4fa6c6ebce16ffb330c7491ee707d020c8912bdb585e4",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/gate_single.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-house-chimney-v1",
+      "title": "Tiny Treats · house chimney",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "HOUSE",
+      "role": "HOUSE",
+      "tags": [
+        "house",
+        "house chimney",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "2bc3160589a34fc166ea3e1f9928da712a05b4fd",
+      "sourceHash": "1a2bc5e950b6b1579f94df4cd0794e04b2801d08c313ce199aeefebe3749b2e8",
+      "sourceSha256": "1a2bc5e950b6b1579f94df4cd0794e04b2801d08c313ce199aeefebe3749b2e8",
+      "sourceParentPath": "assets/shared/homely-house/house_chimney.obj",
+      "masterSourcePath": "assets/shared/homely-house/house_chimney.obj",
+      "path": "/assets/shared/homely-house/house_chimney.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/house_chimney.obj",
+        "assets/shared/homely-house/house_chimney.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/house_chimney.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/house_chimney.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 244,
+        "faces": 216,
+        "sourceSha256": "1a2bc5e950b6b1579f94df4cd0794e04b2801d08c313ce199aeefebe3749b2e8"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/house_chimney.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "2bc3160589a34fc166ea3e1f9928da712a05b4fd",
+          "sourceSha256": "1a2bc5e950b6b1579f94df4cd0794e04b2801d08c313ce199aeefebe3749b2e8",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/house_chimney.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-house-door-v1",
+      "title": "Tiny Treats · house door",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "HOUSE",
+      "role": "HOUSE",
+      "tags": [
+        "house",
+        "house door",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "f97d69ca8b11da9f1ac9258f4c6caa8007011a0b",
+      "sourceHash": "11bee37947adc71b36e51ec4575a542b6299ed57de6489e3e6717e7f97b4d4aa",
+      "sourceSha256": "11bee37947adc71b36e51ec4575a542b6299ed57de6489e3e6717e7f97b4d4aa",
+      "sourceParentPath": "assets/shared/homely-house/house_door.obj",
+      "masterSourcePath": "assets/shared/homely-house/house_door.obj",
+      "path": "/assets/shared/homely-house/house_door.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/house_door.obj",
+        "assets/shared/homely-house/house_door.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/house_door.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/house_door.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 221,
+        "faces": 236,
+        "sourceSha256": "11bee37947adc71b36e51ec4575a542b6299ed57de6489e3e6717e7f97b4d4aa"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/house_door.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "f97d69ca8b11da9f1ac9258f4c6caa8007011a0b",
+          "sourceSha256": "11bee37947adc71b36e51ec4575a542b6299ed57de6489e3e6717e7f97b4d4aa",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/house_door.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-house-heart-v1",
+      "title": "Tiny Treats · house heart",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "HOUSE",
+      "role": "HOUSE",
+      "tags": [
+        "house",
+        "house heart",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "bad7c5b6620edd586c3d98e17a2d563fc81a288d",
+      "sourceHash": "7d9d1ed4a6cd8b59a0382857777c55be5221b2401175e75bdce5ab774573bf5e",
+      "sourceSha256": "7d9d1ed4a6cd8b59a0382857777c55be5221b2401175e75bdce5ab774573bf5e",
+      "sourceParentPath": "assets/shared/homely-house/house_heart.obj",
+      "masterSourcePath": "assets/shared/homely-house/house_heart.obj",
+      "path": "/assets/shared/homely-house/house_heart.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/house_heart.obj",
+        "assets/shared/homely-house/house_heart.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/house_heart.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/house_heart.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 93,
+        "faces": 89,
+        "sourceSha256": "7d9d1ed4a6cd8b59a0382857777c55be5221b2401175e75bdce5ab774573bf5e"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/house_heart.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "bad7c5b6620edd586c3d98e17a2d563fc81a288d",
+          "sourceSha256": "7d9d1ed4a6cd8b59a0382857777c55be5221b2401175e75bdce5ab774573bf5e",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/house_heart.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-house-v1",
+      "title": "Tiny Treats · house",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "HOUSE",
+      "role": "HOUSE",
+      "tags": [
+        "house",
+        "house",
+        "building",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "b3078a85566d138cbaecb7ac1b428bb03aec7beb",
+      "sourceHash": "85e0f7edc9ce27d54372458ad632dd07536aab383a7e0ae65f7965b900c37f27",
+      "sourceSha256": "85e0f7edc9ce27d54372458ad632dd07536aab383a7e0ae65f7965b900c37f27",
+      "sourceParentPath": "assets/shared/homely-house/house.obj",
+      "masterSourcePath": "assets/shared/homely-house/house.obj",
+      "path": "/assets/shared/homely-house/house.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/house.obj",
+        "assets/shared/homely-house/house.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/house.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/house.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 1714,
+        "faces": 1525,
+        "sourceSha256": "85e0f7edc9ce27d54372458ad632dd07536aab383a7e0ae65f7965b900c37f27"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/house.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "b3078a85566d138cbaecb7ac1b428bb03aec7beb",
+          "sourceSha256": "85e0f7edc9ce27d54372458ad632dd07536aab383a7e0ae65f7965b900c37f27",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/house.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-letter-v1",
+      "title": "Tiny Treats · letter",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "LETTER",
+      "role": "LETTER",
+      "tags": [
+        "letter",
+        "letter",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "7d63501ea509c6cc9f0f273acaa6c8ebbe73bb18",
+      "sourceHash": "18d72df4473dfe6609f72fbd9532b0911d80aec01adb88344363c94453faf546",
+      "sourceSha256": "18d72df4473dfe6609f72fbd9532b0911d80aec01adb88344363c94453faf546",
+      "sourceParentPath": "assets/shared/homely-house/letter.obj",
+      "masterSourcePath": "assets/shared/homely-house/letter.obj",
+      "path": "/assets/shared/homely-house/letter.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/letter.obj",
+        "assets/shared/homely-house/letter.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/letter.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/letter.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 64,
+        "faces": 56,
+        "sourceSha256": "18d72df4473dfe6609f72fbd9532b0911d80aec01adb88344363c94453faf546"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/letter.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "7d63501ea509c6cc9f0f273acaa6c8ebbe73bb18",
+          "sourceSha256": "18d72df4473dfe6609f72fbd9532b0911d80aec01adb88344363c94453faf546",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/letter.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-mailbox-door-v1",
+      "title": "Tiny Treats · mailbox door",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "MAILBOX",
+      "role": "MAILBOX",
+      "tags": [
+        "mailbox",
+        "mailbox door",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "47f4db9b66290abcf53935d6868b6b31d85476ae",
+      "sourceHash": "cdf57d301a64e67f6149e84b52e67f4734a83af9e36beaf9bf5e5563c2f73e04",
+      "sourceSha256": "cdf57d301a64e67f6149e84b52e67f4734a83af9e36beaf9bf5e5563c2f73e04",
+      "sourceParentPath": "assets/shared/homely-house/mailbox_door.obj",
+      "masterSourcePath": "assets/shared/homely-house/mailbox_door.obj",
+      "path": "/assets/shared/homely-house/mailbox_door.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/mailbox_door.obj",
+        "assets/shared/homely-house/mailbox_door.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/mailbox_door.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/mailbox_door.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 89,
+        "faces": 93,
+        "sourceSha256": "cdf57d301a64e67f6149e84b52e67f4734a83af9e36beaf9bf5e5563c2f73e04"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/mailbox_door.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "47f4db9b66290abcf53935d6868b6b31d85476ae",
+          "sourceSha256": "cdf57d301a64e67f6149e84b52e67f4734a83af9e36beaf9bf5e5563c2f73e04",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/mailbox_door.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-mailbox-flag-v1",
+      "title": "Tiny Treats · mailbox flag",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "MAILBOX",
+      "role": "MAILBOX",
+      "tags": [
+        "mailbox",
+        "mailbox flag",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "e290ecbed69824c8db25e23208eaf64155daf918",
+      "sourceHash": "f7635d052aeda31a0cd67948d6462e0b91d26e40c4bc00b932e49fb60f8f1618",
+      "sourceSha256": "f7635d052aeda31a0cd67948d6462e0b91d26e40c4bc00b932e49fb60f8f1618",
+      "sourceParentPath": "assets/shared/homely-house/mailbox_flag.obj",
+      "masterSourcePath": "assets/shared/homely-house/mailbox_flag.obj",
+      "path": "/assets/shared/homely-house/mailbox_flag.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/mailbox_flag.obj",
+        "assets/shared/homely-house/mailbox_flag.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/mailbox_flag.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/mailbox_flag.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 35,
+        "faces": 33,
+        "sourceSha256": "f7635d052aeda31a0cd67948d6462e0b91d26e40c4bc00b932e49fb60f8f1618"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/mailbox_flag.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "e290ecbed69824c8db25e23208eaf64155daf918",
+          "sourceSha256": "f7635d052aeda31a0cd67948d6462e0b91d26e40c4bc00b932e49fb60f8f1618",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/mailbox_flag.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-mailbox-v1",
+      "title": "Tiny Treats · mailbox",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "MAILBOX",
+      "role": "MAILBOX",
+      "tags": [
+        "mailbox",
+        "mailbox",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "8526ac6dadfc9b5af8b93c8111a7538aa4825f74",
+      "sourceHash": "d04e3750b970ab745247aa0ae6c8c7981f5ef2189dc6c57ecff873282f2a525d",
+      "sourceSha256": "d04e3750b970ab745247aa0ae6c8c7981f5ef2189dc6c57ecff873282f2a525d",
+      "sourceParentPath": "assets/shared/homely-house/mailbox.obj",
+      "masterSourcePath": "assets/shared/homely-house/mailbox.obj",
+      "path": "/assets/shared/homely-house/mailbox.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/mailbox.obj",
+        "assets/shared/homely-house/mailbox.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/mailbox.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/mailbox.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 158,
+        "faces": 160,
+        "sourceSha256": "d04e3750b970ab745247aa0ae6c8c7981f5ef2189dc6c57ecff873282f2a525d"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/mailbox.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "8526ac6dadfc9b5af8b93c8111a7538aa4825f74",
+          "sourceSha256": "d04e3750b970ab745247aa0ae6c8c7981f5ef2189dc6c57ecff873282f2a525d",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/mailbox.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-package-v1",
+      "title": "Tiny Treats · package",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "PACKAGE",
+      "role": "PACKAGE",
+      "tags": [
+        "package",
+        "package",
+        "prop",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "9ca6cdf587092aa2ac9ea872424d012fdf1eff4b",
+      "sourceHash": "6ec78c12641965b7567d341301509e2d0f81ddc662199667bab8f0f3f984fe30",
+      "sourceSha256": "6ec78c12641965b7567d341301509e2d0f81ddc662199667bab8f0f3f984fe30",
+      "sourceParentPath": "assets/shared/homely-house/package.obj",
+      "masterSourcePath": "assets/shared/homely-house/package.obj",
+      "path": "/assets/shared/homely-house/package.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/package.obj",
+        "assets/shared/homely-house/package.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/package.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/package.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 124,
+        "faces": 118,
+        "sourceSha256": "6ec78c12641965b7567d341301509e2d0f81ddc662199667bab8f0f3f984fe30"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/package.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "9ca6cdf587092aa2ac9ea872424d012fdf1eff4b",
+          "sourceSha256": "6ec78c12641965b7567d341301509e2d0f81ddc662199667bab8f0f3f984fe30",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/package.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-tree-large-v1",
+      "title": "Tiny Treats · tree large",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "TREE",
+      "role": "TREE",
+      "tags": [
+        "tree",
+        "tree large",
+        "environment",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을",
+        "nature",
+        "forest",
+        "숲"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "46dd94f5803bcd6d34dbfe6b78871b1a8736e000",
+      "sourceHash": "33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d",
+      "sourceSha256": "33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d",
+      "sourceParentPath": "assets/shared/homely-house/tree_large.obj",
+      "masterSourcePath": "assets/shared/homely-house/tree_large.obj",
+      "path": "/assets/shared/homely-house/tree_large.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/tree_large.obj",
+        "assets/shared/homely-house/tree_large.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/tree_large.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/tree_large.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 205,
+        "faces": 252,
+        "sourceSha256": "33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/tree_large.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "46dd94f5803bcd6d34dbfe6b78871b1a8736e000",
+          "sourceSha256": "33b7a5a40b579a6790bea2662ff51ae2fcb2e5736c153337c6e760e46d351e3d",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/tree_large.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
+    },
+    {
+      "id": "external-tinytreats-tree-v1",
+      "title": "Tiny Treats · tree",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "TREE",
+      "role": "TREE",
+      "tags": [
+        "tree",
+        "tree",
+        "environment",
+        "village",
+        "town",
+        "survival",
+        "3d",
+        "마을",
+        "nature",
+        "forest",
+        "숲"
+      ],
+      "platform": "SHARED_3D_SOURCE",
+      "platforms": [],
+      "targetPlatforms": [],
+      "status": "REPO_ASSET_STATIC_GEOMETRY_QA",
+      "license": "CC0",
+      "creator": "Isa Lousberg",
+      "source": "TINY_TREATS_HOMELY_HOUSE_V1",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+      "licenseEvidenceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+      "sourceRevision": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "sourceGitBlobSha": "e4aba6f7f1f8b53c40610e3f3b0e6f75ac0abb63",
+      "sourceHash": "2857ae18918afa6ed96fcaa5b1bf6c95c24d38361b46b8a88d0e5298e0f7c797",
+      "sourceSha256": "2857ae18918afa6ed96fcaa5b1bf6c95c24d38361b46b8a88d0e5298e0f7c797",
+      "sourceParentPath": "assets/shared/homely-house/tree.obj",
+      "masterSourcePath": "assets/shared/homely-house/tree.obj",
+      "path": "/assets/shared/homely-house/tree.obj",
+      "sourceFiles": [
+        "assets/shared/homely-house/tree.obj",
+        "assets/shared/homely-house/tree.mtl"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/homely-house/tree.obj"
+        ],
+        "materials": [
+          "assets/shared/homely-house/tree.mtl"
+        ]
+      },
+      "sourceObjQa": {
+        "status": "OBJ_STATIC_GEOMETRY_PASS",
+        "vertices": 149,
+        "faces": 180,
+        "sourceSha256": "2857ae18918afa6ed96fcaa5b1bf6c95c24d38361b46b8a88d0e5298e0f7c797"
+      },
+      "originalExternalPath": "addons/tiny_treats_homely_house_set/Assets/obj/tree.obj",
+      "originalSourceImmutable": true,
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "acquiredExternal": true,
+      "downloaded": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "runtimeVerificationState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "transformHistory": [
+        {
+          "kind": "VERIFIED_CC0_ORIGINAL_OBJ_IMPORT",
+          "upstream": "TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0",
+          "upstreamCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+          "sourceGitBlobSha": "e4aba6f7f1f8b53c40610e3f3b0e6f75ac0abb63",
+          "sourceSha256": "2857ae18918afa6ed96fcaa5b1bf6c95c24d38361b46b8a88d0e5298e0f7c797",
+          "geometryPreserved": true
+        },
+        {
+          "kind": "NONDESTRUCTIVE_PLATFORM_MATERIAL_FALLBACK",
+          "file": "assets/shared/homely-house/tree.mtl",
+          "modelOriginalPreserved": true,
+          "nativeGameStyleConversionRequired": true
+        }
+      ],
+      "gameplayAuthority": false,
+      "saveAuthority": false,
+      "cosmeticOnly": true
     }
   ],
   "research": [
@@ -84860,7 +87563,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 130,
+    "lastCatalogSynchronizedVersion": 137,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,
