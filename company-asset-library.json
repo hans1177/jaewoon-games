@@ -1,5 +1,5 @@
 {
-  "version": 134,
+  "version": 135,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
   "updatedAt": "2026-10-11T04:01:00.000Z",
@@ -77187,6 +77187,232 @@
         "vertices": 558,
         "faces": 406
       },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-sword-v1",
+      "title": "마력숲 내부 공용 SWORD_BLADE",
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "subfamily": "SWORD_BLADE",
+      "role": "SWORD_BLADE",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/blade_long.obj",
+      "sourceParentGitBlobSha": "55cae4471ba1956ef4b539f7ac72209143026154",
+      "sourceHash": "31d3f00096d729f3a38fb66ad593d0489c24e528cee24489723def5455d595ba",
+      "sourceSha256": "31d3f00096d729f3a38fb66ad593d0489c24e528cee24489723def5455d595ba",
+      "nativeArtifactHash": "4d82c62d53236758123ab1f55fc104bf921b3ff86e88a44d2a8021aa9ed61d41",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestSword.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/blade_long.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestSword.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestSword.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestSword.obj",
+          "artifactSha256": "4d82c62d53236758123ab1f55fc104bf921b3ff86e88a44d2a8021aa9ed61d41"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "55cae4471ba1956ef4b539f7ac72209143026154",
+          "sourceSha256": "31d3f00096d729f3a38fb66ad593d0489c24e528cee24489723def5455d595ba",
+          "targetSha256": "4d82c62d53236758123ab1f55fc104bf921b3ff86e88a44d2a8021aa9ed61d41"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 52,
+        "faces": 36
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-grip-v1",
+      "title": "마력숲 내부 공용 SWORD_GRIP",
+      "category": "WEAPON",
+      "family": "WEAPON",
+      "subfamily": "SWORD_GRIP",
+      "role": "SWORD_GRIP",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-combat-parts-v1/grip_long.obj",
+      "sourceParentGitBlobSha": "dd5798d245a29989827ad80eb144e45492ab733d",
+      "sourceHash": "1834e3b3f6d7cff23b0646a18daff7e619e1ed1c42471cee61c140816807bcfc",
+      "sourceSha256": "1834e3b3f6d7cff23b0646a18daff7e619e1ed1c42471cee61c140816807bcfc",
+      "nativeArtifactHash": "e20e6d069a91ef3f59c7d7d3428261e34499e365123f5eb598aa6a8af2f90e07",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestGrip.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-combat-parts-v1/grip_long.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestGrip.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestGrip.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestGrip.obj",
+          "artifactSha256": "e20e6d069a91ef3f59c7d7d3428261e34499e365123f5eb598aa6a8af2f90e07"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "dd5798d245a29989827ad80eb144e45492ab733d",
+          "sourceSha256": "1834e3b3f6d7cff23b0646a18daff7e619e1ed1c42471cee61c140816807bcfc",
+          "targetSha256": "e20e6d069a91ef3f59c7d7d3428261e34499e365123f5eb598aa6a8af2f90e07"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 344,
+        "faces": 246
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-ui-v1",
+      "title": "마력숲 내부 공용 UI 유니티 표현 설정",
+      "category": "UI",
+      "family": "UI",
+      "role": "INVENTORY_MENU_TOUCH_UI",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+      "sourceParentGitBlobSha": "90ec5ccb0f100d7be7a18fb3d7cebede1af3e6d6",
+      "sourceHash": "430ce7cf373578437505592ea318d582485cb424a1c9fad7c529a58572d1d46b",
+      "sourceSha256": "430ce7cf373578437505592ea318d582485cb424a1c9fad7c529a58572d1d46b",
+      "nativeArtifactHash": "82cda879d877ee5b2f3f5eaae76e3941383bb07ccfc321f62fe99176f15e4fd8",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json",
+      "sourceFiles": [
+        "assets/roblox/common-ui-v1/RobloxCommonUI.luau",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json",
+          "artifactSha256": "82cda879d877ee5b2f3f5eaae76e3941383bb07ccfc321f62fe99176f15e4fd8"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_PRESENTATION_METADATA_ADAPT",
+          "sourceSha256": "430ce7cf373578437505592ea318d582485cb424a1c9fad7c529a58572d1d46b",
+          "targetSha256": "82cda879d877ee5b2f3f5eaae76e3941383bb07ccfc321f62fe99176f15e4fd8"
+        }
+      ],
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-motion-v1",
+      "title": "마력숲 내부 공용 MOTION 유니티 표현 설정",
+      "category": "MOTION",
+      "family": "MOTION",
+      "role": "ACTION_TIMING_BINDING",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+      "sourceParentGitBlobSha": "3e3ba761a44c073adc75d3f34e8ceecae16d539a",
+      "sourceHash": "dce85db0e5b5c9d9874e3550be4349bb0ea56f18e5063bf3a29d8c28799c0e35",
+      "sourceSha256": "dce85db0e5b5c9d9874e3550be4349bb0ea56f18e5063bf3a29d8c28799c0e35",
+      "nativeArtifactHash": "26674e23b98c5390c1a72d2da3804419b681e16ef108cf4a14af1c904e6e5349",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json",
+      "sourceFiles": [
+        "assets/roblox/common-motion-v1/RobloxCommonMotion.luau",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json",
+          "artifactSha256": "26674e23b98c5390c1a72d2da3804419b681e16ef108cf4a14af1c904e6e5349"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_PRESENTATION_METADATA_ADAPT",
+          "sourceSha256": "dce85db0e5b5c9d9874e3550be4349bb0ea56f18e5063bf3a29d8c28799c0e35",
+          "targetSha256": "26674e23b98c5390c1a72d2da3804419b681e16ef108cf4a14af1c904e6e5349"
+        }
+      ],
       "originalSourceImmutable": true,
       "intendedConsumerGameIds": [
         "fantasy-survival"
