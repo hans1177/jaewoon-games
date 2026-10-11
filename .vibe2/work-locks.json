@@ -3,48 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-vqlq9m",
-      "worker": "vibe2",
-      "taskId": "exorcist-office-studio-evolution-roblox-usability-v1",
-      "gameId": "exorcist-office",
-      "files": [
-        "roblox-games/exorcist-office/client/Game.client.luau",
-        "roblox-games/exorcist-office/shared/GameConfig.luau",
-        "roblox-games/exorcist-office/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:39:12.584Z",
-      "expiresAt": "2026-10-11T03:24:12.584Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:exorcist-office-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-16wqjyy",
-      "worker": "vibe2",
-      "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
-      "gameId": "core-clash-4v4",
-      "files": [
-        "roblox-games/core-clash-4v4/client/Game.client.luau",
-        "roblox-games/core-clash-4v4/shared/GameConfig.luau",
-        "roblox-games/core-clash-4v4/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:39:27.904Z",
-      "expiresAt": "2026-10-11T03:24:27.904Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:core-clash-4v4-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-vijs0s",
       "worker": "vibe2",
       "taskId": "human-go-studio-evolution-roblox-stability-v1",
@@ -520,6 +478,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-water-gwisin-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-1s5d2to",
+      "worker": "vibe2",
+      "taskId": "internal-motion-tengu-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/tengu/init.luau"
+      ],
+      "baseSha": "01b9569c9fe892bf614fcf736f951d82ece72960",
+      "runId": "38104101272",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T03:24:52.011Z",
+      "expiresAt": "2026-10-11T04:09:52.011Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-tengu-walk-v1"
       ]
     }
   ]
