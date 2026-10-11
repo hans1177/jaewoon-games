@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1ycnnq1",
+      "worker": "vibe2",
+      "taskId": "internal-motion-dokkaebi-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/dokkaebi/init.luau"
+      ],
+      "baseSha": "70f3d34e5dae0e451084516d69e811d9a18ead6d",
+      "runId": "38150772861",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T15:45:05.936Z",
+      "expiresAt": "2026-10-11T16:30:05.936Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-dokkaebi-walk-v1"
+      ]
+    }
+  ]
 }
