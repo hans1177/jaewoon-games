@@ -9,6 +9,16 @@ on:
     workflows:
       - Vibe2 Continuous Core
       - Company System AI Workers
+      # Reuse the same canonical recovery queue for completed deployment failures.
+      - Vibe2 Candidate Release Gate
+      - Unity Web Development Floor
+      - Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
+      - Company DEVELOPMENT_CONFIRMED Roblox Runtime
+      - Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight
+      - Vibe2 Roblox Candidate Runtime
+      - Vibe2 Roblox Candidate Result
+      - Vibe2 Roblox Release Handoff
+      - Magic Forest Static Play
     types: [completed]
   schedule:
     - cron: '*/5 * * * *'
@@ -40,6 +50,8 @@ jobs:
 
       - name: Escalate and redispatch recovery from latest control state
         id: recovery
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -57,6 +69,12 @@ jobs:
             attempt=$((attempt+1))
             rm -rf /tmp/vibe2-recovery-control
             git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            # Rebind the exact work unit to the four current main policies before changing state.
+            git reset --hard origin/main >/dev/null
+            node tools/company-shared-context.mjs --policy=company-learning/platform-release-roadmap.json \
+              --log-map=company-learning/company-log-map.json \
+              --architecture=company-learning/company-architecture-map.json \
+              --security=company-learning/security-immune-system.json > /tmp/vibe2-recovery-fast/shared-context.log
             git worktree prune
             git worktree add --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
             control=/tmp/vibe2-recovery-control
@@ -65,7 +83,18 @@ jobs:
             test -f "$control/.vibe2/system-ai-queue.json" || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > "$control/.vibe2/system-ai-queue.json"
             test -f "$control/.vibe2/recovery-queue.json" || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > "$control/.vibe2/recovery-queue.json"
 
-            node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/escalation.log
+            # Source the failing step only from GitHub's own job conclusions. Never execute log text.
+            deployment_args=()
+            if [ "${GITHUB_EVENT_NAME}" = workflow_run ] && jq -e '.workflow_run.conclusion == "failure"' "$GITHUB_EVENT_PATH" >/dev/null; then
+              failed_run_id="$(jq -r '.workflow_run.id' "$GITHUB_EVENT_PATH")"
+              [[ "$failed_run_id" =~ ^[0-9]+$ ]]
+              if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$failed_run_id/jobs?per_page=100" > /tmp/vibe2-recovery-fast/deployment-jobs.json; then
+                printf '%s\n' '{"jobs":[]}' > /tmp/vibe2-recovery-fast/deployment-jobs.json
+                echo "DEPLOYMENT_FAILED_RUN_JOBS=UNAVAILABLE_CAUSAL_TRIAGE_REQUIRED"
+              fi
+              deployment_args=("--deployment-event=$GITHUB_EVENT_PATH" "--deployment-jobs=/tmp/vibe2-recovery-fast/deployment-jobs.json")
+            fi
+            node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" --catalog=game-catalog.json "${deployment_args[@]}" | tee /tmp/vibe2-recovery-fast/escalation.log
             node tools/company-recovery-dispatch.mjs --route=all --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/dispatch.log
 
             system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"
