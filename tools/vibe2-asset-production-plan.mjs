@@ -1836,8 +1836,137 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     assetsByPackId:registryAssetsByPackId
   }));
 
-  // 공용 자산 분류: 기존 packId/경로는 출처 이력이며 게임 전용 사용 제한이 아니다.
+  // [자동 파생 자산화] 기존 GRAPHICS_PRODUCTION 동기화가 실제 DCC 결과만 PREPARED 후보로 등록한다.
+  // 원본 모델·게임 코드는 불변이며 native 런타임 QA 없이 productionVerified를 올리지 않는다.
   let organizationAssetsChanged=false;
+  const derivedSync={inspected:0,registered:0,rejected:0,failureCounts:{}};
+  const derivedRoot=path.join(repoRoot,'assets','generated');
+  let canonicalAssetRoot='',canonicalDerivedRoot='';
+  try{
+    canonicalAssetRoot=fs.realpathSync(path.join(repoRoot,'assets'));
+    canonicalDerivedRoot=fs.realpathSync(derivedRoot);
+  }catch{}
+  if(canonicalAssetRoot&&canonicalDerivedRoot.startsWith(canonicalAssetRoot+path.sep)){
+    const sourceByPath=new Map();
+    const allowedSource=asset=>{
+      const license=clean(asset?.license).toLowerCase();
+      return !asset?.parentSourceId&&!asset?.derivedFromAssetId
+        &&['project-original','cc0','cc-by'].includes(license)
+        &&(license!=='cc-by'||Boolean(clean(asset?.sourceCredit||asset?.credit||asset?.attribution)))
+        &&!internalAssetHardBlockReason(asset);
+    };
+    for(const asset of next.assets){
+      if(!allowedSource(asset))continue;
+      for(const raw of unique([asset?.path,asset?.masterGlb,...(asset?.sourceFiles||[])])){
+        const relative=clean(raw).replaceAll('\\','/').replace(/^\/+/,'');
+        if(/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(relative)
+          &&!relative.split('/').includes('..')&&!sourceByPath.has(relative))sourceByPath.set(relative,asset);
+      }
+    }
+    const listDirs=directory=>{
+      try{return fs.readdirSync(directory,{withFileTypes:true}).filter(row=>row.isDirectory()&&/^[a-z0-9][a-z0-9._-]*$/i.test(row.name));}catch{return[];}
+    };
+    const actualFile=relative=>{
+      if(!/^assets\/[a-zA-Z0-9_.\/-]+$/i.test(relative)||relative.split('/').includes('..'))return null;
+      try{
+        const full=path.resolve(repoRoot,relative),real=fs.realpathSync(full);
+        const stat=fs.lstatSync(full);
+        if(!real.startsWith(canonicalAssetRoot+path.sep)||stat.isSymbolicLink()||!stat.isFile()
+          ||stat.size<8||stat.size>64*1024*1024)return null;
+        return{full:real,size:stat.size};
+      }catch{return null;}
+    };
+    for(const platform of ['roblox','unity','web']){
+      const platformRoot=path.join(canonicalDerivedRoot,platform);
+      for(const game of listDirs(platformRoot)){
+        if(consumerGameScope&&!consumerGameScope.has(game.name))continue;
+        for(const type of listDirs(path.join(platformRoot,game.name))){
+          const relative='assets/generated/'+platform+'/'+game.name+'/'+type.name;
+          const assetPath=relative+'/asset.glb',masterPath=relative+'/master.glb';
+          const previewPath=relative+'/preview.png',evidencePath=relative+'/evidence.json';
+          const applicationPath=relative+'/application.json';
+          const files=[assetPath,masterPath,previewPath,evidencePath,applicationPath].map(actualFile);
+          if(!files[3])continue;
+          derivedSync.inspected++;
+          if(files.some(row=>!row)){
+            derivedSync.rejected++;
+            derivedSync.failureCounts.DERIVED_ASSET_ARTIFACT_MISSING=(derivedSync.failureCounts.DERIVED_ASSET_ARTIFACT_MISSING||0)+1;
+            continue;
+          }
+          try{
+            const evidence=readJson(files[3].full),application=readJson(files[4].full);
+            const provenance=evidence?.sourceMesh,sourcePath=clean(provenance?.sourcePath).replaceAll('\\','/');
+            const parent=sourceByPath.get(sourcePath),license=clean(provenance?.license).toLowerCase();
+            const family=clean(evidence?.family).toUpperCase();
+            if(!parent||!['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP'].includes(family)
+              ||family!==clean(parent.family||parent.category).toUpperCase()
+              ||license!==clean(parent.license).toLowerCase()
+              ||(license==='cc-by'&&!clean(provenance.attribution))
+              ||provenance?.sourceFileImmutable!==true
+              ||!Array.isArray(provenance?.transformHistory)||provenance.transformHistory.length===0
+              ||provenance.transformHistory.some(row=>!['PBR_ROUGHNESS_STYLE_REAUTHOR','PBR_BASE_COLOR_STYLE_REAUTHOR','PBR_METALNESS_STYLE_REAUTHOR','PBR_NORMAL_STYLE_REAUTHOR','PBR_WEAR_STYLE_REAUTHOR'].includes(clean(row?.kind)))
+              ||evidence?.generator!=='assets/native-authoring/build-game-visual.py'
+              ||evidence?.internalAsset?.library!=='VIBE_STUDIO_ASSET_UNIVERSE'
+              ||evidence?.internalAsset?.state!=='PREPARED_NATIVE_QA_PENDING'
+              ||evidence?.productionVerified!==false||evidence?.companyPromotionEligible!==false
+              ||evidence?.runtimeVerificationState!=='STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING'
+              ||evidence?.pbrMeshQa?.pass!==true
+              ||application?.internalAsset?.originalImmutable!==true
+              ||application?.sourceMesh?.sourcePath!==sourcePath)throw new Error('DERIVED_ASSET_PROVENANCE_INVALID');
+            const originalFile=actualFile(sourcePath);
+            if(!originalFile)throw new Error('DERIVED_ASSET_PARENT_MISSING');
+            const originalHash=crypto.createHash('sha256').update(fs.readFileSync(originalFile.full)).digest('hex');
+            if(!/^[0-9a-f]{64}$/i.test(clean(provenance.sourceSha256))
+              ||originalHash!==provenance.sourceSha256
+              ||(clean(parent.sourceSha256)&&clean(parent.sourceSha256)!==originalHash))throw new Error('DERIVED_ASSET_PARENT_HASH_MISMATCH');
+            const artifactHash=crypto.createHash('sha256').update(fs.readFileSync(files[0].full)).digest('hex');
+            const masterHash=crypto.createHash('sha256').update(fs.readFileSync(files[1].full)).digest('hex');
+            if(artifactHash===originalHash||masterHash===originalHash)throw new Error('DERIVED_ASSET_UNCHANGED_SOURCE');
+            const preview=fs.readFileSync(files[2].full);
+            const previewHash=crypto.createHash('sha256').update(preview).digest('hex');
+            if(preview.length<45||!preview.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+              ||preview.readUInt32BE(8)!==13||preview.toString('ascii',12,16)!=='IHDR'
+              ||preview.readUInt32BE(16)<1||preview.readUInt32BE(16)>4096
+              ||preview.readUInt32BE(20)<1||preview.readUInt32BE(20)>4096
+              ||preview.readUInt32BE(preview.length-12)!==0||preview.toString('ascii',preview.length-8,preview.length-4)!=='IEND'
+              ||evidence?.artifactHash!==artifactHash||evidence?.previewHash!==previewHash
+              ||application?.masterSha256!==artifactHash)throw new Error('DERIVED_ASSET_OUTPUT_HASH_MISMATCH');
+            const staticQa=inspectVibeSourceGlb({repoRoot,source:{path:assetPath,sourceHash:artifactHash}});
+            const masterQa=inspectVibeSourceGlb({repoRoot,source:{path:masterPath,sourceHash:masterHash}});
+            if(staticQa.status!=='INSPECTED_RECONSTRUCTION_INPUT'||masterQa.status!=='INSPECTED_RECONSTRUCTION_INPUT')
+              throw new Error('DERIVED_ASSET_GLB_STATIC_QA_FAILED');
+            const id='derived-'+platform+'-'+game.name+'-'+type.name,existing=registryAssetById.get(id);
+            if(existing?.productionVerified===true||existing?.verifiedCompanyReusable===true)continue;
+            const candidate={
+              id,title:clean(parent.title)||id,family,role:clean(parent.role)||null,
+              status:'PREPARED_SOURCE_ONLY',platform:'SHARED_MASTER',preparedForPlatforms:[platform.toUpperCase()],
+              path:assetPath,masterGlb:masterPath,previewPath,
+              sourceFiles:[sourcePath,assetPath,masterPath],nativeArtifacts:[assetPath,masterPath],
+              sourceHash:originalHash,sourceSha256:originalHash,artifactHash,masterGlbHash:masterHash,
+              license:parent.license,sourceUrl:clean(parent.sourceUrl)||null,
+              sourceCredit:clean(provenance.attribution)||null,parentSourceId:clean(parent.id),
+              transformHistory:[...provenance.transformHistory],generator:evidence.generator,
+              evidenceRef:evidencePath,applicationRef:applicationPath,
+              intendedConsumerGameIds:[game.name],consumerGameIds:[],
+              runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+              productionVerified:false,verifiedCompanyReusable:false,nativeRuntimeVerified:false,
+              platformVariants:{},platformNativeImportRequired:true
+            };
+            if(existing&&JSON.stringify(Object.fromEntries(Object.keys(candidate).map(key=>[key,existing[key]])))===JSON.stringify(candidate))continue;
+            if(existing)Object.assign(existing,candidate);
+            else{next.assets.push(candidate);registryAssetById.set(id,candidate);}
+            derivedSync.registered++;
+            organizationAssetsChanged=true;
+          }catch(error){
+            derivedSync.rejected++;
+            const raw=clean(error?.message),signature=/^DERIVED_ASSET_[A-Z_]+$/.test(raw)?raw:'DERIVED_ASSET_VALIDATION_FAILED';
+            derivedSync.failureCounts[signature]=(derivedSync.failureCounts[signature]||0)+1;
+          }
+        }
+      }
+    }
+  }
+
   for(const asset of next.assets){
     const family=clean(asset.family||asset.category).toUpperCase();
     const files=unique([
@@ -2214,6 +2343,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerBindings:consumerSync.bindings,
     sourceConsumerRelations:consumerSync.relations,
     sourceConsumerRegistry:consumerSync.registry,
+    derivedSync:freeze({...derivedSync}),
     seedCount:seedPlan.seedCount,
     automationPlan:libraryPlan,
     executionAutomationPlan

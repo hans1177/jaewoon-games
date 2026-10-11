@@ -4149,6 +4149,83 @@ function writeInspectionTriangle(root,change=()=>{}){
   return inspectVibeSourceGlb({repoRoot:root,source:{path:'triangle.glb'}});
 }
 
+// [자동 파생 자산화] 실제 3D 원본/파생 바이트, 권리·계보·PBR 변경, 증거를 통과해야 미검증 후보만 등록한다.
+test('company registry sync automatically ingests verified-byte PBR derivatives without claiming runtime pass',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'registered-derived-'));
+  try{
+    const sourceDir=path.join(root,'assets','shared');
+    const outDir=path.join(root,'assets','generated','unity','demo','prop');
+    fs.mkdirSync(sourceDir,{recursive:true});fs.mkdirSync(outDir,{recursive:true});
+    const source=path.join(sourceDir,'source.glb');
+    writeInspectionTriangle(root);
+    fs.copyFileSync(path.join(root,'triangle.glb'),source);
+    const sourceHash=createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+    writeInspectionTriangle(root,doc=>{doc.materials[0].pbrMetallicRoughness.roughnessFactor=.72;});
+    const derived=fs.readFileSync(path.join(root,'triangle.glb'));
+    fs.writeFileSync(path.join(outDir,'asset.glb'),derived);
+    fs.writeFileSync(path.join(outDir,'master.glb'),derived);
+    const artifactHash=createHash('sha256').update(derived).digest('hex');
+    assert.notEqual(sourceHash,artifactHash);
+    const preview=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD9kAAAAASUVORK5CYII=','base64');
+    fs.writeFileSync(path.join(outDir,'preview.png'),preview);
+    const parent={id:'shared-source',title:'Source',family:'PROP',role:'environment-prop',
+      path:'assets/shared/source.glb',sourceFiles:['assets/shared/source.glb'],
+      sourceSha256:sourceHash,license:'project-original',status:'REPO_ASSET'};
+    const registry={version:1,assets:[parent],externalSources:[]};
+    const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
+      sourceFileImmutable:true,license:'project-original',
+      transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
+    const evidence={version:1,assetId:'demo-prop',family:'PROP',
+      generator:'assets/native-authoring/build-game-visual.py',
+      sourceMesh:provenance,license:'project-original',artifactHash,
+      previewHash:createHash('sha256').update(preview).digest('hex'),
+      pbrMeshQa:{pass:true},internalAsset:{library:'VIBE_STUDIO_ASSET_UNIVERSE',
+        state:'PREPARED_NATIVE_QA_PENDING'},
+      runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+      productionVerified:false,companyPromotionEligible:false};
+    const writeEvidence=()=>fs.writeFileSync(path.join(outDir,'evidence.json'),JSON.stringify(evidence));
+    writeEvidence();
+    fs.writeFileSync(path.join(outDir,'application.json'),JSON.stringify({
+      sourceMesh:provenance,masterSha256:artifactHash,
+      internalAsset:{originalImmutable:true,nativeRuntimePromotionRequired:true}
+    }));
+    const sync=(value=registry)=>synchronizeCompanyCommonAssetRegistry({
+      repoRoot:root,registry:value,persist:false,consumerGameIds:['demo']
+    });
+    const first=sync();
+    assert.equal(first.derivedSync.inspected,1);
+    assert.equal(first.derivedSync.registered,1,JSON.stringify(first.derivedSync));
+    assert.equal(first.derivedSync.rejected,0);
+    const added=first.registry.assets.find(row=>row.id==='derived-unity-demo-prop');
+    assert.ok(added);
+    assert.equal(added.parentSourceId,'shared-source');
+    assert.equal(added.sourceHash,sourceHash);
+    assert.equal(added.artifactHash,artifactHash);
+    assert.equal(added.platform,'SHARED_MASTER');
+    assert.equal(added.runtimeVerificationState,'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING');
+    assert.equal(added.productionVerified,false);
+    assert.equal(added.verifiedCompanyReusable,false);
+    assert.equal(added.nativeRuntimeVerified,false);
+    assert.deepEqual(added.platformVariants,{});
+    assert.equal(first.changedSections.includes('assets'),true);
+    const second=sync(first.registry);
+    assert.equal(second.derivedSync.registered,0,'unchanged source and outputs must not register twice');
+    assert.equal(second.changed,false,'idempotent sync must not mutate canonical registry');
+    evidence.companyPromotionEligible=true;
+    writeEvidence();
+    const unsafePromotion=sync();
+    assert.equal(unsafePromotion.derivedSync.registered,0);
+    assert.equal(unsafePromotion.derivedSync.rejected,1);
+    assert.ok(!unsafePromotion.registry.assets.some(row=>row.id==='derived-unity-demo-prop'));
+    evidence.companyPromotionEligible=false;
+    writeEvidence();
+    fs.appendFileSync(source,Buffer.from([0x20]));
+    const staleParent=sync();
+    assert.equal(staleParent.derivedSync.registered,0);
+    assert.equal(staleParent.derivedSync.rejected,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('GLB production inspection measures transformed geometry and ground pivot for static props',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-spatial-'));
   try{
