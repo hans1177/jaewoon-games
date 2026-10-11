@@ -1860,7 +1860,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
       for(const raw of unique([asset?.path,asset?.masterGlb,...(asset?.sourceFiles||[])])){
         const relative=clean(raw).replaceAll('\\','/').replace(/^\/+/,'');
         if(/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(relative)
-          &&!relative.split('/').includes('..')&&!sourceByPath.has(relative))sourceByPath.set(relative,asset);
+          &&!relative.split('/').includes('..')){
+          const owners=sourceByPath.get(relative)||[];
+          if(!owners.some(row=>row.id===asset.id)){
+            owners.push(asset);
+            sourceByPath.set(relative,owners);
+          }
+        }
       }
     }
     const listDirs=directory=>{
@@ -1896,8 +1902,17 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
           try{
             const evidence=readJson(files[3].full),application=readJson(files[4].full);
             const provenance=evidence?.sourceMesh,sourcePath=clean(provenance?.sourcePath).replaceAll('\\','/');
-            const parent=sourceByPath.get(sourcePath),license=clean(provenance?.license).toLowerCase();
+            const license=clean(provenance?.license).toLowerCase();
             const family=clean(evidence?.family).toUpperCase();
+            // 하나의 공용 메시를 환경 팩·개별 건물·소품이 함께 등록할 수 있다.
+            // 첫 번째 경로 소유자가 아닌 실제 family/권리/원본 해시에 일치하는 자산을 선택한다.
+            const parent=(sourceByPath.get(sourcePath)||[])
+              .filter(row=>clean(row.family||row.category).toUpperCase()===family
+                &&clean(row.license).toLowerCase()===license
+                &&(!clean(row.sourceSha256)||clean(row.sourceSha256)===clean(provenance?.sourceSha256)))
+              .sort((a,b)=>Number(Boolean(clean(b.role)))-Number(Boolean(clean(a.role)))
+                ||(a.sourceFiles||[]).length-(b.sourceFiles||[]).length
+                ||clean(a.id).localeCompare(clean(b.id)))[0]||null;
             if(!parent||!['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP'].includes(family)
               ||family!==clean(parent.family||parent.category).toUpperCase()
               ||license!==clean(parent.license).toLowerCase()
