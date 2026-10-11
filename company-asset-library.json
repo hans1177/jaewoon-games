@@ -80403,7 +80403,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/barbarian.glb"
         ],
         "support": [
@@ -80443,7 +80443,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/knight.glb"
         ],
         "support": [
@@ -80483,7 +80483,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mage.glb"
         ],
         "support": [
@@ -80523,7 +80523,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/rogue.glb"
         ],
         "support": [
@@ -80563,7 +80563,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/rogue-hooded.glb"
         ],
         "support": [
@@ -80603,7 +80603,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/skeleton-mage.glb"
         ],
         "support": [
@@ -80643,7 +80643,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/skeleton-minion.glb"
         ],
         "support": [
@@ -80683,7 +80683,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/skeleton-rogue.glb"
         ],
         "support": [
@@ -80723,7 +80723,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/skeleton-warrior.glb"
         ],
         "support": [
@@ -80763,7 +80763,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-female-a.glb"
         ],
         "support": [
@@ -80803,7 +80803,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-female-b.glb"
         ],
         "support": [
@@ -80843,7 +80843,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-female-c.glb"
         ],
         "support": [
@@ -80883,7 +80883,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-female-d.glb"
         ],
         "support": [
@@ -80923,7 +80923,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-female-e.glb"
         ],
         "support": [
@@ -80963,7 +80963,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-female-f.glb"
         ],
         "support": [
@@ -81003,7 +81003,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-male-a.glb"
         ],
         "support": [
@@ -81043,7 +81043,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-male-b.glb"
         ],
         "support": [
@@ -81083,7 +81083,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-male-c.glb"
         ],
         "support": [
@@ -81123,7 +81123,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-male-d.glb"
         ],
         "support": [
@@ -81163,7 +81163,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-male-e.glb"
         ],
         "support": [
@@ -81203,7 +81203,7 @@
       "gameExclusive": false,
       "consumerGameIds": [],
       "fileRoles": {
-        "master": [
+        "models": [
           "assets/roblox/actors/native/mini-character-male-f.glb"
         ],
         "support": [
@@ -81277,7 +81277,18 @@
           "sourceArchiveEntry": "Bricks059_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Bricks059/Bricks059_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-bricks079",
@@ -81345,7 +81356,18 @@
           "sourceArchiveEntry": "Bricks079_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Bricks079/Bricks079_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-concrete034",
@@ -81413,7 +81435,18 @@
           "sourceArchiveEntry": "Concrete034_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Concrete034/Concrete034_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-concrete046",
@@ -81481,7 +81514,18 @@
           "sourceArchiveEntry": "Concrete046_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Concrete046/Concrete046_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-fabric026",
@@ -81549,7 +81593,18 @@
           "sourceArchiveEntry": "Fabric026_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Fabric026/Fabric026_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-fabric030",
@@ -81617,7 +81672,18 @@
           "sourceArchiveEntry": "Fabric030_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Fabric030/Fabric030_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-grass001",
@@ -81685,7 +81751,18 @@
           "sourceArchiveEntry": "Grass001_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Grass001/Grass001_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-ground037",
@@ -81753,7 +81830,18 @@
           "sourceArchiveEntry": "Ground037_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Ground037/Ground037_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-ground054",
@@ -81821,7 +81909,18 @@
           "sourceArchiveEntry": "Ground054_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Ground054/Ground054_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-leather008",
@@ -81889,7 +81988,18 @@
           "sourceArchiveEntry": "Leather008_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Leather008/Leather008_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-leather026",
@@ -81957,7 +82067,18 @@
           "sourceArchiveEntry": "Leather026_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Leather026/Leather026_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-marble012",
@@ -82025,7 +82146,18 @@
           "sourceArchiveEntry": "Marble012_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Marble012/Marble012_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-metal032",
@@ -82106,7 +82238,19 @@
           "sourceArchiveEntry": "Metal032_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Metalness.png",
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Metal032/Metal032_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-metal046a",
@@ -82187,7 +82331,19 @@
           "sourceArchiveEntry": "Metal046A_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Metalness.png",
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Metal046A/Metal046A_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-metalplates006",
@@ -82268,7 +82424,19 @@
           "sourceArchiveEntry": "MetalPlates006_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Metalness.png",
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/MetalPlates006/MetalPlates006_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-rock030",
@@ -82336,7 +82504,18 @@
           "sourceArchiveEntry": "Rock030_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Rock030/Rock030_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-rock035",
@@ -82404,7 +82583,18 @@
           "sourceArchiveEntry": "Rock035_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Rock035/Rock035_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-tiles074",
@@ -82472,7 +82662,18 @@
           "sourceArchiveEntry": "Tiles074_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Tiles074/Tiles074_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-wood062",
@@ -82540,7 +82741,18 @@
           "sourceArchiveEntry": "Wood062_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Wood062/Wood062_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-wood066",
@@ -82608,7 +82820,18 @@
           "sourceArchiveEntry": "Wood066_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/Wood066/Wood066_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "ambientcg-woodfloor051",
@@ -82676,7 +82899,18 @@
           "sourceArchiveEntry": "WoodFloor051_1K-PNG_Roughness.png"
         }
       },
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "textures": [
+          "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Color.png",
+          "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_NormalGL.png",
+          "assets/roblox/common-materials-v1/sources/WoodFloor051/WoodFloor051_1K-PNG_Roughness.png"
+        ],
+        "support": [
+          "assets/roblox/common-materials-v1/manifest.json"
+        ]
+      }
     },
     {
       "id": "external-actor-quaternius-skeleton",
@@ -82709,7 +82943,18 @@
       "robloxAssetId": null,
       "companyCommonBase": true,
       "gameExclusive": false,
-      "consumerGameIds": []
+      "consumerGameIds": [],
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "fileRoles": {
+        "models": [
+          "assets/roblox/actors/native/quaternius-skeleton/master.glb",
+          "assets/roblox/actors/sources/quaternius-monsters/FBX/Skeleton.fbx"
+        ],
+        "support": [
+          "assets/roblox/actors/native/quaternius-skeleton/application.json",
+          "assets/roblox/actors/native/quaternius-skeleton/evidence.json"
+        ]
+      }
     }
   ],
   "research": [
