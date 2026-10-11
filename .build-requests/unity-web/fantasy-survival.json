@@ -1,7 +1,7 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-library-native-3d-material-build-fantasy-survival-20261011",
+  "requestId": "owner-fantasy-native-library-registration-and-unreadable-mesh-fix-20261011",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
@@ -13,12 +13,18 @@
   "webPrototypeFallbackForbidden": true,
   "upperPlatformReadinessRequired": true,
   "homepageCardVisibleRegardlessOfBuildResult": true,
-  "repairCause": "VERIFY_NATIVE_COMPANY_ASSET_RESOURCE_IMPORT_BINDING_AND_RUNNING_MESH_GEOMETRY; REPORT_REPAIR_REQUIRED_IF_MISSING",
+  "repairCause": "NATIVE_IMPORTED_MODEL_STATIC_QA_AND_WEBGL_GPU_ONLY_MESH_INDEX_READABILITY",
   "nativeAssetSourcePaths": [
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
   ],
-  "assetValidationStatus": "SOURCE_BOUND_RUNTIME_UNVERIFIED",
-  "productionVerified": false
+  "assetValidationStatus": "REGISTERED_SOURCE_BOUND_RUNTIME_QA_PENDING",
+  "productionVerified": false,
+  "registryAssetIds": [
+    "unity-fantasy-survival-tree-trunk-v1",
+    "unity-fantasy-survival-tree-crown-v1",
+    "unity-fantasy-survival-tree-materials-v1"
+  ],
+  "registryVersionRequired": 131
 }
