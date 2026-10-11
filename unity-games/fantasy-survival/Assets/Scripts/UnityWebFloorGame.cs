@@ -504,12 +504,19 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             source.transform.rotation = Quaternion.Euler(46f, -25f, 0f);
         }
 
+        // 오토 바이옴 · 기존 5개 지역의 월드 충돌과 좌표는 그대로 둔다.
+        // 승인된 세계지형의 숲·협곡·호숫가·설원·황무지 유형을 실제 Unity 3D 메시로 표현한다.
+        // 고정 시드의 시각용 지형에는 Collider를 추가하지 않아 이동/채집/세이브가 바뀌지 않는다.
         Color[] regionColors =
         {
-            new Color(.16f,.39f,.21f), new Color(.35f,.30f,.25f),
-            new Color(.22f,.34f,.42f), new Color(.25f,.28f,.37f),
+            new Color(.40f,.35f,.30f), new Color(.22f,.38f,.43f),
+            new Color(.17f,.39f,.22f), new Color(.69f,.76f,.81f),
             new Color(.55f,.37f,.20f)
         };
+        string[] biomeNames={"ROCK_CANYON","LAKE_SHORE","MAGIC_FOREST","SNOWFIELD","SAND_WASTELAND"};
+        Shader biomeShader=Shader.Find("Standard")??Shader.Find("Universal Render Pipeline/Lit")
+            ??Shader.Find("Unlit/Color");
+        if(biomeShader==null)throw new InvalidOperationException("MAGIC_FOREST_AUTOBIOME_SHADER_MISSING");
         for (int i = 0; i < regionColors.Length; i++)
         {
             GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -518,7 +525,69 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             ground.transform.position = new Vector3((i - 2) * 16f, -.45f, 0f);
             ground.transform.localScale = new Vector3(16f, .9f, 80f);
             Tint(ground, regionColors[i]);
+            // 기존 땅의 Collider는 유지하고 단조로운 평면 그래픽만 네이티브 메시로 대체한다.
+            ground.GetComponent<Renderer>().enabled=false;
+            const int widthSegments=16, lengthSegments=48;
+            var vertices=new Vector3[(widthSegments+1)*(lengthSegments+1)];
+            var triangles=new int[widthSegments*lengthSegments*6];
+            for(int z=0;z<=lengthSegments;z++)
+            for(int x=0;x<=widthSegments;x++)
+            {
+                float px=x*16f/widthSegments-8f,pz=z*80f/lengthSegments-40f;
+                float noise=Mathf.PerlinNoise((x+i*23f)*.22f,(z+i*31f)*.19f);
+                float detail=Mathf.PerlinNoise((x+i*17f)*.69f,(z+i*11f)*.51f);
+                float elevation=-.035f+noise*.045f+detail*.018f;
+                if(i==0)elevation+=Mathf.Pow(Mathf.Abs(px)/8f,3f)*.095f;
+                if(i==1)elevation-=Mathf.Clamp01((18f-Mathf.Abs(pz-24f))/18f)*.014f;
+                if(i==3)elevation+=Mathf.Abs(px)*.0035f;
+                vertices[z*(widthSegments+1)+x]=new Vector3(px,elevation,pz);
+            }
+            int triangle=0;
+            for(int z=0;z<lengthSegments;z++)
+            for(int x=0;x<widthSegments;x++)
+            {
+                int lower=z*(widthSegments+1)+x,upper=lower+widthSegments+1;
+                triangles[triangle++]=lower;
+                triangles[triangle++]=upper;
+                triangles[triangle++]=lower+1;
+                triangles[triangle++]=lower+1;
+                triangles[triangle++]=upper;
+                triangles[triangle++]=upper+1;
+            }
+            var mesh=new Mesh{name="MagicForest_AutoBiome_"+biomeNames[i]};
+            mesh.vertices=vertices;
+            mesh.triangles=triangles;
+            mesh.RecalculateNormals();
+            GameObject surface=new GameObject("NativeAutoBiome_"+biomeNames[i]);
+            surface.transform.SetParent(worldRoot.transform);
+            surface.transform.position=new Vector3((i-2)*16f,0f,0f);
+            surface.AddComponent<MeshFilter>().sharedMesh=mesh;
+            Material biomeMaterial=new Material(biomeShader);
+            biomeMaterial.color=regionColors[i];
+            surface.AddComponent<MeshRenderer>().sharedMaterial=biomeMaterial;
+            Debug.Log("MAGIC_FOREST_AUTOBIOME_REGION="+biomeNames[i]+" triangles="+triangles.Length/3
+                +" status=SOURCE_BOUND_RUNTIME_QA_REQUIRED");
+            // 지역별 랜드마크는 기존 모델 바인더에서만 생성한다. 실제 전투/충돌 루프에 영향 없음.
+            for(int prop=0;prop<10;prop++)
+            {
+                float azimuth=prop*2.39996f+i*.71f;
+                float distance=9.2f+(prop%4)*2.8f;
+                Vector3 pos=new Vector3((i-2)*16f+Mathf.Cos(azimuth)*Mathf.Min(6f,distance*.36f),
+                    .015f,Mathf.Sin(azimuth)*distance*2.1f);
+                if(Mathf.Abs(pos.x)<3f && Mathf.Abs(pos.z)<6f)continue;
+                string asset=i==0?"MagicForestRock":i==1?"MagicForestVillage_cobblestones":
+                    i==2?(prop%3==0?"MagicForestVillage_tree_large":"MagicForestVillage_tree"):
+                    i==3?(prop%3==0?"MagicForestRock":"MagicForestVillage_tree"):
+                    (prop%3==0?"MagicForestVillage_foliage_A":"MagicForestRock");
+                GameObject scenery=BindCompanyVisual(asset,worldRoot.transform,pos,
+                    Vector3.one*(i==3?.74f:i==0?1.30f:.91f),Quaternion.Euler(0f,prop*61f,0f));
+                if(scenery!=null)TintCompanyMesh(scenery,
+                    i==3?new Color(.78f,.83f,.88f):i==0?new Color(.60f,.52f,.45f):
+                    i==1?new Color(.44f,.59f,.64f):i==4?new Color(.67f,.51f,.34f):
+                    new Color(.37f,.62f,.37f));
+            }
         }
+        Debug.Log("MAGIC_FOREST_AUTOBIOME=FIVE_NATIVE_3D_REGIONS_SOURCE_BOUND_RUNTIME_QA_REQUIRED");
         // 그래픽 · 공용 3D OBJ 원본에서 Unity Y축/재질에 맞춰 파생 제작한 실제 메시를 연결한다.
         // 기존 Tree/Rock 콜라이더와 채집 판정은 그대로 두고, 시각 모델만 교체한다.
         GameObject treeTrunkSource = Resources.Load<GameObject>("CompanyAssets/MagicForestTrunk");
