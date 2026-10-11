@@ -116,6 +116,59 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.equal(request.fullGameplayPassAuthority,false,'source and metadata are not runtime pass evidence');
 });
 
+test('native asset registry preflight runs before Unity editor and fails closed on tampered source',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  const begin=workflow.indexOf('      - name: Verify Unity Web development-floor contract');
+  const after=workflow.indexOf('      - name: Bind canonical Unity source tree',begin);
+  assert.ok(begin>=0&&after>begin);
+  const section=workflow.slice(begin,after);
+  const start=section.indexOf("node --input-type=module <<'NODE'\n");
+  const end=section.indexOf('\n          NODE',start);
+  assert.ok(start>=0&&end>start);
+  const code=section.slice(start+"node --input-type=module <<'NODE'\n".length,end)
+    .split('\n').map(line=>line.replace(/^          /,'')).join('\n');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'fantasy-registry-preflight-'));
+  const paths=[
+    'company-learning/platform-release-roadmap.json',
+    'company-asset-library.json',
+    '.build-requests/unity-web/fantasy-survival.json',
+    'assets/roblox/survival-core-world-v1/tree_trunk_thick.obj',
+    'assets/roblox/survival-core-world-v1/tree_crown_round.obj',
+    'assets/roblox/survival-core-world-v1/survival-core-world.mtl',
+    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',
+    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj',
+    'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl'
+  ];
+  const invoke=()=>execFileSync(process.execPath,['--input-type=module','--eval',code],{
+    cwd:root,encoding:'utf8',timeout:15000,
+    env:{...process.env,GAME_ID:'fantasy-survival',PROJECT_PATH:'unity-games/fantasy-survival'}
+  });
+  try{
+    for(const relative of paths){
+      const dest=path.join(root,relative);
+      fs.mkdirSync(path.dirname(dest),{recursive:true});
+      fs.copyFileSync(relative,dest);
+    }
+    const cleanRun=invoke();
+    assert.match(cleanRun,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count=3/);
+    const tampered=path.join(root,'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj');
+    fs.appendFileSync(tampered,'\n# deliberate SHA256 mismatch\n');
+    assert.throws(invoke,error=>{
+      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
+      return true;
+    });
+    fs.copyFileSync('unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj',tampered);
+    const requestFile=path.join(root,'.build-requests/unity-web/fantasy-survival.json');
+    const req=JSON.parse(fs.readFileSync(requestFile,'utf8'));
+    req.registryVersionRequired=999999;
+    fs.writeFileSync(requestFile,JSON.stringify(req));
+    assert.throws(invoke,error=>{
+      assert.match(String(error.stderr),/UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE/);
+      return true;
+    });
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('Unity Web first-stage request binds canonical Unity source and Web output',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-first-stage-'));
   const old=process.cwd();
