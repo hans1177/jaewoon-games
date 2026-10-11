@@ -396,6 +396,17 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private Vector2 pointerOrigin;
     private int progress, level = 1, resource = 10, actions;
 
+    // 시각 · 인스턴스마다 재질을 복제하지 않고 같은 공용 3D 지오메트리를 지역별 색감으로 보정한다.
+    private static void TintCompanyMesh(GameObject visual,Color tint)
+    {
+        if(visual==null)return;
+        var block=new MaterialPropertyBlock();
+        block.SetColor("_Color",tint);
+        block.SetColor("_BaseColor",tint);
+        foreach(Renderer renderer in visual.GetComponentsInChildren<Renderer>(true))
+            if(renderer!=null)renderer.SetPropertyBlock(block);
+    }
+
     // 자산 · 공용 라이브러리 모델을 Unity Resources 네이티브 파생본으로 소비한다.
     [Serializable] private sealed class LibraryUiTheme
     {
@@ -476,6 +487,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         mainCamera.clearFlags = CameraClearFlags.SolidColor;
         mainCamera.backgroundColor = new Color(0.065f, 0.16f, 0.14f);
         mainCamera.fieldOfView = 57f;
+        // 환경 · 실제 3D 수목과 지역 실루엣이 구분되도록 기존 월드 조명만 보정한다.
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Exponential;
+        RenderSettings.fogDensity = .012f;
+        RenderSettings.fogColor = new Color(.15f,.24f,.22f);
+        RenderSettings.ambientLight = new Color(.57f,.65f,.62f);
 
         if (FindFirstObjectByType<Light>() == null)
         {
@@ -483,6 +500,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Light sunlight = source.AddComponent<Light>();
             sunlight.type = LightType.Directional;
             sunlight.intensity = 1.15f;
+            sunlight.color = new Color(.99f,.94f,.79f);
             source.transform.rotation = Quaternion.Euler(46f, -25f, 0f);
         }
 
@@ -602,6 +620,71 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             BindCompanyVisual("MagicForestRoad",worldRoot.transform,
                 new Vector3((i-2)*14f,-.005f,6.5f),new Vector3(1.12f,.44f,1.12f),
                 Quaternion.Euler(0f,(i%2)*180f,0f));
+        // 마을 · 검증된 외부 CC0 모델을 기존 공용 Unity Resources 로더로 직접 배치한다.
+        // 건물/길/울타리는 시각 전용이고 전투 판정·채집·충돌·저장에는 개입하지 않는다.
+        Vector3[] villageLocations={new Vector3(-27f,0f,21f),new Vector3(26f,0f,-23f),new Vector3(21f,0f,29f)};
+        int villageHouses=0,villageDetailCount=0;
+        for(int area=0;area<villageLocations.Length;area++)
+        {
+            Vector3 center=villageLocations[area];
+            Quaternion direction=Quaternion.Euler(0f,area==1?180f:0f,0f);
+            Color wallTint=area==1?new Color(.68f,.64f,.56f):new Color(.83f,.70f,.55f);
+            GameObject house=BindCompanyVisual("MagicForestVillage_house",worldRoot.transform,
+                center+new Vector3(0f,-.23f,0f),Vector3.one*(area==1?.88f:.96f),direction);
+            if(house==null)continue;
+            TintCompanyMesh(house,wallTint);
+            villageHouses++;
+            GameObject door=BindCompanyVisual("MagicForestVillage_house_door",worldRoot.transform,
+                center+direction*new Vector3(0f,-.14f,-2.65f),Vector3.one*.9f,direction);
+            if(door!=null){TintCompanyMesh(door,new Color(.57f,.38f,.26f));villageDetailCount++;}
+            GameObject chimney=BindCompanyVisual("MagicForestVillage_house_chimney",worldRoot.transform,
+                center+direction*new Vector3(1.7f,.7f,1.0f),Vector3.one*.95f,direction);
+            if(chimney!=null){TintCompanyMesh(chimney,new Color(.68f,.66f,.65f));villageDetailCount++;}
+            GameObject gate=BindCompanyVisual("MagicForestVillage_gate_single",worldRoot.transform,
+                center+direction*new Vector3(-3.3f,.05f,-5.0f),Vector3.one*.98f,direction);
+            if(gate!=null){TintCompanyMesh(gate,new Color(.59f,.42f,.27f));villageDetailCount++;}
+            for(int side=-1;side<=1;side+=2)
+            {
+                GameObject fence=BindCompanyVisual("MagicForestVillage_fence_straight",worldRoot.transform,
+                    center+direction*new Vector3(side*4.2f,.02f,-4.2f),new Vector3(2.0f,1.0f,1.15f),direction);
+                if(fence!=null){TintCompanyMesh(fence,new Color(.50f,.38f,.27f));villageDetailCount++;}
+                GameObject corner=BindCompanyVisual("MagicForestVillage_fence_corner",worldRoot.transform,
+                    center+direction*new Vector3(side*5.7f,.02f,-3.2f),Vector3.one*1.1f,direction);
+                if(corner!=null){TintCompanyMesh(corner,new Color(.49f,.36f,.26f));villageDetailCount++;}
+            }
+            GameObject bench=BindCompanyVisual("MagicForestVillage_bench_A",worldRoot.transform,
+                center+direction*new Vector3(3.8f,0f,2.3f),Vector3.one*1.05f,direction);
+            if(bench!=null){TintCompanyMesh(bench,new Color(.56f,.42f,.29f));villageDetailCount++;}
+            GameObject parcel=BindCompanyVisual("MagicForestVillage_package",worldRoot.transform,
+                center+direction*new Vector3(2.4f,0f,-2.0f),Vector3.one*.85f,direction);
+            if(parcel!=null){TintCompanyMesh(parcel,new Color(.78f,.67f,.43f));villageDetailCount++;}
+            GameObject mailbox=BindCompanyVisual("MagicForestVillage_mailbox",worldRoot.transform,
+                center+direction*new Vector3(-3.8f,0f,-2.2f),Vector3.one*1.05f,direction);
+            if(mailbox!=null){TintCompanyMesh(mailbox,new Color(.46f,.49f,.47f));villageDetailCount++;}
+            for(int pathTile=0;pathTile<4;pathTile++)
+            {
+                GameObject cobble=BindCompanyVisual("MagicForestVillage_cobblestones",worldRoot.transform,
+                    center+direction*new Vector3(0f,.02f,-4f-pathTile*1.65f),Vector3.one*1.35f,direction);
+                if(cobble!=null){TintCompanyMesh(cobble,new Color(.66f,.63f,.55f));villageDetailCount++;}
+            }
+            for(int grove=0;grove<4;grove++)
+            {
+                float theta=grove*Mathf.PI*.65f+area*.5f;
+                Vector3 outside=center+new Vector3(Mathf.Cos(theta)*9f,0f,Mathf.Sin(theta)*8.2f);
+                string treeName=grove%2==0?"MagicForestVillage_tree_large":"MagicForestVillage_tree";
+                GameObject nativeTree=BindCompanyVisual(treeName,worldRoot.transform,
+                    outside,Vector3.one*(1.0f+grove*.11f),Quaternion.Euler(0f,area*31f+grove*83f,0f));
+                if(nativeTree!=null){TintCompanyMesh(nativeTree,new Color(.42f,.60f,.43f));villageDetailCount++;}
+                string foliageName=grove%2==0?"MagicForestVillage_foliage_A":"MagicForestVillage_foliage_B";
+                GameObject foliage=BindCompanyVisual(foliageName,worldRoot.transform,
+                    outside+new Vector3(1.2f,0f,-.8f),Vector3.one*1.15f,Quaternion.Euler(0f,grove*43f,0f));
+                if(foliage!=null){TintCompanyMesh(foliage,new Color(.49f,.68f,.44f));villageDetailCount++;}
+            }
+        }
+        Debug.Log("MAGIC_FOREST_WEB_CC0_VILLAGES="+villageHouses+" details="+villageDetailCount
+            +" status="+(villageHouses==villageLocations.Length?"SOURCE_BOUND_RUNTIME_QA_REQUIRED":"REPAIR_REQUIRED"));
+        if(villageHouses!=villageLocations.Length || villageDetailCount<60)
+            throw new InvalidOperationException("MAGIC_FOREST_WEB_CC0_VILLAGE_ASSET_MISSING");
         // 자원 · 원본 웹의 섬유 노드를 3D 채집 대상으로 연결한다. 기존 나무/돌 보상은 불변.
         for (int i = 0; i < 36; i++)
         {
