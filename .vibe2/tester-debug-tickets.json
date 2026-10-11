@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-11T23:02:45.099Z",
+  "updatedAt": "2026-10-11T23:17:12.898Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -7449,8 +7449,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T00:53:38.989Z",
-      "updatedAt": "2026-10-11T23:02:45.095Z",
-      "occurrenceCount": 29
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 30
     },
     {
       "id": "bug-f19930d732d990cdc52f",
@@ -7928,8 +7928,152 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T22:34:39.877Z",
-      "updatedAt": "2026-10-11T23:02:45.095Z",
-      "occurrenceCount": 3
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 4
+    },
+    {
+      "id": "bug-3273f71ca643bdb87e2c",
+      "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+        "{\"sourceRevision\":\"e4a2b237232068dc4cf8d023135f617eb1e89b8f\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-11T23:17:12.895Z",
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-34f12732b02289bb5482",
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+        "{\"sourceRevision\":\"c1d2c59514d33c45c2225697eb411e70bfba0452\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-11T23:17:12.895Z",
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-a3921f552aa14380396b",
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_DATASTORE_REQUIRED|SERVER_DATASTORE_LOAD_REQUIRED|SERVER_DATASTORE_SAVE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+        "{\"sourceRevision\":\"adbd4830a7aa80bcec7f8b348b6ac2b9a610081f\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-11T23:17:12.895Z",
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-78588d484859f77abfda",
+      "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+        "{\"sourceRevision\":\"483afa19a584c5f3689431f013da74087ea985fe\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-11T23:17:12.895Z",
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-9edb0c43b589a56290fe",
+      "gameId": "territory-war",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_PLAY_MODE_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+        "{\"sourceRevision\":\"a51139df4451bdc9e7f5dcc84d383201ca31d975\",\"buildSourceRevision\":\"a51139df4451bdc9e7f5dcc84d383201ca31d975\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-11T23:17:12.895Z",
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-9443a6ba1778ce0d7f09",
+      "gameId": "cozy-island",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "PLATFORM",
+      "signature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED",
+        "{\"sourceRevision\":\"fbfc5cb2bd015e981f4de20c19c2781f02b66637\",\"buildSourceRevision\":\"fbfc5cb2bd015e981f4de20c19c2781f02b66637\",\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-11T23:17:12.895Z",
+      "updatedAt": "2026-10-11T23:17:12.895Z",
+      "occurrenceCount": 1
     }
   ]
 }
