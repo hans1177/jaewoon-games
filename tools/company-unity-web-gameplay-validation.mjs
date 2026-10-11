@@ -17,6 +17,8 @@ const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
 if(screenshot&&!/\.png$/i.test(screenshot))throw new Error('UNITY_WEB_QA_SCREENSHOT_PNG_REQUIRED');
 const port=Number(args.port||4187);
+// 메인 · 공개 배포된 WebGL도 기존 실제 플레이 검증기로 검사한다.
+const publicUrl=String(args['public-url']||'').trim();
 const scenarioId=String(args.scenario||'actual-play').trim();
 if(!['actual-play','independent-qa','regression'].includes(scenarioId))
   throw new Error('UNITY_WEB_QA_SCENARIO_INVALID:'+scenarioId);
@@ -32,6 +34,13 @@ if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3
 
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
+if(publicUrl){
+  const target=new URL(publicUrl);
+  if(target.origin!=='https://jaewoon-games.pages.dev'||
+     target.pathname!==`/web-games/${gameId}/unity/`||
+     target.search||target.hash||target.username||target.password)
+    throw new Error('UNITY_WEB_QA_PUBLIC_URL_INVALID');
+}
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
 if(!fs.existsSync(path.join(source,'index.html')))throw new Error('UNITY_WEB_INDEX_MISSING');
 const manifestPath=path.join(source,'unity-web-deploy-manifest.json');
@@ -75,7 +84,7 @@ const contentType=file=>{
 };
 
 const root=process.cwd();
-const server=http.createServer((req,res)=>{
+const server=publicUrl?null:http.createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
     const relative=pathname.replace(/^\/+/, '');
@@ -92,7 +101,7 @@ const server=http.createServer((req,res)=>{
     res.writeHead(500);res.end(String(error?.message||error));
   }
 });
-await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
+if(server)await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
 
 const markers=[];
 const consoleErrors=[];
@@ -111,6 +120,7 @@ const qaDeadline=setTimeout(()=>{
     observedRuntimeFailure:true,
     failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
     failureSignature,markers,consoleErrors,pageErrors,failedRequests,
+    runtimeSurface:publicUrl?'CLOUDFLARE_PAGES_MOBILE_EMULATION':'LOCAL_MOBILE_EMULATION',
     generatedAt:new Date().toISOString()
   };
   if(output){
@@ -149,11 +159,13 @@ try{
     return at>0?[token.slice(0,at),token.slice(at+1)]:null;
   }).filter(Boolean));
   const volatileStateKeys=new Set(['game','region','enemy','enemyHp','hp','maxHp','x','y','z','cameraX','cameraY','cameraZ']);
-  const url=`http://127.0.0.1:${port}/${source}/?qa=1`;
+  const url=publicUrl?publicUrl+'?qa=1':`http://127.0.0.1:${port}/${source}/?qa=1`;
   const bootStartedAt=Date.now();
   qaStage='WEBGL_BOOT';
   console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+  const navigation=await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+  if(publicUrl&&navigation?.status()!==200)
+    throw new Error('UNITY_WEB_QA_PUBLIC_HTTP_STATUS_INVALID:'+String(navigation?.status()));
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(4000);
   // 화면 증거: 부팅 직후 첫 Unity canvas를 저장한다. 이후 플레이가 실패해도 빈 화면 근거는 남는다.
@@ -654,6 +666,8 @@ try{
       markerOnlyPassForbidden:true
     },
     sourcePath:source,
+    runtimeSurface:publicUrl?'CLOUDFLARE_PAGES_MOBILE_EMULATION':'LOCAL_MOBILE_EMULATION',
+    publicGameUrl:publicUrl||null,
     approvedEnvironment:{
       required:approvedEnvironment.required===true,
       layoutSha256:approvedEnvironment.required===true?approvedEnvironment.layoutSha256:null,
@@ -771,14 +785,20 @@ try{
   }));
   console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
 } catch(error) {
-  // 실제 브라우저 실패 지점을 기록하고 이전 QA 통과 상태로 대체하지 않는다.
+  // 메인 · 오류가 발생하면 기존 플레이 근거를 보존하되 최종 판정은 FAIL로 기록한다.
   const failureSignature=String(error?.message||error);
-  if(output&&!fs.existsSync(output)){
+  if(output){
+    let previousEvidence=null;
+    try{if(fs.existsSync(output))previousEvidence=JSON.parse(fs.readFileSync(output,'utf8'));}catch{}
     const failureEvidence={
-      version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
+      ...(previousEvidence&&typeof previousEvidence==='object'?previousEvidence:{}),
+      version:2,gameId,scenarioId,pass:false,
+      playableBrowserTest:previousEvidence?.playableBrowserTest===true,
       observedRuntimeFailure:true,
       failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
       failureSignature,markers,consoleErrors,pageErrors,failedRequests,
+      runtimeSurface:publicUrl?'CLOUDFLARE_PAGES_MOBILE_EMULATION':'LOCAL_MOBILE_EMULATION',
+      publicGameUrl:publicUrl||null,
       generatedAt:new Date().toISOString(),
     };
     fs.mkdirSync(path.dirname(output),{recursive:true});
@@ -794,7 +814,7 @@ try{
 } finally {
   qaStage='HTTP_SERVER_CLOSE';
   // Unity WebGL 요청이 중단돼도 스트리밍 소켓 때문에 작업이 무한 대기하지 않게 한다.
-  await new Promise(resolve=>{
+  if(server)await new Promise(resolve=>{
     server.close(resolve);
     server.closeAllConnections();
   });
