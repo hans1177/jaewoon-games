@@ -685,7 +685,7 @@ jobs:
           const configured = Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS);
           const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : 256;
           const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
-          const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
+          const afterText = `${JSON.stringify(normalized)}\n`;
           if (beforeText !== afterText) {
             fs.writeFileSync(file, afterText, 'utf8');
             console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=YES');
