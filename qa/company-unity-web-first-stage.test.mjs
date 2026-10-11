@@ -475,3 +475,24 @@ test('Unity Web actual browser failure signatures reach the existing Vibe repair
   assert.match(settlement,/vibe2-queue-control\.mjs fail/);
   assert.doesNotMatch(settlement,/vibe2-queue-control\.mjs pass/);
 });
+
+
+test('Unity Web source preflight routes exact native 3D source error into existing causal repair queue',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const preflight=workflow.slice(workflow.indexOf('      - name: Verify Unity Web development-floor contract'),
+    workflow.indexOf('      - name: Bind canonical Unity source tree'));
+  const repair=workflow.slice(workflow.indexOf('      - name: Mark Unity Web floor repair requirement'),
+    workflow.indexOf('  settle-vibe2-failure:'));
+  assert.match(preflight,/id: source_preflight/);
+  assert.match(preflight,/preflight_code="\$\{PIPESTATUS\[0\]\}"/);
+  assert.match(preflight,/--validate-only 2>&1 \| tee "\$preflight_log"/);
+  assert.match(preflight,/failure_stage=UNITY_WEB_SOURCE_PREFLIGHT/);
+  assert.match(preflight,/UNITY_WEB_SOURCE_PREFLIGHT_FAILURE=/);
+  assert.match(repair,/SOURCE_PREFLIGHT_FAILURE_STAGE:/);
+  assert.match(repair,/SOURCE_PREFLIGHT_FAILURE_SIGNATURE:/);
+  assert.match(repair,/failure_stage="\$\{SOURCE_PREFLIGHT_FAILURE_STAGE:-UNITY_WEB_BUILD_OR_READINESS\}"/);
+  assert.match(repair,/failure_signature="\$\{SOURCE_PREFLIGHT_FAILURE_SIGNATURE:-REPAIR_REQUIRED\}"/);
+  assert.match(repair,/for filename in unity-web-post-deploy-mobile\.json/);
+  assert.match(workflow,/Re-enter Vibe2 Unity Web causal repair/);
+  assert.doesNotMatch(preflight,/git push/);
+});
