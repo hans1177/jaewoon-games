@@ -9,6 +9,16 @@ on:
     workflows:
       - Vibe2 Continuous Core
       - Company System AI Workers
+      # Reuse the same canonical recovery queue for completed deployment failures.
+      - Vibe2 Candidate Release Gate
+      - Unity Web Development Floor
+      - Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment
+      - Company DEVELOPMENT_CONFIRMED Roblox Runtime
+      - Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight
+      - Vibe2 Roblox Candidate Runtime
+      - Vibe2 Roblox Candidate Result
+      - Vibe2 Roblox Release Handoff
+      - Magic Forest Static Play
     types: [completed]
   schedule:
     - cron: '*/5 * * * *'
@@ -40,6 +50,8 @@ jobs:
 
       - name: Escalate and redispatch recovery from latest control state
         id: recovery
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -57,6 +69,12 @@ jobs:
             attempt=$((attempt+1))
             rm -rf /tmp/vibe2-recovery-control
             git fetch --no-tags --depth=1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
+            # Rebind the exact work unit to the four current main policies before changing state.
+            git reset --hard origin/main >/dev/null
+            node tools/company-shared-context.mjs --policy=company-learning/platform-release-roadmap.json \
+              --log-map=company-learning/company-log-map.json \
+              --architecture=company-learning/company-architecture-map.json \
+              --security=company-learning/security-immune-system.json > /tmp/vibe2-recovery-fast/shared-context.log
             git worktree prune
             git worktree add --detach /tmp/vibe2-recovery-control origin/vibe2-unreal-core >/dev/null
             control=/tmp/vibe2-recovery-control
@@ -65,7 +83,79 @@ jobs:
             test -f "$control/.vibe2/system-ai-queue.json" || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > "$control/.vibe2/system-ai-queue.json"
             test -f "$control/.vibe2/recovery-queue.json" || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > "$control/.vibe2/recovery-queue.json"
 
-            node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/escalation.log
+            # Source the failing step only from GitHub's own job conclusions. Never execute log text.
+            deployment_args=()
+            failed_run_id="$(node -e "const e=require(process.env.GITHUB_EVENT_PATH);if(e.workflow_run?.conclusion==='failure')process.stdout.write(String(e.workflow_run.id||''))")"
+            if [ "${GITHUB_EVENT_NAME}" = workflow_run ] && [ -n "$failed_run_id" ]; then
+              [[ "$failed_run_id" =~ ^[0-9]+$ ]]
+              if ! curl --fail-with-body --silent --show-error \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$failed_run_id/jobs?per_page=100" > /tmp/vibe2-recovery-fast/deployment-jobs.json; then
+                printf '%s\n' '{"jobs":[]}' > /tmp/vibe2-recovery-fast/deployment-jobs.json
+                echo "DEPLOYMENT_FAILED_RUN_JOBS=UNAVAILABLE_CAUSAL_TRIAGE_REQUIRED"
+              fi
+              # Unity Web's own repair step emits strict failure-stage markers. Do not
+              # mistake a failed Cloudflare publish for a C# or gameplay defect.
+              workflow_name="$(node -e 'const e=require(process.env.GITHUB_EVENT_PATH);process.stdout.write(String(e.workflow_run?.name||""))')"
+              if [ "$workflow_name" = 'Unity Web Development Floor' ]; then
+                failed_job_id="$(node -e 'const fs=require("fs");const j=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));const f=(j.jobs||[]).find(x=>x.conclusion==="failure"&&Number.isSafeInteger(x.id));process.stdout.write(f?String(f.id):"")' /tmp/vibe2-recovery-fast/deployment-jobs.json)"
+                if [[ "$failed_job_id" =~ ^[0-9]+$ ]]; then
+                  # Stream job logs through a strict allowlist; never save or execute raw logs.
+                  marker_lines="$(curl --location --fail-with-body --silent --show-error \
+                    --header 'Accept: application/vnd.github+json' \
+                    --header "Authorization: Bearer $GH_TOKEN" \
+                    --header 'X-GitHub-Api-Version: 2022-11-28' \
+                    "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/jobs/$failed_job_id/logs" \
+                    | grep -oE 'UNITY_WEB_REPAIR_FAILURE_(STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]+' | tail -n 12 || true)"
+                  if [ -n "$marker_lines" ]; then
+                    DEPLOYMENT_MARKERS="$marker_lines" node -e 'const fs=require("fs");const p="/tmp/vibe2-recovery-fast/deployment-jobs.json";const j=JSON.parse(fs.readFileSync(p,"utf8"));j.failureMarkers=process.env.DEPLOYMENT_MARKERS.split("\n").filter(x=>/^UNITY_WEB_REPAIR_FAILURE_(STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}$/.test(x));fs.writeFileSync(p,JSON.stringify(j))'
+                  fi
+                fi
+              fi
+              # Extract only bounded diagnostic classifications and tracked source paths.
+              # Raw build logs are never written to the recovery queue or uploaded as artifacts.
+              node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='/tmp/vibe2-recovery-fast/deployment-jobs.json';
+          const data=JSON.parse(fs.readFileSync(file,'utf8'));
+          const job=(data.jobs||[]).find(x=>x.conclusion==='failure'&&Number.isSafeInteger(Number(x.id)));
+          if(job){
+            try{
+              const res=await fetch('https://api.github.com/repos/'+process.env.GITHUB_REPOSITORY+'/actions/jobs/'+job.id+'/logs',{
+                headers:{Accept:'application/vnd.github+json',Authorization:'Bearer '+process.env.GH_TOKEN},
+                signal:AbortSignal.timeout(12000)
+              });
+              if(res.ok&&Number(res.headers.get('content-length')||0)<2000000){
+                const logs=await res.text();
+                if(logs.length<2000000){
+                  const markers=[...logs.matchAll(/UNITY_WEB_REPAIR_FAILURE_(?:STAGE|SIGNATURE)=[A-Za-z0-9_.:/-]{1,160}/g)]
+                    .map(x=>x[0]).slice(-4);
+                  const exceptionAt=logs.lastIndexOf('MissingComponentException');
+                  const errorAt=logs.search(/Assets\/[A-Za-z0-9_./-]+\.cs\([0-9]+,[0-9]+\): error CS[0-9]+/);
+                  const excerpt=exceptionAt>=0?logs.slice(exceptionAt,exceptionAt+3500)
+                    :errorAt>=0?logs.slice(errorAt,errorAt+1600):'';
+                  const repoPaths=[...excerpt.matchAll(/(?:unity|roblox|web)-games\/[a-z0-9-]+\/[A-Za-z0-9_./-]+\.(?:cs|luau|lua|js|html)/g)]
+                    .map(x=>x[0]);
+                  const unityPaths=[...excerpt.matchAll(/Assets\/[A-Za-z0-9_./-]+\.cs/g)].map(x=>x[0]);
+                  const classification=exceptionAt>=0?'UNITY_MISSING_COMPONENT':
+                    errorAt>=0?'UNITY_CSHARP_COMPILE':'';
+                  data.failureMarkers=[...new Set(markers)];
+                  data.failureDiagnostics={classification,
+                    sourceFiles:[...new Set([...repoPaths,...unityPaths])].slice(0,3)};
+                  fs.writeFileSync(file,JSON.stringify(data),'utf8');
+                  console.log('DEPLOYMENT_CAUSAL_DIAGNOSTIC='+((classification||'STAGE_ONLY')));
+                }
+              }
+            }catch(error){
+              console.log('DEPLOYMENT_CAUSAL_DIAGNOSTIC=JOB_STEPS_ONLY');
+            }
+          }
+          NODE
+              deployment_args=("--deployment-event=$GITHUB_EVENT_PATH" "--deployment-jobs=/tmp/vibe2-recovery-fast/deployment-jobs.json")
+            fi
+            node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" --catalog=game-catalog.json "${deployment_args[@]}" | tee /tmp/vibe2-recovery-fast/escalation.log
             node tools/company-recovery-dispatch.mjs --route=all --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/dispatch.log
 
             system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"
