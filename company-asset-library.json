@@ -1,8 +1,8 @@
 {
-  "version": 131,
+  "version": 132,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-11T02:32:31.121Z",
+  "updatedAt": "2026-10-11T04:01:00.000Z",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -76296,6 +76296,298 @@
       ],
       "originalSourceImmutable": true,
       "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-rock-v1",
+      "title": "마력숲 내부 공용 RESOURCE_ROCK",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "RESOURCE_ROCK",
+      "role": "RESOURCE_ROCK",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/rock_medium.obj",
+      "sourceParentGitBlobSha": "32816b301e0a9492732b357f187f3e4ea79eee8b",
+      "sourceHash": "a3dcd9cfbb19548c2ca9de9220e30ef881d053c053cbe7ccb8520db16cee8689",
+      "sourceSha256": "a3dcd9cfbb19548c2ca9de9220e30ef881d053c053cbe7ccb8520db16cee8689",
+      "nativeArtifactHash": "cc5a91ee6da4177a9c6fd087a282619b2ab7f23bdf89ca278d017aa74ba684cd",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestRock.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/rock_medium.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestRock.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestRock.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestRock.obj",
+          "artifactSha256": "cc5a91ee6da4177a9c6fd087a282619b2ab7f23bdf89ca278d017aa74ba684cd"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "32816b301e0a9492732b357f187f3e4ea79eee8b",
+          "sourceSha256": "a3dcd9cfbb19548c2ca9de9220e30ef881d053c053cbe7ccb8520db16cee8689",
+          "targetSha256": "cc5a91ee6da4177a9c6fd087a282619b2ab7f23bdf89ca278d017aa74ba684cd"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 292,
+        "faces": 247
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-chest-v1",
+      "title": "마력숲 내부 공용 STORAGE_CHEST",
+      "category": "PROP",
+      "family": "PROP",
+      "subfamily": "STORAGE_CHEST",
+      "role": "STORAGE_CHEST",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/chest.obj",
+      "sourceParentGitBlobSha": "9fc3d2ebc0164f4331223fb5f25e4fd33c7e7e5b",
+      "sourceHash": "acac831eaa3b5fea26487a0c951c574d95b8cbd0ddf6057f13081fcfb790e008",
+      "sourceSha256": "acac831eaa3b5fea26487a0c951c574d95b8cbd0ddf6057f13081fcfb790e008",
+      "nativeArtifactHash": "b3a3033c0e419dbcb4aaf082b089f1dcbd501a6eda760a583a55b1876d95c8f1",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestChest.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/chest.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestChest.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestChest.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestChest.obj",
+          "artifactSha256": "b3a3033c0e419dbcb4aaf082b089f1dcbd501a6eda760a583a55b1876d95c8f1"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "9fc3d2ebc0164f4331223fb5f25e4fd33c7e7e5b",
+          "sourceSha256": "acac831eaa3b5fea26487a0c951c574d95b8cbd0ddf6057f13081fcfb790e008",
+          "targetSha256": "b3a3033c0e419dbcb4aaf082b089f1dcbd501a6eda760a583a55b1876d95c8f1"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 212,
+        "faces": 168
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-wall-v1",
+      "title": "마력숲 내부 공용 WOOD_WALL",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "WOOD_WALL",
+      "role": "WOOD_WALL",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/wall_solid.obj",
+      "sourceParentGitBlobSha": "167cba497833024c152cac5bb2d5a3c49e297e47",
+      "sourceHash": "9c97364ba88c34acc26b15c832a0d8b1fd420fc89bd088e8a99a9bc617e0e499",
+      "sourceSha256": "9c97364ba88c34acc26b15c832a0d8b1fd420fc89bd088e8a99a9bc617e0e499",
+      "nativeArtifactHash": "1c66a70ef21a00453d8f28ad8b0ef57f18bfd829adcc938815fe2805cd3f3ee9",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestWall.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/wall_solid.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestWall.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestWall.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestWall.obj",
+          "artifactSha256": "1c66a70ef21a00453d8f28ad8b0ef57f18bfd829adcc938815fe2805cd3f3ee9"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "167cba497833024c152cac5bb2d5a3c49e297e47",
+          "sourceSha256": "9c97364ba88c34acc26b15c832a0d8b1fd420fc89bd088e8a99a9bc617e0e499",
+          "targetSha256": "1c66a70ef21a00453d8f28ad8b0ef57f18bfd829adcc938815fe2805cd3f3ee9"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 112,
+        "faces": 80
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-door-v1",
+      "title": "마력숲 내부 공용 WOOD_DOOR",
+      "category": "BUILDING",
+      "family": "BUILDING",
+      "subfamily": "WOOD_DOOR",
+      "role": "WOOD_DOOR",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/door_single.obj",
+      "sourceParentGitBlobSha": "7d01bfcb473d3cfc2d681abb1dcc3a15cdd316a0",
+      "sourceHash": "4691ca520934bc5669f4292c5087bf2590d6a31132412d38d4b9eee5ea858041",
+      "sourceSha256": "4691ca520934bc5669f4292c5087bf2590d6a31132412d38d4b9eee5ea858041",
+      "nativeArtifactHash": "f7e6503826d57a9c0758517723db4ada3aeb989a84b72c353cdad13c266c69c5",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDoor.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/door_single.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDoor.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDoor.obj"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDoor.obj",
+          "artifactSha256": "f7e6503826d57a9c0758517723db4ada3aeb989a84b72c353cdad13c266c69c5"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "7d01bfcb473d3cfc2d681abb1dcc3a15cdd316a0",
+          "sourceSha256": "4691ca520934bc5669f4292c5087bf2590d6a31132412d38d4b9eee5ea858041",
+          "targetSha256": "f7e6503826d57a9c0758517723db4ada3aeb989a84b72c353cdad13c266c69c5"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 212,
+        "faces": 156
+      },
+      "originalSourceImmutable": true,
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-detail-materials-v1",
+      "title": "마력숲 공용 환경/무기 상세 재질",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "role": "FOREST_AND_COMBAT_MATERIAL",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+      "sourceParentGitBlobSha": "acab8cd77f51c27de0db9267984c91c54d4fee7e",
+      "sourceHash": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+      "sourceSha256": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+      "nativeArtifactHash": "ca94b99c90db3d332124c5f3e3f40b7b6f3d187e941936ac7133bc193e699e3e",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+        "assets/roblox/survival-combat-parts-v1/survival-combat-parts.mtl",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl"
+      ],
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestDetailMaterials.mtl",
+          "artifactSha256": "ca94b99c90db3d332124c5f3e3f40b7b6f3d187e941936ac7133bc193e699e3e"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "COMBINE_ORIGINAL_MATERIAL_FAMILIES_PRESERVE_ORIGINALS"
+        }
+      ],
+      "originalSourceImmutable": true,
       "intendedConsumerGameIds": [
         "fantasy-survival"
       ],
