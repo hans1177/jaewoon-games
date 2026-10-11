@@ -5521,3 +5521,32 @@ test('asset supply summary indexes registry and quality lookups instead of neste
   assert.doesNotMatch(summarySource,/assets\.find\(/);
 });
 
+
+
+test('company catalog revision only claims synchronized common packs and retains pending maintenance debt',()=>{
+  const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
+  const dir=path.join(repoRoot,'assets','roblox');
+  const packs=registry.assets||[];
+  let verifiedCatalogs=0;
+  for(const name of fs.readdirSync(dir).filter(name=>name.startsWith('common-')).sort()){
+    const file=path.join(dir,name,'catalog.json');
+    if(!fs.existsSync(file))continue;
+    const catalog=JSON.parse(fs.readFileSync(file,'utf8'));
+    const pack=packs.find(row=>row.id===catalog.packId);
+    assert.ok(pack,'registered common pack '+catalog.packId);
+    const rows=Array.isArray(catalog.atoms)?catalog.atoms:Array.isArray(catalog.items)?catalog.items:[];
+    assert.equal(pack.catalogVersion,catalog.version,'catalog revision '+catalog.packId);
+    assert.equal(pack.catalogRowCount,rows.length,'catalog row coverage '+catalog.packId);
+    verifiedCatalogs++;
+  }
+  assert.ok(verifiedCatalogs>=14,'common pack coverage must not be dropped');
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  const maintenance=registry.internalAssetLibraryAutomation.maintenance||{};
+  const maintenanceVersion=Number(maintenance.synchronizedRegistryVersion)||0;
+  assert.ok(maintenanceVersion<=registry.version,'maintenance cannot point at a future registry');
+  if(maintenanceVersion!==registry.version){
+    assert.equal(maintenance.refreshRequired,true,'unsynchronized asset maintenance must stay explicit');
+    assert.ok(Number(maintenance.assetCount||0)<=packs.length,'unrefreshed maintenance cannot invent current asset count');
+  }
+});
