@@ -116,6 +116,45 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.equal(request.fullGameplayPassAuthority,false,'source and metadata are not runtime pass evidence');
 });
 
+// [마력숲 Vibe 회귀] 웹 원본의 섬유·제작/저장 의미를 Unity 네이티브 책임 함수에서 보존한다.
+test('Fantasy Survival Unity reconnects missing fiber harvesting and restores normal equipment and structures',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const web=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
+  assert.match(web,/best\.kind==='fiber'\)p\.fiber\+=amount/);
+  assert.match(web,/fiber:p\.fiber/);
+  assert.match(game,/CreatePart\(worldRoot\.transform,\s*PrimitiveType\.Capsule,\s*"Fiber"/);
+  assert.match(game,/if\(n!="Tree" && n!="Rock" && n!="Fiber"\)continue/);
+  assert.match(game,/material=n=="Tree"\?"wood":n=="Rock"\?"stone":"fiber"/);
+  assert.match(game,/material=="stone"\?"돌":"섬유"/);
+  // 기존 PlayerPrefs 키의 구버전 데이터도 nullable 추가 필드로 마이그레이션한다.
+  assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
+  assert.match(game,/public int fiber;/);
+  assert.match(game,/public List<string> crafted;/);
+  assert.match(game,/public List<BuildingRecord> buildings;/);
+  assert.match(game,/if\(old\.crafted!=null\)/);
+  assert.match(game,/if\(old\.buildings!=null\)/);
+  assert.match(game,/materials\["fiber"\]=Mathf\.Max\(0,old\.fiber\)/);
+  assert.match(game,/fiber=materials\.ContainsKey\("fiber"\)/);
+  assert.match(game,/crafted=new List<string>\(crafted\)/);
+  assert.match(game,/if\(creative\)SaveCreative\(\);\s*else SaveNormalCounters\(\)/);
+  assert.equal((game.match(/private void PlaceStructure\(/g)||[]).length,1,'single owner handles building creation and restoration');
+  assert.match(game,/PlaceStructure\(recipe\.id,player\.position/);
+  assert.match(game,/PlaceStructure\(entry\.recipeId,entry\.position\)/);
+  assert.match(game,/PlaceStructure\(item\.recipeId,item\.position\)/);
+});
+
+test('Fantasy Survival removes dead monster touch hitboxes through the existing update flow and retains Vibe repair routing',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const update=game.slice(game.indexOf('private void UpdateMonsters('),game.indexOf('private void HurtMonster('));
+  assert.match(update,/if\(m\.hp<=0\)/);
+  assert.match(update,/monsterColliders\.Remove\(collider\)/);
+  assert.ok(update.indexOf('monsterColliders.Remove(collider)')<update.indexOf('monsters.RemoveAt(i)'));
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  assert.match(workflow,/UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_FAILURE_SIGNATURE=/);
+  assert.match(workflow,/repair-vibe2:/);
+});
+
 test('native asset registry preflight runs before Unity editor and fails closed on tampered source',()=>{
   const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   const begin=workflow.indexOf('      - name: Verify Unity Web development-floor contract');
