@@ -967,3 +967,18 @@ test('Fantasy Survival WebGL preserves native colliders and persisted guardian a
   assert.ok(nativeGame.includes('MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING'));
   assert.ok(nativeGame.includes('GameObject.CreatePrimitive(primitive)'));
 });
+
+// 마력숲 · 실제 모바일 WebGL에서 관측된 누락 콜라이더 189건 재발 방지.
+test('Fantasy Survival WebGL canonical native physics scene collider references',()=>{
+  const build=fs.readFileSync('unity-games/fantasy-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  assert.ok(build.includes('if(root.GetComponent<UnityWebFloorGame>()==null)root.AddComponent<UnityWebFloorGame>()'));
+  for(const type of ['Box','Sphere','Capsule']){
+    assert.ok(build.includes('root.AddComponent<'+type+'Collider>()'),'native scene reference: '+type);
+    assert.ok(game.includes('obj.AddComponent<'+type+'Collider>()'),'native runtime reference: '+type);
+    assert.ok(build.includes('native'+type+'.enabled=false'),'scene collision stays disabled: '+type);
+  }
+  assert.ok(game.includes('if(keepCollider && obj.GetComponent<Collider>()==null)'));
+  assert.ok(game.includes('if (!keepCollider) Destroy(obj.GetComponent<Collider>())'));
+  assert.ok(game.includes('private const string SavePrefix = "fantasy_survival_webfloor_"'));
+});
