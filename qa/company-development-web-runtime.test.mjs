@@ -1,3 +1,4 @@
+// 파일명: qa/company-development-web-runtime.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -210,20 +211,36 @@ test('canonical DEVELOPMENT_CONFIRMED runtime gates new upper-platform work on U
   assert.doesNotMatch(source,/gh workflow run company-development-(?:roblox|unity)-runtime\.yml/);
 });
 
-test('native routing admits only readiness-pass or grandfathered games while unready games stay in Unity Web floor',()=>{
+test('design-ready Unity Web routing stays independent and failed WebGL remains repair-required',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const admission=fs.readFileSync('tools/company-upper-platform-admission.mjs','utf8');
+  // 변경된 중앙정책: 미완료 Unity Web은 Roblox F0/F9 자체를 취소하지 않는다.
   assert.match(source,/classifyUpperPlatformAdmission/);
-  assert.match(source,/decision\.state==='UPPER_PLATFORM'/);
-  assert.match(source,/decision\.state==='UNITY_WEB_FLOOR'/);
-  assert.match(source,/decision\.state==='UNITY_WEB_BOOTSTRAP'/);
-  assert.match(source,/grandfatheredIds\.push\(item\.gameId\)/);
+  assert.match(source,/if\(decision\.state!=='UPPER_PLATFORM'\)\{\s+blockedIds\.push\(item\.gameId\)/);
+  assert.match(source,/const nativeAdmitted=platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
+  assert.match(source,/if\(nativeAdmitted\)\{/);
+  assert.match(source,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
+  // 실제 Unity 프로젝트·WebGL 실행과 독립 QA 증거가 필요하며 실패를 PASS 처리하지 않는다.
+  assert.match(source,/const web=decision\.web\|\|\{\}/);
+  assert.match(source,/if\(web\.state==='UNITY_WEB_FLOOR'\)/);
+  assert.match(source,/else if\(web\.state==='UNITY_WEB_BOOTSTRAP'\)/);
+  assert.match(source,/else if\(web\.state==='UNITY_WEB_SOURCE_REPAIR'\)/);
+  assert.match(source,/else if\(web\.state==='UNITY_WEB_VERIFIED'\)/);
+  assert.match(source,/UNITY_WEB_FLOOR_REPAIR_REQUIRED=/);
+  assert.match(source,/if\(decision\.grandfathered===true\)grandfatheredIds\.push\(item\.gameId\)/);
+  // 실제 설계·플랫폼 프로필과 대상이 없으면 개발 진입을 막는다.
+  assert.match(admission,/if\(item\.minimumDesignContract\?\.pass!==true\)return\{gameId,state:'BLOCKED'/);
+  assert.match(admission,/if\(!profiles\.ROBLOX\?\.source\|\|!profiles\.UNITY\?\.source\)return\{gameId,state:'BLOCKED'/);
+  assert.match(admission,/if\(!targets\.has\('ROBLOX'\)\|\|!targets\.has\('UNITY'\)\)return\{gameId,state:'BLOCKED'/);
   assert.match(admission,/const nativeStarted=nativeUpperPlatformAlreadyStarted\(item\)/);
-  assert.match(admission,/if\(nativeStarted\)return\{gameId,state:'UPPER_PLATFORM',reason:'GRANDFATHERED_NATIVE_PROGRESS'/);
-  assert.match(admission,/grandfatherSource:grandfathered\.has\(gameId\)\?'EXPLICIT_MIGRATION_LIST':'DURABLE_NATIVE_PROGRESS_EVIDENCE'/);
-  assert.match(admission,/if\(readiness\.pass\)return\{gameId,state:'UPPER_PLATFORM'/);
-  assert.match(admission,/if\(buildMethod\)return\{gameId,state:'UNITY_WEB_FLOOR'/);
-  assert.match(admission,/state:'UNITY_WEB_BOOTSTRAP'/);
+  assert.match(admission,/const readiness=readUpperPlatformReadiness\(repoRoot,gameId\)/);
+  assert.match(admission,/const method=readiness\.pass\?null:discoverUnityWebBuildMethod\(repoRoot,gameId\)/);
+  assert.match(admission,/const web=readiness\.pass\?\{state:'UNITY_WEB_VERIFIED'/);
+  assert.match(admission,/:method\?\{state:'UNITY_WEB_FLOOR'/);
+  assert.match(admission,/:fs\.existsSync\(path\.join\(repoRoot,'unity-games',gameId\)\)\?\{state:'UNITY_WEB_SOURCE_REPAIR'/);
+  assert.match(admission,/:{state:'UNITY_WEB_BOOTSTRAP'/);
+  assert.match(admission,/return\{gameId,state:'UPPER_PLATFORM',reason:'MINIMUM_DESIGN_READY',grandfathered:nativeStarted/);
+  assert.match(admission,/grandfatherSource:nativeStarted\?\(grandfathered\.has\(gameId\)/);
   assert.match(source,/dispatch-roblox:/);
   assert.match(source,/dispatch-unity:/);
   assert.match(source,/dispatch-unity-web-floor:/);
@@ -233,7 +250,6 @@ test('native routing admits only readiness-pass or grandfathered games while unr
   assert.match(source,/needs\.native-plan\.outputs\.unity_web_json/);
   assert.doesNotMatch(source,/UNITY_WEB_RUNTIME_ROLE=NON_BLOCKING_VALIDATION_SURFACE/);
 });
-
 test('target platform failures stay in repair states in native workers',()=>{
   const router=fs.readFileSync('tools/company-selected-platform-router.mjs','utf8');
   const roblox=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
