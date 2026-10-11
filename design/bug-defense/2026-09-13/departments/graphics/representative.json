@@ -13,23 +13,23 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "gemma3:1b",
-      "llama3.2:1b"
+      "game_seed_generation",
+      "game_seed_generation"
     ],
     "fix": [
-      "gemma3:1b"
+      "game_seed_generation"
     ],
     "add": [
-      "llama3.2:1b"
+      "game_seed_style"
     ],
     "risks": [
-      "game_seed_market_evidence.json"
+      "game_seed_risk"
     ],
     "evidence": [
-      "game_seed_market_evidence.json"
+      "game_seed_evidence"
     ],
     "questions": [
-      "design_strategy_clarity"
+      "game_seed_question"
     ]
   }
 }
