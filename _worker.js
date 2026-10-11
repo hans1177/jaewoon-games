@@ -437,7 +437,8 @@ export default{
       headers.set('Content-Encoding',format==='gz'?'gzip':'br');
       headers.set('Cache-Control','no-cache, must-revalidate');
       headers.delete('Content-Length');
-      return new Response(request.method==='HEAD'?null:response.body,{status:response.status,statusText:response.statusText,headers});
+      // 이미 압축된 Unity 번들을 다시 압축하지 않고 그대로 전달한다.
+      return new Response(request.method==='HEAD'?null:response.body,{status:response.status,statusText:response.statusText,headers,encodeBody:'manual'});
     }
     const webEntry=url.pathname.match(/^\/web-games\/([a-z0-9-]+)(?:\/(?:index\.html)?)?$/i);
     if(webEntry&&response.ok&&(response.headers.get('content-type')||'').includes('text/html')){
