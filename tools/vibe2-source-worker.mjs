@@ -3097,7 +3097,12 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
     file
     &&!path.isAbsolute(file)
     &&!file.split('/').includes('..')
-    &&/^assets\//.test(file)
+    &&(
+      /^assets\//.test(file)
+      ||Boolean(gameId&&file.startsWith('unity-games/'+gameId+'/Assets/'))
+      ||Boolean(gameId&&file.startsWith('roblox-games/'+gameId+'/'))
+      ||Boolean(gameId&&file.startsWith('web-games/'+gameId+'/'))
+    )
   )).sort();
   const canonicalRoot=fs.realpathSync(cwd)+path.sep;
   const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
@@ -3364,7 +3369,7 @@ export function buildInternalAssetApiIndex({cwd=process.cwd(),paths=[]}={}){
     file
     &&!path.isAbsolute(file)
     &&!file.split('/').includes('..')
-    &&/^assets\//.test(file)
+    &&/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/|web-games\/[A-Za-z0-9._-]+\/)/.test(file)
     &&/\.(?:lua|luau|js|mjs|cs)$/i.test(file)
   )).sort();
   const rows=[];
@@ -3428,7 +3433,7 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
   const allSelectedPaths=(contract.selectedSourcePaths||unique([
     ...(contract.flowSelections||[]).flatMap(row=>row.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).flatMap(row=>[...(row.sourceFiles||[]),row.path])
-  ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort()).filter(file=>/\.(?:lua|luau|js|mjs|cs)$/i.test(file));
+  ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/|web-games\/[A-Za-z0-9._-]+\/)/.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort()).filter(file=>/\.(?:lua|luau|js|mjs|cs)$/i.test(file));
   const apiIndex=allSelectedPaths.length
     ?buildInternalAssetApiIndex({cwd,paths:allSelectedPaths})
     :{text:'',representedSourceCount:0,availableSourceCount:0,unavailableSourceCount:0,signatureCount:0,allSelectedSourcesRepresented:true};
