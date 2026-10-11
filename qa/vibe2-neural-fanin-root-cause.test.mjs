@@ -51,6 +51,21 @@ function baseResult(extraEvidence=[]){
   };
 }
 
+test('fan-in result index preserves exact candidate branch selection ahead of earlier pass rows',()=>{
+  const wrongBranch={...baseResult(),candidateBranch:'vibe2/candidate/neural-root-task-alternate-run'};
+  const unrelated={...baseResult(),taskId:'other-task',candidateBranch:'vibe2/candidate/other-task-primary',candidateIdentity:{...baseResult().candidateIdentity,taskId:'other-task',gameId:'other'}};
+  const exact=baseResult();
+  const result=finalizeVibe2FanInReview({
+    queue:{tasks:[baseTask()]},
+    results:[wrongBranch,unrelated,exact],
+    taskIds:['neural-root-task']
+  });
+  assert.equal(result.reviewed[0].pass,true);
+  assert.equal(result.releaseCandidates.length,1);
+  assert.equal(result.releaseCandidates[0].candidateBranch,'vibe2/candidate/neural-root-task-primary-run');
+  assert.ok(result.queue.tasks[0].evidence.includes('candidate-identity:PASS'));
+});
+
 test('fan-in regression and review confirm causal repair but do not invent responsible system',()=>{
   const result=finalizeVibe2FanInReview({
     queue:{tasks:[baseTask()]},
