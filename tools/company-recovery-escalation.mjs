@@ -133,9 +133,15 @@ function deploymentGameIds(catalogInput={},tasks=[]){
   }
   return uniq(ids).filter(id=>/^[a-z0-9][a-z0-9-]*$/.test(id));
 }
-function deploymentSourceFiles(platform,gameId,linkedTask){
+function deploymentSourceFiles(platform,gameId,linkedTask,diagnosticFiles=[]){
   if(!gameId)return[];
   const root=(platform==='UNITY_WEB'?'unity':platform.toLowerCase())+'-games/'+gameId;
+  // Exception/compile source paths from the exact failed run take priority, but must exist inside this game.
+  const diagnosed=uniq(diagnosticFiles).map(file=>file.replaceAll('\\','/'))
+    .map(file=>file.startsWith('Assets/')?root+'/'+file:file)
+    .filter(file=>file.startsWith(root+'/')&&!file.includes('..')&&/\.(?:cs|luau|lua|js|html)$/.test(file)
+      &&fs.existsSync(file)&&fs.statSync(file).isFile());
+  if(diagnosed.length)return diagnosed.slice(0,3);
   const linked=uniq(linkedTask?.responsibleFiles).filter(file=>file.startsWith(root+'/')&&!file.includes('..')&&fs.existsSync(file)&&fs.statSync(file).isFile());
   if(linked.length)return linked;
   if(platform==='WEB'){
@@ -184,7 +190,11 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   const exactSignature=platform==='UNITY_WEB'
     ?clean(markers.find(value=>value.startsWith('UNITY_WEB_REPAIR_FAILURE_SIGNATURE='))?.slice('UNITY_WEB_REPAIR_FAILURE_SIGNATURE='.length)):'';
   const stage=exactStage||'DEPLOYMENT_'+platform+'_'+stepKey;
-  const signature=exactSignature||'WORKFLOW_FAILED_'+stepKey;
+  const diagnostics=jobsInput.failureDiagnostics&&typeof jobsInput.failureDiagnostics==='object'?jobsInput.failureDiagnostics:{};
+  const diagnosticClass=/^UNITY_(?:MISSING_COMPONENT|CSHARP_COMPILE|RUNTIME_EXCEPTION)$/.test(clean(diagnostics.classification))
+    ?clean(diagnostics.classification):'';
+  const signature=exactSignature&&!['REPAIR_REQUIRED','UNKNOWN'].includes(exactSignature)
+    ?exactSignature:'WORKFLOW_FAILED_'+stepKey+(diagnosticClass?'_'+diagnosticClass:'');
   const known=deploymentGameIds(catalogInput,tasks);
   const title=clean(run?.display_title)+' '+clean(run?.head_branch);
   const matching=known.filter(id=>new RegExp('(^|[^a-z0-9_-])'+id+'(?=$|[^a-z0-9_-])','i').test(title));
@@ -194,18 +204,19 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     &&(clean(task.candidateBranch)===clean(run.head_branch)
       ||[task.candidateSha,task.sourceRevision,task.baseSourceRevision].map(clean).includes(sha))
     &&uniq(task.responsibleFiles).length>0);
-  const sourceFailure=exactStage
+  const sourceFailure=diagnosticClass==='UNITY_MISSING_COMPONENT'||diagnosticClass==='UNITY_CSHARP_COMPILE'
+    ||(exactStage
     ? !/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|RELEASE|BUILD_OR_READINESS|UNKNOWN)/.test(exactStage)
     : /(?:SOURCE|CSHARP|COMPILE|GAMEPLAY|BROWSER|INDEPENDENT_QA|STATIC_QA|REGRESSION|UNIT_TEST|F0_SOURCE)/.test(stepKey)
-      &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey);
-  const codeFiles=sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask):[];
+      &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey));
+  const codeFiles=sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask,diagnostics.sourceFiles):[];
   const catalogGame=(Array.isArray(catalogInput.games)?catalogInput.games:[]).find(item=>clean(item?.id)===gameId);
   const productionClass=clean(catalogGame?.productionClass||linkedTask?.productionClass).toUpperCase();
   const releaseEligible=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass);
   const sourceRepair=sourceFailure&&codeFiles.length>0&&releaseEligible;
   const owner=sourceRepair?'VIBE2_VIBE3':'SYSTEM_AI';
   const runMarker='deployment-failure-run:'+runId+':'+attempt;
-  const sourceKey='deployment:'+workflowFile+':'+sha+':'+(sourceRepair?gameId:'pipeline');
+  const sourceKey='deployment:'+workflowFile+':'+sha+':'+(gameId||'unresolved-run-'+runId);
   let sourceTaskId=sourceKey;
   const previous=queue.tasks.find(item=>item.sourceQueue==='deployment'&&item.sourceTaskId===sourceKey
     &&item.failureStage===stage&&item.failureSignature===signature);
@@ -231,6 +242,7 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
       'deployment-game:'+(gameId||'UNRESOLVED'),'deployment-head-sha:'+sha,
       'deployment-production-class:'+(releaseEligible?productionClass:'UNVERIFIED'),
       'deployment-failed-job:'+deploymentStepKey(failedStep.job),'deployment-failed-step:'+stepKey,
+      ...(diagnosticClass?['deployment-causal-error:'+diagnosticClass]:[]),
       ...(exactStage?['deployment-confirmed-failure-stage:'+exactStage]:[]),
       ...(exactSignature?['deployment-confirmed-failure-signature:'+exactSignature]:[]),
       'deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/'+runId,
