@@ -4043,7 +4043,7 @@
     "blockers": [
       "roblox-runtime-evidence-pending"
     ],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -6216,8 +6216,8 @@
     "expectedPlayerEffect": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생활. 업보와 인과응보의 생활 세계에서 사회관계 선택 × 업보와 인과응보과 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing",
+      "runtimeObserved": false
     },
     "baseline": {
       "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
@@ -6236,7 +6236,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",

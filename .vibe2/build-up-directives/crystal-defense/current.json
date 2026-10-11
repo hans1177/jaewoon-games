@@ -4060,7 +4060,7 @@
     "blockers": [
       "roblox-runtime-evidence-pending"
     ],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
@@ -6233,8 +6233,8 @@
     "expectedPlayerEffect": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
       "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing",
+      "runtimeObserved": false
     },
     "baseline": {
       "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
@@ -6253,7 +6253,7 @@
   },
   "nextActionDecision": {
     "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "reason": "current source F0 design-bound gameplay gaps require source repair before real runtime testing"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
