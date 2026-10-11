@@ -93,7 +93,87 @@
     "strictDesignReviewRunsInParallel": true,
     "unityWebValidationPolicySource": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.unityWebValidationSurface",
     "fortniteUefnAutomaticDevelopment": false,
-    "fortniteUefnState": "OWNER_HOLD"
+    "fortniteUefnState": "OWNER_HOLD",
+    "focusedDevelopmentCaretakers": {
+      "version": 2,
+      "enabled": true,
+      "ownerFocusedGameIds": [
+        "fantasy-survival",
+        "daechung-rpg",
+        "gem-survivor"
+      ],
+      "includeAllReleaseConfirmed": false,
+      "includeAllInternalPlatformRelease": false,
+      "internalPlatformReleaseCountsAsRelease": true,
+      "caretakerMode": "PER_GAME_PERSISTENT",
+      "oneLogicalCaretakerPerEligibleGame": true,
+      "caretakerStickyOwnership": true,
+      "physicalRunnerPolicy": "MAXIMUM_SAFE_NON_OVERLAPPING_WORKERS",
+      "idleBehavior": "RETURN_PHYSICAL_SLOT_KEEP_LOGICAL_OWNERSHIP",
+      "workerFailureHandoff": "REPLACE_WORKER_AND_RESUME_EXACT_CHECKPOINT",
+      "taskPriority": "critical",
+      "retryPolicy": "UNLIMITED_CAUSAL_REPAIR",
+      "burstWorkers": {
+        "enabled": true,
+        "min": 2,
+        "max": null,
+        "onlyWhenIndependentHighValueWorkExists": true,
+        "externalCapacityOnlyBoundary": true
+      },
+      "appliesBeforePublicRelease": true,
+      "preservesExistingPostReleaseCaretaker": true,
+      "targetGamesMeaning": "THREE_OWNER_FOCUSED_BUILD_COMPLETION_GAMES_OTHER_RELEASED_GAMES_KEEP_POST_RELEASE_CARETAKERS",
+      "internalPhysicalWorkerCap": null,
+      "sameGameNonOverlappingPackagesParallel": true,
+      "sourceRootWideLockForbidden": true,
+      "responsibleFileConflictSerializationOnly": true,
+      "targetFocusedGames": 3,
+      "maxFocusedGames": 3,
+      "completionPursuit": {
+        "enabled": true,
+        "authority": "OWNER_DIRECTIVE_2026-10-11",
+        "targetPlatform": "ROBLOX",
+        "selectionCriteria": [
+          "OWNER_EXISTING_FOCUS_CONTINUITY",
+          "MINIMUM_MAIN_A_B_C_AT_DESIGN_READY",
+          "EXACT_LUAU_SOURCE_AND_BUILD_READINESS",
+          "FEWEST_CAUSAL_BLOCKERS_TO_FIRST_VERIFIED_PLAY",
+          "GAME_SPECIFIC_IDENTITY_AND_CONTENT_COMPLETENESS"
+        ],
+        "retainUntil": "EXACT_BUILD_F0_TO_F9_AND_FIRST_PLAY_RETRY_SAVE_WHEN_REQUIRED_VERIFIED",
+        "rotationRequires": "COMPLETION_OR_DOCUMENTED_UNRESOLVABLE_EXTERNAL_DEPENDENCY_AND_REPLACEMENT_DESIGN_READY",
+        "ordinaryRepairMustNotRotateGame": true,
+        "knownCausalBlockersRepairFirst": true,
+        "unrelatedPolishMustNotReplaceRequiredDesignGap": true,
+        "autoBiomeSource": "SAME_GAME_APPROVED_SPATIAL_LAYOUT_EXISTING_TOOL_AND_LUAU_SOURCE",
+        "missingSpatialDesignAction": "EXISTING_DESIGN_PIPELINE_REPAIR_NO_INVENTED_DEFAULT_WORLD",
+        "nonFocusedDevelopmentContinues": true,
+        "implementationTimeoutMs": 360000,
+        "graphicsTimeoutMs": 600000,
+        "maxPredict": 4096,
+        "zeroOutputWatchdogUnchanged": true,
+        "timeSpentNeverProvesCompletion": true,
+        "requiredImplementationAxes": [
+          "MAIN_A_B_c_AT_GRAMMAR_AND_SHARED_STATE_FLOW",
+          "GENRE_CORE_LOOP",
+          "CONCEPT_WORLD_AND_STORY_PROGRESSION",
+          "GAMEPLAY_SYSTEMS_AND_FAILURE_RECOVERY",
+          "GRAPHICS_MOTION_VFX_AUDIO_UI",
+          "FIRST_PLAY_COMPLETE_SESSION_RETRY_AND_SAVE",
+          "SAME_BUILD_RUNTIME_SCREENSHOT_PIXEL_REVIEW_AND_RECAPTURE"
+        ],
+        "traceabilityRequired": [
+          "DESIGN_BASELINE_REVISION",
+          "DESIGN_RULE_ID",
+          "RESPONSIBLE_LUAU_FILE_AND_FUNCTION",
+          "INPUT_STATE_TRANSITION_OUTPUT",
+          "SAME_BUILD_RUNTIME_SCENARIO_AND_EVIDENCE"
+        ],
+        "sourceOnlyCannotCloseRuntimeGap": true,
+        "verifiedLearningReuseRequiresFreshSameBuildValidation": true,
+        "implementationOrderAuthority": "robloxStudioProductionFlowContract.designImplementationFlow"
+      }
+    }
   },
   "summary": {
     "webArchiveCount": 11,
@@ -131,14 +211,58 @@
     },
     "autonomousFocus": {
       "enabled": true,
-      "targetSlots": 2,
-      "filledSlots": 0,
+      "targetSlots": 3,
+      "filledSlots": 3,
       "preferredGameIds": [],
-      "focusedGameIds": [],
-      "games": [],
+      "focusedGameIds": [
+        "fantasy-survival",
+        "daechung-rpg",
+        "gem-survivor"
+      ],
+      "games": [
+        {
+          "slot": 1,
+          "gameId": "fantasy-survival",
+          "slug": "fantasy-survival",
+          "name": "마력숲 생존기",
+          "score": 0,
+          "slotRole": "owner-build-completion",
+          "lane": "selected-platform",
+          "selectedPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "homepageCategory": "development-confirmed",
+          "webPath": "/web-games/fantasy-survival/"
+        },
+        {
+          "slot": 2,
+          "gameId": "daechung-rpg",
+          "slug": "daechung-rpg",
+          "name": "대충 RPG",
+          "score": 8,
+          "slotRole": "owner-build-completion",
+          "lane": "selected-platform",
+          "selectedPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "homepageCategory": "development-confirmed",
+          "webPath": "/web-games/daechung-rpg/"
+        },
+        {
+          "slot": 3,
+          "gameId": "gem-survivor",
+          "slug": "gem-survivor",
+          "name": "보석 생존전",
+          "score": 0,
+          "slotRole": "owner-build-completion",
+          "lane": "selected-platform",
+          "selectedPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "homepageCategory": "development-confirmed",
+          "webPath": "/web-games/gem-survivor/"
+        }
+      ],
       "nextFocusGameIds": [],
       "nextDevelopmentGameIds": [],
-      "selection": "AUTO_NATIVE_READINESS_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
+      "selection": "THREE_OWNER_FOCUSED_BUILD_COMPLETION",
       "platformPriority": [
         "ROBLOX",
         "UNITY"
@@ -148,10 +272,10 @@
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-11",
       "source": [
+        "company-learning/platform-release-roadmap.json",
         "autonomous-portfolio.json",
-        "game-artbooks.json",
         "game-catalog.json",
-        "tools/autonomous-24h-work-planner.mjs"
+        "tools/company-status-sync.mjs"
       ]
     },
     "productionClasses": {
