@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-thql9e",
-      "worker": "vibe2",
-      "taskId": "dice-battle-board-studio-evolution-roblox-usability-v1",
-      "gameId": "dice-battle-board",
-      "files": [
-        "roblox-games/dice-battle-board/client/Game.client.luau",
-        "roblox-games/dice-battle-board/shared/GameConfig.luau",
-        "roblox-games/dice-battle-board/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:42:43.621Z",
-      "expiresAt": "2026-10-11T03:27:43.621Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:dice-battle-board-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-s7s7hb",
       "worker": "vibe2",
       "taskId": "crystal-defense-studio-evolution-roblox-usability-v1",
@@ -413,6 +392,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-umibozu-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-tumld2",
+      "worker": "vibe2",
+      "taskId": "internal-motion-bakeneko-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/bakeneko/init.luau"
+      ],
+      "baseSha": "01b9569c9fe892bf614fcf736f951d82ece72960",
+      "runId": "38104101272",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T03:28:10.956Z",
+      "expiresAt": "2026-10-11T04:13:10.956Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-bakeneko-walk-v1"
       ]
     }
   ]
