@@ -173012,39 +173012,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_65d4169ee26d4a6a93216082",
-          "taskId": "horror-escape-room-existing-web-assessment-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "web",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0",
-            "capability_ctrace_8aef9f9d73b93a89b8777139",
-            "capability_ctrace_8d74f51489e0fcd3b8c02e18",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "base-main:25ea619d935e1cfbb0d2cfa9fbc9ea1310bbd826",
-            "actions-run:37466484589",
-            "reservation-id:37466484589:1",
-            "capability-application-sample:7793d784ddb76cec10bc"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_90743e2c759469ff87828d7a",
           "taskId": "horror-escape-room-existing-web-assessment-v1",
           "workKey": null,
@@ -175115,6 +175082,39 @@
             "actions-run:38102095634",
             "reservation-id:38102095634:1",
             "capability-application-sample:1f3df0d2fd9b3912041a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a33b53320804b7254279ac65",
+          "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_ddff3d7349db776caea50936",
+            "capability_ctrace_c521db94b0af41e1a28784bb",
+            "capability_ctrace_5d702248380211cff05ff579",
+            "capability_ctrace_b70a7b79eab91457b8e6a9de",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:2c6ddd2e8e0738eb77ecaa96b79925c3f7ee116c",
+            "actions-run:38108871419",
+            "reservation-id:38108871419:1",
+            "capability-application-sample:fdb7e5dc7cc29bbfcfe9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -290425,43 +290425,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_b4c688893a4c00eb55fb5f1e",
-          "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_ddff3d7349db776caea50936",
-            "capability_ctrace_c521db94b0af41e1a28784bb",
-            "capability_ctrace_5d702248380211cff05ff579",
-            "capability_ctrace_b70a7b79eab91457b8e6a9de",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:4b28c97404ee1e76735d32ff07e60d704fc6f139",
-            "base-main:a074478f9f76ecd70307738d81c73125fab20171",
-            "incremental-qa-hash:72ad18f907bc9192bb8797da3995236c13c1be0d299533dc6bf87069f358a32e",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37111119445",
-            "reservation-id:37111119445:1",
-            "capability-application-sample:f848b961f9b4b14f4b58"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_f1983681217d47cf4b099255",
           "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -292576,6 +292539,39 @@
             "actions-run:38102095634",
             "reservation-id:38102095634:1",
             "capability-application-sample:1f3df0d2fd9b3912041a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_a4287fb30a4835ae6c122312",
+          "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_ddff3d7349db776caea50936",
+            "capability_ctrace_c521db94b0af41e1a28784bb",
+            "capability_ctrace_5d702248380211cff05ff579",
+            "capability_ctrace_b70a7b79eab91457b8e6a9de",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:2c6ddd2e8e0738eb77ecaa96b79925c3f7ee116c",
+            "actions-run:38108871419",
+            "reservation-id:38108871419:1",
+            "capability-application-sample:fdb7e5dc7cc29bbfcfe9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -319736,43 +319732,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_a17ec46c38033d3a18fe6eda",
-          "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_ddff3d7349db776caea50936",
-            "capability_ctrace_c521db94b0af41e1a28784bb",
-            "capability_ctrace_5d702248380211cff05ff579",
-            "capability_ctrace_b70a7b79eab91457b8e6a9de",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:4b28c97404ee1e76735d32ff07e60d704fc6f139",
-            "base-main:a074478f9f76ecd70307738d81c73125fab20171",
-            "incremental-qa-hash:72ad18f907bc9192bb8797da3995236c13c1be0d299533dc6bf87069f358a32e",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37111119445",
-            "reservation-id:37111119445:1",
-            "capability-application-sample:f848b961f9b4b14f4b58"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_c6b4e1154249ed112ed63fbb",
           "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -321887,6 +321846,39 @@
             "actions-run:38102095634",
             "reservation-id:38102095634:1",
             "capability-application-sample:1f3df0d2fd9b3912041a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0f6513670ccb34235437f989",
+          "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_ddff3d7349db776caea50936",
+            "capability_ctrace_c521db94b0af41e1a28784bb",
+            "capability_ctrace_5d702248380211cff05ff579",
+            "capability_ctrace_b70a7b79eab91457b8e6a9de",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:2c6ddd2e8e0738eb77ecaa96b79925c3f7ee116c",
+            "actions-run:38108871419",
+            "reservation-id:38108871419:1",
+            "capability-application-sample:fdb7e5dc7cc29bbfcfe9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -333597,43 +333589,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_de88dbd2fa5eb97332ae7aee",
-          "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_ddff3d7349db776caea50936",
-            "capability_ctrace_c521db94b0af41e1a28784bb",
-            "capability_ctrace_5d702248380211cff05ff579",
-            "capability_ctrace_b70a7b79eab91457b8e6a9de",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:4b28c97404ee1e76735d32ff07e60d704fc6f139",
-            "base-main:a074478f9f76ecd70307738d81c73125fab20171",
-            "incremental-qa-hash:72ad18f907bc9192bb8797da3995236c13c1be0d299533dc6bf87069f358a32e",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37111119445",
-            "reservation-id:37111119445:1",
-            "capability-application-sample:f848b961f9b4b14f4b58"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_a093b2d96e8d00046faee517",
           "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -335748,6 +335703,39 @@
             "actions-run:38102095634",
             "reservation-id:38102095634:1",
             "capability-application-sample:1f3df0d2fd9b3912041a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_4f7d4fd838a3bbd783ea28eb",
+          "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_ddff3d7349db776caea50936",
+            "capability_ctrace_c521db94b0af41e1a28784bb",
+            "capability_ctrace_5d702248380211cff05ff579",
+            "capability_ctrace_b70a7b79eab91457b8e6a9de",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:2c6ddd2e8e0738eb77ecaa96b79925c3f7ee116c",
+            "actions-run:38108871419",
+            "reservation-id:38108871419:1",
+            "capability-application-sample:fdb7e5dc7cc29bbfcfe9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -394216,43 +394204,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_70df14f30495e9697cab701d",
-          "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
-          "workKey": null,
-          "gameId": "seed-single-defense-strat-celestial-bastion",
-          "engine": "roblox",
-          "outcome": "OBSERVED_NOT_FINAL",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_ddff3d7349db776caea50936",
-            "capability_ctrace_c521db94b0af41e1a28784bb",
-            "capability_ctrace_5d702248380211cff05ff579",
-            "capability_ctrace_b70a7b79eab91457b8e6a9de",
-            "capability_ctrace_d1fc214a9466b3499d56576b"
-          ],
-          "evidence": [
-            "candidate-sha:4b28c97404ee1e76735d32ff07e60d704fc6f139",
-            "base-main:a074478f9f76ecd70307738d81c73125fab20171",
-            "incremental-qa-hash:72ad18f907bc9192bb8797da3995236c13c1be0d299533dc6bf87069f358a32e",
-            "causal-replay-status:PLAN_ONLY",
-            "architecture-drift-status:NO_RESPONSIBLE_TEXT_SOURCE",
-            "actions-run:37111119445",
-            "reservation-id:37111119445:1",
-            "capability-application-sample:f848b961f9b4b14f4b58"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_8fff5483e5eac0bd3461177d",
           "taskId": "seed-single-defense-strat-celestial-bastion-roblox-presentation-asset-adaptation-v1",
           "workKey": null,
@@ -396367,6 +396318,39 @@
             "actions-run:38102095634",
             "reservation-id:38102095634:1",
             "capability-application-sample:1f3df0d2fd9b3912041a"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5a08f16d74261bf0fced6e08",
+          "taskId": "seed-single-defense-strat-celestial-bastion-studio-evolution-roblox-stability-v1",
+          "workKey": null,
+          "gameId": "seed-single-defense-strat-celestial-bastion",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_ddff3d7349db776caea50936",
+            "capability_ctrace_c521db94b0af41e1a28784bb",
+            "capability_ctrace_5d702248380211cff05ff579",
+            "capability_ctrace_b70a7b79eab91457b8e6a9de",
+            "capability_ctrace_d1fc214a9466b3499d56576b"
+          ],
+          "evidence": [
+            "base-main:2c6ddd2e8e0738eb77ecaa96b79925c3f7ee116c",
+            "actions-run:38108871419",
+            "reservation-id:38108871419:1",
+            "capability-application-sample:fdb7e5dc7cc29bbfcfe9"
           ],
           "observedAt": null,
           "rawCodeStored": false,
