@@ -4084,7 +4084,20 @@ test('flow asset requirements resolve through the latest company library and are
   assert.equal(plan.flowAssetLoadout.crossGenreReuseAllowed,true);
   assert.equal(plan.flowAssetLoadout.genreUsedForEligibility,false);
   assert.ok(plan.flowAssetRequirements.every(row=>row.genreRestriction===false&&row.crossGenreReuseAllowed===true));
+  // [바이브 자동 자산 연결] 현재 소스만 실제 사용으로 판정하고 누락은 기존 작업으로 전달한다.
+  const auto=plan.automaticAssetBindingWork;
+  assert.equal(auto.enabled,true);
+  assert.equal(auto.trigger,'EVERY_EXISTING_BUILD_UP');
+  assert.equal(auto.selectedRequirementCount,plan.flowAssetLoadout.selections.filter(row=>row.required!==false).length);
+  assert.equal(auto.targets.length,auto.selectedRequirementCount);
+  assert.equal(auto.noNewQueue,true);
+  assert.equal(auto.existingGraphicsProductionAndBuildUp,true);
+  assert.equal(auto.verifiedRuntimeEvidenceRequiredBeforePositiveLearning,true);
+  assert.equal(auto.pendingSourceBindingCount+auto.authoringRequiredCount+auto.runtimeQaRequiredCount,auto.selectedRequirementCount);
+  assert.ok(auto.targets.every(row=>row.nativeRuntimeVerified===false&&row.protectedGameplayAuthority===true));
   const guidance=assetProductionGuidance(plan);
+  assert.match(guidance,/VIBE AUTOMATIC GAME ASSET BINDING/);
+  assert.match(guidance,/NATIVE_SOURCE_BINDING_REQUIRED/);
   assert.match(guidance,/FLOW-DRIVEN ASSET REQUIREMENTS/);
   assert.match(guidance,/FLOW-DRIVEN ASSET LOADOUT/);
   assert.match(guidance,/최신 company-asset-library\.json/);
