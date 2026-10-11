@@ -2,9 +2,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import vm from 'node:vm';
 import { classifyVerifiedExternalBlackBoxPrinciples } from '../tools/vibe2-learning-motor.mjs';
-import { finalizeVibe2FanInReview, finalizePostNativeSpecializedReview } from '../tools/vibe2-fan-in-review.mjs';
+import { finalizeVibe2FanInReview, finalizePostNativeSpecializedReview, runVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 
 function baseTask(extraEvidence=[]){
   return{
@@ -515,4 +517,39 @@ test('static evidence workflow enforces exact identity and cannot claim actual r
   execute(report,'failure');
   assert.equal(written.tasks[0].runtimeEvidenceCandidate.staticVerified,false);
   assert.throws(()=>vm.runInNewContext(settle,{require:()=>({readFileSync:()=>JSON.stringify({tasks:[task]})}),process:{env:{...env,CANDIDATE_SHA:'b'.repeat(40)}}}),/stale runtime evidence candidate/);
+});
+
+
+test('fan-in persists the existing Vibe queue compactly and retains all durable task evidence',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-fanin-queue-'));
+  try{
+    const queueFile=path.join(dir,'.vibe2','queue.json');
+    const inputFile=path.join(dir,'fan-in-input.json');
+    const outputFile=path.join(dir,'fan-in-review.json');
+    const queue={
+      version:5,
+      scheduling:{atomicNeuronCompletion:true,existingQueueAuthority:'CANONICAL'},
+      tasks:[{
+        id:'preserve-reservation',
+        status:'queued',
+        blocker:'SOURCE_REVALIDATION_REQUIRED',
+        reservationId:'exact-original-reservation',
+        evidence:['immutable-result:sha-unchanged','save-state:unchanged','long-proof:'+'x'.repeat(4096)]
+      }]
+    };
+    fs.mkdirSync(path.dirname(queueFile),{recursive:true});
+    const previous=JSON.stringify(queue,null,2)+'\n';
+    fs.writeFileSync(queueFile,previous,'utf8');
+    fs.writeFileSync(inputFile,JSON.stringify({results:[]})+'\n','utf8');
+
+    runVibe2FanInReview({queueFile,inputFile,outputFile});
+
+    const saved=fs.readFileSync(queueFile,'utf8');
+    assert.deepEqual(JSON.parse(saved),queue);
+    assert.equal(saved,JSON.stringify(queue)+'\n');
+    assert.ok(Buffer.byteLength(saved)<Buffer.byteLength(previous));
+    assert.match(fs.readFileSync(outputFile,'utf8'),/^\{\n  "version": 7,/);
+  }finally{
+    fs.rmSync(dir,{recursive:true,force:true});
+  }
 });

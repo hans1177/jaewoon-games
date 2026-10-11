@@ -70,7 +70,7 @@ function verifiedExternalLearningApplicationFailures(row={}){
 }
 
 function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
-function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
+function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const compactQueue=/(?:^|\/)\.vibe2\/queue\.json$/.test(String(file).replaceAll('\\','/'));fs.writeFileSync(file,`${JSON.stringify(value,null,compactQueue?0:2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function resultsFromPayload(payload={}){return(Array.isArray(payload)?payload:payload.results||[]).filter(row=>row&&typeof row==='object');}
 function taskIdsFromPayload(payload={}){return[...new Set(resultsFromPayload(payload).map(row=>clean(row?.taskId)).filter(Boolean))];}
