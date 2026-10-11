@@ -1134,6 +1134,38 @@ test('Roblox internal asset family binding requires actual family use and reject
   assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
 });
 
+// [자동 자산 연결] 기존 바이브 코딩 프롬프트가 제작 플래너의 누락 작업을 직접 소비한다.
+test('every Vibe native BUILD_UP receives automatic asset binding recovery without expanding writable source',()=>{
+  const order={
+    target:'roblox',gameId:'auto-asset-fixture',goal:'Improve current native 3D presentation',
+    source:{root:'roblox-games/auto-asset-fixture'},
+    assetProduction:{
+      baseMaterialLoadout:{
+        families:{UI:['FRAME_PANEL'],ENVIRONMENT:['TREE_TRUNK_THICK']},
+        universalAssetFirst:{required:true}
+      },
+      automaticAssetBindingWork:{
+        enabled:true,trigger:'EVERY_EXISTING_BUILD_UP',gameId:'auto-asset-fixture',target:'roblox',
+        targets:[{assetId:'internal-tree',family:'ENVIRONMENT',status:'NATIVE_SOURCE_BINDING_REQUIRED',
+          sourceFiles:['assets/roblox/survival-core-world-v1/tree_trunk_thick.obj'],
+          nativeRuntimeVerified:false}],
+        verifiedRuntimeEvidenceRequiredBeforePositiveLearning:true,
+        preserveGameRulesSaveAndNetwork:true,
+        noNewQueue:true
+      }
+    }
+  };
+  const prompt=buildPrompt(order,{
+    files:[{path:'client/Game.client.luau',editable:true,content:'local Lighting=game:GetService("Lighting")\\n'}]
+  },['client/Game.client.luau'],{verifiedExternalLearningContract:{block:''}});
+  assert.match(prompt,/AUTOMATIC ASSET BINDING \/ CANONICAL VIBE/);
+  assert.match(prompt,/NATIVE_SOURCE_BINDING_REQUIRED/);
+  assert.match(prompt,/internal-tree/);
+  assert.match(prompt,/exact artifact and independent engine evidence/);
+  assert.match(prompt,/Allowed edit paths: client\/Game\.client\.luau/);
+  assert.doesNotMatch(prompt,/Allowed edit paths:.*company-asset-library\.json/);
+});
+
 test('Vibe libraries and development tools rematch updated APIs for existing save and combat source without changing rules or design',()=>{
   const cwd=tempRoot();
   const gameSource='function SaveGame(state) { return state; }\nfunction ApplyDamage(target, damage) { return target.hp - damage; }\n';
