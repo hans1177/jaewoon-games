@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -12,6 +13,80 @@ public static class UnityWebFloorBuild
 {
     private const string SceneFolder = "Assets/Scenes";
     private const string ScenePath = "Assets/Scenes/Main.unity";
+
+    // 외부 CC0 공용 메시의 일부만 마력숲 숲마을·캠프·길의 실제 3D 소비처에 연결한다.
+    // 임의 다운로드/새 파이프라인 없이 기존 공용 자산 원본과 등록 해시를 사용한다.
+    private static readonly string[] VillageModelNames = {
+        "house", "house_door", "house_chimney", "fence_straight", "fence_corner",
+        "gate_single", "bench_A", "tree", "tree_large", "foliage_A", "foliage_B",
+        "cobblestones", "package", "mailbox"
+    };
+
+    [Serializable] private sealed class SharedRegistry { public SharedAsset[] assets; }
+    [Serializable] private sealed class SharedAsset
+    {
+        public string id, path, sourceHash, license;
+        public bool originalSourceImmutable, companyCommonBase;
+    }
+
+    // 공용 에셋을 게임 기존 Resources 소비처로 임포트한다. 원본은 읽기 전용이고
+    // 생성 파일은 Editor에서만 존재하며, 실제 출시 여부는 WebGL 런타임 검증이 결정한다.
+    private static void ImportSharedVillageModels()
+    {
+        string project = Directory.GetParent(Application.dataPath).FullName;
+        string repoRoot = Path.GetFullPath(Path.Combine(project, "..", ".."));
+        string registryPath = Path.Combine(repoRoot, "company-asset-library.json");
+        if (!File.Exists(registryPath)) throw new Exception("MAGIC_FOREST_COMMON_REGISTRY_MISSING");
+        SharedRegistry registry = JsonUtility.FromJson<SharedRegistry>(File.ReadAllText(registryPath));
+        if (registry == null || registry.assets == null)
+            throw new Exception("MAGIC_FOREST_COMMON_REGISTRY_INVALID");
+        string folder = "Assets/Resources/CompanyAssets/";
+        int imported = 0;
+        foreach (string name in VillageModelNames)
+        {
+            string original = "assets/shared/homely-house/" + name + ".obj";
+            SharedAsset entry = Array.Find(registry.assets, row => row != null
+                && row.id == "external-tinytreats-" + name.ToLowerInvariant().Replace('_', '-') + "-v1");
+            if (entry == null || entry.path != "/" + original || entry.license != "CC0"
+                || !entry.companyCommonBase || !entry.originalSourceImmutable
+                || string.IsNullOrEmpty(entry.sourceHash))
+                throw new Exception("MAGIC_FOREST_SHARED_SOURCE_UNREGISTERED:" + name);
+            string source = Path.Combine(repoRoot, original);
+            string material = Path.Combine(repoRoot, "assets/shared/homely-house/" + name + ".mtl");
+            if (!File.Exists(source) || !File.Exists(material) || new FileInfo(source).Length > 3 * 1024 * 1024)
+                throw new Exception("MAGIC_FOREST_SHARED_SOURCE_MISSING:" + name);
+            string sourceHash;
+            using (SHA256 sha = SHA256.Create())
+                sourceHash = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(source)))
+                    .Replace("-", "").ToLowerInvariant();
+            if (!String.Equals(sourceHash, entry.sourceHash, StringComparison.OrdinalIgnoreCase))
+                throw new Exception("MAGIC_FOREST_SHARED_SOURCE_HASH_MISMATCH:" + name);
+            string target = Path.Combine(project, folder + "MagicForestVillage_" + name + ".obj");
+            string targetMaterial = Path.Combine(project, folder + name + ".mtl");
+            // glTF/FBX wrapper 대신 Unity의 기존 OBJ 임포터를 직접 사용한다.
+            if (!File.Exists(target) || !File.ReadAllBytes(target).AsSpan().SequenceEqual(File.ReadAllBytes(source)))
+                File.Copy(source, target, true);
+            if (!File.Exists(targetMaterial) || File.ReadAllText(targetMaterial) != File.ReadAllText(material))
+                File.Copy(material, targetMaterial, true);
+            imported++;
+        }
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        foreach (string name in VillageModelNames)
+        {
+            string modelPath = folder + "MagicForestVillage_" + name + ".obj";
+            GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+            if (model == null) throw new Exception("MAGIC_FOREST_SHARED_MESH_IMPORT_FAILED:" + name);
+            int indices = 0;
+            foreach (MeshFilter filter in model.GetComponentsInChildren<MeshFilter>(true))
+                if (filter != null && filter.sharedMesh != null)
+                    for (int submesh = 0; submesh < filter.sharedMesh.subMeshCount; submesh++)
+                        if (filter.sharedMesh.GetTopology(submesh) == MeshTopology.Triangles)
+                            indices += (int)filter.sharedMesh.GetIndexCount(submesh);
+            if (indices < 45 || model.GetComponentInChildren<Renderer>(true) == null)
+                throw new Exception("MAGIC_FOREST_SHARED_MESH_GEOMETRY_FAILED:" + name);
+        }
+        Debug.Log("MAGIC_FOREST_SHARED_CC0_3D=SOURCE_BOUND_RUNTIME_QA_REQUIRED models=" + imported);
+    }
 
     public static void BuildWeb()
     {
@@ -69,6 +144,7 @@ public static class UnityWebFloorBuild
         // 그래픽 · 공용 스킨드 GLB의 실제 본/액션 클립을 기존 Unity 빌드 진입점에서 변환한다.
         // 변환 실패는 웹 빌드를 중단하며 준비된 소스만으로 출시 PASS를 만들지 않는다.
         UnityCompanyAssets.Prepare();
+        ImportSharedVillageModels();
         foreach(string role in new[]{"Traveler","Rogue","Guardian","Archer","Mage",
             "Wolf","Golem","Spider","Serpent","Beetle"})
         {
