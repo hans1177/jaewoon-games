@@ -739,3 +739,24 @@ test('Unity native source F0 failure carries exact signature and file into exist
   assert.equal(extracted,'UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs');
   assert.equal(extracted.replace(/[^a-zA-Z0-9_.:/-]/g,'').slice(0,128),extracted);
 });
+
+
+test('Unity WebGL Roslyn compilation errors preserve the real source file, line and code for existing Vibe repair',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const build=workflow.slice(workflow.indexOf('- name: Build Unity Web'),workflow.indexOf('- name: Collect Unity Web output'));
+  const repair=workflow.slice(workflow.indexOf('- name: Mark Unity Web floor repair requirement'));
+  assert.ok(build.includes('set -euo pipefail'));
+  assert.ok(build.includes('-logFile /dev/stdout 2>&1 | tee "$RUNNER_TEMP/unity-web-build.log"'));
+  assert.ok(!build.includes('continue-on-error: true'));
+  assert.ok(repair.includes('compiler_log="$RUNNER_TEMP/unity-web-build.log"'));
+  assert.ok(repair.includes("sed -nE 's#^.*(Assets/[A-Za-z0-9._/-]+\\.cs)"));
+  assert.ok(repair.includes('failure_stage=UNITY_WEB_CSHARP_COMPILE'));
+  assert.ok(repair.includes('failure_signature="UNITY_WEB_CSHARP_COMPILE_ERROR:$compiler_failure"'));
+  assert.ok(repair.includes('for filename in unity-web-post-deploy-mobile.json'));
+  assert.ok(repair.includes('exit 42'));
+  const roslyn='Assets/Scripts/PrototypeAnimatedVisuals.cs(1177,69): error CS1002: ; expected';
+  const extracted=roslyn.match(/(Assets\/[A-Za-z0-9._/-]+\.cs)\(([0-9]+),[0-9]+\): error (CS[0-9]+):/);
+  assert.deepEqual(extracted.slice(1),['Assets/Scripts/PrototypeAnimatedVisuals.cs','1177','CS1002']);
+  const signature='UNITY_WEB_CSHARP_COMPILE_ERROR:'+extracted[1]+':'+extracted[2]+':'+extracted[3];
+  assert.equal(signature.replace(/[^a-zA-Z0-9_.:/-]/g,'').slice(0,128),signature);
+});
