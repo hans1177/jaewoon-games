@@ -107,6 +107,124 @@ function escalationRow({sourceQueue,task,signature,stage,blastRadius='single-tas
       ]
   };
 }
+// 배포 실패도 기존 복구 큐/작업자/QA로 돌린다. 별도 재배포 실행기는 만들지 않는다.
+const DEPLOYMENT_WORKFLOWS=new Map([
+  ['Vibe2 Candidate Release Gate',['WEB','.github/workflows/vibe2-candidate-release.yml']],
+  ['Unity Web Development Floor',['UNITY_WEB','.github/workflows/unity-web-first-stage-build.yml']],
+  ['Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment',['ROBLOX','.github/workflows/company-development-roblox-release-promotion.yml']],
+  ['Company DEVELOPMENT_CONFIRMED Roblox Runtime',['ROBLOX','.github/workflows/company-development-roblox-runtime.yml']],
+  ['Company DEVELOPMENT_CONFIRMED Roblox F0 Source Preflight',['ROBLOX','.github/workflows/company-development-roblox-headless-fast-mvp.yml']],
+  ['Vibe2 Roblox Candidate Runtime',['ROBLOX','.github/workflows/vibe2-roblox-candidate-runtime.yml']],
+  ['Vibe2 Roblox Candidate Result',['ROBLOX','.github/workflows/vibe2-roblox-candidate-result.yml']],
+  ['Vibe2 Roblox Release Handoff',['ROBLOX','.github/workflows/vibe2-roblox-release-handoff.yml']],
+  ['Magic Forest Static Play',['WEB','.github/workflows/magic-forest-pages.yml']]
+]);
+function deploymentStepKey(value){
+  return clean(value).toUpperCase().replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,72)||'UNKNOWN';
+}
+function deploymentGameIds(catalogInput={},tasks=[]){
+  const ids=[
+    ...(Array.isArray(catalogInput.games)?catalogInput.games.map(row=>row?.id):[]),
+    ...tasks.map(row=>row?.gameId)
+  ];
+  for(const root of ['web-games','unity-games','roblox-games']){
+    try{ids.push(...fs.readdirSync(root,{withFileTypes:true}).filter(row=>row.isDirectory()).map(row=>row.name));}
+    catch{/* A scoped test checkout may not contain every platform root. */}
+  }
+  return uniq(ids).filter(id=>/^[a-z0-9][a-z0-9-]*$/.test(id));
+}
+function deploymentSourceFiles(platform,gameId,linkedTask){
+  if(!gameId)return[];
+  const root=(platform==='UNITY_WEB'?'unity':platform.toLowerCase())+'-games/'+gameId;
+  const linked=uniq(linkedTask?.responsibleFiles).filter(file=>file.startsWith(root+'/')&&!file.includes('..')&&fs.existsSync(file)&&fs.statSync(file).isFile());
+  if(linked.length)return linked;
+  if(platform==='WEB'){
+    const file=root+'/index.html';
+    return fs.existsSync(file)?[file]:[];
+  }
+  if(platform==='UNITY_WEB'){
+    const dir=root+'/Assets/Scripts';
+    if(!fs.existsSync(dir))return[];
+    // Only one unambiguous canonical source can be selected without an original Vibe work lock.
+    const files=fs.readdirSync(dir,{withFileTypes:true}).filter(entry=>entry.isFile()&&entry.name.endsWith('.cs')).map(entry=>dir+'/'+entry.name);
+    return files.length===1?files:[];
+  }
+  if(platform==='ROBLOX'){
+    const files=[root+'/server/Game.server.luau',root+'/client/Game.client.luau'].filter(file=>fs.existsSync(file));
+    return files.length===1?files:[];
+  }
+  return[];
+}
+export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput={},recoveryInput={},catalogInput={}}={}){
+  const queue=normalizeRecoveryQueue(recoveryInput);
+  const run=event?.workflow_run||event;
+  const definition=DEPLOYMENT_WORKFLOWS.get(clean(run?.name));
+  const repository=clean(run?.head_repository?.full_name||event?.repository?.full_name);
+  const runId=Number(run?.id),attempt=Math.max(1,Math.floor(Number(run?.run_attempt)||1));
+  const sha=clean(run?.head_sha).toLowerCase();
+  if(!definition||clean(run?.path)!==definition[1]||repository!=='hans1177/jaewoon-games'
+      ||clean(run?.conclusion)!=='failure'||!Number.isSafeInteger(runId)||runId<1||!/^[0-9a-f]{40}$/.test(sha)){
+    return{queue,added:[],reactivated:[],ignored:'NOT_VERIFIED_CANONICAL_DEPLOYMENT_FAILURE'};
+  }
+  const [platform,workflowFile]=definition;
+  const tasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
+  const failedJobs=(Array.isArray(jobsInput.jobs)?jobsInput.jobs:[]).filter(job=>clean(job?.conclusion)==='failure');
+  const failedStep=failedJobs.flatMap(job=>(Array.isArray(job.steps)?job.steps:[])
+    .filter(step=>clean(step?.conclusion)==='failure')
+    .map(step=>({job:clean(job.name),step:clean(step.name)})))[0]
+    ||(failedJobs.length?{job:clean(failedJobs[0].name),step:clean(failedJobs[0].name)}:{job:'UNKNOWN',step:'UNKNOWN'});
+  const stepKey=deploymentStepKey(failedStep.step);
+  const stage='DEPLOYMENT_'+platform+'_'+stepKey;
+  const signature='WORKFLOW_FAILED_'+stepKey;
+  const known=deploymentGameIds(catalogInput,tasks);
+  const title=clean(run?.display_title)+' '+clean(run?.head_branch);
+  const matching=known.filter(id=>new RegExp('(^|[^a-z0-9_-])'+id+'(?=$|[^a-z0-9_-])','i').test(title));
+  const gameId=clean(run?.name)==='Magic Forest Static Play'&&known.includes('fantasy-survival')
+    ?'fantasy-survival':matching.length===1?matching[0]:'';
+  const linkedTask=tasks.find(task=>clean(task.gameId)===gameId&&gameId
+    &&(clean(task.candidateBranch)===clean(run.head_branch)
+      ||[task.candidateSha,task.sourceRevision,task.baseSourceRevision].map(clean).includes(sha))
+    &&uniq(task.responsibleFiles).length>0);
+  const sourceFailure=/(?:SOURCE|BUILD|COMPILE|STATIC|QA|REGRESSION|TEST|BROWSER|GAMEPLAY|VALIDATION|READINESS|REPAIR_REQUIREMENT|RUNTIME|PREFLIGHT|F0|F1|F2|F3|F4|F9)/.test(stepKey)
+    &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey);
+  const codeFiles=sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask):[];
+  const sourceRepair=sourceFailure&&codeFiles.length>0;
+  const owner=sourceRepair?'VIBE2_VIBE3':'SYSTEM_AI';
+  const runMarker='deployment-failure-run:'+runId+':'+attempt;
+  const sourceKey='deployment:'+workflowFile+':'+sha+':'+(sourceRepair?gameId:'pipeline');
+  let sourceTaskId=sourceKey;
+  const previous=queue.tasks.find(item=>item.sourceQueue==='deployment'&&item.sourceTaskId===sourceKey
+    &&item.failureStage===stage&&item.failureSignature===signature);
+  if(previous?.evidence?.includes(runMarker))return{queue,added:[],reactivated:[],ignored:'EXACT_WORKFLOW_ATTEMPT_ALREADY_INGESTED'};
+  // A fresh failure must not silently reuse a previously verified repair as success.
+  if(previous?.status==='verified'||previous?.status==='awaiting-primary-ai-review')sourceTaskId+=':new-'+runId+'-'+attempt;
+  const responsibleFiles=sourceRepair?codeFiles:[workflowFile];
+  const result=enqueueRecovery(queue,{
+    sourceQueue:'deployment',sourceTaskId,gameId:gameId||null,relatedTaskIds:sourceRepair&&linkedTask?[clean(linkedTask.id)]:[],
+    responsibleFiles,contextFiles:uniq([workflowFile,...(gameId?[(platform==='UNITY_WEB'?'unity':platform.toLowerCase())+'-games/'+gameId]:[])]),
+    priority:'critical',failureStage:stage,failureSignature:signature,checkpoint:sha,
+    blastRadius:sourceRepair?'game:'+gameId:'deployment-workflow:'+workflowFile,
+    recoveryOwner:owner,
+    goal:'Analyze the exact failed '+platform+' deployment stage '+stepKey+' for '+(gameId||'an unresolved game')+
+      ' using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.',
+    recoveryStrategy:sourceRepair?'VIBE_GAME_SOURCE_CAUSAL_REPAIR_EXACT_QA_THEN_CANONICAL_REDEPLOY'
+      :'SYSTEM_AI_CANONICAL_DEPLOYMENT_INFRASTRUCTURE_CAUSAL_REPAIR_THEN_VERIFIED_REDEPLOY',
+    verificationPlan:['IDENTIFY_EXACT_FAILURE_CAUSE','VERIFY_RESPONSIBLE_SOURCE_MUTATION',
+      'RERUN_EXACT_FAILED_STAGE','REVALIDATE_RELEVANT_QA_AND_REGRESSION',
+      'CANONICAL_REDEPLOY_ONLY_AFTER_REQUIRED_RELEASE_GATES','VERIFY_ACTUAL_DEPLOYMENT_RESULT'],
+    recurrenceCount:Math.max(1,Number(previous?.recurrenceCount||0)+1),
+    evidence:uniq([runMarker,'deployment-workflow:'+workflowFile,'deployment-platform:'+platform,
+      'deployment-game:'+(gameId||'UNRESOLVED'),'deployment-head-sha:'+sha,
+      'deployment-failed-job:'+deploymentStepKey(failedStep.job),'deployment-failed-step:'+stepKey,
+      'deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/'+runId,
+      'deployment-failure-triage:'+(sourceRepair?'SCOPED_GAME_SOURCE':'WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE'),
+      'deployment-auto-redeploy:CANONICAL_VERIFIED_ONLY','deployment-release-gates:PRESERVED',
+      'source-mutation-required:YES','primary-ai-collaboration:REQUESTED'])
+  },{reactivateDispatched:true});
+  return{queue:result.queue,added:result.added?[result.id]:[],
+    reactivated:result.reactivated?[result.id]:[],ignored:null,gameId:gameId||null,owner,stage};
+}
+
 export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput={},recoveryInput={}}={}){
   let queue=normalizeRecoveryQueue(recoveryInput);const added=[],reactivated=[];
   const gameTasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
@@ -177,12 +295,26 @@ export function escalateRecoveryCandidates({gameQueueInput={},systemAiQueueInput
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
   const recoveryFile=clean(args.recovery)||'.vibe2/recovery-queue.json';
+  const gameQueueInput=readJson(clean(args.queue)||'.vibe2/queue.json',{tasks:[]});
+  const initialRecovery=readJson(recoveryFile,{tasks:[]});
+  const deployment=clean(args['deployment-event'])
+    ?escalateDeploymentFailure({
+      event:readJson(clean(args['deployment-event']),{}),
+      jobsInput:readJson(clean(args['deployment-jobs']),{jobs:[]}),
+      gameQueueInput,
+      recoveryInput:initialRecovery,
+      catalogInput:readJson(clean(args.catalog)||'game-catalog.json',{games:[]})
+    })
+    :{queue:initialRecovery,added:[],reactivated:[],ignored:'NO_DEPLOYMENT_EVENT'};
   const result=escalateRecoveryCandidates({
-    gameQueueInput:readJson(clean(args.queue)||'.vibe2/queue.json',{tasks:[]}),
+    gameQueueInput,
     systemAiQueueInput:readJson(clean(args['system-ai'])||'.vibe2/system-ai-queue.json',{tasks:[]}),
-    recoveryInput:readJson(recoveryFile,{tasks:[]})
+    recoveryInput:deployment.queue
   });
   writeJson(recoveryFile,result.queue);
   console.log('RECOVERY_ESCALATION_ADDED='+result.added.length);
   console.log('RECOVERY_ESCALATION_REACTIVATED='+result.reactivated.length);
+  console.log('DEPLOYMENT_RECOVERY_ADDED='+deployment.added.length);
+  console.log('DEPLOYMENT_RECOVERY_REACTIVATED='+deployment.reactivated.length);
+  console.log('DEPLOYMENT_RECOVERY_TRIAGE='+(deployment.ignored||((deployment.owner||'UNKNOWN')+':'+(deployment.gameId||'UNRESOLVED'))));
 }
