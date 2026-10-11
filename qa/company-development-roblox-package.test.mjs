@@ -388,6 +388,8 @@ test('Roblox binding rejects nonempty lists and comments while accepting actual 
 test('Roblox binding follows multiline selected-atom branches and same-object type guards',()=>{
   const source=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
   for(const family of ['WEAPON','CREATURE','PROP'])assert.equal(robloxStudioAssetFamilyBoundInText(source,family),true,family);
+  const cozy=fs.readFileSync(new URL('../roblox-games/cozy-island/client/Game.client.luau',import.meta.url),'utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(cozy,'CREATURE'),true,'selected atom early return must preserve the existing consumer');
 
   const guard='if not instance:IsA("MeshPart") then return end\nlocal name = instance.Name:lower()\n';
   const selection='if name == "lamp"\n  and table.find(studioAssetFamily("PROP"), "LAMP") then\n';
@@ -402,6 +404,8 @@ test('Roblox binding follows multiline selected-atom branches and same-object ty
     guard+'end\nlocal function unrelated(instance)\n'+selection+render+'end',
     'if instance:IsA("MeshPart") and #\n  studioAssetFamily("PROP") > 0 then\n'+render+'end',
     guard+selection+'  instance:SetAttribute("AssetFamily", "PROP")\nend',
+    'if table.find(studioAssetFamily("PROP"), "LAMP") then return end\nif instance:IsA("MeshPart") then\n'+render+'end',
+    'if not table.find(studioAssetFamily("PROP"), "LAMP") then return end\nend\nlocal function unrelated(instance)\nif instance:IsA("MeshPart") then\n'+render+'end',
   ];
   for(const text of rejected)assert.equal(robloxStudioAssetFamilyBoundInText(text,'PROP'),false,text);
 });

@@ -166,10 +166,16 @@ export function robloxStudioAssetFamilyBoundInText(text='',family=''){
     if(guardStart>=0&&thenMatch&&!/\b(?:then|else|end|function|return)\b/.test(conditionPrefix)
       &&!/\b(?:if|elseif|else|end|function|return)\b/.test(raw.slice(index,index+thenMatch.index))){
       const bodyStart=index+thenMatch.index+thenMatch[0].length;
-      const after=raw.slice(bodyStart,bodyStart+1800);
+      const condition=raw.slice(guardStart,bodyStart);
+      let after=raw.slice(bodyStart,bodyStart+1800);
+      // 선택된 atom이 없으면 즉시 반환하는 기존 소비자는 이후 본문이
+      // 선택값에 종속된다. 긍정 조건의 반환이나 복합 조건은 추정하지 않는다.
+      const negativeExit=after.match(/^\s*return\s+end\b/);
+      if(negativeExit&&/^if\s+not\s+(?:table\s*\.\s*find|hasStudio(?:Asset)?Atom)\s*\(/.test(condition)
+        &&!/\b(?:and|or)\b/.test(condition))after=after.slice(negativeExit[0].length);
       const blockEnd=after.search(/\b(?:else|elseif|end)\b/);
       const block=blockEnd>=0?after.slice(0,blockEnd):after;
-      const guardedBlock=raw.slice(guardStart,bodyStart)+block;
+      const guardedBlock=condition+block;
       if(renderSink.test(block)){
         if(nativePattern.test(guardedBlock))return true;
         // 같은 객체의 직전 조기 반환형 타입 검사도 보존한다. 다른 객체,
