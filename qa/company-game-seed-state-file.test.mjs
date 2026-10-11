@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import {GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {normalizeSeedState,validatePortfolioSeedRequest,pendingPortfolioSeedRequests,ensureSeedMaterialPool} from '../tools/game-seed-state.mjs';
 
@@ -74,4 +75,46 @@ test('persisted GAME_SEED state follows current central machine policy contract'
   assert.doesNotThrow(()=>pendingPortfolioSeedRequests(state));
   assert.equal(directive.gameSeed.replenishment.oneForOneOnly,false);
   assert.equal(directive.gameSeed.bootstrap.categoriesAreReferenceSetNotSlotQuota,true);
+});
+
+test('owner original gameplay loop survives mismatched market-profile fallback; new seeds still use the fallback',()=>{
+  // Execute the production normalization decision in an isolated sandbox with two
+  // opposed cases, avoiding duplicate logic in the test and preserving the normalizer.
+  const start=semanticNormalize.indexOf('  const loops=uniq(seed.CORE_LOOP)');
+  const end=semanticNormalize.indexOf('  seed.CORE_FUN_TO_LEARN=',start);
+  assert.ok(start>=0&&end>start);
+  const normalizationSlice=semanticNormalize.slice(start,end);
+  const original=[
+    'Explore the village, take a quest, and travel into the selected dungeon.',
+    'Fight the actual monsters using the approved weapons and character stats.',
+    'Return to the village with loot, gain experience, and unlock new dungeon quests.'
+  ];
+  const puzzle=[
+    'Start a board or grid level with the visible puzzle constraint.',
+    'Move tiles, make matches, and clear the puzzle objective.',
+    'Claim the puzzle score and advance to the next board.'
+  ];
+  const run=seed=>{
+    const sandbox={
+      seed,
+      cfg:{minimumCoreLoop:puzzle,requiredConceptGroups:[['puzzle']],minimumRequiredConceptGroups:1},
+      uniq:values=>[...new Set((Array.isArray(values)?values:[]).map(v=>String(v).trim()).filter(Boolean))],
+      businessMeta:/never-match-business-copy-example/u,
+      weakLoopSuffix:/result feedback sentence not present/u,
+      conceptGroupCoverage:()=>0,
+      repaired:false
+    };
+    vm.runInNewContext(normalizationSlice,sandbox,{timeout:1000});
+    return sandbox.seed.CORE_LOOP;
+  };
+  assert.deepEqual(run({
+    CORE_LOOP:original,
+    REUSE_PRIOR_DESIGN_BASELINE:true,
+    originalDesignContext:{content:{coreLoop:original}}
+  }),original,'an existing RPG must never become a generic puzzle because a category benchmark has different verbs');
+  assert.deepEqual(run({CORE_LOOP:original}),puzzle,'brand-new unanchored seeds keep the current market-profile fallback');
+  assert.deepEqual(run({
+    CORE_LOOP:original,
+    designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY'
+  }),original,'explicit owner brief keeps authored gameplay verbs until designer revision');
 });
