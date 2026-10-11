@@ -36,7 +36,7 @@ internal static class UnityCompanyAssets
     [Serializable] private class Accessor { public int bufferView, byteOffset, componentType, count; public string type; }
     [Serializable] private class BufferView { public int byteOffset, byteLength, byteStride; }
     [Serializable] private class MaterialData { public string name; public Pbr pbrMetallicRoughness; }
-    [Serializable] private class Pbr { public float[] baseColorFactor; }
+    [Serializable] private class Pbr { public float[] baseColorFactor; public float metallicFactor, roughnessFactor; }
     [Serializable] private class Motion { public string name; public Sampler[] samplers; public Channel[] channels; }
     [Serializable] private class Sampler { public int input, output; public string interpolation; }
     [Serializable] private class Channel { public int sampler; public Target target; }
@@ -129,6 +129,8 @@ internal static class UnityCompanyAssets
         mesh.SetVertices(vertices);
         mesh.SetNormals(normals);
         mesh.SetUVs(0, uv);
+        // 렌더링 · GLB 노멀/UV를 이용한 조명 접선은 메시 생성 시 한 번만 계산한다.
+        mesh.RecalculateTangents();
         mesh.boneWeights = weights.ToArray();
         Skin skin = doc.skins[0];
         var bindposes = new Matrix4x4[skin.joints.Length];
@@ -303,14 +305,24 @@ internal static class UnityCompanyAssets
                 MaterialData row = matIndex >= 0 && matIndex < doc.materials.Length ? doc.materials[matIndex] : null;
                 string matPath = output + "Material" + i + ".mat";
                 if (AssetDatabase.LoadAssetAtPath<Material>(matPath) != null) AssetDatabase.DeleteAsset(matPath);
-                Shader shader = Shader.Find("Standard") ?? Shader.Find("Universal Render Pipeline/Lit")
-                    ?? Shader.Find("Unlit/Color");
-                if (shader == null) throw new Exception("UNITY_COMPANY_NATIVE_SHADER_MISSING");
+                // 렌더링 · 스킨드 자산을 Unlit으로 후퇴시키지 않고 프로젝트의 Lit PBR 셰이더에 연결한다.
+                Shader shader = GraphicsSettings.currentRenderPipeline == null
+                    ? Shader.Find("Standard") : Shader.Find("Universal Render Pipeline/Lit");
+                if (shader == null || !shader.isSupported)
+                    throw new Exception("UNITY_COMPANY_NATIVE_LIT_SHADER_MISSING:" + key);
                 var mat = new Material(shader) { name = key + "_" + i };
-                float[] rgb = row != null && row.pbrMetallicRoughness != null
-                    ? row.pbrMetallicRoughness.baseColorFactor : null;
-                mat.color = rgb != null && rgb.Length >= 3
+                Pbr pbr = row != null ? row.pbrMetallicRoughness : null;
+                float[] rgb = pbr != null ? pbr.baseColorFactor : null;
+                Color baseColor = rgb != null && rgb.Length >= 3
                     ? new Color(rgb[0], rgb[1], rgb[2], rgb.Length > 3 ? rgb[3] : 1f) : Color.white;
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", baseColor);
+                if (mat.HasProperty("_Color")) mat.SetColor("_Color", baseColor);
+                float metallic = Mathf.Clamp01(pbr != null ? pbr.metallicFactor : 0f);
+                float smooth = Mathf.Clamp(1f - (pbr != null ? pbr.roughnessFactor : .68f), .14f, .72f);
+                if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", metallic);
+                if (mat.HasProperty("_Glossiness")) mat.SetFloat("_Glossiness", smooth);
+                if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", smooth);
+                mat.enableInstancing = true;
                 AssetDatabase.CreateAsset(mat, matPath);
                 materials.Add(mat);
             }
@@ -322,6 +334,8 @@ internal static class UnityCompanyAssets
             for (int i = 0; i < bones.Length; i++) bones[i] = nodes[skin.joints[i]];
             skinned.bones = bones;
             skinned.rootBone = nodes[skin.skeleton];
+            skinned.shadowCastingMode = ShadowCastingMode.On;
+            skinned.receiveShadows = true;
             skinned.updateWhenOffscreen = false;
             var animation = root.AddComponent<Animation>();
             foreach (Motion action in doc.animations)
