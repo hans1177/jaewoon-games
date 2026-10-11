@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
 import {
   synchronizeOwnerDevelopmentHolds,
   enqueueVibeTask,
@@ -1957,6 +1958,48 @@ test('candidate result workflows use direct repository-dispatch refill instead o
   }
 });
 
+
+// 메인 · 같은 리비전의 아직 시작하지 않은 게임 호출만 기존 큐에 유지한다.
+test('24H preplan deduplicates queued same-main game-primary wake without cross-game cancellation',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const start=workflow.indexOf('          queued_exact_wake="$(CURRENT_MAIN_SHA=');
+  const a=workflow.indexOf("          const fs=require('fs');",start);
+  const b=workflow.indexOf('\n          NODE',a);
+  assert.ok(start>0&&a>start&&b>a);
+  const script=workflow.slice(a,b);
+  const evaluate=(workflow_runs,sha)=>{
+    let output='';
+    runInNewContext(script,{
+      require:module=>{
+        assert.equal(module,'fs');
+        return {readFileSync:(file,encoding)=>{
+          assert.equal(file,'/tmp/vibe2-preplan-actions-runs.json');
+          assert.equal(encoding,'utf8');
+          return JSON.stringify({workflow_runs});
+        }};
+      },
+      process:{env:{CURRENT_MAIN_SHA:sha},stdout:{write:value=>{output+=value;}}}
+    });
+    return output;
+  };
+  const main='f'.repeat(40),previous='a'.repeat(40);
+  const wake={id:751,path:'.github/workflows/vibe2-continuous-core.yml',
+    event:'workflow_dispatch',head_sha:main,status:'queued',
+    display_title:'Vibe2 Continuous Core · workflow_dispatch · game-primary'};
+  assert.equal(evaluate([wake],main),'751');
+  assert.equal(evaluate([{...wake,status:'pending'}],main),'751');
+  assert.equal(evaluate([{...wake,status:'requested'}],main),'751');
+  assert.equal(evaluate([{...wake,status:'in_progress'}],main),'');
+  assert.equal(evaluate([{...wake,status:'completed'}],main),'');
+  assert.equal(evaluate([{...wake,head_sha:previous}],main),'');
+  assert.equal(evaluate([{...wake,event:'push'}],main),'');
+  assert.equal(evaluate([{...wake,path:'.github/workflows/vibe2-recovery-fast.yml'}],main),'');
+  assert.equal(evaluate([{...wake,display_title:'Vibe2 Continuous Core · workflow_dispatch · asset-development'}],main),'');
+  assert.equal(evaluate([{...wake,head_sha:previous},wake],main),'751');
+  assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN/);
+  assert.match(workflow,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
+  assert.match(workflow,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
+});
 
 test('24H plan uses optimistic writes while reserve stays lightweight and fan-in stays run-unique',()=>{
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');

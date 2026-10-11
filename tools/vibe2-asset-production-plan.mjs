@@ -1805,7 +1805,12 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
 
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true,consumerGameIds=null}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
-  const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
+  // [원자적 읽기] 같은 원장 바이트를 한 번만 읽어 해시 및 파싱에 공유한다.
+  const registrySnapshot=persist&&fs.existsSync(registryPath)?fs.readFileSync(registryPath,'utf8'):null;
+  const registrySnapshotHash=registrySnapshot===null?null
+    :crypto.createHash('sha256').update(registrySnapshot).digest('hex');
+  const original=registry||(registrySnapshot===null
+    ?readJson(registryPath,{version:0,assets:[],externalSources:[]}):JSON.parse(registrySnapshot));
   // 동기화는 asset top-level 필드만 직접 수정하고 중첩 계약은 교체/읽기만 한다. 3MB registry 전체 JSON deep-copy를 피한다.
   const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
@@ -1847,7 +1852,13 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     canonicalDerivedRoot=fs.realpathSync(derivedRoot);
   }catch{}
   if(canonicalAssetRoot&&canonicalDerivedRoot.startsWith(canonicalAssetRoot+path.sep)){
-    const sourceByPath=new Map();
+    const sourceByPath=new Map(),sourceHashCache=new Map();
+    const sourceFileSha256=full=>{
+      if(!sourceHashCache.has(full)){
+        sourceHashCache.set(full,crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'));
+      }
+      return sourceHashCache.get(full);
+    };
     const allowedSource=asset=>{
       const license=clean(asset?.license).toLowerCase();
       return !asset?.parentSourceId&&!asset?.derivedFromAssetId
@@ -1906,8 +1917,10 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
             const family=clean(evidence?.family).toUpperCase();
             // 하나의 공용 메시를 환경 팩·개별 건물·소품이 함께 등록할 수 있다.
             // 첫 번째 경로 소유자가 아닌 실제 family/권리/원본 해시에 일치하는 자산을 선택한다.
+            const expectedParentId=clean(provenance?.libraryParentAssetId);
             const parent=(sourceByPath.get(sourcePath)||[])
-              .filter(row=>clean(row.family||row.category).toUpperCase()===family
+              .filter(row=>(!expectedParentId||clean(row.id)===expectedParentId)
+                &&clean(row.family||row.category).toUpperCase()===family
                 &&clean(row.license).toLowerCase()===license
                 &&(!clean(row.sourceSha256)||clean(row.sourceSha256)===clean(provenance?.sourceSha256)))
               .sort((a,b)=>Number(Boolean(clean(b.role)))-Number(Boolean(clean(a.role)))
@@ -1930,12 +1943,12 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
               ||application?.sourceMesh?.sourcePath!==sourcePath)throw new Error('DERIVED_ASSET_PROVENANCE_INVALID');
             const originalFile=actualFile(sourcePath);
             if(!originalFile)throw new Error('DERIVED_ASSET_PARENT_MISSING');
-            const originalHash=crypto.createHash('sha256').update(fs.readFileSync(originalFile.full)).digest('hex');
+            const originalHash=sourceFileSha256(originalFile.full);
             if(!/^[0-9a-f]{64}$/i.test(clean(provenance.sourceSha256))
               ||originalHash!==provenance.sourceSha256
               ||(clean(parent.sourceSha256)&&clean(parent.sourceSha256)!==originalHash))throw new Error('DERIVED_ASSET_PARENT_HASH_MISMATCH');
-            const artifactHash=crypto.createHash('sha256').update(fs.readFileSync(files[0].full)).digest('hex');
-            const masterHash=crypto.createHash('sha256').update(fs.readFileSync(files[1].full)).digest('hex');
+            const artifactHash=sourceFileSha256(files[0].full);
+            const masterHash=sourceFileSha256(files[1].full);
             if(artifactHash===originalHash||masterHash===originalHash)throw new Error('DERIVED_ASSET_UNCHANGED_SOURCE');
             const preview=fs.readFileSync(files[2].full);
             const previewHash=crypto.createHash('sha256').update(preview).digest('hex');
@@ -2337,11 +2350,31 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   }
   let persisted=false,persistError=null;
   if(persist&&changed){
+    const lockPath=registryPath+'.lock';
+    let lockFd=null,tempPath=null;
     try{
-      fs.writeFileSync(registryPath,JSON.stringify(next,null,2)+'\n','utf8');
+      // [원자적 발행] 배타 잠금 → 최신 원장 비교 → 같은 디렉터리 임시 파일 → fsync → rename.
+      // 생성 파일 및 동기화된 원장 모두 검증되기 전에는 최종 원장을 노출하지 않는다.
+      lockFd=fs.openSync(lockPath,'wx',0o600);
+      const currentHash=fs.existsSync(registryPath)
+        ?crypto.createHash('sha256').update(fs.readFileSync(registryPath)).digest('hex'):null;
+      if(currentHash!==registrySnapshotHash)throw new Error('COMPANY_ASSET_LIBRARY_CONCURRENT_UPDATE');
+      tempPath=registryPath+'.tmp-'+process.pid+'-'+crypto.randomBytes(8).toString('hex');
+      const tempFd=fs.openSync(tempPath,'wx',0o600);
+      try{
+        fs.writeFileSync(tempFd,JSON.stringify(next,null,2)+'\n','utf8');
+        fs.fsyncSync(tempFd);
+      }finally{fs.closeSync(tempFd);}
+      fs.renameSync(tempPath,registryPath);
+      tempPath=null;
       persisted=true;
     }catch(error){
       persistError=clean(error?.message||error);
+    }finally{
+      if(tempPath){try{fs.rmSync(tempPath,{force:true});}catch{}}
+      if(lockFd!==null){
+        try{fs.closeSync(lockFd);}finally{fs.rmSync(lockPath,{force:true});}
+      }
     }
   }
   return freeze({
@@ -2742,6 +2775,8 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
       ...(module!=='auto'?['--module',module]:[]),
       ...(imageRequested?['--source-image',sourceImage,'--mesh-model',meshModel]:[]),
       ...(modelRequested?['--source-model',sourceModel]:[]),
+      ...(linkedSourceModel?['--library-parent-id',clean(librarySource.sourceAssetId),
+        '--library-source-sha256',clean(librarySource.sourceSha256)]:[]),
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
       ...(module==='object'?['--object-kind',objectKind]:[]),
@@ -2804,7 +2839,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const materialDerivationRequested=Boolean(clean(task.gameId)&&clean(assetSupplySummary?.gameId))
     &&!clean(task.assetAuthoring?.sourceModel)&&!clean(task.assetAuthoring?.sourceImage)
     &&task.assetAuthoring?.automaticLibraryDerivation!==false;
-  const librarySourceByFamily=new Map();
+  const librarySourceByFamily=new Map(),ambiguousLibraryFamilies=new Set();
   if(materialDerivationRequested){
     for(const row of assetSupplySummary?.nextActions||[]){
       if(row?.action!=='ADAPT'||row.roleEvidence?.verifiedRoleMatch!==true
@@ -2813,15 +2848,30 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)||sourceModel.split('/').includes('..'))continue;
       try{
         const root=fs.realpathSync(repoRoot),real=fs.realpathSync(path.resolve(repoRoot,sourceModel));
-        if(!real.startsWith(root+path.sep)||!fs.statSync(real).isFile())continue;
+        if(!real.startsWith(root+path.sep)||!fs.statSync(real).isFile()
+          ||fs.lstatSync(path.resolve(repoRoot,sourceModel)).isSymbolicLink())continue;
         const size=fs.statSync(real).size;
         if(size<1||size>64*1024*1024)continue;
         const sourceSha256=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
-        const expected=clean(row.libraryReuse.expectedSourceSha256);
+        const expected=clean(row.libraryReuse.expectedSourceSha256).toLowerCase();
         if(expected&&expected!==sourceSha256)continue;
-        if(!['project-original','cc0','cc-by'].includes(license))continue;
-        librarySourceByFamily.set(clean(row.family).toUpperCase(),freeze({
-          sourceAssetId:row.assetId,sourceModel,sourceLicense:license,
+        const sourceAssetId=clean(row.libraryReuse.sourceAssetId);
+        if(!/^[a-z0-9][a-z0-9._-]{0,159}$/i.test(sourceAssetId)
+          ||sourceAssetId!==clean(row.assetId)
+          ||!['project-original','cc0','cc-by'].includes(license)
+          ||(license==='cc-by'&&!clean(row.libraryReuse.sourceCredit)))continue;
+        const family=clean(row.family).toUpperCase();
+        if(ambiguousLibraryFamilies.has(family))continue;
+        const previous=librarySourceByFamily.get(family);
+        if(previous&&(previous.sourceAssetId!==sourceAssetId
+          ||previous.sourceModel!==sourceModel||previous.sourceSha256!==sourceSha256)){
+          // 동일 계열의 서로 다른 역할을 임의의 한 원본으로 합치지 않는다.
+          librarySourceByFamily.delete(family);
+          ambiguousLibraryFamilies.add(family);
+          continue;
+        }
+        librarySourceByFamily.set(family,freeze({
+          sourceAssetId,sourceModel,sourceLicense:license,
           sourceCredit:row.libraryReuse.sourceCredit,sourceSha256
         }));
       }catch{} // 원본·권리·해시 불일치는 자동 제작이 아니라 기존 검수/수리 경로로 돌린다.

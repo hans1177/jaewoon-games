@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -30,6 +31,8 @@ PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
 PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical','animation','video'], default='auto')
 PARSER.add_argument('--source-model', default='')
+PARSER.add_argument('--library-parent-id', default='')
+PARSER.add_argument('--library-source-sha256', default='')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
 PARSER.add_argument('--motion-kind', choices=['sway','turntable','bounce'], default='sway')
 PARSER.add_argument('--mesh-model', choices=['auto','trellis2','triposr'], default='auto')
@@ -38,6 +41,12 @@ PARSER.add_argument('--cinematic-quality', choices=['preview','high'], default='
 PARSER.add_argument('--source-sanitized', choices=['yes','no'], default='no')
 ARGV = sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 ARGS = PARSER.parse_args(ARGV)
+# [내부 라이브러리] 실제 파일·부모 ID·원본 해시가 함께 고정된 자동 파생만 허용한다.
+if bool(ARGS.library_parent_id) != bool(ARGS.library_source_sha256) or (ARGS.library_parent_id and not ARGS.source_model):
+    raise RuntimeError('LIBRARY_DERIVATIVE_PARENT_AND_SOURCE_REQUIRED')
+if ARGS.library_parent_id and (not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,159}', ARGS.library_parent_id)
+                               or not re.fullmatch(r'[0-9a-fA-F]{64}', ARGS.library_source_sha256)):
+    raise RuntimeError('LIBRARY_DERIVATIVE_SOURCE_IDENTITY_INVALID')
 ARGS.output.mkdir(parents=True, exist_ok=True)
 STYLE = json.loads(ARGS.style_json)
 AXES = STYLE.get('axes', {})
@@ -604,6 +613,8 @@ def import_source_surface():
         raise RuntimeError('OPEN_SOURCE_SURFACE_RIGHTS_REQUIRED')
     if rights=='cc-by' and not ARGS.source_credit.strip():
         raise RuntimeError('OPEN_SOURCE_SURFACE_ATTRIBUTION_REQUIRED')
+    if ARGS.library_parent_id and hashlib.sha256(src.read_bytes()).hexdigest() != ARGS.library_source_sha256.lower():
+        raise RuntimeError('LIBRARY_DERIVATIVE_SOURCE_HASH_CHANGED')
     if ARGS.module=='medical' and ARGS.source_sanitized!='yes':
         raise RuntimeError('MEDICAL_SOURCE_SANITIZED_CONFIRMATION_REQUIRED')
     before=set(bpy.data.objects)
@@ -644,7 +655,12 @@ def import_source_surface():
             obj.matrix_world=world_matrix
             obj.data.materials.clear()
             obj.data.materials.append(MID)
-        elif not obj.data.materials:obj.data.materials.append(MID)
+        elif not obj.data.materials:
+            obj.data.materials.append(MID)
+            if ARGS.library_parent_id:
+                SOURCE_ENHANCEMENTS.append({'kind':'PBR_BASE_COLOR_STYLE_REAUTHOR',
+                                            'material':MID.name,'reason':'MISSING_SOURCE_MATERIAL',
+                                            'texturePreserved':True})
         if ARGS.module!='medical':
             for slot in obj.material_slots:
                 source_mat=slot.material
@@ -678,6 +694,21 @@ def import_source_surface():
                                     base_color.default_value=corrected
                                     SOURCE_ENHANCEMENTS.append({'kind':'PBR_BASE_COLOR_STYLE_REAUTHOR',
                                                                 'material':source_mat.name,'texturePreserved':True})
+                            # 스타일 축이 중립이어도 실제 소폭 PBR 보정을 남겨 자산화를 가능하게 한다.
+                            # 텍스처가 연결된 소켓은 건드리지 않으며 원본 머티리얼은 복제만 한다.
+                            if ARGS.library_parent_id and not any(
+                                    row.get('material') == source_mat.name for row in SOURCE_ENHANCEMENTS):
+                                basic_roughness=shader.inputs.get('Roughness')
+                                if basic_roughness and not basic_roughness.is_linked:
+                                    original=float(basic_roughness.default_value)
+                                    if math.isfinite(original) and 0. <= original <= 1.:
+                                        corrected=max(0.,min(1.,original + (.035 if original < .6 else -.035)))
+                                        if abs(corrected-original)>1e-6:
+                                            basic_roughness.default_value=corrected
+                                            SOURCE_ENHANCEMENTS.append({'kind':'PBR_ROUGHNESS_STYLE_REAUTHOR',
+                                                                        'material':source_mat.name,
+                                                                        'from':original,'to':corrected,
+                                                                        'scope':'SUBTLE_LIBRARY_STYLE_FALLBACK'})
                     material_copies[source_mat]=derivative
                 slot.material=material_copies[source_mat]
         ASSET_OBJECTS.append(obj)
@@ -712,6 +743,7 @@ def import_source_surface():
             ASSET_ARMATURES.append(rig)
     SOURCE_PROVENANCE={
         'sourcePath':ARGS.source_model,'sourceSha256':hashlib.sha256(src.read_bytes()).hexdigest(),
+        'libraryParentAssetId':ARGS.library_parent_id or None,
         'license':ARGS.source_license,'attribution':ARGS.source_credit.strip() or None,
         'sourceFormat':src.suffix.lower(),
         'transformHistory':SOURCE_ENHANCEMENTS,'sourceFileImmutable':True,

@@ -536,6 +536,31 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       if(!script.startsWith('assets/')||!script.endsWith('.py'))throw new Error('NATIVE_DCC_SCRIPT_SCOPE_FORBIDDEN:'+script);
       const scriptAbs=path.resolve(cwd,script);
       if(!fs.existsSync(scriptAbs)||!fs.statSync(scriptAbs).isFile())throw new Error('NATIVE_DCC_SCRIPT_MISSING:'+script);
+      // [내부 라이브러리] 계획 이후 원본이 바뀌거나 부모 증거가 없으면 제작 전에 차단한다.
+      const libraryDerivative=recipe?.automaticLibraryDerivative===true;
+      if(libraryDerivative){
+        const parent=clean(recipe.librarySourceAssetId),model=dccRepoPath(recipe.sourceModel);
+        const expected=clean(recipe.librarySourceSha256).toLowerCase();
+        const args=(recipe?.args||[]).map(value=>String(value));
+        const argument=flag=>{const index=args.indexOf(flag);return index<0?null:args[index+1];};
+        if(!/^[a-z0-9][a-z0-9._-]{0,159}$/i.test(parent)||!/^[a-f0-9]{64}$/.test(expected)
+          ||!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(model)
+          ||model.split('/').includes('..')||argument('--source-model')!==model
+          ||argument('--library-parent-id')!==parent
+          ||clean(argument('--library-source-sha256')).toLowerCase()!==expected)
+          throw new Error('NATIVE_DCC_LIBRARY_PARENT_CONTRACT_INVALID:'+clean(recipe.id));
+        const full=path.resolve(cwd,model);
+        const assetsDirectory=path.join(cwd,'assets');
+        const assetsRoot=fs.realpathSync(assetsDirectory);
+        if(fs.lstatSync(assetsDirectory).isSymbolicLink()
+          ||!assetsRoot.startsWith(fs.realpathSync(cwd)+path.sep))
+          throw new Error('NATIVE_DCC_LIBRARY_SOURCE_ROOT_INVALID:'+clean(recipe.id));
+        if(!fs.existsSync(full)||!fs.statSync(full).isFile()
+          ||fs.lstatSync(full).isSymbolicLink()
+          ||!fs.realpathSync(full).startsWith(assetsRoot+path.sep)
+          ||sha256File(full)!==expected)
+          throw new Error('NATIVE_DCC_LIBRARY_SOURCE_CHANGED:'+clean(recipe.id));
+      }
       const outputs=(recipe?.outputs||[]).map(dccRepoPath);
       if(!outputs.length)throw new Error('NATIVE_DCC_OUTPUTS_REQUIRED:'+clean(recipe?.id));
       const recipeFiles=unique([...outputs,recipe?.evidenceJson,recipe?.preview].filter(Boolean).map(dccRepoPath));
@@ -573,6 +598,15 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           const file=path.resolve(cwd,evidenceJson);
           if(!fs.existsSync(file))throw new Error('NATIVE_DCC_EVIDENCE_MISSING:'+evidenceJson);
           evidence=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
+        }
+        if(libraryDerivative){
+          const provenance=evidence?.sourceMesh;
+          if(provenance?.libraryParentAssetId!==clean(recipe.librarySourceAssetId)
+            ||provenance?.sourcePath!==dccRepoPath(recipe.sourceModel)
+            ||provenance?.sourceSha256!==clean(recipe.librarySourceSha256).toLowerCase()
+            ||provenance?.sourceFileImmutable!==true
+            ||!Array.isArray(provenance?.transformHistory)||!provenance.transformHistory.length)
+            throw new Error('NATIVE_DCC_LIBRARY_DERIVATIVE_EVIDENCE_INVALID:'+clean(recipe.id));
         }
         // 이미지 기반 메쉬의 픽셀 입력·라이선스·실제 추론·다각도 렌더를 독립 검증한다.
         // Blender가 만든 메타데이터만으로 생성 성공이나 게임 런타임 PASS를 선언하지 않는다.
