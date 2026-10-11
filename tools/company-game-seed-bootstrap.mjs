@@ -706,6 +706,8 @@ export function computeVibeSeedProposal(target){
     RPG:{genre:'롤플레잉',a:'퀘스트와 인물 관계',b:'전투와 장비 운용',choiceA:'인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택',choiceB:'전투 결과에 맞춰 장비와 동료의 다음 대응을 조정',playerRole:'모험가'},
     SURVIVAL:{genre:'생존',a:'환경 탐색과 자원 확보',b:'제작과 방어 거점 관리',choiceA:'식량과 재료를 확보할 위험 구역을 선택',choiceB:'남은 자원으로 장비와 거점을 보강해 다음 탐색 위험을 낮출 방법을 선택',playerRole:'생존자'},
     HORROR:{genre:'호러',a:'위협 탐지와 잠입',b:'봉인과 단서 해독',choiceA:'소리와 흔적을 관찰해 숨어 이동할 시점과 경로를 선택',choiceB:'확보한 단서로 봉인 순서와 위험한 상호작용을 선택',playerRole:'조사자'},
+    INFECTION:{genre:'감염 추격',a:'진영 전환과 추격 경로',b:'정화와 팀 대응',choiceA:'상대 진영과 이동 경로를 읽고 감염 또는 회피의 시점과 대상을 선택',choiceB:'바뀐 인원과 역할을 읽고 정화·지원·반격의 우선순위를 선택',playerRole:'감염 추격전 참가자'},
+    KINGDOM:{genre:'왕국 경영',a:'채집과 주민 자동화',b:'병력 편성과 거점 정복',choiceA:'자원 부족과 주민 역할을 비교해 직접 채집과 자동화 투자의 순서를 선택',choiceB:'확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택',playerRole:'작은 왕국의 운영자'},
     DEFENSE:{genre:'전략',a:'방어 시설 배치',b:'적 패턴과 자원 대응',choiceA:'접근 경로와 적의 사거리 사이에서 배치 위치를 선택',choiceB:'웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정',playerRole:'방어 지휘관'},
   };
   const explicitObby=['OBBY','PLATFORMER','OBBY_PLATFORMER'].includes(category.toUpperCase())||/오비|플랫포머|obby|platformer|파쿠르|parkour/i.test(requestedName);
@@ -718,6 +720,8 @@ export function computeVibeSeedProposal(target){
     playerRole:'학교 운영자'}:null;
   const topicalProfiles=[
     [/오비|플랫포머|obby|platformer|파쿠르|parkour/,obbyProfile],
+    [/감염.{0,40}추격|감염전|infection.{0,40}chase/,profiles.INFECTION],
+    [/왕국|kingdom|주민.{0,30}자동화|거점.{0,30}점령|정복|conquest/,profiles.KINGDOM],
     [/타이쿤|tycoon|놀이공원|theme.?park|상점.?운영|management/,profiles.TYCOON],
     [/생존|survival|크래프팅|crafting/,profiles.SURVIVAL],
     [/레이싱|racing|경주|race/,profiles.RACING],
@@ -727,7 +731,9 @@ export function computeVibeSeedProposal(target){
     [/카드|card|덱빌딩|deckbuild/,profiles.CARD],
     [/롤플레잉|\brpg\b|역할게임|던전/,profiles.RPG],
   ];
-  const topicMatch=topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
+  // MAIN의 명시된 주제를 먼저 잡고, 세계관 소재 단어가 다른 게임 시스템을 선택하지 않게 한다.
+  const topicMatch=topicalProfiles.find(([pattern])=>pattern.test(requestedName.toLowerCase()))
+    ||topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
   const profile=(explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
     topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
     {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};

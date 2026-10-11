@@ -773,6 +773,7 @@ jobs:
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
+          BASELINE_GATE_REFRESH_MODE: DESIGN_EVIDENCE
         shell: bash
         run: |
           set -euo pipefail
@@ -855,6 +856,7 @@ jobs:
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
+          BASELINE_GATE_REFRESH_MODE: DESIGN_EVIDENCE
         shell: bash
         run: |
           set -euo pipefail
