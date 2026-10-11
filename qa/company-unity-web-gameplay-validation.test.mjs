@@ -670,6 +670,8 @@ test('public mobile replay checks actual compressed assets then repeats gameplay
   for(const group of ["['loader','javascript']","['framework','javascript']","['wasm','application/wasm']","['data','application/octet-stream']"])
     assert.ok(source.includes(group));
   assert.match(source,/hostedMobilePlay:hostedUrl/);
+  assert.match(source,/if\(hostedUrl&&output&&fs\.existsSync\(output\)\)/);
+  assert.match(source,/recorded\.observedRuntimeFailure=true/);
   assert.match(source,/realDeviceVerified:false/);
   const repair=workflow.slice(workflow.indexOf('      - name: Mark Unity Web floor repair requirement'));
   assert.ok(repair.includes("steps.publish.outcome == 'failure'"));
