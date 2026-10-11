@@ -55919,7 +55919,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T15:27:55.406Z",
-      "updatedAt": "2026-10-11T18:08:40.958Z",
+      "updatedAt": "2026-10-11T18:16:50.796Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -55933,7 +55933,7 @@
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
-      "robloxBuildSourceRevision": null,
+      "robloxBuildSourceRevision": "b582e5bdc18340690d1533cd5d427546a3b2b287",
       "robloxBuildArtifactIdentity": null,
       "robloxBuildPassedAt": null,
       "robloxBuildPreflightPassed": false,
@@ -55973,10 +55973,10 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "roblox-build-package-failed",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package:roblox-build-package-failed"
       ],
       "robloxSourceCommit": "b582e5bdc18340690d1533cd5d427546a3b2b287",
       "robloxSourceBootstrapPassedAt": "2026-10-11T17:21:02.183Z",
@@ -56482,7 +56482,9 @@
         "gameplayAuthority": false
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null
+      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxBuildFailedAt": "2026-10-11T18:16:50.796Z",
+      "robloxRuntimeRetryCount": 0
     },
     {
       "gameId": "survival",
@@ -56611,7 +56613,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-11T18:16:18.415Z",
+  "updatedAt": "2026-10-11T18:16:50.796Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
