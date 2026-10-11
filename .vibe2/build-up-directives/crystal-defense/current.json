@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "crystal-defense-build-up-g1-96206a519111",
-  "directiveFingerprint": "96206a519111793f1a7961516d6a3d87acbce88810f2e9e69c12f84f2d110c97",
+  "directiveId": "crystal-defense-build-up-g1-2bcc48c3e246",
+  "directiveFingerprint": "2bcc48c3e2461ee76aeb788b5fb6d0bdfe1c1d869fbe876d661dbe0aae264b6b",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "crystal-defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/crystal-defense",
-  "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
+  "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
   "designFingerprint": "571b0d15d7a0dcd6ddc4d727d04efee7b0d2b3a9c6e30b6f6be3b6c5f41ef95f",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
+        "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "571b0d15d7a0dcd6ddc4d727d04efee7b0d2b3a9c6e30b6f6be3b6c5f41ef95f",
-    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
+    "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
+    "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3922,22 +3922,24 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
-    "runtimeObserved": true,
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
+    "blockers": [
+      "roblox-runtime-evidence-pending"
+    ],
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -4387,7 +4389,7 @@
     {
       "domain": "GOALS",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 목표·다음 목표·실패 조건을 플레이 중 확인 가능하게 하고, 목표가 업보와 인과응보의 전략 세계와 직접 연결되어 플레이어가 왜 행동하는지 분명하게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4495,7 +4497,7 @@
     {
       "domain": "WORLD_NAVIGATION",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "지도/미니맵/방향 표식/랜드마크/목표 추적 중 게임에 맞는 수단으로 현재 위치·목적지·잠금 경로를 읽게 하며 모바일에서도 길을 잃는 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4513,7 +4515,7 @@
     {
       "domain": "TRAVERSAL",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "이동은 속도만이 아니라 지형·장애물·경로 선택·위험 회피와 연결하고 모바일 입력에서 의도한 방향/행동이 안정적으로 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4522,7 +4524,7 @@
     {
       "domain": "INTERACTION_DISCOVERABILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "줍기·열기·대화·제작·장착·구매·사용 가능한 대상은 접근 전후에 형태/프롬프트/상태 피드백으로 구별되고 상호작용 실패 이유도 즉시 보이게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4549,7 +4551,7 @@
     {
       "domain": "INVENTORY_USABILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4603,7 +4605,7 @@
     {
       "domain": "FAILURE_RESPAWN_CHECKPOINTS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "사망/실패/런 종료 시 기존 손실·보존·체크포인트·리스폰 규칙을 유지하고 빠르게 재시작하게 한다. 실제 기록에 있는 원인만 시각화한다: 퍼즐의 잘못된 연결, 방어의 뚫린 경로, 생존의 사망 원인 등 해당 장르에 맞게 표시하며 근거가 없으면 추측하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4612,7 +4614,7 @@
     {
       "domain": "SAVE_AND_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "기존 저장 키·구조·의미를 보존하고 진행·장비·해금을 재접속 후 복구한다. 불러오기 실패를 신규 사용자로 처리하거나 기본값으로 덮어쓰지 말고 재시도·안전 복귀를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4621,7 +4623,7 @@
     {
       "domain": "SAVE_COMPLETENESS",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "현재 게임에서 저장돼야 하는 진행·인벤토리·장비·해금·퀘스트·발견 지역·설정 상태를 기존 save 의미를 깨지 않고 재접속 후 일관되게 복구한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4630,7 +4632,7 @@
     {
       "domain": "RECONNECT_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "재접속/late join/네트워크 실패 후 권위 상태를 재동기화하고 중복 보상·장비 유실·퀘스트 되감기 없이 복구한다. 복구된 실제 진행·현재 목표·다음 행동을 짧게 안내하며 복구 전 상태를 확정해 표시하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4639,7 +4641,7 @@
     {
       "domain": "MULTIPLAYER_AND_SYNC",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4648,7 +4650,7 @@
     {
       "domain": "INPUT",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 행동마다 터치 우선 입력과 키보드/패드 대체 입력을 동일 게임 상태에 연결하고 중복 입력·길게 누름·드래그·취소 경계를 명확히 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4657,7 +4659,7 @@
     {
       "domain": "MOBILE_UX",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "작은 화면에서 핵심 행동 버튼을 크게, 설정·도움말을 접어서 배치하고 HUD·위험 경고가 손가락에 가리지 않게 한다. safe area·스크롤·가로/세로를 검수하고 팝업 닫기 터치가 뒤쪽 이동·공격으로 전달되지 않게 입력을 소비한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4666,7 +4668,7 @@
     {
       "domain": "ACCESSIBILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "색만으로 상태를 구분하지 않고 형태/아이콘/텍스트/모션을 함께 쓰며, 중요한 피드백은 크기·대비·지속시간을 확보해 정보 누락을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4675,7 +4677,7 @@
     {
       "domain": "SETTINGS_ACCESSIBILITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4693,7 +4695,7 @@
     {
       "domain": "CONVENIENCE",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "반복 조작을 줄일 수 있는 빠른 사용/장착, 제작 가능 표시, 부족 재료 표시, 목표 추적, 비교 정보 등 현재 게임에 맞는 편의 기능을 추가하되 플레이 선택 자체를 자동화하지 않는다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4711,7 +4713,7 @@
     {
       "domain": "UI_INFORMATION_PRIORITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "현재 목표, 생존/위험, 핵심 자원, 장비/쿨다운, 다음 행동 순으로 실제 플레이 중요도에 맞게 정보 위계를 정하고 작은 화면에서 비핵심 정보가 핵심 HUD를 밀어내지 않게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4720,7 +4722,7 @@
     {
       "domain": "FEEDBACK_CLARITY",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "획득·구매·제작·장착·레벨업·퀘스트·실패·사용 불가 등 중요한 상태 변화에 즉시 읽히는 UI/음향/시각 피드백과 실패 이유를 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4729,7 +4731,7 @@
     {
       "domain": "TUTORIAL_ONBOARDING",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "업보와 인과응보의 전략 세계의 첫 입력·결과·목표를 필요한 순간 한 줄과 실습으로 안내한다. 같은 실패 반복 시 목표 확인→관련 위치→행동 예시의 선택형 힌트를 단계적으로 제공하되 정답 자동 처리·난이도 변경은 금지한다. 설명 닫기는 학습 완료가 아니며 건너뛰기·도움말 다시 열기를 제공한다. 재접속은 초기 설명 대신 현재 목표를 보여준다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4747,7 +4749,7 @@
     {
       "domain": "GAME_FEEL",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 입력의 반응 지연, anticipation, impact, hit-stop/반동/화면 반응, recovery를 장르와 업보와 인과응보의 전략 세계에 맞춰 조정해 버튼 입력과 결과 사이의 손맛을 강화한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4783,7 +4785,7 @@
     {
       "domain": "AUDIO_MUSIC_SFX",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4918,7 +4920,7 @@
     {
       "domain": "UI_HUD",
       "state": "PASS",
-      "priority": "BUILD_UP_NOW",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "HUD는 현재 목표·체력/위험·핵심 자원·쿨다운/상태·다음 선택의 우선순위를 명확히 하고 게임 아트 언어와 일치하는 패널/아이콘/상태 피드백을 사용한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4945,7 +4947,7 @@
     {
       "domain": "PERFORMANCE",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "실제 병목 근거를 기준으로 update/tick 빈도, 객체/파티클 수명, draw/instance 수, GC/할당, 네트워크 빈도, 모바일 열/메모리 비용을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4954,7 +4956,7 @@
     {
       "domain": "PERFORMANCE_BUDGET",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "맵·에셋·NPC·VFX를 늘릴 때 객체 수명, 동시 NPC/파티클, 업데이트 빈도, 스트리밍/LOD, 메모리·모바일 프레임 예산을 함께 정의하고 초과 시 표현 비용부터 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4963,7 +4965,7 @@
     {
       "domain": "RUNTIME_STABILITY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "핵심 루프를 반복 실행해도 상태 누수·중복 이벤트·고착·크래시 없이 시작→플레이→실패/성공→재시작/복귀가 유지되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4972,7 +4974,7 @@
     {
       "domain": "ERROR_RECOVERY",
       "state": "PASS",
-      "priority": "MONITOR_OR_CONNECT",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "재현된 오류는 숨기지 말고 책임 시스템에서 원인을 제거하고 실패 시 안전한 복구/재시도/사용자 피드백 경로를 제공한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5016,9 +5018,9 @@
       "reason": "placeholder or primitive-heavy implementation remains"
     }
   ],
-  "primaryFocus": "USABILITY",
-  "thisLoopPrimaryGoal": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"업보와 인과응보의 전략 세계\", 현재 책임 소스는 roblox-games/crystal-defense/client/Game.client.luau::reportNativeFoundationReady, roblox-games/crystal-defense/client/Game.client.luau::render, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler1, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler3, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler4, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler5, roblox-games/crystal-defense/server/Game.server.luau::initializePlayer, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler2이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryFocus": "STABILITY",
+  "thisLoopPrimaryGoal": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"업보와 인과응보의 전략 세계\", 현재 책임 소스는 roblox-games/crystal-defense/client/Game.client.luau::reportNativeFoundationReady, roblox-games/crystal-defense/client/Game.client.luau::render, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler1, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler3, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler4, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler5, roblox-games/crystal-defense/server/Game.server.luau::initializePlayer, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler2이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/crystal-defense/client/Game.client.luau::reportNativeFoundationReady, roblox-games/crystal-defense/client/Game.client.luau::render, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler1, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler3, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler4, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler5, roblox-games/crystal-defense/server/Game.server.luau::initializePlayer, roblox-games/crystal-defense/server/Game.server.luau::scopeHandler2에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "업보와 인과응보의 전략 세계를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -5109,7 +5111,7 @@
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
     "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5157,7 +5159,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 68,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -5167,7 +5169,7 @@
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 42,
+        "score": 34,
         "gapDomains": [
           "EQUIPMENT_LOADOUT"
         ]
@@ -5178,6 +5180,11 @@
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 22,
+        "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5192,11 +5199,6 @@
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
-        "gapDomains": []
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 14,
         "gapDomains": []
       }
     ],
@@ -5276,7 +5278,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
+    "sourceFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5338,13 +5340,13 @@
       "BEFORE_AFTER_COMPARISON_REQUIRED",
       "SAME_SCENE_RUNTIME_REOBSERVATION_REQUIRED"
     ],
-    "focus": "USABILITY"
+    "focus": "STABILITY"
   },
   "experienceBuildUpContract": {
     "version": 1,
     "status": "ACTIVE_EXECUTABLE_BUILD_UP_CONTRACT",
     "platform": "ROBLOX",
-    "focus": "USABILITY",
+    "focus": "STABILITY",
     "attention": "EXTRA",
     "tracks": [
       {
@@ -5509,14 +5511,14 @@
     "반복 조작은 편의 기능으로 줄이되 핵심 플레이 선택과 위험/보상 판단을 자동화하지 않는다."
   ],
   "platformAdaptationDirectives": {
-    "WEB": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
-    "UNITY": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "FORTNITE_UEFN": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UNITY_WEB": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "UNITY_APP": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
-    "UNREAL": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
-    "UEFN": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
+    "WEB": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "ROBLOX": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "UNITY": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "FORTNITE_UEFN": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UNITY_WEB": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
+    "UNITY_APP": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
+    "UNREAL": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
+    "UEFN": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다."
   },
   "robloxNativeExecution": {
     "version": 1,
@@ -5534,8 +5536,8 @@
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/client/Game.client.luau",
@@ -5543,8 +5545,8 @@
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -5552,8 +5554,8 @@
         "kind": "FUNCTION",
         "symbol": "scopeHandler1",
         "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -5561,8 +5563,8 @@
         "kind": "FUNCTION",
         "symbol": "scopeHandler3",
         "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -5570,8 +5572,8 @@
         "kind": "FUNCTION",
         "symbol": "scopeHandler4",
         "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -5579,8 +5581,8 @@
         "kind": "FUNCTION",
         "symbol": "scopeHandler5",
         "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -5588,8 +5590,8 @@
         "kind": "FUNCTION",
         "symbol": "initializePlayer",
         "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -5597,8 +5599,8 @@
         "kind": "FUNCTION",
         "symbol": "scopeHandler2",
         "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
@@ -5651,7 +5653,7 @@
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
     ],
-    "expectedPlayerEffect": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
+    "expectedPlayerEffect": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "observableAcceptanceScenario": "input/touch -> local handler -> RemoteEvent/RemoteFunction when required -> server validation -> authoritative state change -> client feedback",
     "sourceInspectionChecklist": [
       "SERVER_AUTHORITY",
@@ -5681,14 +5683,14 @@
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
-    "mode": "EXISTING_PLAY_PRESENTATION",
+    "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "crystal-defense",
     "genreProfile": "DEFENSE",
     "conceptIdentity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
     "coreAction": "배치·대응 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
     "approvedCoreLoop": [
       "Read the next attack pattern and choose where crystal defenses create the most value.",
       "Spend limited resources on placement, resonance or upgrades.",
@@ -5704,1316 +5706,46 @@
     "depthAndReward": null,
     "ideas": [
       {
-        "id": "DEFENSE:PLAY_READABILITY",
-        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
-        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+        "id": "DEFENSE:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "DEFENSE:PLAY_READABILITY",
-      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
-      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      "id": "DEFENSE:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "DEFENSE:PLAY_READABILITY"
+      "DEFENSE:SOURCE_REPAIR"
     ],
     "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/crystal-defense/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
           "roblox-games/crystal-defense/client/Game.client.luau"
         ],
-        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
           "roblox-games/crystal-defense/shared/GameConfig.luau"
         ],
-        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
-    "spatialBlueprintContract": {
-      "version": 1,
-      "required": false,
-      "dimension": "SOURCE_BOUND_REQUIRED",
-      "platform": "ROBLOX",
-      "scope": "PRESERVE_LAYOUT_PRESENTATION_ONLY",
-      "designFingerprint": "7800480c781f11211e5c1cd02e878835a2b4523a9a1a19644009509350cc4665",
-      "macroSketch": {
-        "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-        "genre": "Strategy",
-        "style": "증언과 합의된 현실와 서사시의 추방과 귀환의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
-        "artDirection": {
-          "visualIdentity": "캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.",
-          "audioIdentity": "탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.",
-          "gameplayFeedbackSync": "실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.",
-          "assetBindings": [
-            {
-              "family": "AUDIO",
-              "role": "AUDIO의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_MAIN"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "BUILDING",
-              "role": "BUILDING의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_A"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "CHARACTER",
-              "role": "CHARACTER의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_B"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "CREATURE",
-              "role": "CREATURE의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_DELVE"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "ENVIRONMENT",
-              "role": "ENVIRONMENT의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_MAIN"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "MOTION",
-              "role": "MOTION의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_A"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "PROP",
-              "role": "PROP의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_B"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "SKILL",
-              "role": "SKILL의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_DELVE"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "UI",
-              "role": "UI의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_MAIN"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "VFX",
-              "role": "VFX의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_A"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "WEAPON",
-              "role": "WEAPON의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_B"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            }
-          ]
-        },
-        "authoredLayout": {},
-        "coreRoute": [
-          "Read the next attack pattern and choose where crystal defenses create the most value.",
-          "Spend limited resources on placement, resonance or upgrades.",
-          "Survive the wave and use the result to prepare a different counter for the next threat."
-        ],
-        "systemConnections": [
-          {
-            "fromId": "VIBE_MAIN",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "업보와 인과응보의 전략 세계",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "경로와 방어 배치: 접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_B",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_DELVE",
-            "toId": "VIBE_MAIN",
-            "stateKeys": [
-              "WorldAccessState"
-            ],
-            "fromSystem": "금기와 기회의 교차",
-            "toSystem": "업보와 인과응보의 전략 세계",
-            "trigger": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 때문에 WorldAccessState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "WorldAccessState의 결과를 업보와 인과응보의 전략 세계의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          }
-        ],
-        "actorRoles": [
-          {
-            "id": "VIBE_MAIN",
-            "grammarRole": "MAIN",
-            "name": "업보와 인과응보의 전략 세계",
-            "purpose": "전략 게임에서 업보와 인과응보과 신화 속 트릭스터의 질서 역전의 인과법칙을 이용해 세계를 바꾸는 경로와 방어 배치·적 대응 전술 복합 게임에서 플레이어는 선택을 누적해 목적을 완수한다. 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.",
-            "playerChoice": "경로와 방어 배치: 접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다.",
-            "stateInputs": [
-              "WorldAccessState",
-              "IntentState"
-            ],
-            "stateOutputs": [
-              "RouteState",
-              "WorldAccessState"
-            ]
-          },
-          {
-            "id": "VIBE_A",
-            "grammarRole": "A",
-            "name": "경로와 방어 배치 × 업보와 인과응보",
-            "purpose": "플레이어가 경로와 방어 배치을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 경로와 방어 배치의 경로와 비용이 바뀐다. 선택의 결과를 위험과 자원 경로에 반영한다.",
-            "playerChoice": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다.",
-            "stateInputs": [
-              "RouteState",
-              "RiskState"
-            ],
-            "stateOutputs": [
-              "RiskState",
-              "ResourceState"
-            ]
-          },
-          {
-            "id": "VIBE_B",
-            "grammarRole": "B",
-            "name": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "purpose": "플레이어가 적 대응 전술을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 적 대응 전술의 정보·대응이 바뀐다. 앞선 행동의 결과를 다음 접근 조건으로 되돌린다.",
-            "playerChoice": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다.",
-            "stateInputs": [
-              "RiskState",
-              "ResourceState"
-            ],
-            "stateOutputs": [
-              "RouteState",
-              "RiskState"
-            ]
-          },
-          {
-            "id": "VIBE_DELVE",
-            "grammarRole": "DELVE",
-            "name": "금기와 기회의 교차",
-            "purpose": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 상황을 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 방식으로 해석한다. 숨겨진 조건을 실험한 뒤 새로운 선택과 경로를 연다.",
-            "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.",
-            "stateInputs": [
-              "RouteState",
-              "RiskState"
-            ],
-            "stateOutputs": [
-              "WorldAccessState",
-              "IntentState"
-            ]
-          }
-        ],
-        "menuAndConvenience": {
-          "hudPriorities": "세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.",
-          "touchAndInput": "이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.",
-          "readability": "장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.",
-          "accessibility": "글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.",
-          "menuStructure": "타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.",
-          "convenienceDecisions": "같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다."
-        },
-        "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
-        "sourceAnchors": [
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "reportNativeFoundationReady",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler1",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler3",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler4",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler5",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "initializePlayer",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler2",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "bindFoundationPlayer",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "bindFoundationCharacter",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "bindVerifiedLearningControl",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "syncVerifiedLearningCharacterMotion",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "current",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "readNumber",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "setNumber",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "hasStudioAtom",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "studioAssetFamily",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "studioAssetFamily",
-            "kind": "FUNCTION"
-          }
-        ],
-        "designTraceability": [
-          {
-            "designElement": "경로와 방어 배치 × 업보와 인과응보",
-            "responsibleSystem": "경로와 방어 배치 × 업보와 인과응보의 기존 책임 함수와 코드 모듈",
-            "validationEvidence": "같은 조건의 입력 전후 위험·세계 상태 값과 다음 B의 선택 변화를 비교한다."
-          },
-          {
-            "designElement": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "responsibleSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전의 기존 책임 함수와 코드 모듈",
-            "validationEvidence": "B의 반작용 이전/이후 A의 다음 경로·비용·행동 가능성을 비교한다."
-          },
-          {
-            "designElement": "전략 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
-            "responsibleSystem": "세계 상태·스토리 반응의 기존 책임 시스템",
-            "validationEvidence": "보조 장르를 제거한 반사실 비교에서 실제 선택과 정보가 달라지는지 재생한다."
-          },
-          {
-            "designElement": "금기와 기회의 교차",
-            "responsibleSystem": "진행·탐색·발견을 연결하는 기존 책임 함수",
-            "validationEvidence": "숨은 발견 조건 이전/이후의 새로운 선택과 재방문 결과를 검증한다."
-          }
-        ]
-      },
-      "sourceFiles": [
-        "roblox-games/crystal-defense/client/Game.client.luau",
-        "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau"
-      ],
-      "authoringOrder": [
-        "MACRO_REGIONS",
-        "TRAVERSAL_AND_OBJECTIVES",
-        "OBJECT_VOLUMES_AND_SUPPORT",
-        "INTERACTION_AND_STATE_CONNECTIONS",
-        "NATIVE_SOURCE"
-      ],
-      "preserve": [
-        "EXISTING_OBJECT_IDS",
-        "EXISTING_TRANSFORMS_UNLESS_DESIGN_REQUIRES_CHANGE",
-        "SPAWN_COUNTS",
-        "BALANCE",
-        "SAVE",
-        "SERVER_AUTHORITY"
-      ],
-      "runtimeChecks": [
-        "EXACT_BUILD_SCENE_BINDINGS",
-        "ACTUAL_GROUND_AND_COLLIDERS",
-        "PLAYER_ROUTE_REPLAY",
-        "INTERACTION_STATE_CHANGE",
-        "CAMERA_OCCLUSION_AND_SIGHTLINES",
-        "MOBILE_VIEW_AND_PERFORMANCE",
-        "MENU_OPEN_BACK_CLOSE_STATE_PRESERVATION",
-        "TOUCH_SCROLL_AND_DISABLED_ACTION_GUARDS"
-      ],
-      "runtimeVerified": false
-    },
-    "interfaceBlueprintContract": {
-      "version": 1,
-      "required": true,
-      "designFingerprint": "613b0075d78f8397d654125aace6bf25e2f0f13b6dbc91fe3b7e4d9a7709e544",
-      "requirements": {
-        "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-        "genre": "Strategy",
-        "coreLoop": [
-          "Read the next attack pattern and choose where crystal defenses create the most value.",
-          "Spend limited resources on placement, resonance or upgrades.",
-          "Survive the wave and use the result to prepare a different counter for the next threat."
-        ],
-        "systems": [
-          {
-            "fromId": "VIBE_MAIN",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "업보와 인과응보의 전략 세계",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "경로와 방어 배치: 접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_B",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_DELVE",
-            "toId": "VIBE_MAIN",
-            "stateKeys": [
-              "WorldAccessState"
-            ],
-            "fromSystem": "금기와 기회의 교차",
-            "toSystem": "업보와 인과응보의 전략 세계",
-            "trigger": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 때문에 WorldAccessState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "WorldAccessState의 결과를 업보와 인과응보의 전략 세계의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          }
-        ],
-        "ux": {
-          "hudPriorities": "세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.",
-          "touchAndInput": "이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.",
-          "readability": "장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.",
-          "accessibility": "글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.",
-          "menuStructure": "타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.",
-          "convenienceDecisions": "같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다."
-        },
-        "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다."
-      },
-      "referencePatterns": [
-        {
-          "id": "BUILD_PRESETS",
-          "game": "Genshin Impact",
-          "sourceUrl": "https://genshin.hoyoverse.com/en/news/detail/156641",
-          "observedAt": "2026-10-07",
-          "principle": "Save and switch a player-selected equipment setup.",
-          "adaptation": "Compare changes before applying; preserve unavailable-item, combat and save restrictions.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TRAVEL_FAVORITES",
-          "game": "No Man's Sky",
-          "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
-          "observedAt": "2026-10-07",
-          "principle": "Favorite destinations reduce repeated searching in travel menus.",
-          "adaptation": "Pin frequent destinations while preserving unlock, cost and travel restrictions.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        }
-      ],
-      "externalAlgorithms": [
-        {
-          "id": "PROGRESSIVE_DISCLOSURE",
-          "sourceUrl": "https://www.nngroup.com/articles/progressive-disclosure/",
-          "principle": "Prioritize the core actions; reveal secondary options only in relevant context.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "RECOGNITION_OVER_RECALL",
-          "sourceUrl": "https://www.nngroup.com/articles/recognition-and-recall/",
-          "principle": "Show existing choices, prerequisites and outcomes instead of requiring memory.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "INFORMATION_SCENT",
-          "sourceUrl": "https://www.nngroup.com/articles/information-scent/",
-          "principle": "Give existing navigation options clear destinations and state-dependent cues.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "STATUS_AND_RECOVERY",
-          "sourceUrl": "https://www.nngroup.com/articles/ten-usability-heuristics/",
-          "principle": "Expose real game status, feedback and existing safe exit or recovery paths.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "MOBILE_TOUCH_TARGETS",
-          "sourceUrl": "https://support.google.com/accessibility/android/answer/7101858",
-          "principle": "Use platform-native safe areas and comfortably separated touch targets.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        }
-      ],
-      "internalToolMatches": [
-        {
-          "id": "INVENTORY_EQUIPMENT",
-          "library": "assets/inventory-equipment.js",
-          "screens": [
-            "INVENTORY_UI",
-            "GAMEPLAY"
-          ],
-          "optional": true,
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "runtimeVerified": false
-        },
-        {
-          "id": "SKILL_EFFECTS",
-          "library": "assets/skill-effects.js",
-          "screens": [
-            "GAMEPLAY"
-          ],
-          "optional": true,
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "status": "DESIGN_HINT_ONLY",
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "runtimeVerified": false
-        },
-        {
-          "id": "TARGETING_COMBAT",
-          "library": "assets/targeting-system.js",
-          "screens": [
-            "GAMEPLAY"
-          ],
-          "optional": true,
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "runtimeVerified": false
-        }
-      ],
-      "internalLibraryMatches": [
-        {
-          "id": "ANIMATION_STATE",
-          "library": "assets/animation-state.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "ASSET_LIBRARY",
-          "library": "assets/asset-library.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": false,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "CHARACTER_PROGRESSION",
-          "library": "assets/character-progression.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/server/Game.server.luau",
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "COMBAT_ACTIONS",
-          "library": "assets/combat-actions.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "COMBAT_VITALS",
-          "library": "assets/combat-vitals.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "ECONOMY_LOOT_SHOP",
-          "library": "assets/economy-loot-shop.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "INPUT_ACTIONS",
-          "library": "assets/input-actions.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "INVENTORY_EQUIPMENT",
-          "library": "assets/inventory-equipment.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_GRAPHICS_ENGINE",
-          "library": "assets/jaewoon-graphics-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_MOTION_ENGINE",
-          "library": "assets/jaewoon-motion-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "RESOURCE_GATHERING",
-          "library": "assets/resource-gathering.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "SAVE_VERSIONING",
-          "library": "assets/save-versioning.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "SCENE_FLOW",
-          "library": "assets/scene-flow.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "SKILL_EFFECTS",
-          "library": "assets/skill-effects.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "STAT_MODIFIERS",
-          "library": "assets/stat-modifiers.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "STATE_MACHINE",
-          "library": "assets/state-machine.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TARGETING_SYSTEM",
-          "library": "assets/targeting-system.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TURN_COMBAT",
-          "library": "assets/turn-combat.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "VISUAL_STYLE",
-          "library": "assets/visual-style.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "WAVE_SPAWNER",
-          "library": "assets/wave-spawner.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        }
-      ],
-      "firstPartyLibraryCount": 37,
-      "genreContext": "Strategy",
-      "screenHints": [
-        "INVENTORY_UI",
-        "GAMEPLAY"
-      ],
-      "sourceFiles": [
-        "roblox-games/crystal-defense/client/Game.client.luau",
-        "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau"
-      ],
-      "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
-      "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
-      "schema": {
-        "version": 1,
-        "designFingerprint": "exact contract fingerprint",
-        "viewport": {
-          "width": 390,
-          "height": 844,
-          "safeTop": 0,
-          "safeBottom": 0
-        },
-        "entryId": "first screen",
-        "screens": [
-          {
-            "id": "existing screen id",
-            "role": "MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS",
-            "modal": false,
-            "scrollable": false,
-            "contentHeight": 844,
-            "controls": [
-              {
-                "id": "existing control id",
-                "action": "existing gameplay action",
-                "feedback": "observable feedback",
-                "enabledWhen": "existing state guard",
-                "rect": {
-                  "x": 0,
-                  "y": 0,
-                  "width": 44,
-                  "height": 44
-                },
-                "binding": {
-                  "path": "source file",
-                  "symbol": "event handler",
-                  "sourceEvidence": "exact event/handler source"
-                }
-              }
-            ]
-          }
-        ],
-        "transitions": [
-          {
-            "from": "screen id",
-            "controlId": "control id",
-            "to": "screen id",
-            "kind": "OPEN or BACK or CLOSE or ACTION",
-            "preservesState": true
-          }
-        ],
-        "playerTasks": [
-          {
-            "id": "frequent player intent",
-            "friction": "observed repeated work or information gap",
-            "patternId": "matched reference or algorithm id or ORIGINAL",
-            "toolId": "optional source-matched internal tool id",
-            "adaptation": "why this game needs it",
-            "from": "screen id",
-            "to": "completion screen",
-            "controlId": "completion action",
-            "maxNavigationSteps": 2,
-            "retainedContext": [
-              "selection",
-              "filter",
-              "scroll",
-              "draft"
-            ],
-            "failureRecovery": "existing safe recovery",
-            "runtimeCheck": "exact-build input sequence and observable result; compare before/after without invented measurements"
-          }
-        ]
-      },
-      "learningRule": "External UX principles and static plans are optional hypotheses, not runtime evidence. Use the existing verified learning path after exact-build native/mobile QA; never copy third-party code, assets or distinctive interface designs.",
-      "preserve": [
-        "SAVE",
-        "PROGRESSION",
-        "COMBAT_RETURN_RESTRICTIONS",
-        "DISABLED_ACTION_GUARDS",
-        "EXISTING_MENU_IDENTITIES"
-      ],
-      "runtimeVerified": false
-    },
-    "libraryReuseContract": {
-      "status": "OPTIONAL_MATCH_NOT_APPLIED",
-      "firstPartyLibraryCount": 37,
-      "candidates": [
-        {
-          "id": "ANIMATION_STATE",
-          "library": "assets/animation-state.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "ASSET_LIBRARY",
-          "library": "assets/asset-library.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": false,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "CHARACTER_PROGRESSION",
-          "library": "assets/character-progression.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/server/Game.server.luau",
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_GRAPHICS_ENGINE",
-          "library": "assets/jaewoon-graphics-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_MOTION_ENGINE",
-          "library": "assets/jaewoon-motion-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "VISUAL_STYLE",
-          "library": "assets/visual-style.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        }
-      ],
-      "assetLibrarySelection": "EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE",
-      "automaticImport": false,
-      "runtimeVerified": false
-    },
+    "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
+    "libraryReuseContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -7029,7 +5761,7 @@
       "runtimeVerified": false
     },
     "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
-    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
     "preservation": [
       "APPROVED_CONCEPT",
       "APPROVED_GENRE",
@@ -7047,14 +5779,14 @@
     "executionBoundary": "EXISTING_BUILD_UP_ONLY",
     "platform": "ROBLOX",
     "executionSurface": "ROBLOX",
-    "mode": "EXISTING_PLAY_PRESENTATION",
+    "mode": "EXISTING_SOURCE_REPAIR",
     "gameId": "crystal-defense",
     "genreProfile": "DEFENSE",
     "conceptIdentity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
     "coreAction": "배치·대응 선택",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-    "systemConnection": "기존 행동 → 상태별 표현/입력 피드백",
+    "systemConnection": "현재 실패 원인 → 기존 행동 복구",
     "approvedCoreLoop": [
       "Read the next attack pattern and choose where crystal defenses create the most value.",
       "Spend limited resources on placement, resonance or upgrades.",
@@ -7070,1316 +5802,46 @@
     "depthAndReward": null,
     "ideas": [
       {
-        "id": "DEFENSE:PLAY_READABILITY",
-        "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
-        "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+        "id": "DEFENSE:SOURCE_REPAIR",
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+        "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
       }
     ],
     "selectedIdea": {
-      "id": "DEFENSE:PLAY_READABILITY",
-      "implementation": "현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.",
-      "distinction": "판정·보상·저장 규칙은 유지하고 표현만 개선한다."
+      "id": "DEFENSE:SOURCE_REPAIR",
+      "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.",
+      "distinction": "새 규칙이나 콘텐츠를 추가하지 않는다."
     },
     "ideaHistory": [
-      "DEFENSE:PLAY_READABILITY"
+      "DEFENSE:SOURCE_REPAIR"
     ],
     "implementationPackages": [
+      {
+        "role": "SERVER_AUTHORITY",
+        "files": [
+          "roblox-games/crystal-defense/server/Game.server.luau"
+        ],
+        "implementation": "현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다. 기존 행동·상태·보상·후속 목표 처리에 연결한다."
+      },
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
           "roblox-games/crystal-defense/client/Game.client.luau"
         ],
-        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+        "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
           "roblox-games/crystal-defense/shared/GameConfig.luau"
         ],
-        "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
+        "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
-    "spatialBlueprintContract": {
-      "version": 1,
-      "required": false,
-      "dimension": "SOURCE_BOUND_REQUIRED",
-      "platform": "ROBLOX",
-      "scope": "PRESERVE_LAYOUT_PRESENTATION_ONLY",
-      "designFingerprint": "7800480c781f11211e5c1cd02e878835a2b4523a9a1a19644009509350cc4665",
-      "macroSketch": {
-        "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-        "genre": "Strategy",
-        "style": "증언과 합의된 현실와 서사시의 추방과 귀환의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
-        "artDirection": {
-          "visualIdentity": "캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.",
-          "audioIdentity": "탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.",
-          "gameplayFeedbackSync": "실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.",
-          "assetBindings": [
-            {
-              "family": "AUDIO",
-              "role": "AUDIO의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_MAIN"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "BUILDING",
-              "role": "BUILDING의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_A"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "CHARACTER",
-              "role": "CHARACTER의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_B"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "CREATURE",
-              "role": "CREATURE의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_DELVE"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "ENVIRONMENT",
-              "role": "ENVIRONMENT의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_MAIN"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "MOTION",
-              "role": "MOTION의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_A"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "PROP",
-              "role": "PROP의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_B"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "SKILL",
-              "role": "SKILL의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_DELVE"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "UI",
-              "role": "UI의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_MAIN"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "VFX",
-              "role": "VFX의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_A"
-              ],
-              "useLocation": "신화 속 트릭스터의 질서 역전의 되돌림 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            },
-            {
-              "family": "WEAPON",
-              "role": "WEAPON의 인과 표현 소재",
-              "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
-              "behavior": "경로와 방어 배치 × 업보와 인과응보와 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
-              "presentation": "증언과 합의된 현실와 서사시의 추방과 귀환의 차이를 조명·표면·동작으로 구분한다.",
-              "ruleIds": [
-                "VIBE_B"
-              ],
-              "useLocation": "업보와 인과응보의 첫 선택 공간에서 세계 반응을 표시한다.",
-              "assetId": "",
-              "decision": "AUTHOR",
-              "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
-              "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-              "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
-              "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
-            }
-          ]
-        },
-        "authoredLayout": {},
-        "coreRoute": [
-          "Read the next attack pattern and choose where crystal defenses create the most value.",
-          "Spend limited resources on placement, resonance or upgrades.",
-          "Survive the wave and use the result to prepare a different counter for the next threat."
-        ],
-        "systemConnections": [
-          {
-            "fromId": "VIBE_MAIN",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "업보와 인과응보의 전략 세계",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "경로와 방어 배치: 접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_B",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_DELVE",
-            "toId": "VIBE_MAIN",
-            "stateKeys": [
-              "WorldAccessState"
-            ],
-            "fromSystem": "금기와 기회의 교차",
-            "toSystem": "업보와 인과응보의 전략 세계",
-            "trigger": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 때문에 WorldAccessState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "WorldAccessState의 결과를 업보와 인과응보의 전략 세계의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          }
-        ],
-        "actorRoles": [
-          {
-            "id": "VIBE_MAIN",
-            "grammarRole": "MAIN",
-            "name": "업보와 인과응보의 전략 세계",
-            "purpose": "전략 게임에서 업보와 인과응보과 신화 속 트릭스터의 질서 역전의 인과법칙을 이용해 세계를 바꾸는 경로와 방어 배치·적 대응 전술 복합 게임에서 플레이어는 선택을 누적해 목적을 완수한다. 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.",
-            "playerChoice": "경로와 방어 배치: 접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다.",
-            "stateInputs": [
-              "WorldAccessState",
-              "IntentState"
-            ],
-            "stateOutputs": [
-              "RouteState",
-              "WorldAccessState"
-            ]
-          },
-          {
-            "id": "VIBE_A",
-            "grammarRole": "A",
-            "name": "경로와 방어 배치 × 업보와 인과응보",
-            "purpose": "플레이어가 경로와 방어 배치을 선택하면 업보와 인과응보의 규칙에 따라 다음 위험과 가능 행동이 변화한다. 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 경로와 방어 배치의 경로와 비용이 바뀐다. 선택의 결과를 위험과 자원 경로에 반영한다.",
-            "playerChoice": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다.",
-            "stateInputs": [
-              "RouteState",
-              "RiskState"
-            ],
-            "stateOutputs": [
-              "RiskState",
-              "ResourceState"
-            ]
-          },
-          {
-            "id": "VIBE_B",
-            "grammarRole": "B",
-            "name": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "purpose": "플레이어가 적 대응 전술을 선택하면 신화 속 트릭스터의 질서 역전의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다. 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 적 대응 전술의 정보·대응이 바뀐다. 앞선 행동의 결과를 다음 접근 조건으로 되돌린다.",
-            "playerChoice": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다.",
-            "stateInputs": [
-              "RiskState",
-              "ResourceState"
-            ],
-            "stateOutputs": [
-              "RouteState",
-              "RiskState"
-            ]
-          },
-          {
-            "id": "VIBE_DELVE",
-            "grammarRole": "DELVE",
-            "name": "금기와 기회의 교차",
-            "purpose": "행동의 결과가 지연되어 행위자·관계·후대에 되돌아온다. 상황을 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 방식으로 해석한다. 숨겨진 조건을 실험한 뒤 새로운 선택과 경로를 연다.",
-            "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.",
-            "stateInputs": [
-              "RouteState",
-              "RiskState"
-            ],
-            "stateOutputs": [
-              "WorldAccessState",
-              "IntentState"
-            ]
-          }
-        ],
-        "menuAndConvenience": {
-          "hudPriorities": "세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.",
-          "touchAndInput": "이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.",
-          "readability": "장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.",
-          "accessibility": "글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.",
-          "menuStructure": "타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.",
-          "convenienceDecisions": "같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다."
-        },
-        "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
-        "sourceAnchors": [
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "reportNativeFoundationReady",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler1",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler3",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler4",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler5",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "initializePlayer",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "scopeHandler2",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "bindFoundationPlayer",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "bindFoundationCharacter",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "bindVerifiedLearningControl",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "syncVerifiedLearningCharacterMotion",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "current",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "readNumber",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/server/Game.server.luau",
-            "symbol": "setNumber",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "hasStudioAtom",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "studioAssetFamily",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/crystal-defense/client/Game.client.luau",
-            "symbol": "studioAssetFamily",
-            "kind": "FUNCTION"
-          }
-        ],
-        "designTraceability": [
-          {
-            "designElement": "경로와 방어 배치 × 업보와 인과응보",
-            "responsibleSystem": "경로와 방어 배치 × 업보와 인과응보의 기존 책임 함수와 코드 모듈",
-            "validationEvidence": "같은 조건의 입력 전후 위험·세계 상태 값과 다음 B의 선택 변화를 비교한다."
-          },
-          {
-            "designElement": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "responsibleSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전의 기존 책임 함수와 코드 모듈",
-            "validationEvidence": "B의 반작용 이전/이후 A의 다음 경로·비용·행동 가능성을 비교한다."
-          },
-          {
-            "designElement": "전략 장르의 주 목표를 진행하는 동안 추리 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. 추리를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.",
-            "responsibleSystem": "세계 상태·스토리 반응의 기존 책임 시스템",
-            "validationEvidence": "보조 장르를 제거한 반사실 비교에서 실제 선택과 정보가 달라지는지 재생한다."
-          },
-          {
-            "designElement": "금기와 기회의 교차",
-            "responsibleSystem": "진행·탐색·발견을 연결하는 기존 책임 함수",
-            "validationEvidence": "숨은 발견 조건 이전/이후의 새로운 선택과 재방문 결과를 검증한다."
-          }
-        ]
-      },
-      "sourceFiles": [
-        "roblox-games/crystal-defense/client/Game.client.luau",
-        "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau"
-      ],
-      "authoringOrder": [
-        "MACRO_REGIONS",
-        "TRAVERSAL_AND_OBJECTIVES",
-        "OBJECT_VOLUMES_AND_SUPPORT",
-        "INTERACTION_AND_STATE_CONNECTIONS",
-        "NATIVE_SOURCE"
-      ],
-      "preserve": [
-        "EXISTING_OBJECT_IDS",
-        "EXISTING_TRANSFORMS_UNLESS_DESIGN_REQUIRES_CHANGE",
-        "SPAWN_COUNTS",
-        "BALANCE",
-        "SAVE",
-        "SERVER_AUTHORITY"
-      ],
-      "runtimeChecks": [
-        "EXACT_BUILD_SCENE_BINDINGS",
-        "ACTUAL_GROUND_AND_COLLIDERS",
-        "PLAYER_ROUTE_REPLAY",
-        "INTERACTION_STATE_CHANGE",
-        "CAMERA_OCCLUSION_AND_SIGHTLINES",
-        "MOBILE_VIEW_AND_PERFORMANCE",
-        "MENU_OPEN_BACK_CLOSE_STATE_PRESERVATION",
-        "TOUCH_SCROLL_AND_DISABLED_ACTION_GUARDS"
-      ],
-      "runtimeVerified": false
-    },
-    "interfaceBlueprintContract": {
-      "version": 1,
-      "required": true,
-      "designFingerprint": "613b0075d78f8397d654125aace6bf25e2f0f13b6dbc91fe3b7e4d9a7709e544",
-      "requirements": {
-        "identity": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-        "genre": "Strategy",
-        "coreLoop": [
-          "Read the next attack pattern and choose where crystal defenses create the most value.",
-          "Spend limited resources on placement, resonance or upgrades.",
-          "Survive the wave and use the result to prepare a different counter for the next threat."
-        ],
-        "systems": [
-          {
-            "fromId": "VIBE_MAIN",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "업보와 인과응보의 전략 세계",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "경로와 방어 배치: 접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 이후 다음 행동의 위험과 보상을 직접 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_B",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 적 대응 전술 × 신화 속 트릭스터의 질서 역전의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_A",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 경로와 방어 배치 × 업보와 인과응보의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_B",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RouteState"
-            ],
-            "fromSystem": "적 대응 전술 × 신화 속 트릭스터의 질서 역전",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "변경된 진입로에 따라 적의 약점과 대응 우선순위를 분석하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 신화 속 트릭스터의 질서 역전의 반작용을 선택한다. 때문에 RouteState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RouteState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_DELVE",
-            "toId": "VIBE_MAIN",
-            "stateKeys": [
-              "WorldAccessState"
-            ],
-            "fromSystem": "금기와 기회의 교차",
-            "toSystem": "업보와 인과응보의 전략 세계",
-            "trigger": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다. 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다. 때문에 WorldAccessState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "WorldAccessState의 결과를 업보와 인과응보의 전략 세계의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          },
-          {
-            "fromId": "VIBE_A",
-            "toId": "VIBE_DELVE",
-            "stateKeys": [
-              "RiskState"
-            ],
-            "fromSystem": "경로와 방어 배치 × 업보와 인과응보",
-            "toSystem": "금기와 기회의 교차",
-            "trigger": "접근 경로의 방어물과 안전 구역을 선택하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 업보와 인과응보의 제약을 감수할지 결정한다. 때문에 RiskState가 변한 순간 다음 시스템이 반응한다.",
-            "stateChange": "RiskState의 결과를 금기와 기회의 교차의 입력으로 전달해 대응 비용과 다음 선택이 변한다."
-          }
-        ],
-        "ux": {
-          "hudPriorities": "세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.",
-          "touchAndInput": "이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.",
-          "readability": "장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.",
-          "accessibility": "글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.",
-          "menuStructure": "타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.",
-          "convenienceDecisions": "같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다."
-        },
-        "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다."
-      },
-      "referencePatterns": [
-        {
-          "id": "BUILD_PRESETS",
-          "game": "Genshin Impact",
-          "sourceUrl": "https://genshin.hoyoverse.com/en/news/detail/156641",
-          "observedAt": "2026-10-07",
-          "principle": "Save and switch a player-selected equipment setup.",
-          "adaptation": "Compare changes before applying; preserve unavailable-item, combat and save restrictions.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TRAVEL_FAVORITES",
-          "game": "No Man's Sky",
-          "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
-          "observedAt": "2026-10-07",
-          "principle": "Favorite destinations reduce repeated searching in travel menus.",
-          "adaptation": "Pin frequent destinations while preserving unlock, cost and travel restrictions.",
-          "authority": "DESIGN_REFERENCE_ONLY",
-          "runtimeVerified": false
-        }
-      ],
-      "externalAlgorithms": [
-        {
-          "id": "PROGRESSIVE_DISCLOSURE",
-          "sourceUrl": "https://www.nngroup.com/articles/progressive-disclosure/",
-          "principle": "Prioritize the core actions; reveal secondary options only in relevant context.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "RECOGNITION_OVER_RECALL",
-          "sourceUrl": "https://www.nngroup.com/articles/recognition-and-recall/",
-          "principle": "Show existing choices, prerequisites and outcomes instead of requiring memory.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "INFORMATION_SCENT",
-          "sourceUrl": "https://www.nngroup.com/articles/information-scent/",
-          "principle": "Give existing navigation options clear destinations and state-dependent cues.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "STATUS_AND_RECOVERY",
-          "sourceUrl": "https://www.nngroup.com/articles/ten-usability-heuristics/",
-          "principle": "Expose real game status, feedback and existing safe exit or recovery paths.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        },
-        {
-          "id": "MOBILE_TOUCH_TARGETS",
-          "sourceUrl": "https://support.google.com/accessibility/android/answer/7101858",
-          "principle": "Use platform-native safe areas and comfortably separated touch targets.",
-          "optional": true,
-          "authority": "EXTERNAL_UX_PRINCIPLE_ONLY",
-          "runtimeVerified": false,
-          "matchEvidence": {
-            "design": true,
-            "sourceAnchor": false
-          }
-        }
-      ],
-      "internalToolMatches": [
-        {
-          "id": "INVENTORY_EQUIPMENT",
-          "library": "assets/inventory-equipment.js",
-          "screens": [
-            "INVENTORY_UI",
-            "GAMEPLAY"
-          ],
-          "optional": true,
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "runtimeVerified": false
-        },
-        {
-          "id": "SKILL_EFFECTS",
-          "library": "assets/skill-effects.js",
-          "screens": [
-            "GAMEPLAY"
-          ],
-          "optional": true,
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "status": "DESIGN_HINT_ONLY",
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "runtimeVerified": false
-        },
-        {
-          "id": "TARGETING_COMBAT",
-          "library": "assets/targeting-system.js",
-          "screens": [
-            "GAMEPLAY"
-          ],
-          "optional": true,
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "runtimeVerified": false
-        }
-      ],
-      "internalLibraryMatches": [
-        {
-          "id": "ANIMATION_STATE",
-          "library": "assets/animation-state.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "ASSET_LIBRARY",
-          "library": "assets/asset-library.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": false,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "CHARACTER_PROGRESSION",
-          "library": "assets/character-progression.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/server/Game.server.luau",
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "COMBAT_ACTIONS",
-          "library": "assets/combat-actions.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "COMBAT_VITALS",
-          "library": "assets/combat-vitals.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "ECONOMY_LOOT_SHOP",
-          "library": "assets/economy-loot-shop.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "INPUT_ACTIONS",
-          "library": "assets/input-actions.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "INVENTORY_EQUIPMENT",
-          "library": "assets/inventory-equipment.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_GRAPHICS_ENGINE",
-          "library": "assets/jaewoon-graphics-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_MOTION_ENGINE",
-          "library": "assets/jaewoon-motion-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "RESOURCE_GATHERING",
-          "library": "assets/resource-gathering.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "SAVE_VERSIONING",
-          "library": "assets/save-versioning.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "SCENE_FLOW",
-          "library": "assets/scene-flow.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "SKILL_EFFECTS",
-          "library": "assets/skill-effects.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "STAT_MODIFIERS",
-          "library": "assets/stat-modifiers.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "STATE_MACHINE",
-          "library": "assets/state-machine.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TARGETING_SYSTEM",
-          "library": "assets/targeting-system.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "TURN_COMBAT",
-          "library": "assets/turn-combat.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "VISUAL_STYLE",
-          "library": "assets/visual-style.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "WAVE_SPAWNER",
-          "library": "assets/wave-spawner.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
-          "matchEvidence": {
-            "design": true,
-            "source": false
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        }
-      ],
-      "firstPartyLibraryCount": 37,
-      "genreContext": "Strategy",
-      "screenHints": [
-        "INVENTORY_UI",
-        "GAMEPLAY"
-      ],
-      "sourceFiles": [
-        "roblox-games/crystal-defense/client/Game.client.luau",
-        "roblox-games/crystal-defense/server/Game.server.luau",
-        "roblox-games/crystal-defense/shared/GameConfig.luau"
-      ],
-      "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
-      "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
-      "schema": {
-        "version": 1,
-        "designFingerprint": "exact contract fingerprint",
-        "viewport": {
-          "width": 390,
-          "height": 844,
-          "safeTop": 0,
-          "safeBottom": 0
-        },
-        "entryId": "first screen",
-        "screens": [
-          {
-            "id": "existing screen id",
-            "role": "MAIN_MENU or GAMEPLAY or INVENTORY or SHOP or QUEST or SETTINGS",
-            "modal": false,
-            "scrollable": false,
-            "contentHeight": 844,
-            "controls": [
-              {
-                "id": "existing control id",
-                "action": "existing gameplay action",
-                "feedback": "observable feedback",
-                "enabledWhen": "existing state guard",
-                "rect": {
-                  "x": 0,
-                  "y": 0,
-                  "width": 44,
-                  "height": 44
-                },
-                "binding": {
-                  "path": "source file",
-                  "symbol": "event handler",
-                  "sourceEvidence": "exact event/handler source"
-                }
-              }
-            ]
-          }
-        ],
-        "transitions": [
-          {
-            "from": "screen id",
-            "controlId": "control id",
-            "to": "screen id",
-            "kind": "OPEN or BACK or CLOSE or ACTION",
-            "preservesState": true
-          }
-        ],
-        "playerTasks": [
-          {
-            "id": "frequent player intent",
-            "friction": "observed repeated work or information gap",
-            "patternId": "matched reference or algorithm id or ORIGINAL",
-            "toolId": "optional source-matched internal tool id",
-            "adaptation": "why this game needs it",
-            "from": "screen id",
-            "to": "completion screen",
-            "controlId": "completion action",
-            "maxNavigationSteps": 2,
-            "retainedContext": [
-              "selection",
-              "filter",
-              "scroll",
-              "draft"
-            ],
-            "failureRecovery": "existing safe recovery",
-            "runtimeCheck": "exact-build input sequence and observable result; compare before/after without invented measurements"
-          }
-        ]
-      },
-      "learningRule": "External UX principles and static plans are optional hypotheses, not runtime evidence. Use the existing verified learning path after exact-build native/mobile QA; never copy third-party code, assets or distinctive interface designs.",
-      "preserve": [
-        "SAVE",
-        "PROGRESSION",
-        "COMBAT_RETURN_RESTRICTIONS",
-        "DISABLED_ACTION_GUARDS",
-        "EXISTING_MENU_IDENTITIES"
-      ],
-      "runtimeVerified": false
-    },
-    "libraryReuseContract": {
-      "status": "OPTIONAL_MATCH_NOT_APPLIED",
-      "firstPartyLibraryCount": 37,
-      "candidates": [
-        {
-          "id": "ANIMATION_STATE",
-          "library": "assets/animation-state.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "ASSET_LIBRARY",
-          "library": "assets/asset-library.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": false,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "CHARACTER_PROGRESSION",
-          "library": "assets/character-progression.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/server/Game.server.luau",
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_GRAPHICS_ENGINE",
-          "library": "assets/jaewoon-graphics-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "JAEWOON_MOTION_ENGINE",
-          "library": "assets/jaewoon-motion-engine.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        },
-        {
-          "id": "VISUAL_STYLE",
-          "library": "assets/visual-style.js",
-          "sourceFiles": [
-            "roblox-games/crystal-defense/client/Game.client.luau"
-          ],
-          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
-          "matchEvidence": {
-            "design": true,
-            "source": true
-          },
-          "optional": true,
-          "firstParty": true,
-          "automaticImport": false,
-          "newGameplayAuthority": false,
-          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
-          "runtimeVerified": false
-        }
-      ],
-      "assetLibrarySelection": "EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE",
-      "automaticImport": false,
-      "runtimeVerified": false
-    },
+    "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
+    "spatialBlueprintContract": null,
+    "interfaceBlueprintContract": null,
+    "libraryReuseContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -8395,7 +5857,7 @@
       "runtimeVerified": false
     },
     "handoffRule": "Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.",
-    "contentRule": "PRESENT_EXISTING_BEHAVIOR_ONLY",
+    "contentRule": "REPAIR_EXISTING_BEHAVIOR_ONLY",
     "preservation": [
       "APPROVED_CONCEPT",
       "APPROVED_GENRE",
@@ -8430,9 +5892,9 @@
         "context": "local function reportNativeFoundationReady()",
         "score": 106,
         "currentBehavior": "local function reportNativeFoundationReady()",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 reportNativeFoundationReady의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/client/Game.client.luau::reportNativeFoundationReady이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/client/Game.client.luau",
@@ -8442,9 +5904,9 @@
         "context": "local function render()",
         "score": 106,
         "currentBehavior": "local function render()",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 render의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/client/Game.client.luau::render이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -8454,9 +5916,9 @@
         "context": "local function scopeHandler1(player)",
         "score": 98,
         "currentBehavior": "local function scopeHandler1(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler1의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/server/Game.server.luau::scopeHandler1이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -8466,9 +5928,9 @@
         "context": "local function scopeHandler3(player)",
         "score": 98,
         "currentBehavior": "local function scopeHandler3(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler3의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/server/Game.server.luau::scopeHandler3이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -8478,9 +5940,9 @@
         "context": "local function scopeHandler4(player)",
         "score": 98,
         "currentBehavior": "local function scopeHandler4(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler4의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/server/Game.server.luau::scopeHandler4이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -8490,9 +5952,9 @@
         "context": "local function scopeHandler5(player)",
         "score": 98,
         "currentBehavior": "local function scopeHandler5(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler5의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/server/Game.server.luau::scopeHandler5이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -8502,9 +5964,9 @@
         "context": "local function initializePlayer(player)",
         "score": 82,
         "currentBehavior": "local function initializePlayer(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 initializePlayer의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/server/Game.server.luau::initializePlayer이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/crystal-defense/server/Game.server.luau",
@@ -8514,9 +5976,9 @@
         "context": "local function scopeHandler2(player)",
         "score": 82,
         "currentBehavior": "local function scopeHandler2(player)",
-        "intendedBehavior": "USABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "intendedBehavior": "STABILITY primary goal \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"에 맞춰 scopeHandler2의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/crystal-defense/server/Game.server.luau::scopeHandler2이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+        "observableAcceptance": "roblox-games/crystal-defense/server/Game.server.luau에 실제 source delta가 있고 관련 QA/runtime에서 STABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "selectionRule": "DIRECT_GAME_RESPONSIBILITY_AND_DESIGN_INTENT_FIRST",
@@ -8635,18 +6097,18 @@
     "nextStep": "EXISTING_WORK_ORDER_EXECUTION"
   },
   "effectivenessMeasurement": {
-    "expectedPlayerEffect": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.",
+    "expectedPlayerEffect": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "5271a5078dc62294399cc46993512bca0307a955710865cf74f7dff41e300c37",
+      "sourceTreeFingerprint": "5a651f8fd665d4a9ab63b2e350eb8813b0371b3c5912c1f49c462af74f72546e",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8657,8 +6119,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial STABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -8761,5 +6223,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T10:13:20.409Z"
+  "generatedAt": "2026-10-11T14:17:16.154Z"
 }

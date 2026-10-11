@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "island-village-build-up-g1-52874ac81153",
-  "directiveFingerprint": "52874ac811539c940d9cacd9d32b864669e89cbf07d040ab81256eadb0db97d3",
+  "directiveId": "island-village-build-up-g1-323afe5ab38a",
+  "directiveFingerprint": "323afe5ab38a8ab66f2653bc55e69686c625af4cf8f360ac7528607196949b96",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "island-village",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/island-village",
-  "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+  "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
   "designFingerprint": "15b1d45e36def6488b1650b216b5df5c3b42b37ebd2c68f81643b1413f99ac83",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+        "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "15b1d45e36def6488b1650b216b5df5c3b42b37ebd2c68f81643b1413f99ac83",
-    "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+    "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+    "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3905,41 +3905,24 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-    "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-f0-gameplay-product-readiness-failed",
-      "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
-      "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
-      "MISSING_GAMEPLAY_CAPABILITY:WORLD",
-      "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
-      "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
-      "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
-      "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
-      "MISSING_GAMEPLAY_CAPABILITY:TYCOON",
-      "MISSING_GAMEPLAY_CAPABILITY:SAVE",
-      "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:0",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:1",
-      "CORE_LOOP_STEP_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
-      "SIGNATURE_SYSTEM_UNIMPLEMENTED:3"
+      "roblox-runtime-evidence-pending"
     ],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
     "regressionPassed": false
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -5020,7 +5003,7 @@
   ],
   "primaryFocus": "STABILITY",
   "thisLoopPrimaryGoal": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생활. 업보와 인과응보의 생활 세계에서 사회관계 선택 × 업보와 인과응보과 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
-  "primaryGoalReason": "실제 runtime 실패가 관찰됐다(F0_GAMEPLAY_PRODUCT_READINESS / ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED). 콘텐츠·그래픽 확장보다 기본 플레이 foundation의 원인 시스템 복구를 먼저 완료하고 같은 실패 시나리오를 다시 검증한다. 책임 소스는 roblox-games/island-village/client/Game.client.luau::reportNativeFoundationReady, roblox-games/island-village/client/Game.client.luau::render, roblox-games/island-village/server/Game.server.luau::scopeHandler1, roblox-games/island-village/server/Game.server.luau::scopeHandler2, roblox-games/island-village/server/Game.server.luau::scopeHandler3, roblox-games/island-village/server/Game.server.luau::scopeHandler4, roblox-games/island-village/server/Game.server.luau::scopeHandler5, roblox-games/island-village/server/Game.server.luau::initializePlayer이다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 STABILITY를 우선한다. 게임 고유 앵커는 \"업보와 인과응보의 생활 세계\", 현재 책임 소스는 roblox-games/island-village/client/Game.client.luau::reportNativeFoundationReady, roblox-games/island-village/client/Game.client.luau::render, roblox-games/island-village/server/Game.server.luau::scopeHandler1, roblox-games/island-village/server/Game.server.luau::scopeHandler2, roblox-games/island-village/server/Game.server.luau::scopeHandler3, roblox-games/island-village/server/Game.server.luau::scopeHandler4, roblox-games/island-village/server/Game.server.luau::scopeHandler5, roblox-games/island-village/server/Game.server.luau::initializePlayer이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
     "우선 책임 소스 앵커 roblox-games/island-village/client/Game.client.luau::reportNativeFoundationReady, roblox-games/island-village/client/Game.client.luau::render, roblox-games/island-village/server/Game.server.luau::scopeHandler1, roblox-games/island-village/server/Game.server.luau::scopeHandler2, roblox-games/island-village/server/Game.server.luau::scopeHandler3, roblox-games/island-village/server/Game.server.luau::scopeHandler4, roblox-games/island-village/server/Game.server.luau::scopeHandler5, roblox-games/island-village/server/Game.server.luau::initializePlayer에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "업보와 인과응보의 생활 세계를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
@@ -5063,9 +5046,9 @@
       "UNITY"
     ],
     "requestedPlatform": "ROBLOX",
-    "executionMode": "CAUSAL_REPAIR_FIRST_KEEP_EXPANSION_CONTEXT",
-    "contentExpansionDeferredUntilRuntimeRepairPass": true,
-    "themeCoverageAdvanced": false,
+    "executionMode": "AUTONOMOUS_CONTENT_BUILD_UP",
+    "contentExpansionDeferredUntilRuntimeRepairPass": false,
+    "themeCoverageAdvanced": true,
     "dataCapacityBudget": {
       "state": "NORMAL",
       "limits": {
@@ -5077,7 +5060,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 143638,
+        "sourceBytes": 143624,
         "largestFileBytes": 85629,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5111,7 +5094,7 @@
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
     "themeDepth": 1,
-    "selectedThemeReason": "Observed runtime failure requires causal foundation repair first; selected theme is retained as context only and does not advance coverage until runtime repair passes.",
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5121,9 +5104,11 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 0
+        "PRESENTATION_WORLD_COHESION": 1
       },
-      "sequence": [],
+      "sequence": [
+        "PRESENTATION_WORLD_COHESION"
+      ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -5133,7 +5118,7 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 0,
+      "distinctCovered": 1,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
@@ -5142,8 +5127,7 @@
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5151,8 +5135,7 @@
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "MID_LATE_ENDGAME_COMPLETION",
-        "PRESENTATION_WORLD_COHESION"
+        "MID_LATE_ENDGAME_COMPLETION"
       ],
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
@@ -5202,8 +5185,16 @@
         "gapDomains": []
       }
     ],
-    "coherentContentBundle": [],
-    "bundleRule": "OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_MUST_PASS_BEFORE_CONTENT_BUNDLE_EXECUTION",
+    "coherentContentBundle": [
+      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
+      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
+      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
+      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
+      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
+      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
+      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+    ],
+    "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
       "compareAgainstExistingContentBeforeAdding": true,
       "nameColorOrStatOnlyCloneForbidden": true,
@@ -5236,9 +5227,17 @@
       ]
     },
     "derivedRuleEvolution": {
-      "allowed": false,
-      "rule": "DEFER_DERIVED_GAMEPLAY_RULE_EVOLUTION_UNTIL_OBSERVED_RUNTIME_FAILURE_CAUSAL_REPAIR_PASSES",
-      "examples": [],
+      "allowed": true,
+      "rule": "MAY_ADD_DERIVED_GAMEPLAY_INTERACTION_RULES_WHEN_THEY_REINFORCE_APPROVED_IDENTITY_AND_DO_NOT_CONTRADICT_CANONICAL_RULES_OR_PROTECTED_VALUES",
+      "examples": [
+        "ENVIRONMENTAL_RULE",
+        "ENEMY_RELATIONSHIP_RULE",
+        "BOSS_PHASE_RULE",
+        "ITEM_SYNERGY_RULE",
+        "QUEST_STATE_RULE",
+        "REGION_ACCESS_RULE",
+        "MULTIPLAYER_INTERACTION_RULE"
+      ],
       "protected": [
         "EXISTING_CANONICAL_RULE_SEMANTICS",
         "AUTHORIZED_BALANCE_VALUES",
@@ -5248,9 +5247,11 @@
       ]
     },
     "completionAcceptance": [
-      "RUNTIME_FAILURE_CAUSAL_REPAIR_PASS_REQUIRED_BEFORE_CONTENT_EXPANSION",
       "REAL_GAME_SOURCE_DELTA_REQUIRED",
       "PLAYER_FACING_OR_GAMEPLAY_SYSTEM_EFFECT_REQUIRED",
+      "DISTINCT_FROM_EXISTING_CONTENT_BY_MEANING_NOT_ONLY_NAME_OR_STATS",
+      "CONNECTED_TO_EXISTING_GAME_FLOW",
+      "CONTINUITY_AND_CAUSALITY_PRESERVED",
       "EXISTING_RELEVANT_INCREMENTAL_QA_PASSES",
       "DATA_CAPACITY_BUDGET_RESPECTED_WITHOUT_TERMINATING_BUILD_UP"
     ]
@@ -5260,9 +5261,9 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+    "sourceFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
     "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "REGRESSION",
+    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -5724,7 +5725,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+    "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -5820,7 +5821,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
+    "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -6081,16 +6082,16 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생활. 업보와 인과응보의 생활 세계에서 사회관계 선택 × 업보와 인과응보과 생활 공간 탐색 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure requires source repair before another observation",
-      "runtimeObserved": true
+      "classification": "NO_PREVIOUS_GENERATION",
+      "reason": "initial build-up generation",
+      "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "24a4f943c915056dfb39f9099f4ca79a6f1be298f8858ff52c0790523ed48452",
-      "runtimeObserved": true,
+      "sourceTreeFingerprint": "6926f945c950157e8385deacc3c7c81cd0fd3151c086551f48e04f616ef087c4",
+      "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
-      "failureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -6101,8 +6102,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
+    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
+    "reason": "initial STABILITY build-up has no previous generation effect to compare"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -6205,5 +6206,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T10:13:20.874Z"
+  "generatedAt": "2026-10-11T14:17:16.605Z"
 }
