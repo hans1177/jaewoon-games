@@ -4645,45 +4645,6 @@ export function buildVibeAssetProductionPlan({
     executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
     sourceConsumerSummary:librarySync.sourceConsumerSync
   });
-  // [모든 게임 자산 자동 연결] 기존 BUILD_UP 선택/실소비자 증거를 한 작업 단위로 결합한다.
-  // 현재 게임에 승인된 자산 요구만 처리하고, 이미 연결된 자산은 중복 제작하지 않는다.
-  const actualGameConsumerIds=new Set((librarySync.sourceConsumerBindings||[])
-    .filter(row=>row.gameId===currentGameId&&row.sourceBound===true)
-    .map(row=>clean(row.assetId)));
-  const automaticBindingTargets=(studioUniversePlan?.loadout?.selections||[])
-    .filter(row=>row.required!==false)
-    .map(row=>{
-      const assetId=clean(row.assetId),sourceBound=Boolean(assetId&&actualGameConsumerIds.has(assetId));
-      const status=!assetId||row.unresolved===true?'AUTHORING_REQUIRED'
-        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
-        :row.sourceFilesPresent===false||!(row.sourceFiles||[]).length?'SOURCE_ASSET_REQUIRED'
-        :'NATIVE_SOURCE_BINDING_REQUIRED';
-      return freeze({
-        requirementId:clean(row.requirementId)||null,assetId:assetId||null,
-        family:clean(row.family),role:clean(row.role)||null,status,
-        sourceBound,sourceFiles:freezeList(row.sourceFiles||[]),
-        sourceHash:clean(row.sourceHash)||null,libraryVersion:Number(row.libraryVersion||0),
-        nativeRuntimeVerified:false,
-        repairOwner:status==='AUTHORING_REQUIRED'||status==='SOURCE_ASSET_REQUIRED'
-          ?'EXISTING_ASSET_DEVELOPMENT':'EXISTING_GAME_SOURCE_WORKER',
-        protectedGameplayAuthority:true
-      });
-    });
-  const automaticAssetBindingWork=freeze({
-    version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
-    trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
-    sourceConsumerScanCompleted:librarySync.sourceConsumerSync?.scannedGameCount>0,
-    actualSourceBoundCount:actualGameConsumerIds.size,
-    selectedRequirementCount:automaticBindingTargets.length,
-    pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
-    authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
-    runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
-    targets:freezeList(automaticBindingTargets),
-    selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
-    existingGraphicsProductionAndBuildUp:true,
-    preserveGameRulesSaveAndNetwork:true,sourceOnlyCannotProveRuntime:true,
-    verifiedRuntimeEvidenceRequiredBeforePositiveLearning:true
-  });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
@@ -4822,6 +4783,45 @@ export function buildVibeAssetProductionPlan({
     heroAssetIds:Array.isArray(task.heroAssetIds)?task.heroAssetIds:[],
     familyOutputsByAsset:task.assetFamilyOutputsById||{}
   }):null;
+  // [모든 게임 자산 자동 연결] 기존 BUILD_UP 선택/실소비자 증거를 한 작업 단위로 결합한다.
+  // 현재 게임에 승인된 자산 요구만 처리하고, 이미 연결된 자산은 중복 제작하지 않는다.
+  const actualGameConsumerIds=new Set((librarySync.sourceConsumerBindings||[])
+    .filter(row=>row.gameId===currentGameId&&row.sourceBound===true)
+    .map(row=>clean(row.assetId)));
+  const automaticBindingTargets=(studioUniversePlan?.loadout?.selections||[])
+    .filter(row=>row.required!==false)
+    .map(row=>{
+      const assetId=clean(row.assetId),sourceBound=Boolean(assetId&&actualGameConsumerIds.has(assetId));
+      const status=!assetId||row.unresolved===true?'AUTHORING_REQUIRED'
+        :sourceBound?'SOURCE_BOUND_RUNTIME_QA_REQUIRED'
+        :row.sourceFilesPresent===false||!(row.sourceFiles||[]).length?'SOURCE_ASSET_REQUIRED'
+        :'NATIVE_SOURCE_BINDING_REQUIRED';
+      return freeze({
+        requirementId:clean(row.requirementId)||null,assetId:assetId||null,
+        family:clean(row.family),role:clean(row.role)||null,status,
+        sourceBound,sourceFiles:freezeList(row.sourceFiles||[]),
+        sourceHash:clean(row.sourceHash)||null,libraryVersion:Number(row.libraryVersion||0),
+        nativeRuntimeVerified:false,
+        repairOwner:status==='AUTHORING_REQUIRED'||status==='SOURCE_ASSET_REQUIRED'
+          ?'EXISTING_ASSET_DEVELOPMENT':'EXISTING_GAME_SOURCE_WORKER',
+        protectedGameplayAuthority:true
+      });
+    });
+  const automaticAssetBindingWork=freeze({
+    version:1,enabled:Boolean(currentGameId)&&['roblox','unity','web'].includes(resolvedTarget),
+    trigger:'EVERY_EXISTING_BUILD_UP',gameId:currentGameId||null,target:resolvedTarget,
+    sourceConsumerScanCompleted:librarySync.sourceConsumerSync?.scannedGameCount>0,
+    actualSourceBoundCount:actualGameConsumerIds.size,
+    selectedRequirementCount:automaticBindingTargets.length,
+    pendingSourceBindingCount:automaticBindingTargets.filter(row=>row.status==='NATIVE_SOURCE_BINDING_REQUIRED').length,
+    authoringRequiredCount:automaticBindingTargets.filter(row=>['AUTHORING_REQUIRED','SOURCE_ASSET_REQUIRED'].includes(row.status)).length,
+    runtimeQaRequiredCount:automaticBindingTargets.filter(row=>row.status==='SOURCE_BOUND_RUNTIME_QA_REQUIRED').length,
+    targets:freezeList(automaticBindingTargets),
+    selectedRequirementsOnly:true,noParallelPipeline:true,noNewQueue:true,
+    existingGraphicsProductionAndBuildUp:true,
+    preserveGameRulesSaveAndNetwork:true,sourceOnlyCannotProveRuntime:true,
+    verifiedRuntimeEvidenceRequiredBeforePositiveLearning:true
+  });
   const robloxAssetSelectionProfile=resolvedTarget==='roblox'
     ?robloxCurrentAssetSelectionProfile({repoRoot,gameId:task.gameId})
     :Object.freeze({genre:'',subgenre:''});
