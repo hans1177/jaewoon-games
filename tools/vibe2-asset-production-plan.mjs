@@ -1359,6 +1359,15 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
             mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
             registerOnlyAfterActualBinaryAndLicenseAndStaticQa:true,
             requiredFields:freezeList(['id','family','path','license','sourceUrl','sourceHash','parentSourceId','transformHistory','platformVariants']),
+            nativeDccScript:'assets/native-authoring/build-game-visual.py',
+            nativeSourceModelField:'task.assetAuthoring.sourceModel',
+            nativeSourceLicenseField:'task.assetAuthoring.sourceLicense',
+            nativeSourceCreditField:'task.assetAuthoring.sourceCredit',
+            nativeOutputFiles:freezeList(['master.glb','asset.glb','application.json','evidence.json','preview.png']),
+            nativeModelMustBeDownloadedIntoAssets:true,
+            generatorEvidenceMustMatchSelectedSourceSha256:true,
+            registryWriteOwner:'EXISTING_GRAPHICS_PRODUCTION_SYNC',
+            gameSourceWorkerMayEditCentralRegistry:false,
             candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
             nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,newPipelineOrQueueCreated:false
           })
@@ -5566,7 +5575,7 @@ export function assetProductionGuidance(plan={}){
         externalAcquisition:row.externalAcquisition,
         materialRefinement:row.materialRefinement,assetization:row.assetization
       })+
-      '. 현재 게임의 실제 결손만 회사 원장에 등록된 출처에서 보충한다. 원본 소스 페이지가 실제 다운로드 링크가 아니면 공식 다운로드 링크 확인 전에는 취득 성공을 주장하지 않는다. 다운 전 최신 라이선스·상업 이용/수정/재배포 조건·출처와 해시를 확인한다. 불분명하거나 NC/ND 또는 스크립트/실행파일 포함 위험 자산은 차단한다. 캐릭터·생물·건물·환경·무기·소품은 실제 3D 메시와 재질이 있는 파일만 받고 정적 구조와 모바일 예산을 검사한다. 기존 원본은 불변으로 보관하고 기존 네이티브 DCC/ASSET_DEVELOPMENT 경로에서 PBR 색상·거칠기·금속성·노멀 세기·필요한 사용감만 현재 게임 Style Lock에 맞게 소폭 바꾼 별도의 파생 모델을 실제 생성한다. 원본·파생 SHA256, 출처·라이선스 증거, 부모 asset/sourceId, 변경 이력, 플랫폼 네이티브 파생 경로를 기존 company-asset-library.json에 PREPARED로 등록한다. 다운로드 또는 실제 3D 파생 파일이 없다면 자산을 등록하거나 생성 성공으로 표시하지 않는다. 파일이 생겼더라도 기존 실제 게임 담당 C#/Luau 렌더러와 프리팹에 연결하고 독립 모바일·런타임·회귀 검증 전에는 productionVerified나 품질 PASS로 승격하지 않는다. 역할 호환이 안 되면 다른 검증 후보를 검토한 후에만 신규 제작으로 진행한다. 게임 판정·밸런스·저장·네트워크 권한을 변경하지 않고 새 파이프라인/큐/래퍼 없이 기존 Vibe 제작 경로를 그대로 사용한다.'),
+      '. 현재 게임의 실제 결손만 회사 원장에 등록된 출처에서 보충한다. 원본 소스 페이지가 실제 다운로드 링크가 아니면 공식 다운로드 링크 확인 전에는 취득 성공을 주장하지 않는다. 다운 전 최신 라이선스·상업 이용/수정/재배포 조건·출처와 해시를 확인한다. 불분명하거나 NC/ND 또는 스크립트/실행파일 포함 위험 자산은 차단한다. 캐릭터·생물·건물·환경·무기·소품은 실제 3D 메시와 재질이 있는 파일만 받고 정적 구조와 모바일 예산을 검사한다. 기존 원본은 불변으로 보관하고 기존 ASSET_DEVELOPMENT의 assets/native-authoring/build-game-visual.py를 재사용한다. 다운로드한 로컬 3D 파일은 task.assetAuthoring.sourceModel, 권리는 sourceLicense, 필요 시 출처 표기는 sourceCredit으로 기존 Blender 제작 레시피에 입력한다. 해당 원본은 불변으로 보관하고 파일의 실제 PBR 색상·거칠기·금속성·사용감만 현재 게임 Style Lock에 맞춰 소폭 바꾼 별도 파생 모델을 생성한다. 원본·파생 SHA256, 출처·라이선스 증거, 부모 sourceId, 변경 이력, 네이티브 산출물을 확인한 후 기존 GRAPHICS_PRODUCTION의 원장 동기화 책임에서만 company-asset-library.json에 PREPARED 후보로 등록한다. 개별 게임 소스 워커는 중앙 자산 원장을 직접 수정하지 않는다. 다운로드 또는 실제 3D 파생 파일이 없다면 자산을 등록하거나 생성 성공으로 표시하지 않는다. 파일이 생겼더라도 기존 실제 게임 담당 C#/Luau 렌더러와 프리팹에 연결하고 독립 모바일·런타임·회귀 검증 전에는 productionVerified나 품질 PASS로 승격하지 않는다. 역할 호환이 안 되면 다른 검증 후보를 검토한 후에만 신규 제작으로 진행한다. 게임 판정·밸런스·저장·네트워크 권한을 변경하지 않고 새 파이프라인/큐/래퍼 없이 기존 Vibe 제작 경로를 그대로 사용한다.'),
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
