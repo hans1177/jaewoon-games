@@ -188,7 +188,10 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
   const sourceFailure=/(?:SOURCE|BUILD|COMPILE|STATIC|QA|REGRESSION|TEST|BROWSER|GAMEPLAY|VALIDATION|READINESS|REPAIR_REQUIREMENT|RUNTIME|PREFLIGHT|F0|F1|F2|F3|F4|F9)/.test(stepKey)
     &&!/(?:DEPLOY|PUBLISH|CLOUDFLARE|PAGES|PROMOTION|UPLOAD|OPEN_CLOUD|MAIN_MERGE|RELEASE)/.test(stepKey);
   const codeFiles=sourceFailure?deploymentSourceFiles(platform,gameId,linkedTask):[];
-  const sourceRepair=sourceFailure&&codeFiles.length>0;
+  const catalogGame=(Array.isArray(catalogInput.games)?catalogInput.games:[]).find(item=>clean(item?.id)===gameId);
+  const productionClass=clean(catalogGame?.productionClass||linkedTask?.productionClass).toUpperCase();
+  const releaseEligible=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass);
+  const sourceRepair=sourceFailure&&codeFiles.length>0&&releaseEligible;
   const owner=sourceRepair?'VIBE2_VIBE3':'SYSTEM_AI';
   const runMarker='deployment-failure-run:'+runId+':'+attempt;
   const sourceKey='deployment:'+workflowFile+':'+sha+':'+(sourceRepair?gameId:'pipeline');
@@ -215,6 +218,7 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     recurrenceCount:Math.max(1,Number(previous?.recurrenceCount||0)+1),
     evidence:uniq([runMarker,'deployment-workflow:'+workflowFile,'deployment-platform:'+platform,
       'deployment-game:'+(gameId||'UNRESOLVED'),'deployment-head-sha:'+sha,
+      'deployment-production-class:'+(releaseEligible?productionClass:'UNVERIFIED'),
       'deployment-failed-job:'+deploymentStepKey(failedStep.job),'deployment-failed-step:'+stepKey,
       'deployment-run-url:https://github.com/hans1177/jaewoon-games/actions/runs/'+runId,
       'deployment-failure-triage:'+(sourceRepair?'SCOPED_GAME_SOURCE':'WORKFLOW_INFRASTRUCTURE_OR_UNRESOLVED_SOURCE'),
