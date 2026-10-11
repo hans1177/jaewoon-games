@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-19rxavj",
+      "worker": "vibe2",
+      "taskId": "amusement-tycoon-unity-web-base-implementation-v1",
+      "gameId": "amusement-tycoon",
+      "files": [
+        "unity-games/amusement-tycoon/Assets/Scripts/GameCore.cs",
+        "unity-games/amusement-tycoon/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "e764fe5c274a99e5f192500fc7e27861b60eb09d",
+      "runId": "38129872250",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T10:41:46.287Z",
+      "expiresAt": "2026-10-11T11:26:46.287Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:amusement-tycoon-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
