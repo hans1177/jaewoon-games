@@ -567,6 +567,42 @@ test('director never cancels a newer-main Unity Web batch because an older-main 
   assert.deepEqual(cancelled,[{id:101,reason:'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH'}]);
 });
 
+// 메인: 오래된 무결과 리필 호출만 실제 제목으로 탐지하고 진행 중·최신·게임 작업을 보존한다.
+test('director drains only stale unstarted Vibe fan-in refills with actual GitHub Actions titles',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const start=director.indexOf("            for(const stale of runs.filter(r=>\n              r.path==='.github/workflows/vibe2-continuous-core.yml'\n              &&String(r.event||'')==='repository_dispatch'");
+  const ending="            ))add(stale,'VIBE2_STALE_UNSTARTED_FANIN_REFILL');";
+  const end=director.indexOf(ending,start);
+  assert.ok(start>=0&&end>start);
+  const code=director.slice(start,end+ending.length);
+  const main='b'.repeat(40),old='a'.repeat(40);
+  const title=lane=>'Vibe2 Continuous Core · vibe2-fanin-refill · '+lane;
+  const row=(id,sha,status,runName=title('game-primary'),event='repository_dispatch',branch='main')=>({
+    id,head_sha:sha,status,display_title:runName,event,head_branch:branch,
+    path:'.github/workflows/vibe2-continuous-core.yml'
+  });
+  const runs=[
+    row(10,old,'queued'),
+    row(11,old,'pending',title('recovery-fast')),
+    row(12,main,'queued'),
+    row(13,old,'in_progress'),
+    row(14,old,'queued','Vibe2 Continuous Core · vibe2-neuron-complete · game-primary'),
+    row(15,old,'queued',title('game-primary'),'workflow_dispatch'),
+    row(16,old,'queued',title('game-primary'),'repository_dispatch','other-branch'),
+    row(17,'','queued'),
+    row(18,old,'queued','Vibe2 Continuous Core · workflow_dispatch · game-primary')
+  ];
+  const cancelled=[];
+  runInNewContext(code,{runs,currentMain:main,
+    queued:new Set(['queued','pending','requested']),
+    add:(entry,reason)=>cancelled.push({id:entry.id,reason})
+  });
+  assert.deepEqual(cancelled,[
+    {id:10,reason:'VIBE2_STALE_UNSTARTED_FANIN_REFILL'},
+    {id:11,reason:'VIBE2_STALE_UNSTARTED_FANIN_REFILL'}
+  ]);
+});
+
 test('director drain QA changes wake the existing runner drain',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   const pushBlock=director.slice(director.indexOf('  push:'),director.indexOf('\npermissions:',director.indexOf('  push:')));
