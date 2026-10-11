@@ -1671,6 +1671,19 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         for(const match of usageBody.matchAll(/\btable\.find\s*\(\s*studioAssetFamily\s*\(\s*['"][A-Z][A-Z0-9_]*['"]\s*\)\s*,\s*['"]([A-Za-z][A-Za-z0-9_.:-]{1,95})['"]\s*\)/g)){
           addToken(usageTokens,match[1],relative);
         }
+        // 기존 팩토리의 실제 Create 호출까지 연결된 ID만 소비로 기록한다.
+        // 카탈로그 선언만으로는 바인딩 또는 런타임 검증을 부여하지 않는다.
+        for(const call of usageBody.matchAll(/\b[A-Za-z_]\w*Factory\s*\.\s*Create\s*\(\s*(?:["']([A-Za-z][A-Za-z0-9_.:-]{1,95})["']|([A-Za-z_]\w*)\b)/g)){
+          if(call[1]){addToken(usageTokens,call[1],relative);continue;}
+          const variable=call[2];
+          const assignment=new RegExp('\\blocal\\s+'+variable+'\\s*=\\s*([A-Za-z_]\\w*)\\s*\\[[^\\]\\r\\n]+\\]','g');
+          for(const use of usageBody.matchAll(assignment)){
+            const table=new RegExp('\\blocal\\s+'+use[1]+'\\s*=\\s*\\{([^{}]{1,65536})\\}','g');
+            for(const declaration of usageBody.matchAll(table)){
+              for(const value of declaration[1].matchAll(/=\s*["']([A-Za-z][A-Za-z0-9_.:-]{1,95})["']/g))addToken(usageTokens,value[1],relative);
+            }
+          }
+        }
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
         }

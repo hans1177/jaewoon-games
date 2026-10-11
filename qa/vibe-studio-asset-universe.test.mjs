@@ -124,6 +124,25 @@ const fullQualityEvidence=Object.freeze({
   MOBILE_PERFORMANCE:100
 });
 
+function assertCurrentCommonCatalogCoverage(registry){
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  // 외부 원본 등록도 원장 버전을 올린다. 공용 팩 동기화는 실제 카탈로그와 대조한다.
+  const synchronized=Number(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion);
+  assert.ok(synchronized>0&&synchronized<=registry.version,'catalog synchronization must not claim a future registry');
+  let catalogs=0;
+  for(const name of fs.readdirSync(path.join(root,'assets/roblox')).filter(name=>name.startsWith('common-'))){
+    const file=path.join(root,'assets/roblox',name,'catalog.json');
+    if(!fs.existsSync(file))continue;
+    const catalog=JSON.parse(fs.readFileSync(file,'utf8'));
+    const pack=registry.assets.find(row=>row.id===catalog.packId);
+    assert.ok(pack,'registered common pack '+catalog.packId);
+    assert.equal(pack.catalogVersion,catalog.version,'current catalog revision '+catalog.packId);
+    assert.equal(pack.catalogRowCount,(catalog.atoms||catalog.items||[]).length,'current catalog rows '+catalog.packId);
+    catalogs++;
+  }
+  assert.ok(catalogs>=14,'common catalog coverage must not be dropped');
+}
+
 test('asset teacher covers every registered object family, base material family and canonical style',()=>{
   const registry=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
   const before=JSON.stringify(registry);
@@ -3709,7 +3728,7 @@ test('company library system depth audit covers every common asset domain withou
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const audit=registry.commonLibrarySystemDepthAudit;
   assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
-  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assertCurrentCommonCatalogCoverage(registry);
   assert.equal(audit.status,'EXPANDED');
   assert.equal(audit.scoreIsUsageGate,false);
   assert.equal(audit.existingAssetsRemainUsable,true);
@@ -3804,7 +3823,7 @@ test('company library registers housing building and settlement assets as reusab
   const here=path.dirname(fileURLToPath(import.meta.url));
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
-  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assertCurrentCommonCatalogCoverage(registry);
   assert.ok(registry.commonGenreSystemExpectations.genres.HOUSING.includes('SNAP_SOCKET'));
   assert.ok(registry.commonGenreSystemExpectations.genres.SANDBOX.includes('BLUEPRINT'));
   assert.ok(registry.commonGenreSystemExpectations.genres.FARMING.includes('ANIMAL_HOME'));
@@ -3990,7 +4009,7 @@ test('company asset library exposes all-stage composition as an asset contract o
   const registry=JSON.parse(fs.readFileSync(path.resolve(here,'..','company-asset-library.json'),'utf8'));
   const contract=registry.internalAssetCompositionContract;
   assert.ok(Number.isInteger(registry.version)&&registry.version>=1);
-  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assertCurrentCommonCatalogCoverage(registry);
   assert.equal(contract.scope,'ALL_INTERNAL_ASSETS');
   assert.equal(contract.consumerStageAccess,'ALL_EXISTING_FLOW_STAGES');
   assert.equal(contract.allInternalAssetsComposableAcrossExistingStages,true);
@@ -5216,6 +5235,9 @@ test('source-bound consumer sync maps project paths exact asset ids and managed 
     }));
     fs.writeFileSync(path.join(root,'roblox-games','horror-demo','client','Game.client.luau'),[
       'local internalGhostSkinByCatalogId={YUREI="yurei"}',
+      'local unusedSkinByCatalogId={UNUSED="unused"}',
+      'local skinId=internalGhostSkinByCatalogId[id]',
+      'local model=GhostSkinFactory.Create(skinId,{parent=workspace})',
       '-- STUDIO_ASSET_BINDING_BEGIN',
       'local STUDIO_ASSET_BINDING_VERSION = 2',
       'local StudioAssets = { Families = { MOTION = { "WALK", "JOG" } } }',
@@ -5369,11 +5391,12 @@ test('real horror-escape-room source fixture resolves project pack identity and 
   });
   const byId=new Map(result.registry.assets.map(row=>[row.id,row]));
   const yurei=byId.get('roblox-world-ghost-yurei');
-  const walk=byId.get('roblox-common-motion-walk');
+  const start=byId.get('roblox-common-motion-start');
+  assert.equal(byId.get('roblox-common-motion-walk').sourceBoundConsumerGameIds,undefined,'declared but unconsumed WALK must stay unbound');
   assert.ok(yurei);
-  assert.ok(walk);
+  assert.ok(start);
   assert.deepEqual(yurei.sourceBoundConsumerGameIds,['horror-escape-room']);
-  assert.deepEqual(walk.sourceBoundConsumerGameIds,['horror-escape-room']);
+  assert.deepEqual(start.sourceBoundConsumerGameIds,['horror-escape-room']);
   assert.ok(result.bindings.some(row=>
     row.assetId==='roblox-world-ghost-yurei'
     &&row.gameId==='horror-escape-room'
@@ -5383,7 +5406,7 @@ test('real horror-escape-room source fixture resolves project pack identity and 
     &&row.evidenceFiles.some(file=>file==='roblox-games/horror-escape-room/client/Game.client.luau')
   ));
   assert.ok(result.bindings.some(row=>
-    row.assetId==='roblox-common-motion-walk'
+    row.assetId==='roblox-common-motion-start'
     &&row.gameId==='horror-escape-room'
     &&row.classification==='ACTUAL_SOURCE_BOUND'
     &&row.bindingMode==='MANAGED_LIBRARY_IDENTITY'
@@ -5391,9 +5414,9 @@ test('real horror-escape-room source fixture resolves project pack identity and 
   assert.equal(yurei.productionVerified,false);
   assert.equal(yurei.verifiedCompanyReusable,false);
   assert.equal(yurei.runtimeVerificationState,'PENDING_STUDIO');
-  assert.equal(walk.productionVerified,false);
-  assert.equal(walk.verifiedCompanyReusable,false);
-  assert.equal(walk.runtimeVerificationState,'PENDING_STUDIO');
+  assert.equal(start.productionVerified,false);
+  assert.equal(start.verifiedCompanyReusable,false);
+  assert.equal(start.runtimeVerificationState,'PENDING_STUDIO');
   assert.equal(result.summary.sourceOnlyDoesNotGrantRuntimeVerification,true);
   assert.equal(result.summary.productionVerificationUnchanged,true);
   assert.equal(result.summary.runtimeVerificationUnchanged,true);
@@ -5439,9 +5462,9 @@ test('source consumer summaries use a per-game aggregate instead of post-binding
   assert.doesNotMatch(syncSource.slice(gameSummaryStart),/currentAssetConsumerIds\(/);
 });
 
-test('demand-bound asset supply uses five decisions and holds quantity-only library work',()=>{
+test('demand-bound asset supply uses six decisions and holds quantity-only library work',()=>{
   const registry={assets:[
-    {id:'used-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
+    {id:'used-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceFiles:['assets/used-creature.glb'],sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
     {id:'common-motion',family:'MOTION',role:'locomotion',platform:'SHARED',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
     {id:'intended-only-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',intendedConsumerGameIds:['demo'],internalAuditScore:980}
   ]};
@@ -5456,7 +5479,7 @@ test('demand-bound asset supply uses five decisions and holds quantity-only libr
       nextVolumeActions:[{domain:'BUILDING',ideaId:'BUILDING_DISTINCT_VARIATION_01'}]
     }
   });
-  assert.deepEqual([...summary.decisionVocabulary],['USE','ADAPT','IMPROVE','AUTHOR','HOLD']);
+  assert.deepEqual([...summary.decisionVocabulary],['USE','ADAPT','IMPROVE','ACQUIRE_ADAPT','AUTHOR','HOLD']);
   assert.equal(summary.currentConsumers,1);
   assert.equal(summary.intendedOnly,1);
   assert.ok(summary.requiredFamilies.includes('CREATURE'));
@@ -5475,12 +5498,12 @@ test('demand-bound asset supply uses five decisions and holds quantity-only libr
 
 test('asset supply summary preserves selection semantics with one-pass registry indexes',()=>{
   const registry={assets:[
-    {id:'z-current-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
-    {id:'a-current-creature',family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:650},
+    {id:'z-current-creature',sourceFiles:['assets/z-current-creature.glb'],family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:700},
+    {id:'a-current-creature',sourceFiles:['assets/a-current-creature.glb'],family:'CREATURE',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:650},
     {id:'material-current',family:'MATERIAL',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',sourceBoundConsumerGameIds:['demo'],internalAuditScore:500},
-    {id:'a-weapon',family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
-    {id:'z-weapon',family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
-    {id:'low-weapon',family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:100},
+    {id:'a-weapon',sourceFiles:['assets/a-weapon.glb'],family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'z-weapon',sourceFiles:['assets/z-weapon.glb'],family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:900},
+    {id:'low-weapon',sourceFiles:['assets/low-weapon.glb'],family:'WEAPON',role:'blade',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',internalAuditScore:100},
     {id:'intended-ui',family:'UI',platform:'ROBLOX',status:'REPO_ASSET',license:'project-original',intendedConsumerGameIds:['demo'],internalAuditScore:999}
   ]};
   const summary=buildAssetSupplyDecisionSummary({
@@ -5592,7 +5615,7 @@ test('company catalog revision only claims synchronized common packs and retains
     verifiedCatalogs++;
   }
   assert.ok(verifiedCatalogs>=14,'common pack coverage must not be dropped');
-  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  assertCurrentCommonCatalogCoverage(registry);
   const maintenance=registry.internalAssetLibraryAutomation.maintenance||{};
   const maintenanceVersion=Number(maintenance.synchronizedRegistryVersion)||0;
   assert.ok(maintenanceVersion<=registry.version,'maintenance cannot point at a future registry');

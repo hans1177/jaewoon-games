@@ -321,13 +321,23 @@ test('bottleneck System AI receives policy-grounded advanced causal optimization
     'CAUSAL_WAIT_GRAPH','LOGICAL_PHYSICAL_CAPACITY_SPLIT','MINIMUM_LOCK_SCOPE','STAGE_SCOPED_EXACT_DEDUPE',
     'CONTROL_PLANE_ISOLATION','EVENT_DRIVEN_REFILL','CHECKPOINT_PRESERVING_HANDOFF','REPRESENTATIVE_CANARY_COHORT',
     'STALE_QA_TRIANGULATION','MULTI_HYPOTHESIS_CAUSAL_REPAIR','WORK_CONSERVING_DISJOINT_PARALLELISM',
-    'SPARE_CAPACITY_HEDGING','CAUSE_SCOPED_BACKPRESSURE','OBSERVABILITY_TO_VERIFIED_LEARNING'
+    'SPARE_CAPACITY_HEDGING','CAUSE_SCOPED_BACKPRESSURE','OBSERVABILITY_TO_VERIFIED_LEARNING',
+    'ASSET_CONSUMER_CAUSAL_TRIANGULATION','EXPLICIT_NATIVE_AUTHORING_REPAIR',
+    'RUNTIME_BOOT_CAUSE_BEFORE_WAIT','EXACT_FAILURE_AND_WAKE_IDENTITY','HOMEPAGE_DEPLOYMENT_VISIBILITY'
   ])assert.ok(ids.includes(required),required);
   assert.match(context.guidance,/POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK/);
   assert.match(context.guidance,/STALE_QA_TRIANGULATION/);
   assert.match(context.guidance,/Vibe3 실행 계약 투영값/);
   assert.match(context.guidance,/Unity Web 실제 3D/);
   assert.match(context.guidance,/MULTI_HYPOTHESIS_CAUSAL_REPAIR/);
+  assert.match(context.guidance,/Factory\.Create/);
+  assert.match(context.guidance,/applyFirst/);
+  assert.match(context.guidance,/Resources\.Load<AnimationClip>/);
+  assert.match(context.guidance,/Animation\.AddClip/);
+  assert.match(context.guidance,/BLOCKED\/CLOCK/);
+  assert.match(context.guidance,/동일 최신 main SHA/);
+  assert.match(context.guidance,/독립 QA·회귀·배포·다음 BUILD_UP/);
+  assert.deepEqual(context.exactKnowledgeIds,[],'repair guidance must not manufacture verified learning records');
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.advisoryOnly,true);
   assert.equal(context.authorityExpanded,false);
@@ -488,7 +498,7 @@ test('System AI learns two hypotheses for exact Roblox failures without inventin
         goal:'repair exact game F0-F9 stage',failureSignature:signature,responsibleFiles:['tools/company-development-roblox-build-preflight.mjs']},
       policyInput:policy,experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{}
     });
-    assert.equal(context.bottleneckPlaybook.methods.length,14);
+    assert.equal(context.bottleneckPlaybook.methods.length,19);
     assert.equal(context.floorRecovery.stage,stage);
     assert.equal(context.floorRecovery.hypotheses.length,2);
     assert.equal(context.floorRecovery.independentVerificationRequired,true);

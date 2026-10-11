@@ -70,6 +70,42 @@ test('Unity WebGL 실제 번들 확인 시 개발 링크 제공, 정식 검증 �
   assert.equal(legacy.games[0].unityWebVerified,false,'index-only probe cannot create QA PASS claim');
 });
 
+test('verified bundle links render before an unrelated slow game finishes probing',async()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  let releaseSlow,resolveFirst,finished=false;
+  const slow=new Promise(resolve=>{releaseSlow=resolve;});
+  const first=new Promise(resolve=>{resolveFirst=resolve;});
+  const html=fs.readFileSync('web-games/daechung-rpg/unity/index.html','utf8');
+  const snapshots=[];
+  const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces,buildCard})',{
+    document:{readyState:'loading',addEventListener(){}},AbortController,setTimeout,clearTimeout,
+    fetch:async(url,options={})=>{
+      if(String(url).includes('/slow/')){await slow;return{ok:false};}
+      if(String(url).includes('/unity/'))return{ok:false};
+      if(String(url).includes('index.html'))return{ok:true,text:async()=>html};
+      if(options.method==='HEAD')return{ok:true};
+      return{ok:false};
+    }
+  });
+  api.setExposure({unityWebEnabled:true,games:[]});
+  const row=id=>({id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',unityProjectPath:'unity-games/'+id});
+  const pending=api.bindAvailableUnityWebSurfaces({games:[row('ready'),row('slow')]},snapshot=>{
+    snapshots.push(snapshot);resolveFirst(snapshot);
+  }).then(result=>{finished=true;return result;});
+  try{
+    const shown=await first;
+    assert.equal(finished,false,'slow unrelated lookup must not withhold a confirmed launch link');
+    assert.equal(shown.games[0].unityWebAvailable,true);
+    assert.equal(shown.games[0].unityWebVerified,false,'bundle presence alone must never manufacture QA approval');
+    assert.equal(shown.games[1].unityWebAvailable,false);
+    assert.match(api.buildCard(shown.games[0]),/href="\/web-games\/ready\/"/);
+  }finally{releaseSlow();}
+  const final=await pending;
+  assert.equal(final.games[0].unityWebTestUrl,'/web-games/ready/');
+  assert.equal(final.games[1].unityWebAvailable,false);
+  assert.equal(snapshots.length,1);
+});
+
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(renderer+';({setExposure(value){platformExposure=value},developmentRows,internalReleaseRows,hasRunnableHomepageTarget,buildCard})',{
@@ -402,7 +438,7 @@ test('homepage exposes only verified native 3D Unity WebGL as a development link
   assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageTestLinkIsNotDeploymentOrRelease,true);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const required=[
-    'async function bindAvailableUnityWebSurfaces(catalog)',
+    'async function bindAvailableUnityWebSurfaces(catalog,onAvailable=()=>{})',
     'projectPath===`unity-games/${id}`',
     'for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`])',
     'probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`)',
