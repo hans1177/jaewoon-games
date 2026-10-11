@@ -3,111 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-gjka5c",
-      "worker": "vibe2",
-      "taskId": "human-go-studio-evolution-roblox-stability-v1",
-      "gameId": "human-go",
-      "files": [
-        "roblox-games/human-go/client/Game.client.luau",
-        "roblox-games/human-go/shared/GameConfig.luau",
-        "roblox-games/human-go/server/Game.server.luau"
-      ],
-      "baseSha": "0bfca0b3293a33479c20bbe1d98b726517807212",
-      "runId": "38104499534",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T03:46:40.585Z",
-      "expiresAt": "2026-10-11T04:31:40.585Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:human-go-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
-      "id": "wl-1pus2ds",
-      "worker": "vibe2",
-      "taskId": "tower-choice-rpg-studio-evolution-roblox-usability-v1",
-      "gameId": "tower-choice-rpg",
-      "files": [
-        "roblox-games/tower-choice-rpg/client/Game.client.luau",
-        "roblox-games/tower-choice-rpg/shared/GameConfig.luau",
-        "roblox-games/tower-choice-rpg/server/Game.server.luau"
-      ],
-      "baseSha": "0bfca0b3293a33479c20bbe1d98b726517807212",
-      "runId": "38104499534",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T03:47:18.573Z",
-      "expiresAt": "2026-10-11T04:32:18.573Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:tower-choice-rpg-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-j2ntsw",
-      "worker": "vibe2",
-      "taskId": "territory-war-studio-evolution-roblox-usability-v1",
-      "gameId": "territory-war",
-      "files": [
-        "roblox-games/territory-war/client/Game.client.luau",
-        "roblox-games/territory-war/shared/GameConfig.luau",
-        "roblox-games/territory-war/server/Game.server.luau"
-      ],
-      "baseSha": "0bfca0b3293a33479c20bbe1d98b726517807212",
-      "runId": "38104499534",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T03:48:01.219Z",
-      "expiresAt": "2026-10-11T04:33:01.219Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:territory-war-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-3n5jht",
-      "worker": "vibe2",
-      "taskId": "core-clash-4v4-studio-evolution-roblox-usability-v1",
-      "gameId": "core-clash-4v4",
-      "files": [
-        "roblox-games/core-clash-4v4/client/Game.client.luau",
-        "roblox-games/core-clash-4v4/shared/GameConfig.luau",
-        "roblox-games/core-clash-4v4/server/Game.server.luau"
-      ],
-      "baseSha": "0bfca0b3293a33479c20bbe1d98b726517807212",
-      "runId": "38104499534",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T03:48:03.056Z",
-      "expiresAt": "2026-10-11T04:33:03.056Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:core-clash-4v4-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-1af4mau",
-      "worker": "vibe2",
-      "taskId": "defense-studio-evolution-roblox-usability-v1",
-      "gameId": "defense",
-      "files": [
-        "roblox-games/defense/client/Game.client.luau",
-        "roblox-games/defense/shared/GameConfig.luau",
-        "roblox-games/defense/server/Game.server.luau"
-      ],
-      "baseSha": "0bfca0b3293a33479c20bbe1d98b726517807212",
-      "runId": "38104499534",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T03:48:18.541Z",
-      "expiresAt": "2026-10-11T04:33:18.541Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:defense-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-xmovap",
       "worker": "vibe2",
       "taskId": "egg-heist-studio-evolution-roblox-usability-v1",
@@ -397,6 +292,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-brahmadaitya-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-8bq88u",
+      "worker": "vibe2",
+      "taskId": "internal-motion-boggart-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/boggart/init.luau"
+      ],
+      "baseSha": "01e7b6141d186e79854d8febd4430a64a3b7704b",
+      "runId": "38107229736",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T04:33:36.174Z",
+      "expiresAt": "2026-10-11T05:18:36.174Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-boggart-walk-v1"
       ]
     }
   ]
