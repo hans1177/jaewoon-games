@@ -206,6 +206,7 @@ jobs:
           PY
 
       - name: Verify Unity Web development-floor contract
+        id: source_preflight
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -225,11 +226,24 @@ jobs:
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
           console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
           NODE
+          # 기존 원본 검증기의 실패 원인을 수정 대기열에 정확히 전달한다.
+          preflight_log="$RUNNER_TEMP/unity-web-source-preflight.log"
+          set +e
           node tools/company-unity-web-first-stage.mjs \
             --game-id="$GAME_ID" \
             --source-root="$PROJECT_PATH" \
             --build-method="$BUILD_METHOD" \
-            --validate-only
+            --validate-only 2>&1 | tee "$preflight_log"
+          preflight_code="${PIPESTATUS[0]}"
+          set -e
+          if [ "$preflight_code" -ne 0 ]; then
+            failure_signature="$(grep -Eo 'UNITY_WEB_[A-Z0-9_]+(:[^[:space:]]+)?' "$preflight_log" | head -n 1 | cut -d: -f1 || true)"
+            failure_signature="${failure_signature:-UNITY_WEB_SOURCE_PREFLIGHT_FAILED}"
+            echo 'failure_stage=UNITY_WEB_SOURCE_PREFLIGHT' >> "$GITHUB_OUTPUT"
+            echo "failure_signature=$failure_signature" >> "$GITHUB_OUTPUT"
+            echo "UNITY_WEB_SOURCE_PREFLIGHT_FAILURE=$failure_signature"
+            exit "$preflight_code"
+          fi
 
       - name: Bind canonical Unity source tree
         id: source
@@ -1124,11 +1138,13 @@ jobs:
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
+          SOURCE_PREFLIGHT_FAILURE_STAGE: ${{ steps.source_preflight.outputs.failure_stage }}
+          SOURCE_PREFLIGHT_FAILURE_SIGNATURE: ${{ steps.source_preflight.outputs.failure_signature }}
         run: |
           set -euo pipefail
           echo 'required=true' >> "$GITHUB_OUTPUT"
-          failure_stage=UNITY_WEB_BUILD_OR_READINESS
-          failure_signature=REPAIR_REQUIRED
+          failure_stage="${SOURCE_PREFLIGHT_FAILURE_STAGE:-UNITY_WEB_BUILD_OR_READINESS}"
+          failure_signature="${SOURCE_PREFLIGHT_FAILURE_SIGNATURE:-REPAIR_REQUIRED}"
           # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
           for filename in unity-web-post-deploy-mobile.json unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
             evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"

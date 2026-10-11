@@ -46,10 +46,12 @@ test('실제 제작 애니메이션 시트의 크기와 비어 있지 않은 픽
     assert.match(visuals, /Resources\.Load<Texture2D>\("DaechungArt\//);
     assert.match(visuals, /SetRegionVisual/);
     assert.match(visuals, /SetEnemyIdentity/);
-    assert.match(visuals, /Shader\.Find\("Jaewoon\/DaechungPixelArt"\)/);
+    // 기존 이미지 아트는 보존하지만 3D 화면은 원래 네이티브 Unity 셰이더를 사용한다.
+    assert.match(visuals, /Shader\.Find\("Standard"\)/);
+    assert.doesNotMatch(visuals, /AddComponent<SpriteRenderer>\(\)/);
 });
 
-test('2.5D 카메라·실제 공간 지형·지역별 깊이 표현과 WebGL 성능 게이트를 유지한다', () => {
+test('3D 원근 카메라·입체 지형·지역별 깊이 표현과 WebGL 성능 게이트를 유지한다', () => {
     assert.match(visuals, /camera\.orthographic\s*=\s*false/);
     assert.match(visuals, /camera\.transform\.LookAt/);
     assert.match(visuals, /_sceneCamera\.fieldOfView = Mathf\.Clamp/);

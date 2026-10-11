@@ -693,7 +693,10 @@ test('Daechung 3D visual actor and world repair emits measured native-depth evid
   assert.match(actor,/GameObject\.CreatePrimitive\(shape\)/);
   assert.match(actor,/part\.GetComponent<MeshRenderer>\(\)\.sharedMaterial = material/);
   assert.match(actor,/UnityEngine\.Object\.Destroy\(collider\)/);
-  assert.match(actor,/_renderer\.enabled = false/);
+  assert.doesNotMatch(actor,/\bSpriteRenderer\s+_renderer\b/);
+  assert.match(actor,/public bool SpriteVisible/);
+  assert.match(actor,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+  assert.match(actor,/if \(_model != null\) _model\.SetActive\(visible && _skin != null\)/);
   assert.match(actor,/HasVisibleVolumetricMesh/);
   assert.match(actor,/_model\.transform\.localRotation = Quaternion\.Euler/);
   for(const symbol of ['SetIdentity','SetTint','FaceRight','SetVisible','AddClip','Play','Tick'])
@@ -710,4 +713,18 @@ test('Daechung 3D scene work keeps the canonical combat, touch and save authorit
   assert.doesNotMatch(source,/PlayerPrefs\.DeleteAll|DeleteKey\(|SaveKey\s*=|experienceReward\s*=|goldReward\s*=/);
   assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
   assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+});
+
+
+test('Daechung native 3D GameObjects contain no active 2D gameplay components',()=>{
+  const visual=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  const executable=visual.replace(/@?"(?:""|\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,' ');
+  assert.doesNotMatch(executable,/\b(?:SpriteRenderer|Physics2D|Rigidbody2D|Collider2D|Tilemap)\b/);
+  assert.doesNotMatch(visual,/_renderer\.sprite\s*=/);
+  assert.match(visual,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+  assert.match(visual,/_backdrop = sprite/);
+  assert.match(visual,/backdropTexture\.width > 0 && backdropTexture\.height > 0/);
+  assert.match(visual,/HasVisibleVolumetricMesh/);
+  assert.match(visual,/SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH/);
+  assert.match(visual,/worldMeshes3d >= 2 && worldDepthCm >= 50/);
 });

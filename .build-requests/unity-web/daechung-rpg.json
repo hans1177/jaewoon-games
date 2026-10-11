@@ -1,16 +1,16 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-daechung-native-volume-3d-webgl-repair-20261011",
+  "requestId": "owner-daechung-native-3d-sprite-preflight-repair-20261011",
   "gameId": "daechung-rpg",
   "projectPath": "unity-games/daechung-rpg",
   "buildMethod": "JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb",
   "sourceCommit": "",
   "outputRoot": "web-games/daechung-rpg",
-  "purpose": "PUBLIC_BROWSER_TEST_FROM_REAL_NATIVE_UNITY_3D_SOURCE; REBUILD_LATEST_MAIN_AFTER_CAUSAL_RENDER_REPAIR; REPLAY_LOCAL_AND_CLOUDFLARE_MOBILE_TOUCH_COMBAT_REWARD_SAVE; REQUIRE_MEASURED_NATIVE_MESH_PERSPECTIVE_AND_WORLD_DEPTH; KEEP_REPAIR_REQUIRED_UNTIL_INDEPENDENT_QA_VERIFIED",
+  "purpose": "PUBLIC_BROWSER_TEST_FROM_REAL_NATIVE_UNITY_3D_SOURCE; REMOVE_ACTIVE_2D_RENDERER_COMPONENTS; BUILD_LATEST_MAIN; REVALIDATE_MOBILE_TOUCH_COMBAT_REWARD_SAVE; REPLAY_POST_DEPLOY_CLOUDFLARE_GAMEPLAY; KEEP_REPAIR_REQUIRED_UNTIL_VERIFIED",
   "upperPlatformReadinessGate": "UPPER_PLATFORM_DEVELOPMENT_READY",
   "requiredDimension": "3D",
   "releaseAuthority": false,
   "noLegacyHtmlAsUnity": true,
-  "repairCause": "REAL_NATIVE_3D_ACTOR_AND_WORLD_DEPTH_REPAIR_FROM_RECORDED_MOBILE_BROWSER_FAILURE"
+  "repairCause": "UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:PrototypeAnimatedVisuals.cs"
 }
