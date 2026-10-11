@@ -683,6 +683,100 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-mobile-layout-regression-20261012",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-Codex",
+      "engine": "roblox",
+      "gameId": "cozy-island",
+      "domains": [
+        "MOBILE_INPUT",
+        "UI_STATE",
+        "DEBUGGING",
+        "ASSET_ADAPTATION"
+      ],
+      "patterns": [
+        "Execute the existing Luau layout function across narrow portrait and landscape viewports, touch/non-touch input and menu states; check clipping, visible-region overlap and minimum hit size.",
+        "For a landscape popup that intersects the right action dock, use a left top anchor and a width-limited dock while preserving existing action callbacks and gameplay state.",
+        "Treat Luau mocks and source-layout assertions as static evidence. Require matching-revision Roblox captures and observed device touch before claiming engine or mobile input success."
+      ],
+      "cautions": [
+        "Do not hide overlap by deleting gameplay controls or weakening geometry assertions.",
+        "Do not regenerate intentionally removed generic client VFX when refreshing an unrelated asset binding."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "9bcec2377248c5bb414b172967252db444ae173fabbda3eae78146bb463e8665",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/ce8e20e7cb4b92633c01c9fc78d47e545205ac85",
+          "qa:qa/cozy-rpg-release-hardening.test.mjs#authored cozy layout:7-viewports",
+          "qa:qa/roblox-rpg-menu.test.mjs#replicated inventory/equipment/shop"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:openai-roblox-library-fingerprint-repair-20261012",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI",
+      "model": "GPT-Codex",
+      "engine": "roblox",
+      "gameId": "daechung-rpg",
+      "domains": [
+        "ASSET_PRODUCTION",
+        "ASSET_ADAPTATION",
+        "DEBUGGING",
+        "REGRESSION_REPAIR"
+      ],
+      "patterns": [
+        "When an asset-library update invalidates an existing Roblox package, derive library version, selection and source-usage fingerprints through the existing canonical binding plan; do not copy arbitrary hashes.",
+        "Review the canonical binder output before applying it: preserve intentional client changes and server/save/balance code when the repair concerns only managed asset identity fields.",
+        "Keep source-usage metadata, native uploaded IDs, actual rendered assets and runtime verification separate; a successful exact-revision Rojo package proves packaging only.",
+        "Preserve CC0 source hashes and licenses. Fill reusable scope and file roles from the existing registry synchronizer without promoting unuploaded GLBs or PBR channels to runtime success."
+      ],
+      "cautions": [
+        "Do not stamp productionVerified or invent Roblox asset IDs to satisfy the package gate.",
+        "Do not resume held Unity or Unity Web development while repairing Roblox library bindings."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "44826de7acc5919b8105126e5a52d80b02a81c97ca9fa02df5edfbe094878a78",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/758c1fdaf3b58e512bd868d2e1bc2623aad7cfa8",
+          "qa:qa/company-development-roblox-package.test.mjs",
+          "qa:qa/roblox-material-pbr.test.mjs",
+          "artifact:sha256:c24b281f363f3747f6fb4008abbe69495ccbecdafe303bfd6b0e1130bdd4ef54:local-Rojo-only"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {

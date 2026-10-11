@@ -542,3 +542,22 @@ test('System AI promotes failure-specific successful repair only after independe
   assert.ok(verified.library.patterns[0].tags.includes('f0_source_preflight'));
   assert.equal(verified.queue.tasks[0].learningPromotion,'PROMOTED');
 });
+
+test('System AI retrieves source-verified Roblox mobile and asset repairs without runtime or weight claims',()=>{
+  const external=JSON.parse(fs.readFileSync('.vibe2/external-ai-distilled-knowledge.json','utf8'));
+  for(const [gameId,suffix,goal] of [
+    ['cozy-island','mobile-layout-regression','repair mobile touch UI_STATE landscape popup dock overlap in existing Roblox layout'],
+    ['daechung-rpg','library-fingerprint-repair','repair ASSET_PRODUCTION ASSET_ADAPTATION library version selection source usage fingerprint package binding']
+  ]){
+    const entryId=`external-ai-distilled:openai-roblox-${suffix}-20261012`;
+    const entry=external.entries.find(row=>row.id===entryId);
+    assert.ok(entry,entryId);
+    assert.equal(entry.verification.method,'source-backed-review');
+    for(const flag of ['directTrainingSample','directMasteryCredit','directProductionPass','authorityExpanded'])assert.equal(entry[flag],false,flag);
+    const context=buildSystemAiLearningContext({task:{id:gameId+'-causal-repair',gameId,target:'roblox',taskType:'bottleneck-repair',goal,responsibleFiles:[`roblox-games/${gameId}/client/Game.client.luau`]},experienceInput:{records:[]},codePatternsInput:{patterns:[]},masteryInput:{},externalAiDistilledInput:external});
+    assert.ok(context.exactKnowledgeIds.includes('EXTERNAL_AI_DISTILLED:'+entryId),entryId);
+    assert.equal(context.rawModelOutputIncluded,false);
+    assert.equal(context.advisoryOnly,true);
+    assert.equal(context.authorityExpanded,false);
+  }
+});
