@@ -1325,11 +1325,17 @@ JAEWOON_UNITY_WEB_QA BOOT/STATE와 장르에 맞는 START 또는 REGION, ACTION 
   }
 
   if(repairState||!buildWebReady||!qaReady||readiness.pass!==true){
+    // 소스에서 실제 2D 컴포넌트 참조를 확인해, 런타임 실패로 오인하기 전에 원본 시각 책임 파일을 지정한다.
+    // 주석·문자열은 기존 Unity Web 소스 검증기와 동일하게 판정에서 제외한다.
+    const nativeVisualSource=readText(sourceFile(repoRoot,nativeVisualRel));
+    const executableVisualSource=nativeVisualSource.replace(/@?"(?:""|\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\/\*[\s\S]*?\*\/|\/\/[^\n]*/g,' ');
+    const native2dGameplayDetected=/\b(?:Rigidbody2D|Collider2D|BoxCollider2D|CircleCollider2D|PolygonCollider2D|CapsuleCollider2D|EdgeCollider2D|CompositeCollider2D|Physics2D|SpriteRenderer|Tilemap|TilemapRenderer|TilemapCollider2D|SpriteShapeRenderer)\b/u.test(executableVisualSource);
     const id=nextCausalGenerationId(queue,`${project.gameId}-unity-web-repair`);if(!id)return null;
     const reasons=[
       repairState?'company-runtime:WEB_VIBE_REPAIR_REQUIRED':'',
       !buildWebReady?'BUILD_WEB_METHOD_MISSING':'',
       !qaReady?'UNITY_WEB_QA_CONTRACT_MISSING':'',
+      native2dGameplayDetected?'UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D':'',
       readiness.pass!==true?'UPPER_PLATFORM_READINESS:'+readinessReason:'',
       bootstrapGraphicsBlocked?'GRAPHICS_BUILDUP_REQUIRED':'',
       multiplayerRepairRequired?'MULTIPLAYER_2PLUS_AUTHORITATIVE_SYNC_REQUIRED':''
@@ -1346,11 +1352,11 @@ MOBILE_TARGET은 실제 화면 컨트롤 위치여야 하고 MOBILE_INPUT은 브
 UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY/QA/PORTABILITY 7개 기준을 우회하거나 boolean만 조작하는 수정은 금지한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
     // 기존 Unity 게임의 2D·2.5D 게임플레이 표현은 원본 시각 책임 파일에서 직접 3D로 교체한다.
     // 관련 없는 UI 스프라이트와 저장·전투 로직은 그대로 둔다.
-    const nativeVisualSource=readText(sourceFile(repoRoot,nativeVisualRel));
     const nativeVisualNeeded=Boolean(nativeVisualSource)
       &&(readinessReason==='READINESS_NATIVE_3D_MESH_EVIDENCE_REQUIRED'
         ||readiness?.data?.criteria?.graphics?.native3dVerified===false
-        ||/\bSpriteRenderer\b|\b2[._]?5D\b|\b2D\s*(?:player|enemy|actor|character|NPC|몬스터|캐릭터)/i.test(nativeVisualSource));
+        ||native2dGameplayDetected
+        ||/\b2[._]?5D\b|\b2D\s*(?:player|enemy|actor|character|NPC|몬스터|캐릭터)/i.test(nativeVisualSource));
     const files=[coreRel,runtimeRel,floorRuntimeRel,...(nativeVisualNeeded?[nativeVisualRel]:[])]
       .filter(relative=>fs.existsSync(sourceFile(repoRoot,relative)));
     if(!buildWebReady){
@@ -1377,6 +1383,8 @@ UPPER_PLATFORM_DEVELOPMENT_READY의 DESIGN/CODE/GRAPHICS/WEBGL_BUILD/ACTUAL_PLAY
       'unity-web-first-stage',
       'owner-unity-web-native-3d-required',
       'unity-web-development-floor:v1',
+      ...(native2dGameplayDetected?['unity-web-native-2d-source-confirmed:YES',
+        'unity-web-source-failure:UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D']:[]),
       'platform-responsibility-split:unity-web-core-runtime',
       'same-game-cross-platform-parallel:responsible-files-only',
       'upper-platform-readiness:'+readinessReason,
