@@ -2461,6 +2461,9 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
     id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,
     types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
     module,sourceModel,meshModel,
+    librarySourceAssetId:clean(recipe?.librarySourceAssetId)||null,
+    librarySourceSha256:clean(recipe?.librarySourceSha256)||null,
+    automaticLibraryDerivative:recipe?.automaticLibraryDerivative===true,
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,
     sourceSanitized:recipe?.sourceSanitized===true,
@@ -2475,7 +2478,7 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   });
 }
 const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','weapon','prop']);
-function genericNativeDccRecipeForType({target='',task={},type=''}={}){
+function genericNativeDccRecipeForType({target='',task={},type='',librarySource=null}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
   if(!['web','roblox','unity'].includes(targetName))return null;
@@ -2498,7 +2501,8 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
   const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
     ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
-  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel));
+  const linkedSourceModel=clean(librarySource?.sourceModel);
+  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel)||linkedSourceModel);
   const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
     :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
   const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
@@ -2529,10 +2533,10 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     .find(row=>clean(row?.path||row?.imageRef||row?.imagePath));
   const sourceImage=clean(task.assetAuthoring?.sourceImage||task.assetImagePath
     ||imageRow?.path||imageRow?.imageRef||imageRow?.imagePath).replaceAll('\\','/');
-  const sourceModel=clean(task.assetAuthoring?.sourceModel).replaceAll('\\','/');
-  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||task.assetAuthoring?.imageLicense
-    ||imageRow?.license);
-  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||imageRow?.attribution||imageRow?.credit);
+  const sourceModel=clean(task.assetAuthoring?.sourceModel||linkedSourceModel).replaceAll('\\','/');
+  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense
+    ||task.assetAuthoring?.imageLicense||imageRow?.license);
+  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
   const checkSourceLicense=()=>{
     if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
       throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
@@ -2579,6 +2583,9 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
     cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
     cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
     sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,
+    librarySourceAssetId:linkedSourceModel?clean(librarySource?.sourceAssetId):null,
+    librarySourceSha256:linkedSourceModel?clean(librarySource?.sourceSha256):null,
+    automaticLibraryDerivative:Boolean(linkedSourceModel),
     sourceLicense:(imageRequested||modelRequested)?sourceLicense:null,sourceCredit,
     executor:'BLENDER_PYTHON',
     script:'assets/native-authoring/build-game-visual.py',
@@ -2605,7 +2612,7 @@ function genericNativeDccRecipeForType({target='',task={},type=''}={}){
   };
 }
 
-function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},explicitRequestedTypes=[]}={}){
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},assetSupplySummary=null,repoRoot=process.cwd(),explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
@@ -2648,12 +2655,43 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const webRequestedActorDccTypes=webNativeTarget
     ?dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type))
     :[];
+  // [자동 재질 파생] 동일 게임 요구와 역할이 일치한 내부 원본만 실제 파일·해시를 검사해 기존 DCC로 연결한다.
+  const materialDerivationRequested=/(?:PBR|material|texture|assetization|재질|텍스처|색감|자산화|소폭\s*(?:수정|변경|보정))/i.test(clean(task.goal||task.request))
+    &&!clean(task.assetAuthoring?.sourceModel)&&!clean(task.assetAuthoring?.sourceImage)
+    &&task.assetAuthoring?.automaticLibraryDerivation!==false;
+  const librarySourceByFamily=new Map();
+  if(materialDerivationRequested){
+    for(const row of assetSupplySummary?.nextActions||[]){
+      if(row?.action!=='ADAPT'||row.roleEvidence?.verifiedRoleMatch!==true
+        ||row.libraryReuse?.derivativeCandidateReady!==true)continue;
+      const sourceModel=clean(row.libraryReuse.sourceModel),license=clean(row.libraryReuse.sourceLicense);
+      if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)||sourceModel.split('/').includes('..'))continue;
+      try{
+        const root=fs.realpathSync(repoRoot),real=fs.realpathSync(path.resolve(repoRoot,sourceModel));
+        if(!real.startsWith(root+path.sep)||!fs.statSync(real).isFile())continue;
+        const size=fs.statSync(real).size;
+        if(size<1||size>64*1024*1024)continue;
+        const sourceSha256=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+        const expected=clean(row.libraryReuse.expectedSourceSha256);
+        if(expected&&expected!==sourceSha256)continue;
+        if(!['project-original','cc0','cc-by'].includes(license))continue;
+        librarySourceByFamily.set(clean(row.family).toUpperCase(),freeze({
+          sourceAssetId:row.assetId,sourceModel,sourceLicense:license,
+          sourceCredit:row.libraryReuse.sourceCredit,sourceSha256
+        }));
+      }catch{} // 원본·권리·해시 불일치는 자동 제작이 아니라 기존 검수/수리 경로로 돌린다.
+    }
+  }
+  const libraryDerivationTypes=decisions.filter(row=>
+    ['background','environment','item','weapon','prop'].includes(clean(row.type).toLowerCase())
+    &&librarySourceByFamily.has(nativeDccFamilyForTypes([row.type]))
+  ).map(row=>clean(row.type).toLowerCase());
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
-    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
+    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes,...libraryDerivationTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
   const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
-    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
+    ?unique([...dccCapableTypes.filter(type=>requestedDccScope.includes(type)),...libraryDerivationTypes])
     :[];
   const declaredDccTypes=(engineNativeTarget||webNativeTarget)?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
@@ -2691,7 +2729,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const concreteCovers=type=>concreteRecipes.some(row=>!row.types.length||row.types.includes(type));
   const normalizedGeneric=uniqueDccTypes
     .filter(type=>!explicitRecipeTypes.includes(type)&&!concreteCovers(type))
-    .map(type=>genericNativeDccRecipeForType({target:targetName,task,type}))
+    .map(type=>genericNativeDccRecipeForType({target:targetName,task,type,
+      librarySource:librarySourceByFamily.get(nativeDccFamilyForTypes([type]))||null}))
     .filter(Boolean)
     .map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{},target,uniqueDccTypes))
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch);
@@ -4345,12 +4384,24 @@ export function buildVibeAssetProductionPlan({
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
+  // 현재 라이브러리와 실제 게임 소비 관계를 한번 결정한 뒤 네이티브 파생 제작에도 동일하게 사용한다.
+  const assetSupplySummary=buildAssetSupplyDecisionSummary({
+    gameId:task.gameId,
+    target:resolvedTarget,
+    request,
+    requirements:flowAssetRequirements,
+    registry:librarySync.sourceConsumerRegistry||companyRegistry,
+    executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
+    sourceConsumerSummary:librarySync.sourceConsumerSync
+  });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
     decisions,
     manifest:manifestInput,
     registry:selectionRegistry,
+    assetSupplySummary,
+    repoRoot,
     explicitRequestedTypes:selector.explicitRequestedTypes||[]
   });
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
@@ -5013,15 +5064,6 @@ export function buildVibeAssetProductionPlan({
     runtimeVerifiedCount:0,newQueueCreated:false,shadowUiPipelineCreated:false,
     implementationOwner:'VIBE2_VIBE3_EXISTING_GAME_SOURCE',dataOwner:'GAMEPLAY_AND_SERVER',
     missingGameSystemCannotBeInvented:true,existingGameplayAndSaveMustRemain:true
-  });
-  const assetSupplySummary=buildAssetSupplyDecisionSummary({
-    gameId:task.gameId,
-    target:resolvedTarget,
-    request,
-    requirements:flowAssetRequirements,
-    registry:librarySync.sourceConsumerRegistry||companyRegistry,
-    executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
-    sourceConsumerSummary:librarySync.sourceConsumerSync
   });
   return freeze({
     version:1,
