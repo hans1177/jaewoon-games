@@ -1603,10 +1603,10 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         // [실사용 자산 추적] 등록용 StudioAssets 목록은 소비 근거가 아니다.
         // 현재 게임 코드의 실제 원자 사용 호출만 식별자 바인딩으로 기록한다.
         const usageBody=usageSource.replace(/^\s*(?:--|\/\/)[^\r\n]*/gm,' ');
-        for(const match of usageBody.matchAll(/\bhasStudioAssetAtom\s*\(\s*(?:['"][A-Z][A-Z0-9_]*['"]\s*,\s*)?['"]([A-Z][A-Z0-9_.:-]{1,95})['"]\s*\)/g)){
+        for(const match of usageBody.matchAll(/\bhasStudioAssetAtom\s*\(\s*(?:['"][A-Z][A-Z0-9_]*['"]\s*,\s*)?['"]([A-Za-z][A-Za-z0-9_.:-]{1,95})['"]\s*\)/g)){
           addToken(usageTokens,match[1],relative);
         }
-        for(const match of usageBody.matchAll(/\btable\.find\s*\(\s*studioAssetFamily\s*\(\s*['"][A-Z][A-Z0-9_]*['"]\s*\)\s*,\s*['"]([A-Z][A-Z0-9_.:-]{1,95})['"]\s*\)/g)){
+        for(const match of usageBody.matchAll(/\btable\.find\s*\(\s*studioAssetFamily\s*\(\s*['"][A-Z][A-Z0-9_]*['"]\s*\)\s*,\s*['"]([A-Za-z][A-Za-z0-9_.:-]{1,95})['"]\s*\)/g)){
           addToken(usageTokens,match[1],relative);
         }
         for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){

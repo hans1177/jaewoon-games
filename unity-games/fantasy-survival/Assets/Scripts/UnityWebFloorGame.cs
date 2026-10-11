@@ -786,10 +786,20 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_SKIN_OR_MOTION_INVALID");
         foreach(Transform bone in nativeActor.GetComponentsInChildren<Transform>(true))
             if(bone.name=="WeaponGrip"){playerWeaponGrip=bone;break;}
-        if(playerWeaponGrip==null || playerNativeMotion["IDLE_BREATH"]==null
-            || playerNativeMotion["RUN"]==null || playerNativeMotion["ATTACK_LIGHT_SLASH"]==null
-            || playerNativeMotion["GUARDIAN_REVIVE"]==null || playerNativeMotion["GUARDIAN_PARRY"]==null)
-            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING");
+        if(playerWeaponGrip==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING:WeaponGrip");
+        // 모션 · 빌드에 포함된 동일 가디언 리그의 실제 클립을 실행 인스턴스에 직접 연결한다.
+        // 프리팹의 AnimationState 유실을 이름 표식이나 임시 모션으로 대체하지 않는다.
+        foreach(string action in new[]{"IDLE_BREATH","RUN","ATTACK_LIGHT_SLASH","ATTACK_HEAVY",
+            "HIT_FRONT","GUARDIAN_REVIVE","GUARDIAN_PARRY"})
+        {
+            AnimationClip clip=Resources.Load<AnimationClip>("CompanyAssets/MagicForestGuardian_"+action);
+            if(clip==null || !clip.legacy || clip.empty)
+                throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING:"+action);
+            playerNativeMotion.AddClip(clip,action);
+            if(playerNativeMotion[action]==null)
+                throw new InvalidOperationException("MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_BINDING_FAILED:"+action);
+        }
         PlayNativeMotion(playerNativeMotion,"IDLE_BREATH");
         Debug.Log("MAGIC_FOREST_PLAYER_NATIVE_CHARACTER=GUARDIAN_SKINNED_MESH_AND_ACTION_READY_RUNTIME_QA_REQUIRED"
             +" vertices="+skin.sharedMesh.vertexCount+" joints="+skin.bones.Length);
