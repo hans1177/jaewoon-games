@@ -1499,13 +1499,14 @@ function sourceConsumerRoots({repoRoot,game}={}){
 }
 function sourceConsumerAssetReference({repoRoot,file,raw}={}){
   const value=clean(raw).replaceAll('\\','/');
+  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   let absolute='';
-  if(value.startsWith('/assets/'))absolute=path.resolve(repoRoot,value.slice(1));
-  else if(value.startsWith('assets/'))absolute=path.resolve(repoRoot,value);
-  else if(/^(?:\.\.\/|\.\/)+assets\//.test(value))absolute=path.resolve(path.dirname(file),value);
+  if(value.startsWith('/')&&allowed.test(value.slice(1)))absolute=path.resolve(repoRoot,value.slice(1));
+  else if(allowed.test(value))absolute=path.resolve(repoRoot,value);
+  else if(/^(?:\.\.\/|\.\/)+/.test(value))absolute=path.resolve(path.dirname(file),value);
   if(!absolute)return'';
   const relative=sourceConsumerPath(path.relative(repoRoot,absolute));
-  if(relative.startsWith('../')||!relative.startsWith('assets/'))return'';
+  if(relative.startsWith('../')||!allowed.test(relative))return'';
   try{return fs.statSync(absolute).isFile()?relative:'';}catch{return'';}
 }
 function collectSourceConsumerJsonPaths(value,{repoRoot,file,out}={}){
@@ -1580,11 +1581,34 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
         scannedFileCount+=1;scannedBytes+=stat.size;
         const relative=sourceConsumerPath(path.relative(repoRoot,file));
         fingerprintRows.push([relative,crypto.createHash('sha256').update(source).digest('hex')]);
-        for(const match of source.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(tokens,match[1],relative);
-        const usageSource=sourceConsumerUsageSource(source);
-        for(const match of usageSource.matchAll(/["']([A-Za-z0-9][A-Za-z0-9_.:-]{1,95})["']/g))addToken(usageTokens,match[1],relative);
-        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*assets\/[A-Za-z0-9._\/-]+)/g)){
+        for(const match of source.matchAll(/((?:\.\.\/|\.\/)*(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)[A-Za-z0-9._/-]+)/g)){
           addAssetPath(sourceConsumerAssetReference({repoRoot,file,raw:match[1]}),relative);
+        }
+        // Unity Resources.Load consumes imported assets without their extensions.
+        // Resolve only exact existing native files referenced by executable game code.
+        // This is source-bound evidence, never proof of an actual rendered frame.
+        if(root.relative.startsWith('unity-games/')){
+          const resourceRoot=root.relative+'/Assets/Resources/';
+          const extensions=['.obj','.fbx','.prefab','.asset','.mat','.png','.jpg','.jpeg','.json','.wav','.ogg','.mp3','.glb','.gltf'];
+          const bindResource=resource=>{
+            if(!/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/.test(resource))return;
+            for(const extension of extensions){
+              const assetPath=sourceConsumerAssetReference({repoRoot,file,raw:resourceRoot+resource+extension});
+              addAssetPath(assetPath,relative);
+            }
+          };
+          for(const match of usageSource.matchAll(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*["']([A-Za-z0-9_/-]+)["']/g)){
+            bindResource(match[1]);
+          }
+          // Existing Unity-native visual consumer resolves CompanyAssets/<name> in
+          // BindCompanyVisual. Bind literal/conditional call sites only when that
+          // actual Resources.Load implementation exists in this same source file.
+          if(/\bResources\.Load(?:<[^>]+>)?\s*\(\s*["']CompanyAssets\/["']\s*\+\s*/.test(usageSource)){
+            for(const match of usageSource.matchAll(/\bBindCompanyVisual\s*\(\s*(?:[A-Za-z_$][\w$]*\s*\?\s*)?["']([A-Za-z0-9_-]+)["'](?:\s*:\s*["']([A-Za-z0-9_-]+)["'])?/g)){
+              bindResource('CompanyAssets/'+match[1]);
+              if(match[2])bindResource('CompanyAssets/'+match[2]);
+            }
+          }
         }
         if(path.extname(entry.name).toLowerCase()==='.json'){
           try{
@@ -1614,9 +1638,13 @@ function sourceConsumerSnapshot({repoRoot=process.cwd(),game={}}={}){
   return snapshot;
 }
 function sourceConsumerAssetPaths(asset={}){
+  const allowed=/^(?:assets\/|unity-games\/[A-Za-z0-9._-]+\/Assets\/|roblox-games\/[A-Za-z0-9._-]+\/)/;
   return unique([
-    ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),...(asset.nativeArtifacts||[])
-  ].map(sourceConsumerPath).filter(value=>value.startsWith('assets/')));
+    ...(asset.sourceFiles||[]),clean(asset.path).replace(/^\//,''),
+    ...(asset.nativeArtifacts||[]),asset.masterGlb,asset.meshArtifact,
+    ...(asset.fileRoles?.models||[]),...(asset.fileRoles?.runtimeCode||[]),
+    ...(asset.fileRoles?.materials||[]),...(asset.fileRoles?.textures||[])
+  ].map(sourceConsumerPath).filter(value=>allowed.test(value)));
 }
 function sourceConsumerIdentityTokens(asset={}){
   return unique([
