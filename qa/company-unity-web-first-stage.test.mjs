@@ -611,6 +611,20 @@ test('Unity monster adventure keeps real UV-less source meshes and uses triplana
   }
 });
 
+// 메인: 유니티 웹 사전검사 실패와 실제 라이선스 실패를 분리한다.
+test('Unity Web only enforces license activation when activation was attempted',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const start=workflow.indexOf('      - name: Enforce Unity activation');
+  const end=workflow.indexOf('      - name: Build Unity Web',start);
+  assert.ok(start>=0&&end>start);
+  const step=workflow.slice(start,end);
+  assert.ok(step.includes("if: ${{ always() && steps.license.outcome != 'skipped' }}"));
+  assert.match(step,/steps\.license\.outcome/);
+  assert.match(step,/exit 198/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_FAILURE_STAGE=/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_FAILURE_SIGNATURE=/);
+});
+
 test('Unity Web uses one shared retained editor cache per exact version without weakening runtime QA',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const steps=[
@@ -719,4 +733,56 @@ test('Unity Web actual browser failure signatures reach the existing Vibe repair
   assert.match(settlement,/unity-web-failure-signature:\$\{UNITY_WEB_FAILURE_SIGNATURE:-UNKNOWN\}/);
   assert.match(settlement,/vibe2-queue-control\.mjs fail/);
   assert.doesNotMatch(settlement,/vibe2-queue-control\.mjs pass/);
+});
+
+test('source-only Unity Web boot fails cheap F0 before Unity editor and preserves browser QA authority',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-boot-f0-'));
+  const gameId='source-only-game';
+  const root=path.join(tmp,'unity-games',gameId);
+  const scriptPath=path.join(root,'Assets','Scripts','Gameplay.cs');
+  try{
+    for(const part of ['Assets/Scripts','Assets/Editor','Packages','ProjectSettings'])
+      fs.mkdirSync(path.join(root,part),{recursive:true});
+    fs.mkdirSync(path.join(tmp,'company-learning'),{recursive:true});
+    fs.copyFileSync(path.join(repo,'company-learning','platform-release-roadmap.json'),
+      path.join(tmp,'company-learning','platform-release-roadmap.json'));
+    fs.writeFileSync(path.join(root,'Packages','manifest.json'),
+      JSON.stringify({dependencies:{'com.unity.modules.physics':'1.0.0'}}));
+    fs.writeFileSync(path.join(root,'ProjectSettings','ProjectVersion.txt'),
+      'm_EditorVersion: 6000.6.0f1\n');
+    fs.writeFileSync(path.join(root,'Assets','Editor','Build.cs'),
+      'public static class SeedAndroidBuild { public static void BuildWeb(){} }\n');
+    const prefix='using UnityEngine;\npublic class Gameplay : MonoBehaviour { MeshFilter world; '+
+      'private void Awake() { GameObject.CreatePrimitive(PrimitiveType.Cube); ';
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); } }\n');
+    const run=()=>execFileSync(process.execPath,[tool,'--game-id='+gameId,'--validate-only'],
+      {cwd:tmp,encoding:'utf8',timeout:15000});
+    assert.throws(run,error=>{
+      assert.match(String(error.stderr),
+        /UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED:unity-games\/source-only-game\/Assets\/Scripts\/Gameplay\.cs/);
+      return true;
+    });
+    // 주석에 적힌 가짜 PASS는 실제 SOURCE_READY_3D 로그의 실패를 숨기지 못한다.
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); '+
+      '// Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS");\n } }\n');
+    assert.throws(run,/UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED/);
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); '+
+      '/* Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS"); */ } }\n');
+    assert.throws(run,/UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED/);
+    // 같은 줄의 실제 두 개 로그는 각각 판정하고 실제 브라우저 PASS로 승격하지 않는다.
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=SOURCE_READY_3D"); '+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS"); } }\n');
+    assert.match(run(),/UNITY_WEB_SOURCE_PREFLIGHT=PASS/);
+    // A native real-world boot source may proceed to QA; F0 alone still cannot claim WebGL PASS.
+    fs.writeFileSync(scriptPath,prefix+
+      'Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=source-only-game status=PASS"); } }\n');
+    const verifiedSource=run();
+    assert.match(verifiedSource,/UNITY_WEB_SOURCE_PREFLIGHT=PASS/);
+    assert.doesNotMatch(verifiedSource,/UNITY_WEB_GAMEPLAY_QA=PASS/);
+    assert.doesNotMatch(verifiedSource,/UNITY_WEB_RUNTIME=PASS/);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
