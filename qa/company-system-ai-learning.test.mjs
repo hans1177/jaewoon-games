@@ -89,6 +89,15 @@ test('Vibe refuses to learn unverified stale-QA fixes or QA gate weakening',()=>
   assert.equal(run({...base,evidence:[...base.evidence,'qa-contract-drift:VERIFIED','current-policy-implementation-agreement:PASS']}).experienceAdded,0);
   const valid=run({...base,evidence:[...base.evidence,
     'qa-contract-drift:VERIFIED','current-policy-implementation-agreement:PASS','qa-gate-weakening:NO']});
+  // 실제 worker의 리뷰는 정책·구현 대조를 확인한 다음 자체 PASS 증거만 출력할 수 있다.
+  // 같은 검증을 통과했는데 별도의 수동 승인 표식이 없다는 이유로 학습을 놓치지 않는다.
+  const reviewed=run({...base,evidence:[...base.evidence,
+    'system-ai-qa-contract-review:PASS','qa-contract-drift:VERIFIED','qa-gate-weakening:NO']});
+  assert.equal(reviewed.experienceAdded,1);
+  assert.equal(reviewed.patternsAdded,1);
+  const unchecked=run({...base,evidence:[...base.evidence,
+    'system-ai-qa-contract-review:PASS','qa-contract-drift:VERIFIED']});
+  assert.equal(unchecked.experienceAdded,0);
   assert.equal(valid.experienceAdded,1);
   assert.equal(valid.patternsAdded,1);
   assert.ok(valid.experience.records[0].avoidPatterns.includes('STALE_QA_REQUIRES_CURRENT_POLICY_IMPLEMENTATION_TRIANGULATION'));
