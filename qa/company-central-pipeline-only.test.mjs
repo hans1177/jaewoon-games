@@ -6,6 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { runInNewContext } from 'node:vm';
 
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
@@ -60,13 +61,15 @@ test('platform-release-roadmap is the only production machine policy with author
   assert.equal(Object.hasOwn(roadmap,'legacyPolicyMirror'),false);
   assert.equal(roadmap.centralDocumentation.canonicalSet.policy,'company-learning/platform-release-roadmap.json');
 });
-test('owner policy defines exactly three platform targets on existing adapters and Unity Web floor',()=>{
+test('owner policy counts only Roblox and Unity Web development while retaining legacy native adapters',()=>{
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const direct=roadmap.directNativeDualPlatformDevelopment;
   const targets=direct.platformCountingPolicy;
   assert.equal(targets.authority,'OWNER_DIRECTIVE_2026-10-09');
-  assert.equal(targets.targetCount,3);
-  assert.deepEqual(targets.targets,['ROBLOX','UNITY_ANDROID','UNITY_WEB']);
+  assert.equal(targets.targetCount,2);
+  assert.deepEqual(targets.targets,['ROBLOX','UNITY_WEB']);
+  assert.deepEqual(targets.ownerHeldTargets,['UNITY_ANDROID']);
+  assert.equal(targets.unityAndroidDevelopmentPaused,true);
   assert.deepEqual(targets.existingExecutionBindings,{
     ROBLOX:'ROBLOX',UNITY_ANDROID:'UNITY',UNITY_WEB:'UNITY_WEB_FLOOR'
   });
@@ -87,7 +90,9 @@ test('owner policy defines exactly three platform targets on existing adapters a
   assert.equal(roadmap.finalDevelopmentLock.sequenceLock.status,'LOCKED');
   assert.equal(direct.unityWebDevelopmentLane.nativeReleaseGateAuthority,false);
   assert.equal(targets.noNewAdapterWorkflowOrShadowPipeline,true);
+  // Historical change records remain immutable; the current owner directive supersedes their active target count.
   assert.equal(roadmap.changeRecord.ownerThreePlatformTargets20261009.targetCount,3);
+  assert.deepEqual(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.activeTargets,['ROBLOX','UNITY_WEB']);
 });
 
 test('obsolete Roblox runtime v8 migration helpers are removed',()=>{
@@ -102,7 +107,7 @@ test('legacy autonomous top-level workflow namespace is removed',()=>{
   assert.deepEqual(legacy,[]);
 });
 
-test('central production runtime gates new Roblox and Unity work on Unity Web readiness',()=>{
+test('central production runtime keeps independent Roblox and Unity Web QA without a Roblox admission dependency',()=>{
   for(const file of centralWorkflows)assert.equal(exists(file),true,file+' must exist');
   const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
@@ -116,7 +121,9 @@ test('central production runtime gates new Roblox and Unity work on Unity Web re
   assert.equal(direct.webDevelopmentStageRemoved,false);
   assert.equal(direct.unityWebEnabled,true);
   assert.equal(direct.unityWebRequired,true);
-  assert.equal(direct.unityWebGateRequired,true);
+  assert.equal(direct.unityWebGateRequired,false);
+  assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.robloxRequiresUnityWebReadiness,false);
+  assert.equal(roadmap.changeRecord.ownerRobloxUnityWebOnly20261009.unityWebRequiresActualBrowserIndependentQaAndRegression,true);
   assert.equal(direct.unityWebMode,'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR');
   assert.equal(direct.minimumDesignRequired,true);
   assert.equal(direct.platformSpecificRuntimeEvidenceRequired,true);
@@ -183,7 +190,8 @@ test('direct horror edits re-enter the canonical development flow',()=>{
   assert.match(reconcile,/roblox-games\/horror-escape-room\/\*\*/);
   assert.match(reconcile,/assets\/roblox\/midnight-manor\/\*\*/);
   assert.match(reconcile,/git add -- development-queue\.json game-catalog\.json game-seed-state\.json/);
-  assert.doesNotMatch(central,/ownerExcludedGameIds/);
+  // Explicit, centrally authorized per-game exclusions are allowed; no hardcoded horror exclusion is.
+  assert.match(central,/developmentSpeedExecution\?\.perGameFailureIsolation\?\.ownerExcludedGameIds/);
   assert.doesNotMatch(central,/\['horror-escape-room'\]/);
 });
 
@@ -487,7 +495,9 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/active-roblox-native-runs\.json/);
   assert.match(development,/active-unity-native-runs\.json/);
   assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(development,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
   assert.match(development,/fromJSON\(needs\.native-plan\.outputs\.roblox_json\)/);
@@ -531,6 +541,66 @@ test('director coalesces only exact same-head central game ingress and preserves
   assert.match(director,/CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD/);
   assert.match(director,/queued\.has\(String\(stale\.status\|\|''\)\.toLowerCase\(\)\)\)add\(stale,'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD'\)/);
   assert.doesNotMatch(director,/CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD[\s\S]{0,220}cancel.*in_progress/i);
+});
+
+// 메인: 이전 main 배치가 살아 있어도 최신 main 게임 개발을 취소하지 않는다.
+test('director never cancels a newer-main Unity Web batch because an older-main coordinator is running',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const start=director.indexOf('          const activeCentralBatch=runs');
+  const end=director.indexOf('          const centralBatchByHead=new Map();',start);
+  assert.ok(start>=0&&end>start);
+  const pipeline='.github/workflows/company-development-confirmed-runtime.yml';
+  const make=(id,head_sha,status,event)=>({
+    id,head_sha,status,event,path:pipeline,
+    display_title:'DEVELOPMENT cycle | batch | '+event
+  });
+  const runs=[
+    make(100,'previous-main','in_progress','push'),
+    make(101,'previous-main','queued','workflow_dispatch'),
+    make(102,'latest-main','queued','workflow_dispatch')
+  ];
+  const cancelled=[];
+  runInNewContext(director.slice(start,end),{
+    runs,queued:new Set(['queued','pending','requested']),
+    add:(run,reason)=>cancelled.push({id:run.id,reason})
+  });
+  assert.deepEqual(cancelled,[{id:101,reason:'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH'}]);
+});
+
+// 메인: 오래된 무결과 리필 호출만 실제 제목으로 탐지하고 진행 중·최신·게임 작업을 보존한다.
+test('director drains only stale unstarted Vibe fan-in refills with actual GitHub Actions titles',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const start=director.indexOf("            for(const stale of runs.filter(r=>\n              r.path==='.github/workflows/vibe2-continuous-core.yml'\n              &&String(r.event||'')==='repository_dispatch'");
+  const ending="            ))add(stale,'VIBE2_STALE_UNSTARTED_FANIN_REFILL');";
+  const end=director.indexOf(ending,start);
+  assert.ok(start>=0&&end>start);
+  const code=director.slice(start,end+ending.length);
+  const main='b'.repeat(40),old='a'.repeat(40);
+  const title=lane=>'Vibe2 Continuous Core · vibe2-fanin-refill · '+lane;
+  const row=(id,sha,status,runName=title('game-primary'),event='repository_dispatch',branch='main')=>({
+    id,head_sha:sha,status,display_title:runName,event,head_branch:branch,
+    path:'.github/workflows/vibe2-continuous-core.yml'
+  });
+  const runs=[
+    row(10,old,'queued'),
+    row(11,old,'pending',title('recovery-fast')),
+    row(12,main,'queued'),
+    row(13,old,'in_progress'),
+    row(14,old,'queued','Vibe2 Continuous Core · vibe2-neuron-complete · game-primary'),
+    row(15,old,'queued',title('game-primary'),'workflow_dispatch'),
+    row(16,old,'queued',title('game-primary'),'repository_dispatch','other-branch'),
+    row(17,'','queued'),
+    row(18,old,'queued','Vibe2 Continuous Core · workflow_dispatch · game-primary')
+  ];
+  const cancelled=[];
+  runInNewContext(code,{runs,currentMain:main,
+    queued:new Set(['queued','pending','requested']),
+    add:(entry,reason)=>cancelled.push({id:entry.id,reason})
+  });
+  assert.deepEqual(cancelled,[
+    {id:10,reason:'VIBE2_STALE_UNSTARTED_FANIN_REFILL'},
+    {id:11,reason:'VIBE2_STALE_UNSTARTED_FANIN_REFILL'}
+  ]);
 });
 
 test('director drain QA changes wake the existing runner drain',()=>{
@@ -893,7 +963,9 @@ test('stage-scoped native dedupe closes duplicate races without whole-game seria
   assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.doesNotMatch(unity.slice(0,unity.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(central,/UNITY_NATIVE_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.match(central,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
 
   assert.equal(change?.status,'SUPERSEDED_BY_STAGE_SCOPED_DEDUPE_2026_10_04');
   assert.equal(change?.workflowLevelGameIdConcurrencyRemoved,true);

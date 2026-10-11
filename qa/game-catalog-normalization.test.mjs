@@ -1,3 +1,4 @@
+// 파일명: qa/game-catalog-normalization.test.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -139,31 +140,63 @@ assert.equal(ingestPolicy.existingCanonicalIndexEnablesWebPlay,true);
 assert.equal(ingestPolicy.missingCanonicalIndexDoesNotCreateVisibleTitleOnlyCard,true);
 
 {
+  // 기존 HTML만으로는 홈페이지 등록 불가. C# 원본과 공식 Unity 빌드·브라우저 QA가 모두 필요하다.
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-web-ingest-'));
   try{
-    const dir=path.join(root,'owner-upload');
+    const gameId='owner-upload';
+    const webRoot=path.join(root,'web-games');
+    const unityRoot=path.join(root,'unity-games');
+    const dir=path.join(webRoot,gameId);
+    const project=path.join(unityRoot,gameId);
     fs.mkdirSync(dir,{recursive:true});
     fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><title>Owner Upload Game</title><main>'+('x'.repeat(700))+'</main>');
     fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=1;');
     const temp={games:[],permanentRemovalPolicy:{ids:[]}};
-    const first=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
-    assert.deepEqual(first.added,['owner-upload']);
-    const game=temp.games[0];
-    assert.equal(game.id,'owner-upload');
-    assert.equal(game.name,'Owner Upload Game');
-    assert.equal(game.webPath,'/web-games/owner-upload/');
-    assert.equal(game.hasWebArchive,true);
-    assert.equal(game.homepageWebPlayable,true);
-    assert.equal(game.productionClass,'DESIGN_ONLY');
-    assert.equal(game.homepageDisplayMode,'WEB_PUBLISHED');
-    assert.match(game.ownerWebSourceRevision,/^[a-f0-9]{64}$/);
-    const firstRevision=game.ownerWebSourceRevision;
-    fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=2;');
-    const second=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
-    assert.deepEqual(second.updated,['owner-upload']);
-    assert.notEqual(game.ownerWebSourceRevision,firstRevision);
-    assert.equal(game.webDevelopmentResetRequired,true);
-    assert.equal(game.ownerWebEntryFile,'web-games/owner-upload/index.html');
+    const options={filesystem:fs,rootDir:webRoot,unityProjectRoot:unityRoot};
+    const first=ingestOwnerWebGameIds(temp,[gameId],options);
+    assert.deepEqual(first.added,[]);
+    assert.equal(temp.games.length,0,'HTML upload cannot create a homepage game');
+    assert.equal(fs.existsSync(path.join(dir,'index.html')),true,'legacy rules and source must remain intact');
+
+    const runtime=path.join(dir,'unity');
+    const buildDir=path.join(runtime,'Build');
+    const scripts=path.join(project,'Assets','Scripts');
+    fs.mkdirSync(buildDir,{recursive:true});
+    fs.mkdirSync(scripts,{recursive:true});
+    fs.mkdirSync(path.join(project,'ProjectSettings'),{recursive:true});
+    fs.writeFileSync(path.join(project,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 2022.3.60f1');
+    fs.writeFileSync(path.join(scripts,'Gameplay.cs'),'public class Gameplay {}');
+    fs.writeFileSync(path.join(runtime,'index.html'),'<script>createUnityInstance(canvas,config);</script><script src="Build/game.loader.js"></script>'+' '.repeat(700));
+    for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(buildDir,file),'test');
+    const manifest={engine:'UNITY_WEB',gameId,bundleComplete:true,homepageVerified:true,requiredDimension:'3D',canonicalSourceRoot:'unity-games/'+gameId,sourceCommit:'a'.repeat(40),unitySourceTreeSha256:'b'.repeat(64),buildTreeSha256:'c'.repeat(64),requiredGroups:{loader:['Build/game.loader.js'],data:['Build/game.data'],framework:['Build/game.framework.js'],wasm:['Build/game.wasm']}};
+    const build={engine:'UNITY_WEB',gameId,canonicalSourceRoot:'unity-games/'+gameId,bootSmoke:'PASS',actualBrowserPlay:'PASS',independentQa:'PASS',regression:'PASS',upperPlatformGateCandidate:true,sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256};
+    const readiness={gameId,state:'UPPER_PLATFORM_DEVELOPMENT_READY',pass:true,sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256,criteria:{graphics:{native3dVerified:true},qa:{pass:true,multiplayerPass:true}}};
+    const qa={engine:'UNITY_WEB',gameId,pass:true,playableBrowserTest:true,boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},performance:{pass:true},noCriticalRuntimeError:true,spatialGameplay:{pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',perspectiveCamera:true,depthPass:true,observedMeshCount:2,observedTriangles:24,worldMeshes3d:2,worldDepthCm:55,gameplayActors3d:1,spriteGameplayActors:0},visualQa:{nativeUnityMesh:{pass:true,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'}}};
+    const write=(name,value)=>fs.writeFileSync(path.join(runtime,name),JSON.stringify(value));
+    write('unity-web-deploy-manifest.json',manifest);
+    write('unity-web-build.json',build);
+    write('upper-platform-development-readiness.json',readiness);
+    for(const name of ['unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'])write(name,qa);
+    const confirmed=ingestOwnerWebGameIds(temp,[gameId],options);
+    assert.deepEqual(confirmed.added,[gameId]);
+    assert.equal(temp.games[0].webPath,'/web-games/owner-upload/unity/');
+    assert.equal(temp.games[0].ownerWebSourceState,'UNITY_WEB_VERIFIED');
+    assert.equal(temp.games[0].homepageWebPlayable,true);
+    assert.equal(temp.games[0].ownerWebEntryFile,'web-games/owner-upload/unity/index.html');
+    const storedRevision=temp.games[0].ownerWebSourceRevision;
+    write('unity-web-independent-qa.json',{...qa,mobile:{...qa.mobile,realGameTouchHandlerObserved:false}});
+    const blocked=ingestOwnerWebGameIds(temp,[gameId],options);
+    assert(blocked.disabled.includes(gameId),'missing real mobile touch must remove play access');
+    assert.equal(temp.games[0].homepageWebPlayable,false);
+    assert.equal(temp.games[0].hasWebArchive,true);
+    assert.equal(fs.existsSync(path.join(dir,'game.js')),true,'legacy game source preserved');
+    write('unity-web-independent-qa.json',qa);
+    ingestOwnerWebGameIds(temp,[gameId],options);
+    assert.equal(temp.games[0].homepageWebPlayable,true);
+    fs.writeFileSync(path.join(runtime,'Build','game.data'),'updated-bundle-test');
+    ingestOwnerWebGameIds(temp,[gameId],options);
+    assert.notEqual(temp.games[0].ownerWebSourceRevision,storedRevision);
+    assert.equal(temp.games[0].webDevelopmentResetRequired,true);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -198,7 +231,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     const temp={games:[{id:'simple-shell',webPath:'/web-games/simple-shell/',homepageWebPlayable:true,hasWebArchive:true},{id:'missing-entry',webPath:'/web-games/missing-entry/',homepageWebPlayable:true,hasWebArchive:true}],permanentRemovalPolicy:{ids:['removed']}};
     write('removed','<title>이전 삭제 게임</title>');
     const result=ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.deepEqual(result.added,['owner-unregistered']);
+    assert.deepEqual(result.added,[],'unregistered HTML game cannot be published');
     assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false);
     assert.equal(temp.games.find(x=>x.id==='simple-shell').ownerWebSourceState,'WITHDRAWN_SIMPLE_PROTOTYPE');
     assert.equal(temp.games.find(x=>x.id==='missing-entry').homepageWebPlayable,false);
@@ -209,11 +242,11 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     fs.mkdirSync(path.join(root,'unity-only-index','Build'));
     for(const file of ['game.loader.js','game.data','game.framework.js','game.wasm'])fs.writeFileSync(path.join(root,'unity-only-index','Build',file),'bundle-fixture');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.equal(temp.games.find(x=>x.id==='unity-only-index').homepageWebPlayable,true);
+    assert(!temp.games.some(x=>x.id==='unity-only-index'),'bundle alone without canonical C# and browser QA cannot pass');
     write('simple-shell','<title>다시 구현한 게임</title><canvas></canvas>');
     ingestOwnerWebGameIds(temp,[],{rootDir:root});
-    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,true);
-    assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,1);
+    assert.equal(temp.games.find(x=>x.id==='simple-shell').homepageWebPlayable,false,'game-specific JS stays archived until Unity 3D replacement passes');
+    assert.equal(temp.games.filter(x=>x.id==='owner-unregistered').length,0);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -238,7 +271,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     const dedicated='<!doctype html><title>실제 월드 게임</title><canvas id="game"></canvas><script>const canvas=document.getElementById("game"),ctx=canvas.getContext("2d");const player={x:10,y:10,hp:100};function move(dx,dy){player.x+=dx;player.y+=dy;}function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillRect(player.x,player.y,16,16);requestAnimationFrame(loop);}requestAnimationFrame(loop);</script>';
     fs.writeFileSync(path.join(dir,'index.html'),dedicated+' '.repeat(600));
     ingestOwnerWebGameIds(catalogFixture,[],{rootDir:root});
-    assert.equal(catalogFixture.games[0].homepageWebPlayable,true,'game-specific world source may reenter without deleting native project');
+    assert.equal(catalogFixture.games[0].homepageWebPlayable,false,'legacy playable HTML cannot reenter without Unity C# and 3D browser QA');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 }
 
@@ -273,7 +306,7 @@ console.log('PASS canonical catalog normalization + stable homepage order: games
     {id:'dev-playable',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/dev-playable/'},
     {id:'design-playable',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',homepageWebPlayable:true,hasWebArchive:true,webPath:'/web-games/design-playable/'}
   ]},{testBuilds:[]}).map(gameIdOf)`,context);
-  assert.deepEqual([...visible].sort(),['design-playable','dev-playable'],'publication classification must not hide real playable builds or expose click-only shells');
+  assert.deepEqual([...visible].sort(),['design-playable','dev-playable'],'registered games stay visible but unverified HTML cannot gain an active game play link');
 }
 console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconciliation and verified Unity test access');
 
@@ -297,6 +330,38 @@ console.log('PASS owner discovery, prototype withdrawal, deployed runtime reconc
 }
 
 assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeatureExpansionFreezeForbidden,true);
+
+// 홈페이지: 실제 로블록스·유니티 원본 프로젝트가 있는 개발 카드 전체를 유지한다.
+{
+  const sourceIds=[
+    'seed-roblox-roleplay-life-avat-brookhaven-rp',
+    'seed-roblox-simulator-tycoon-i-adopt-me',
+    'seed-roblox-story-rpg-adventur-blox-fruits',
+    'seed-roblox-survival-horror-es-doors'
+  ];
+  const sourceCatalog={games:catalog.games.map(game=>structuredClone(game))};
+  normalizeCatalog(sourceCatalog);
+  for(const id of sourceIds){
+    const game=sourceCatalog.games.find(game=>game.id===id);
+    assert(game,'original registered native game must exist: '+id);
+    assert.equal(game.robloxProjectPath,'roblox-games/'+id);
+    assert.equal(game.canonical.sources.roblox.projectPath,'roblox-games/'+id);
+    assert.equal(game.canonical.sources.web.playable,false,'HTML prototype is never promoted');
+  }
+  for(const id of ['bug-defense','amusement-tycoon','daechung-rpg','survival']){
+    const game=sourceCatalog.games.find(game=>game.id===id);
+    assert.equal(game.unityProjectPath,'unity-games/'+id);
+    assert.equal(game.canonical.sources.unity.projectPath,'unity-games/'+id);
+  }
+  const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const ui=vm.runInNewContext(renderer+';({developmentRows,setExposure(value){platformExposure=value}})',{
+    document:{readyState:'loading',addEventListener(){}}
+  });
+  ui.setExposure({unityWebEnabled:true,games:[]});
+  const cards=ui.developmentRows(sourceCatalog,{});
+  assert.equal(cards.length,sourceCatalog.games.filter(game=>!['WITHDRAWN_SIMPLE_PROTOTYPE','ENTRY_MISSING_OR_INVALID','NON_GAME_SURFACE'].includes(String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase())).length,'unverified prototypes must not be listed');
+  assert.equal(new Set(Array.from(cards,game=>game.id)).size,cards.length);
+}
 
 // Cover bytes, titles and per-game typography must survive the canonical/runtime merge.
 {
@@ -330,8 +395,18 @@ assert.equal(roadmap.studioQualityEvolution?.parallelExecution?.automaticFeature
     const bytes=Buffer.from('fixture: only metadata binding is exercised here');
     const src=`assets/homepage-media/${row.gameId}.mp4`;
     fs.mkdirSync(path.join(temp,'assets/homepage-media'),{recursive:true});fs.writeFileSync(path.join(temp,src),bytes);
-    const video={gameId:row.gameId,platform:'WEB',sourceRevision:'a'.repeat(40),artifactIdentity:webTreeFingerprint(fs,root),capturedAt:'2026-10-05T00:00:00Z',src,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),dependencies:[{path:`web-games/${row.gameId}/index.html`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'index.html'))).digest('hex')}],runtimeVerification:{pass:true,inputEvents:2,visualChangeObserved:true}};
+    const video={gameId:row.gameId,platform:'WEB',sourceRevision:'a'.repeat(40),artifactIdentity:webTreeFingerprint(fs,root),capturedAt:'2026-10-05T00:00:00Z',seconds:8,src,bytes:bytes.length,sha256:crypto.createHash('sha256').update(bytes).digest('hex'),dependencies:[{path:`web-games/${row.gameId}/index.html`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'index.html'))).digest('hex')}],runtimeVerification:{pass:true,inputEvents:2,visualChangeObserved:true}};
     assert(validatedHomepageMedia(row.gameId,{...row,video},{root:temp}).video);
+    const photoBytes=Buffer.from([0xff,0xd8,0xff,0xe0,0x11,0x22,0xff,0xd9]);
+    const imageSrc='assets/homepage-media/'+row.gameId+'-1.jpg';
+    fs.writeFileSync(path.join(temp,imageSrc),photoBytes);
+    const screenshot={gameId:row.gameId,platform:'WEB',artifactIdentity:video.artifactIdentity,sourceRevision:video.sourceRevision,
+      source:'ACTUAL_GAMEPLAY_VIDEO_FRAME',src:imageSrc,capturedAt:video.capturedAt,second:2,width:1920,height:1080,
+      bytes:photoBytes.length,sha256:crypto.createHash('sha256').update(photoBytes).digest('hex')};
+    const slides=validatedHomepageMedia(row.gameId,{...row,video,screenshots:[screenshot]},{root:temp});
+    assert.equal(slides.screenshots.length,1);
+    assert(!validatedHomepageMedia(row.gameId,{...row,video,screenshots:[{...screenshot,sourceRevision:'f'.repeat(40)}]},{root:temp}).screenshots);
+    assert(!validatedHomepageMedia(row.gameId,{...row,video,screenshots:[{...screenshot,sha256:'0'.repeat(64)}]},{root:temp}).screenshots);
     assert(!validatedHomepageMedia(row.gameId,{...row,video:{...video,platform:'ROBLOX'}},{root:temp}).video,'web capture cannot claim Roblox native footage');
     fs.appendFileSync(path.join(root,'index.html'),'changed source');
     assert(!validatedHomepageMedia(row.gameId,{...row,video},{root:temp}).video,'stale capture cannot follow a changed runtime');

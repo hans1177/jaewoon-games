@@ -108,6 +108,8 @@ jobs:
     timeout-minutes: 75
     outputs:
       repair_required: ${{ steps.repair.outputs.required }}
+      failure_stage: ${{ steps.repair.outputs.failure_stage }}
+      failure_signature: ${{ steps.repair.outputs.failure_signature }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -205,6 +207,10 @@ jobs:
 
       - name: Verify Unity Web development-floor contract
         shell: bash
+        env:
+          GAME_ID: ${{ steps.request.outputs.game_id }}
+          PROJECT_PATH: ${{ steps.request.outputs.project_path }}
+          BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
@@ -217,8 +223,46 @@ jobs:
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
+          // 빌드 비용이 큰 Unity Editor 설치 전, 이번 게임이 요구한 네이티브 자산 원본/파생 해시를 검증한다.
+          // 이 단계는 SOURCE_READY만 증명하며 WebGL 런타임/독립 QA PASS를 절대로 대신하지 않는다.
+          const declarationPath='.build-requests/unity-web/'+process.env.GAME_ID+'.json';
+          if(fs.existsSync(declarationPath)){
+            const declaration=JSON.parse(fs.readFileSync(declarationPath,'utf8'));
+            const ids=Array.isArray(declaration.registryAssetIds)?declaration.registryAssetIds:[];
+            if(ids.length){
+              const crypto=await import('node:crypto');
+              const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+              const nativeRoot=process.env.PROJECT_PATH+'/Assets/Resources/';
+              if(!Number.isInteger(declaration.registryVersionRequired)
+                ||registry.version<declaration.registryVersionRequired)
+                throw new Error('UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE');
+              for(const id of ids){
+                const asset=(registry.assets||[]).find(row=>row.id===id);
+                if(!asset||asset.platform!=='UNITY'||!asset.license||asset.originalSourceImmutable!==true)
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_REGISTRY_MISSING_OR_UNSAFE:'+id);
+                const native=String(asset.path||'').replace(/^\/+/, '');
+                const parent=String(asset.sourceParentPath||'').replace(/^\/+/, '');
+                if(!native.startsWith(nativeRoot)||native.includes('..')||!parent.startsWith('assets/')
+                  ||parent.includes('..')||!fs.existsSync(native)||!fs.existsSync(parent))
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_SOURCE_PATH_INVALID:'+id);
+                const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+                if(asset.nativeArtifactHash!==sha(native)||asset.sourceHash!==sha(parent))
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH:'+id);
+                if(asset.productionVerified===true&&asset.nativeRuntimeVerified!==true)
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_UNVERIFIED_PROMOTION:'+id);
+              }
+              console.log('UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count='+ids.length);
+            }
+          }
           console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
           NODE
+          # 기존 3D F0 검사는 동일하게 실패 처리하면서 정확한 오류를 자동 수리로 전달한다.
+          # pipefail은 tee가 실제 검증 실패 종료코드를 숨기지 못하게 한다.
+          node tools/company-unity-web-first-stage.mjs \
+            --game-id="$GAME_ID" \
+            --source-root="$PROJECT_PATH" \
+            --build-method="$BUILD_METHOD" \
+            --validate-only 2>&1 | tee "$RUNNER_TEMP/unity-web-preflight.log"
 
       - name: Bind canonical Unity source tree
         id: source
@@ -268,6 +312,23 @@ jobs:
           [[ -n "$UNITY_EMAIL" ]] || { echo 'UNITY_EMAIL secret missing' >&2; exit 21; }
           [[ -n "$UNITY_PASSWORD" ]] || { echo 'UNITY_PASSWORD secret missing' >&2; exit 22; }
 
+      # Exact Unity version + revision is shared by all games. Hosted runners are disposable;
+      # the editor archive, unlike a transient runner install, survives across workflows.
+      - name: Prepare reusable Unity WebGL editor directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo mkdir -p /opt/unity/editors
+          sudo chown -R "$(id -u):$(id -g)" /opt/unity
+
+      - name: Restore installed Unity WebGL editor
+        id: editor_cache
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: /opt/unity/editors
+          key: unity-webgl-editor-v1-${{ runner.os }}-${{ steps.request.outputs.unity_version }}-${{ steps.request.outputs.unity_revision }}
+
       - name: Install Unity Hub and WebGL Editor
         id: unity
         shell: bash
@@ -290,8 +351,13 @@ jobs:
           echo 'deb https://archive.ubuntu.com/ubuntu jammy main universe' | sudo tee /etc/apt/sources.list.d/unity-jammy-compat.list >/dev/null
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends unityhub xvfb libgtk2.0-0 libglu1-mesa libgconf-2-4 libncurses5
-          sudo rm -rf /opt/unityhub
-          sudo ln -s /usr/lib/unityhub /opt/unityhub
+          if [[ ! -e /opt/unityhub/unityhub ]]; then
+            if [[ -e /opt/unityhub || -L /opt/unityhub ]]; then
+              echo 'Unity Hub path already exists but is unusable; preserving installed files' >&2
+              exit 26
+            fi
+            sudo ln -s /usr/lib/unityhub /opt/unityhub
+          fi
           sudo tee /usr/local/bin/unity-hub >/dev/null <<'EOF'
           #!/bin/bash
           set -e
@@ -299,13 +365,42 @@ jobs:
           EOF
           sudo chmod 755 /usr/local/bin/unity-hub
           install_root=/opt/unity/editors
-          sudo mkdir -p "$install_root"
-          sudo chown -R "$(id -u):$(id -g)" /opt/unity
           unity-hub install-path --set "$install_root"
-          unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m webgl --cm
-          editor="$(find "$install_root" -type f -path '*/Editor/Unity' -perm -111 2>/dev/null | head -n1 || true)"
-          [[ -n "$editor" && -x "$editor" ]] || { echo 'Unity editor missing' >&2; exit 25; }
+          editor="$(find "$install_root" -type f -path "*/$UNITY_VERSION/Editor/Unity" -perm -111 2>/dev/null | head -n1 || true)"
+          if [[ -n "$editor" && -d "$(dirname "$editor")/Data/PlaybackEngines/WebGLSupport" ]]; then
+            echo "UNITY_WEB_EDITOR_REUSED=YES version=$UNITY_VERSION revision=$UNITY_REVISION"
+          else
+            echo "UNITY_WEB_EDITOR_REUSED=NO version=$UNITY_VERSION revision=$UNITY_REVISION"
+            unity-hub install --version "$UNITY_VERSION" --changeset "$UNITY_REVISION" -m webgl --cm
+            editor="$(find "$install_root" -type f -path "*/$UNITY_VERSION/Editor/Unity" -perm -111 2>/dev/null | head -n1 || true)"
+          fi
+          [[ -n "$editor" && -x "$editor" ]] || { echo 'Unity editor missing for requested version' >&2; exit 25; }
+          [[ -d "$(dirname "$editor")/Data/PlaybackEngines/WebGLSupport" ]] || { echo 'Unity WebGL Build Support missing' >&2; exit 27; }
           echo "editor=$editor" >> "$GITHUB_OUTPUT"
+
+      # Save immediately after installation: browser QA/release failures must not erase the
+      # reusable editor. A successful build remains subject to every existing quality gate.
+      - name: Retain installed Unity WebGL editor for future builds
+        id: editor_save
+        if: steps.editor_cache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: /opt/unity/editors
+          key: unity-webgl-editor-v1-${{ runner.os }}-${{ steps.request.outputs.unity_version }}-${{ steps.request.outputs.unity_revision }}
+
+      - name: Record retained Unity editor state
+        shell: bash
+        env:
+          CACHE_HIT: ${{ steps.editor_cache.outputs.cache-hit }}
+          CACHE_SAVED: ${{ steps.editor_save.outcome }}
+        run: |
+          echo "UNITY_WEB_EDITOR_CACHE_HIT=${CACHE_HIT:-false}"
+          if [[ "$CACHE_HIT" == 'true' || "$CACHE_SAVED" == 'success' ]]; then
+            echo 'UNITY_WEB_EDITOR_CACHE_RETAINED=YES'
+          else
+            echo 'UNITY_WEB_EDITOR_CACHE_RETAINED=UNVERIFIED_RETRY_NEXT_BUILD'
+          fi
 
       - name: Activate Unity Personal
         id: license
@@ -321,13 +416,15 @@ jobs:
           license-version: 6.x
 
       - name: Enforce Unity activation
-        if: always()
+        # 사전검사 실패에서는 미실행 라이선스를 별도 실패로 기록하지 않는다. 실제 인증 실패는 계속 차단.
+        if: ${{ always() && steps.license.outcome != 'skipped' }}
         shell: bash
         run: |
           set -euo pipefail
           [[ '${{ steps.license.outcome }}' == 'success' ]] || exit 198
 
       - name: Build Unity Web
+        timeout-minutes: 40
         shell: bash
         env:
           UNITY_EDITOR_PATH: ${{ steps.unity.outputs.editor }}
@@ -335,6 +432,8 @@ jobs:
           BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         run: |
           set -euo pipefail
+          # Roslyn/Unity 실제 컴파일 실패를 검증 통과로 숨기지 않고 원인 로그로 보존한다.
+          # 기존 set -euo pipefail이 파이프 전체에 실제 Unity 종료코드를 적용한다.
           "$UNITY_EDITOR_PATH" \
             -batchmode \
             -nographics \
@@ -342,7 +441,7 @@ jobs:
             -buildTarget WebGL \
             -projectPath "$GITHUB_WORKSPACE/$PROJECT_PATH" \
             -executeMethod "$BUILD_METHOD" \
-            -logFile /dev/stdout
+            -logFile /dev/stdout 2>&1 | tee "$RUNNER_TEMP/unity-web-build.log"
 
       - name: Collect Unity Web output
         id: output
@@ -425,6 +524,7 @@ jobs:
           echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
 
       - name: Prepare Unity Web browser runtime
+        timeout-minutes: 12
         shell: bash
         run: |
           set -euo pipefail
@@ -433,9 +533,10 @@ jobs:
           echo 'UNITY_WEB_BROWSER_RUNTIME=READY'
 
       - name: Run Unity Web actual browser play
-        # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
+        timeout-minutes: 10
+        # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -446,13 +547,15 @@ jobs:
             --game-id="$GAME_ID" \
             --source="web-games/$GAME_ID" \
             --port=4187 \
+            --scenario=actual-play \
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-gameplay-validation.json" \
             --screenshot="/tmp/unity-web/gameplay-mobile.png"
 
       - name: Run Unity Web independent QA
-        # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
+        timeout-minutes: 10
+        # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -463,13 +566,15 @@ jobs:
             --game-id="$GAME_ID" \
             --source="web-games/$GAME_ID" \
             --port=4188 \
+            --scenario=independent-qa \
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-independent-qa.json" \
             --screenshot="/tmp/unity-web/independent-qa-mobile.png"
 
       - name: Run Unity Web regression
-        # Daechung 테스트 공개를 위해 FPS 실패 시에도 실제 전투·터치·저장 증거까지 기록한다.
+        timeout-minutes: 10
+        # 모든 게임의 개발 테스트 공개 시 FPS 실패와 무관하게 실제 전투·터치·저장 증거를 보존한다.
         # 실패 판정과 정식 플랫폼 QA 게이트는 유지한다.
-        continue-on-error: ${{ steps.request.outputs.game_id == 'daechung-rpg' }}
+        continue-on-error: true
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -480,6 +585,7 @@ jobs:
             --game-id="$GAME_ID" \
             --source="web-games/$GAME_ID" \
             --port=4189 \
+            --scenario=regression \
             --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-regression.json" \
             --screenshot="/tmp/unity-web/regression-mobile.png"
 
@@ -495,10 +601,23 @@ jobs:
           import fs from 'node:fs';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
-          const play=JSON.parse(fs.readFileSync(root+'/unity-web-gameplay-validation.json','utf8'));
-          const independent=JSON.parse(fs.readFileSync(root+'/unity-web-independent-qa.json','utf8'));
-          const regression=JSON.parse(fs.readFileSync(root+'/unity-web-regression.json','utf8'));
-          const checks=[play,independent,regression];
+          const scenarios=[
+            ['actual-play','unity-web-gameplay-validation.json'],
+            ['independent-qa','unity-web-independent-qa.json'],
+            ['regression','unity-web-regression.json']
+          ];
+          const checks=scenarios.map(([scenario,file])=>{
+            const evidencePath=root+'/'+file;
+            if(!fs.existsSync(evidencePath))throw new Error('UNITY_WEB_QA_EVIDENCE_MISSING:'+scenario);
+            return JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+          });
+          const observedFailure=checks.find(e=>e?.observedRuntimeFailure===true);
+          if(observedFailure){
+            const signature=String(observedFailure.failureSignature||'UNKNOWN').slice(0,800);
+            console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+observedFailure.scenarioId+':'+signature);
+            throw new Error('UNITY_WEB_QA_REPAIR_REQUIRED:'+observedFailure.scenarioId+':'+signature);
+          }
+          const [play,independent,regression]=checks;
           // 3회 실제 브라우저 부팅 증거가 없는 경우 다른 성공 표식으로 대체하지 않는다.
           if(checks.some(e=>e.playableBrowserTest!==true||e.boot?.pass!==true))
             throw new Error('UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED');
@@ -509,6 +628,17 @@ jobs:
             &&e.coreFun?.pass===true&&e.saveRestore?.pass===true
             &&e.mobile?.pass===true&&e.noCriticalRuntimeError===true);
           if(!playable)throw new Error('UNITY_WEB_REAL_BROWSER_PLAYABILITY_REQUIRED');
+          // 실제 승인 3D 월드에 대해서는 3회 브라우저 화면과 Unity PBR/법선 측정이 모두 있어야 한다.
+          // 3D 증거가 없는 일반 게임/부트스트랩은 기존 판정을 유지한다.
+          const renderScreenPass=checks.every(e=>e.visualQa?.renderedScene?.required===true
+            &&e.visualQa.renderedScene.pass===true
+            &&e.visualQa.renderedScene.sceneCapturePersisted===true
+            &&/^[a-f0-9]{64}$/.test(e.visualQa.renderedScene.sceneCaptureSha256||'')
+            &&e.visualQa.renderedScene.pixels?.source==='REAL_UNITY_CANVAS_SCREENSHOT'
+            &&(e.approvedEnvironment?.required!==true||
+              (e.visualQa.renderedScene.nativeRenderProof?.materials>0
+                &&e.visualQa.renderedScene.nativeRenderProof?.litMaterials===e.visualQa.renderedScene.nativeRenderProof?.materials)));
+          if(!renderScreenPass)throw new Error('UNITY_WEB_RENDERED_SCENE_SCREEN_EVIDENCE_REQUIRED');
           const gatePass=checks.every(e=>e.pass===true&&e.performance?.pass===true)
             &&checks.every(e=>e.spatialGameplay?.pass===true&&e.spatialGameplay?.requiredDimension==='3D'
               &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
@@ -516,9 +646,10 @@ jobs:
               &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
               &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
               &&e.visualQa?.nativeUnityMesh?.pass===true);
-          if(!gatePass&&gameId!=='daechung-rpg')
-            throw new Error('UNITY_WEB_FULL_GAMEPLAY_QA_REQUIRED');
+          if(!gatePass)console.log('UNITY_WEB_FULL_GAMEPLAY_QA=REPAIR_REQUIRED_DEVELOPMENT_TEST_ONLY');
           const file=root+'/unity-web-build.json';
+          if(checks.some(e=>e.approvedEnvironment?.required===true))
+            console.log('UNITY_WEB_RENDERED_SCENE_SCREEN='+ (renderScreenPass?'PASS':'REPAIR_REQUIRED'));
           console.log('UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE');
           console.log('UNITY_WEB_GAMEPLAY_QA='+(gatePass?'PASS':'REPAIR_REQUIRED'));
           fs.writeFileSync(file,JSON.stringify({
@@ -549,19 +680,40 @@ jobs:
           GAME_ID: ${{ steps.request.outputs.game_id }}
           SOURCE_COMMIT: ${{ steps.request.outputs.source_commit }}
           UNITY_SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
+          VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin company-runtime
+          git fetch --no-tags --depth=1 origin main
+          if [ -n "$VIBE2_TASK_ID" ]; then
+            git fetch --no-tags --depth=1 origin vibe2-unreal-core || true
+          fi
           git show origin/company-runtime:development-queue.json > /tmp/company-runtime-development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
           import {execFileSync} from 'node:child_process';
+          import {evaluateUnityWebBuildUpGrowth,evaluateUnityWebPrecisionQa,
+            auditUnityWebNativeSystems} from './tools/company-upper-platform-admission.mjs';
           const gameId=process.env.GAME_ID;
           const root='/tmp/unity-web/web-games/'+gameId;
           const queue=JSON.parse(fs.readFileSync('/tmp/company-runtime-development-queue.json','utf8'));
           const item=(queue.items||[]).find(row=>row.gameId===gameId);
           if(!item)throw new Error('UPPER_PLATFORM_QUEUE_ITEM_MISSING:'+gameId);
+          // 이전 검증본은 main에 게시된 같은 게임의 QA만 사용한다. 빌드 브랜치의 자가 표식은 기준선이 아니다.
+          let previousReadiness=null;
+          try{
+            previousReadiness=JSON.parse(execFileSync('git',['show',
+              'origin/main:web-games/'+gameId+'/upper-platform-development-readiness.json'],{encoding:'utf8'}));
+          }catch{}
+          let buildUpTask=null;
+          const taskId=String(process.env.VIBE2_TASK_ID||'').trim();
+          if(taskId){
+            try{
+              const queue=JSON.parse(execFileSync('git',['show','origin/vibe2-unreal-core:.vibe2/queue.json'],{encoding:'utf8',maxBuffer:32*1024*1024}));
+              buildUpTask=(queue.tasks||[]).find(row=>row.id===taskId&&row.gameId===gameId)||null;
+            }catch{}
+          }
           const build=JSON.parse(fs.readFileSync(path.join(root,'unity-web-build.json'),'utf8'));
           const play=JSON.parse(fs.readFileSync(path.join(root,'unity-web-gameplay-validation.json'),'utf8'));
           const independent=JSON.parse(fs.readFileSync(path.join(root,'unity-web-independent-qa.json'),'utf8'));
@@ -612,6 +764,9 @@ jobs:
           const graphicsPass=!bootstrapGraphicsBlocked
             &&Object.values(graphicsCounts).filter(v=>v>0).length>=3
             &&fs.existsSync('/tmp/unity-web/gameplay-mobile.png')
+            &&[play,independent,regression].every(e=>e.visualQa?.renderedScene?.pass===true)
+            &&['gameplay-mobile-scene.png','independent-qa-mobile-scene.png','regression-mobile-scene.png']
+              .every(name=>fs.existsSync('/tmp/unity-web/'+name))
             &&native3dVerified;
           const webglPass=build.bootSmoke==='PASS'
             &&build.unitySourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA
@@ -619,14 +774,31 @@ jobs:
             &&fs.existsSync(path.join(root,'unity-web-deploy-manifest.json'));
           const actualPlayPass=play.pass===true&&play.mobile?.pass===true&&play.coreFun?.pass===true;
           const designSource=String(item.minimumDesignContract?.source||'');
-          let multiplayerRequired=false;
+          let multiplayerRequired=false,verifiedDesignRecord=null;
           if(designSource){
             try{
-              const raw=JSON.parse(execFileSync('git',['show','origin/company-runtime:'+designSource],{encoding:'utf8'}));
-              const mode=String(raw?.content?.multiplayerMode||'').toUpperCase();
+              verifiedDesignRecord=JSON.parse(execFileSync('git',['show',
+                'origin/company-runtime:'+designSource],{encoding:'utf8',maxBuffer:16*1024*1024}));
+              const mode=String(verifiedDesignRecord?.content?.multiplayerMode||'').toUpperCase();
               multiplayerRequired=Boolean(mode&&mode!=='SINGLE'&&mode!=='SINGLE_PLAYER');
-            }catch{}
+            }catch(error){
+              console.error('UNITY_WEB_VERIFIED_DESIGN_LOAD_FAILED='+String(error?.message||error));
+            }
           }
+          const precisionQa=evaluateUnityWebPrecisionQa({gameId,play,independent,regression});
+          const nativeSystemAudit=auditUnityWebNativeSystems({
+            repoRoot:process.cwd(),gameId,
+            designRecord:verifiedDesignRecord||{},play,independent,regression
+          });
+          console.log('UNITY_WEB_REAL_SYSTEM_IMPLEMENTATION='+(nativeSystemAudit.pass?'PASS':'REPAIR_REQUIRED'));
+          console.log('UNITY_WEB_REAL_SYSTEM_STATIC_COVERAGE='+(nativeSystemAudit.staticCoverageComplete?'PASS':'REPAIR_REQUIRED'));
+          console.log('UNITY_WEB_NATIVE_SYSTEM_METHOD_COUNT='+nativeSystemAudit.nativeMethodCount);
+          console.log('UNITY_WEB_NATIVE_SYSTEM_REACHABLE_METHODS='+nativeSystemAudit.interactiveReachableMethodCount);
+          console.log('UNITY_WEB_MISSING_SYSTEM_BEHAVIOR='+JSON.stringify(
+            nativeSystemAudit.roles.filter(row=>!row.runtimeComplete).map(row=>({
+              role:row.role,id:row.systemId,failures:row.failures
+            })).slice(0,12)));
+          console.log('UNITY_WEB_PRECISE_PLAYTEST='+(precisionQa.pass?'PASS':'REPAIR_REQUIRED'));
           const multiplayerEvidence=item.unityWebMultiplayerQaEvidence||null;
           const multiplayerPass=!multiplayerRequired
             ||(multiplayerEvidence?.pass===true&&Number(multiplayerEvidence?.participantCount||0)>=2&&multiplayerEvidence?.authoritativeSync===true);
@@ -636,6 +808,17 @@ jobs:
           const portabilityPass=designPass
             &&build.canonicalSourceRoot==='unity-games/'+gameId
             &&build.buildOutputRoot==='web-games/'+gameId;
+          // 유니티 웹의 이전 검증 게임과 실제 C#/3D 소스·3회 브라우저 관측을 비교한다.
+          // 빌드업 작업에만 적용하고 수리·최적화나 로블록스의 개발 권한은 바꾸지 않는다.
+          const taskPhase=String(buildUpTask?.studioQualityEvolution?.phase||'').toUpperCase();
+          const taskFocus=String(buildUpTask?.studioQualityEvolution?.focusPillar
+            ||buildUpTask?.buildUpDirective?.primaryFocus||'CORE_FUN').toUpperCase();
+          const growth=evaluateUnityWebBuildUpGrowth({
+            repoRoot:process.cwd(),gameId,sourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
+            previousReadiness,play,independent,regression,focus:taskFocus
+          });
+          const buildUpGrowthRequired=Boolean(taskId&&growth.comparisonAvailable
+            &&(taskPhase==='BUILD_UP'||!buildUpTask));
           const criteria={
             design:{pass:designPass},
             code:{pass:codePass},
@@ -644,8 +827,18 @@ jobs:
             actualPlay:{pass:actualPlayPass},
             qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
             portability:{pass:portabilityPass},
+            precisionQa:{pass:precisionQa.pass,status:precisionQa.status,
+              scenarioStages:precisionQa.checks.map(row=>row.stage)},
+            nativeSystems:{pass:nativeSystemAudit.pass,status:nativeSystemAudit.status,
+              staticCoverageComplete:nativeSystemAudit.staticCoverageComplete,
+              authoredRoles:nativeSystemAudit.roles.length,
+              verifiedRoles:nativeSystemAudit.roles.filter(row=>row.runtimeComplete).length},
+            ...(buildUpGrowthRequired?{buildUpGrowth:{pass:growth.verifiedGrowth,status:growth.status,focus:taskFocus}}:{})
           };
           const pass=Object.values(criteria).every(row=>row.pass===true);
+          console.log('UNITY_WEB_BUILD_UP_GROWTH='+growth.status);
+          console.log('UNITY_WEB_BUILD_UP_GROWTH_REQUIRED='+(buildUpGrowthRequired?'YES':'NO'));
+          console.log('UNITY_WEB_BUILD_UP_GROWTH_VERIFIED='+(growth.verifiedGrowth?'YES':'NO'));
           const evidence={
             version:1,
             gameId,
@@ -655,11 +848,56 @@ jobs:
             unitySourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             buildTreeSha256:build.buildTreeSha256,
             criteria,
+            buildUpGrowth:growth,
+            buildUpGrowthRequired,
+            precisionQa,
+            precisionQaRequired:true,
+            nativeSystemAudit,
+            nativeSystemAuditRequired:true,
+            nativeSystemAuditSourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA,
             passAction:pass?'START_CONCURRENT_ROBLOX_AND_UNITY_UPPER_PLATFORM_DEVELOPMENT':null,
             failureAction:pass?null:'REPAIR_CAUSAL_UNITY_WEB_FLOOR_THEN_REBUILD_REPLAY_REQA_REREGRESSION',
             releaseOrDeploymentAuthority:false,
             generatedAt:new Date().toISOString(),
           };
+          // 홈페이지 입장은 기존 Unity 빌드·브라우저 3회·3D·모바일·저장·멀티 검증이 모두 통과한 경우만 승인한다.
+          // 검증 전 빌드도 QA 자료로 보관하지만 홈페이지 플레이 경로로 승격하지 않는다.
+          const manifestPath=path.join(root,'unity-web-deploy-manifest.json');
+          const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+          if(manifest.engine!=='UNITY_WEB'||manifest.gameId!==gameId||manifest.bundleComplete!==true)
+            throw new Error('UNITY_WEB_DEPLOY_MANIFEST_IDENTITY_INVALID');
+          manifest.canonicalSourceRoot=build.canonicalSourceRoot;
+          manifest.sourceCommit=build.sourceCommit;
+          manifest.unitySourceTreeSha256=build.unitySourceTreeSha256;
+          manifest.buildTreeSha256=build.buildTreeSha256;
+          manifest.requiredDimension='3D';
+          manifest.buildUpGrowth={status:growth.status,verifiedGrowth:growth.verifiedGrowth,required:buildUpGrowthRequired,
+            previousSourceTreeSha256:growth.previousSourceTreeSha256,
+            sourceTreeSha256:growth.sourceTreeSha256};
+          manifest.nativeSystemAudit={
+            required:true,pass:nativeSystemAudit.pass,
+            staticCoverageComplete:nativeSystemAudit.staticCoverageComplete,
+            authoredRoles:nativeSystemAudit.roles.length,
+            verifiedRoles:nativeSystemAudit.roles.filter(row=>row.runtimeComplete).length,
+            sourceTreeSha256:process.env.UNITY_SOURCE_TREE_SHA
+          };
+          manifest.precisionQa={required:true,pass:precisionQa.pass,
+            scenarios:precisionQa.checks.map(row=>row.scenarioId)};
+          manifest.homepageVerified=pass;
+          // 완전한 3D 준비 판정과 구분하여 실제 브라우저 플레이가 되는 개발 빌드만 별도 링크로 제공한다.
+          manifest.homepageDevelopmentTest=build.bootSmoke==='PASS'
+            &&['PASS','PLAYABLE_TEST_ONLY'].includes(build.actualBrowserPlay);
+          manifest.browserVerification={
+            actualBrowserPlay:play.pass===true,
+            independentQa:independent.pass===true,
+            regression:regression.pass===true,
+            realMobileTouch:play.mobile?.realGameTouchHandlerObserved===true,
+            saveRestore:qaPass,
+            native3d:graphicsPass&&native3dVerified,
+            multiplayer:multiplayerPass,
+            source:'OFFICIAL_UNITY_WEB_DEVELOPMENT_FLOOR'
+          };
+          fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
           fs.writeFileSync(path.join(root,'upper-platform-development-readiness.json'),JSON.stringify(evidence,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'pass='+(pass?'true':'false')+'\n');
           console.log('UPPER_PLATFORM_DEVELOPMENT_READY='+(pass?'PASS':'NO'));
@@ -667,6 +905,9 @@ jobs:
           NODE
 
       - name: Upload Unity Web artifact
+        # Build succeeds but screenshot/QA fails: preserve real browser images and failure evidence.
+        # No artifact is uploaded when the WebGL output stage itself never succeeded.
+        if: ${{ always() && steps.output.outcome == 'success' }}
         uses: actions/upload-artifact@v4
         with:
           name: unity-web-${{ steps.request.outputs.game_id }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -675,7 +916,8 @@ jobs:
           retention-days: 7
 
       - name: Create verified Unity Web readiness PR
-        if: (steps.readiness.outputs.pass == 'true' && (github.event_name == 'push' || inputs.publish_to_main == true)) || (steps.readiness.outputs.pass == 'false' && steps.request.outputs.game_id == 'daechung-rpg' && github.event_name == 'push')
+        id: publish
+        if: steps.readiness.outcome == 'success' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -695,15 +937,8 @@ jobs:
             git cat-file -e "${SOURCE_COMMIT}:$file" 2>/dev/null || { echo "UNITY_WEB_GENERATED_ASSET_MISSING=$file" >&2; exit 1; }
           done
           candidate_paths=("unity-games/$GAME_ID" "${generated_asset_files[@]}")
-          # Preserve the existing playable HTML archive while publishing the real Unity WebGL test.
-          runtime_dir="web-games/$GAME_ID"
-          if [ "$GAME_ID" = "daechung-rpg" ]; then
-            runtime_dir="web-games/$GAME_ID/unity"
-          fi
-          if [ "$READINESS_PASS" != "true" ] && [ "$GAME_ID" != "daechung-rpg" ]; then
-            echo 'UNITY_WEB_UNVERIFIED_PUBLIC_TEST_SCOPE_INVALID' >&2
-            exit 1
-          fi
+          # 기존 웹게임·저장 경로는 보존하고 유니티 웹 빌드만 공통 하위 경로에 게시한다.
+          runtime_dir="web-games/$GAME_ID/unity"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags origin main
@@ -725,12 +960,8 @@ jobs:
           branch="unity-web/$GAME_ID-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git checkout -B "$branch" origin/main
           git checkout "$SOURCE_COMMIT" -- "${candidate_paths[@]}"
-          if [ "$runtime_dir" = "web-games/$GAME_ID" ]; then
-            rm -rf "$runtime_dir"
-          else
-            test -s "web-games/$GAME_ID/index.html"
-            rm -rf "$runtime_dir"
-          fi
+          # HTML 웹게임은 삭제하지 않고 정확한 Unity Web 빌드 디렉터리만 교체한다.
+          rm -rf "$runtime_dir"
           mkdir -p "$runtime_dir"
           cp -R "/tmp/unity-web/web-games/$GAME_ID"/. "$runtime_dir"/
           test -d "$runtime_dir/Build"
@@ -749,7 +980,10 @@ jobs:
           test -n "$(git ls-files "$runtime_dir/Build/*.data*" | head -n1)"
           test -n "$(git ls-files "$runtime_dir/Build/*.framework.js*" | head -n1)"
           test -n "$(git ls-files "$runtime_dir/Build/*.wasm*" | head -n1)"
-          git diff --cached --check
+          # Unity가 자동 생성한 .meta YAML의 공백은 원본 그대로 유지하고, 코드 및 기타 파일의 검사도 유지한다.
+          # Unity 소스 파일을 빌드 후 임의 수정하면 검증한 소스 해시와 어긋나므로 변경하지 않는다.
+          printf 'unity-games/**/Assets/**/*.meta whitespace=-blank-at-eol\n' > /tmp/unity-web-meta-attributes
+          git -c core.attributesFile=/tmp/unity-web-meta-attributes diff --cached --check
           if git diff --cached --quiet; then
             echo "UNITY_WEB_PUBLICATION_PR=NO_CHANGE"
             if [ -n "$VIBE2_TASK_ID" ]; then
@@ -819,6 +1053,35 @@ jobs:
             sleep 10
           done
 
+          # 기존 검증기로 Cloudflare 본서버 게임의 모바일 터치·전투·저장을 다시 확인한다.
+          # Android 브라우저 모의 환경이며 실제 휴대전화 장치 검증은 별도다.
+          echo "UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=START"
+          (
+            cd /tmp/unity-web
+            node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+              --game-id="$GAME_ID" \
+              --source="web-games/$GAME_ID" \
+              --scenario=actual-play \
+              --public-url="https://jaewoon-games.pages.dev/$runtime_dir/" \
+              --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-post-deploy-mobile.json" \
+              --screenshot="/tmp/unity-web/post-deploy-mobile.png"
+          )
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='/tmp/unity-web/web-games/'+process.env.GAME_ID+'/unity-web-post-deploy-mobile.json';
+          const evidence=JSON.parse(fs.readFileSync(file,'utf8'));
+          if(evidence.runtimeSurface!=='CLOUDFLARE_PAGES_MOBILE_EMULATION'||
+             evidence.pass!==true||evidence.playableBrowserTest!==true||
+             evidence.boot?.pass!==true||evidence.input?.pass!==true||
+             evidence.gameplay?.pass!==true||evidence.coreFun?.pass!==true||
+             evidence.mobile?.pass!==true||evidence.saveRestore?.pass!==true||
+             evidence.noCriticalRuntimeError!==true||
+             evidence.observedRuntimeFailure===true)
+            throw new Error('UNITY_WEB_PUBLIC_MOBILE_GAMEPLAY_REPAIR_REQUIRED');
+          console.log('UNITY_WEB_PUBLIC_MOBILE_ACTUAL_PLAY=PASS');
+          console.log('UNITY_WEB_PUBLIC_PHYSICAL_DEVICE_QA=NOT_VERIFIED');
+          NODE
+
           echo "UNITY_WEB_MAIN_PROMOTION_SHA=$promotion_sha"
           echo "UNITY_WEB_PUBLIC_BROWSER_TEST_PATH=/$runtime_dir/"
           echo "UNITY_WEB_UPPER_PLATFORM_READY=$READINESS_PASS"
@@ -834,7 +1097,9 @@ jobs:
             git -C /tmp/vibe2-control config user.name 'jaewoon-unity-web-release'
             git -C /tmp/vibe2-control config user.email 'unity-web-release@users.noreply.github.com'
             settled=0
-            for settle_attempt in 1 2 3; do
+            settle_attempt=0
+            while true; do
+              settle_attempt=$((settle_attempt+1))
               git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
               git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --evidence="execution-surface:UNITY_WEB,unity-web-webgl-build-pass,unity-web-browser-play-pass,unity-web-independent-qa-pass,unity-web-regression-pass,unity-web-native-3d-runtime-pass,unity-web-cloudflare-preview-pass,unity-web-main-pr-merged,unity-web-cloudflare-deployment-pass,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,unity-web-source-tree:$unity_source_tree_sha,unity-web-runtime-source-tree:$web_source_tree_sha,unity-web-main-sha:$promotion_sha,actions-run-${GITHUB_RUN_ID}"
@@ -848,7 +1113,9 @@ jobs:
                 settled=1
                 break
               fi
-              sleep $((settle_attempt * 2))
+              retry_sleep=$((settle_attempt<5?settle_attempt:5))
+              echo "UNITY_WEB_PASS_QUEUE_CONFLICT_RETRY=$settle_attempt:$retry_sleep"
+              sleep "$retry_sleep"
             done
             test "$settled" = 1
             payload="$(jq -nc \
@@ -868,17 +1135,74 @@ jobs:
             echo "VIBE2_UNITY_WEB_TASK_FINAL_PASS=EXACT_SOURCE_RUNTIME_AND_DEPLOYMENT:$unity_source_tree_sha:$web_source_tree_sha"
           fi
 
+          # After verified main deployment, wake the existing game-primary source loop.
+          # Vibe-owned publications already emit a callback. QA repair remains fail-closed.
+          if [ -z "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = 'true' ]; then
+            refill_payload="$(jq -nc \
+              --arg run "${GITHUB_RUN_ID:-}" \
+              --arg attempt "${GITHUB_RUN_ATTEMPT:-}" \
+              --arg game "$GAME_ID" \
+              --arg source "$promotion_sha" \
+              '{event_type:"vibe2-fanin-refill",client_payload:{source_run:$run,source_attempt:$attempt,execution_lane:"game-primary",game_id:$game,source_revision:$source,reason:"unity-web-main-deployed-next-build-up"}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+              --data "$refill_payload"
+            echo "UNITY_WEB_POST_DEPLOY_NEXT_BUILD_UP=REFILL_REQUESTED:$GAME_ID:$promotion_sha"
+          fi
+
       - name: Mark Unity Web floor repair requirement
         id: repair
-        if: steps.readiness.outputs.pass != 'true'
+        if: ${{ always() && !cancelled() && (steps.readiness.outputs.pass != 'true' || steps.publish.outcome == 'failure') }}
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
         run: |
           set -euo pipefail
           echo 'required=true' >> "$GITHUB_OUTPUT"
+          failure_stage=UNITY_WEB_BUILD_OR_READINESS
+          failure_signature=REPAIR_REQUIRED
+          # Unity 컴파일 이전 실패도 게임/책임 파일 수준으로 정확히 수리하도록 증거를 전달한다.
+          preflight_log="$RUNNER_TEMP/unity-web-preflight.log"
+          if [ -s "$preflight_log" ]; then
+            preflight_signature="$(grep -oE 'UNITY_WEB_[A-Z0-9_]+:[A-Za-z0-9._:/-]+' "$preflight_log" | tail -n 1 || true)"
+            if [ -n "$preflight_signature" ]; then
+              failure_stage=UNITY_WEB_SOURCE_PREFLIGHT
+              failure_signature="$preflight_signature"
+            fi
+          fi
+          # C# 실제 오류의 책임 파일·줄·코드를 기존 바이브 수리 경로로 전달한다.
+          # sed는 증거 텍스트만 추출하며, 입력값을 명령으로 실행하지 않는다.
+          compiler_log="$RUNNER_TEMP/unity-web-build.log"
+          if [ -s "$compiler_log" ]; then
+            compiler_failure="$(sed -nE 's#^.*(Assets/[A-Za-z0-9._/-]+\.cs)\(([0-9]+),[0-9]+\): error (CS[0-9]+):.*$#\1:\2:\3#p' "$compiler_log" | head -n 1 || true)"
+            if [ -n "$compiler_failure" ]; then
+              failure_stage=UNITY_WEB_CSHARP_COMPILE
+              failure_signature="UNITY_WEB_CSHARP_COMPILE_ERROR:$compiler_failure"
+            fi
+          fi
+          # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
+          for filename in unity-web-post-deploy-mobile.json unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
+            evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"
+            if [ -f "$evidence_file" ]; then
+              evidence_line="$(jq -r 'select(.observedRuntimeFailure == true) | [.failureStage, .failureSignature] | @tsv' "$evidence_file" 2>/dev/null || true)"
+              if [ -n "$evidence_line" ]; then
+                IFS=$'\t' read -r failure_stage failure_signature <<< "$evidence_line"
+                break
+              fi
+            fi
+          done
+          failure_stage="$(printf '%s' "$failure_stage" | tr -cd 'a-zA-Z0-9_:' | cut -c1-96)"
+          failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:/-' | cut -c1-128)"
+          echo "failure_stage=${failure_stage:-UNITY_WEB_UNKNOWN}" >> "$GITHUB_OUTPUT"
+          echo "failure_signature=${failure_signature:-UNKNOWN}" >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
           echo "UNITY_WEB_REPAIR_GAME_ID=$GAME_ID"
+          echo "UNITY_WEB_REPAIR_FAILURE_STAGE=${failure_stage:-UNITY_WEB_UNKNOWN}"
+          echo "UNITY_WEB_REPAIR_FAILURE_SIGNATURE=${failure_signature:-UNKNOWN}"
           echo 'UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW'
           exit 42
 
@@ -896,6 +1220,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VIBE2_TASK_ID: ${{ inputs.vibe2_task_id }}
           VIBE2_CANDIDATE_BRANCH: ${{ inputs.vibe2_candidate_branch }}
+          UNITY_WEB_FAILURE_STAGE: ${{ needs.build.outputs.failure_stage }}
+          UNITY_WEB_FAILURE_SIGNATURE: ${{ needs.build.outputs.failure_signature }}
         shell: bash
         run: |
           set -euo pipefail
@@ -907,10 +1233,12 @@ jobs:
           git -C /tmp/vibe2-control config user.name 'jaewoon-unity-web-release'
           git -C /tmp/vibe2-control config user.email 'unity-web-release@users.noreply.github.com'
           settled=0
-          for attempt in 1 2 3; do
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
             git -C /tmp/vibe2-control fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git -C /tmp/vibe2-control reset --hard origin/vibe2-unreal-core
-            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --blocker=unity-web-runtime-or-promotion-failed --evidence="execution-surface:UNITY_WEB,unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --queue=/tmp/vibe2-control/.vibe2/queue.json --id="$VIBE2_TASK_ID" --blocker=unity-web-runtime-or-promotion-failed --evidence="execution-surface:UNITY_WEB,unity-web-failure-stage:${UNITY_WEB_FAILURE_STAGE:-UNITY_WEB_UNKNOWN},unity-web-failure-signature:${UNITY_WEB_FAILURE_SIGNATURE:-UNKNOWN},unity-web-candidate-branch:$VIBE2_CANDIDATE_BRANCH,actions-run-${GITHUB_RUN_ID}"
             git -C /tmp/vibe2-control add .vibe2/queue.json
             if git -C /tmp/vibe2-control diff --cached --quiet; then
               settled=1
@@ -921,7 +1249,9 @@ jobs:
               settled=1
               break
             fi
-            sleep $((attempt * 2))
+            retry_sleep=$((attempt<5?attempt:5))
+            echo "UNITY_WEB_FAILURE_QUEUE_CONFLICT_RETRY=$attempt:$retry_sleep"
+            sleep "$retry_sleep"
           done
           test "$settled" = 1
           payload="$(jq -nc \

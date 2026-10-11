@@ -89,8 +89,13 @@ local function bindStudioCharacterAssets(character)
     torso.Material = table.find(studioAssetFamily("CHARACTER"), "TORSO_PLATE") and Enum.Material.Metal or torso.Material
   end
   local function bindWeapon(part)
-    if part:IsA("BasePart") and part.Name:find("ClassWeapon", 1, true) then
-      part.Material = table.find(studioAssetFamily("WEAPON"), "BLADE_LONG") and Enum.Material.Metal or part.Material
+    -- 검 계열에만 검날 재질을 연결하고 지팡이의 목재 및 강화 네온 재질을 보존한다.
+    local classId = tostring(character:GetAttribute("ClassId") or p:GetAttribute("ClassId") or "")
+    if part:IsA("BasePart") and part.Name:find("ClassWeapon", 1, true)
+      and (classId == "BREAKER" or classId == "SHADOW")
+      and part.Material ~= Enum.Material.Neon
+      and table.find(studioAssetFamily("WEAPON"), "BLADE_LONG") then
+      part.Material = Enum.Material.Metal
     end
   end
   for _, descendant in ipairs(character:GetDescendants()) do bindWeapon(descendant) end
@@ -117,11 +122,9 @@ if p.Character then task.defer(bindStudioCharacterAssets, p.Character) end
 p.CharacterAdded:Connect(bindStudioCharacterAssets)
 
 task.defer(function()
-  local rpgWorld = workspace:FindFirstChild("DaechungRPGWorld") or workspace:WaitForChild("DaechungRPGWorld", 8)
-  if not rpgWorld then return end
-
-  local village = rpgWorld:FindFirstChild("Village")
-  local plaza = village and village:FindFirstChild("VillagePlaza")
+  local rpgWorld = workspace:WaitForChild("DaechungRPGWorld")
+  local village = rpgWorld:WaitForChild("Village")
+  local plaza = village:WaitForChild("VillagePlaza")
   if plaza and plaza:IsA("BasePart") then
     plaza.Material = table.find(studioAssetFamily("MATERIAL"), "STONE") and Enum.Material.Cobblestone or plaza.Material
     if not village:FindFirstChild("StudioRpgBuildingTrim") then
@@ -148,13 +151,26 @@ task.defer(function()
   atmosphere.Density = 0.12
   atmosphere.Haze = 0.65
 
+  -- 적의 EnemyId는 투명 충돌 루트에 있으므로 실제 보이는 털 부품에만 적용한다.
+  local furPartNames = {
+    WolfBody=true, WolfChest=true, WolfHead=true, BoarBody=true, BoarHead=true,
+    DeerBody=true, DeerHead=true, SnowBeastBody=true, SnowBeastShoulder=true,
+    SnowBeastMane=true, SnowBeastHead=true,
+  }
   local function bindCreature(instance)
-    if not instance:IsA("BasePart") or instance:GetAttribute("EnemyId") == nil then return end
-    instance.Material = table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") and Enum.Material.Fabric or instance.Material
+    if instance:IsA("BasePart") and furPartNames[instance.Name]
+      and table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") then
+      instance.Material = Enum.Material.Fabric
+    end
   end
   local function bindProp(instance)
     if not instance:IsA("MeshPart") or not instance.Name:find("AssetProp_", 1, true) then return end
-    instance.Material = table.find(studioAssetFamily("PROP"), "LAMP") and Enum.Material.Metal or instance.Material
+    -- 전체 장식 MeshPart를 금속으로 덮어쓰지 않고 조명 소품만 처리한다.
+    local name = instance.Name:lower()
+    if (name:find("lamp", 1, true) or name:find("lantern", 1, true))
+      and table.find(studioAssetFamily("PROP"), "LAMP") then
+      instance.Material = Enum.Material.Metal
+    end
   end
   for _, descendant in ipairs(rpgWorld:GetDescendants()) do
     bindCreature(descendant)

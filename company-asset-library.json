@@ -1,8 +1,8 @@
 {
-  "version": 122,
+  "version": 131,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-07T12:05:00+09:00",
+  "updatedAt": "2026-10-11T02:32:31.121Z",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -72971,6 +72971,3344 @@
           "assets/roblox/common-ui-v1/quality-evidence.json"
         ]
       }
+    },
+    {
+      "id": "shared-humanoid-motion-v1",
+      "title": "공용 3D 휴머노이드 스킨·기본 모션 액션 원본",
+      "family": "MOTION",
+      "category": "MOTION",
+      "platform": "SHARED_NATIVE_SOURCE",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "reuseScope": "ALL_COMPATIBLE_UNITY_ROBLOX_WEB_SOURCE_REAUTHORING",
+      "gameSpecificStyleAdaptationRequired": true,
+      "originAssetId": "gwisin-bride",
+      "originalSourcePreserved": true,
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATION",
+      "sourceFiles": [
+        "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+        "assets/shared/humanoid-motion-v1/catalog.json",
+        "assets/shared/humanoid-motion-v1/author-motion.py"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb"
+        ],
+        "authoring": [
+          "assets/shared/humanoid-motion-v1/author-motion.py"
+        ],
+        "catalogs": [
+          "assets/shared/humanoid-motion-v1/catalog.json"
+        ],
+        "support": []
+      },
+      "authoringRecipes": [
+        {
+          "id": "shared-humanoid-baseline-light-attack-1-20261010",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "assetId": "shared-humanoid-motion-v1",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_light_attack_1_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_light_attack_1_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60
+        }
+      ],
+      "intendedConsumerGameIds": [],
+      "consumerGameIds": [],
+      "originalAssetStable": true,
+      "oneObjectOneClipWorkUnit": true,
+      "motionSourceDefinitions": 45,
+      "bakedNewSharedMotionClips": 0,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PENDING_STUDIO",
+      "studioMotionRuntimeVerified": false,
+      "unityAnimationRuntimeVerified": false,
+      "robloxAnimationRuntimeVerified": false,
+      "webRuntimeVerified": false,
+      "license": "project-original",
+      "sourceProvenance": {
+        "upstreamPath": "assets/roblox/world-ghosts/native/mesh/bride.glb",
+        "upstreamGitBlobSha": "9b316a619a985033753da5145605c0ca4c96bfc5",
+        "sourceRigBones": 80,
+        "sourceAnimationCount": 6,
+        "shaValidationRequired": true
+      },
+      "improvementNeed": "COMMON_IDLE_WALK_RUN_AND_ACTION_HQ_CHARACTER_MOTION_FIRST",
+      "qaPromotionAuthority": "EXISTING_NATIVE_3D_RUNTIME_AND_MOBILE_QA_ONLY",
+      "availableCareerMotionRecipes": [
+        {
+          "id": "shared-career-common_samurai_iai_draw_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "SAMURAI",
+          "clipId": "common_samurai_iai_draw_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_samurai_iai_draw_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_samurai_iai_draw_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_samurai_parry_counter_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "SAMURAI",
+          "clipId": "common_samurai_parry_counter_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_samurai_parry_counter_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_samurai_parry_counter_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_knight_shield_bash_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "KNIGHT",
+          "clipId": "common_knight_shield_bash_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_knight_shield_bash_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_knight_shield_bash_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_monk_palm_combo_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "MONK",
+          "clipId": "common_monk_palm_combo_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_monk_palm_combo_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_monk_palm_combo_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_archer_draw_release_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "ARCHER",
+          "clipId": "common_archer_draw_release_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_archer_draw_release_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_archer_draw_release_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_mage_area_cast_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "MAGE",
+          "clipId": "common_mage_area_cast_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_mage_area_cast_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_mage_area_cast_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_assassin_backstep_cut_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "ASSASSIN",
+          "clipId": "common_assassin_backstep_cut_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_assassin_backstep_cut_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_assassin_backstep_cut_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_lancer_thrust_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "LANCER",
+          "clipId": "common_lancer_thrust_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_lancer_thrust_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_lancer_thrust_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_healer_wave_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "CLERIC",
+          "clipId": "common_healer_wave_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_healer_wave_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_healer_wave_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_summoner_ritual_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "SUMMONER",
+          "clipId": "common_summoner_ritual_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_summoner_ritual_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_summoner_ritual_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_blacksmith_hammer_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "BLACKSMITH",
+          "clipId": "common_blacksmith_hammer_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_blacksmith_hammer_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_blacksmith_hammer_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_bard_performance_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "BARD",
+          "clipId": "common_bard_performance_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_bard_performance_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_bard_performance_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_mechanist_gadget_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "MECHANIST",
+          "clipId": "common_mechanist_gadget_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_mechanist_gadget_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_mechanist_gadget_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        },
+        {
+          "id": "shared-career-common_farmer_harvest_hq",
+          "assetId": "shared-humanoid-motion-v1",
+          "careerId": "FARMER",
+          "clipId": "common_farmer_harvest_hq",
+          "family": "CHARACTER",
+          "role": "PLAYER",
+          "executor": "BLENDER_PYTHON",
+          "types": [
+            "character"
+          ],
+          "targetPlatforms": [
+            "UNITY",
+            "ROBLOX",
+            "WEB"
+          ],
+          "script": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "editableSource": "assets/shared/humanoid-motion-v1/author-motion.py",
+          "args": [
+            "--source",
+            "assets/shared/humanoid-motion-v1/base-skinned-humanoid.glb",
+            "--focus",
+            "common_farmer_harvest_hq",
+            "--output",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq",
+            "--render-dir",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/previews"
+          ],
+          "outputs": [
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/common-humanoid-motion-v1.glb",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/evidence.json",
+            "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/previews/source-bind-reference.png"
+          ],
+          "evidenceJson": "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/evidence.json",
+          "preview": "assets/shared/humanoid-motion-v1/derived/common_farmer_harvest_hq/previews/source-bind-reference.png",
+          "masterGlbRequired": true,
+          "runMode": "VERIFY_ONLY",
+          "license": "project-original",
+          "objectCountPerWorkUnit": 1,
+          "clipCountPerWorkUnit": 1,
+          "activeModificationBudgetMinutes": 60,
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "automaticBatchExecution": false
+        }
+      ],
+      "careerSourceMotionDefinitions": 14,
+      "motionLibraryConsumers": [
+        "ACTION_RPG",
+        "MMORPG",
+        "ROGUELIKE",
+        "FIGHTING",
+        "SURVIVAL",
+        "SIMULATION",
+        "TYCOON",
+        "STRATEGY",
+        "TACTICAL_RPG",
+        "HORROR",
+        "SOCIAL"
+      ],
+      "crossGenreCareerSource": "assets/vibe-motion-director.js#COMMON_CAREER_MOTION_HIERARCHY",
+      "crossGenreSkillSource": "assets/vibe-motion-director.js#COMMON_SKILL_MOTION_GRAMMAR",
+      "crossGenreMonsterSource": "assets/vibe-motion-director.js#COMMON_MONSTER_SPECIES_JOINT_POSES",
+      "sharedMonsterSpeciesPreparedCount": 20,
+      "sharedCareerHierarchyPreparedCount": 51,
+      "preparedSemanticCannotClaimRuntimeVerification": true
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 15,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-traveler.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-traveler",
+      "title": "공통 3D 여행자 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "TRAVELER_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-traveler.glb",
+      "masterGlb": "assets/shared/humanoid-traveler.glb",
+      "meshArtifact": "assets/shared/humanoid-traveler.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-traveler.glb",
+      "vertices": 3904,
+      "triangles": 6058,
+      "visualIdentityAxes": [
+        "TRAVEL_CLOAK",
+        "SATCHEL",
+        "SOFT_SHOULDER_WRAP",
+        "HAIR_PROFILE"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-traveler.glb"
+        ]
+      },
+      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함."
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 15,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-guardian.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-guardian",
+      "title": "공통 3D 수호자 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "ARMORED_GUARDIAN_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-guardian.glb",
+      "masterGlb": "assets/shared/humanoid-guardian.glb",
+      "meshArtifact": "assets/shared/humanoid-guardian.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-guardian.glb",
+      "vertices": 4028,
+      "triangles": 6276,
+      "visualIdentityAxes": [
+        "ARMORED_PAULDRONS",
+        "FULL_CHEST_ARMOR",
+        "HELMET",
+        "METAL_TREATS"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-guardian.glb"
+        ]
+      },
+      "note": "엔진 비종속 원본 GLB. 메시·리그·스킨·관절 애니메이션 15개 포함. 별도 엔진 적용·실행·동작 시각 품질 검증이 필요함."
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 15,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-traveler.glb",
+        "assets/shared/humanoid-guardian.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-motion-suite",
+      "title": "공통 휴머노이드 이동·전투 액션 15종",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "ANIMATED_GLB_CLIP_LIBRARY",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-traveler.glb",
+      "masterGlb": "assets/shared/humanoid-traveler.glb",
+      "supportedRigProfiles": [
+        "SHARED_HUMANOID_SKINNED_19"
+      ],
+      "motionCount": 15,
+      "notes": "실제 3D 스킨 애니메이션 클립. 클립 수가 런타임 품질 인증을 의미하지 않음.",
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-traveler.glb",
+          "assets/shared/humanoid-guardian.glb"
+        ]
+      }
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 16,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "SAMURAI_IAI_DRAW"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-samurai.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-samurai",
+      "title": "공용 3D 사무라이 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "SAMURAI_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-samurai.glb",
+      "masterGlb": "assets/shared/humanoid-samurai.glb",
+      "meshArtifact": "assets/shared/humanoid-samurai.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-samurai.glb",
+      "vertices": 4112,
+      "triangles": 6322,
+      "visualIdentityAxes": [
+        "KABUTO_HELMET",
+        "LAMELLAR_WAIST_ARMOR",
+        "ASYMMETRIC_WAIST_SHEATH",
+        "SHOULDER_PLATE_PAIR"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-samurai.glb"
+        ]
+      },
+      "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
+      "sourceRoleId": "samurai",
+      "masterGlbGitBlobSha": "f76751214cc5e4a8e2609f8ba3bce8e71270f0a2",
+      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "staticStructuralChecks": {
+        "skinPresent": true,
+        "jointCount": 19,
+        "roleJointAnimationChannels": true,
+        "expectedRoleClip": "SAMURAI_IAI_DRAW",
+        "authoredClipCount": 16,
+        "distinctMeshGeometry": true,
+        "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
+      },
+      "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
+      "genreReusable": true
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 16,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "ARCHER_DRAW_RELEASE"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-archer.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-archer",
+      "title": "공용 3D 궁수 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "ARCHER_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-archer.glb",
+      "masterGlb": "assets/shared/humanoid-archer.glb",
+      "meshArtifact": "assets/shared/humanoid-archer.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-archer.glb",
+      "vertices": 4099,
+      "triangles": 6322,
+      "visualIdentityAxes": [
+        "FITTED_HOOD",
+        "LONG_HUNTER_MANTLE",
+        "SHOULDER_QUIVER",
+        "CURVED_HELD_BOW"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-archer.glb"
+        ]
+      },
+      "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
+      "sourceRoleId": "archer",
+      "masterGlbGitBlobSha": "d5515017a0d081ff32c0b207c4da5734597918a2",
+      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "staticStructuralChecks": {
+        "skinPresent": true,
+        "jointCount": 19,
+        "roleJointAnimationChannels": true,
+        "expectedRoleClip": "ARCHER_DRAW_RELEASE",
+        "authoredClipCount": 16,
+        "distinctMeshGeometry": true,
+        "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
+      },
+      "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
+      "genreReusable": true
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 16,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "MAGE_AREA_CAST"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-mage.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-mage",
+      "title": "공용 3D 마법사 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "MAGE_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-mage.glb",
+      "masterGlb": "assets/shared/humanoid-mage.glb",
+      "meshArtifact": "assets/shared/humanoid-mage.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-mage.glb",
+      "vertices": 4099,
+      "triangles": 6322,
+      "visualIdentityAxes": [
+        "FLOOR_LENGTH_ROBE",
+        "TALL_WIZARD_HAT",
+        "HAT_BRIM",
+        "HELD_STAFF"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-mage.glb"
+        ]
+      },
+      "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
+      "sourceRoleId": "mage",
+      "masterGlbGitBlobSha": "6e0279bf641f9acc5b086b811cfdeaee9048fc53",
+      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "staticStructuralChecks": {
+        "skinPresent": true,
+        "jointCount": 19,
+        "roleJointAnimationChannels": true,
+        "expectedRoleClip": "MAGE_AREA_CAST",
+        "authoredClipCount": 16,
+        "distinctMeshGeometry": true,
+        "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
+      },
+      "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
+      "genreReusable": true
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 16,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "ROGUE_BACKSTEP_CUT"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-rogue.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-rogue",
+      "title": "공용 3D 도적 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "ROGUE_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-rogue.glb",
+      "masterGlb": "assets/shared/humanoid-rogue.glb",
+      "meshArtifact": "assets/shared/humanoid-rogue.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-rogue.glb",
+      "vertices": 4099,
+      "triangles": 6298,
+      "visualIdentityAxes": [
+        "FACE_HOOD",
+        "ASYMMETRIC_CLOAK",
+        "DUAL_HAND_DAGGERS",
+        "LOW_PROFILE_OUTFIT"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-rogue.glb"
+        ]
+      },
+      "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
+      "sourceRoleId": "rogue",
+      "masterGlbGitBlobSha": "107eee75671cf908ce094328ab41ee0d4b8478a1",
+      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "staticStructuralChecks": {
+        "skinPresent": true,
+        "jointCount": 19,
+        "roleJointAnimationChannels": true,
+        "expectedRoleClip": "ROGUE_BACKSTEP_CUT",
+        "authoredClipCount": 16,
+        "distinctMeshGeometry": true,
+        "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
+      },
+      "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
+      "genreReusable": true
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 16,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "LANCER_SPEAR_THRUST"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-lancer.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-lancer",
+      "title": "공용 3D 창병 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "LANCER_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-lancer.glb",
+      "masterGlb": "assets/shared/humanoid-lancer.glb",
+      "meshArtifact": "assets/shared/humanoid-lancer.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-lancer.glb",
+      "vertices": 4125,
+      "triangles": 6346,
+      "visualIdentityAxes": [
+        "WIDE_SHOULDER_GUARDS",
+        "REINFORCED_CHEST",
+        "EXTRA_LONG_SPEAR",
+        "SPEAR_POINT"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-lancer.glb"
+        ]
+      },
+      "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
+      "sourceRoleId": "lancer",
+      "masterGlbGitBlobSha": "7e0549d6be0794cc425febb89b6ebfcac886fff4",
+      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "staticStructuralChecks": {
+        "skinPresent": true,
+        "jointCount": 19,
+        "roleJointAnimationChannels": true,
+        "expectedRoleClip": "LANCER_SPEAR_THRUST",
+        "authoredClipCount": 16,
+        "distinctMeshGeometry": true,
+        "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
+      },
+      "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
+      "genreReusable": true
+    },
+    {
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET_STATIC_STRUCTURAL_QA",
+      "license": "project-original",
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "STATIC_GLB_STRUCTURE_VERIFIED_NATIVE_RUNTIME_PENDING",
+      "artReviewState": "NATIVE_RUNTIME_VISUAL_REVIEW_REQUIRED",
+      "consumerGameIds": [],
+      "intendedConsumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "crossPlatformMasterSource": true,
+      "platformNativeDerivativeRequired": true,
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlbContractVersion": 1,
+      "masterGlbStaticQaPass": false,
+      "masterGlbQaAuthority": "tools/vibe2-asset-production-plan.mjs#evaluateCrossPlatform3dMasterGlb",
+      "primitiveFallbackFinalUseForbidden": true,
+      "gameplayAuthority": false,
+      "sourceLicense": "project-original",
+      "jointCount": 19,
+      "rigProfile": "SHARED_HUMANOID_SKINNED_19",
+      "boneAnimationChannels": true,
+      "animationClipCount": 16,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "BLACKSMITH_FORGE_HAMMER"
+      ],
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-blacksmith.glb"
+      ],
+      "engineNeutralSource": true,
+      "platformDerivativeBindingPending": true,
+      "styleAdaptationRequiredPerGame": true,
+      "id": "shared-humanoid-blacksmith",
+      "title": "공용 3D 대장장이 캐릭터 원본",
+      "family": "CHARACTER",
+      "category": "CHARACTER",
+      "subfamily": "BLACKSMITH_HUMANOID",
+      "role": "HUMANOID",
+      "path": "/assets/shared/humanoid-blacksmith.glb",
+      "masterGlb": "assets/shared/humanoid-blacksmith.glb",
+      "meshArtifact": "assets/shared/humanoid-blacksmith.glb",
+      "modelDownloadPath": "/assets/shared/humanoid-blacksmith.glb",
+      "vertices": 4151,
+      "triangles": 6370,
+      "visualIdentityAxes": [
+        "HEAVY_LEATHER_APRON",
+        "LAYERED_WORK_GLOVES",
+        "DOUBLE_HANDED_HAMMER",
+        "WORKING_TOOL"
+      ],
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-blacksmith.glb"
+        ]
+      },
+      "note": "실제 스킨 3D 메시와 역할 전용 관절 애니메이션 원본. 게임별 의복·스타일·리그 변환과 원생 엔진 및 모바일 런타임 QA 전에는 완성 자산 아님.",
+      "sourceRoleId": "blacksmith",
+      "masterGlbGitBlobSha": "f440d67e598c7396ec3c4fe2e9530f9a7c82a3e1",
+      "generatorSourceGitBlobSha": "25698022bcb4fd7068b566b1cfdd26631954b546",
+      "staticStructuralChecks": {
+        "skinPresent": true,
+        "jointCount": 19,
+        "roleJointAnimationChannels": true,
+        "expectedRoleClip": "BLACKSMITH_FORGE_HAMMER",
+        "authoredClipCount": 16,
+        "distinctMeshGeometry": true,
+        "exporterGenerator": "assets/native-authoring/build-shared-humanoid.mjs"
+      },
+      "modelGenerationMode": "EXISTING_SHARED_HUMANOID_BUILDER_ROLE_VARIANT",
+      "genreReusable": true
+    },
+    {
+      "id": "shared-creature-wolf",
+      "title": "공용 3D wolf 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "WOLF",
+      "bodyPlan": "QUADRUPED_CANINE",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-wolf.glb",
+      "path": "/assets/shared/creature-wolf.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-wolf.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-wolf.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "e48b3e0f740977bf53639a05ac3d1071f529a44f",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-wolf.glb"
+        ]
+      },
+      "rigProfile": "SHARED_CREATURE_WOLF_SKINNED",
+      "jointCount": 17,
+      "vertices": 1052,
+      "triangleCount": 1592,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "WOLF_PACK_HOWL"
+      ],
+      "signatureClip": "WOLF_PACK_HOWL",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true,
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=wolf"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
+    },
+    {
+      "id": "shared-creature-spider",
+      "title": "공용 3D spider 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "SPIDER",
+      "bodyPlan": "ARACHNID",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-spider.glb",
+      "path": "/assets/shared/creature-spider.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-spider.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-spider.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "0731466b97e2e81b3c8e2bd5dd01a8d88690318b",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-spider.glb"
+        ]
+      },
+      "rigProfile": "SHARED_CREATURE_SPIDER_SKINNED",
+      "jointCount": 29,
+      "vertices": 1789,
+      "triangleCount": 2692,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "SPIDER_WEB_THREAT"
+      ],
+      "signatureClip": "SPIDER_WEB_THREAT",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true,
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=spider"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
+    },
+    {
+      "id": "shared-creature-beetle",
+      "title": "공용 3D beetle 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "BEETLE",
+      "bodyPlan": "HEXAPOD_INSECT",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-beetle.glb",
+      "path": "/assets/shared/creature-beetle.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-beetle.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-beetle.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "c712f20cf7ce6978910d4793d7530b4b2f2689a0",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-beetle.glb"
+        ]
+      },
+      "rigProfile": "SHARED_CREATURE_BEETLE_SKINNED",
+      "jointCount": 23,
+      "vertices": 1503,
+      "triangleCount": 2292,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "BEETLE_HORN_CHARGE"
+      ],
+      "signatureClip": "BEETLE_HORN_CHARGE",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true,
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=beetle"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
+    },
+    {
+      "id": "shared-creature-golem",
+      "title": "공용 3D golem 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "GOLEM",
+      "bodyPlan": "HEAVY_GOLEM_OR_BOSS",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-golem.glb",
+      "path": "/assets/shared/creature-golem.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-golem.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-golem.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "5da17953f8ae1d44b8f702e95b53328ea79587de",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-golem.glb"
+        ]
+      },
+      "rigProfile": "SHARED_CREATURE_GOLEM_SKINNED",
+      "jointCount": 15,
+      "vertices": 1249,
+      "triangleCount": 1988,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "GOLEM_CORE_PULSE"
+      ],
+      "signatureClip": "GOLEM_CORE_PULSE",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true,
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=golem"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
+    },
+    {
+      "id": "shared-creature-serpent",
+      "title": "공용 3D serpent 다관절 몬스터 원본",
+      "family": "CREATURE",
+      "category": "CREATURE",
+      "subfamily": "SKINNED_CREATURE_MASTER",
+      "role": "MONSTER",
+      "speciesId": "SERPENT",
+      "bodyPlan": "REPTILE_OR_SERPENT",
+      "platform": "SHARED_MASTER",
+      "status": "REPO_ASSET",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "originalAssetStable": true,
+      "sourceLicense": "project-original",
+      "license": "project-original",
+      "sourceType": "SKINNED_GLB_2_0_WITH_RIG_AND_ANIMATIONS",
+      "masterAssetFormat": "GLB_2_0",
+      "masterGlb": "assets/shared/creature-serpent.glb",
+      "path": "/assets/shared/creature-serpent.glb",
+      "masterGlbStaticQaPass": false,
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-serpent.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-serpent.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "derivedBinaryGitBlobSha": "7151f8ef9aaa1eb3e15d581be9127f234f1d9aea",
+        "projectOriginal": true,
+        "platformNeutralOriginal": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-serpent.glb"
+        ]
+      },
+      "rigProfile": "SHARED_CREATURE_SERPENT_SKINNED",
+      "jointCount": 17,
+      "vertices": 915,
+      "triangleCount": 1328,
+      "boneAnimationChannels": true,
+      "animationClipCount": 11,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "SERPENT_COIL_STRIKE"
+      ],
+      "signatureClip": "SERPENT_COIL_STRIKE",
+      "motionPresentationOnly": true,
+      "gameplayAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "approvalRequiredAfterNativeRuntime": true,
+      "mobileRuntimeVerificationRequired": true,
+      "nativeRetargetAndConsumerQaRequired": true,
+      "distinctAttackAndSkillCurvesSourceAuthored": true,
+      "sourceGenerator": "assets/native-authoring/build-shared-creature.mjs",
+      "sourceGeneratorArgs": [
+        "assets/shared",
+        "--species=serpent"
+      ],
+      "sourceAuthoringMode": "REPRODUCIBLE_SHARED_SOURCE_ONLY",
+      "existingNativeDccExecutorUnchanged": true,
+      "requiresNativeAuthoringForTargetPlatform": true
+    },
+    {
+      "id": "shared-creature-wolf-actions",
+      "title": "공용 3D wolf 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CREATURE_ACTIONS",
+      "sourceRoleId": "wolf",
+      "sourceMasterId": "shared-creature-wolf",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/creature-wolf-actions.glb",
+      "masterGlb": "assets/shared/creature-wolf-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-wolf.glb",
+        "assets/shared/creature-wolf-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-wolf-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "sourceMasterAssetId": "shared-creature-wolf",
+        "sourceMasterPath": "assets/shared/creature-wolf.glb",
+        "derivedBinaryGitBlobSha": "4b48cce3f301a2c534180f340a124e1398aa81e3",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-wolf.glb",
+          "assets/shared/creature-wolf-actions.glb"
+        ]
+      },
+      "jointCount": 17,
+      "boneAnimationChannels": true,
+      "animationClipCount": 19,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "WOLF_PACK_HOWL",
+        "WOLF_STALK_CROUCH",
+        "WOLF_FLANK_LUNGE",
+        "WOLF_POUNCE_PIN",
+        "WOLF_PACK_HOWL_LOOP",
+        "WOLF_GUARD_BACKSTEP",
+        "WOLF_HEAVY_HIT",
+        "WOLF_GET_UP",
+        "WOLF_BOSS_PHASE_TELL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "4b48cce3f301a2c534180f340a124e1398aa81e3",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-creature-spider-actions",
+      "title": "공용 3D spider 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CREATURE_ACTIONS",
+      "sourceRoleId": "spider",
+      "sourceMasterId": "shared-creature-spider",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/creature-spider-actions.glb",
+      "masterGlb": "assets/shared/creature-spider-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-spider.glb",
+        "assets/shared/creature-spider-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-spider-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "sourceMasterAssetId": "shared-creature-spider",
+        "sourceMasterPath": "assets/shared/creature-spider.glb",
+        "derivedBinaryGitBlobSha": "d9163a5e4b8e00ec9a012bc5a98411ab71d3753d",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-spider.glb",
+          "assets/shared/creature-spider-actions.glb"
+        ]
+      },
+      "jointCount": 29,
+      "boneAnimationChannels": true,
+      "animationClipCount": 19,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "SPIDER_WEB_THREAT",
+        "SPIDER_SILK_DESCENT",
+        "SPIDER_WALL_PIVOT",
+        "SPIDER_TWO_LEG_STAB",
+        "SPIDER_FANG_BURST",
+        "SPIDER_WEB_AIM",
+        "SPIDER_SHELL_BRACE",
+        "SPIDER_KNOCKBACK",
+        "SPIDER_BOSS_PHASE_TELL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "d9163a5e4b8e00ec9a012bc5a98411ab71d3753d",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-creature-beetle-actions",
+      "title": "공용 3D beetle 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CREATURE_ACTIONS",
+      "sourceRoleId": "beetle",
+      "sourceMasterId": "shared-creature-beetle",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/creature-beetle-actions.glb",
+      "masterGlb": "assets/shared/creature-beetle-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-beetle.glb",
+        "assets/shared/creature-beetle-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-beetle-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "sourceMasterAssetId": "shared-creature-beetle",
+        "sourceMasterPath": "assets/shared/creature-beetle.glb",
+        "derivedBinaryGitBlobSha": "c163099e397b156b16707be21030bb0bd102d938",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-beetle.glb",
+          "assets/shared/creature-beetle-actions.glb"
+        ]
+      },
+      "jointCount": 23,
+      "boneAnimationChannels": true,
+      "animationClipCount": 19,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "BEETLE_HORN_CHARGE",
+        "BEETLE_HORN_UPSWEEP",
+        "BEETLE_TURN_RAM",
+        "BEETLE_SHELL_BLOCK",
+        "BEETLE_HORN_FEINT",
+        "BEETLE_MANDIBLE_CLAMP",
+        "BEETLE_LEG_STOMP",
+        "BEETLE_REEL_BACK",
+        "BEETLE_BOSS_PHASE_TELL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "c163099e397b156b16707be21030bb0bd102d938",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-creature-golem-actions",
+      "title": "공용 3D golem 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CREATURE_ACTIONS",
+      "sourceRoleId": "golem",
+      "sourceMasterId": "shared-creature-golem",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/creature-golem-actions.glb",
+      "masterGlb": "assets/shared/creature-golem-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-golem.glb",
+        "assets/shared/creature-golem-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-golem-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "sourceMasterAssetId": "shared-creature-golem",
+        "sourceMasterPath": "assets/shared/creature-golem.glb",
+        "derivedBinaryGitBlobSha": "97ad09d8f9360e0284ae217f4b674f457e0ca79b",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-golem.glb",
+          "assets/shared/creature-golem-actions.glb"
+        ]
+      },
+      "jointCount": 15,
+      "boneAnimationChannels": true,
+      "animationClipCount": 19,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "GOLEM_CORE_PULSE",
+        "GOLEM_CORE_CHANNEL",
+        "GOLEM_DOUBLE_FIST_SLAM",
+        "GOLEM_GROUND_STOMP",
+        "GOLEM_GUARD_BRACE",
+        "GOLEM_SLOW_TURN",
+        "GOLEM_HEAD_RECOIL",
+        "GOLEM_FALL_RECOVER",
+        "GOLEM_BOSS_PHASE_TELL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "97ad09d8f9360e0284ae217f4b674f457e0ca79b",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-creature-serpent-actions",
+      "title": "공용 3D serpent 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CREATURE_ACTIONS",
+      "sourceRoleId": "serpent",
+      "sourceMasterId": "shared-creature-serpent",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/creature-serpent-actions.glb",
+      "masterGlb": "assets/shared/creature-serpent-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-creature.mjs",
+        "assets/shared/creature-serpent.glb",
+        "assets/shared/creature-serpent-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/creature-serpent-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-creature.mjs",
+        "sourceMasterAssetId": "shared-creature-serpent",
+        "sourceMasterPath": "assets/shared/creature-serpent.glb",
+        "derivedBinaryGitBlobSha": "efabc34a6ef313384d9063363345e44761a9a83b",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-creature.mjs"
+        ],
+        "models": [
+          "assets/shared/creature-serpent.glb",
+          "assets/shared/creature-serpent-actions.glb"
+        ]
+      },
+      "jointCount": 17,
+      "boneAnimationChannels": true,
+      "animationClipCount": 19,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "TURN",
+        "ATTACK_A",
+        "ATTACK_B",
+        "SKILL_PREPARE",
+        "SKILL_RELEASE",
+        "HIT_FRONT",
+        "DEATH",
+        "SERPENT_COIL_STRIKE",
+        "SERPENT_COIL_CHARGE",
+        "SERPENT_SIDE_FANG",
+        "SERPENT_TAIL_WHIP",
+        "SERPENT_SPIRAL_EVADE",
+        "SERPENT_VENOM_AIM",
+        "SERPENT_HIT_COIL",
+        "SERPENT_UNCOIL_RECOVER",
+        "SERPENT_BOSS_PHASE_TELL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "efabc34a6ef313384d9063363345e44761a9a83b",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-traveler-actions",
+      "title": "공용 3D traveler 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "traveler",
+      "sourceMasterId": "shared-humanoid-traveler",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-traveler-actions.glb",
+      "masterGlb": "assets/shared/humanoid-traveler-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-traveler.glb",
+        "assets/shared/humanoid-traveler-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-traveler-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-traveler",
+        "sourceMasterPath": "assets/shared/humanoid-traveler.glb",
+        "derivedBinaryGitBlobSha": "20cfa3be7867bf84d5e6b3cb8ffeec1e1c27bf53",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-traveler.glb",
+          "assets/shared/humanoid-traveler-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 23,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "TRAVELER_IDLE_SCAN",
+        "TRAVELER_PICKUP",
+        "TRAVELER_CARRY",
+        "TRAVELER_INTERACT",
+        "TRAVELER_ROLL",
+        "TRAVELER_CLIMB_REACH",
+        "TRAVELER_CAMP_REST",
+        "TRAVELER_GREET"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "20cfa3be7867bf84d5e6b3cb8ffeec1e1c27bf53",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-guardian-actions",
+      "title": "공용 3D guardian 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "guardian",
+      "sourceMasterId": "shared-humanoid-guardian",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-guardian-actions.glb",
+      "masterGlb": "assets/shared/humanoid-guardian-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-guardian.glb",
+        "assets/shared/humanoid-guardian-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-guardian-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-guardian",
+        "sourceMasterPath": "assets/shared/humanoid-guardian.glb",
+        "derivedBinaryGitBlobSha": "f69c6a68a7c18e833ab8ba2e3e1ea09bfba41884",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-guardian.glb",
+          "assets/shared/humanoid-guardian-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 23,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "GUARDIAN_SHIELD_WALL",
+        "GUARDIAN_PARRY",
+        "GUARDIAN_CHARGE",
+        "GUARDIAN_STAGGER",
+        "GUARDIAN_REVIVE",
+        "GUARDIAN_BATTLE_CRY",
+        "GUARDIAN_COUNTER",
+        "GUARDIAN_BOSS_TELL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "f69c6a68a7c18e833ab8ba2e3e1ea09bfba41884",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-samurai-actions",
+      "title": "공용 3D samurai 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "samurai",
+      "sourceMasterId": "shared-humanoid-samurai",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-samurai-actions.glb",
+      "masterGlb": "assets/shared/humanoid-samurai-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-samurai.glb",
+        "assets/shared/humanoid-samurai-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-samurai-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-samurai",
+        "sourceMasterPath": "assets/shared/humanoid-samurai.glb",
+        "derivedBinaryGitBlobSha": "789e8a83c3f676a42db1b5188258db795cbaad8e",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-samurai.glb",
+          "assets/shared/humanoid-samurai-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 24,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "SAMURAI_IAI_DRAW",
+        "SAMURAI_LOW_CUT",
+        "SAMURAI_RISING_CUT",
+        "SAMURAI_DEFLECT",
+        "SAMURAI_DASH_SLASH",
+        "SAMURAI_FINISHER",
+        "SAMURAI_SHEATH",
+        "SAMURAI_HIT_RECOVER",
+        "SAMURAI_ULTIMATE_POSE"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "789e8a83c3f676a42db1b5188258db795cbaad8e",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-archer-actions",
+      "title": "공용 3D archer 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "archer",
+      "sourceMasterId": "shared-humanoid-archer",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-archer-actions.glb",
+      "masterGlb": "assets/shared/humanoid-archer-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-archer.glb",
+        "assets/shared/humanoid-archer-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-archer-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-archer",
+        "sourceMasterPath": "assets/shared/humanoid-archer.glb",
+        "derivedBinaryGitBlobSha": "8cf55d95968f3f94cb162c0673e518209ffedc41",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-archer.glb",
+          "assets/shared/humanoid-archer-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 24,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "ARCHER_DRAW_RELEASE",
+        "ARCHER_CROUCH_AIM",
+        "ARCHER_SIDE_STRAFE",
+        "ARCHER_DOUBLE_SHOT",
+        "ARCHER_RETREAT_SHOT",
+        "ARCHER_AIM_HOLD",
+        "ARCHER_BOW_SKILL",
+        "ARCHER_RELOAD_QUIVER",
+        "ARCHER_MARK_TARGET"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "8cf55d95968f3f94cb162c0673e518209ffedc41",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-mage-actions",
+      "title": "공용 3D mage 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "mage",
+      "sourceMasterId": "shared-humanoid-mage",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-mage-actions.glb",
+      "masterGlb": "assets/shared/humanoid-mage-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-mage.glb",
+        "assets/shared/humanoid-mage-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-mage-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-mage",
+        "sourceMasterPath": "assets/shared/humanoid-mage.glb",
+        "derivedBinaryGitBlobSha": "6ba106c06bfbc6c556fbb4faefc14f88bb1c708b",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-mage.glb",
+          "assets/shared/humanoid-mage-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 24,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "MAGE_AREA_CAST",
+        "MAGE_PROJECTILE_CAST",
+        "MAGE_BARRIER",
+        "MAGE_CHANNEL",
+        "MAGE_SUMMON",
+        "MAGE_HEAL",
+        "MAGE_BEAM",
+        "MAGE_COUNTERSPELL",
+        "MAGE_ULTIMATE"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "6ba106c06bfbc6c556fbb4faefc14f88bb1c708b",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-rogue-actions",
+      "title": "공용 3D rogue 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "rogue",
+      "sourceMasterId": "shared-humanoid-rogue",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-rogue-actions.glb",
+      "masterGlb": "assets/shared/humanoid-rogue-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-rogue.glb",
+        "assets/shared/humanoid-rogue-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-rogue-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-rogue",
+        "sourceMasterPath": "assets/shared/humanoid-rogue.glb",
+        "derivedBinaryGitBlobSha": "a6dcecbad8e65c5e8c1db984a33fcf2bc6508ec9",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-rogue.glb",
+          "assets/shared/humanoid-rogue-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 24,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "ROGUE_BACKSTEP_CUT",
+        "ROGUE_SNEAK",
+        "ROGUE_SHADOW_DASH",
+        "ROGUE_DUAL_CUT",
+        "ROGUE_PARRY",
+        "ROGUE_BACKSTAB",
+        "ROGUE_TRAP",
+        "ROGUE_EVADE",
+        "ROGUE_CLOAK"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "a6dcecbad8e65c5e8c1db984a33fcf2bc6508ec9",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-lancer-actions",
+      "title": "공용 3D lancer 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "lancer",
+      "sourceMasterId": "shared-humanoid-lancer",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-lancer-actions.glb",
+      "masterGlb": "assets/shared/humanoid-lancer-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-lancer.glb",
+        "assets/shared/humanoid-lancer-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-lancer-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-lancer",
+        "sourceMasterPath": "assets/shared/humanoid-lancer.glb",
+        "derivedBinaryGitBlobSha": "b817151e9c08166765970513da168966f483380d",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-lancer.glb",
+          "assets/shared/humanoid-lancer-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 24,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "LANCER_SPEAR_THRUST",
+        "LANCER_GUARD",
+        "LANCER_JUMP_STAB",
+        "LANCER_SWEEP",
+        "LANCER_CHARGE",
+        "LANCER_DOUBLE_THRUST",
+        "LANCER_PARRY",
+        "LANCER_BACKSTEP",
+        "LANCER_FINISHER"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "b817151e9c08166765970513da168966f483380d",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "shared-humanoid-blacksmith-actions",
+      "title": "공용 3D blacksmith 종별·직업별 확장 관절 모션",
+      "family": "MOTION",
+      "category": "MOTION",
+      "subfamily": "SKINNED_ACTION_PACK",
+      "role": "CHARACTER_ACTIONS",
+      "sourceRoleId": "blacksmith",
+      "sourceMasterId": "shared-humanoid-blacksmith",
+      "platform": "SHARED_MASTER",
+      "companyCommonBase": true,
+      "crossPlatformMasterSource": true,
+      "gameExclusive": false,
+      "reuseScope": "ALL_COMPATIBLE_3D_GAME_GENRES",
+      "styleAdaptationRequiredPerGame": true,
+      "status": "PREPARED_NATIVE_NEUTRAL_GLB_RUNTIME_PENDING",
+      "license": "project-original",
+      "sourceLicense": "project-original",
+      "path": "/assets/shared/humanoid-blacksmith-actions.glb",
+      "masterGlb": "assets/shared/humanoid-blacksmith-actions.glb",
+      "masterAssetFormat": "GLB_2_0",
+      "sourceFiles": [
+        "assets/native-authoring/build-shared-humanoid.mjs",
+        "assets/shared/humanoid-blacksmith.glb",
+        "assets/shared/humanoid-blacksmith-actions.glb"
+      ],
+      "nativeArtifacts": [
+        "assets/shared/humanoid-blacksmith-actions.glb"
+      ],
+      "sourceProvenance": {
+        "generator": "assets/native-authoring/build-shared-humanoid.mjs",
+        "sourceMasterAssetId": "shared-humanoid-blacksmith",
+        "sourceMasterPath": "assets/shared/humanoid-blacksmith.glb",
+        "derivedBinaryGitBlobSha": "3204f40587f4f427e5b875aa75a1be824189b1df",
+        "originalImmutable": true,
+        "platformNeutralAuthoring": true
+      },
+      "fileRoles": {
+        "authoring": [
+          "assets/native-authoring/build-shared-humanoid.mjs"
+        ],
+        "models": [
+          "assets/shared/humanoid-blacksmith.glb",
+          "assets/shared/humanoid-blacksmith-actions.glb"
+        ]
+      },
+      "jointCount": 19,
+      "boneAnimationChannels": true,
+      "animationClipCount": 24,
+      "animationClips": [
+        "IDLE_BREATH",
+        "WALK",
+        "RUN",
+        "SPRINT",
+        "COMBAT_READY",
+        "ATTACK_LIGHT_JAB",
+        "ATTACK_LIGHT_SLASH",
+        "ATTACK_HEAVY",
+        "GUARD_BLOCK",
+        "DODGE_LEFT",
+        "HIT_FRONT",
+        "JUMP",
+        "CAST_SPELL",
+        "DEATH_FRONT",
+        "GET_UP",
+        "BLACKSMITH_FORGE_HAMMER",
+        "BLACKSMITH_TONGS",
+        "BLACKSMITH_ANVIL",
+        "BLACKSMITH_COOL_METAL",
+        "BLACKSMITH_INSPECT",
+        "BLACKSMITH_REPAIR",
+        "BLACKSMITH_CRAFT",
+        "BLACKSMITH_LIFT",
+        "BLACKSMITH_SHOW_TOOL"
+      ],
+      "additionalAuthoredClips": 8,
+      "masterGlbGitBlobSha": "3204f40587f4f427e5b875aa75a1be824189b1df",
+      "masterGlbStaticQaPass": false,
+      "gameplayAuthority": false,
+      "combatAuthority": false,
+      "balanceAuthority": false,
+      "nativeRuntimeVerified": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "platformNativeDerivativeRequired": true,
+      "mobileRuntimeVerificationRequired": true,
+      "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
+      "externalLicenseAcquisitionRequired": false,
+      "originalAssetStable": true
+    },
+    {
+      "id": "unity-fantasy-survival-tree-trunk-v1",
+      "title": "마력숲 네이티브 나무 줄기",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "TREE_TRUNK",
+      "role": "THICK_RESOURCE_TREE_TRUNK",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "originalAssetId": "roblox-survival-tree_trunk_thick",
+      "parentAssetId": "roblox-survival-tree_trunk_thick",
+      "sourceParentId": "roblox-survival-tree_trunk_thick",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/tree_trunk_thick.obj",
+      "sourceParentGitBlobSha": "3e84abf4611370908c86576e3fa5372b16b3d4b2",
+      "sourceHash": "7cd1eca2c7383d7fbf369fb33c20ab63547cf1d7b9ceefd0d64e6d5b000cca70",
+      "sourceSha256": "7cd1eca2c7383d7fbf369fb33c20ab63547cf1d7b9ceefd0d64e6d5b000cca70",
+      "nativeArtifactHash": "84ae024e9e4e89671aef54424eb509254b98ee64b6744b7b5980bc2853454911",
+      "nativeArtifactGitBlobSha": "d6b4ba93a4455e68930a7408b2d33fff2d0f76f4",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/tree_trunk_thick.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/survival-core-world-v1/tree_trunk_thick.obj",
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj"
+        ],
+        "support": [
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        ]
+      },
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+          "sourceAssetId": "roblox-survival-tree_trunk_thick",
+          "artifactSha256": "84ae024e9e4e89671aef54424eb509254b98ee64b6744b7b5980bc2853454911"
+        }
+      },
+      "materialLibrary": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "3e84abf4611370908c86576e3fa5372b16b3d4b2",
+          "sourceSha256": "7cd1eca2c7383d7fbf369fb33c20ab63547cf1d7b9ceefd0d64e6d5b000cca70",
+          "targetSha256": "84ae024e9e4e89671aef54424eb509254b98ee64b6744b7b5980bc2853454911"
+        },
+        {
+          "kind": "MTL_DIFFUSE_TINT",
+          "sourcePath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+          "derivedPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 526,
+        "faces": 363
+      },
+      "originalSourceImmutable": true,
+      "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-tree-crown-v1",
+      "title": "마력숲 네이티브 나무 수관",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "TREE_CROWN",
+      "role": "ROUND_RESOURCE_TREE_CANOPY",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "originalAssetId": "roblox-survival-tree_crown_round",
+      "parentAssetId": "roblox-survival-tree_crown_round",
+      "sourceParentId": "roblox-survival-tree_crown_round",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/tree_crown_round.obj",
+      "sourceParentGitBlobSha": "f15c80484182a4757126736bf9039694576a9ef9",
+      "sourceHash": "e3c647aec1e2b73ba13d53693d7e58d2b842c2ac8496d3696d31cb7e6bb87148",
+      "sourceSha256": "e3c647aec1e2b73ba13d53693d7e58d2b842c2ac8496d3696d31cb7e6bb87148",
+      "nativeArtifactHash": "84832b4a032fca19d61ff2cdcbefb7701172d383e79b8da07b5b43b5983c2b6d",
+      "nativeArtifactGitBlobSha": "5ff056b1629066eb70b241acf8b4dbeeb4b632ca",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/tree_crown_round.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/survival-core-world-v1/tree_crown_round.obj",
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+        ],
+        "support": [
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        ]
+      },
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+          "sourceAssetId": "roblox-survival-tree_crown_round",
+          "artifactSha256": "84832b4a032fca19d61ff2cdcbefb7701172d383e79b8da07b5b43b5983c2b6d"
+        }
+      },
+      "materialLibrary": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "f15c80484182a4757126736bf9039694576a9ef9",
+          "sourceSha256": "e3c647aec1e2b73ba13d53693d7e58d2b842c2ac8496d3696d31cb7e6bb87148",
+          "targetSha256": "84832b4a032fca19d61ff2cdcbefb7701172d383e79b8da07b5b43b5983c2b6d"
+        },
+        {
+          "kind": "MTL_DIFFUSE_TINT",
+          "sourcePath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+          "derivedPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 868,
+        "faces": 728
+      },
+      "originalSourceImmutable": true,
+      "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-tree-materials-v1",
+      "title": "마력숲 나무 공용 표면 재질 파생",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "subfamily": "FOREST_TREE_SURFACE",
+      "role": "TREE_SURFACE_MTL",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "parentAssetId": "roblox-survival-core-world-v1",
+      "sourceParentId": "roblox-survival-core-world-v1",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+      "sourceHash": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+      "sourceSha256": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+      "nativeArtifactHash": "79d38b5736805db8f536205190bd78a898b5602175af8d2ca571bfccbbd35343",
+      "nativeArtifactGitBlobSha": "b10d4560962846aa7fc23a1e8b96478227d152fb",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "fileRoles": {
+        "support": [
+          "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        ]
+      },
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+          "artifactSha256": "79d38b5736805db8f536205190bd78a898b5602175af8d2ca571bfccbbd35343"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "MTL_DIFFUSE_TINT",
+          "sourceSha256": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+          "targetSha256": "79d38b5736805db8f536205190bd78a898b5602175af8d2ca571bfccbbd35343",
+          "originalSourceImmutable": true
+        }
+      ],
+      "originalSourceImmutable": true,
+      "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
     }
   ],
   "research": [
@@ -74373,6 +77711,462 @@
       "speculativeDownloadAllowed": false,
       "automaticAcquisitionWhenSelected": true,
       "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-fence-cc0",
+      "name": "Mesh fence",
+      "category": "PROP",
+      "categories": [
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "jumpylion87",
+      "sourceUrl": "https://www.meshy.ai/3d-models/mesh-fence-v2-019c011c-984e-79f6-a644-0491172bfbbc",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/mesh-fence-v2-019c011c-984e-79f6-a644-0491172bfbbc",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 6 Geometry + Meshy 6 Preview Texture",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-stag-cc0",
+      "name": "Stag",
+      "category": "CREATURE",
+      "categories": [
+        "CREATURE"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "cyber_fox",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Stag-v2-019ca926-5c23-7ebd-840b-3849dab0dcbb",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Stag-v2-019ca926-5c23-7ebd-840b-3849dab0dcbb",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 6",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-mosswing-whelp-cc0",
+      "name": "Mosswing Whelp",
+      "category": "CREATURE",
+      "categories": [
+        "CREATURE"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "kaesar3d",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Mosswing-Whelp-01a0a516-aa35-7248-acb4-0a869c720b91",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Mosswing-Whelp-01a0a516-aa35-7248-acb4-0a869c720b91",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 7 Geometry + Meshy 6 Texture",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-mossrune-wyrmling-cc0",
+      "name": "Mossrune Wyrmling",
+      "category": "CREATURE",
+      "categories": [
+        "CREATURE"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "kaesar3d",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Mossrune-Wyrmling-01a0a506-1277-768a-bfd4-396e25731bf9",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Mossrune-Wyrmling-01a0a506-1277-768a-bfd4-396e25731bf9",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 7 Geometry + Meshy 6 Texture",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-wolf-cub-cc0",
+      "name": "Wolf Cub",
+      "category": "CREATURE",
+      "categories": [
+        "CREATURE"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "cyber_fox",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Moonlit-Wolf-Pup-019fc44a-675e-7d31-ba1b-3ac5ce4b2e47",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Moonlit-Wolf-Pup-019fc44a-675e-7d31-ba1b-3ac5ce4b2e47",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 6",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-enchanted-table-cc0",
+      "name": "Enchanted Table",
+      "category": "PROP",
+      "categories": [
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "cyber_fox",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Enchanted-Table-01988934-2199-723f-859b-c34ad32fbdd0",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Enchanted-Table-01988934-2199-723f-859b-c34ad32fbdd0",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 5 Preview",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-enchanted-essence-cc0",
+      "name": "Enchanted Essence",
+      "category": "PROP",
+      "categories": [
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "cyber_fox",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Enchanted-Essence-019873e7-2354-798a-8a05-d74c659ff0f7",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Enchanted-Essence-019873e7-2354-798a-8a05-d74c659ff0f7",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 5 Preview",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
+      "reuseAcquiredSourceWhenCompatible": true
+    },
+    {
+      "id": "meshy-illuminated-relic-cc0",
+      "name": "Illuminated Relic",
+      "category": "PROP",
+      "categories": [
+        "PROP"
+      ],
+      "status": "LICENSE_VERIFIED_EXTERNAL_CANDIDATE",
+      "source": "Meshy Community",
+      "creator": "cyber_fox",
+      "sourceUrl": "https://www.meshy.ai/3d-models/Illuminated-Relic-019873a1-b88f-7969-af14-e6ae74ac8f6d",
+      "license": "CC0-1.0",
+      "licenseEvidenceUrl": "https://www.meshy.ai/3d-models/Illuminated-Relic-019873a1-b88f-7969-af14-e6ae74ac8f6d",
+      "licenseTermsUrl": "https://www.meshy.ai/terms-of-use",
+      "verifiedAt": "2026-10-10",
+      "licenseEvidenceSnapshot": {
+        "communityModelPageLicense": "CC0",
+        "generationInfo": "Meshy 5 Preview",
+        "licenseTermsVersion": "2026-09-19",
+        "reviewedAt": "2026-10-10",
+        "scope": "PUBLIC_COMMUNITY_3D_MODEL"
+      },
+      "platformTargets": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "platformResearchTargets": [
+        "WEB"
+      ],
+      "capabilities": [
+        "3D_MODEL",
+        "MATERIAL_REAUTHORING_ONLY"
+      ],
+      "allowedTransforms": [
+        "MATERIAL_REAUTHORING"
+      ],
+      "preserveGeometry": true,
+      "preserveRigAndAnimation": true,
+      "preserveGameLogic": true,
+      "commercialUseAllowed": true,
+      "derivativesAllowed": true,
+      "rawRedistributionAllowed": false,
+      "aiModelTrainingAllowed": false,
+      "sourcePriority": 0,
+      "volumeAdaptationEligible": false,
+      "acquisition": "ON_DEMAND_MANUAL_ACCOUNT_REQUIRED",
+      "acquisitionState": "CANDIDATE_METADATA_ONLY_UNTIL_SELECTED",
+      "downloadRequiresAccount": true,
+      "automaticAcquisitionWhenSelected": false,
+      "prefetchAllowed": false,
+      "speculativeDownloadAllowed": false,
+      "assetBinaryAcquired": false,
+      "productionVerified": false,
+      "runtimeVerificationState": "NOT_STARTED",
+      "promotionRequiresRuntimeConsumer": true,
       "reuseAcquiredSourceWhenCompatible": true
     }
   ],
@@ -79885,7 +83679,7 @@
     "pipelineCreated": false,
     "wrapperCreated": false,
     "shadowSystemCreated": false,
-    "lastCatalogSynchronizedVersion": 122,
+    "lastCatalogSynchronizedVersion": 130,
     "focusPhase": "QUALITY_UP_1000",
     "qualityTarget": 1000,
     "volumeReady": false,

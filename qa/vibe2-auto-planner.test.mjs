@@ -11,6 +11,7 @@ import {createVibeContinuousQueue, selectVibeQueueBatch} from '../assets/vibe-co
 import {findSafeTasks} from '../tools/vibe2-auto-planner.mjs';
 import {robloxPackageAssetRepairContext} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {buildGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
+import {latestVerifiedDesign} from '../tools/company-all-games-design-reset.mjs';
 
 test('internal motion planning binds 100 registered parents to one current walk source each',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'motion-plan-'));
@@ -92,6 +93,48 @@ function writeStudioDesign(root,gameId,overrides={}){
     identity:`${gameId} 고유 플레이 정체성`,
     coreFun:'적의 위협을 읽고 핵심 행동을 선택해 실제 전투 상태를 바꾸는 재미',
     coreLoop:['위협과 목표를 읽고 행동을 선택한다','실제 입력으로 적·월드·자원 상태를 바꾼다','결과와 보상으로 다음 목표와 전략을 갱신한다'],
+    // 검증용 게임도 실제 V5 MAIN × A × B × C + @ 설계의 최소 계약을 갖춰야 한다.
+    // 플레이어 행동·상태 인과가 없는 임시 MAIN-only 설계를 PASS 증거로 오인하지 않는다.
+    creativeGrammar:{
+      mainIdentity:`${gameId}에서 지역 배치와 위험 대응을 함께 판단해 다음 플레이 지형과 목표를 바꾸는 게임`,
+      a:{system:'지형 배치와 경로 운영',material:'지형의 층과 흔적',materialDomain:'환경과 건축의 역사',stateChange:'선택한 지역 배치가 안전 경로와 탐험 가능한 공간의 상태를 변경한다.'},
+      b:{system:'위험 대응과 보상 전략',material:'생물 행동과 지역 생태',materialDomain:'자연사와 생태',stateChange:'위험을 제어한 결과가 다음 지역 배치의 자원 비용과 접근 가능성을 바꾼다.'},
+      abCausality:'지역의 배치와 이동 경로가 위협의 대응 선택을 바꾸고, 대응한 결과의 위험과 보상 상태가 다시 지역 배치와 다음 진행 목표를 바꾼다.',
+      abEvolution:{
+        aChangesB:'배치된 통로와 은폐 지역에 따라 같은 위협에서도 회피와 대응의 유효한 선택이 바뀐다.',
+        bChangesA:'실제로 해결한 위험과 사용한 자원이 다음 경로 배치와 거점 확장의 비용을 바꾼다.',
+        lateGameChange:'후반에는 여러 지역의 배치와 위험 대응을 동시에 조절하여 새로운 연결 경로를 만든다.'
+      },
+      materialFusion:{
+        contrast:'지형의 구조와 생태 행동은 서로 다른 재료지만 공간 위험을 선택하는 플레이에서 결합된다.',
+        causalBridge:'생물의 이동으로 남은 흔적이 새 지역의 진입 경로와 배치 결정에 반영된다.',
+        removalConsequence:'지형 배치를 없애면 위험 대응 위치 선택이 사라지고 생태 규칙을 없애면 지역 선택의 긴장과 변화가 사라진다.'
+      },
+      storyCausalChain:{
+        cause:'지역의 통로가 변하면서 생물과 주민이 쓰던 이동 길이 막혀 새로운 문제가 생긴다.',
+        characterConflict:'주민은 안전한 우회로를 원하지만 탐험가는 더 위험한 지름길의 가치를 주장한다.',
+        playerChoice:'플레이어는 자원을 써서 통로를 복구하거나 다른 지역을 탐색하는 경로를 선택한다.',
+        worldChange:'해결 방식에 따라 새로운 통로와 거점의 사용 가능 상태가 실제로 변경된다.',
+        nextEvent:'바뀐 통로로 생물 이동과 주민의 요청이 달라져 다음 지역의 사건이 발생한다.'
+      },
+      cThemes:[
+        {name:'환경 윤리',kind:'MATERIAL',gameplayEffect:'자연을 보존할지 개발할지 결정하면 지역 자원과 이동 조건이 달라진다.'},
+        {name:'민담',kind:'MATERIAL',gameplayEffect:'지역의 전승에서 얻은 단서가 위험을 피하는 숨겨진 경로를 드러낸다.'}
+      ],
+      cGenres:[
+        {role:'PRIMARY',name:'전략',gameplayEffect:'지역 자원과 위험을 비교해 어느 경로에 먼저 투자할지 결정한다.'},
+        {role:'SECONDARY',name:'탐험',gameplayEffect:'발견한 단서로 기존 배치 계획에서 보이지 않던 선택지가 실제로 열린다.'}
+      ],
+      cGenreInterlock:'탐험에서 발견한 지형과 민담의 단서가 전략 장르의 배치 비용과 위험 대응 우선순위를 바꾼다.',
+      cWorldAndGameplayEffect:'환경 윤리와 민담의 선택 결과가 지역 자원의 재생과 새로운 탐험 경로, 위험 대응 규칙을 함께 바꾼다.',
+      delveDiscoveries:Array.from({length:4},(_,i)=>({
+        clue:`이전 위험 반응과 지형 흔적을 함께 관찰하는 발견 단서 ${i+1}`,
+        discovery:`위험과 통로 상태의 조합에서 새로운 숨겨진 관계를 발견한다 ${i+1}`,
+        newChoice:`다음 진입과 자원 사용에서 이미 검증된 경로를 새로운 순서로 활용한다 ${i+1}`
+      })),
+      delveGrowthRule:'상한 없이 새로운 지역 상태와 적 반응의 조합을 발견하고 검증된 규칙 안에서 다음 대응 전략을 심화한다.',
+      finalGameIdentity:`${gameId}의 전략과 탐험을 지역·생태의 인과 구조로 연결한 복합 게임`
+    },
     signatureSystems:[
       {name:'combat-counterplay',purpose:'적 유형에 맞춘 실제 전투 선택',playerChoice:'공격·회피·배치 중 상황에 맞는 대응을 선택'},
       {name:'progression-loop',purpose:'전투 결과가 다음 선택을 확장',playerChoice:'보상으로 다음 목표나 성장 경로를 고른다'}
@@ -100,11 +143,28 @@ function writeStudioDesign(root,gameId,overrides={}){
     ...overrides
   };
   const file=path.join(dir,'design-revised.json');
-  fs.writeFileSync(file,JSON.stringify({version:1,gameId,date:'2026-09-25',status:'DESIGN_BASELINE_CANDIDATE',content},null,2),'utf8');
+  fs.writeFileSync(file,JSON.stringify({version:6,gameId,date:'2026-09-25',gameplaySketchVersion:5,status:'DESIGN_BASELINE_CANDIDATE',content},null,2),'utf8');
   fs.writeFileSync(path.join(dir,'cycle-status.json'),JSON.stringify({gameId,status:'COMPLETE',baselineGate:{state:'DESIGN_BASELINE_READY',ready:true,blockers:[],checkedAt:'2026-09-25T00:00:00Z'}},null,2),'utf8');
   fs.writeFileSync(path.join(dir,'strict-design-review.json'),JSON.stringify({gameId,verdict:'PASS',totalScore:90,hardFailures:[],reviewedAt:'2026-09-25T00:00:00Z'},null,2),'utf8');
   return file;
 }
+test('simulated verified studio design fixture satisfies the current V5 identity-and-grammar gate',()=>{
+  const root=tempRepo();
+  try{
+    const file=writeStudioDesign(root,'v5-authoring-fixture');
+    const record=JSON.parse(fs.readFileSync(file,'utf8'));
+    assert.equal(record.gameplaySketchVersion,5);
+    const verified=latestVerifiedDesign(root,'v5-authoring-fixture');
+    assert.ok(verified,'a simulated verified design must be complete under the same gate used by the real planner');
+    assert.equal(verified.record.content.creativeGrammar.cThemes.length,2);
+    assert.deepEqual(verified.record.content.creativeGrammar.cGenres.map(row=>row.role),['PRIMARY','SECONDARY']);
+    const broken=structuredClone(record);
+    delete broken.content.creativeGrammar;
+    fs.writeFileSync(file,JSON.stringify(broken,null,2),'utf8');
+    assert.equal(latestVerifiedDesign(root,'v5-authoring-fixture'),null,'old MAIN-only content is not a verified design');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 const status={projects:[{gameId:'demo',ownerDecision:'PASS',target:'unity-android',projectPath:'unity-games/demo',progress:80}]};
 const catalog={games:[
   {id:'demo',homepageCategory:'development-confirmed'},
@@ -1070,8 +1130,17 @@ test('completed Unity Web package is not duplicated after completion and retains
   assert.equal(first.planned,true);
   const autoExpanded=first.task.evidence.includes('work-package-auto-expanded');
   const parallelPackage=(first.packages?.[0]?.tasks||[]).length>1;
-  assert.equal(autoExpanded||parallelPackage,true);
-  if(autoExpanded){
+  const nativeUnityBootstrap=first.task.evidence.includes('unity-web-first-stage')
+    &&first.task.evidence.includes('source-root-bootstrap-required');
+  if(nativeUnityBootstrap){
+    // Unity Web 원본 코어 부트스트랩은 병렬 자산이 없더라도 유효한 최소 작업이다.
+    assert.equal(first.task.sourceRoot,'unity-games/demo');
+    assert.equal(first.task.unityWebDevelopment,true);
+    assert.deepEqual(first.task.responsibleFiles,[
+      'unity-games/demo/Assets/Scripts/GameCore.cs',
+      'unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'
+    ]);
+  }else if(autoExpanded){
     assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
     assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
   }else{
@@ -1559,6 +1628,71 @@ test('web presentation planner discovers a real non-index game entry file',()=>{
   assert.ok(task.responsibleFiles.includes(`web-games/${gameId}/legacy_entry_web-28.html`));
 });
 
+test('existing Web game presentation automatically selects optional UX and built-in tool candidates',()=>{
+  const root=tempRepo();
+  try{
+    const gameId='old-survival-interface',dir=path.join(root,'web-games',gameId),file=path.join(dir,'index.html');
+    fs.mkdirSync(dir,{recursive:true});
+    const existing='<html><body><button onclick="openInventory()">장비</button><script>function openInventory(){inventoryPanel.hidden=false;} const craftRecipes=[];</script></body></html>';
+    fs.writeFileSync(file,existing);
+    const assets=path.join(root,'assets');fs.mkdirSync(assets,{recursive:true});
+    for(const name of ['inventory-equipment.js','crafting-recipes.js','vibe-private-engine.js']){
+      fs.writeFileSync(path.join(assets,name),'export const library = true;');
+    }
+    const project={gameId,engine:'web',genre:'SURVIVAL',releaseState:'development-confirmed',projectPath:'web-games/'+gameId};
+    const task=findWebPresentationQualityTask(project,root,{tasks:[]});
+    assert.ok(task);
+    const sync=task.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync;
+    assert.equal(sync.status,'SOURCE_MATCH_CANDIDATES_NOT_APPLIED');
+    assert.deepEqual(sync.sourceFiles,['web-games/'+gameId+'/index.html']);
+    assert.ok(sync.externalAlgorithms.some(row=>row.id==='RECOGNITION_OVER_RECALL'));
+    assert.ok(sync.internalToolMatches.some(row=>row.id==='INVENTORY_EQUIPMENT'));
+    assert.ok(sync.internalToolMatches.some(row=>row.id==='CRAFTING'));
+    assert.ok(sync.internalToolMatches.every(row=>row.optional&&!row.automaticImport&&!row.runtimeVerified));
+    assert.equal(sync.firstPartyLibraryCount,2);
+    assert.ok(sync.internalLibraryMatches.some(row=>row.library==='assets/inventory-equipment.js'));
+    assert.ok(sync.internalLibraryMatches.some(row=>row.library==='assets/crafting-recipes.js'));
+    assert.ok(!sync.internalLibraryMatches.some(row=>row.library==='assets/vibe-private-engine.js'));
+    assert.ok(sync.internalLibraryMatches.every(row=>row.optional&&!row.automaticImport&&!row.runtimeVerified));
+    assert.equal(sync.designMutation,false);assert.equal(sync.runtimeVerified,false);
+    assert.match(task.goal,/EXISTING_GAME_INTERFACE_AUTO_MATCH/);
+    assert.equal(fs.readFileSync(file,'utf8'),existing);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('existing Unity WebGL and Unity app match the same existing C# interface source',()=>{
+  const root=tempRepo();
+  try{
+    const policyPath=path.join(root,'company-learning/platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+    policy.assetProductionParallelContract={enabled:true};fs.writeFileSync(policyPath,JSON.stringify(policy));
+    fs.writeFileSync(path.join(root,'unity-games/demo/Assets/Scripts/UIController.cs'),'using UnityEngine.UI; public class UIController { void OpenInventory(){ inventoryPanel.SetActive(true); } }');
+    const assets=path.join(root,'assets');fs.mkdirSync(assets,{recursive:true});
+    fs.writeFileSync(path.join(assets,'inventory-equipment.js'),'export const library = true;');
+    const project={gameId:'demo',name:'Unity Demo',engine:'unity',genre:'RPG',target:'unity',releaseState:'development-confirmed',projectPath:'unity-games/demo'};
+    const web=findPresentationQualityTask({...project,firstStageUnityWeb:true},root,{tasks:[]});
+    const app=findPresentationQualityTask({...project,firstStageUnityWeb:false},root,{tasks:[]});
+    assert.ok(web&&app);
+    const w=web.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync;
+    const a=app.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync;
+    assert.equal(w.platformBinding,'UNITY_WEBGL_SAME_CANONICAL_UNITY_PROJECT_AND_UI_SOURCE');
+    assert.equal(a.platformBinding,'UNITY_APP_SAME_CANONICAL_UNITY_PROJECT_WITH_WEBGL');
+    assert.deepEqual(w.externalAlgorithms.map(row=>row.id),a.externalAlgorithms.map(row=>row.id));
+    assert.deepEqual(w.internalToolMatches.map(row=>row.id),a.internalToolMatches.map(row=>row.id));
+    assert.deepEqual(w.internalLibraryMatches.map(row=>row.id),a.internalLibraryMatches.map(row=>row.id));
+    assert.ok(w.internalLibraryMatches.some(row=>row.library==='assets/inventory-equipment.js'));
+    assert.ok(w.internalLibraryMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
+    assert.ok(w.sourceFiles.includes('unity-games/demo/Assets/Scripts/UIController.cs'));
+    assert.ok(w.internalToolMatches.every(row=>row.integration==='NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT'));
+    assert.equal(w.designMutation,false);assert.equal(w.noShadowUiPipeline,true);
+    const id='no-interface-genre',dir=path.join(root,'web-games',id);
+    fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'index.html'),'<html><body><canvas id="game"></canvas></body></html>');
+    const noUi=findWebPresentationQualityTask({gameId:id,engine:'web',genre:'RPG',releaseState:'development-confirmed',projectPath:'web-games/'+id},root,{tasks:[]});
+    assert.ok(noUi);
+    assert.equal(noUi.graphicsReplacementContract.menuDiversity.existingGameInterfaceSync.status,'NO_SOURCE_MATCH');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('presentation quality passes are queued in canonical order',()=>{
   const root=tempRepo();
   const gameId='presentation-web';
@@ -1842,6 +1976,8 @@ test('central Unity Web development floor routes new DEVELOPMENT_CONFIRMED work 
   ]);
   assert.ok(task.evidence.includes('unity-web-first-stage'));
   assert.ok(task.evidence.includes('unity-web-source-root-bootstrap-required'));
+  assert.equal(task.maxRetries,null,'Unity Web bootstrap must never stop because of a retry count');
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.match(task.goal,/UNITY_PROJECT_SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
   assert.match(task.goal,/1차 Web 게임 원본을 unity-games\//);
   assert.match(task.goal,/HTML\/Canvas\/PlayCanvas 신규 게임을 만들지 않는다/);
@@ -1904,6 +2040,8 @@ test('missing current upper-platform readiness requeues real Unity Web code and 
   assert.equal(task.target,'unity');
   assert.ok(task.evidence.includes('unity-web-development-floor:v1'));
   assert.ok(task.evidence.includes('platform-responsibility-split:unity-web-core-runtime'));
+  assert.equal(task.maxRetries,null,'Unity Web 3D repair must remain indefinitely retryable');
+  assert.equal(task.retryPolicy,'UNLIMITED_CAUSAL_REPAIR');
   assert.ok(task.evidence.includes('same-game-cross-platform-parallel:responsible-files-only'));
   assert.ok(task.evidence.includes('upper-platform-readiness:READINESS_EVIDENCE_MISSING'));
   assert.deepEqual(task.responsibleFiles,[
@@ -1967,6 +2105,105 @@ test('Unity native presentation responsibility excludes gameplay core when a vis
   assert.ok(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/PrototypeAnimatedVisuals.cs'));
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/GameCore.cs'),false);
   assert.equal(task.responsibleFiles.includes('unity-games/demo/Assets/Scripts/RuntimeBootstrap.cs'),false);
+});
+
+test('current owner hold keeps daechung RPG Unity Web 3D work eligible while Android remains held',()=>{
+  const root=tempRepo(),gameId='daechung-rpg';
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.ownerActiveDevelopmentScope20261009={
+    status:'ACTIVE',
+    activeTargets:['ROBLOX','UNITY_WEB'],
+    ownerHeldTargets:['UNITY_ANDROID','FORTNITE_UEFN']
+  };
+  policy.unityWebFirstStage={
+    status:'OWNER_DIRECT_LOCKED',
+    scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    enabled:true,
+    validationSurfaceOnly:false
+  };
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
+  const unityRoot=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(unityRoot,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(unityRoot,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  const rows=collectProjects({projects:[]},{games:[{
+    id:gameId,name:'5포탈 RPG',productionClass:'DEVELOPMENT_CONFIRMED',
+    lifecycleState:'ACTIVE',unityProjectPath:`unity-games/${gameId}`
+  }]},root,{items:[]});
+  const unityWeb=rows.find(row=>row.gameId===gameId&&row.engine==='unity');
+  assert.ok(unityWeb,'Android hold must not remove the 3D Unity Web work from the project list');
+  assert.equal(unityWeb.firstStageUnityWeb,true);
+  assert.equal(unityWeb.firstStageEngine,'UNITY_WEB');
+  assert.equal(unityWeb.projectPath,`unity-games/${gameId}`);
+  assert.equal(rows.filter(row=>row.gameId===gameId&&row.engine==='unity').length,1);
+  assert.ok(findSafeTasks(unityWeb,root,{tasks:[]}).length>0,'Unity Web 3D development must have a source task');
+});
+
+test('Unity Web 3D source and separate asset responsibilities are scheduled together',()=>{
+  const root=tempRepo(),gameId='unity-web-asset-parallel';
+  const policyPath=path.join(root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+  policy.assetProductionParallelContract={enabled:true};
+  policy.unityWebFirstStage={
+    status:'OWNER_DIRECT_LOCKED',
+    scope:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
+    validationSurfaceOnly:false,
+    canonicalGameSourceRoot:'unity-games/<gameId>/'
+  };
+  fs.writeFileSync(policyPath,JSON.stringify(policy,null,2));
+  const projectDir=path.join(root,'unity-games',gameId);
+  fs.mkdirSync(path.join(projectDir,'Assets','Editor'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'Packages'),{recursive:true});
+  fs.mkdirSync(path.join(projectDir,'ProjectSettings'),{recursive:true});
+  fs.writeFileSync(path.join(projectDir,'Assets','Editor','Build.cs'),
+    'public static class UnityWebBuild { public static void BuildWeb(){} }\n');
+  fs.writeFileSync(path.join(projectDir,'Packages','manifest.json'),'{}\n');
+  fs.writeFileSync(path.join(projectDir,'ProjectSettings','ProjectVersion.txt'),'m_EditorVersion: 6000.6.0f1\n');
+  // 기존 Unity 코어가 있어야 WebGL 수리와 원본 시각 책임을 별도 파일로 구분한다.
+  const scriptsDir=path.join(projectDir,'Assets','Scripts');
+  fs.mkdirSync(scriptsDir,{recursive:true});
+  fs.writeFileSync(path.join(scriptsDir,'GameCore.cs'),'public sealed class GameCore {}\\n');
+  fs.writeFileSync(path.join(scriptsDir,'RuntimeBootstrap.cs'),'public sealed class RuntimeBootstrap {}\\n');
+  // 3D 시각 책임 파일은 존재하지만 코어 수리 대상 파일과 독립적이다.
+  const visualFile=path.join(projectDir,'Assets','Scripts','PrototypeAnimatedVisuals.cs');
+  fs.mkdirSync(path.dirname(visualFile),{recursive:true});
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private MeshRenderer actor; }\n');
+  const project={
+    gameId,name:'Unity Web Asset Parallel',engine:'unity',target:'unity',
+    releaseState:'development-confirmed',projectPath:`unity-games/${gameId}`,
+    existing:true,firstStageUnityWeb:true
+  };
+  const rows=findSafeTasks(project,root,{tasks:[]});
+  const repair=rows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  const visualPath=`unity-games/${gameId}/Assets/Scripts/PrototypeAnimatedVisuals.cs`;
+  const assets=rows.find(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes(visualPath));
+  assert.ok(repair,'existing 3D gameplay repair must continue');
+  assert.ok(assets,'independent native 3D asset work must not wait for all WebGL gates');
+  assert.equal(repair.sourceRoot,assets.sourceRoot);
+  assert.equal(repair.responsibleFiles.some(file=>assets.responsibleFiles.includes(file)),false);
+
+  // 코드에서 사용하지 않는 주석은 2D 게임플레이로 오판하지 않는다.
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private MeshRenderer actor; } // SpriteRenderer in old notes\n');
+  const commentRows=findSafeTasks(project,root,{tasks:[]});
+  const commentRepair=commentRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  assert.equal(commentRepair.responsibleFiles.includes(visualPath),false);
+  assert.equal(commentRepair.evidence.includes('unity-web-native-2d-source-confirmed:YES'),false);
+  assert.ok(commentRows.some(row=>row.assetProductionLane===true&&(row.responsibleFiles||[]).includes(visualPath)));
+
+  // 실제 2D 컴포넌트를 사용하면 원본 시각 책임 함수만 수리 범위에 넣는다.
+  fs.writeFileSync(visualFile,
+    'using UnityEngine; public sealed class PrototypeAnimatedVisuals { private SpriteRenderer actor; }\n');
+  const conflictRows=findSafeTasks(project,root,{tasks:[]});
+  const conflictRepair=conflictRows.find(row=>(row.evidence||[]).includes('unity-web-first-stage'));
+  assert.ok(conflictRepair?.responsibleFiles.includes(visualPath));
+  assert.ok(conflictRepair.evidence.includes('unity-web-native-2d-source-confirmed:YES'));
+  assert.ok(conflictRepair.evidence.includes('unity-web-source-failure:UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D'));
+  assert.match(conflictRepair.goal,/UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D/);
+  assert.equal(conflictRows.some(row=>row.assetProductionLane===true
+    &&(row.responsibleFiles||[]).includes(visualPath)),false);
 });
 
 test('same-game Unity Web repair and Unity asset task stay parallel when responsible files are disjoint',()=>{

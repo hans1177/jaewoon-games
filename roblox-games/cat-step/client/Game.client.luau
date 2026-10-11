@@ -19,6 +19,49 @@ local verifiedExternalLearningMappings = verifiedExternalLearningContext.GameSpe
 local verifiedExternalLearningDispositions = verifiedExternalLearningContext.LearningDispositions or {}
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_END
 
+-- STUDIO_ASSET_BINDING_CLIENT_BEGIN
+local STUDIO_ASSET_BINDING_VERSION = 2
+local studioAssetConfig = Config.StudioAssets or {}
+local studioAssetFamilies = studioAssetConfig.Families or {}
+local studioAssetSelectionFingerprint = studioAssetConfig.SelectionFingerprint or ""
+local function studioAssetFamily(family)
+  local atoms = studioAssetFamilies[family]
+  return type(atoms) == "table" and atoms or {}
+end
+local function hasStudioAssetAtom(familyOrAtom, atom)
+  local family = atom == nil and "UI" or familyOrAtom
+  local assetAtom = atom == nil and familyOrAtom or atom
+  return table.find(studioAssetFamily(family), assetAtom) ~= nil
+end
+local STUDIO_ASSET_SELECTION = {
+  CHARACTER = studioAssetFamily("CHARACTER"),
+  CREATURE = studioAssetFamily("CREATURE"),
+  BUILDING = studioAssetFamily("BUILDING"),
+  ENVIRONMENT = studioAssetFamily("ENVIRONMENT"),
+  WEAPON = studioAssetFamily("WEAPON"),
+  SKILL = studioAssetFamily("SKILL"),
+  MATERIAL = studioAssetFamily("MATERIAL"),
+  AUDIO = studioAssetFamily("AUDIO"),
+  VFX = studioAssetFamily("VFX"),
+  UI = studioAssetFamily("UI"),
+  MOTION = studioAssetFamily("MOTION"),
+  PROP = studioAssetFamily("PROP"),
+}
+local STUDIO_ASSET_FAMILY_STATUS = {
+  CHARACTER = "NOT_APPLICABLE",
+  CREATURE = "NOT_APPLICABLE",
+  BUILDING = "NOT_APPLICABLE",
+  ENVIRONMENT = "NOT_APPLICABLE",
+  WEAPON = "NOT_APPLICABLE",
+  SKILL = "NOT_APPLICABLE",
+  MATERIAL = "NOT_APPLICABLE",
+  AUDIO = "NOT_APPLICABLE",
+  VFX = "NOT_APPLICABLE",
+  UI = "APPLIED",
+  MOTION = "APPLIED",
+  PROP = "NOT_APPLICABLE",
+}
+-- STUDIO_ASSET_BINDING_CLIENT_END
 local palette = Config.Palette
 
 -- 유틸
@@ -357,6 +400,19 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Global
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local root = Instance.new("Frame")
+if hasStudioAssetAtom("UI", "FRAME_PANEL") then
+  local studioAssetStroke = Instance.new("UIStroke")
+  studioAssetStroke.Name = "StudioAssetFramePanel"
+  studioAssetStroke.Thickness = 1
+  studioAssetStroke.Transparency = 0.55
+  studioAssetStroke.Color = Color3.fromRGB(210, 225, 255)
+  studioAssetStroke.Parent = root
+end
+
+root:SetAttribute("StudioAssetBindingVersion", STUDIO_ASSET_BINDING_VERSION)
+root:SetAttribute("StudioAssetSelectionFingerprint", studioAssetSelectionFingerprint)
+root:SetAttribute("StudioAssetAtoms", table.concat(studioAssetFamily("UI"), ","))
+
 root.Name = "Root"
 root.Size = UDim2.fromScale(1, 1)
 root.BackgroundColor3 = palette.SkyBottom

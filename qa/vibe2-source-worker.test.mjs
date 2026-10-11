@@ -27,6 +27,124 @@ import { robloxDeterministicPresentationEligible } from '../tools/vibe2-source-w
 import { expandPresentationResponsibleFiles } from '../tools/vibe2-continuous-runner.mjs';
 import { classifyVibePatchSaturation } from '../assets/vibe-quality-intelligence.js';
 
+// 메인: 기존 설계→플랫폼 코딩 추적 결과를 한 번만 받아 로블록스 Luau 소스 워커에 전달한다.
+test('Roblox native coding consumes the existing same-game Unity Web trace without a shadow source scanner',()=>{
+  const gameId='sync-native-fixture',sourceFile='unity-games/'+gameId+'/Assets/Scripts/GameCore.cs';
+  const sync={
+    version:1,kind:'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC',canonicalGameId:gameId,
+    canonicalDesignFingerprint:'same-verified-design-fingerprint',unityWebProjectRoot:'unity-games/'+gameId,
+    unityWebSourceAvailable:true,unityWebScriptsFingerprint:'0123456789abcdef',
+    sourceFiles:[sourceFile],sourceMethods:[{
+      file:sourceFile,line:14,symbol:'ApplyDamage',
+      signature:'public void ApplyDamage()',stateChangeSource:'public void ApplyDamage() { Health--; }'
+    }],referenceStatus:'SOURCE_READ_ONLY_UNVERIFIED',
+    verificationTransferred:false,sourceImplementationPassed:false,robloxRuntimeVerified:false
+  };
+  const directive={directiveId:'sync-current-design',gameId,
+    designToPlatformCodingTrace:{designFingerprint:sync.canonicalDesignFingerprint,unityWebSourceSync:sync}};
+  const context={files:[{path:'server/Game.server.luau',editable:true,content:'local health=100'}]};
+  const order={target:'roblox',gameId,goal:'Keep the same authorized state behavior with native optimization.',
+    source:{root:'roblox-games/'+gameId},selectedTask:{buildUpDirective:directive}};
+  const prompt=work=>buildPrompt(work,context,['server/Game.server.luau'],{
+    verifiedExternalLearningContract:{block:''}
+  });
+  const initial=prompt(order);
+  assert.match(initial,/unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE/);
+  assert.ok(initial.includes(sourceFile));
+  assert.ok(initial.includes('0123456789abcdef'));
+  assert.ok(initial.includes('ApplyDamage'));
+  assert.ok(initial.includes('Health--'));
+  assert.ok(initial.includes('"verified":false'));
+  assert.ok(initial.includes('"robloxRuntimeVerified":false'));
+  assert.match(initial,/Allowed edit paths: server\/Game\.server\.luau/);
+  assert.doesNotMatch(initial,/Allowed edit paths:.*GameCore\.cs/);
+  const changed={...sync,unityWebScriptsFingerprint:'different-current-unity-source'};
+  const revised=prompt({...order,selectedTask:{buildUpDirective:{...directive,
+    designToPlatformCodingTrace:{...directive.designToPlatformCodingTrace,unityWebSourceSync:changed}}}});
+  assert.ok(revised.includes('different-current-unity-source'));
+  assert.ok(!revised.includes('0123456789abcdef'));
+  assert.doesNotMatch(prompt({...order,source:{root:'roblox-games/someone-else'}}),/unityWebSourceReference=/);
+  assert.doesNotMatch(prompt({...order,target:'unity',source:{root:'unity-games/'+gameId}}),/unityWebSourceReference=/);
+  assert.doesNotMatch(prompt({...order,selectedTask:{buildUpDirective:{...directive,gameId:'other-game'}}}),/unityWebSourceReference=/);
+  assert.doesNotMatch(prompt({...order,selectedTask:{buildUpDirective:{...directive,
+    designToPlatformCodingTrace:{designFingerprint:'stale-design',unityWebSourceSync:sync}}}}),/unityWebSourceReference=/);
+});
+
+test('Roblox native code remains independent when Unity Web is missing or only has unverified source',()=>{
+  const gameId='native-independent-game',context={files:[{path:'server/Game.server.luau',editable:true,content:'local state={}' }]};
+  const base={target:'roblox',gameId,source:{root:'roblox-games/'+gameId},goal:'repair existing native game source'};
+  const designFingerprint='approved-game-design';
+  const sync={kind:'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC',version:1,canonicalGameId:gameId,
+    canonicalDesignFingerprint:designFingerprint,unityWebSourceAvailable:false,unityWebScriptsFingerprint:null,
+    unityWebProjectRoot:'unity-games/'+gameId,sourceFiles:[],sourceMethods:[],
+    referenceStatus:'SOURCE_NOT_AVAILABLE'};
+  const directive={directiveId:'same-game',gameId,
+    designToPlatformCodingTrace:{designFingerprint,unityWebSourceSync:sync}};
+  const call=order=>buildPrompt(order,context,['server/Game.server.luau'],{
+    verifiedExternalLearningContract:{block:''}
+  });
+  const missing=call({...base,selectedTask:{buildUpDirective:directive}});
+  assert.match(missing,/sourceAvailable\":false/);
+  assert.match(missing,/Missing\/unverified Unity Web does not block independent Roblox coding/);
+  assert.match(missing,/Allowed edit paths: server\/Game\.server\.luau/);
+  assert.doesNotMatch(missing,/Unity Web.*runtime PASS\s*=\s*YES/);
+  const noDirective=call({...base,selectedTask:{}});
+  assert.doesNotMatch(noDirective,/unityWebSourceReference=/);
+});
+
+test('compact Roblox coding preserves same-game Unity Web source fingerprint and state operation',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const first=worker.indexOf('function buildUpDirectiveBlockFromPrompt(');
+  const last=worker.indexOf('\nexport function buildRobloxNativeSourceInspection',first);
+  assert.ok(first>=0&&last>first);
+  const compact=runInNewContext(worker.slice(first,last)+'\nbuildUpDirectiveBlockFromPrompt',{
+    Buffer,
+    clean:value=>String(value??'').replace(/\s+/g,' ').trim(),
+    posix:value=>String(value??'').replaceAll('\\','/').replace(/\/+$/,''),
+    boundedPromptText:(value,length)=>String(value).slice(0,length),
+    SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+    COMPACT_DIRECTIVE_LINE_BYTES:900,console:{log(){}}
+  });
+  const reference=index=>'unityWebSourceReference='+JSON.stringify({
+    path:'unity-games/roblox-sync/Assets/Scripts/Game'+index+'.cs',
+    sha256:String(index).repeat(64),runtimeVerified:false,
+    sourceStatus:'NATIVE_CSHARP_SOURCE_OBSERVATION_ONLY',
+    methods:[{method:'ApplyDamage',source:'public void ApplyDamage(int value) { Health -= value; }'}]
+  });
+  const lines=[
+    '[GAME SPECIFIC BUILD UP DIRECTIVE BEGIN]',
+    'directiveId=roblox-sync',
+    'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE',
+    reference(1),reference(2),reference(3),
+    ...['MAIN','A','B','DELVE'].map(role=>'designCodeRole='+role),
+    ...Array.from({length:25},(_,i)=>'gameplay=expand-'+i+' '+('x'.repeat(350))),
+    '[GAME SPECIFIC BUILD UP DIRECTIVE END]'
+  ].join('\n');
+  const out=compact(lines,{compact:true,responsiblePaths:['server/Game.server.luau']});
+  assert.match(out,/unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE/);
+  assert.equal((out.match(/unityWebSourceReference=/g)||[]).length,2);
+  assert.match(out,/ApplyDamage/);
+  assert.match(out,/Health -= value/);
+  assert.ok(out.includes('1'.repeat(64)));
+  assert.ok(out.includes('2'.repeat(64)));
+  assert.ok(!out.includes('3'.repeat(64)));
+  for(const role of ['MAIN','A','B','DELVE'])assert.ok(out.includes('designCodeRole='+role));
+  const escaped=lines.replace(reference(1),reference(1).replace('unity-games/roblox-sync/Assets/Scripts/', 'unity-games/other-game/../../'));
+  const safe=compact(escaped,{compact:true,responsiblePaths:['server/Game.server.luau']});
+  assert.ok(!safe.includes('unity-games/other-game/../../'));
+  // 같은 게임의 네이티브 소스만 사용한다. ../ 경로로 다른 게임 소스를 참조할 수 없다.
+  const bound=lines.replace('directiveId=roblox-sync',
+    'directiveId=roblox-sync\ndesignCodePlatform=ROBLOX;source=roblox-games/roblox-sync;mode=COOP');
+  const wrongGame=reference(1).replace('unity-games/roblox-sync/', 'unity-games/other-game/');
+  const traversed=reference(2).replace('Assets/Scripts/Game2.cs', 'Assets/Scripts/../../other-game/Bad.cs');
+  const wrong=compact(bound.replace(reference(1),wrongGame).replace(reference(2),traversed),
+    {compact:true,responsiblePaths:['server/Game.server.luau']});
+  assert.ok(!wrong.includes('unity-games/other-game/Assets/Scripts/'));
+  assert.ok(!wrong.includes('Assets/Scripts/../../'));
+  assert.equal((wrong.match(/unityWebSourceReference=/g)||[]).length,1,
+    'correct same-game reference survives while foreign/traversal sources are rejected');
+});
+
 test('Vibe coding method requires native 3D for Unity Web but does not change unrelated platform prompts',()=>{
   const context={files:[{path:'RuntimeBootstrap.cs',content:'using UnityEngine; public class RuntimeBootstrap {}',editable:true}]};
   const options={verifiedExternalLearningContract:{block:''}};
@@ -1014,6 +1132,41 @@ test('Roblox internal asset family binding requires actual family use and reject
   });
   assert.equal(rejected.pass,false);
   assert.ok(rejected.blockers.includes('ROBLOX_INTERNAL_ASSET_FAMILY_NOT_ACTUALLY_BOUND:UI'));
+});
+
+test('Vibe libraries and development tools rematch updated APIs for existing save and combat source without changing rules or design',()=>{
+  const cwd=tempRoot();
+  const gameSource='function SaveGame(state) { return state; }\nfunction ApplyDamage(target, damage) { return target.hp - damage; }\n';
+  write(path.join(cwd,'assets/vibe-save-kit.js'),'export function saveSnapshot(data) { return data; }\n');
+  write(path.join(cwd,'tools/vibe-combat-quality.mjs'),'export function inspectCombatRules(source) { return source; }\n');
+  write(path.join(cwd,'tools/vibe-unity-combat.mjs'),'export function inspectCombatRules(source) { return source; }\n');
+  write(path.join(cwd,'tools/company-design-combat.mjs'),'export function inspectCombatRules(source) { return source; }\n');
+  const input={files:[{path:'server/Game.server.luau',editable:true,content:gameSource}],bytes:Buffer.byteLength(gameSource)};
+  const contract={target:'roblox',selectedSourcePaths:[],synchronization:{}};
+  const args={cwd,contract,order:{target:'roblox',goal:'Preserve existing save and combat rules',gameId:'old-game'}};
+  const first=attachSelectedInternalAssetApiContext(input,args);
+  const initial=first.vibeDynamicToolMatch;
+  assert.equal(initial.target,'roblox');
+  assert.ok(initial.sourceSignals.includes('SAVE'));
+  assert.ok(initial.sourceSignals.includes('COMBAT'));
+  assert.ok(initial.matches.some(row=>row.path==='assets/vibe-save-kit.js'&&row.kind==='LIBRARY_REFERENCE_READ_ONLY'));
+  assert.ok(initial.matches.some(row=>row.path==='tools/vibe-combat-quality.mjs'&&row.kind==='DEVELOPMENT_TOOL_READ_ONLY'));
+  assert.ok(!initial.matches.some(row=>row.path==='tools/vibe-unity-combat.mjs'));
+  assert.ok(!initial.matches.some(row=>row.path==='tools/company-design-combat.mjs'));
+  assert.equal(input.files[0].content,gameSource);
+  assert.equal(initial.runtimeVerified,false);
+  assert.equal(initial.sourceMutationPerformed,false);
+  assert.ok(initial.matches.every(row=>/^[a-f0-9]{64}$/.test(row.sha256)));
+  write(path.join(cwd,'tools/vibe-combat-quality.mjs'),'export function inspectCombatRules(source) { return source; }\nexport function inspectAttackEvents(source) { return source; }\n');
+  const second=attachSelectedInternalAssetApiContext(input,args);
+  assert.notEqual(second.vibeDynamicToolMatch.fingerprint,initial.fingerprint);
+  assert.ok(second.vibeDynamicToolMatch.matches.find(row=>row.path==='tools/vibe-combat-quality.mjs').exports.includes('inspectAttackEvents'));
+  assert.equal(input.files[0].content,gameSource);
+  const unrelated=attachSelectedInternalAssetApiContext(
+    {files:[{path:'client/Game.client.luau',editable:true,content:'local tickCount = 1'}],bytes:20},
+    {cwd,contract,order:{target:'roblox',goal:'Keep current timer'}}
+  );
+  assert.ok(!unrelated.vibeDynamicToolMatch||!unrelated.vibeDynamicToolMatch.matches.some(row=>row.path==='tools/vibe-combat-quality.mjs'));
 });
 
 test('internal asset detail rotation stays enabled while every selected API remains indexed in the same BUILD_UP',()=>{

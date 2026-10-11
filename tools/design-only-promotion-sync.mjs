@@ -6,7 +6,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {resolveSelectedPlatform} from './company-selected-platform-router.mjs';
 import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
-import {latestMinimumDesign} from './company-minimum-design-contract.mjs';
+import {latestMinimumDesign,materializeVibeMinimumDesign} from './company-minimum-design-contract.mjs';
 
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -47,9 +47,19 @@ const clearLegacyQueueCaps=queue=>{
 function assertCanonicalDirectNativePolicy(root='.'){
   const roadmap=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{});
   const d=roadmap?.directNativeDualPlatformDevelopment||{};
-  const web=d?.unityWebValidationSurface||{};
-  const ok=d.status==='OWNER_DIRECT_LOCKED'
+  const web=d.unityWebValidationSurface||{};
+  const pairing=d.automaticPairing||d.autoPairRules||{};
+  const development=d.development||{};
+  const gate=d.upperPlatformDevelopmentReadinessGate||{};
+  // 메인: 최신 중앙정책의 최소 설계 우선·Roblox/Unity Web 병렬 개발을 정확히 검사한다.
+  // Android/Unity 앱은 오너 홀드이며, 오래된 Unity Web 선행 입장 관문을 되살리지 않는다.
+  const ok=roadmap.authority==='MACHINE_EXECUTION_CONTRACT'
+    &&roadmap.developmentAccess?.ROBLOX==='ALWAYS_ALLOWED'
+    &&roadmap.developmentAccess?.UNITY_WEB==='ALWAYS_ALLOWED'
+    &&roadmap.developmentAccess?.UNITY==='OWNER_HOLD'
+    &&d.status==='OWNER_DIRECT_LOCKED'
     &&d.mode==='ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR'
+    &&d.ownerActiveDevelopmentScope20261009?.activeTargets?.join(',')==='ROBLOX,UNITY_WEB'
     &&d.canonicalDevelopmentAdmissionAuthority===true
     &&d.minimumDesignRequired===true
     &&d.strictDesignScoreRequiredForDevelopmentAdmission===false
@@ -57,13 +67,22 @@ function assertCanonicalDirectNativePolicy(root='.'){
     &&d.webDevelopmentStageRemoved===false
     &&d.unityWebEnabled===true
     &&d.unityWebRequired===true
-    &&d.unityWebGateRequired===true
+    &&d.unityWebGateRequired===false
     &&d.unityWebMode==='UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR'
-    &&web.requiredForDevelopmentAdmission===true
-    &&d.automaticPairing?.ROBLOX?.join(',')==='UNITY_WEB_FLOOR,ROBLOX,UNITY'
-    &&d.automaticPairing?.UNITY?.join(',')==='UNITY_WEB_FLOOR,UNITY,ROBLOX'
+    &&d.upperPlatformAdmission==='MINIMUM_DESIGN_READY'
+    &&web.requiredForDevelopmentAdmission===false
+    &&development.unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart===false
+    &&development.upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass===false
+    &&gate.gateId==='UPPER_PLATFORM_DEVELOPMENT_READY'
+    &&gate.allCriteriaRequired===true
+    &&Array.isArray(gate.targets)
+    &&gate.targets.join(',')==='ROBLOX,UNITY'
     &&Array.isArray(d.supportedDevelopmentPlatforms)
-    &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY';
+    &&d.supportedDevelopmentPlatforms.join(',')==='ROBLOX,UNITY'
+    &&Array.isArray(pairing.ROBLOX)
+    &&pairing.ROBLOX.join(',')==='ROBLOX,UNITY_WEB_FLOOR'
+    &&Array.isArray(pairing.UNITY)
+    &&pairing.UNITY.join(',')==='UNITY_WEB_FLOOR';
   if(!ok)throw new Error('CANONICAL_DIRECT_NATIVE_POLICY_REQUIRED');
   return d;
 }
@@ -337,6 +356,25 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
   const resetIds=new Set(Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds.map(String):[]);
 
+  // 메인: 디자이너 정밀 설계를 기다리는 동안 바이브의 원본 근거 기반 최소 설계 한 건을 먼저 만든다.
+  // 기존 설계·실행 진행도·저장 의미를 덮어쓰지 않으며, 정밀 설계 PASS/QA/출시 증거는 생성하지 않는다.
+  const vibeMinimumCreated=[];
+  for(const seed of state.seeds){
+    const gameId=clean(seed?.gameId);
+    if(clean(seed?.status).toUpperCase()!=='ACTIVE'||clean(seed?.productionClass).toUpperCase()==='RELEASE_CONFIRMED')continue;
+    const catalogGame=catalogById.get(gameId);
+    const lifecycle=clean(catalogGame?.canonical?.lifecycle?.state||catalogGame?.lifecycleState||'ACTIVE').toUpperCase();
+    if(!['ACTIVE','REBUILD'].includes(lifecycle))continue;
+    const existing=latestMinimumDesign(root,gameId,{seed});
+    const ownerResetAt=resetIds.has(gameId)?resetAt:0;
+    if(existing&&freshAfterOwnerReset(existing,ownerResetAt))continue;
+    const result=materializeVibeMinimumDesign({root,seed,catalogGame,ownerResetAt});
+    if(result.created){
+      vibeMinimumCreated.push({gameId,file:result.file});
+      break;
+    }
+  }
+
   for(const seed of state.seeds){
     const gameId=clean(seed?.gameId); if(!gameId)continue;
     const seedStatus=clean(seed?.status).toUpperCase();
@@ -353,7 +391,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     const currentClass=clean(seed?.productionClass).toUpperCase();
     if(currentClass==='RELEASE_CONFIRMED'){skipped.push({gameId,reason:'ALREADY_RELEASED'});continue;}
 
-    const design=latestMinimumDesign(root,gameId);
+    const design=latestMinimumDesign(root,gameId,{seed});
     const resetRequiresFresh=resetIds.has(gameId)&&!freshAfterOwnerReset(design,resetAt);
     if(!design||resetRequiresFresh){
       const reason=resetRequiresFresh?'OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED':'MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY';
@@ -387,6 +425,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
   return {
     promoted,
+    vibeMinimumCreated,
     reconciledExisting:[],
     reconciledPromotedSeeds:reconciled,
     demoted,
@@ -399,6 +438,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const result=promoteReadyDesignSeeds();
+  console.log(`VIBE_MINIMUM_DESIGN_CREATED=${result.vibeMinimumCreated.map(item=>item.gameId+':'+item.file).join(',')||'NONE'}`);
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_CONFIRMED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);

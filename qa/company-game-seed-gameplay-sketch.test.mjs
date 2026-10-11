@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
+import {computeVibeSeedProposal,normalizeGameplaySketch} from '../tools/company-game-seed-bootstrap.mjs';
+import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 
 const legacySeed=()=>({
   GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',
@@ -66,9 +68,15 @@ test('seed bootstrap asks the model to sketch the world before code and persists
   assert.match(source,/brokenGenreAssumption/);
   assert.match(source,/newPrimaryVerb/);
   assert.match(source,/irreducibilityTest/);
-  assert.match(source,/MAIN × A × B × c/);
-  const legacyMajorC=['MAIN×A×B×'+'C','A/B/'+'C',"connectsTo:['A','B','"+'C'+"']","enum:['MAIN','A','B','"+'C'+"']"];
-  for(const token of legacyMajorC)assert.equal(source.includes(token),false);
+  assert.match(source,/MAIN × A × B × C/);
+  assert.match(source,/themeFusion:C_FUSION_SCHEMA/);
+  assert.match(source,/genreInterlock/);
+  // C는 게임의 세 번째 시스템 축이 아니라 소재·장르 층이다. @의 인과 연결 대상으로는 허용한다.
+  const axisSchema=source.slice(source.indexOf('const SYSTEM_AXIS_SCHEMA='),source.indexOf('const SUB_ELEMENT_SCHEMA='));
+  assert.match(axisSchema,/key:\{type:'string',enum:\['A','B'\]\}/);
+  assert.match(source,/majorAxes:\{type:'array',minItems:2,maxItems:2,items:SYSTEM_AXIS_SCHEMA\}/);
+  assert.match(source,/connectsTo:.*enum:\['MAIN','A','B','C','c'\]/);
+  assert.equal(source.includes("enum:['A','B','C']"),false);
   assert.match(source,/DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS/);
   assert.match(source,/SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE/);
   const legacyDepthLabels=['D1_'+'LIGHT_COMIC','D2_'+'STRANGE_FUSION','D3_'+'DEEP_CULTURAL','D4_'+'SYSTEMIC_MYTHIC'];
@@ -275,4 +283,161 @@ test('GAMEPLAY_SKETCH v4 creates emergent genre from material grammar × MAIN×A
   const fail=validateGameSeed(broken);
   assert.equal(fail.pass,false);
   assert.ok(fail.errors.some(error=>error.includes('not a general system axis')));
+
+  // 기존 V4 설계 호환성은 남기되 새로운 V5만 오너 창작 문법으로 인정한다.
+  const v5=structuredClone(seed);
+  v5.GAMEPLAY_SKETCH.version=5;
+  const v5Grammar=v5.GAMEPLAY_SKETCH.novelGameGrammar;
+  v5Grammar.gameplaySystemFusion.formula='MAIN × A × B × C';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].systemFamily='대화';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].sourceMaterial='희극적 오해';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].sourceDomain='연극';
+  v5Grammar.gameplaySystemFusion.majorAxes[0].materialRule='오해가 쌓일수록 전파자에 따라 설득 비용과 성공 조건이 달라진다.';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].systemFamily='퍼즐';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].sourceMaterial='합의 현실';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].sourceDomain='인식론';
+  v5Grammar.gameplaySystemFusion.majorAxes[1].materialRule='증언의 신뢰도가 높아질수록 문과 장애물의 공간 상태가 바뀐다.';
+  v5Grammar.gameplaySystemFusion.themeFusion={
+    themes:[
+      {name:'철학',kind:'MATERIAL',causalEffect:'거짓말의 책임이 어떤 결과를 초래할지 선택에 영향을 준다.'},
+      {name:'엽기',kind:'MATERIAL',causalEffect:'비정상적인 증언이 특수 동선과 추가 피해 위험을 만든다.'}
+    ],
+    genres:[
+      {role:'PRIMARY',name:'미스터리',gameplayEffect:'단서의 신뢰도를 비교해 진실을 찾아야만 숨겨진 규칙에 접근한다.'},
+      {role:'SECONDARY',name:'코믹',gameplayEffect:'잘못 전달된 농담이 목격자의 증언을 바꾸고 맵 규칙의 반전을 유도한다.'}
+    ],
+    genreInterlock:'미스터리 단서를 추적하는 중 코믹한 오해를 활용하면 접근 방법과 최종 진실이 달라진다.',
+    jointWorldRule:'철학적 윤리와 엽기적 오해가 사람들의 믿음 상태와 공간의 실제 규칙을 뒤바꾼다.',
+    abGameplayEffect:'대화에서 생긴 오해가 퍼즐 지형을 바꾸고 퍼즐의 변화가 대화 상대의 반응을 되돌려 바꾼다.'
+  };
+  v5Grammar.emergentGenre.grammarFormula='MAIN × A × B × C + @';
+  const okV5=validateGameSeed(v5);
+  assert.equal(okV5.pass,true,okV5.errors.join('; '));
+  const v5Flow=buildGameFlowArchitecture({
+    gameId:'emergent-v5-test',genre:v5.GAME_CATEGORY,
+    baseline:{content:{identity:'합의현실 소문 퍼즐극',coreFun:'믿음을 바꾸는 추리 퍼즐',coreLoop:v5.CORE_LOOP,novelGameGrammar:v5Grammar}},
+    inventory:[]
+  });
+  assert.equal(evaluateGameFlowArchitecture(v5Flow).pass,true);
+  // 학교 만들기 타이쿤: C 장르는 필수, 예전 c 서브 시스템은 필수가 아니다.
+  const school=structuredClone(v5);
+  school.GAME_CATEGORY='SIMULATOR_TYCOON_INCREMENTAL';
+  const schoolFusion=school.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion;
+  delete schoolFusion.subElements;
+  schoolFusion.main={name:'초등학교 만들기 타이쿤',purpose:'학생을 위한 학교를 직접 짓고 운영한다.',playerAction:'교실과 복도의 위치를 선택해 운영한다.',stateContribution:'학교 시설 배치와 학생 성장 목표가 운영 결과에 남는다.'};
+  schoolFusion.majorAxes[0]={key:'A',name:'건축과 로마 신전',purpose:'교실 배치가 봉인과 학습의 조건을 바꾼다.',playerChoice:'교실과 복도·제례실의 위치를 결정한다.',stateContribution:'건물 동선이 시설 가동률과 봉인 범위를 바꾼다.',systemFamily:'HOUSING_BUILDING',sourceMaterial:'로마 신전 건축',sourceDomain:'서양 역사·신화',materialRule:'신전 구조를 따른 교실 배치가 학생 이동과 봉인 강도를 바꾼다.'};
+  schoolFusion.majorAxes[1]={key:'B',name:'액션과 로마 신화 괴물',purpose:'학생 보호를 위한 대응 방식이 건축 요구를 바꾼다.',playerChoice:'시설과 괴물의 약점을 이용해 대응한다.',stateContribution:'괴물 사건 결과가 학교의 수업·동선 상태를 바꾼다.',systemFamily:'TARGETING_COMBAT',sourceMaterial:'로마 신화의 괴물',sourceDomain:'로마 신화',materialRule:'괴물의 출현과 대응이 학생 안전·학교 운영과 건물 수리 우선순위를 바꾼다.'};
+  schoolFusion.themeFusion.genres=[{role:'PRIMARY',name:'미스터리',gameplayEffect:'단서를 조사해 사건 원인을 밝혀 봉인 설계를 해금한다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'학생들의 오해가 시설 접근·괴물 대응·정보 흐름을 바꾼다.'}];
+  schoolFusion.crossSystemRules=['교실 건축 선택이 괴물 출현 경로를 바꾼다.','괴물 사건의 해결 결과가 다시 교실 배치와 운영 선택을 바꾼다.','철학과 엽기 소재의 단서가 사건의 진실에 접근하는 경로를 바꾼다.','코믹한 오해 때문에 같은 단서도 정보 비용과 봉인 선택이 달라진다.'];
+  for(const element of school.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements)element.connectsTo=[...new Set(element.connectsTo.map(value=>value==='c'?'C':value))];
+  const schoolResult=validateGameSeed(school);
+  assert.equal(schoolResult.pass,true,schoolResult.errors.join('; '));
+  const schoolFlow=buildGameFlowArchitecture({gameId:'school-tycoon-v5',genre:school.GAME_CATEGORY,baseline:{content:{identity:'초등학교 만들기 타이쿤',coreFun:'학교 건설과 운영 및 괴물 사건 대응',coreLoop:school.CORE_LOOP,novelGameGrammar:school.GAMEPLAY_SKETCH.novelGameGrammar}},inventory:[]});
+  assert.equal(evaluateGameFlowArchitecture(schoolFlow).pass,true);
+  const duplicatedFlow=structuredClone(schoolFlow);
+  duplicatedFlow.systemBlueprint.novelGrammarContract.gameplaySystemFusion.themeFusion.themes[1].name='철학';
+  assert.ok(evaluateGameFlowArchitecture(duplicatedFlow).blockers.includes('FLOW_C_TWO_THEMES_AND_CAUSAL_LINK_REQUIRED'));
+  const duplicatedTheme=structuredClone(school);
+  duplicatedTheme.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.themes[1].name='철학';
+  assert.equal(validateGameSeed(duplicatedTheme).pass,false);
+  const legacyWithoutSub=structuredClone(seed);
+  delete legacyWithoutSub.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements;
+  assert.equal(validateGameSeed(legacyWithoutSub).pass,false);
+
+  const oneGenre=structuredClone(v5);
+  oneGenre.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.genres.pop();
+  assert.equal(validateGameSeed(oneGenre).pass,false);
+  const sameGenre=structuredClone(v5);
+  sameGenre.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.themeFusion.genres[1].name='미스터리';
+  assert.equal(validateGameSeed(sameGenre).pass,false);
+  const noMaterial=structuredClone(v5);
+  noMaterial.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes[0].sourceMaterial='';
+  assert.equal(validateGameSeed(noMaterial).pass,false);
+  const deep=structuredClone(v5);
+  deep.GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements.push(...Array.from({length:12},(_,i)=>({
+    name:'파고들기'+i,discoveryCondition:'서로 다른 두 상태를 고의로 바꾸고 반응 순서를 관찰한다.',
+    masteryOrInsight:'기존 시스템의 조건을 새 방향으로 재해석한다.',
+    gameplayEffect:'새로운 선택·위험·보상 경로를 열고 재방문 의미를 바꾼다.',
+    connectsTo:['MAIN','A','B']
+  })));
+  assert.equal(validateGameSeed(deep).pass,true);
+});
+
+test('Vibe native composer computes schema-valid MAIN A B C delve seeds without external models',()=>{
+  const ids=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE']){
+    const target={requestId:'native-'+category,category,platform:'ROBLOX',materials:[
+      {materialId:'MAT-001',causalDNA:ids.slice(0,3)},
+      {materialId:'MAT-002',causalDNA:ids.slice(2,5)}
+    ]};
+    const proposal=computeVibeSeedProposal(target);
+    const sketch=normalizeGameplaySketch(target,proposal,proposal.coreLoop,proposal.gameName);
+    const seed={...legacySeed(),
+      GAME_CATEGORY:category,
+      REFERENCE_INPUTS:[{type:'ORIGINAL_MATERIAL',value:'Verified causal source material'}],
+      CORE_FUN_TO_LEARN:proposal.coreFunToLearn,CORE_LOOP:proposal.coreLoop,
+      DISTINCT_IDENTITY:proposal.distinctIdentity,
+      GAMEPLAY_SKETCH:sketch,
+      INITIAL_TARGET_PLATFORM:proposal.initialTargetPlatform,
+      INITIAL_PLAY_MODE:proposal.initialPlayMode,
+      MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode,
+      CROSS_PLATFORM_EXPANSION_VALUE:proposal.crossPlatformExpansionValue
+    };
+    const result=validateGameSeed(seed);
+    assert.equal(result.pass,true,category+': '+result.errors.join('; '));
+    const grammar=sketch.novelGameGrammar,fusion=grammar.gameplaySystemFusion;
+    assert.equal(fusion.formula,'MAIN × A × B × C');
+    assert.deepEqual(fusion.majorAxes.map(row=>row.key),['A','B']);
+    assert.ok(fusion.majorAxes.every(row=>row.sourceMaterial&&row.sourceDomain&&row.materialRule));
+    assert.equal(fusion.themeFusion.themes.length,2);
+    assert.equal(fusion.themeFusion.genres.length,2);
+    assert.deepEqual(fusion.themeFusion.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+    assert.ok(grammar.delveLayer.elements.length>=4);
+    assert.equal(sketch.source,'VIBE_NATIVE_CAUSAL_COMPOSITION');
+    assert.ok(['COOP','COMPETITIVE','HYBRID'].includes(proposal.multiplayerDesignMode));
+    assert.deepEqual(computeVibeSeedProposal(target),proposal,'identical inputs must produce identical design proposals');
+  }
+});
+
+
+test('native causal grammar preserves owner game identity and calculates distinct A B C themes',()=>{
+  const target={
+    requestId:'school-owner-grammar',category:'TYCOON',platform:'ROBLOX',
+    gameName:'학교 타이쿤',
+    ownerBrief:'학교를 건축하고 로마 신전 의례에 따라 괴물을 상대하는 액션. 철학과 엽기 코믹의 장르 반작용을 설계한다.',
+    materials:[]
+  };
+  const result=computeVibeSeedProposal(target);
+  const grammar=result.gameplaySketch.novelGameGrammar;
+  const fusion=grammar.gameplaySystemFusion;
+  assert.equal(result.gameName,'학교 타이쿤');
+  assert.equal(fusion.main.name,'학교 타이쿤');
+  assert.match(result.distinctIdentity,/학교 타이쿤/);
+  assert.match(fusion.majorAxes[0].systemFamily,/학교 시설 건축/);
+  assert.match(fusion.majorAxes[1].systemFamily,/괴물 대응 액션/);
+  assert.notEqual(fusion.majorAxes[0].sourceMaterial,fusion.majorAxes[1].sourceMaterial);
+  assert.match(fusion.majorAxes[0].sourceMaterial,/의례/);
+  assert.match(fusion.majorAxes[1].sourceMaterial,/금기/);
+  assert.match(fusion.themeFusion.themes[0].name,/철학/);
+  assert.match(fusion.themeFusion.themes[1].name,/희극/);
+  assert.deepEqual(fusion.themeFusion.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+  assert.equal(fusion.themeFusion.genres[0].name,'경영');
+  assert.equal(fusion.themeFusion.genres[1].name,'코믹');
+  assert.equal(grammar.delveLayer.elements.length,4);
+  assert.equal(new Set(grammar.delveLayer.elements.map(row=>row.name)).size,4);
+  assert.equal(grammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
+  assert.deepEqual(computeVibeSeedProposal(target),result,'same owner input must reproduce same native calculation');
+});
+
+test('native repair variants vary derived materials without overwriting explicitly selected source DNA',()=>{
+  const plain={requestId:'unique-grammar',category:'RACING',gameName:'나선 경주',platform:'ROBLOX',materials:[]};
+  const first=computeVibeSeedProposal({...plain,variant:0});
+  const changed=computeVibeSeedProposal({...plain,variant:1});
+  const ids=row=>row.gameplaySketch.novelGameGrammar.causalDNAs.map(dna=>dna.id);
+  assert.notDeepEqual(ids(first),ids(changed),'a new computation must offer a distinct causal material candidate');
+  const explicit={...plain,materials:[{causalDNA:['OATH_CONTRACT','RITUAL_RECIPROCITY']}]};
+  const pinned=computeVibeSeedProposal({...explicit,variant:3});
+  assert.deepEqual(ids(pinned).slice(0,2),['OATH_CONTRACT','RITUAL_RECIPROCITY']);
+  assert.equal(first.gameName,'나선 경주');
+  assert.equal(changed.gameName,'나선 경주');
 });

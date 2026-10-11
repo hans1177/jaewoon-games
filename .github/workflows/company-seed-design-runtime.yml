@@ -7,6 +7,9 @@ on:
     branches: [main]
     paths:
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-game-seed-bootstrap.mjs'
+      - 'tools/company-vibe2-game-flow-architect.mjs'
+      - 'tools/company-game-seed-contract.mjs'
       - 'tools/company-all-games-design-reset.mjs'
       - 'game-catalog.json'
       - 'tools/vibe2-design-intelligence.mjs'
@@ -29,15 +32,13 @@ permissions:
   actions: write
 
 concurrency:
-  # One canonical runtime: finish the active checkpointed batch; engine changes enter the next batch.
-  group: company-seed-design-runtime
+  # 같은 엔진 버전의 중복 예약만 직렬화한다. 오래된 버전의 긴 배치가 최신 설계를 막지 않는다.
+  group: company-seed-design-runtime-${{ github.sha }}
   cancel-in-progress: false
+  queue: max # 실행 중 작업은 취소하지 않고 최신 버전의 확인을 독립 진행한다
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  COMPANY_MODEL_PHASE_CONCURRENCY: '2'
-  COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'
-  COMPANY_VIBE_LOCAL_MODEL: 'qwen3:1.7b'
 
 jobs:
   # 메인: 대상 선정부터 바로 시작한다. 다른 개발 작업의 관측 결과는 설계 착수 조건이 아니다.
@@ -57,7 +58,46 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
           fetch-tags: false
+      - name: Verify current design engine snapshot before runtime writes
+        id: main_snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin '+refs/heads/main:refs/remotes/origin/main'
+          # Only a superseded design-relevant revision skips this batch; unrelated pushes do not discard work.
+          if git diff --quiet "$GITHUB_SHA" "origin/main" -- \
+            '.github/workflows/company-seed-design-runtime.yml' \
+            'company-learning/platform-release-roadmap.json' \
+            'company-directive.json' \
+            'game-catalog.json' \
+            'owner-design-reset-queue.json' \
+            'tools/company-design-cycle.mjs' \
+            'tools/company-game-seed-bootstrap.mjs' \
+            'tools/company-vibe2-game-flow-architect.mjs' \
+            'tools/company-game-seed-contract.mjs' \
+            'tools/company-all-games-design-reset.mjs' \
+            'tools/owner-design-reset.mjs' \
+            'tools/vibe2-design-intelligence.mjs' \
+            'tools/company-design-checkpoint-recovery.mjs' \
+            'tools/company-baseline-gate.mjs' \
+            'tools/company-design-seed-normalize.mjs' \
+            'tools/company-design-gate-scoring-v2.mjs' \
+            'tools/company-strict-production-review.mjs' \
+            'tools/company-design-prepromotion-repair.mjs' \
+            'tools/company-shared-context.mjs'; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_ENGINE_SNAPSHOT=CURRENT'
+          else
+            rc=$?
+            if [ "$rc" -ne 1 ]; then
+              echo "DESIGN_ENGINE_SNAPSHOT_CHECK_FAILED=$rc"
+              exit "$rc"
+            fi
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_ENGINE_SNAPSHOT=SUPERSEDED_SKIP_NO_MUTATION'
+          fi
       - name: Load latest company runtime state
+        if: steps.main_snapshot.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -76,6 +116,7 @@ jobs:
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
       - name: Synchronize active owner design reset seeds
+        if: steps.main_snapshot.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -92,6 +133,7 @@ jobs:
           NODE
 
       - name: Auto-enroll and persist active GAME_SEED intake
+        if: steps.main_snapshot.outputs.current == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -129,12 +171,14 @@ jobs:
           echo 'MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
 
       - name: Validate shared worker policy log and architecture context
+        if: steps.main_snapshot.outputs.current == 'true'
         run: |
           node --check tools/company-shared-context.mjs
           node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-plan.json
 
       - name: Resolve central-policy active incomplete GAME_SEED targets
+        if: steps.main_snapshot.outputs.current == 'true'
         id: targets
         shell: bash
         run: |
@@ -143,10 +187,11 @@ jobs:
           import fs from 'node:fs';
           import path from 'node:path';
           import {createHash} from 'node:crypto';
+          import {evaluateMinimumDesignContract} from './tools/company-minimum-design-contract.mjs';
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const designScheduling=directive?.platformStrategy?.designStabilizationScheduling||{};
-          const engineFiles=['tools/company-design-cycle.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
+          const engineFiles=['tools/company-design-cycle.mjs','tools/company-game-seed-bootstrap.mjs','tools/company-vibe2-game-flow-architect.mjs','tools/vibe2-design-intelligence.mjs','tools/company-design-checkpoint-recovery.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
           const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
           const configuredWip=roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax;
           const unboundedByPolicy=configuredWip===null||typeof configuredWip==='undefined';
@@ -173,11 +218,15 @@ jobs:
           const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
             .map(value=>String(value||'').trim()).filter(Boolean));
+          // 같은 스냅샷의 검증 결과를 게임마다 재사용해 정렬·우선순위 단계의 중복 파일 검사를 없앤다.
+          const latestStrictPassCache=new Map();
           const latestStrictPassFor=(seed)=>{
+            const gameId=String(seed?.gameId||'').trim();
+            if(latestStrictPassCache.has(gameId))return latestStrictPassCache.get(gameId);
             const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
             const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed.gameId));
-            if(!fs.existsSync(gameRoot))return null;
+            if(!fs.existsSync(gameRoot)){latestStrictPassCache.set(gameId,null);return null;}
             try{
               const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
@@ -194,13 +243,21 @@ jobs:
                 }
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
                 if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
-                  let ownerDesignEventId=null;
                   const revisedPath=path.join(base,'design-revised.json');
-                  if(fs.existsSync(revisedPath)){try{ownerDesignEventId=String(JSON.parse(fs.readFileSync(revisedPath,'utf8'))?.ownerDesignEventId||'').trim()||null;}catch{}}
-                  return{date,evidenceAt,review,status,ownerDesignEventId};
+                  if(!fs.existsSync(revisedPath))continue;
+                  let revised;
+                  try{revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));}catch{continue;}
+                  // 과거 strict PASS도 현재 V5 기본 설계·양 플랫폼 계약이 유효해야 재사용한다.
+                  // 미완성 원본은 PASS로 캐싱하지 않고 기존 자동 설계 재작성 대상으로 돌린다.
+                  if(!evaluateMinimumDesignContract(revised,{seed,requireGrammar:true}).pass)continue;
+                  const ownerDesignEventId=String(revised?.ownerDesignEventId||'').trim()||null;
+                  const verified={date,evidenceAt,review,status,ownerDesignEventId};
+                  latestStrictPassCache.set(gameId,verified);
+                  return verified;
                 }
               }
             }catch{}
+            latestStrictPassCache.set(gameId,null);
             return null;
           };
           const strictPassFor=seed=>Boolean(latestStrictPassFor(seed));
@@ -233,6 +290,9 @@ jobs:
             return String(seed?.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase()==='ROBLOX'?0:1;
           };
           const deterministicCheckpointPriority=seed=>{
+            // 메인: 현재 게임의 설계 초기화 시각은 각 체크포인트 선택기에서 계산한다.
+            const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed?.gameId||''));
             if(!fs.existsSync(gameRoot))return 1;
             try{
@@ -260,6 +320,9 @@ jobs:
             return 1;
           };
           const checkpointResumePriority=seed=>{
+            // 메인: 현재 게임의 설계 초기화 시각은 각 체크포인트 선택기에서 계산한다.
+            const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
+            const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed?.gameId||''));
             if(!fs.existsSync(gameRoot))return 1;
             try{
@@ -349,6 +412,11 @@ jobs:
         target: ${{ fromJSON(needs.resolve-seed-targets.outputs.targets) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    concurrency:
+      # 동일 게임만 직렬화하고 다른 게임의 바이브 설계를 병렬 진행한다.
+      group: company-seed-design-game-${{ matrix.target.game_id }}
+      cancel-in-progress: false
+      queue: max
     steps:
       - uses: actions/checkout@v4
         with:
@@ -396,7 +464,7 @@ jobs:
           set -euo pipefail
           node tools/company-all-games-design-reset.mjs --auto-missing-design-intake --game-id="$GAME_ID"
           echo 'TARGET_MISSING_DESIGN_AUTO_CREATE=CANONICAL_GAME_SEED_PIPELINE'
-          echo 'DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA'
+          echo 'DESIGN_AI_PROVIDER=VIBE_NATIVE_FUNCTION'
           echo 'DESIGN_GATE_AUTHORITY=DETERMINISTIC_EVIDENCE'
           echo 'DESIGN_EXTERNAL_AI_ALLOWED=NO'
 
@@ -446,7 +514,7 @@ jobs:
           console.log(`design_evolution_reason=${String(process.env.TARGET_DESIGN_EVOLUTION_REASON||'UNKNOWN')}`);
           console.log(`design_evolution_superseded=${supersededByNewerPass?'true':'false'}`);
           NODE
-      - name: Recover verified deterministic design checkpoint before external model wait
+      - name: Recover verified deterministic design checkpoint before native recomputation
         id: deterministic_recovery
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -460,7 +528,7 @@ jobs:
           set -e
           if [ "$rc" -eq 0 ] && grep -q '^DESIGN_DETERMINISTIC_RECOVERY=PASS$' /tmp/deterministic-design-recovery.txt; then
             echo 'materialized=true' >> "$GITHUB_OUTPUT"
-            echo 'DESIGN_EXTERNAL_MODEL_WAIT_BYPASSED=YES'
+            echo 'DESIGN_NATIVE_RECOMPUTATION_BYPASSED=YES'
             echo 'DESIGN_CHECKPOINT_PRESERVED=YES'
           else
             echo 'materialized=false' >> "$GITHUB_OUTPUT"
@@ -485,107 +553,33 @@ jobs:
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
           // A cycle not recovered above can require a local repair after current-policy validation.
-          const localAuthoringNeeded=true;
-          console.log('DESIGN_PROVIDER_GOVERNOR=READY_LOCAL_ONLY');
+          const localAuthoringNeeded=false;
+          console.log('DESIGN_PROVIDER_GOVERNOR=VIBE_NATIVE_CAUSAL_FUNCTION');
           console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
           console.log('DESIGN_AI_REVIEW_REQUIRED=NO');
           console.log('DESIGN_AI_REVIEW_LANES=NONE');
-          console.log(`DESIGN_LOCAL_AUTHORING_FALLBACK_NEEDED=${localAuthoringNeeded?'YES':'NO'}`);
+          console.log('DESIGN_NATIVE_AUTHORING_REQUIRED=YES');
           console.log(`DESIGN_LOCAL_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
           console.log('DESIGN_LOCAL_FULL_CYCLE_RESTART=NO');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=LOCAL_ONLY\nlocal_fallback_needed=${localAuthoringNeeded?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'run_design_cycle=true\nquota_state=VIBE_NATIVE_FUNCTION\n');
           NODE
-      - name: Restore Vibe local design fallback cache
-        id: design_local_cache
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.local_fallback_needed == 'true'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.ollama/models
-            ~/.cache/vibe2-ollama/bin/ollama
-            ~/.cache/vibe2-ollama/lib/ollama
-          key: vibe2-ollama-v3-Linux-qwen3-1.7b
-
-      - name: Prepare Vibe local design fallback
-        id: design_local
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.local_fallback_needed == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
-          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
-          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-            sudo mkdir -p /usr/local/lib/ollama
-            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'DESIGN_LOCAL_RUNTIME_SOURCE=CACHE'
-          else
-            installed=0
-            for attempt in 1 2 3; do
-              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-              sleep $((attempt * 4))
-            done
-            test "$installed" = 1
-            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
-            cp "$(command -v ollama)" "$cached"
-            chmod +x "$cached"
-            runtime_lib=""
-            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
-              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
-                runtime_lib="$candidate"
-                break
-              fi
-            done
-            test -n "$runtime_lib"
-            cp -a "$runtime_lib/." "$cached_lib/"
-            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
-            echo 'DESIGN_LOCAL_RUNTIME_SOURCE=FALLBACK_INSTALL'
-          fi
-          nohup "$cached" serve > /tmp/design-ollama.log 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat /tmp/design-ollama.log || true; exit 1; fi
-            sleep 2
-          done
-          if "$cached" list | awk 'NR>1 {print $1}' | grep -Fqx "$COMPANY_VIBE_LOCAL_MODEL"; then
-            echo 'DESIGN_LOCAL_MODEL_SOURCE=CACHE'
-          else
-            "$cached" pull "$COMPANY_VIBE_LOCAL_MODEL"
-            echo 'DESIGN_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
-          fi
-          # 모델 로딩은 설계 작성 시간과 분리한다. 준비 응답은 설계 결과로 사용하지 않는다.
-          node --input-type=module <<'NODE'
-          const started=Date.now();
-          const response=await fetch('http://127.0.0.1:11434/api/generate',{
-            method:'POST',
-            headers:{'content-type':'application/json'},
-            body:JSON.stringify({model:process.env.COMPANY_VIBE_LOCAL_MODEL,prompt:'',stream:false,think:false,keep_alive:'10m',options:{num_ctx:8192,num_predict:0}}),
-            signal:AbortSignal.timeout(120000)
-          });
-          if(!response.ok)throw new Error(`DESIGN_LOCAL_WARMUP_HTTP_${response.status}`);
-          const result=await response.json();
-          if(result.error||result.done!==true)throw new Error('DESIGN_LOCAL_WARMUP_FAILED');
-          console.log(`DESIGN_LOCAL_WARMUP=READY|elapsedMs=${Date.now()-started}|loadMs=${Math.round(Number(result.load_duration||0)/1e6)}`);
-          NODE
-          echo 'ready=true' >> "$GITHUB_OUTPUT"
-          echo 'DESIGN_LOCAL_AUTHORING_FALLBACK=READY'
-
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         id: design_pipeline
-        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.local_authoring.outputs.run_design_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
-          COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           checkpoint_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-checkpoint.json"
           progress_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-progress.json"
           worktree="/tmp/design-checkpoint-${{ matrix.target.game_id }}"
+          promotion_dispatch_marker="/tmp/design-minimum-promotion-${{ matrix.target.game_id }}-${{ matrix.target.date }}"
           last_checkpoint_sync_key=''
           checkpoint_sync_key() {
-            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,p.percent??'',cp.lastSuccessfulModelCallAt||'',Object.values(cp.modelHealth||{}).reduce((sum,row)=>sum+Number(row?.calls||0),0),cp.lastError||''].join('|'))" "$checkpoint_path" "$progress_path"
+            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,cp.designerSeed?.contentDigest||'',p.percent??'',cp.lastSuccessfulModelCallAt||'',Object.values(cp.modelHealth||{}).reduce((sum,row)=>sum+Number(row?.calls||0),0),cp.lastError||''].join('|'))" "$checkpoint_path" "$progress_path"
           }
           persist_design_checkpoint() {
             if [ ! -f "$checkpoint_path" ]; then
@@ -635,6 +629,29 @@ jobs:
             echo "DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES|$sync_key"
             echo 'DESIGN_PROGRESS_RUNTIME_PERSIST=YES'
             echo 'PUBLIC_MAIN_WRITE=NO'
+            # 모델이 작성한 기본설계의 증거가 company-runtime에 저장되자마자 기존 승격기를 실행한다.
+            # 전체 정밀 설계가 진행 중이어도 기본설계 유효성을 별도 결정론적 게이트에서 판정한다.
+            if [ -f "$seed_path" ]; then
+              local authored_digest
+              authored_digest="$(node -e '
+                const fs=require("fs"),crypto=require("crypto");
+                const s=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));
+                const cp=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
+                const digest=crypto.createHash("sha256").update(JSON.stringify(s.content||{})).digest("hex");
+                if(s.authorRole==="GAME_DESIGNER_AI"&&s.sourceStage==="identity-core"&&s.status==="AUTHORED_CANDIDATE"
+                  &&s.contentDigest===digest&&s.engineDigest===cp.engineDigest&&s.fingerprint===cp.fingerprint
+                  &&cp.designerSeed?.contentDigest===digest&&cp.designerSeed?.authorModel===s.authorModel)
+                  process.stdout.write(digest);
+              ' "$seed_path" "$checkpoint_path")"
+              if [ -n "$authored_digest" ] && { [ ! -f "$promotion_dispatch_marker" ] || [ "$(cat "$promotion_dispatch_marker")" != "$authored_digest" ]; }; then
+                printf '%s' "$authored_digest" > "$promotion_dispatch_marker"
+                if gh workflow run company-design-promotion-sync.yml --repo "$GITHUB_REPOSITORY" --ref main; then
+                  echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=YES|$authored_digest"
+                else
+                  echo "DESIGN_AUTHORED_MINIMUM_PROMOTION_DISPATCH=ERROR|fallback=EXISTING_WORKFLOW_COMPLETION"
+                fi
+              fi
+            fi
           }
           pipeline_pid=0
           sync_pid=0
@@ -1091,7 +1108,7 @@ jobs:
           NODE
           )"
           echo "DESIGN_GATE_REPAIR_PENDING=$pending"
-          active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID);const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?branch=main&per_page=100" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID),sha=process.env.GITHUB_SHA;const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&r.head_sha===sha&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "DESIGN_GATE_ACTIVE_OTHER_RUNS=$active_other"
           echo 'DESIGN_EXTERNAL_AI_WAIT=DISABLED'
           gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main

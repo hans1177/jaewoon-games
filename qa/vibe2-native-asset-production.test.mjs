@@ -6,12 +6,347 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
+import {fileURLToPath} from 'node:url';
+import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
 import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
 import {buildRobloxStudioAssetBootstrapPlan,compileRobloxSource,robloxStudioAssetFamilyBoundInText} from '../tools/company-development-roblox-bootstrap.mjs';
+
+// 중앙 정책: 외부 원본은 게임에서 필요한 경우만 선택하며 재질 수정·등록·런타임 승격은 별도 검증한다.
+test('current-game asset gap selects licensed external source for on-demand PBR derivative, not a verified asset',()=>{
+  const external={
+    id:'kenney-building-test',name:'Building Kit',category:'BUILDING',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',license:'CC0',
+    sourceUrl:'https://kenney.nl/assets/building-kit',
+    licenseEvidenceUrl:'https://kenney.nl/assets/building-kit',
+    verifiedAt:'2026-10-01',platformTargets:['UNITY','ROBLOX'],
+    automaticAcquisitionWhenSelected:true,commercialUseAllowed:true,derivativesAllowed:true,
+    capabilities:['GLB','FBX'],prefetchAllowed:false
+  };
+  const registry={assets:[],externalSources:[external],
+    baseMaterialLibrary:{families:{MATERIAL:['WOOD','STONE','MOD_WORN']}}};
+  const params={gameId:'home-game',target:'unity',request:'village building',
+    requirements:[{family:'BUILDING',role:'house'}],registry};
+  const plan=buildAssetSupplyDecisionSummary(params);
+  const action=plan.nextActions.find(row=>row.family==='BUILDING');
+  assert.equal(action.action,'ACQUIRE_ADAPT');
+  assert.equal(action.assetId,null);
+  assert.equal(action.externalAcquisition.sourceId,'kenney-building-test');
+  assert.equal(action.externalAcquisition.acquisitionState,'SOURCE_PAGE_RESOLUTION_REQUIRED');
+  assert.equal(action.externalAcquisition.downloadUrl,null,'source landing page is not a downloadable 3D file');
+  assert.equal(action.externalAcquisition.onDemandOnly,true);
+  assert.equal(action.externalAcquisition.bulkPrefetchForbidden,true);
+  assert.equal(action.externalAcquisition.sourceFileMustBeReal3d,true);
+  assert.equal(action.roleEvidence.verifiedRoleMatch,false,'catalog categories cannot verify individual geometry roles');
+  assert.equal(action.materialRefinement.originalAssetImmutable,true);
+  assert.deepEqual(action.materialRefinement.availableSemanticAtoms,['WOOD','STONE','MOD_WORN']);
+  assert.equal(action.materialRefinement.sourceMaterialModificationPerformed,false);
+  assert.equal(action.assetization.registerOnlyAfterActualBinaryAndLicenseAndStaticQa,true);
+  assert.equal(action.assetization.nativeDccScript,'assets/native-authoring/build-game-visual.py');
+  assert.equal(action.assetization.nativeSourceModelField,'task.assetAuthoring.sourceModel');
+  assert.equal(action.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  assert.equal(action.assetization.productionVerified,false);
+  assert.equal(plan.selectedOnDemandExternalGapCount,1);
+  assert.equal(plan.runtimeVerificationGranted,false);
+  assert.equal(plan.productionVerificationGranted,false);
+  assert.match(assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'home-game',target:'unity',assetSupplySummary:plan}),/ON-DEMAND LICENSED ASSET GAP FILL/);
+  assert.equal(buildAssetSupplyDecisionSummary({...params,gameId:''}).selectedOnDemandExternalGapCount,0,'no unidentified game may trigger external acquisition');
+});
+
+// [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
+test('eligible internal 3d asset auto-fill exposes exact native material derivative and unverified assetization',()=>{
+  const original={
+    id:'shared-forest-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
+    path:'/assets/shared/forest-tree.glb',license:'project-original',
+    status:'REPO_ASSET',sourceSha256:'example-source-expected-hash'
+  };
+  const registry={assets:[original],externalSources:[],
+    baseMaterialLibrary:{families:{MATERIAL:['WOOD','MOD_WORN']}}};
+  const plan=buildAssetSupplyDecisionSummary({
+    gameId:'new-forest',target:'unity',request:'나무 재질 자산화',
+    requirements:[{family:'ENVIRONMENT',role:'tree'}],registry
+  });
+  const action=plan.nextActions.find(row=>row.family==='ENVIRONMENT');
+  assert.equal(action.action,'ADAPT');
+  assert.equal(action.libraryReuse.sourceAssetId,original.id);
+  assert.equal(action.libraryReuse.sourceModel,'assets/shared/forest-tree.glb');
+  assert.equal(action.libraryReuse.expectedSourceSha256,original.sourceSha256);
+  assert.equal(action.libraryReuse.sourceFileAndSha256InspectionRequired,true);
+  assert.equal(action.libraryReuse.derivativeCandidateReady,true);
+  assert.equal(action.materialRefinement.mode,'SUBTLE_CONTEXT_PBR_REAUTHOR');
+  assert.deepEqual(action.materialRefinement.availableSemanticAtoms,['WOOD','MOD_WORN']);
+  assert.equal(action.materialRefinement.sourceMaterialModificationPerformed,false);
+  assert.equal(action.assetization.nativeDccScript,'assets/native-authoring/build-game-visual.py');
+  assert.equal(action.assetization.registryWriteOwner,'EXISTING_GRAPHICS_PRODUCTION_SYNC');
+  assert.equal(action.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  assert.equal(action.assetization.productionVerified,false);
+  assert.equal(action.assetization.runtimeVerified,false);
+  assert.equal(plan.productionVerificationGranted,false);
+  assert.match(assetProductionGuidance({kind:'vibe2-asset-production-plan',gameId:'new-forest',
+    target:'unity',assetSupplySummary:plan}),/COMPANY LIBRARY MATERIAL DERIVATIVE/);
+  const prompt=buildPrompt({target:'unity',gameId:'new-forest',goal:'나무 재질 자산화',
+    assetProduction:{assetSupplySummary:plan,nativeAuthoringExecution:{enabled:false}}},{
+    files:[{path:'Assets/Scripts/World.cs',editable:true,
+      content:'using UnityEngine; public class World : MonoBehaviour {}'}]
+  },['Assets/Scripts/World.cs']);
+  assert.match(prompt,/"onDemandLibrarySupply"/);
+  assert.match(prompt,/"selectedSourceId":"shared-forest-tree"/);
+  assert.ok(prompt.includes('"sourceModel":"assets/shared/forest-tree.glb"'));
+  assert.match(prompt,/"sourceInspectionRequired":true/);
+  assert.match(prompt,/"runtimeVerified":false/);
+});
+
+test('existing native DCC automatically derives only role-matched internal source with matching local SHA256',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-library-derive-'));
+  try{
+    const shared=path.join(root,'assets','shared');
+    fs.mkdirSync(shared,{recursive:true});
+    const sourcePath=path.join(shared,'tree.obj');
+    const original='mtllib tree.mtl\no tree\nv 0 0 0\nv 1 0 0\nv 0 1 0\nvt 0 0\nvt 1 0\nvt 0 1\nvn 0 0 1\nusemtl Wood\nf 1/1/1 2/2/1 3/3/1\n';
+    fs.writeFileSync(sourcePath,original);
+    fs.writeFileSync(path.join(shared,'tree.mtl'),'newmtl Wood\nKd 0.5 0.3 0.2\n');
+    const sha=createHash('sha256').update(original).digest('hex');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({version:1,
+      assets:[{id:'shared-tree',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',
+        path:'assets/shared/tree.obj',license:'project-original',status:'REPO_ASSET',
+        sourceSha256:sha,sourceFiles:['assets/shared/tree.obj']}]
+    }));
+    const task={gameId:'forest-game',goal:'environment background asset visuals',
+      assetRequirements:[{family:'ENVIRONMENT',role:'tree'}]};
+    const build=()=>buildVibeAssetProductionPlan({repoRoot:root,target:'unity',task,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}});
+    const initial=build();
+    const candidates=initial.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.automaticLibraryDerivative);
+    assert.ok(candidates.length>0,'selected internal tree should enter canonical native DCC recipes');
+    const derived=candidates.find(row=>row.sourceModel==='assets/shared/tree.obj');
+    assert.ok(derived);
+    assert.equal(derived.librarySourceAssetId,'shared-tree');
+    assert.equal(derived.librarySourceSha256,sha);
+    assert.equal(derived.sourceLicense,'project-original');
+    assert.equal(derived.args[derived.args.indexOf('--library-parent-id')+1],'shared-tree');
+    assert.equal(derived.args[derived.args.indexOf('--library-source-sha256')+1],sha);
+    assert.ok(derived.args.includes('--source-model'));
+    assert.equal(derived.companyPromotionAllowed,false);
+    assert.equal(derived.runtimeVerificationRequired,true);
+    fs.appendFileSync(sourcePath,'# unauthorized source mutation\n');
+    const changed=build();
+    assert.equal(changed.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.automaticLibraryDerivative),false,
+      'stale source hashes must never auto-generate a derivative');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [원자적 제작] 원본이 계획 이후 바뀌면 기존 Blender 실행 전 중단한다.
+test('library derivative refuses changed parent bytes without invoking Blender authoring',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-parent-atomic-'));
+  try{
+    execFileSync('git',['init','-q'],{cwd:root});
+    fs.mkdirSync(path.join(root,'assets','shared'),{recursive:true});
+    fs.mkdirSync(path.join(root,'assets','native-authoring'),{recursive:true});
+    const sourcePath=path.join(root,'assets','shared','tree.obj');
+    const source='v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n';
+    fs.writeFileSync(sourcePath,source);
+    const expected=createHash('sha256').update(source).digest('hex');
+    fs.appendFileSync(sourcePath,'# changed\n');
+    fs.writeFileSync(path.join(root,'assets/native-authoring/build-game-visual.py'),'# fixture\n');
+    const fake=path.join(root,'fake-blender.sh');
+    fs.writeFileSync(fake,'#!/bin/sh\nif [ "$1" = "--version" ]; then exit 0; fi\ntouch invoked\nexit 0\n');
+    fs.chmodSync(fake,0o755);
+    const recipe={
+      id:'derived-tree',executor:'BLENDER_PYTHON',runMode:'VERIFY_ONLY',
+      script:'assets/native-authoring/build-game-visual.py',
+      automaticLibraryDerivative:true,librarySourceAssetId:'shared-tree',
+      librarySourceSha256:expected,sourceModel:'assets/shared/tree.obj',
+      args:['--source-model','assets/shared/tree.obj','--library-parent-id','shared-tree','--library-source-sha256',expected],
+      outputs:['assets/generated/unity/demo/environment/asset.glb']
+    };
+    const order={evidence:['asset-production-parallel:v1'],assetProduction:{nativeAuthoringExecution:{dcc:{executionRecipes:[recipe]}}}};
+    assert.throws(()=>executeDeclaredNativeDccAuthoringVerification({
+      cwd:root,order,blenderExecutable:fake,persistCandidateOutputs:false
+    }),/NATIVE_DCC_LIBRARY_SOURCE_CHANGED/);
+    assert.equal(fs.existsSync(path.join(root,'invoked')),false);
+    assert.equal(fs.existsSync(path.join(root,recipe.outputs[0])),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('unusable or rights-blocked library sources never become auto-produced models',()=>{
+  const base={id:'tree-source',family:'ENVIRONMENT',role:'tree',platform:'SHARED_MASTER',status:'REPO_ASSET'};
+  for(const blocked of [
+    {...base,path:'/assets/shared/tree.png',license:'project-original'},
+    {...base,path:'/assets/shared/tree.glb',license:'CC-BY-NC'},
+    {...base,path:'/assets/shared/tree.glb',license:'unknown'}
+  ]){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'forest-2',target:'roblox',
+      requirements:[{family:'ENVIRONMENT',role:'tree'}],registry:{assets:[blocked],externalSources:[]}});
+    assert.equal(plan.nextActions.some(row=>row.action==='ADAPT'),false,blocked.license);
+    assert.equal(plan.productionVerificationGranted,false);
+  }
+});
+
+test('audio and UI library gap-fill cannot be routed to the 3D Blender material authoring path',()=>{
+  const registry={assets:[],externalSources:[
+    {id:'ui-source',name:'UI Pack',category:'UI',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+      sourceUrl:'https://kenney.nl/assets/ui-pack',licenseEvidenceUrl:'https://kenney.nl/assets/ui-pack',
+      verifiedAt:'2026-10-01',license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true},
+    {id:'sound-source',name:'Impact Sounds',category:'AUDIO',status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',
+      sourceUrl:'https://kenney.nl/assets/impact-sounds',licenseEvidenceUrl:'https://kenney.nl/assets/impact-sounds',
+      verifiedAt:'2026-10-01',license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true}
+  ]};
+  for(const family of ['UI','AUDIO']){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'asset-test',target:'unity',requirements:[{family,role:'generic'}],registry});
+    const candidate=plan.nextActions.find(row=>row.family===family);
+    assert.equal(candidate.action,'ACQUIRE_ADAPT');
+    assert.equal(candidate.materialRefinement.mode,'NATIVE_FAMILY_ADAPT_NO_PBR');
+    assert.deepEqual(candidate.materialRefinement.allowedAxes,[]);
+    assert.equal(candidate.assetization.nativeDccScript,null);
+    assert.equal(candidate.assetization.nativeSourceModelField,null);
+    assert.deepEqual(candidate.assetization.nativeOutputFiles,[]);
+    assert.equal(candidate.assetization.gameSourceWorkerMayEditCentralRegistry,false);
+  }
+});
+
+test('blocked, manual or unverified external catalogs cannot authorize asset acquisition',()=>{
+  const base={id:'test-source',name:'Forest Asset',category:'ENVIRONMENT',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourceUrl:'https://example.org/forest',
+    licenseEvidenceUrl:'https://example.org/license',verifiedAt:'2026-10-01',
+    license:'CC0',platformTargets:['UNITY'],automaticAcquisitionWhenSelected:true};
+  const unsafe=[
+    {...base,license:'CC-BY-NC',commercialUseAllowed:true,derivativesAllowed:true},
+    {...base,license:'UNKNOWN'},
+    {...base,status:'RESEARCH_ONLY'},
+    {...base,sourceUrl:'http://example.org/forest'},
+    {...base,sourceUrl:'https://127.0.0.1/internal'},
+    {...base,licenseEvidenceUrl:'https://localhost/license'},
+    {...base,derivativesAllowed:false},
+    {...base,automaticAcquisitionWhenSelected:false},
+    {...base,platformTargets:['ROBLOX']}
+  ];
+  for(const source of unsafe){
+    const plan=buildAssetSupplyDecisionSummary({gameId:'forest-game',target:'unity',request:'forest',
+      requirements:[{family:'ENVIRONMENT',role:'tree'}],registry:{assets:[],externalSources:[source]}});
+    assert.equal(plan.selectedOnDemandExternalGapCount,0,JSON.stringify(source));
+    assert.equal(plan.nextActions.find(row=>row.family==='ENVIRONMENT').action,'AUTHOR');
+  }
+});
+
+test('2D references never count as ready spatial assets, while current real 3D remains preferred over external acquisition',()=>{
+  const external={id:'safe-3d',name:'Building Models',category:'BUILDING',
+    status:'LICENSE_VERIFIED_EXTERNAL_CANDIDATE',sourceUrl:'https://example.org/buildings',
+    licenseEvidenceUrl:'https://example.org/rights',verifiedAt:'2026-10-01',
+    license:'CC0',automaticAcquisitionWhenSelected:true,platformTargets:['UNITY']};
+  const params={gameId:'village-game',target:'unity',request:'village',requirements:[{family:'BUILDING',role:'cabin'}]};
+  const ref2d={id:'old-reference',family:'BUILDING',license:'project-original',
+    status:'REPO_ASSET',path:'/assets/village.webp',consumerGameIds:['village-game']};
+  const fallback=buildAssetSupplyDecisionSummary({...params,registry:{assets:[ref2d],externalSources:[external]}});
+  assert.equal(fallback.nextActions.find(row=>row.family==='BUILDING').action,'ACQUIRE_ADAPT');
+  const actual3d={...ref2d,id:'reusable-model',path:'assets/shared/village.glb',platform:'SHARED_MASTER'};
+  const preferred=buildAssetSupplyDecisionSummary({...params,registry:{assets:[actual3d],externalSources:[external]}});
+  assert.equal(preferred.selectedOnDemandExternalGapCount,0);
+  assert.equal(preferred.nextActions.find(row=>row.family==='BUILDING').assetId,'reusable-model');
+  assert.ok(['USE','ADAPT'].includes(preferred.nextActions.find(row=>row.family==='BUILDING').action));
+});
+
+test('existing Vibe source worker passes on-demand library selection to native game build with no false completion',()=>{
+  const order={target:'unity',gameId:'fantasy-survival',goal:'기존 3D 자산으로 환경 재질 보강',assetProduction:{
+    assetSupplySummary:{nextActions:[{
+      action:'ACQUIRE_ADAPT',family:'ENVIRONMENT',reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+      externalAcquisition:{sourceId:'kenney-nature-kit',sourceUrl:'https://kenney.nl/assets/nature-kit',
+        downloadUrl:null,acquisitionState:'SOURCE_PAGE_RESOLUTION_REQUIRED',
+        license:'CC0',licenseEvidenceUrl:'https://kenney.nl/assets/nature-kit'},
+      assetization:{nativeDccScript:'assets/native-authoring/build-game-visual.py',
+        nativeSourceModelField:'task.assetAuthoring.sourceModel'}
+    }]},nativeAuthoringExecution:{enabled:false}
+  }};
+  const prompt=buildPrompt(order,{files:[{path:'Assets/Scripts/World.cs',
+    content:'using UnityEngine; public class World : MonoBehaviour {}',editable:true}]},['Assets/Scripts/World.cs']);
+  assert.match(prompt,/"onDemandLibrarySupply"/);
+  assert.match(prompt,/"selectedSourceId":"kenney-nature-kit"/);
+  assert.match(prompt,/"acquisitionState":"SOURCE_PAGE_RESOLUTION_REQUIRED"/);
+  assert.match(prompt,/"nativeBuildBlockedByUnacquiredSource":true/);
+  assert.match(prompt,/"nativeBuildRequiresRegisteredAssetAndRealSource":true/);
+  assert.match(prompt,/"runtimeVerified":false/);
+  assert.match(prompt,/"productionVerified":false/);
+});
+
+test('five common monster body plans bake reproducible skinned GLBs and actual attack skill joints',()=>{
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const script=path.join(root,'assets','native-authoring','build-shared-creature.mjs');
+  const lib=JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8'));
+  const profiles={
+    wolf:{body:'QUADRUPED_CANINE',joints:17,signature:'WOLF_PACK_HOWL'},
+    spider:{body:'ARACHNID',joints:29,signature:'SPIDER_WEB_THREAT'},
+    beetle:{body:'HEXAPOD_INSECT',joints:23,signature:'BEETLE_HORN_CHARGE'},
+    golem:{body:'HEAVY_GOLEM_OR_BOSS',joints:15,signature:'GOLEM_CORE_PULSE'},
+    serpent:{body:'REPTILE_OR_SERPENT',joints:17,signature:'SERPENT_COIL_STRIKE'}
+  };
+  const folder=fs.mkdtempSync(path.join(os.tmpdir(),'shared-creature-'));
+  try{
+    execFileSync(process.execPath,[script,folder],{encoding:'utf8',timeout:120000});
+    const visualSignatures=new Set();
+    for(const [species,expected] of Object.entries(profiles)){
+      const asset=lib.assets.find(a=>a.id==='shared-creature-'+species);
+      assert.ok(asset,species+' registered');
+      assert.equal(asset.bodyPlan,expected.body);
+      assert.equal(asset.platform,'SHARED_MASTER');
+      assert.equal(asset.productionVerified,false);
+      assert.equal(asset.masterGlbStaticQaPass,false);
+      assert.equal(asset.nativeRuntimeVerified,false);
+      assert.equal(asset.sourceGenerator,'assets/native-authoring/build-shared-creature.mjs');
+      assert.deepEqual(asset.sourceGeneratorArgs,['assets/shared','--species='+species]);
+      assert.equal(asset.authoringRecipes,undefined,'Node source cannot be scheduled as a Blender DCC recipe');
+      assert.equal(asset.existingNativeDccExecutorUnchanged,true);
+      const original=fs.readFileSync(path.join(root,asset.masterGlb));
+      const generated=fs.readFileSync(path.join(folder,'creature-'+species+'.glb'));
+      assert.ok(original.equals(generated),species+' source must reproduce exact committed master');
+      assert.ok(original.length>120000&&original.length<8*1024*1024,species+' mobile asset bound');
+      assert.equal(original.toString('ascii',0,4),'glTF');
+      assert.equal(original.readUInt32LE(4),2);
+      assert.equal(original.readUInt32LE(8),original.length);
+      const jsonLen=original.readUInt32LE(12);
+      const doc=JSON.parse(original.subarray(20,20+jsonLen).toString('utf8').trim());
+      assert.ok(doc.meshes.length>0&&doc.materials.length>=3);
+      assert.equal(doc.skins.length,1);
+      assert.equal(doc.skins[0].joints.length,expected.joints);
+      assert.ok(doc.nodes.some(n=>n.mesh===0&&n.skin===0));
+      assert.equal(doc.animations.length,11);
+      assert.ok(doc.animations.some(a=>a.name===expected.signature));
+      const ids=new Set(doc.skins[0].joints),primitives=doc.meshes.flatMap(m=>m.primitives);
+      assert.ok(primitives.every(p=>p.attributes.JOINTS_0!==undefined&&p.attributes.WEIGHTS_0!==undefined),'actual per-vertex skinned weights');
+      assert.ok(primitives.every(p=>doc.accessors[p.attributes.POSITION].min?.length===3&&doc.accessors[p.attributes.POSITION].max?.length===3),'glTF 2.0 POSITION bounds');
+      const rotations=doc.animations.flatMap(a=>a.channels).filter(ch=>ch.target.path==='rotation');
+      assert.ok(rotations.length>=expected.joints*9,'joint animation channels');
+      assert.ok(rotations.every(ch=>ids.has(ch.target.node)&&ch.target.node!==0),'no root-only motion authority');
+      for(const name of ['WALK','RUN','ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE','HIT_FRONT','DEATH',expected.signature]){
+        const clip=doc.animations.find(a=>a.name===name);
+        assert.ok(clip,species+':'+name);
+        const movingJoint=clip.channels.find(ch=>ch.target.node===1&&ch.target.path==='rotation');
+        assert.ok(movingJoint,'body rotation is required');
+        const access=doc.accessors[clip.samplers[movingJoint.sampler].output];
+        const view=doc.bufferViews[access.bufferView];
+        const start=20+jsonLen+8+(view.byteOffset||0)+(access.byteOffset||0);
+        const frames=Array.from({length:access.count},(_,i)=>original.readFloatLE(start+i*16));
+        assert.ok(Math.max(...frames)-Math.min(...frames)>.001,species+':'+name+' must articulate body');
+      }
+      const actionVariants=['ATTACK_A','ATTACK_B','SKILL_PREPARE','SKILL_RELEASE',expected.signature];
+      const distinctMotionTracks=new Set(actionVariants.map(name=>{
+        const clip=doc.animations.find(a=>a.name===name),hash=createHash('sha256');
+        for(const joint of [1,2,3]){
+          const channel=clip.channels.find(ch=>ch.target.node===joint&&ch.target.path==='rotation');
+          assert.ok(channel,species+':'+name+' missing articulated joint '+joint);
+          const accessor=doc.accessors[clip.samplers[channel.sampler].output];
+          const view=doc.bufferViews[accessor.bufferView];
+          const byteStart=20+jsonLen+8+(view.byteOffset||0)+(accessor.byteOffset||0);
+          hash.update(original.subarray(byteStart,byteStart+accessor.count*4*4));
+        }
+        return hash.digest('hex');
+      }));
+      assert.equal(distinctMotionTracks.size,5,species+' must have five genuinely different attack/skill animations');
+      visualSignatures.add(JSON.stringify({joints:expected.joints,materials:doc.materials.map(m=>m.pbrMetallicRoughness.baseColorFactor),primitiveCount:primitives.length}));
+    }
+    assert.equal(visualSignatures.size,5,'different body plans need distinct rigs and appearance');
+  }finally{fs.rmSync(folder,{recursive:true,force:true});}
+});
 
 test('Unity and shared gameplay libraries mandate real native 3D while keeping UI/audio as support resources',()=>{
   const guidance=assetProductionGuidance({kind:'vibe2-asset-production-plan'});
@@ -536,7 +871,9 @@ test('midnight hundred source entries stay shared for every game without bypassi
     assert.deepEqual(a.familyCandidates.CREATURE,b.familyCandidates.CREATURE);
     assert.equal(a.familyCandidates.CREATURE[0].sourcePackId,'roblox-world-ghost-skins-v1');
     assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
-    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'NATIVE_REAUTHOR_BASE');
+    // Verified 3D source may be style-adapted across engines, but is never runtime-verified by registration.
+    assert.equal(a.familyCandidates.CREATURE[0].applicationMode,target==='roblox'?'USE_AS_IS':'STYLE_ADAPT');
+    assert.equal(a.familyCandidates.CREATURE[0].verifiedCompanyReusable,false);
   }
   const fixture={version:1,assets:[
     {id:'z',family:'CREATURE',subfamily:'B',title:'가',license:'CC0',platform:'ROBLOX',path:'z.glb'},
@@ -1473,6 +1810,83 @@ function tempRoot(opts={}){
   return root;
 }
 
+test('common career motion authoring resolves one existing registered source per game genre, without fake verified clips',()=>{
+  const root=tempRoot();
+  try{
+    const company=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+    const registered=company.assets.find(row=>row.id==='shared-humanoid-motion-v1');
+    assert.ok(registered?.availableCareerMotionRecipes?.length>=14,'common career recipes registered in the canonical library');
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify({
+      version:company.version,assets:[registered],externalSources:[]
+    }));
+    const base={
+      target:'unity',repoRoot:root,
+      manifest:{version:1,assets:[]},presetCatalog:{version:1,presets:[]}
+    };
+    const task={gameId:'common-career-demo',genre:'ACTION_RPG',goal:'사무라이 검술 공용 모션 제작',
+      commonCareerId:'SAMURAI',commonMotionClip:'common_samurai_iai_draw_hq'};
+    const plan=buildVibeAssetProductionPlan({...base,task});
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,task.commonMotionClip);
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.selectedCareer,'SAMURAI');
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.oneObjectOneClipWorkUnit,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.sharedCareerSource.unverifiedUntilNativeRuntime,true);
+    assert.equal(plan.nativeAuthoringExecution.dcc.executionRecipes.length,1);
+    const selected=plan.nativeAuthoringExecution.dcc.executionRecipes[0];
+    assert.equal(selected.script,'assets/shared/humanoid-motion-v1/author-motion.py');
+    assert.ok(selected.args.includes(task.commonMotionClip));
+    assert.equal(selected.runMode,'VERIFY_ONLY');
+    assert.equal(selected.companyPromotionAllowed,false);
+    const combat=plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(combat.career.id,'SAMURAI');
+    assert.equal(combat.career.productionVerified,false);
+    assert.equal(combat.newPipelineCreated,false);
+    const sim=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'common-farm-demo',genre:'TYCOON',goal:'공용 농장 작업 모션',
+      commonCareerId:'FARMER',commonMotionClip:'common_farmer_harvest_hq'
+    }});
+    assert.equal(sim.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_farmer_harvest_hq');
+    assert.equal(sim.nativeAuthoringExecution.dcc.executionRecipes.length,1);
+    assert.equal(sim.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career.genre,'TYCOON');
+    const inherited=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'common-kensei-demo',genre:'ACTION_RPG',goal:'검성 계층 상속된 공용 모션',
+      commonCareerId:'KENSEI'
+    }});
+    assert.equal(inherited.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,'common_samurai_iai_draw_hq');
+    assert.throws(()=>buildVibeAssetProductionPlan({...base,task:{
+      gameId:'wrong-career-demo',genre:'ACTION_RPG',goal:'없는 직업 클립 요청',
+      commonCareerId:'SAMURAI',commonMotionClip:'common_wizard_unknown_hq'
+    }}),/COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED/);
+    const normal=buildVibeAssetProductionPlan({...base,task:{gameId:'normal-game',genre:'SURVIVAL',goal:'기존 동작 유지'}});
+    assert.equal(normal.nativeAuthoringExecution.dcc.sharedCareerSource.selectedClip,null);
+    const crossGenre=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'multi-genre-shared-assets',genre:'FARMING',goal:'장르 공통 직업과 몬스터 모션 선택',
+      commonCareerIds:['BUILDER','MERCHANT'],npcRoles:['FARMER','BLACKSMITH'],
+      commonMonsterSpeciesIds:['WOLF','SPIDER'],
+      assetRequirements:[{family:'CHARACTER',careerId:'CHEF'},
+        {family:'CREATURE',speciesId:'GOLEM'}]
+    }});
+    const shared=crossGenre.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(shared.genre,'FARMING');
+    assert.deepEqual(shared.careers.map(row=>row.id),['BUILDER','MERCHANT','FARMER','BLACKSMITH','CHEF']);
+    assert.deepEqual(shared.monsters.map(row=>row.id),['WOLF','SPIDER','GOLEM']);
+    assert.equal(shared.career.id,'BUILDER');
+    assert.equal(shared.monster.id,'WOLF');
+    assert.equal(shared.state,'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED');
+    assert.ok(shared.careers.every(row=>row.productionVerified===false));
+    assert.ok(shared.monsters.every(row=>row.productionVerified===false));
+    assert.ok(shared.monsters.every(row=>row.expressiveChoreography.length>0));
+    const missing=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'missing-shared-roles',genre:'FARMING',goal:'미등록 역할은 자산 검증 보류',
+      commonCareerIds:['NOT_A_CAREER'],commonMonsterSpeciesIds:['NOT_A_MONSTER']
+    }}).companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits;
+    assert.equal(missing.state,'ARCHETYPE_SOURCE_GAP');
+    assert.deepEqual(missing.unresolvedCareers,['NOT_A_CAREER']);
+    assert.deepEqual(missing.unresolvedSpecies,['NOT_A_MONSTER']);
+    assert.equal(missing.career,null);
+    assert.equal(missing.monster,null);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('verified commercial black-box distillation is mandatory input for internal asset evolution',()=>{
   const verifiedLearning={
     exactKnowledgeIds:['PLAYBOOK_REUSE:external-black-box-commercial-ui','PLAYBOOK_REUSE:external-black-box-commercial-motion'],
@@ -1570,7 +1984,9 @@ test('hero asset planning upgrades only hero requests to the stronger local mode
   assert.ok(hero.nativeAuthoringExecution.dcc.requiredTypes.length>0);
   assert.equal(hero.nativeAuthoringExecution.dcc.executionRequired,true);
   assert.equal(hero.nativeAuthoringExecution.dcc.nativeSourceMayNotMaskDccRequirement,true);
-  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'AUTHORING_RECIPE_REQUIRED');
+  assert.equal(hero.nativeAuthoringExecution.dcc.executionStatus,'EXISTING_AUTHORING_RECIPE_AVAILABLE');
+  assert.ok(hero.nativeAuthoringExecution.dcc.availableExistingRecipeCount>0);
+  assert.equal(hero.nativeAuthoringExecution.completion.authoringRequestIsNotCompletion,true);
   const guidance=assetProductionGuidance(hero);
   assert.match(guidance,/ASSET MODEL ROUTING/);
   assert.match(guidance,/NATIVE AUTHORING EXECUTION LOOP/);
@@ -1681,6 +2097,270 @@ test('generic environment and prop authoring declares task-specific Blender outp
   assert.equal(twoD.nativeAuthoringExecution.dcc.executionRequired,false);
 });
 
+test('licensed single image enters existing Blender TripoSR DCC recipe with genuine multiview render outputs',()=>{
+  const task={
+    gameId:'image-mesh-demo',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 게임 환경 배경 소품 3D',
+    imageToAsset:true,referenceImages:[{
+      sourceId:'owned-prop-ref',sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
+      path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'
+    }]
+  };
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+    assert.ok(recipes.length>0,target);
+    for(const recipe of recipes){
+      assert.equal(recipe.imageToMesh,true);
+      assert.equal(recipe.sourceImage,'assets/roblox/world-ghosts/dokkaebi.png');
+      assert.equal(recipe.sourceLicense,'project-original');
+      assert.equal(recipe.runMode,'VERIFY_ONLY');
+      assert.equal(recipe.runtimeVerificationRequired,true);
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.ok(recipe.args.includes('--source-image'));
+      assert.equal(recipe.args[recipe.args.indexOf('--source-image')+1],recipe.sourceImage);
+      assert.ok(recipe.args.includes('--source-license'));
+      assert.ok(recipe.outputs.some(name=>name.endsWith('/preview.png')));
+      for(const angle of ['000','090','180','270']){
+        assert.ok(recipe.outputs.some(name=>name.endsWith('/preview-angle-'+angle+'.png')),angle);
+      }
+    }
+  }
+  const ccby={...task,referenceImages:[{
+    path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY',credit:'Creator, source, CC-BY'
+  }]};
+  const byPlan=buildVibeAssetProductionPlan({target:'roblox',task:ccby,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(byPlan.nativeAuthoringExecution.dcc.executionRecipes.every(recipe=>recipe.license==='CC-BY'));
+  const invalid={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:invalid,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
+  const traversal={...task,referenceImages:[{path:'../private.png',license:'project-original'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:traversal,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED/);
+  const noCredit={...task,referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'CC-BY'}]};
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',task:noCredit,manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_ATTRIBUTION_REQUIRED/);
+});
+
+test('image mesh reconstruction requires real local open-source weights and cannot silently substitute primitives',()=>{
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_ENGINE_NOT_INSTALLED/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_LOCAL_WEIGHTS_REQUIRED/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_INFERENCE_FAILED/);
+  assert.match(py,/IMAGE_TO_MESH_GENERATED_GEOMETRY_INVALID/);
+  assert.match(py,/IMAGE_TO_MESH_VIEW_RENDER_MISSING/);
+  assert.match(py,/STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING/);
+  const executor=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(executor,/IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID/);
+  assert.match(executor,/IMAGE_TO_MESH_MULTIVIEW_RENDER_REQUIRED/);
+  assert.match(executor,/sha256File\(imageFile\)/);
+});
+
+test('Vibe built-in open-source authoring plans preserve human, clothing, objects and medical rights gates',()=>{
+  const source=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  for(const module of ['mesh-ai','human','clothing','object','design','medical','animation','video']){
+    assert.ok(source.includes(module),'native planner must list '+module);
+    assert.ok(py.includes("'"+module+"'"),'Blender native authoring must list '+module);
+  }
+  for(const role of ['chair','table','door','tree','machine','weapon','lamp']){
+    assert.ok(py.includes("'"+role+"'"),role);
+  }
+  assert.match(py,/HUMAN_MPFB_ADDON_NOT_INSTALLED/);
+  assert.match(py,/HUMAN_MPFB_WEIGHT_BINDING_REQUIRED/);
+  assert.match(py,/HUMAN_IMPORTED_RIG_AND_WEIGHTS_REQUIRED/);
+  assert.match(py,/MEDICAL_SOURCE_SANITIZED_CONFIRMATION_REQUIRED/);
+  assert.match(py,/OPEN_SOURCE_SURFACE_RIGHTS_REQUIRED/);
+  assert.match(py,/clinicalUseApproved':False/);
+  assert.match(py,/bpy\.ops\.export_scene\.gltf/);
+  assert.match(py,/if not ASSET_ARMATURES and not MOTION_CLIPS/);
+  assert.match(py,/image_mesh_asset\(\)/);
+});
+
+test('animation and video select a real existing Blender DCC authoring recipe with MP4 evidence',()=>{
+  const base={target:'roblox',manifest:{assets:[]},presetCatalog:{presets:[]}};
+  for(const module of ['animation','video']){
+    const plan=buildVibeAssetProductionPlan({...base,task:{
+      gameId:'oss-motion-'+module,
+      goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 및 배경 애니메이션 렌더링',
+      assetAuthoring:{module,motionKind:'turntable'}
+    }});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes;
+    assert.ok(recipes.length>0,module);
+    assert.ok(recipes.some(recipe=>recipe.module===module),module);
+    for(const recipe of recipes.filter(recipe=>recipe.module===module)){
+      assert.ok(recipe.args.includes('--module'));
+      assert.ok(recipe.args.includes('--motion-kind'));
+      assert.ok(recipe.args.includes('turntable'));
+      assert.equal(recipe.runtimeVerificationRequired,true);
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/preview-motion.mp4')));
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/asset.glb')));
+      for(const angle of ['000','090','180','270']){
+        assert.ok(recipe.outputs.some(name=>name.endsWith('/preview-angle-'+angle+'.png')),angle);
+      }
+    }
+  }
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/def human_motion\(/);
+  assert.match(py,/MOTION_CLIPS\.append\('SHOWCASE'\)/);
+  assert.match(py,/VIDEO_FFMPEG_ENCODER_EXECUTION_FAILED/);
+  assert.match(py,/ffmpeg\.org/);
+  assert.match(py,/'-c:v','mpeg4'/);
+  assert.match(py,/actualFramesRendered':True/);
+  const exec=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(exec,/NATIVE_OPEN_SOURCE_ANIMATION_VIDEO_OUTPUT_UNVERIFIED/);
+  assert.match(exec,/NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID/);
+  assert.match(exec,/videoProof\.sourceGlbSha256!==nativeArtifact\.sha256/);
+  assert.match(exec,/glbInspection\?\.inventory\?\.animations/);
+});
+
+test('licensed FBX motion enters the unified internal asset library without provider-specific routing',()=>{
+  const task={
+    gameId:'internal-motion',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 배경 애니메이션',
+    assetAuthoring:{module:'animation',sourceModel:'assets/shared/mocap/walk.fbx',sourceLicense:'project-original'}
+  };
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const recipes=plan.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.module==='animation');
+    assert.ok(recipes.length>0,target);
+    for(const recipe of recipes){
+      assert.equal(recipe.sourceModel,'assets/shared/mocap/walk.fbx');
+      assert.equal(recipe.sourceLicense,'project-original');
+      assert.equal(recipe.internalAssetLibrary,'VIBE_STUDIO_ASSET_UNIVERSE');
+      assert.equal(recipe.internalAssetState,'PREPARED_NATIVE_QA_PENDING');
+      assert.equal(recipe.materialsMeshesRigAndMotionEnhancementOnly,true);
+      assert.ok(recipe.args.includes('--source-model'));
+      assert.ok(!recipe.args.includes('--source-provider'));
+      assert.ok(!Object.hasOwn(recipe,'sourceProvider'));
+      assert.ok(recipe.outputs.some(output=>output.endsWith('/asset.glb')));
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.equal(recipe.runtimeVerificationRequired,true);
+    }
+  }
+  const automatic=buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{...task.assetAuthoring,module:undefined}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(automatic.nativeAuthoringExecution.dcc.executionRecipes.some(row=>row.module==='animation'
+    &&row.sourceModel==='assets/shared/mocap/walk.fbx'));
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{...task.assetAuthoring,module:'object'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}}),/NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE/);
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{...task.assetAuthoring,sourceLicense:'CC-BY-NC'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_LICENSE_REQUIRED/);
+  const script=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(script,/bpy\.ops\.import_scene\.fbx/);
+  assert.match(script,/NATIVE_MOCAP_SKINNED_RIG_REQUIRED/);
+  assert.match(script,/NATIVE_MOCAP_CLIP_REQUIRED/);
+  assert.match(script,/SOURCE_UV_PRESERVED/);
+  assert.match(script,/NATIVE_SOURCE_UV_INVALID/);
+  assert.match(script,/textureIndicesValid/);
+  assert.match(script,/sourceUvPreserved/);
+  assert.match(script,/SOURCE_MOCAP/);
+});
+
+test('all source GLBs share one internal asset identity and receive non-destructive PBR style variants',()=>{
+  const task={gameId:'internal-mesh',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 3D 소품 배경',
+    assetAuthoring:{module:'object',sourceModel:'assets/shared/models/asset.glb',sourceLicense:'cc0'}};
+  for(const target of ['roblox','unity']){
+    const plan=buildVibeAssetProductionPlan({target,task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+    const imported=plan.nativeAuthoringExecution.dcc.executionRecipes.filter(row=>row.sourceModel===task.assetAuthoring.sourceModel);
+    assert.ok(imported.length>0,target);
+    for(const recipe of imported){
+      assert.equal(recipe.internalAssetLibrary,'VIBE_STUDIO_ASSET_UNIVERSE');
+      assert.equal(recipe.internalAssetState,'PREPARED_NATIVE_QA_PENDING');
+      assert.equal(recipe.runMode,'VERIFY_ONLY');
+      assert.equal(recipe.companyPromotionAllowed,false);
+      assert.equal(recipe.license,'cc0');
+      assert.ok(!recipe.args.includes('--source-provider'));
+    }
+  }
+  const script=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(script,/VIBE_STUDIO_ASSET_UNIVERSE/);
+  assert.match(script,/PBR_ROUGHNESS_STYLE_REAUTHOR/);
+  assert.match(script,/PBR_BASE_COLOR_STYLE_REAUTHOR/);
+  assert.match(script,/if rig not in ASSET_ARMATURES and any/,'existing source GLB rig and motion must survive asset reauthoring');
+  assert.match(script,/transformHistory.*SOURCE_ENHANCEMENTS/);
+  assert.match(script,/sourceFileImmutable.*True/);
+  assert.match(script,/nativeRuntimePromotionRequired.*True/);
+  assert.match(script,/NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID/);
+  assert.doesNotMatch(script,/ARGS\.source_provider/);
+});
+
+test('unlicensed TRELLIS.2 dependencies block commercial asset authoring before GPU execution',()=>{
+  const task={gameId:'high-fidelity-scene',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 바위 환경 3D 모델',
+    imageToAsset:true,assetAuthoring:{meshModel:'trellis2'},
+    referenceImages:[{path:'assets/roblox/world-ghosts/dokkaebi.png',license:'project-original'}]};
+  for(const target of ['roblox','unity']){
+    assert.throws(()=>buildVibeAssetProductionPlan({
+      target,task,manifest:{assets:[]},presetCatalog:{presets:[]}
+    }),/IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED/);
+  }
+  const autoPlan=buildVibeAssetProductionPlan({
+    target:'unity',task:{...task,assetAuthoring:{meshModel:'auto'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(autoPlan.nativeAuthoringExecution.dcc.executionRecipes.length>0);
+  assert.ok(autoPlan.nativeAuthoringExecution.dcc.executionRecipes.every(row=>row.meshModel==='auto'));
+  assert.throws(()=>buildVibeAssetProductionPlan({target:'roblox',
+    task:{...task,assetAuthoring:{meshModel:'unknown-provider'}},
+    manifest:{assets:[]},presetCatalog:{presets:[]}}),/IMAGE_TO_MESH_MODEL_UNSUPPORTED/);
+  const py=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  assert.match(py,/IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED/);
+  assert.match(py,/trellis_requested = requested == 'trellis2'/);
+  assert.doesNotMatch(py,/requested == 'auto' and any\(os\.environ\.get/);
+  assert.match(py,/VIBE_TRIPOSR_HOME/);
+  assert.match(py,/IMAGE_TO_MESH_TRIPOSR_LOCAL_INSTALL_REQUIRED/);
+  assert.match(py,/HF_HUB_OFFLINE/);
+});
+
+test('direct Blender image-mesh production enforces the Nvidia rights gate without loading Blender or GPU',()=>{
+  const python=[
+    'import ast, os, tempfile, hashlib',
+    'from pathlib import Path',
+    'from types import SimpleNamespace',
+    'source = Path("assets/native-authoring/build-game-visual.py").read_text(encoding="utf-8")',
+    'tree = ast.parse(source)',
+    'func = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "image_mesh_asset")',
+    'with tempfile.TemporaryDirectory() as folder:',
+    '    image = Path(folder) / "licensed.png"',
+    '    image.write_bytes(b"valid-source-fixture")',
+    '    scope = {"ARGS": SimpleNamespace(source_image=str(image), source_license="project-original", source_credit="", mesh_model="trellis2"), "Path": Path, "os": os, "hashlib": hashlib}',
+    '    exec(compile(ast.Module(body=[func], type_ignores=[]), "<isolated-image-mesh-source>", "exec"), scope)',
+    '    try:',
+    '        scope["image_mesh_asset"]()',
+    '    except RuntimeError as error:',
+    '        assert str(error) == "IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED", error',
+    '    else:',
+    '        raise AssertionError("Noncommercial Nvidia dependency was allowed to execute")'
+  ].join('\n');
+  execFileSync('python3',['-c',python],{encoding:'utf8',timeout:30000});
+});
+
+test('Blender and FFmpeg video uses verifiable three-shot cinematography without changing gameplay',()=>{
+  const task={gameId:'cinematic-demo',
+    goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 환경 소품 3D 애니메이션 영상 제작',
+    assetAuthoring:{module:'video',motionKind:'turntable',cinematicStyle:'dramatic',cinematicQuality:'high'}};
+  const plan=buildVibeAssetProductionPlan({target:'roblox',task,manifest:{assets:[]},presetCatalog:{presets:[]}});
+  assert.ok(plan.nativeAuthoringExecution.dcc.executionRecipes.length);
+  for(const recipe of plan.nativeAuthoringExecution.dcc.executionRecipes){
+    assert.equal(recipe.module,'video');
+    assert.equal(recipe.cinematicStyle,'dramatic');
+    assert.equal(recipe.cinematicQuality,'high');
+    assert.equal(recipe.args[recipe.args.indexOf('--cinematic-style')+1],'dramatic');
+    assert.equal(recipe.args[recipe.args.indexOf('--cinematic-quality')+1],'high');
+    assert.ok(recipe.outputs.some(output=>output.endsWith('/preview-motion.mp4')));
+  }
+  const source=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  for(const marker of ['ESTABLISHING','ACTION_REVEAL','SIGNATURE_CLOSEUP']){
+    assert.ok(source.includes(marker));
+  }
+  assert.match(source,/video_resolution=640 if shot_quality=='high' else 320/);
+  assert.match(source,/SCENE\.render\.filepath=str\(frames_dir/);
+  assert.match(source,/cinematicStyle':video_style/);
+  const verification=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(verification,/NATIVE_OPEN_SOURCE_CINEMATIC_SHOT_EVIDENCE_INVALID/);
+  assert.match(verification,/NATIVE_OPEN_SOURCE_CINEMATIC_REQUEST_MISMATCH/);
+});
+ 
 test('Web 3D actor work requires the shared Master GLB DCC path without forcing 2D Web actors',()=>{
   const threeD=buildVibeAssetProductionPlan({
     target:'web',
@@ -3482,8 +4162,8 @@ test('registered assets are shared by family while all original safety and platf
   assert.equal(registry.internalAssetStandard.sharedOrganization.gameExclusivePacks,false);
   for(const asset of registry.assets){
     assert.equal(asset.companyCommonBase,true,asset.id);
-    assert.equal(asset.reuseScope,'COMPANY_COMMON_BASE',asset.id);
-    assert.equal(asset.gameExclusive,false,asset.id);
+    assert.ok(['COMPANY_COMMON_BASE','ALL_COMPATIBLE_UNITY_ROBLOX_WEB_SOURCE_REAUTHORING','ALL_COMPATIBLE_3D_GAME_GENRES'].includes(asset.reuseScope),asset.id);
+    assert.notEqual(asset.gameExclusive,true,asset.id);
     assert.ok(asset.family,asset.id);
     assert.ok(asset.fileRoles,asset.id);
   }
@@ -3503,6 +4183,120 @@ function writeInspectionTriangle(root,change=()=>{}){
   fs.writeFileSync(path.join(root,'triangle.glb'),Buffer.concat([header,json,binaryHeader,bin]));
   return inspectVibeSourceGlb({repoRoot:root,source:{path:'triangle.glb'}});
 }
+
+// [자동 파생 자산화] 실제 3D 원본/파생 바이트, 권리·계보·PBR 변경, 증거를 통과해야 미검증 후보만 등록한다.
+test('company registry sync automatically ingests verified-byte PBR derivatives without claiming runtime pass',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'registered-derived-'));
+  try{
+    const sourceDir=path.join(root,'assets','shared');
+    const outDir=path.join(root,'assets','generated','unity','demo','prop');
+    fs.mkdirSync(sourceDir,{recursive:true});fs.mkdirSync(outDir,{recursive:true});
+    const source=path.join(sourceDir,'source.glb');
+    writeInspectionTriangle(root);
+    fs.copyFileSync(path.join(root,'triangle.glb'),source);
+    const sourceHash=createHash('sha256').update(fs.readFileSync(source)).digest('hex');
+    writeInspectionTriangle(root,doc=>{doc.materials[0].pbrMetallicRoughness.roughnessFactor=.72;});
+    const derived=fs.readFileSync(path.join(root,'triangle.glb'));
+    fs.writeFileSync(path.join(outDir,'asset.glb'),derived);
+    fs.writeFileSync(path.join(outDir,'master.glb'),derived);
+    const artifactHash=createHash('sha256').update(derived).digest('hex');
+    assert.notEqual(sourceHash,artifactHash);
+    const preview=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD9kAAAAASUVORK5CYII=','base64');
+    fs.writeFileSync(path.join(outDir,'preview.png'),preview);
+    const parent={id:'shared-source',title:'Source',family:'PROP',role:'environment-prop',
+      path:'assets/shared/source.glb',sourceFiles:['assets/shared/source.glb'],
+      sourceSha256:sourceHash,license:'project-original',status:'REPO_ASSET'};
+    // 동일 GLB를 환경 팩/소품 팩/개별 소품이 공유해도 올바른 계열과 원본 계보를 선택해야 한다.
+    const environmentPack={...parent,id:'environment-pack',family:'ENVIRONMENT',role:'',sourceFiles:['assets/shared/source.glb']};
+    const genericPropPack={...parent,id:'generic-prop-pack',role:'',sourceFiles:['assets/shared/source.glb','assets/shared/unused.glb']};
+    const staleProp={...parent,id:'stale-prop',sourceSha256:'f'.repeat(64)};
+    const registry={version:1,assets:[environmentPack,genericPropPack,staleProp,parent],externalSources:[]};
+    const provenance={sourcePath:'assets/shared/source.glb',sourceSha256:sourceHash,
+      libraryParentAssetId:'shared-source',
+      sourceFileImmutable:true,license:'project-original',
+      transformHistory:[{kind:'PBR_ROUGHNESS_STYLE_REAUTHOR',material:'Surface',from:.8,to:.72}]};
+    const evidence={version:1,assetId:'demo-prop',family:'PROP',
+      generator:'assets/native-authoring/build-game-visual.py',
+      sourceMesh:provenance,license:'project-original',artifactHash,
+      previewHash:createHash('sha256').update(preview).digest('hex'),
+      pbrMeshQa:{pass:true},internalAsset:{library:'VIBE_STUDIO_ASSET_UNIVERSE',
+        state:'PREPARED_NATIVE_QA_PENDING'},
+      runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+      productionVerified:false,companyPromotionEligible:false};
+    const writeEvidence=()=>fs.writeFileSync(path.join(outDir,'evidence.json'),JSON.stringify(evidence));
+    writeEvidence();
+    fs.writeFileSync(path.join(outDir,'application.json'),JSON.stringify({
+      sourceMesh:provenance,masterSha256:artifactHash,
+      internalAsset:{originalImmutable:true,nativeRuntimePromotionRequired:true}
+    }));
+    const sync=(value=registry)=>synchronizeCompanyCommonAssetRegistry({
+      repoRoot:root,registry:value,persist:false,consumerGameIds:['demo']
+    });
+    const first=sync();
+    assert.equal(first.derivedSync.inspected,1);
+    assert.equal(first.derivedSync.registered,1,JSON.stringify(first.derivedSync));
+    assert.equal(first.derivedSync.rejected,0);
+    const added=first.registry.assets.find(row=>row.id==='derived-unity-demo-prop');
+    assert.ok(added);
+    assert.equal(added.parentSourceId,'shared-source');
+    assert.equal(added.sourceHash,sourceHash);
+    assert.equal(added.artifactHash,artifactHash);
+    assert.equal(added.platform,'SHARED_MASTER');
+    assert.equal(added.runtimeVerificationState,'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING');
+    assert.equal(added.productionVerified,false);
+    assert.equal(added.verifiedCompanyReusable,false);
+    assert.equal(added.nativeRuntimeVerified,false);
+    assert.deepEqual(added.platformVariants,{});
+    assert.equal(first.changedSections.includes('assets'),true);
+    const second=sync(first.registry);
+    assert.equal(second.derivedSync.registered,0,'unchanged source and outputs must not register twice');
+    assert.equal(second.changed,false,'idempotent sync must not mutate canonical registry');
+    provenance.libraryParentAssetId='environment-pack';
+    writeEvidence();
+    const mismatchedParent=sync();
+    assert.equal(mismatchedParent.derivedSync.registered,0);
+    assert.equal(mismatchedParent.derivedSync.rejected,1,'wrong family parent cannot be registered');
+    provenance.libraryParentAssetId='shared-source';
+    writeEvidence();
+    evidence.companyPromotionEligible=true;
+    writeEvidence();
+    const unsafePromotion=sync();
+    assert.equal(unsafePromotion.derivedSync.registered,0);
+    assert.equal(unsafePromotion.derivedSync.rejected,1);
+    assert.ok(!unsafePromotion.registry.assets.some(row=>row.id==='derived-unity-demo-prop'));
+    evidence.companyPromotionEligible=false;
+    writeEvidence();
+    fs.appendFileSync(source,Buffer.from([0x20]));
+    const staleParent=sync();
+    assert.equal(staleParent.derivedSync.registered,0);
+    assert.equal(staleParent.derivedSync.rejected,1);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+// [원자적 등록] 실패 시 기존 원장 보존, 재시도 시 완전한 JSON 한 번에 반영.
+test('company asset registry publish uses an exclusive lock and atomic rename',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'asset-atomic-sync-'));
+  try{
+    const registryPath=path.join(root,'company-asset-library.json');
+    const original=JSON.stringify({version:1,assets:[],externalSources:[]})+'\n';
+    fs.writeFileSync(registryPath,original);
+    fs.writeFileSync(registryPath+'.lock','other-writer');
+    const blocked=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(blocked.changed,true);
+    assert.equal(blocked.persisted,false);
+    assert.ok(blocked.persistError);
+    assert.equal(fs.readFileSync(registryPath,'utf8'),original,'lock failure must not overwrite canonical bytes');
+    assert.equal(fs.readFileSync(registryPath+'.lock','utf8'),'other-writer');
+    fs.rmSync(registryPath+'.lock');
+    const committed=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(committed.persisted,true,committed.persistError||'');
+    assert.equal(JSON.parse(fs.readFileSync(registryPath,'utf8')).version,2);
+    assert.equal(fs.existsSync(registryPath+'.lock'),false);
+    assert.equal(fs.readdirSync(root).some(name=>name.startsWith('company-asset-library.json.tmp-')),false);
+    const next=synchronizeCompanyCommonAssetRegistry({repoRoot:root,persist:true});
+    assert.equal(next.changed,false,'published registry should remain idempotent');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 
 test('GLB production inspection measures transformed geometry and ground pivot for static props',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'glb-spatial-'));
@@ -3638,6 +4432,13 @@ test('actual Blender authoring preserves a styled master across platforms and ex
       assert(declared.centroidMeters.every((v,i)=>Math.abs(v-measured.centroidMeters[i])<Math.max(1e-5,Math.max(...inspection.inventory.spatial.size)*1e-4)),'Blender and GLB surface centroid must match');
       assert.equal(measured.collisionAuthority,false);
       assert.equal(application.nativeRuntimeVerified,false);
+      assert.equal(application.pbrMeshQa.pass,true);
+      assert.equal(application.pbrMeshQa.runtimeVerified,false);
+      assert.equal(application.pbrMeshQa.normalAndUvPresent,true);
+      assert.equal(application.pbrMeshQa.materialIndexValid,true);
+      assert.equal(application.pbrMeshQa.materialFactorsFinite,true);
+      assert.equal(application.researchApplication.hunyuan3d21.modelRan,false);
+      assert.equal(application.researchApplication.hunyuan3d21.modelLicenseRegionBlocked,'SOUTH_KOREA');
       const original=inspectVibeSourceGlb({repoRoot:root,source:{path:path.relative(root,path.join(folder,'master.glb'))}});
       assert.equal(original.inventory.visibleGeometrySha256,inspection.inventory.visibleGeometrySha256);
       assert(inspection.bytes<=original.bytes);
@@ -3703,4 +4504,59 @@ test('GLB scene geometry identity survives shared mesh reuse and changes on UV o
     const changed=writeInspectionTriangle(root,(d,b)=>{d.nodes.push({mesh:0,translation:[3,0,0]});d.scenes[0].nodes.push(2);b.writeFloatLE(.25,72);});
     assert.notEqual(changed.inventory.visibleGeometrySha256,shared.inventory.visibleGeometrySha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('open-source Blender cinematic must decode the exact original GLB animation movie',
+  {skip:!process.env.VIBE2_BLENDER_BINARY,timeout:240000},()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-open-source-cinematic-'));
+  try{
+    const args=['--background','--threads','2','--python-exit-code','1',
+      '--python','assets/native-authoring/build-game-visual.py','--',
+      '--output',root,'--asset-id','video-qa','--profile','prop','--subject','crate',
+      '--target','web','--module','video','--motion-kind','turntable',
+      '--cinematic-style','dramatic','--cinematic-quality','preview'];
+    execFileSync(process.env.VIBE2_BLENDER_BINARY,args,
+      {timeout:200000,encoding:'utf8',maxBuffer:4*1024*1024,stdio:['ignore','pipe','pipe']});
+    const file=path.join(root,'preview-motion.mp4');
+    const asset=path.join(root,'asset.glb');
+    const evidence=JSON.parse(fs.readFileSync(path.join(root,'evidence.json'),'utf8'));
+    assert.ok(fs.statSync(file).size>1024);
+    assert.equal(evidence.videoExport.actualFramesRendered,true);
+    assert.equal(evidence.videoExport.sourceGlbSha256,createHash('sha256').update(fs.readFileSync(asset)).digest('hex'));
+    assert.equal(evidence.videoExport.sha256,createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+    assert.equal(evidence.productionVerified,false);
+    assert.equal(evidence.videoExport.runtimeVerified,false);
+    const probe=JSON.parse(execFileSync(process.env.VIBE2_FFPROBE_BINARY||'ffprobe',[
+      '-v','error','-count_frames',
+      '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+      '-of','json','-i',file
+    ],{timeout:30000,encoding:'utf8'}));
+    const v=probe.streams.find(row=>row.codec_type==='video');
+    assert.equal(probe.streams.length,1);
+    assert.equal(v.codec_name,'mpeg4');
+    assert.equal(v.width,320);
+    assert.equal(v.height,320);
+    assert.equal(Number(v.nb_read_frames),24);
+    assert.equal(v.r_frame_rate,'12/1');
+    assert.equal(Number(probe.format.duration),2);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('source worker validates decoded cinematic frames rather than accepting MP4 metadata alone',()=>{
+  const worker=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(worker,/NATIVE_OPEN_SOURCE_VIDEO_FFPROBE_REQUIRED/);
+  assert.match(worker,/NATIVE_OPEN_SOURCE_VIDEO_FRAME_DECODE_INVALID/);
+  assert.match(worker,/nb_read_frames/);
+  assert.match(worker,/stream\?\.codec_name!=='mpeg4'/);
+  assert.match(worker,/sourceGlbSha256!==nativeArtifact\.sha256/);
+});
+
+test('native authoring reviews exported GLB material channels and never executes region-blocked model',()=>{
+  const source=fs.readFileSync('assets/native-authoring/build-game-visual.py','utf8');
+  assert.match(source,/pbr_mesh_qa\['pass'\]/);
+  assert.match(source,/NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID/);
+  assert.match(source,/TEXCOORD_0/);
+  assert.match(source,/modelLicenseRegionBlocked.*SOUTH_KOREA/);
+  assert.match(source,/modelRan.*False/);
 });

@@ -240,8 +240,8 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/IDENTITY_BUILD_UP_RULE:/);
   assert.match(directivePrompt(directive),/CAUSAL_GRAMMAR_EVIDENCE:/);
   assert.match(directivePrompt(directive),/CAUSAL_GRAMMAR_BUILD_UP_RULE:/);
-  assert.equal(directive.identityReinforcement.causalGrammarEvidence.formula,'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @');
-  assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.formula,'MAIN × A × B × c + @');
+  assert.equal(directive.identityReinforcement.causalGrammarEvidence.formula,'MAIN × A × B × C + @');
+  assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.formula,'MAIN × A × B × C + @');
   assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.majorAxes.length,2);
   assert.equal(directive.identityReinforcement.causalGrammarEvidence.existingGameGrammarMap.identityRewriteRequired,false);
   assert.match(directivePrompt(directive),/EXISTING_GAME_MAIN_A_B_c_AT_MAP:/);
@@ -252,6 +252,64 @@ test('game-specific directive covers the whole game and all visual domains',()=>
   assert.match(directivePrompt(directive),/ANTI_CLONE:/);
   assert.match(directivePrompt(directive),/CONTINUITY_CAUSALITY:/);
   assert.match(directivePrompt(directive),/DERIVED_RULE_EVOLUTION:/);
+});
+
+
+test('V5 creative C and individually sourced A/B are required for authored build-up without legacy c',()=>{
+  const base=design();
+  base.content.signatureSystems=['MAIN','A','B','DELVE'].map((role,index)=>({
+    id:'school-rule-'+index,grammarRole:role,name:'학교 운영 '+role,
+    purpose:'현재 초등학교의 건축·대응·조사 결정을 학교 상태에 반영한다.',
+    playerChoice:'학생 안전과 학교 운영 중 어떤 결정을 먼저 할지 선택한다.',
+    stateInputs:['SchoolState'],stateOutputs:['SchoolState']
+  }));
+  base.content.creativeGrammar={
+    mainIdentity:'학생 안전과 학교 시설을 직접 선택하는 학교 만들기 타이쿤',
+    a:{system:'건축',material:'로마 신전 구조',materialDomain:'서양 역사·건축',stateChange:'교실과 복도의 연결이 봉인 조건과 학생 동선을 바꾼다.'},
+    b:{system:'액션',material:'로마 신화 괴물',materialDomain:'서양 신화',stateChange:'괴물 대응 결과가 시설 접근과 학교의 다음 건설 우선순위를 바꾼다.'},
+    abCausality:'건축한 복도 구조가 괴물 대응의 위험과 경로를 바꾸고 괴물 사건의 결과가 다음 교실 배치 선택과 학생 안전 상태를 되돌려 바꾼다.',
+    cThemes:[{name:'철학',kind:'MATERIAL',gameplayEffect:'학생의 증언과 선택 책임이 사건의 원인 판단을 바꾼다.'},{name:'엽기',kind:'MATERIAL',gameplayEffect:'오해가 생긴 시설이 단서와 괴물 출현 조건을 바꾼다.'}],
+    cGenres:[{role:'PRIMARY',name:'미스터리',gameplayEffect:'단서를 조사해 사건의 원인을 알아내야 다음 구역을 해금한다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'학생의 오해가 단서의 신뢰도와 대응 경로를 변형한다.'}],
+    cGenreInterlock:'코믹 오해가 미스터리 단서 판정과 괴물 대응 방법을 실제로 바꾼다.',
+    cWorldAndGameplayEffect:'철학과 엽기 사건의 연쇄가 다음 건축·대응·조사 선택을 바꾼다.',
+    delveGrowthRule:'숨겨진 교실 배치와 사건의 조건을 발견해 다양한 해결 경로를 늘린다.'
+  };
+  const sourceObservation={sourceTreeFingerprint:'school-v5',topFiles:[],sourceAnchors:[],observations:[],signals:{}};
+  const args={gameId:'school-v5-grammar',designRecord:base,sourceObservation};
+  const authored=buildGameSpecificBuildUpDirective(args).identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
+  assert.equal(authored.source,'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS');
+  assert.deepEqual(authored.roleSystemIds.c,[]);
+  assert.equal(authored.cPrimarySecondaryGenres.length,2);
+  const v5Trace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:base.content,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.deepEqual(v5Trace.roleBindings.map(row=>row.role),['MAIN','A','B','@']);
+  assert.equal(v5Trace.creativeCBinding.designAuthored,true);
+  assert.deepEqual(v5Trace.creativeCBinding.genres.map(row=>row.role),['PRIMARY','SECONDARY']);
+  assert.ok(!v5Trace.gapReasons.some(reason=>reason.startsWith('DESIGN_ROLE_NOT_AUTHORED:')||reason.includes('DESIGN_MAIN_A_B_C_AT_INCOMPLETE')));
+  assert.equal(v5Trace.sourceImplementationPassed,false,'authored grammar is never runtime implementation evidence');
+  const broken=structuredClone(base);
+  broken.content.creativeGrammar.cGenres.pop();
+  broken.content.signatureSystems.push({id:'legacy-c',grammarRole:'c',name:'날씨',purpose:'이전 버전의 기계적 상황 변화',playerChoice:'날씨 확인',stateInputs:['SchoolState'],stateOutputs:['SchoolState']});
+  const unverified=buildGameSpecificBuildUpDirective({...args,designRecord:broken}).identityReinforcement.causalGrammarEvidence.existingGameGrammarMap;
+  assert.equal(unverified.source,'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE');
+  const missingGenreTrace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:broken.content,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.equal(missingGenreTrace.creativeCBinding.designAuthored,false);
+  assert.ok(missingGenreTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
+  const legacy=structuredClone(base.content);
+  delete legacy.creativeGrammar;
+  legacy.signatureSystems.push({
+    id:'old-weather',grammarRole:'c',name:'기존 날씨 규칙',
+    purpose:'기존 환경 상태를 활용한 선택 제약',playerChoice:'현재 날씨에 맞춰 행동을 선택한다',
+    stateInputs:['SchoolState'],stateOutputs:['SchoolState']
+  });
+  const legacyTrace=buildDesignToPlatformCodingTrace({
+    gameId:'school-v5-grammar',design:legacy,platform:'ROBLOX',sourceObservation,multiplayerRequired:false
+  });
+  assert.deepEqual(legacyTrace.roleBindings.map(row=>row.role),['MAIN','A','B','c','@']);
+  assert.ok(!legacyTrace.gapReasons.includes('DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING'));
 });
 
 test('holistic build-up marks sparse map inventory UI session and convenience systems as explicit gaps',()=>{
@@ -945,11 +1003,35 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.equal(trace.sourceImplementationPassed,false);
       assert.equal(trace.actualTwoClientPassed,false);
       assert.equal(trace.independentQaPassed,false);
-      assert.equal(trace.codingReviewState,'SOURCE_CANDIDATES_PRESENT_NOT_IMPLEMENTATION_PASS');
+      assert.equal(trace.codingReviewState,'GAME_STAGE_LOCAL_REPAIR_REQUIRED');
+      assert.ok(trace.gapReasons.includes('DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN'));
+      assert.equal(trace.nativeStateMappingSummary.staticSourceMappingIsNotRuntimeParity,true);
       assert.deepEqual(trace.roleBindings.map(x=>x.role),['MAIN','A','B','c','@']);
       assert.deepEqual(trace.roleBindings.map(x=>x.systemId),roles.map((_,i)=>'rule-'+i));
       assert.ok(trace.roleBindings.every(x=>x.suggestedExistingOwnerFiles.every(file=>expectedFiles.includes(file))));
       assert.ok(trace.roleBindings.every(x=>x.codingStatus==='SOURCE_OWNER_CANDIDATE_UNVERIFIED'));
+      if(platform==='UNITY_WEB'){
+        const algorithm=trace.unityWebDevelopmentAlgorithm;
+        assert.equal(algorithm.platform,'UNITY_WEB');
+        assert.ok(algorithm.algorithms.includes('DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER'));
+        assert.ok(algorithm.algorithms.includes('WEIGHTED_GREEDY_SET_COVER_FOR_RESPONSIBLE_SOURCE_FILES'));
+        assert.ok(algorithm.cyclicRoleDependencies.includes('MAIN'),'a circular authored design must not be accepted as linear');
+        const acyclic=buildDesignToPlatformCodingTrace({
+          gameId,design:{...signedDesign,systemInterconnections:signedDesign.systemInterconnections.slice(0,-1)},
+          platform,repoRoot:root,sourceRoot,sourceObservation:observed,
+          responsibleFiles:expectedFiles,multiplayerRequired:true
+        }).unityWebDevelopmentAlgorithm;
+        assert.deepEqual(acyclic.roleImplementationOrder,['MAIN','A','B','c','@']);
+        assert.deepEqual(acyclic.cyclicRoleDependencies,[]);
+        assert.equal(algorithm.designRequirements.filter(row=>row.kind==='CORE_LOOP').length,3);
+        assert.ok(algorithm.designRequirements.some(row=>row.id==='NATIVE_3D_VISUAL'));
+        assert.ok(algorithm.designRequirements.some(row=>row.id==='MULTIPLAYER_SYNC'));
+        assert.ok(algorithm.developmentPackages.length>0);
+        assert.ok(algorithm.developmentPackages.every(row=>row.responsibleFiles.every(file=>expectedFiles.includes(file))));
+        assert.equal(algorithm.existingF0F9SequencePreserved,true);
+        assert.equal(algorithm.sourceCandidatesNeverCountAsRuntimePass,true);
+        assert.deepEqual(algorithm.unresolvedRequirements,[]);
+      }else assert.equal(trace.unityWebDevelopmentAlgorithm,undefined,'Roblox/Unity app algorithms remain unchanged');
       const directive=buildGameSpecificBuildUpDirective({
         gameId,gameName:'원본 테스트',platform,repoRoot:root,sourceRoot,
         designRecord:{content:signedDesign},sourceObservation:observed,responsibleFiles:expectedFiles
@@ -964,7 +1046,179 @@ test('the one approved design binds MAIN, A, B, c and @ to three real native sou
       assert.match(directivePrompt(directive),/DESIGN_TO_PLATFORM_CODING_CHECK:/);
       assert.match(directivePrompt(directive),/CODING_IMPLEMENTATION_VERDICT:/);
       assert.equal(directive.designToPlatformCodingTrace.sourceImplementationPassed,false);
+      if(platform==='UNITY_WEB'){
+        assert.match(directivePrompt(directive),/UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS:/);
+        assert.ok(directive.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm?.developmentPackages.length);
+      }else assert.doesNotMatch(directivePrompt(directive),/UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS:/);
     }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+
+test('Unity Web design role keys and cross-system keys are audited against executable source without false PASS',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-state-parity-'));
+  const gameId='unity-state-parity';
+  const sourceRoot='unity-games/'+gameId;
+  const owner=sourceRoot+'/Assets/Scripts/GameCore.cs';
+  const sourceFile=path.join(root,owner);
+  const design={
+    multiplayerMode:'COOP',
+    signatureSystems:[
+      {id:'main',grammarRole:'MAIN',name:'전투',stateInputs:['Health'],stateOutputs:['Health']},
+      {id:'reward',grammarRole:'A',name:'보상',stateInputs:['Reward'],stateOutputs:['Reward']},
+      {id:'battle',grammarRole:'B',name:'회복',stateInputs:['Health'],stateOutputs:['Health']},
+      {id:'delve',grammarRole:'DELVE',name:'탐험',stateInputs:['Health'],stateOutputs:['Health']}
+    ],
+    systemInterconnections:[{fromId:'main',toId:'reward',stateKeys:['Reward']}],
+    platformProfiles:{UNITY:{unityWebSpatialPresentation:{
+      dimension:'3D',
+      worldDepth:'실제 3D 공간의 높이와 깊이를 사용한다'.repeat(2),
+      cameraAndOcclusion:'실제 카메라 가림과 거리 변화를 구현한다'.repeat(2),
+      lightingAndMaterials:'실제 메시 기반 조명과 재질을 적용한다'.repeat(2),
+      mobileWebglEvidence:'모바일 WebGL에서 실제 플레이 화면을 검사한다'.repeat(2)
+    }}}
+  };
+  const write=code=>{
+    fs.mkdirSync(path.dirname(sourceFile),{recursive:true});
+    fs.writeFileSync(sourceFile,code);
+  };
+  const check=()=>{
+    const sourceObservation=inspectGameSources({repoRoot:root,sourceRoots:[sourceRoot]});
+    return buildDesignToPlatformCodingTrace({
+      gameId,design,platform:'UNITY_WEB',sourceRoot,repoRoot:root,sourceObservation,
+      responsibleFiles:[owner],multiplayerRequired:true
+    });
+  };
+  try{
+    write('public class GameCore {\n  public int Health = 10;\n  public void Damage() { Health -= 2; }\n  // Reward += 5; is only a comment\n  public void Label() { System.Console.WriteLine("Reward += 5;"); }\n}\n');
+    const first=check();
+    const main=first.roleBindings.find(row=>row.role==='MAIN');
+    const reward=first.roleBindings.find(row=>row.role==='A');
+    assert.equal(main.nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+    assert.deepEqual(reward.nativeStateMapping.missingInputKeys,['Reward']);
+    assert.deepEqual(reward.nativeStateMapping.missingWrittenOutputKeys,['Reward']);
+    assert.ok(first.gapReasons.includes('DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A'));
+    assert.ok(first.gapReasons.includes('DESIGN_EDGE_STATE_KEYS_INCONSISTENT:main->reward'));
+    assert.deepEqual(first.edgeStateMismatches[0].mismatchedStateKeys,['Reward']);
+    assert.equal(first.sourceImplementationPassed,false);
+    assert.equal(first.actualWebglRenderPassed,false);
+    write('public class GameCore {\n  public int Health = 10;\n  public int Reward;\n  public void Damage() { Health -= 2; }\n  public void Gain() { Reward += 5; }\n}\n');
+    const second=check();
+    const rewardUpdated=second.roleBindings.find(row=>row.role==='A');
+    assert.equal(rewardUpdated.nativeStateMapping.state,'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED');
+    assert.deepEqual(rewardUpdated.nativeStateMapping.missingWrittenOutputKeys,[]);
+    assert.ok(!second.gapReasons.includes('DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:A'));
+    assert.notEqual(second.sourceTreeFingerprint,first.sourceTreeFingerprint);
+    assert.equal(second.sourceImplementationPassed,false,'matching tokens are still not playable rule parity');
+    assert.ok(second.gapReasons.includes('DESIGN_EDGE_STATE_KEYS_INCONSISTENT:main->reward'));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('Unity Web graph and source packages survive focused Vibe worker compression, not Roblox',()=>{
+  const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
+  const start=worker.indexOf('function gameSpecificBuildUpDirectiveGuidance(');
+  const finish=worker.indexOf('export function buildRobloxNativeSourceInspection',start);
+  const {guide,compact}=runInNewContext(worker.slice(start,finish)
+    +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
+      clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
+      COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
+      Buffer,console:{log(){}}
+    });
+  const owner='unity-games/unity-game/Assets/Scripts/GameCore.cs';
+  const directive={
+    directiveId:'unity-graph',gameId:'unity-game',generation:3,
+    gameIdentityAndNonNegotiables:{identity:'유니티 웹 3D 게임'},
+    designToPlatformCodingTrace:{
+      activePlatform:'UNITY_WEB',sourceTreeFingerprint:'a'.repeat(64),
+      platformCodingPlans:[{platform:'UNITY_WEB',canonicalGameSourceRoot:'unity-games/unity-game'}],
+      unityWebDevelopmentAlgorithm:{
+        roleImplementationOrder:['MAIN','A','B','@'],cyclicRoleDependencies:[],
+        unresolvedRequirements:[],designRequirements:[{id:'ROLE:MAIN'}],
+        developmentPackages:[{
+          sequence:1,responsibleFiles:[owner],designRequirementIds:['ROLE:MAIN','NATIVE_3D_VISUAL'],
+          acceptance:'EXACT_WEBGL_NATIVE_QA',runtimeVerified:false
+        }],
+        sequence:['LOAD_LATEST_VERIFIED_DESIGN','DIRECTLY_EDIT_UNITY_SOURCE','EXISTING_F0_TO_F9']
+      }
+    }
+  };
+  const original=guide({gameId:'unity-game',target:'unity',
+    selectedTask:{firstStageUnityWeb:true,buildUpDirective:directive}},[owner]);
+  assert.match(original,/unityWebAlgorithm=DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER/);
+  assert.match(original,/unityWebPackage=.*ROLE:MAIN/);
+  assert.match(original,/unityWebGrowthProof=COMPARE_EXACT_MAIN_VERIFIED_BASELINE/);
+  assert.match(compact(original,{compact:true,responsiblePaths:[owner]}),/unityWebPackage=/);
+  const roblox=guide({gameId:'unity-game',target:'roblox',buildUpDirective:directive},[owner]);
+  assert.doesNotMatch(roblox,/unityWebAlgorithm=/);
+});
+
+test('Roblox coding reads the same game Unity Web C# origin with exact change fingerprint and native-only authority',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-roblox-source-sync-'));
+  const gameId='source-sync-example';
+  const unityFile='unity-games/'+gameId+'/Assets/Scripts/GameCore.cs';
+  const otherFile='unity-games/other-game/Assets/Scripts/OtherGame.cs';
+  const roblFile='roblox-games/'+gameId+'/server/Game.server.luau';
+  const write=(file,code)=>{const full=path.join(root,file);fs.mkdirSync(path.dirname(full),{recursive:true});fs.writeFileSync(full,code);return full;};
+  const design={
+    identity:'하나의 공통 설계',
+    multiplayerMode:'COOP',
+    coreLoop:['첫 행동','결과 선택','다음 계획'],
+    signatureSystems:['MAIN','A','B','DELVE'].map((role,index)=>({
+      id:'rule-'+index,grammarRole:role,name:role,
+      stateInputs:['WorldState'],stateOutputs:['WorldState']
+    })),
+    systemInterconnections:[]
+  };
+  try{
+    write(roblFile,'local function Attack() return true end\n');
+    write(otherFile,'public class OtherGame { public void TransferSecret(){} }\n');
+    const without=buildDesignToPlatformCodingTrace({
+      gameId,design,platform:'ROBLOX',repoRoot:root,
+      sourceRoot:'roblox-games/'+gameId,multiplayerRequired:false
+    });
+    assert.equal(without.unityWebSourceSync.unityWebSourceAvailable,false);
+    assert.equal(without.unityWebSourceSync.unityWebScriptsFingerprint,null);
+    assert.equal(without.unityWebSourceSync.verificationTransferred,false);
+    assert.equal(without.sourceImplementationPassed,false);
+    write(unityFile,'public class UnityWebFloorGame {\n  private const string CoreLoop = "generic";\n  private int progress;\n  private void PerformAction(bool mobile) { progress++; }\n}\n');
+    const generic=buildDesignToPlatformCodingTrace({
+      gameId,design,platform:'ROBLOX',repoRoot:root,sourceRoot:'roblox-games/'+gameId,multiplayerRequired:false
+    });
+    assert.equal(generic.unityWebSourceSync.unityWebSourceAvailable,false,'generic Unity Web scaffold has no transferable gameplay authority');
+    assert.equal(generic.unityWebSourceSync.referenceStatus,'GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY');
+    assert.deepEqual(generic.unityWebSourceSync.sourceMethods,[]);
+    write(unityFile,'public class GameCore {\n  public int Health = 12;\n  public void ApplyDamage() { Health--; }\n  public void RestoreState() { Health++; }\n}\n');
+    const sourceRoots=['roblox-games/'+gameId];
+    const observed=inspectGameSources({repoRoot:root,sourceRoots});
+    const args={gameId,design,platform:'ROBLOX',repoRoot:root,sourceRoot:sourceRoots[0],sourceObservation:observed,responsibleFiles:[roblFile],multiplayerRequired:false};
+    const first=buildDesignToPlatformCodingTrace(args);
+    assert.equal(first.unityWebSourceSync.kind,'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC');
+    assert.equal(first.unityWebSourceSync.unityWebSourceAvailable,true);
+    assert.equal(first.unityWebSourceSync.unityWebScriptCount,1);
+    assert.deepEqual(first.unityWebSourceSync.sourceFiles,[unityFile]);
+    assert.ok(first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='ApplyDamage'&&method.file===unityFile));
+    assert.ok(!first.unityWebSourceSync.sourceMethods.some(method=>method.symbol==='TransferSecret'));
+    assert.equal(first.unityWebSourceSync.sourceImplementationPassed,false);
+    assert.equal(first.unityWebSourceSync.robloxRuntimeVerified,false);
+    assert.equal(first.unityWebSourceSync.directCsCopyForbidden,true);
+    assert.equal(first.unityWebSourceSync.canonicalDesignFingerprint,first.designFingerprint);
+    const initial=first.unityWebSourceSync.unityWebScriptsFingerprint;
+    write(unityFile,'public class GameCore {\n  public int Health = 12;\n  public void ApplyDamage() { Health -= 2; }\n  public void RestoreState() { Health++; }\n}\n');
+    const second=buildDesignToPlatformCodingTrace(args);
+    assert.notEqual(second.unityWebSourceSync.unityWebScriptsFingerprint,initial,'C# source change must invalidate stale Roblox sync context');
+    assert.equal(second.designFingerprint,first.designFingerprint,'source edit must not silently redefine shared design');
+    const directive=buildGameSpecificBuildUpDirective({
+      gameId,gameName:'통합 소스 테스트',platform:'ROBLOX',repoRoot:root,
+      designRecord:{content:design},sourceRoot:sourceRoots[0],
+      sourceObservation:observed,responsibleFiles:[roblFile]
+    });
+    const prompt=directivePrompt(directive);
+    assert.match(prompt,/UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC/);
+    assert.match(prompt,/REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS/);
+    assert.match(prompt,/Roblox 서버 권한/);
+    assert.equal(directive.designToPlatformCodingTrace.unityWebSourceSync.verificationTransferred,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -1021,7 +1275,9 @@ test('design-to-native trace is fail-closed for absent owners, incomplete roles 
     const worker=fs.readFileSync('tools/vibe2-source-worker.mjs','utf8');
     assert.match(worker,/designCodeRole=/);
     assert.match(worker,/designCodeVerification=/);
-    assert.match(worker,/KEEP EVERY MAIN\/A\/B\/c\/@ ROLE/);
+    assert.match(worker,/KEEP EVERY AUTHORED MAIN\/A\/B\/C\/@ ROLE/);
+    assert.match(worker,/designCodeCreativeC=/);
+    assert.match(worker,/Legacy c is optional in V5/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 

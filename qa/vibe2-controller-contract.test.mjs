@@ -694,7 +694,7 @@ test('reserve preflight uses the pinned main contract and blocks broken GAME_PRI
   assert(preflight.includes('--control="$control_root/.vibe2/parallelism-control.json"'));
   assert(!preflight.includes('node tools/vibe2-handoff.mjs --check'));
   assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
-  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'));
+  assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION'));
   assert(preflight.includes('node --test --test-concurrency=4'));
   assert(preflight.includes('contract_regression_passed=true'));
   assert(preflight.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
@@ -916,7 +916,7 @@ test('workers signal atomic completion and task micro-fan-in refills capacity wi
   assert.equal(runtime.continuous.reserveContractRegressionPreflight.blocksReservationOnFailure,true);
   assert.equal(runtime.continuous.reserveContractRegressionPreflight.neuronCompletionCallbackExcluded,true);
   assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE'));
-  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE'));
+  assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION'));
   assert(workflow.includes('VIBE2_RESERVE_CONTRACT_REGRESSION=PASS'));
   assert.equal(runtime.continuous.atomicNeuronStream.liveRunnerQueuePressureCoalescing,true);
   assert.equal(runtime.continuous.atomicNeuronStream.pressureCoalescingIndependentFreeSlotRefillPreserved,false);

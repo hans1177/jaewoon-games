@@ -79,7 +79,7 @@ const homepagePlayableGames=games.filter(game=>{
   return activeHomepageLifecycle(game)&&(web.playable===true||game.homepageWebPlayable===true)&&(web.archive===true||game.hasWebArchive===true);
 });
 const brokenWebGameLinks=homepagePlayableGames.filter(game=>{const file=webIndexPath(game);if(!file||!exists(file))return true;try{return fs.statSync(file).size<512;}catch{return true;}}).map(game=>game.id);
-const mismatchedWebPaths=homepagePlayableGames.filter(game=>{const file=webIndexPath(game);return file&&file!==`web-games/${canonicalId(game)}/index.html`;}).map(canonicalId);
+const mismatchedWebPaths=homepagePlayableGames.filter(game=>{const file=webIndexPath(game);return file&&!['web-games/'+canonicalId(game)+'/index.html','web-games/'+canonicalId(game)+'/unity/index.html'].includes(file);}).map(canonicalId);
 const prepromotionOfficialCards=games.filter(game=>game.homepageOfficialCard===true&&canonicalClass(game)!=='RELEASE_CONFIRMED').map(canonicalId);
 
 const homepagePolicy=centralHomepage.managerContract||{};
@@ -90,7 +90,8 @@ const directiveHomepageMirror=directive.homepageOperations||{};
 const directiveHomepageTestingMirror=directive.homepageTesting||{};
 const directiveDocumentationMirror=directive.documentationSynchronization||{};
 const directiveMirrorMatchesCentral=
-  JSON.stringify(directiveHomepageMirror)===JSON.stringify(homepagePolicy)&&
+  JSON.stringify(Object.fromEntries(Object.entries(directiveHomepageMirror).filter(([key])=>key!=='homepageListingContract')))===JSON.stringify(homepagePolicy)&&
+  JSON.stringify(directiveHomepageMirror.homepageListingContract||{})===JSON.stringify(centralHomepage.homepageListingContract||{})&&
   JSON.stringify(directiveHomepageTestingMirror)===JSON.stringify(homepageTesting)&&
   JSON.stringify(directiveDocumentationMirror)===JSON.stringify(documentationSync);
 const homepagePresentation=roadmap.homepagePresentation||{};
@@ -105,9 +106,10 @@ const checks={
   centralHomepageRuntimeAuthority:centralHomepage.runtimeAuthority==='company-runtime'&&centralHomepage.serverRuntimeBranch==='company-runtime'&&centralHomepage.publicSourceBranch==='main',
   centralWebShelfPolicyExists:webShelfPolicy.enabled===false&&webShelfPolicy.legacyArchiveOnly===true&&webShelfPolicy.frontDoorVisible===false&&top30ShelfPolicy.enabled===false&&top30ShelfPolicy.mustNotRender===true,
   developmentAndWebShelfPlacementDocumented:developmentDisplay.autoRegisterProductionClass==='DEVELOPMENT_CONFIRMED'&&webShelfPolicy.source==='LEGACY_ARCHIVE_ONLY'&&Array.isArray(centralHomepage.supportedPlatforms)&&centralHomepage.supportedPlatforms.length>0,
-  runnableOnlyGameCardVisibility:developmentDisplay.cardVisibilityRequiresRunnableTarget===true&&developmentDisplay.titleOnlyCardExposureForbidden===true&&developmentDisplay.playableWebCompanionSource==='ACTUAL_CANONICAL_WEB_ENTRY'&&developmentDisplay.playableWebCompanionRequiresExistingCanonicalIndex===true&&includesAll(enhancementEntry,['function hasRunnableHomepageTarget(game)','filter(hasRunnableHomepageTarget)']),
-  cleanRunnableShelfPresentation:includesAll(index,['data-runtime-fallback="loading"','실행 가능한 게임을 불러오는 중'])&&includesAll(enhancementEntry,['class="gameShelfHead"','class="gameShelfCount"','const direct=links.roblox||links.unity||links.unityWeb||links.web||\'\'','hasRunnableHomepageTarget(item)']),
-  developmentTestButtonsAvailable:developmentDisplay.webTestButtonEnabled===true&&developmentDisplay.webTestButtonLabel==='Unity Web · 개발중'&&developmentDisplay.platformTestButtonEnabled===true&&developmentDisplay.platformTestButtonLabelMode==='PLATFORM_NAME'&&developmentDisplay.webAndPlatformTestButtonsMustBeSeparate===true&&includesAll(enhancementEntry,['function platformLinks(game)','bindAvailableUnityWebSurfaces(catalog)',"button(links.roblox,`Roblox · ${state('ROBLOX')}`","button(links.unity,`Unity 앱 · ${state('UNITY')}`","button(links.unityWeb,'Unity Web · 개발중'"])&&!enhancementEntry.includes("button(web,'Web 플레이'")&&!enhancementEntry.includes("button(links.fortnite"),
+  allDeployedGameCardVisibility:developmentDisplay.cardVisibilityRequiresRunnableTarget===false&&developmentDisplay.titleOnlyCardExposureForbidden===false&&centralHomepage.homepageListingContract?.allDeployedGamesVisible===true&&centralHomepage.homepageListingContract?.gameCardVisibilityIndependentOfReleaseClassification===true&&includesAll(enhancementEntry,['const activeLifecycle=row=>','const registered=root===`web-games/${id}`','WITHDRAWN_SIMPLE_PROTOTYPE','function developmentRows(catalog,status)','function hasRunnableHomepageTarget(game)'])&&!enhancementEntry.includes('.filter(hasRunnableHomepageTarget)'),
+  homepageUnity3dVerifiedOnly:includesAll(enhancementEntry,['manifest.homepageVerified!==true',"manifest.requiredDimension!=='3D'",'build.upperPlatformGateCandidate!==true','readiness.criteria?.graphics?.native3dVerified!==true','e.mobile?.realGameTouchHandlerObserved===true',"const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebAvailable===true"])&&!enhancementEntry.includes("button(links.web,'웹 플레이'"),
+  cleanRunnableShelfPresentation:includesAll(index,['data-runtime-fallback="loading"','실행 가능한 게임을 불러오는 중'])&&includesAll(enhancementEntry,['class="gameShelfHead"','class="gameShelfCount"',"const direct=links.unityWeb||links.roblox||links.unity||''",'rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)']),
+  developmentTestButtonsAvailable:developmentDisplay.webTestButtonEnabled===true&&developmentDisplay.webTestButtonLabel==='Unity Web · 개발중'&&developmentDisplay.platformTestButtonEnabled===true&&developmentDisplay.platformTestButtonLabelMode==='PLATFORM_NAME'&&developmentDisplay.webAndPlatformTestButtonsMustBeSeparate===true&&includesAll(enhancementEntry,['function platformLinks(game)','bindAvailableUnityWebSurfaces(catalog)',"button(links.roblox,`Roblox · ${state('ROBLOX')}`","button(links.unity,`Unity 앱 · ${state('UNITY')}`","button(links.unityWeb,game.unityWebVerified?'Unity Web · 개발중':'Unity Web · 개발 테스트'"])&&!enhancementEntry.includes("button(web,'Web 플레이'")&&!enhancementEntry.includes("button(links.fortnite"),
   developmentCurrentScoreRankingAvailable:developmentDisplay.scoreDisplayEnabled===false&&developmentDisplay.scoreSource==='DISABLED_FOR_DIRECT_NATIVE_DEVELOPMENT'&&developmentDisplay.ranking==='CATALOG_ORDER'&&includesAll(enhancementEntry,['catalog?.runtimeInfoAuthority!==\'company-runtime\'','status?.runtimeAuthority!==\'company-runtime\'']),
   documentationSyncPolicyExists:documentationSync.centralPolicyFirst===true&&documentationSync.centralPolicyPath==='company-learning/platform-release-roadmap.json'&&documentationSync.implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized===true&&documentationSync.humanPolicyMirrorRequired===false&&documentationSync.workDocumentsCannotOverrideCentralPolicy===true,
   centralHomepageManagerContract:homepagePolicy.mode==='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'&&homepagePolicy.manager==='HOMEPAGE'&&homepagePolicy.supervisor==='DIRECTOR'&&homepagePolicy.managerCount===1&&homepagePolicy.supervisorCount===1&&centralHomepage.directiveMirrorMayNotOverrideCentral===true,
@@ -119,7 +121,7 @@ const checks={
   homepageInternalPlatformExposureSurface:platformExposureSnapshot?.version===3&&platformExposureSnapshot?.authority==='company-runtime'&&platformExposureSnapshot?.internalCompanySurface===true&&platformExposureSnapshot?.centralPolicyFingerprint===homepageCentral.fingerprint&&JSON.stringify(platformExposureSnapshot?.supportedPlatforms)===JSON.stringify(centralHomepage.supportedPlatforms)&&Array.isArray(platformExposureSnapshot?.games)&&roadmap?.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.publicExposure?.homepageIsInternalCompanySurface===true&&includesAll(enhancementEntry,["getJson('/homepage-platform-exposure.json')",'const exposureOf=id=>','const exposureLabelOf=id=>']),
 
   verifiedServerShelfBoundary:includesAll(enhancementEntry,['const displayEligible=row=>','function releaseRows(','function developmentRows(','function webPublishedRows(catalog)','function canonicalWebHref(row)','RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED']),
-  platformReadyGameShelfWithFixedWebAction:includesAll(enhancementEntry,['function internalReleaseRows(catalog,status)','function buildGameCenter(',"buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임'","button(links.roblox,`Roblox · ${state('ROBLOX')}`","button(links.unity,`Unity 앱 · ${state('UNITY')}`","button(links.web,'웹 플레이'","function playableWebHref(row)",'dataset.homePlatformAvailableCount','dataset.homeServerAuthority'])&&!enhancementEntry.includes('homeTop30GameCenter')&&!enhancementEntry.includes('const TOP_LIMIT='),
+  platformReadyGameShelfWithFixedWebAction:includesAll(enhancementEntry,['function internalReleaseRows(catalog,status)','function buildGameCenter(',"buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임'","button(links.roblox,`Roblox · ${state('ROBLOX')}`","button(links.unity,`Unity 앱 · ${state('UNITY')}`","manifest.homepageVerified!==true","function playableWebHref(row)",'dataset.homePlatformAvailableCount','dataset.homeServerAuthority'])&&!enhancementEntry.includes('homeTop30GameCenter')&&!enhancementEntry.includes('const TOP_LIMIT='),
   platformReadyAndDevelopmentShelvesDoNotDuplicate:includesAll(index,['id="gameHub"','id="gameGrid"','id="recentUpdates"'])&&includesAll(enhancementEntry,["buildShelf(hub,'homePlatformAvailableGameCenter','출시 게임'","buildShelf(hub,'homeDevelopmentGameCenter','개발 중'",'const availableIds=new Set(available.map(gameIdOf))','filter(game=>!availableIds.has(gameIdOf(game)))','function buildRecentUpdates(catalog)']),
   dualNativeExposureAcrossConcurrentPlatforms:includesAll(enhancementEntry,['const exposureOf=id=>','function platformLinks(game)','function internalReleaseLinks(game)',"platform('ROBLOX')","platform('UNITY')","['ROBLOX','UNITY'].includes(normalizePlatform(p?.platform))",'function internalReleaseRows(catalog,status)','function playableWebHref(row)'])&&!enhancementEntry.includes("button(links.fortnite"),
   pwaInstallOwnerFixedContractPreserved:includesAll(index,['id="appInstallBar"','id="appInstallBtn"','requestHomepageInstall','beforeinstallprompt','appinstalled','registerHomepagePwa()'])&&homepagePolicy?.fixedFunctionProtection?.ownerLocked===true&&homepagePolicy?.fixedFunctionProtection?.protectedFunctions?.includes('PWA_APP_INSTALL_AND_OFFLINE_RUNTIME'),
@@ -152,7 +154,7 @@ const failures=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);
 console.log(`HOMEPAGE_MANAGEMENT=${failures.length?'ATTENTION':'PASS'}`);
 console.log(`HOMEPAGE_SELF_QA=${Object.keys(checks).length-failures.length}/${Object.keys(checks).length}`);
 console.log(`HOMEPAGE_CATALOG_ORDER=${canonicalOrderValid?'CANONICAL_STABLE':'INVALID'}`);
-console.log(`HOMEPAGE_CATALOG_SOURCE=${catalogPath}`);console.log(`HOMEPAGE_STATUS_SOURCE=${statusPath}`);console.log(`HOMEPAGE_CATALOG=${games.length}`);console.log(`HOMEPAGE_CANONICAL_RECORDS=${games.filter(game=>canonicalOf(game)?.schemaVersion===1).length}/${games.length}`);console.log(`HOMEPAGE_OFFICIAL_CARD_COUNT=${officialGames.length}`);console.log(`HOMEPAGE_VALIDATION_CANDIDATE_COUNT=${testCandidates.length}`);console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);console.log(`HOMEPAGE_BROKEN_GAME_IMAGES=${brokenGameImages.length}`);console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);console.log(`HOMEPAGE_PLAYABLE_OFFICIAL_WEB_GAMES=${homepagePlayableGames.length}`);console.log(`HOMEPAGE_BROKEN_WEB_LINKS=${brokenWebGameLinks.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_WEB_LINKS=${brokenTestWebRoutes.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_ARTBOOKS=${brokenTestArtbooks.length}`);console.log(`HOMEPAGE_PREPROMOTION_OFFICIAL_CARD_VIOLATIONS=${prepromotionOfficialCards.length}`);console.log('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE');console.log('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY');console.log('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC');console.log('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=DATA_ONLY_SAMPLE_UI_HIDDEN');console.log('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE');console.log('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT');console.log('HOMEPAGE_DEVELOPMENT_ACTIONS=ROBLOX_UNITY_PLUS_OPTIONAL_UNITY_WEB');console.log('HOMEPAGE_LEGACY_WEB_SHELF=HIDDEN');console.log('HOMEPAGE_TOP30_SHELF=DISABLED_VALIDATION_MANIFEST_ONLY');console.log('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM');console.log('HOMEPAGE_OFFICIAL_CARD_POLICY=STRICT_PASS_AND_PROMOTION_ONLY');console.log('HOMEPAGE_RUNTIME_SYNC=SERVER_CATALOG_PLUS_NATIVE_PLATFORM_EXPOSURE');console.log(`HOMEPAGE_PORTFOLIO_CONTROL=${checks.homepagePortfolioControlSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_PLATFORM_EXPOSURE=${checks.homepageInternalPlatformExposureSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SHA256=${homepageCentral.fingerprint||'INVALID'}`);console.log(`HOMEPAGE_CENTRAL_PLATFORMS=${(centralHomepage.supportedPlatforms||[]).join(',')}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SYNC=${checks.centralHomepageExecutionFingerprint?'PASS':'FAIL'}`);console.log(`HOMEPAGE_DIRECTIVE_MIRROR=${directiveMirrorMatchesCentral?'SYNCED':'STALE_NON_AUTHORITATIVE'}`);console.log('HOMEPAGE_RAW_DESIGN_ONLY_EXECUTION_SHELF=FORBIDDEN');console.log('HOMEPAGE_MANAGER_COUNT=1');console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
+console.log(`HOMEPAGE_CATALOG_SOURCE=${catalogPath}`);console.log(`HOMEPAGE_STATUS_SOURCE=${statusPath}`);console.log(`HOMEPAGE_CATALOG=${games.length}`);console.log(`HOMEPAGE_CANONICAL_RECORDS=${games.filter(game=>canonicalOf(game)?.schemaVersion===1).length}/${games.length}`);console.log(`HOMEPAGE_OFFICIAL_CARD_COUNT=${officialGames.length}`);console.log(`HOMEPAGE_VALIDATION_CANDIDATE_COUNT=${testCandidates.length}`);console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);console.log(`HOMEPAGE_BROKEN_GAME_IMAGES=${brokenGameImages.length}`);console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);console.log(`HOMEPAGE_PLAYABLE_OFFICIAL_WEB_GAMES=${homepagePlayableGames.length}`);console.log(`HOMEPAGE_BROKEN_WEB_LINKS=${brokenWebGameLinks.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_WEB_LINKS=${brokenTestWebRoutes.length}`);console.log(`HOMEPAGE_BROKEN_VALIDATION_ARTBOOKS=${brokenTestArtbooks.length}`);console.log(`HOMEPAGE_PREPROMOTION_OFFICIAL_CARD_VIOLATIONS=${prepromotionOfficialCards.length}`);console.log('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE');console.log('HOMEPAGE_DEVELOPMENT_VISIBILITY=ALL_DEPLOYED_GAMES');console.log(`HOMEPAGE_DEPLOYED_GAME_CARDS=${games.filter(game=>{const id=canonicalId(game);const state=String(game.canonical?.sources?.web?.state||game.ownerWebSourceState||'').toUpperCase();const registered=String(game.canonical?.sources?.web?.path||game.webPath||'').split('/').filter(Boolean).join('/')===`web-games/${id}`;if(state==='NON_GAME_SURFACE'||!registered)return false;return state!=='WITHDRAWN_SIMPLE_PROTOTYPE'||game.ownerExistingGame===true||game.canonical?.lifecycle?.ownerExistingGame===true||Boolean(game.canonical?.sources?.unity?.projectPath||game.canonical?.sources?.roblox?.projectPath)}).length}`);console.log('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC');console.log('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=DATA_ONLY_SAMPLE_UI_HIDDEN');console.log('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE');console.log('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT');console.log('HOMEPAGE_DEVELOPMENT_ACTIONS=ROBLOX_UNITY_PLUS_OPTIONAL_UNITY_WEB');console.log('HOMEPAGE_LEGACY_WEB_SHELF=HIDDEN');console.log('HOMEPAGE_TOP30_SHELF=DISABLED_VALIDATION_MANIFEST_ONLY');console.log('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM');console.log('HOMEPAGE_OFFICIAL_CARD_POLICY=STRICT_PASS_AND_PROMOTION_ONLY');console.log('HOMEPAGE_RUNTIME_SYNC=SERVER_CATALOG_PLUS_NATIVE_PLATFORM_EXPOSURE');console.log(`HOMEPAGE_PORTFOLIO_CONTROL=${checks.homepagePortfolioControlSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_PLATFORM_EXPOSURE=${checks.homepageInternalPlatformExposureSurface?'PASS':'FAIL'}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SHA256=${homepageCentral.fingerprint||'INVALID'}`);console.log(`HOMEPAGE_CENTRAL_PLATFORMS=${(centralHomepage.supportedPlatforms||[]).join(',')}`);console.log(`HOMEPAGE_CENTRAL_POLICY_SYNC=${checks.centralHomepageExecutionFingerprint?'PASS':'FAIL'}`);console.log(`HOMEPAGE_DIRECTIVE_MIRROR=${directiveMirrorMatchesCentral?'SYNCED':'STALE_NON_AUTHORITATIVE'}`);console.log('HOMEPAGE_RAW_DESIGN_ONLY_EXECUTION_SHELF=FORBIDDEN');console.log('HOMEPAGE_MANAGER_COUNT=1');console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
 if(failures.length){console.error(`HOMEPAGE_FAILURES=${failures.join(',')}`);process.exitCode=1;}
 
 async function captureReleaseMedia(planOnly=false){
@@ -171,7 +173,7 @@ async function captureReleaseMedia(planOnly=false){
   const exposure=json('homepage-platform-exposure.json');
   const gameFilter=process.argv.find(x=>x.startsWith('--media-game='))?.slice(13);
   const candidates=[];
-  const captureVersion=2;
+  const captureVersion=3;
   for(const game of catalog.games||[]){
     const id=game.canonical?.identity?.gameId||game.id;
     if(!/^[a-z0-9][a-z0-9-]*$/.test(id)||gameFilter&&gameFilter!==id)continue;
@@ -182,7 +184,7 @@ async function captureReleaseMedia(planOnly=false){
     if(!fs.existsSync(entry))continue;
     const artifactIdentity=webTreeFingerprint(fs,dir);
     const current=validatedHomepageMedia(id,media.games[id]);
-    if(current?.video?.artifactIdentity===artifactIdentity)continue;
+    if(current?.video?.artifactIdentity===artifactIdentity&&current.screenshots?.length)continue;
     const attempt=media.games[id].captureAttempt;
     if(attempt?.captureVersion===captureVersion&&attempt?.artifactIdentity===artifactIdentity&&Date.now()-Date.parse(attempt.at)<86400000)continue;
     candidates.push({id,artifactIdentity,platform:/createUnityInstance|\.loader\.js/.test(fs.readFileSync(entry,'utf8'))?'UNITY_WEB':'WEB'});
@@ -224,8 +226,9 @@ async function captureReleaseMedia(planOnly=false){
       let context;
       const {id,platform,artifactIdentity}=candidate;
       try{
-        context=await browser.newContext({viewport:{width:960,height:540},recordVideo:{dir:temp,size:{width:960,height:540}},serviceWorkers:'block'});
+        context=await browser.newContext({viewport:{width:1920,height:1080},recordVideo:{dir:temp,size:{width:1920,height:1080}},serviceWorkers:'block'});
         const page=await context.newPage();
+        const captureStartedAt=Date.now();
         const errors=[];
         const loadedFiles=new Set();
         page.on('response',response=>{
@@ -251,7 +254,7 @@ async function captureReleaseMedia(planOnly=false){
         }
         await page.locator('canvas').first().waitFor({state:'visible'});
         await page.waitForTimeout(700);
-        const clipStart=await page.evaluate(()=>performance.now()/1000);
+        const clipStart=Math.max(0,(Date.now()-captureStartedAt)/1000);
         let inputEvents=id==='cozy-island'?0:1;
         for(const key of ['ArrowRight','ArrowUp','ArrowLeft','ArrowDown']){
           await page.keyboard.down(key);inputEvents++;
@@ -278,11 +281,38 @@ async function captureReleaseMedia(planOnly=false){
         const frameAt=second=>execFileSync('ffmpeg',['-v','error','-ss',String(second),'-i',temporaryOutput,'-frames:v','1','-vf','scale=64:36','-f','rawvideo','-pix_fmt','rgb24','pipe:1'],{timeout:15000});
         const firstFrame=frameAt(.5),lastFrame=frameAt(9);
         if(firstFrame.length!==64*36*3||lastFrame.length!==64*36*3||digest(firstFrame)===digest(lastFrame))throw Error('NO_VISIBLE_RUNTIME_CHANGE');
-        // Publish only after a complete successful capture. Existing media survives failures.
+        // 추출·크기·해시 검증을 끝낸 뒤에만 실제 플레이 사진과 편집 영상을 게시한다.
+        const capturedAt=new Date().toISOString();
+        const frames=[];
+        for(const second of [2,6,10].filter(value=>value<duration-.25)){
+          const n=frames.length+1;
+          const temporaryFrame=temp+'/'+id+'-'+n+'.jpg';
+          execFileSync('ffmpeg',['-y','-loglevel','error','-ss',String(clipStart+second),
+            '-i',videoPath,'-frames:v','1','-vf','scale=1920:1080:flags=lanczos,setsar=1',
+            '-q:v','6','-update','1',temporaryFrame],{timeout:45000,stdio:'pipe'});
+          const dimensions=execFileSync('ffprobe',['-v','error','-select_streams','v:0',
+            '-show_entries','stream=width,height','-of','csv=s=x:p=0',temporaryFrame],{encoding:'utf8'}).trim();
+          const imageBytes=fs.readFileSync(temporaryFrame),sha256=digest(imageBytes);
+          if(dimensions!=='1920x1080'||imageBytes.length<1024||imageBytes.length>1048576
+            ||imageBytes[0]!==0xff||imageBytes[1]!==0xd8
+            ||imageBytes[imageBytes.length-2]!==0xff||imageBytes[imageBytes.length-1]!==0xd9)throw Error('GAMEPLAY_FRAME_INVALID');
+          if(frames.some(frame=>frame.sha256===sha256)){fs.rmSync(temporaryFrame,{force:true});continue;}
+          frames.push({gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,
+            source:'ACTUAL_GAMEPLAY_VIDEO_FRAME',src:'assets/homepage-media/'+id+'-'+n+'.jpg',
+            bytes:imageBytes.length,sha256,width:1920,height:1080,second,
+            temporaryFrame});
+        }
+        if(!frames.length)throw Error('GAMEPLAY_FRAME_MISSING');
+        // 기존 검증 영상을 덮지 않고 게임별 성공 결과만 반영한다.
+        for(const frame of frames)fs.copyFileSync(frame.temporaryFrame,frame.src);
         fs.copyFileSync(temporaryOutput,output);
-        media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt:new Date().toISOString(),src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
+        media.games[id].video={gameId:id,platform,sourceRevision,artifactIdentity,capturedAt,
+          src:output,bytes:bytes.length,sha256:digest(bytes),dependencies,seconds:duration,
+          width:640,height:360,runtimeVerification:{pass:true,inputEvents,visualChangeObserved:true,
+          scriptErrors:0,purpose:'MARKETING_CAPTURE_ONLY_NOT_F0_F9_ACCEPTANCE'}};
+        media.games[id].screenshots=frames.map(({temporaryFrame,...frame})=>frame);
         delete media.games[id].captureAttempt;
-        console.log(`HOMEPAGE_RELEASE_MEDIA_CAPTURED=${id} PLATFORM=${platform} BYTES=${bytes.length}`);
+        console.log('HOMEPAGE_RELEASE_MEDIA_CAPTURED='+id+' PLATFORM='+platform+' BYTES='+bytes.length+' FRAMES='+frames.length+' RESOLUTION=1920x1080');
       }catch(error){
         media.games[id].captureAttempt={artifactIdentity,captureVersion,at:new Date().toISOString(),state:'CAPTURE_PENDING_NOT_GAMEPLAY_PROVEN',reason:String(error.message||error).slice(0,500)};
         console.log(`HOMEPAGE_RELEASE_MEDIA_PENDING=${id} REASON=${String(error.message||error).split('\n')[0]}`);

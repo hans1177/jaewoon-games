@@ -92,3 +92,21 @@
 ## 추가 요청 범위
 
 월드·로비 동선/면적/통행 여유, 원근 거리감, 중력·넉백, 메뉴 깊이/정보 공개/반응형 UI, 경제 원장·유입/소모, 데미지/능력치/전투 배치, 구도/팔레트/조명 깊이와 8가지 화풍 제작 규칙을 포함한다. 화풍은 실제 내부 자산의 형태·텍스처·재질·조명 작업으로 구현하고 같은 카메라에서 비교해야 한다. 표의 수치는 튜닝 예시이며 미적 품질이나 밸런스의 자동 합격 기준이 아니다.
+
+
+## 3D 메쉬·모션 외부 연구 응용 (2026-10-10)
+
+이 문서는 **기존 내부 파이프라인의 알고리즘 응용 근거**만 기록한다. 아래 논문의 학습된 모델·가중치가 실제로 실행됐다는 의미는 아니고, 정식 원본/상업 이용권과 GPU 요건을 충족하기 전에는 자동 생성 PASS로 승격하지 않는다.
+
+| 근거 | 기존 책임 경로 | 실제 응용 내용 | 제한 |
+| --- | --- | --- | --- |
+| [RigMo (CVPR 2026)](https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_RigMo_Unifying_Rig_and_Motion_Learning_for_Generative_Animation_CVPR_2026_paper.html) | `assets/vibe-motion-director.js` | 휴머노이드/크리처 리그 정합성, 스킨 바인딩, 골격 길이 변화 계측 | 합동 신경망 추론·오토리깅을 실행한 것은 아님 |
+| [PhysSkin (CVPR 2026)](https://openaccess.thecvf.com/content/CVPR2026/html/Lei_PhysSkin_Real-Time_and_Generalizable_Physics-Based_Animation_via_Self-Supervised_Neural_Skinning_CVPR_2026_paper.html) | 동일 기존 QA | 스킨 가중치 정규화 편차 및 관절 변형의 근거 필수화 | 학습된 스킨 신경망은 별도 라이선스·설치·검증 필요 |
+| [MotionMaster (CVPR 2026)](https://openaccess.thecvf.com/content/CVPR2026/html/Jiang_MotionMaster_Generalizable_Text-Driven_Motion_Generation_and_Editing_CVPR_2026_paper.html) | `assets/vibe-motion-director.js` | 기존 모션 DNA·액션 단계·합성/전환 의미 정합성 유지 | 자연어→모션 기반 모델 학습/실행 주장이 아님 |
+| [PhyMotion (2026)](https://arxiv.org/abs/2605.14269) | 기존 모션 접촉 QA | 무게중심 지지영역 이탈, 관절 변화율, 접촉·균형 위반 증거 | MuJoCo 물리 시뮬레이션은 미실행 |
+| [Hunyuan3D 2.1 논문 (2025)](https://arxiv.org/abs/2506.15442) | `assets/native-authoring/build-game-visual.py` | 실제 GLB의 UV·노멀·PBR 재질 채널·다중 시점 렌더 검증 | [원본 라이선스](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/main/LICENSE)가 **대한민국을 제외**하므로 모델·코드·가중치 사용 금지 |
+
+- [DeepMotion 발 고정 공식 설명](https://www.deepmotion.com/post/animate-3d-v2-6-release-foot-locking-modes): Auto/Always/Never/Grounding 모드의 구분을 참고하고 기존 `author-motion.py`의 접지·도약·낙하 동작별 타당성에 적용한다. DeepMotion 클라우드 추론은 연결하지 않았다.
+- Cascadeur의 AutoPhysics/포즈 보정과 [Blender 커뮤니티의 리타겟 문제 사례](https://www.reddit.com/r/blender/comments/1u9470x/feet_slipping_mocap_correction/), [Cascadeur 반입/내보내기 리그 오류](https://www.reddit.com/r/Cascadeur/comments/1rvk6as/glitches_when_importing_cascadeur_animations_into/)를 참고해 엉덩이·다리 길이/레스트 포즈 불일치, 발 접촉 위치 및 튀는 관절 검사 항목을 추가한다. 상용 Cascadeur 엔진 알고리즘을 복제하지 않는다.
+- 실제 GLB 미리보기는 기존 `asset-library.html`, `assets/asset-library.js`, `assets/asset-library-viewer.js` 안에서 동작한다. 원본 스킨 메시와 내장 애니메이션을 사용하며, 라이브러리 미리보기 자체를 게임 플랫폼 런타임 QA로 간주하지 않는다.
+- 기존 대미지·이동·충돌·저장·게임 세이브·권한 흐름은 그대로 두고 별도의 새 파이프라인·모델 서버·게임 워커는 만들지 않는다. 품질 판정은 기존 F0~F9 런타임·모바일 증거로만 가능하다.

@@ -126,15 +126,21 @@ bgm.Volume = table.find(studioAssetFamily("AUDIO"), "ENV_FOREST") and .18 or bgm
 
 -- 기존 포근섬 월드/야생동물/오디오에 선택된 내부 자산 family를 실제 Roblox 표현으로 연결한다.
 task.defer(function()
-  local cozyWorld = workspace:FindFirstChild("CozyConquestWorld") or workspace:WaitForChild("CozyConquestWorld", 8)
-  if not cozyWorld then return end
+  local cozyWorld = workspace:WaitForChild("CozyConquestWorld")
 
-  local function bindCreatureModel(model)
-    if not model:IsA("Model") then return end
-    if not (model.Name:find("Bear", 1, true) or model.Name:find("Boar", 1, true) or model.Name:find("Raider", 1, true)) then return end
-    local body = model.PrimaryPart or model:FindFirstChildWhichIsA("BasePart")
-    if body and body:IsA("BasePart") then
-      body.Material = table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") and Enum.Material.Fabric or body.Material
+  -- 실제 렌더링되는 곰 몸통과 멧돼지 부품에만 선택된 재질을 적용한다.
+  -- 투명한 동물 루트와 약탈병 충돌 부품은 건드리지 않는다.
+  local furParts = {Body=true, Chest=true, Rump=true, ChestRuff=true, BoarBody=true, BoarShoulder=true, BoarMane=true}
+  local function bindCreatureModel(instance)
+    if not table.find(studioAssetFamily("CREATURE"), "FUR_PATCH") then return end
+    if instance:IsA("Model") and instance:GetAttribute("WildlifeSpecies") == "BEAR" then
+      for _, part in ipairs(instance:GetChildren()) do
+        if part:IsA("BasePart") and furParts[part.Name] then part.Material = Enum.Material.Fabric end
+      end
+    elseif instance:IsA("BasePart") and furParts[instance.Name] then
+      local isBoarPart = instance.Name:find("Boar", 1, true) ~= nil
+      local isBearPart = instance.Parent and instance.Parent:IsA("Model") and instance.Parent:GetAttribute("WildlifeSpecies") == "BEAR"
+      if isBoarPart or isBearPart then instance.Material = Enum.Material.Fabric end
     end
   end
   for _, descendant in ipairs(cozyWorld:GetDescendants()) do bindCreatureModel(descendant) end
@@ -151,7 +157,7 @@ task.defer(function()
   atmosphere.Density = 0.16
   atmosphere.Haze = 0.8
 
-  local plaza = cozyWorld:FindFirstChild("VillagePlaza")
+  local plaza = cozyWorld:WaitForChild("VillagePlaza")
   if plaza and plaza:IsA("BasePart") then
     plaza.Material = table.find(studioAssetFamily("MATERIAL"), "STONE") and Enum.Material.Cobblestone or plaza.Material
 
@@ -170,7 +176,7 @@ task.defer(function()
     emitter:Emit(14)
   end
 
-  local boat = cozyWorld:FindFirstChild("VillageBoat")
+  local boat = cozyWorld:WaitForChild("VillageBoat")
   if boat and boat:IsA("BasePart") then
     boat.Material = table.find(studioAssetFamily("PROP"), "LAMP") and Enum.Material.WoodPlanks or boat.Material
     local baseOrientation = boat.Orientation

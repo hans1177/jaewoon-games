@@ -63,7 +63,23 @@ const progressState=row=>String(runtimeInfo(row).status||'진행상태 미평가
 const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selectedPlatform||row?.selectedPlatform||'';
 const displayPlatform=row=>String(row?.homepageDisplayMode||homepageOf(row).displayMode||'').toUpperCase()==='ROBLOX_HISTORICAL_DEPLOYMENT'?'ROBLOX':selectedPlatform(row);
-const activeLifecycle=row=>['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase());
+// 홈에 표시할 정식 게임은 실행 빌드 유무와 별개로 유지하고, 단순 버튼형 시제품만 제외한다.
+// 파일명: assets/homepage-enhancements.js / 게임 표시
+// 배포된 게임 카드는 개발 중·출시 상태와 무관하게 유지한다. 3D QA는 실행 링크 활성화만 제어한다.
+const activeLifecycle=row=>{
+  const id=gameIdOf(row);
+  if(!id||!['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase()))return false;
+  const sources=sourcesOf(row),web=sources.web||{};
+  const state=String(web.state||row?.ownerWebSourceState||'').toUpperCase();
+  if(state==='NON_GAME_SURFACE')return false;
+  const root=String(web.path||row?.webPath||'').trim().split('/').filter(Boolean).join('/');
+  const registered=root===`web-games/${id}`;
+  const nativeDeployed=hasRunnableHomepageTarget(row)||hasInternalRelease(row);
+  // 파일이나 원본 프로젝트가 있다는 이유로 버튼형 시제품을 게임으로 홍보하지 않는다.
+  // 실제 실행 가능한 네이티브 배포만 웹 시제품 철회 상태와 별개로 유지한다.
+  if(state==='WITHDRAWN_SIMPLE_PROTOTYPE'||state==='ENTRY_MISSING_OR_INVALID')return nativeDeployed;
+  return registered||nativeDeployed;
+};
 const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
@@ -119,17 +135,8 @@ function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(productionClassOf(game)))
     .map(game=>bindVerifiedUnityBuild(game,status))
-    // 개발중·미출시라도 실제 실행 경로가 있는 게임만 노출한다. 버튼만 있는 시제품 카드는 제외한다.
-    .filter(hasRunnableHomepageTarget)
-    .sort((a,b)=>{
-      const sa=scoreState(a),sb=scoreState(b);
-      if(sa.score!==null||sb.score!==null){
-        if(sa.score===null)return 1;
-        if(sb.score===null)return-1;
-        if(sb.score!==sa.score)return sb.score-sa.score;
-      }
-      return catalogOrderCompare(a,b);
-    });
+    // 카드는 원본 카탈로그 순서를 유지한다. 게임 점수·플랫폼 빌드 여부는 노출 순서를 바꾸지 않는다.
+    .sort((a,b)=>catalogOrderOf(a)-catalogOrderOf(b));
 }
 function canonicalWebHref(row){
   const id=gameIdOf(row);
@@ -139,100 +146,124 @@ function canonicalWebHref(row){
   const expected=`web-games/${id}`;
   return raw===expected?`/${expected}/`:'';
 }
+// 기존 HTML·JavaScript 게임은 원본 보관만 허용하고 홈페이지 링크로 승격하지 않는다.
 function playableWebHref(row){
-  const web=sourcesOf(row).web||{};
-  if(['WITHDRAWN_SIMPLE_PROTOTYPE','NON_GAME_SURFACE','ENTRY_MISSING_OR_INVALID','UNITY_WEB_BUNDLE_INCOMPLETE'].includes(web.state||row?.ownerWebSourceState))return'';
-  const playable=web.playable===true||row?.homepageWebPlayable===true;
-  const archive=web.archive===true||row?.hasWebArchive===true;
-  return activeLifecycle(row)&&playable&&archive?canonicalWebHref(row):'';
+  return '';
 }
+// 실제 Unity C# WebGL 빌드와 3회 브라우저 검증, 네이티브 3D 및 저장 검증을 모두 확인한다.
 async function bindAvailableUnityWebSurfaces(catalog){
-  if(platformExposure?.unityWebEnabled!==true||!Array.isArray(catalog?.games))return catalog;
+  if(!Array.isArray(catalog?.games))return catalog;
+  const enabled=platformExposure?.unityWebEnabled===true;
   const probeFetch=async(url,options={})=>{
     const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),2500);
-    try{return await fetch(url,{...options,signal:controller.signal});}
+    const timer=setTimeout(()=>controller.abort(),5000);
+    try{return await fetch(url,{...options,signal:controller.signal,cache:'no-store'});}
     finally{clearTimeout(timer);}
   };
-  const candidates=catalog.games.filter(game=>{
+  const candidates=enabled?catalog.games.filter(game=>{
     const id=gameIdOf(game);
     const unity=sourcesOf(game).unity||{};
     const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
-    return Boolean(id)&&projectPath===`unity-games/${id}`;
-  });
+    return /^[a-z0-9][a-z0-9-]*$/.test(id)
+      &&(projectPath===`unity-games/${id}`||(activeLifecycle(game)&&canonicalWebHref(game)===`/web-games/${id}/`));
+  }):[];
   const available=new Map();
-  const bundleGroupsFromUnityIndex=html=>{
-    const groups={loader:null,data:null,framework:null,wasm:null};
-    const refs=[...String(html||'').matchAll(/["']([^"']+\.(?:loader\.js|data(?:\.(?:br|gz))?|framework\.js(?:\.(?:br|gz))?|wasm(?:\.(?:br|gz))?))["']/gi)]
-      .map(match=>String(match[1]||'').replace(/^\.\//,'').replace(/^\//,''));
-    for(const ref of refs){
-      const file=ref.split('/').pop()||'';
-      if(/\.loader\.js$/i.test(file))groups.loader=ref;
-      else if(/\.data(?:\.(?:br|gz))?$/i.test(file))groups.data=ref;
-      else if(/\.framework\.js(?:\.(?:br|gz))?$/i.test(file))groups.framework=ref;
-      else if(/\.wasm(?:\.(?:br|gz))?$/i.test(file))groups.wasm=ref;
-    }
-    return groups;
-  };
-  const bundleUrl=(href,ref)=>{
-    const cleanRef=String(ref||'').replace(/^\.\//,'').replace(/^\//,'');
-    return cleanRef.startsWith('Build/')?`${href}${cleanRef}`:`${href}Build/${cleanRef}`;
-  };
   await Promise.all(candidates.map(async game=>{
     const id=gameIdOf(game),stamp=Date.now();
-    if(!id)return;
-    // Keep the playable legacy web game, but prefer the published real Unity WebGL test build.
     for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`]){
-    try{
-      const indexResponse=await probeFetch(`${href}index.html?ts=${stamp}`,{cache:'no-store'});
-      if(!indexResponse.ok)continue;
-      const html=await indexResponse.text();
-      let complete=false;
       try{
-        const manifestResponse=await probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`,{cache:'no-store'});
-        if(manifestResponse.ok){
-          const manifest=await manifestResponse.json();
-          const groups=manifest?.requiredGroups||{};
-          complete=manifest?.engine==='UNITY_WEB'
-            &&manifest?.gameId===id
-            &&manifest?.bundleComplete===true
-            &&['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0);
-          if(complete){
-            const probes=await Promise.all(['loader','data','framework','wasm'].map(key=>
-              probeFetch(`${href}${groups[key][0]}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
-            ));
-            complete=probes.every(response=>response?.ok===true);
+        const [indexResponse,manifestResponse]=await Promise.all([
+          probeFetch(`${href}index.html?ts=${stamp}`),
+          probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`)
+        ]);
+        if(!indexResponse.ok)continue;
+        const html=await indexResponse.text();
+        if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
+        const manifest=manifestResponse.ok?await manifestResponse.json().catch(()=>null):null;
+        let refs=[];
+        if(manifest){
+          // Unity 원본과 실행 번들의 식별자는 정확해야 한다. QA 합격 여부는 링크 활성화와 분리한다.
+          const hex64=/^[a-f0-9]{64}$/,hex40=/^[a-f0-9]{40}$/;
+          if(manifest?.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true||
+             manifest.requiredDimension!=='3D'||
+             manifest.canonicalSourceRoot!==`unity-games/${id}`||
+             !hex64.test(String(manifest.unitySourceTreeSha256||''))||
+             !hex64.test(String(manifest.buildTreeSha256||''))||
+             !hex40.test(String(manifest.sourceCommit||'')))continue;
+          const groups=manifest.requiredGroups||{};
+          if(!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
+          refs=['loader','data','framework','wasm'].flatMap(key=>groups[key]);
+        }else{
+          // 이전 Unity WebGL 빌드: index의 실제 WebGL 로더 4종을 찾아 확인한다.
+          const patterns=[
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.loader\.js)["']/g,
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.data(?:\.gz|\.br)?)["']/g,
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.framework\.js(?:\.gz|\.br)?)["']/g,
+            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.wasm(?:\.gz|\.br)?)["']/g
+          ];
+          refs=patterns.map(pattern=>{
+            const match=pattern.exec(html);
+            return match?`Build/${match[1]}`:'';
+          });
+        }
+        if(refs.length<4||!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
+        const probes=await Promise.all(refs.map(ref=>
+          probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD'}).catch(()=>null)
+        ));
+        if(!probes.every(response=>response?.ok===true))continue;
+        // 실행 파일이 실재하면 개발 테스트 링크를 표시한다. QA가 없거나 실패해도 PASS로 표시하지 않는다.
+        let verified=false;
+        if(manifest?.homepageVerified===true){
+          const files=['unity-web-build.json','upper-platform-development-readiness.json',
+            'unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'];
+          const responses=await Promise.all(files.map(file=>probeFetch(`${href}${file}?ts=${stamp}`).catch(()=>null)));
+          if(responses.every(response=>response?.ok===true)){
+            const [build,readiness,...qa]=await Promise.all(responses.map(response=>response.json()));
+            const actual3d=e=>e?.spatialGameplay?.pass===true
+              &&e.spatialGameplay.requiredDimension==='3D'
+              &&e.spatialGameplay.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
+              &&e.spatialGameplay.perspectiveCamera===true&&e.spatialGameplay.depthPass===true
+              &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
+              &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
+              &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
+              &&e.visualQa?.nativeUnityMesh?.pass===true
+              &&e.visualQa.nativeUnityMesh.measurementState==='UNITY_RUNTIME_MESH_INSPECTION';
+            const qaPassed=e=>e?.engine==='UNITY_WEB'&&e.gameId===id&&e.pass===true
+              &&e.playableBrowserTest===true&&e.boot?.pass===true&&e.input?.pass===true
+              &&e.gameplay?.pass===true&&e.coreFun?.pass===true&&e.saveRestore?.pass===true
+              &&e.mobile?.pass===true&&e.mobile?.actualBrowserTouchDispatched===true
+              &&e.mobile?.realGameTouchHandlerObserved===true&&e.performance?.pass===true
+              &&e.noCriticalRuntimeError===true&&actual3d(e);
+            const verifiedFailed=manifest.homepageVerified!==true
+              ||build?.gameId!==id||build.canonicalSourceRoot!==`unity-games/${id}`
+              ||build.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+              ||build.buildTreeSha256!==manifest.buildTreeSha256||build.sourceCommit!==manifest.sourceCommit
+              ||build.bootSmoke!=='PASS'||build.actualBrowserPlay!=='PASS'
+              ||build.independentQa!=='PASS'||build.regression!=='PASS'
+              ||build.upperPlatformGateCandidate!==true
+              ||readiness?.gameId!==id||readiness.pass!==true||readiness.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'
+              ||readiness.sourceCommit!==manifest.sourceCommit
+              ||readiness.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
+              ||readiness.buildTreeSha256!==manifest.buildTreeSha256
+              ||readiness.criteria?.graphics?.native3dVerified!==true
+              ||readiness.criteria?.qa?.pass!==true||readiness.criteria?.qa?.multiplayerPass!==true
+              ||!qa.every(qaPassed);
+            verified=!verifiedFailed;
           }
         }
+        available.set(id,{href,verified});
+        break;
       }catch{}
-      if(!complete){
-        const looksLikeUnity=/Unity Web Player|unity-container|createUnityInstance|\.loader\.js/i.test(html);
-        const groups=bundleGroupsFromUnityIndex(html);
-        if(looksLikeUnity&&['loader','data','framework','wasm'].every(key=>Boolean(groups[key]))){
-          const probes=await Promise.all(['loader','data','framework','wasm'].map(key=>
-            probeFetch(`${bundleUrl(href,groups[key])}?ts=${stamp}`,{method:'HEAD',cache:'no-store'}).catch(()=>null)
-          ));
-          complete=probes.every(response=>response?.ok===true);
-        }
-      }
-      if(complete){available.set(id,href);break;}
-    }catch{}
     }
   }));
-  return{
-    ...catalog,
-    games:catalog.games.map(game=>available.has(gameIdOf(game))
-      ?{...game,unityWebTestUrl:available.get(gameIdOf(game)),unityWebAvailable:true}
-      :{...game,unityWebTestUrl:null,unityWebAvailable:false})
-  };
+  return {...catalog,games:catalog.games.map(game=>available.has(gameIdOf(game))
+    ?{...game,unityWebTestUrl:available.get(gameIdOf(game)).href,unityWebAvailable:true,unityWebVerified:available.get(gameIdOf(game)).verified}
+    :{...game,unityWebTestUrl:null,unityWebAvailable:false,unityWebVerified:false})};
 }
 function webPublishedRows(catalog){
   return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(game=>{
-      const web=sourcesOf(game).web||{};
-      return activeLifecycle(game)&&(web.playable===true||game?.homepageWebPlayable===true)&&(web.archive===true||game?.hasWebArchive===true)&&Boolean(canonicalWebHref(game));
-    })
-    .map(game=>({...game,webPath:canonicalWebHref(game),homepageDisplayMode:'WEB_PUBLISHED'}))
+    .filter(game=>activeLifecycle(game)&&game.unityWebAvailable===true&&Boolean(game.unityWebTestUrl))
+    .map(game=>({...game,webPath:game.unityWebTestUrl,homepageDisplayMode:'WEB_PUBLISHED'}))
     .sort(catalogOrderCompare);
 }
 function verifiedRobloxDeploymentRows(catalog){
@@ -249,14 +280,36 @@ function verifiedRobloxDeploymentRows(catalog){
     .sort(catalogOrderCompare);
 }
 function mediaImageHref(asset){return asset?.src?`${asset.src}?v=${String(asset.sha256||'').slice(0,12)}`:'';}
+// 메인: 게임 이름과 저용량 원본 이미지를 맞게 표시한다.
 function mergeGame(row){
-  const displayMode=String(row?.homepageDisplayMode||'').trim();
-  const identity=identityOf(row),web=sourcesOf(row).web||{};
+  const identity=identityOf(row),id=gameIdOf(row),web=sourcesOf(row).web||{};
   const media=marketingOf(row).homepageMedia;
-  const playable=web.playable===true||row?.homepageWebPlayable===true;
-  const allowWeb=playable&&(displayEligible(row)||displayMode==='WEB_PUBLISHED'||displayMode==='ROBLOX_HISTORICAL_DEPLOYMENT');
-  const webPath=allowWeb?canonicalWebHref(row):'';
-  return {...row,id:gameIdOf(row),homepageMedia:media,name:media?.titleEn||identity.name||row?.name||gameIdOf(row),subtitle:media?.titleKo||'',webPath,image:mediaImageHref(media?.cover)||marketingOf(row).thumbnail||identity.image||row?.marketingThumbnail||row?.image||'assets/pwa-icon-512.png',description:identity.description||row?.description||'개발 중인 게임.'};
+  const webPath=row?.unityWebAvailable===true?String(row.unityWebTestUrl||''):'';
+  const canonicalThumbnail=String(marketingOf(row).thumbnail||identity.image||'').trim();
+  // 로블록스 본서버 원본 썸네일은 어떤 해상도 대체도 하지 않는다.
+  const sharedRobloxThumbnail=/^assets\/roblox-thumbnails\/[a-z0-9-]+\.(svg|png|jpe?g)$/i.test(canonicalThumbnail);
+  const small=mediaImageHref(media?.small),cover=mediaImageHref(media?.cover);
+  // 실제 존재하는 예전 타이틀 로고만 재활용한다. 없는 원본을 앱 로고로 속이지 않는다.
+  const originalTitleArt={
+    'crystal-defense':'assets/title-crystal-defense.svg',
+    'bug-defense':'assets/title-insect-defense.svg',
+    'egg-heist':'assets/title-egg-heist.svg',
+    'human-go':'assets/title-human-go.svg',
+    'island-village':'assets/title-island-village.svg',
+    'survival2':'assets/title-survival2.svg'
+  }[id]||'';
+  const generic=/^assets\/(?:pwa-icon-(?:192|512)\.png|mock\.webp|page-bg(?:-v\d+)?\.webp|card-rpg(?:-v\d+)?\.webp|portal\.webp)$/i;
+  const raw=canonicalThumbnail||String(row?.marketingThumbnail||row?.image||'').trim();
+  const actual=generic.test(raw)?'':raw;
+  const originalLogo=!sharedRobloxThumbnail&&!small&&generic.test(raw)&&Boolean(originalTitleArt);
+  const image=sharedRobloxThumbnail?canonicalThumbnail:(small||(originalLogo?originalTitleArt:actual));
+  const heroImage=sharedRobloxThumbnail?canonicalThumbnail:(cover||image);
+  const name=identity.name||row?.name||media?.titleKo||media?.titleEn||id;
+  const enTitle=String(media?.titleEn||'').trim();
+  const subtitle=enTitle&&enTitle.toLocaleLowerCase()!==String(name).toLocaleLowerCase()?enTitle:'';
+  return {...row,id,homepageMedia:media,name,subtitle,webPath,image,heroImage,
+    originalLogo,missingImage:!image,sharedRobloxThumbnail,
+    description:identity.description||row?.description||'개발 중인 게임.'};
 }
 function platformLinks(game){
   const exposure=exposureOf(gameIdOf(game));
@@ -281,8 +334,9 @@ function internalReleaseLinks(game){
   };
 }
 function hasRunnableHomepageTarget(game){
+  // 검증된 실제 실행 링크만 활성화한다. 카드 목록 필터로 사용하지 않는다.
   const links=internalReleaseLinks(game);
-  return Boolean(links.roblox||links.unity||links.unityWeb||links.web);
+  return Boolean(links.unityWeb||links.roblox||links.unity);
 }
 function hasInternalRelease(game){
   const exposure=exposureOf(gameIdOf(game));
@@ -303,7 +357,6 @@ function recentModificationRows(catalog){
   const generic=/^Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다\.$|^TARGET_PLATFORM_TECHNICAL_VALIDATION$/;
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(activeLifecycle)
-    .filter(hasRunnableHomepageTarget)
     .map(game=>{
       const work=String(latestWork(game)||'').trim();
       const updated=String(runtimeInfo(game).updatedAt||homepageOf(game).updatedAt||'').trim();
@@ -315,7 +368,7 @@ function recentModificationRows(catalog){
 }
 function platformHref(game){
   const links=platformLinks(game);
-  return links.roblox||links.unity||links.unityWeb||links.web||'';
+  return links.unityWeb||links.roblox||links.unity||'';
 }
 function installStyles(){
   document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';
@@ -331,6 +384,11 @@ function installStyles(){
 .foldGameCompletion summary{cursor:pointer;min-height:36px;display:flex;align-items:center}
 .foldGameCompletion a{display:inline-flex;min-height:36px;align-items:center;color:#1264c4}
 .foldGameCompletion ol{margin:4px 0;padding-left:20px}
+.homeGameGallery{height:100%;width:100%;position:relative}.homeGalleryTrack{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain;height:100%}.homeGalleryTrack::-webkit-scrollbar{display:none}.homeGallerySlide{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:16/9;margin:0;position:relative}.homeGallerySlide img{display:block;width:100%;height:100%;object-fit:cover}.homeGallerySlide img.homeOriginalTitleLogo{object-fit:contain;padding:9% 7%;background:#20384f}
+.homeTitlePending{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:28px 18px 44px;background:#1c2c3d;color:#eef3fb;text-align:center}
+.homeTitlePending strong{font-size:clamp(17px,2vw,23px);line-height:1.3;overflow-wrap:anywhere}
+.homeTitlePending small{color:#b7c4d0;font-size:11px}
+.homeGallerySlide figcaption{position:absolute;bottom:0;left:0;right:0;padding:18px 12px 9px;background:linear-gradient(transparent,rgba(0,0,0,.68));color:#fff;font-size:11px;pointer-events:none}.homeGalleryControls{position:absolute;right:9px;bottom:10px;z-index:2;display:flex;align-items:center;gap:5px;padding:2px 6px;background:rgba(0,0,0,.72);border-radius:24px;color:#fff;font-size:11px}.homeGalleryControls button{border:0;background:transparent;color:#fff;min-width:32px;min-height:32px;font-size:18px;cursor:pointer}.homeGalleryControls button:focus-visible{outline:2px solid #fff;outline-offset:2px}.homeGalleryControls span{min-width:30px;text-align:center;font-variant-numeric:tabular-nums}
 @media(max-width:700px){.gameShelfGrid{grid-template-columns:1fr}.homeFocusBtn{width:100%;min-height:48px}}
 @media(max-width:420px){.foldGameActions{grid-template-columns:repeat(2,minmax(0,1fr))}.foldGameBtn.platformAction{grid-column:1/-1}}
 `;
@@ -342,13 +400,13 @@ function buildFocus(catalog,status){
   const allRows=[...internalReleaseRows(catalog,status),...developmentRows(catalog,status)];
   const seen=new Set();
   const rows=allRows.filter(row=>{const id=gameIdOf(row);if(!id||seen.has(id))return false;seen.add(id);return true;});
-  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID&&hasRunnableHomepageTarget(item))||rows[0];
+  const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
   if(!row)return;
   const game=mergeGame(row),links=internalReleaseLinks(game);
-  const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
-  const actionLabel=links.roblox||links.unity?'게임 입장':links.unityWeb?'Unity Web 플레이':'웹 플레이';
+  const direct=links.unityWeb||links.roblox||links.unity||'';
+  const actionLabel=links.unityWeb?(game.unityWebVerified?'Unity Web 플레이':'Unity Web 개발 테스트'):links.roblox?'Roblox 플레이':links.unity?'Unity 앱 플레이':'게임 보기';
   hero.className='hero homeFocus';
-  hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'","%27")}')`);
+  hero.style.setProperty('--focus-bg',`url('${String(game.heroImage||'assets/page-bg-v4.webp').replaceAll("'","%27")}')`);
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
 }
 function buildCard(row){
@@ -359,11 +417,12 @@ function buildCard(row){
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'),
     platformExposure?.unityWebEnabled===true
-      ?button(links.unityWeb,'Unity Web · 개발중','Unity Web · 빌드없음','webAction unityWebAction')
+      ?button(links.unityWeb,game.unityWebVerified?'Unity Web · 개발중':'Unity Web · 개발 테스트','Unity Web · 빌드없음','webAction unityWebAction')
       :'',
-    links.web?button(links.web,'웹 플레이','웹 빌드없음','webAction webCompanionAction'):''
+    // 일반 HTML 게임 링크는 홈페이지에 표시하지 않는다.
+    ''
   ].join('');
-  const meta=platformExposureMeta(game.id)||'로블록스 / 유니티 개발 준비';
+  const meta=links.unityWeb?(game.unityWebVerified?'Unity WebGL · 3D·브라우저·모바일·저장 검증 통과':'Unity WebGL · 실행 가능한 개발 빌드 · 추가 검증 필요'):hasInternalRelease(game)?'출시 게임 · Unity Web 실행 검증 대기':'개발 중 · Unity Web 실행 검증 대기';
   const completions=(exposure?.platforms||[]).map(p=>{
     const label=p.platform==='ROBLOX'?'로블록스':p.platform==='UNITY'?'유니티':esc(p.platform);
     const history=p.completion;
@@ -376,11 +435,23 @@ function buildCard(row){
     if(!count)return `<div>${title} · 검증된 배포 기록 없음</div>`;
     return `<details><summary>${esc(title)}</summary><small>보존된 최종 검증·배포 기록 기준. 현재 수리 상태와 별개야. 최근 ${records.length}건 · 한국 시간</small><ol>${records.map(r=>`<li><a href="${esc(r.evidenceUrl)}" target="_blank" rel="noopener noreferrer">${esc(formatDate(r.completedAt))} · 증거 보기</a></li>`).join('')}</ol></details>`;
   }).join('');
-  const direct=links.roblox||links.unity||links.unityWeb||links.web||'';
+  const direct=links.unityWeb||links.roblox||links.unity||'';
   const media=game.homepageMedia;
   const video=hasInternalRelease(game)&&media?.video?.runtimeVerification?.pass===true&&/^assets\/homepage-media\/[a-z0-9-]+\.mp4$/.test(media.video.src||'')?media.video:null;
   const videoMarkup=video?`<details class="homeGameplayVideo"><summary>실제 플레이 · ${esc(video.platform==='WEB'?'웹':video.platform==='UNITY_WEB'?'Unity Web':'Unity 앱')}</summary><video controls playsinline preload="none" data-src="/${esc(video.src)}?v=${esc(video.sha256.slice(0,12))}" poster="${esc(mediaImageHref(media.small))}" aria-label="${esc(game.subtitle||game.name)} 실제 플레이"></video></details>`:'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt"><img src="${esc(mediaImageHref(media?.small)||game.image)}" alt="${esc(game.name+(game.subtitle?' · '+game.subtitle:''))}" width="480" height="270" loading="lazy" decoding="async"></div><div class="foldGameBody"><h3>${esc(game.name)}</h3>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
+  // 대표 썸네일과 실제 플레이 동영상에서 검증된 장면을 슬라이드로 묶는다.
+  const shots=Array.isArray(media?.screenshots)?media.screenshots:[];
+  const firstCaption=game.sharedRobloxThumbnail?'로블록스 동일 썸네일':game.originalLogo?'기존 게임 타이틀 로고':game.missingImage?'대표 이미지 준비 중':'게임 대표 이미지';
+  const firstArt=game.missingImage
+    ? `<div class="homeTitlePending" role="img" aria-label="${esc(game.name)} · 대표 이미지 준비 중"><strong>${esc(game.name)}</strong><small>게임별 원본 이미지 확인 중</small></div>`
+    : `<img class="${game.originalLogo?'homeOriginalTitleLogo':''}" src="${esc(game.image)}" alt="${esc(game.name)} · ${esc(firstCaption)}" width="1920" height="1080" loading="lazy" decoding="async">`;
+  const slides=[
+    `<figure class="homeGallerySlide">${firstArt}<figcaption>${esc(firstCaption)}</figcaption></figure>`,
+    ...shots.map((shot,index)=>`<figure class="homeGallerySlide"><img src="/${esc(shot.src)}?v=${esc(shot.sha256.slice(0,12))}" alt="${esc(game.name)} · 실제 플레이 화면 ${index+1}" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>${shot.platform==='UNITY_WEB'?'Unity Web 실제 플레이':'웹게임 실제 플레이'} · ${index+1}</figcaption></figure>`)
+  ];
+  const controls=shots.length?`<div class="homeGalleryControls"><button type="button" data-gallery-step="-1" aria-label="이전 게임 사진">‹</button><span data-gallery-count>1/${slides.length}</span><button type="button" data-gallery-step="1" aria-label="다음 게임 사진">›</button></div>`:'';
+  const gallery=`<div class="homeGameGallery" data-gallery-game="${esc(game.id)}"><div class="homeGalleryTrack" role="region" tabindex="0" aria-label="${esc(game.name)} 게임 사진 슬라이드">${slides.join('')}</div>${controls}</div>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-direct-play="${esc(direct)}"><div class="foldGameArt">${gallery}</div><div class="foldGameBody"><h3>${esc(game.name)}</h3>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${videoMarkup}<div class="foldGameMeta">${esc(meta)}</div><div class="foldGameCompletion">${completions}</div><div class="foldGameActions">${actions}</div></div></article>`;
 }
 function buildShelf(hub,id,title,description,rows){
   document.getElementById(id)?.remove();
@@ -447,8 +518,29 @@ function bindDirectGameLaunch(){
     if(details.open&&!video.src){video.src=video.dataset.src;video.load();}
     if(!details.open){video.pause();refresh();}
   },true);
+  document.addEventListener('scroll',event=>{
+    const track=event.target?.closest?.('.homeGalleryTrack');
+    if(!track)return;
+    const total=track.querySelectorAll('.homeGallerySlide').length;
+    const index=Math.max(0,Math.min(total-1,Math.round(track.scrollLeft/Math.max(1,track.clientWidth))));
+    const counter=track.parentElement?.querySelector('[data-gallery-count]');
+    if(counter)counter.textContent=(index+1)+'/'+total;
+  },true);
   document.addEventListener('click',event=>{
-    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary,video');
+    const control=event.target.closest('button[data-gallery-step]');
+    if(control){
+      const gallery=control.closest('.homeGameGallery'),track=gallery?.querySelector('.homeGalleryTrack');
+      if(track){
+        const width=Math.max(1,track.clientWidth),total=track.querySelectorAll('.homeGallerySlide').length;
+        const index=Math.round(track.scrollLeft/width);
+        const target=Math.max(0,Math.min(total-1,index+Number(control.dataset.galleryStep||0)));
+        track.scrollTo({left:target*width,behavior:'smooth'});
+        const count=gallery.querySelector('[data-gallery-count]');
+        if(count)count.textContent=(target+1)+'/'+total;
+      }
+      return;
+    }
+    const interactive=event.target.closest('a,button,input,select,textarea,label,details,summary,video,.homeGalleryTrack');
     if(interactive)return;
     const card=event.target.closest('.foldGameCard,.gameCard');
     if(!card)return;
@@ -489,9 +581,10 @@ async function refresh(){
       buildRecentUpdates(currentCatalog);
       lastSignature=sig;
     };
-    renderCatalog(catalog);
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
+    // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
+    if(!lastSignature)renderCatalog(catalog);
     const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
     renderCatalog(boundCatalog);
   }finally{refreshInFlight=false;}

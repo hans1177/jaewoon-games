@@ -90,31 +90,28 @@ test('system AI edits only assigned system file and leaves completion for superv
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
-test('system AI may edit explicitly assigned game source only as an isolated reviewed candidate',async()=>{
+test('system AI rejects assigned game source edits and leaves the original intact',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
     write('web-games/demo/index.html','x');
-    write('task.json',JSON.stringify({id:'game-dev',status:'running',goal:'implement assigned gameplay change',responsibleFiles:['web-games/demo/index.html'],acceptanceCriteria:['assigned game source changes']}));
-    write('response.json',JSON.stringify({summary:'update assigned game source',edits:[{path:'web-games/demo/index.html',find:'x',replace:'y'}],newFiles:[],recommendedTests:['game-specific QA'],risks:[]}));
-    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
-    assert.equal(fs.readFileSync('web-games/demo/index.html','utf8'),'y');
-    assert.equal(result.gameSourceWrite,true);
-    assert.equal(result.gameSourceWriteMode,'ISOLATED_ASSIGNED_CANDIDATE_ONLY');
-    assert.equal(result.workerSelfAcceptance,false);
-    assert.equal(result.supervisorReviewRequired,true);
-    assert.equal(result.learningCandidate,true);
-    assert.equal(result.learningRoute,'EXISTING_VIBE_LEARNING_MOTOR');
+    write('task.json',JSON.stringify({id:'game-dev',status:'running',goal:'implement assigned gameplay change',responsibleFiles:['web-games/demo/index.html']}));
+    write('response.json',JSON.stringify({summary:'unapproved game source change',edits:[{path:'web-games/demo/index.html',find:'x',replace:'y'}]}));
+    await assert.rejects(runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'}),/SYSTEM_AI_GAME_SOURCE_WRITE_FORBIDDEN/);
+    assert.equal(fs.readFileSync('web-games/demo/index.html','utf8'),'x');
+    assert.equal(fs.existsSync('result.json'),false);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
-test('system AI still refuses unassigned game source edits',async()=>{
+test('system AI rejects unassigned game source edits at preflight, including all supported game roots',async()=>{
   const cwd=root(),prev=process.cwd();process.chdir(cwd);
   try{
-    write('web-games/demo/index.html','x');
-    write('web-games/other/index.html','a');
-    write('task.json',JSON.stringify({id:'scoped-game-dev',status:'running',goal:'only demo',responsibleFiles:['web-games/demo/index.html']}));
-    write('response.json',JSON.stringify({summary:'bad scope expansion',edits:[{path:'web-games/other/index.html',find:'a',replace:'b'}],newFiles:[],recommendedTests:[],risks:[]}));
-    await assert.rejects(runSystemAiWorker({taskFile:'task.json',responseFile:'response.json'}),/SYSTEM_AI_UNASSIGNED_FILE/);
+    for(const prefix of ['web-games','roblox-games','unity-games','unreal-games','godot-games']){
+      const target=`${prefix}/demo/main.txt`;
+      write(target,'protected');
+      write('task.json',JSON.stringify({id:'game-dev',status:'running',goal:'game source repair',responsibleFiles:[target]}));
+      await assert.rejects(runSystemAiWorker({taskFile:'task.json',responseFile:'response.json'}),/SYSTEM_AI_GAME_SOURCE_WRITE_FORBIDDEN/);
+      assert.equal(fs.readFileSync(target,'utf8'),'protected');
+    }
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
 
@@ -486,4 +483,41 @@ test('hard bottleneck repair critic may revise the proposal before any file edit
     assert.equal(result.criticRawStored,false);
     assert.ok(result.criticDecisionSha256);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('System AI priority accounts for downstream dependency chain',()=>{
+  const at=Date.parse('2026-10-11T00:10:00Z');
+  const tasks=[
+    {id:'root',status:'queued',priority:'normal',responsibleFiles:['tools/root.mjs'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'child',status:'queued',priority:'normal',dependencies:['root'],responsibleFiles:['tools/child.mjs'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'grandchild',status:'queued',priority:'normal',dependencies:['child'],responsibleFiles:['tools/grandchild.mjs'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'peer',status:'queued',priority:'normal',responsibleFiles:['tools/peer.mjs'],createdAt:'2026-10-11T00:00:00Z'}
+  ];
+  const queue={tasks},root=systemAiImpactProfile(tasks[0],queue,{at});
+  assert.equal(root.criticalPathDepth,2);
+  assert.equal(root.transitiveBlockedTaskCount,2);
+  assert.deepEqual(new Set(root.blockedTaskIds),new Set(['child','grandchild']));
+  assert.ok(root.score>systemAiImpactProfile(tasks[3],queue,{at}).score);
+  assert.deepEqual(reserveSystemAiBatch(queue,{max:1,reservationId:'critical-path',at}).reserved.map(t=>t.id),['root']);
+});
+
+test('critical-path score uses longest converging DAG chain and stays finite on cyclic evidence',()=>{
+  const at=Date.parse('2026-10-11T00:10:00Z');
+  const tasks=[
+    {id:'root',status:'queued',dependencies:[],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'sink',status:'queued',dependencies:['root','step2'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'step1',status:'queued',dependencies:['root'],createdAt:'2026-10-11T00:00:00Z'},
+    {id:'step2',status:'queued',dependencies:['step1'],createdAt:'2026-10-11T00:00:00Z'}
+  ];
+  const result=systemAiImpactProfile(tasks[0],{tasks},{at});
+  assert.equal(result.criticalPathDepth,3);
+  assert.equal(result.transitiveBlockedTaskCount,3);
+  const cyclic=[
+    {id:'root',status:'queued',dependencies:['second']},
+    {id:'first',status:'queued',dependencies:['root','second']},
+    {id:'second',status:'queued',dependencies:['first']}
+  ];
+  const cycle=systemAiImpactProfile(cyclic[0],{tasks:cyclic},{at});
+  assert.ok(Number.isFinite(cycle.score));
+  assert.ok(cycle.criticalPathDepth>=1&&cycle.criticalPathDepth<=cyclic.length);
 });

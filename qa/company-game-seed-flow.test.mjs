@@ -250,7 +250,9 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
-  assert.match(seedWorkflow,/GAME_SEED_STALE_DESIGN_RUN_POLICY=FINISH_PINNED_ENGINE/);
+  assert.match(seedWorkflow,/GAME_SEED_STALE_DESIGN_RUN_POLICY=KEEP_PINNED_ENGINE_BUT_DO_NOT_BLOCK_LATEST/);
+  assert.match(seedWorkflow,/git worktree add --detach/);
+  assert.doesNotMatch(seedWorkflow,/git checkout -B game-seed-persist/);
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_RUNNING_BATCH_CANCELLED=NO/);
   assert.doesNotMatch(seedWorkflow,/actions\/runs\/\$run_id\/cancel/);
 
@@ -284,10 +286,10 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(seedDesignWorkflow,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
   assert.match(seedDesignWorkflow,/WEB_DEVELOPMENT_START=NO/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
-  assert.match(seedDesignWorkflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '2'/);
-  assert.match(seedDesignWorkflow,/COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'/);
+  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '2'/);
+  assert.doesNotMatch(seedDesignWorkflow,/COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS: '300000'/);
   assert.doesNotMatch(seedDesignWorkflow,/secrets\.GEMINI_API_KEY/);
-  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_LOCAL_OLLAMA/);
+  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=VIBE_NATIVE_FUNCTION/);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL:/);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_GEMINI_FALLBACK_MODELS:/);
   assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
@@ -337,19 +339,19 @@ test('autonomous runtime pins the engine and designs independent games within ce
   assert.match(design,/fiveDepartmentLeadReviewCompleted:false/);
   assert.match(design,/meetingRequired:false/);
   assert.match(design,/rebuttalRounds:0/);
-  assert.match(design,/localDesignerCallTimeoutMs/);
+  assert.doesNotMatch(design,/localDesignerCallTimeoutMs/);
   assert.doesNotMatch(design,/geminiUnavailableModels/);
   assert.doesNotMatch(design,/function quarantineGeminiModel/);
-  assert.match(design,/localAuthoringSplits/);
+  assert.match(design,/designCheckpoint\.slicePartialResults/);
   assert.match(design,/DESIGN_AI_REVIEW_LANES=NONE/);
-  assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'VIBE_LOCAL_OLLAMA'\}/);
+  assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'VIBE_NATIVE_FUNCTION'\}/);
   const checkpointInitialization=design.indexOf('let designCheckpoint=readJson(checkpointPath,null);');
-  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_OLLAMA'}\`);");
+  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'VIBE_NATIVE_FUNCTION'}\`);");
   assert.ok(checkpointInitialization>=0&&checkpointProviderLog>checkpointInitialization,'AI provider logging happens only after checkpoint initialization');
   assert.doesNotMatch(design,/generativelanguage\.googleapis\.com/);
-  assert.match(design,/format:schema\|\|'json'/);
-  assert.match(design,/VIBE_LOCAL_OLLAMA/);
-  assert.match(design,/OLLAMA_DESIGN_TIMEOUT/);
+  assert.match(design,/function computeVibeNativeDesign\(\)/);
+  assert.doesNotMatch(design,/VIBE_LOCAL_OLLAMA/);
+  assert.doesNotMatch(design,/OLLAMA_DESIGN_TIMEOUT/);
   assert.equal(directive.ai.providerMode,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');
   assert.equal(directive.ai.providerSecret,'GEMINI_API_KEY');
   assert.equal(directive.ai.openAiProviderAllowed,false);
@@ -374,7 +376,7 @@ test('DESIGN_ONLY uses one designer plus deterministic department evidence witho
   assert.match(design,/meetingRequired:false/);
   assert.match(design,/rebuttalRounds:0/);
   assert.match(design,/marketMetricAloneUsedForDiscard:false/);
-  assert.match(design,/vibe2Used:false/);
+  assert.match(design,/vibe2Used:true/);
   assert.doesNotMatch(design,/cross_department_meeting|lead_rebuttals|department_representatives/);
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
@@ -420,7 +422,7 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
 
-test('design authoring uses only Vibe internal models without external secrets or department review lanes',()=>{
+test('design authoring uses native Vibe functions without model transport or department review lanes',()=>{
   const roles=['planning','graphics','development','qa','audio'];
   assert.deepEqual(roles.map(role=>directive.ai.departmentLeadModels[role]),Array(5).fill('llama3.2:1b'));
   assert.deepEqual(directive.ai.gameDesigner.providerPriority,['VIBE_LOCAL_OLLAMA']);
@@ -429,7 +431,7 @@ test('design authoring uses only Vibe internal models without external secrets o
   assert.deepEqual(directive.ai.gameDesigner.geminiFallbackModels,[]);
   assert.doesNotMatch(seedDesignWorkflow,/COMPANY_EXTERNAL_AI_ENABLED:|COMPANY_GEMINI_|secrets\.GEMINI_API_KEY/);
   assert.doesNotMatch(design,/externalAiEnabled|callExternalDesignerModel|generativelanguage|process\.env\.GEMINI_API_KEY/);
-  assert.match(design,/GAME_DESIGNER_PROVIDER=VIBE_LOCAL_OLLAMA/);
+  assert.match(design,/GAME_DESIGNER_PROVIDER=VIBE_NATIVE_FUNCTION/);
   assert.match(seedDesignWorkflow,/DESIGN_EXTERNAL_AI_ALLOWED=NO/);
   assert.match(seedDesignWorkflow,/DESIGN_AI_REVIEW_LANES=NONE/);
 });

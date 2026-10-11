@@ -134,7 +134,7 @@ test('repeat development is fixed at 128 while physical provider capacity and co
   assert.equal(architectureRegressionPreflight.contractIdentity,'EXACT_RESERVE_MAIN_SHA');
   assert.equal(architectureRegressionPreflight.failureAction,'BLOCK_RESERVATION_BEFORE_GAME_WORKERS');
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=EXACT_SHA_CORE_QA_REUSE/);
-  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_SAME_FAN_IN_SUITE/);
+  assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION_SOURCE=LOCAL_ACTIVE_GAME_SOURCE_AND_RESERVATION_REGRESSION/);
   assert.match(core,/VIBE2_RESERVE_CONTRACT_REGRESSION=PASS/);
 });
 
@@ -437,6 +437,26 @@ test('stale main push wake rebases to latest main before expensive reserve work 
 });
 
 
+test('24H asset planning keeps source integrity QA without serializing full product QA',()=>{
+  const start=runner.indexOf('      - name: Plan from latest main and persist control queue');
+  const end=runner.indexOf('      - name: Read queue continuation state',start);
+  assert.ok(start>=0&&end>start);
+  const plan=runner.slice(start,end);
+  const scoped=plan.split('\n').find(line=>line.includes('--test-name-pattern=')&&line.includes('qa/vibe2-native-asset-production.test.mjs'));
+  assert.ok(scoped,'the canonical planner must keep asset source checks');
+  const pattern=scoped.match(/--test-name-pattern='([^']+)'/)?.[1];
+  assert.ok(pattern,'bounded native asset source pattern required');
+  const selected=new RegExp(pattern);
+  const cases=[...fs.readFileSync('qa/vibe2-native-asset-production.test.mjs','utf8').matchAll(/^test\('([^']+)'/gm)].map(row=>row[1]);
+  assert.ok(cases.filter(name=>selected.test(name)).length>=10,'retain real asset, rig and material checks');
+  assert.ok(selected.test('licensed FBX motion enters the unified internal asset library without provider-specific routing'));
+  assert.ok(selected.test('GLB production inspection measures transformed geometry and ground pivot for static props'));
+  assert.equal(selected.test('fantasy-survival development-confirmed Unity can receive P0 weather work only through owner-authorized company status'),false);
+  assert.doesNotMatch(plan,/\bnode --test qa\/vibe2-native-asset-production\.test\.mjs/);
+  assert.match(coreQa,/node --test qa\/vibe2-native-asset-production\.test\.mjs/,'independent full native QA remains mandatory');
+  assert.match(plan,/VIBE2_24H_NATIVE_ASSET_PREFLIGHT=SCOPED_SOURCE_INTEGRITY_FULL_QA_REMAINS_IN_CORE/);
+  assert.match(plan,/node tools\/company-constitution-enforcer\.mjs --phase=24h-planner/);
+});
 test('24h runner keeps asset lane independent from generic repository runner pressure',()=>{
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentRunnerCapacityIndependentFromGamePrimary,true);
   assert.equal(roadmap.assetProductionParallelContract?.parallelism?.assetDevelopmentPhysicalRunnerPoolSeparated,true);
@@ -532,4 +552,17 @@ test('24H pre-plan production dispatch observes runner pressure without suppress
   assert.match(step,/VIBE2_PREPLAN_ASSET_DEVELOPMENT_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=DISPATCHED/);
   assert.match(step,/VIBE2_ASSET_PRIORITY_BURST_MAX/);
+});
+
+
+test('existing Vibe2 GAME_PRIMARY executor uses all 128 fixed repeat-development slots',()=>{
+  const fixed=roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots;
+  assert.equal(fixed,128);
+  assert.ok(runner.includes("VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'"));
+  assert.ok(runner.includes('VIBE2_GAME_PRIMARY_REFILL_TARGET=128'));
+  assert.ok(runner.includes('"execution_lane":"game-primary","lane_max":"128"'));
+  assert.match(runner,/execution_lane: game-primary\s*\n\s*lane_max: '128'/);
+  assert.ok(core.includes("== 'game-primary' && '128'"));
+  assert.ok(!core.includes("== 'game-primary' && '64'"));
+  assert.ok(runner.includes("VIBE2_ASSET_DEVELOPMENT_MAX: '63'"));
 });

@@ -539,6 +539,7 @@ export function extractDesignContext(record={}){
   })).filter(x=>x.name||x.purpose||x.playerChoice).slice(0,12);
   return Object.freeze({
     identity:clean(d?.identity),
+    creativeGrammar:d?.creativeGrammar&&typeof d.creativeGrammar==='object'?d.creativeGrammar:{},
     playerFantasy:clean(d?.playerFantasy),
     genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
@@ -696,6 +697,12 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
         if(Array.isArray(rows))groups.push(['NARRATIVE_'+name.toUpperCase(),rows]);
       }
     }
+    if(design.creativeGrammar?.a)groups.push(['CREATIVE_A_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.a.system+' × '+design.creativeGrammar.a.material,trigger:design.creativeGrammar.a.system,stateChange:design.creativeGrammar.a.stateChange}]]);
+    if(design.creativeGrammar?.b)groups.push(['CREATIVE_B_SYSTEM_AND_SOURCE',[{name:design.creativeGrammar.b.system+' × '+design.creativeGrammar.b.material,trigger:design.creativeGrammar.b.system,stateChange:design.creativeGrammar.b.stateChange}]]);
+    if(Array.isArray(design.creativeGrammar?.cThemes))groups.push(['CREATIVE_C_THEME_FUSION',design.creativeGrammar.cThemes.map(row=>({name:row.name,trigger:row.kind,stateChange:row.gameplayEffect}))]);
+    if(Array.isArray(design.creativeGrammar?.cGenres))groups.push(['CREATIVE_C_PRIMARY_SECONDARY_GENRE',design.creativeGrammar.cGenres.map(row=>({name:row.role+' '+row.name,trigger:row.role,stateChange:row.gameplayEffect}))]);
+    if(design.creativeGrammar?.cGenreInterlock)groups.push(['CREATIVE_C_GENRE_INTERLOCK',[{name:'메인·보조 장르 플레이 인과',trigger:'두 장르 동시 발동',stateChange:design.creativeGrammar.cGenreInterlock}]]);
+    if(Array.isArray(design.creativeGrammar?.delveDiscoveries))groups.push(['CREATIVE_AT_DELVE',design.creativeGrammar.delveDiscoveries.map(row=>({name:row.discovery,trigger:row.clue,stateChange:row.newChoice}))]);
     groups.push(['IMPLEMENTATION_TRACE',traces]);
     for(const [family,rows] of groups)if(Array.isArray(rows))rows.forEach((row,index)=>add(family,index,row));
   }
@@ -727,7 +734,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
   });
 }
 
-// 단일 디자이너 원본의 MAIN/A/B/c/@를 실제 플랫폼 소스에 연결한다.
+// 단일 디자이너 원본의 MAIN/A/B/C/@를 실제 플랫폼 소스에 연결한다. 과거 c는 존재할 때만 보존한다.
 // 파일/함수 발견은 '구현 완료' 증거가 아니며 BUILD_UP/독립 런타임 QA의 책임을 바꾸지 않는다.
 export function buildDesignToPlatformCodingTrace({
   gameId='',design={},platform='COMMON',sourceRoot='',sourceObservation={},
@@ -751,7 +758,21 @@ export function buildDesignToPlatformCodingTrace({
     'NOT_SELECTED_NATIVE_PLATFORM';
   const designRoles=Array.isArray(design.signatureSystems)?design.signatureSystems:[];
   const connections=Array.isArray(design.systemInterconnections)?design.systemInterconnections:[];
-  const roles=['MAIN','A','B','c','DELVE'];
+  // V5의 C는 두 소재·두 장르의 인과 계약이다. 원본에 없는 예전 c 기계축을 요구하지 않는다.
+  const creativeGrammar=design.creativeGrammar&&typeof design.creativeGrammar==='object'&&!Array.isArray(design.creativeGrammar)?design.creativeGrammar:null;
+  const hasCreativeGrammar=Boolean(creativeGrammar&&Object.keys(creativeGrammar).length);
+  const cThemes=Array.isArray(creativeGrammar?.cThemes)?creativeGrammar.cThemes:[];
+  const cGenres=Array.isArray(creativeGrammar?.cGenres)?creativeGrammar.cGenres:[];
+  const sourcedAB=['a','b'].every(key=>clean(creativeGrammar?.[key]?.system)&&clean(creativeGrammar?.[key]?.material)
+    &&clean(creativeGrammar?.[key]?.materialDomain)&&clean(creativeGrammar?.[key]?.stateChange));
+  const creativeCReady=hasCreativeGrammar&&sourcedAB&&clean(creativeGrammar?.abCausality)
+    &&cThemes.length===2&&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cGenres.length===2&&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(creativeGrammar?.cGenreInterlock)&&clean(creativeGrammar?.cWorldAndGameplayEffect);
+  const includeLegacyC=!hasCreativeGrammar||designRoles.some(row=>row?.grammarRole==='c');
+  const roles=['MAIN','A','B',...(includeLegacyC?['c']:[]),'DELVE'];
   const roleByName=new Map(roles.map(role=>[role,designRoles.filter(row=>row?.grammarRole===role)]));
   const mode=clean(design.multiplayerMode).toUpperCase();
   const modeReady=['COOP','COMPETITIVE','HYBRID'].includes(mode);
@@ -779,14 +800,19 @@ export function buildDesignToPlatformCodingTrace({
     ...responsibleFiles
   ].map(safeSourcePath).filter(Boolean));
   // 정적 함수/행동 증거는 최소 소스 후보만 의미한다. 코멘트·태그·설정 파일만으로는 구현을 인정하지 않는다.
+  // 임포트/주석/문구의 상태 키는 실행 증거가 아니다. 기존 소스 파일 한 번만 읽어 추적에 재사용한다.
+  const nativeCodeByFile=new Map();
   const codeSignalFiles=observedFiles.filter(file=>{
     try{
       const original=fs.readFileSync(path.resolve(rootReal,file),'utf8');
-      const source=original.split('\n').map(line=>{
-        const comment=file.endsWith('.cs')?'//':'--';
-        const at=line.indexOf(comment);
-        return at<0?line:line.slice(0,at);
-      }).join('\n');
+      const withoutStrings=original.replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,' ');
+      const source=withoutStrings.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/--\[\[[\s\S]*?\]\]/g,' ')
+        .split('\n').map(line=>{
+          const comment=file.endsWith('.cs')?'//':'--';
+          const at=line.indexOf(comment);
+          return at<0?line:line.slice(0,at);
+        }).join('\n');
+      nativeCodeByFile.set(file,source);
       if(file.endsWith('.cs')){
         return /\b(?:void|Task|IEnumerator|bool|int|float|string|GameObject|Coroutine)\s+\w+\s*\(/.test(source);
       }
@@ -815,18 +841,44 @@ export function buildDesignToPlatformCodingTrace({
       .map(file=>({file,score:priority(file,role)}))
       .sort((a,b)=>b.score-a.score||a.file.localeCompare(b.file))
       .slice(0,3).map(row=>row.file);
-    const inputKeys=uniq(system.stateInputs||[]);
-    const outputKeys=uniq(system.stateOutputs||[]);
+    const inputKeys=uniq(rows.flatMap(row=>row?.stateInputs||[]));
+    const outputKeys=uniq(rows.flatMap(row=>row?.stateOutputs||[]));
     const id=clean(system.id);
     const roleIds=new Set(rows.map(row=>clean(row.id)).filter(Boolean));
     const connected=connections.filter(edge=>roleIds.has(clean(edge?.fromId))||roleIds.has(clean(edge?.toId))).map(edge=>({
       fromId:clean(edge.fromId),toId:clean(edge.toId),stateKeys:uniq(edge.stateKeys||[])
     })).slice(0,12);
+    // 소스의 식별자 참조/대입만 후보로 추적한다. 정적 발견은 실제 규칙·밸런스·런타임 검증이 아니다.
+    const executableOwnerFiles=candidates.filter(file=>codeSignalFiles.includes(file));
+    const ownerProgram=executableOwnerFiles.map(file=>nativeCodeByFile.get(file)||'').join('\n');
+    const stateIdentifier=key=>/^[A-Za-z_$][\w$]*$/.test(key);
+    const stateReferenced=key=>stateIdentifier(key)
+      &&new RegExp('\\b'+key+'\\b').test(ownerProgram);
+    const stateWritten=key=>stateIdentifier(key)
+      &&new RegExp('\\b'+key+'\\s*(?:\\+\\+|--|[+*\\/%-]?=(?!=))').test(ownerProgram);
+    const foundInputs=inputKeys.filter(stateReferenced);
+    const foundOutputs=outputKeys.filter(stateWritten);
+    const missingInputs=inputKeys.filter(key=>!foundInputs.includes(key));
+    const missingOutputs=outputKeys.filter(key=>!foundOutputs.includes(key));
+    const nativeStateMapping=Object.freeze({
+      state:!rows.length||!inputKeys.length||!outputKeys.length?'DESIGN_STATE_KEYS_INCOMPLETE'
+        :!executableOwnerFiles.length?'EXECUTABLE_SOURCE_REQUIRED'
+          :missingInputs.length||missingOutputs.length?'SOURCE_STATE_KEYS_NOT_MAPPED'
+            :'STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED',
+      matchedInputKeys:Object.freeze(foundInputs),
+      matchedWrittenOutputKeys:Object.freeze(foundOutputs),
+      missingInputKeys:Object.freeze(missingInputs),
+      missingWrittenOutputKeys:Object.freeze(missingOutputs),
+      inspectedExecutableFiles:Object.freeze(executableOwnerFiles),
+      exactRuntimeStateTransitionVerified:false,
+      rule:'IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS'
+    });
     return Object.freeze({
       role:role==='DELVE'?'@':role,grammarRole:role,systemId:id||null,
       systemIds:[...roleIds],names:rows.map(row=>clean(row.name)).filter(Boolean),
       name:clean(system.name)||null,
       stateInputs:inputKeys,stateOutputs:outputKeys,connections:connected,
+      nativeStateMapping,
       suggestedExistingOwnerFiles:candidates,
       inspectedSymbols:symbols.filter(row=>candidates.includes(row.file)).slice(0,5),
       designStatus:everySystemAuthored&&(['MAIN','A','B'].includes(role)?rows.length===1:rows.length>=1)?'AUTHORED':'DESIGN_REPAIR_REQUIRED',
@@ -837,9 +889,81 @@ export function buildDesignToPlatformCodingTrace({
       evidenceNeeded:'EXACT_RESPONSIBLE_FUNCTION_AND_STATE_CHANGE + ACTUAL_PLATFORM_ACTION_RESULT_QA'
     });
   });
+  // 연결된 두 설계 시스템은 동일한 상태 키의 생산/소비 계약을 공유해야 한다.
+  const systemById=new Map(designRoles.filter(row=>clean(row?.id)).map(row=>[clean(row.id),row]));
+  const edgeStateMismatches=connections.flatMap(edge=>{
+    const from=systemById.get(clean(edge?.fromId)),to=systemById.get(clean(edge?.toId));
+    if(!from||!to)return[];
+    const keys=uniq(edge?.stateKeys||[]);
+    const mismatched=keys.filter(key=>!uniq(from.stateOutputs||[]).includes(key)||!uniq(to.stateInputs||[]).includes(key));
+    return mismatched.length?[Object.freeze({
+      fromId:clean(edge.fromId),toId:clean(edge.toId),
+      mismatchedStateKeys:Object.freeze(mismatched),
+      cause:'FROM_OUTPUT_AND_TO_INPUT_MUST_SHARE_DECLARED_STATE_KEY'
+    })]:[];
+  });
   const authoredRolesComplete=roles.every(role=>['MAIN','A','B'].includes(role)?(roleByName.get(role)||[]).length===1:(roleByName.get(role)||[]).length>=1)
-    &&bindings.every(row=>row.designStatus==='AUTHORED');
+    &&bindings.every(row=>row.designStatus==='AUTHORED')
+    &&(!hasCreativeGrammar||creativeCReady);
   const mandatory=multiplayerRequired===true;
+  // Unity Web의 같은 게임 C# 원본을 Roblox 코딩에 읽기 전용으로 인계한다.
+  // 공통 설계 원본을 벗어나 소스 파일을 복제하거나 Unity 실행 결과를 Roblox 통과로 승계하지 않는다.
+  const unityWebSourceSync=selected==='ROBLOX'?(()=>{
+    const scriptsRoot=`${roots.UNITY_WEB}/Assets/Scripts`;
+    const inspected=inspectGameSource({repoRoot:rootReal,sourceRoot:scriptsRoot});
+    const candidates=(inspected?.topFiles||[]).filter(row=>clean(row?.file).startsWith(scriptsRoot+'/')
+      &&clean(row?.file).toLowerCase().endsWith('.cs'));
+    // 일반 WebGL 기술 틀만 존재하면 Roblox의 게임 규칙 원본이라고 주장하지 않는다.
+    // 다른 소스 워커와 동일한 범용 틀 서명을 검사하며 권한은 기존 디자인과 Roblox 원본에 둔다.
+    let genericFloorCount=0;
+    const gameplaySources=candidates.filter(row=>{
+      try{
+        const full=path.resolve(rootReal,posix(row.file));
+        const original=fs.realpathSync(full);
+        const ownerRoot=fs.realpathSync(path.resolve(rootReal,scriptsRoot));
+        if(!original.startsWith(ownerRoot+path.sep)||!fs.statSync(original).isFile()
+          ||fs.statSync(original).size>1024*1024)return false;
+        const text=fs.readFileSync(original,'utf8');
+        const generic=/\bclass\s+UnityWebFloorGame\b/.test(text)
+          &&/\bprivate\s+int\s+progress\s*;/.test(text)
+          &&/\bprivate\s+void\s+PerformAction\s*\(\s*bool\s+mobile\s*\)/.test(text)
+          &&/\bconst\s+string\s+CoreLoop\s*=/.test(text);
+        if(generic)genericFloorCount+=1;
+        return !generic;
+      }catch{return false;}
+    });
+    const acceptedFiles=new Set(gameplaySources.map(row=>posix(row.file)));
+    const anchors=(inspected?.sourceAnchors||[]).filter(row=>acceptedFiles.has(posix(row?.file))
+      &&['METHOD','FUNCTION'].includes(row?.kind))
+      .slice(0,16).map(row=>Object.freeze({
+        file:posix(row.file),line:Number(row.line)||0,symbol:clean(row.symbol),
+        signature:clean(row.context).slice(0,180)
+      }));
+    const available=gameplaySources.length>0;
+    const genericOnly=!available&&genericFloorCount>0&&genericFloorCount===candidates.length;
+    return Object.freeze({
+      version:1,kind:'UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC',
+      canonicalGameId:id,canonicalDesignFingerprint:sha(JSON.stringify(design)),
+      unityWebProjectRoot:roots.UNITY_WEB,
+      unityWebBuildOutputRoot:`web-games/${id}`,
+      unityWebSourceAvailable:available,
+      unityWebScriptsFingerprint:available?clean(inspected.sourceTreeFingerprint):null,
+      unityWebScriptCount:available?gameplaySources.length:0,
+      sourceFiles:Object.freeze(available?gameplaySources.slice(0,8).map(row=>posix(row.file)):[]),
+      sourceMethods:Object.freeze(available?anchors:[]),
+      referenceStatus:available?'SOURCE_READ_ONLY_UNVERIFIED':
+        genericOnly?'GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY':'SOURCE_NOT_AVAILABLE',
+      verificationTransferred:false,sourceImplementationPassed:false,robloxRuntimeVerified:false,
+      ruleOwner:'COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT',
+      codeConversion:'REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS',
+      optimizationTarget:'ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE',
+      protectedState:'SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY',
+      sourceReferenceOnly:true,directCsCopyForbidden:true,shadowPipelineForbidden:true,
+      nextAction:available
+        ?'COMPARE_UNITY_WEB_CURRENT_SOURCE_METHODS_WITH_SHARED_DESIGN_AND_ROBLOX_OWNER_CODE_THEN_NATIVE_IMPLEMENT_AND_INDEPENDENT_QA'
+        :'CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE'
+    });
+  })():null;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
   const spatialReady=clean(unityDepth.dimension)==='3D'
     &&['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence']
@@ -856,21 +980,220 @@ export function buildDesignToPlatformCodingTrace({
   }));
   const observedCode=selectedRoot&&observedFiles.length>0;
   const gapReasons=[
-    ...(!authoredRolesComplete?['DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(!authoredRolesComplete?[hasCreativeGrammar?'DESIGN_MAIN_A_B_C_AT_INCOMPLETE':'DESIGN_MAIN_A_B_c_AT_INCOMPLETE']:[]),
+    ...(hasCreativeGrammar&&!creativeCReady?['DESIGN_CREATIVE_C_CAUSAL_LINK_MISSING']:[]),
     ...(mandatory&&!modeReady?['MULTIPLAYER_DESIGN_MODE_MISSING']:[]),
     ...(selected==='UNITY_WEB'&&!spatialReady?['UNITY_WEB_DESIGN_SPATIAL_DEPTH_MISSING']:[]),
     ...(!selectedRoot?['PLATFORM_SOURCE_NOT_SELECTED']:!observedCode?['NATIVE_GAME_CODE_OWNER_MISSING']:[]),
     ...(observedCode&&!codeSignalFiles.length?['EXECUTABLE_GAMEPLAY_SOURCE_NOT_FOUND']:[]),
+    ...bindings.filter(row=>row.designStatus==='AUTHORED'&&row.nativeStateMapping.state==='SOURCE_STATE_KEYS_NOT_MAPPED')
+      .map(row=>'DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:'+row.role),
+    ...edgeStateMismatches.map(row=>'DESIGN_EDGE_STATE_KEYS_INCONSISTENT:'+row.fromId+'->'+row.toId),
     ...bindings.filter(row=>row.designStatus!=='AUTHORED').map(row=>'DESIGN_ROLE_NOT_AUTHORED:'+row.role),
     ...bindings.filter(row=>row.codingStatus==='SOURCE_OWNER_MISSING').map(row=>'GAME_CODE_OWNER_MISSING:'+row.role)
   ];
+  // 메인: Unity Web에만 적용하는 외부 공학 알고리즘 원리(의존성 위상 정렬 + 가중 탐욕 집합 덮개).
+  // 설계 역할과 실제 C# 책임 경로 후보를 정렬하며, 이 정적 결과는 구현/런타임 PASS가 아니다.
+  const unityWebDevelopmentAlgorithm=selected==='UNITY_WEB'?(()=>{
+    const designRoleId=new Map(designRoles.filter(row=>clean(row?.id)).map(row=>[clean(row.id),clean(row.grammarRole)]));
+    const activeRoles=bindings.map(row=>row.role);
+    const roleForId=id=>{const role=designRoleId.get(clean(id));return role==='DELVE'?'@':role||null;};
+    const dependencyEdges=connections.map(edge=>({
+      fromId:clean(edge?.fromId),toId:clean(edge?.toId),
+      fromRole:roleForId(edge?.fromId),toRole:roleForId(edge?.toId),
+      stateKeys:uniq(edge?.stateKeys||[])
+    })).filter(row=>row.fromRole&&row.toRole&&row.fromRole!==row.toRole);
+    const orderWeight=role=>{
+      const row=bindings.find(item=>item.role===role);
+      if(!row)return 0;
+      if(row.designStatus!=='AUTHORED')return 120;
+      if(row.codingStatus==='SOURCE_OWNER_MISSING')return 110;
+      if(row.nativeStateMapping?.state==='SOURCE_STATE_KEYS_NOT_MAPPED')return 95;
+      return 55;
+    };
+    // 위상 정렬(Kahn): 생산/소비 선행 규칙을 먼저 구현한다. 순환 설계는 억지로 선형 PASS시키지 않는다.
+    const incoming=new Map(activeRoles.map(role=>[role,0]));
+    const outgoing=new Map(activeRoles.map(role=>[role,new Set()]));
+    for(const edge of dependencyEdges){
+      if(!outgoing.get(edge.fromRole).has(edge.toRole)){
+        outgoing.get(edge.fromRole).add(edge.toRole);
+        incoming.set(edge.toRole,incoming.get(edge.toRole)+1);
+      }
+    }
+    const ready=[...activeRoles].filter(role=>incoming.get(role)===0);
+    const sorted=[];
+    while(ready.length){
+      ready.sort((a,b)=>orderWeight(b)-orderWeight(a)||a.localeCompare(b));
+      const role=ready.shift();
+      sorted.push(role);
+      for(const next of outgoing.get(role)){
+        incoming.set(next,incoming.get(next)-1);
+        if(incoming.get(next)===0)ready.push(next);
+      }
+    }
+    const cycleRoles=activeRoles.filter(role=>!sorted.includes(role));
+    const steps=[...sorted,...cycleRoles];
+    // 소스 책임 후보를 단일 파일 또는 정확한 의존 파일 집합으로 묶는다.
+    // 일치하지 않는 파일명/설계 이름을 실제 구현의 증거로 승격하지 않는다.
+    const requirements=new Map();
+    for(const row of bindings)requirements.set('ROLE:'+row.role,{
+      id:'ROLE:'+row.role,kind:'DESIGN_ROLE',role:row.role,
+      weight:orderWeight(row.role),sourceOwnerCandidates:row.suggestedExistingOwnerFiles,
+      missingInputs:row.nativeStateMapping?.missingInputKeys||[],
+      missingWrites:row.nativeStateMapping?.missingWrittenOutputKeys||[],
+      expectedNativeBehavior:'PLAYER_INPUT_TO_STATE_CHANGE_TO_FEEDBACK_AND_RETRY'
+    });
+    for(const edge of dependencyEdges){
+      const id='EDGE:'+edge.fromId+'->'+edge.toId;
+      const mismatch=edgeStateMismatches.some(row=>row.fromId===edge.fromId&&row.toId===edge.toId);
+      requirements.set(id,{id,kind:'DESIGN_DEPENDENCY',role:edge.fromRole+'->'+edge.toRole,
+        weight:mismatch?110:75,stateKeys:edge.stateKeys,
+        expectedNativeBehavior:'PRODUCER_WRITE_TO_CONSUMER_READ_TO_PLAYER_CONSEQUENCE'});
+    }
+    // 콘텐츠/그래픽도 설계 목표에 남겨 게임 시스템만 반복하는 편향을 막는다.
+    const coreOwnerFiles=uniq(bindings.flatMap(row=>row.suggestedExistingOwnerFiles));
+    const contentOwnerFiles=coreOwnerFiles.filter(file=>/core|gameplay|quest|progress|world|region|content|inventory|save/i.test(file));
+    const contentOwners=contentOwnerFiles.length?contentOwnerFiles:coreOwnerFiles;
+    const graphicsOwners=uniq([
+      ...coreOwnerFiles.filter(file=>/visual|render|anim|camera|scene|world|bootstrap|gamecore/i.test(file)),
+      ...(sourceObservation?.topFiles||[]).map(row=>posix(row?.file)).filter(file=>
+        file.startsWith(roots.UNITY_WEB+'/Assets/')
+        &&/\.(?:unity|prefab|mat|anim|controller|fbx|obj|glb|gltf)$/i.test(file))
+    ]);
+    const spatialOwners=graphicsOwners.length?graphicsOwners:coreOwnerFiles;
+    const loop=Array.isArray(design?.coreLoop)?design.coreLoop:[];
+    loop.forEach((row,index)=>{
+      const step=clean(typeof row==='string'?row:row?.name||row?.step||row?.action);
+      if(!step)return;
+      const id='LOOP:'+index;
+      requirements.set(id,{id,kind:'CORE_LOOP',title:step,weight:85,
+        sourceOwnerCandidates:contentOwners,
+        expectedNativeBehavior:'PLAYER_ACTION_CAUSES_AUTHORED_LOOP_STATE_AND_NEXT_CHOICE'});
+    });
+    const milestones=Array.isArray(design?.contentExpansionPlan)?design.contentExpansionPlan:[];
+    milestones.forEach((row,index)=>{
+      const title=clean(row?.milestone||row?.name||row?.id);
+      if(!title)return;
+      const id='CONTENT:'+index;
+      requirements.set(id,{id,kind:'DESIGNED_CONTENT_MILESTONE',title,weight:80,
+        designedGameplay:clean(row?.newGameplay),designedSystemImpact:clean(row?.systemImpact),
+        sourceOwnerCandidates:contentOwners,
+        expectedNativeBehavior:'REAL_UNLOCK_OR_CONTENT_STATE_REACHABLE_AND_PLAYER_CONSEQUENCE'});
+    });
+    if(hasCreativeGrammar){
+      requirements.set('CREATIVE_C_CAUSALITY',{id:'CREATIVE_C_CAUSALITY',
+        kind:'DESIGN_CREATIVE_INTERLOCK',title:'A_B_C_PRIMARY_SECONDARY_GAMEPLAY_EFFECT',
+        weight:creativeCReady?75:115,sourceOwnerCandidates:contentOwners,
+        expectedNativeBehavior:'ACTUAL_GAMEPLAY_STATE_AND_PLAYER_DECISION_CHANGE_FROM_CREATIVE_C'});
+    }
+    requirements.set('NATIVE_3D_VISUAL',{id:'NATIVE_3D_VISUAL',kind:'UNITY_WEB_SPATIAL_PRESENTATION',
+      weight:spatialReady?65:125,sourceOwnerCandidates:spatialOwners,
+      expectedNativeBehavior:'REAL_NATIVE_UNITY_3D_MESH_CAMERA_MOTION_MATERIAL_AND_MOBILE_BROWSER_PIXELS'});
+    if(mandatory)requirements.set('MULTIPLAYER_SYNC',{id:'MULTIPLAYER_SYNC',kind:'NATIVE_MULTIPLAYER',
+      weight:110,sourceOwnerCandidates:coreOwnerFiles,
+      expectedNativeBehavior:'TWO_REAL_BROWSER_CLIENTS_SHARED_AUTHORITATIVE_SESSION_AND_RECONNECT_QA'});
+    const ownerSets=new Map();
+    const offer=(files,covered)=>{
+      const nativeFiles=uniq(files).filter(file=>file.startsWith(roots.UNITY_WEB+'/')).sort();
+      if(!nativeFiles.length)return;
+      const key=nativeFiles.join('|');
+      const set=ownerSets.get(key)||new Set();
+      for(const ref of covered)if(requirements.has(ref))set.add(ref);
+      ownerSets.set(key,set);
+    };
+    for(const row of bindings){
+      for(const file of row.suggestedExistingOwnerFiles)offer([file],['ROLE:'+row.role]);
+    }
+    for(const edge of dependencyEdges){
+      const from=bindings.find(row=>row.role===edge.fromRole);
+      const to=bindings.find(row=>row.role===edge.toRole);
+      const fromOwner=from?.suggestedExistingOwnerFiles?.[0];
+      const toOwner=to?.suggestedExistingOwnerFiles?.[0];
+      offer([fromOwner,toOwner].filter(Boolean),['EDGE:'+edge.fromId+'->'+edge.toId]);
+    }
+    for(const requirement of requirements.values()){
+      if(requirement.kind==='DESIGN_ROLE'||requirement.kind==='DESIGN_DEPENDENCY')continue;
+      for(const file of requirement.sourceOwnerCandidates||[])offer([file],[requirement.id]);
+    }
+    // 가중 탐욕 집합 덮개: 이번 반복에서 빠진 설계 계약을 가장 많이 해소할 파일 묶음부터 선택한다.
+    // 전체 볼륨 상한을 뜻하지 않으며 한 번에 동일한 파일을 중복 수정하지 않는다.
+    const unselected=new Set(requirements.keys());
+    const scoredOwners=[...ownerSets.entries()].map(([key,covered])=>({
+      files:key.split('|'),covered:[...covered]
+    }));
+    const selectedPackages=[];
+    while(unselected.size){
+      const next=scoredOwners.map(row=>{
+        const coverage=row.covered.filter(ref=>unselected.has(ref));
+        const score=coverage.reduce((sum,ref)=>sum+requirements.get(ref).weight,0)/(row.files.length||1);
+        return {...row,coverage,score};
+      }).filter(row=>row.score>0).sort((a,b)=>b.score-a.score
+        ||a.files.length-b.files.length||a.files.join('|').localeCompare(b.files.join('|')))[0];
+      if(!next)break;
+      const ids=next.coverage.slice().sort((a,b)=>
+        requirements.get(b).weight-requirements.get(a).weight||a.localeCompare(b));
+      selectedPackages.push(Object.freeze({
+        sequence:selectedPackages.length+1,
+        responsibleFiles:Object.freeze([...next.files]),
+        designRequirementIds:Object.freeze(ids),
+        priorityWeight:ids.reduce((sum,ref)=>sum+requirements.get(ref).weight,0),
+        method:'DIRECT_EDIT_EXISTING_CSHARP_OR_UNITY_ASSET_OWNER',
+        acceptance:'REAL_NATIVE_SOURCE_DIFF_THEN_EXACT_WEBGL_MOBILE_BROWSER_PLAY_AND_STATE_REGRESSION',
+        sourceEvidenceOnly:true,runtimeVerified:false
+      }));
+      for(const id of ids)unselected.delete(id);
+    }
+    return Object.freeze({
+      version:1,platform:'UNITY_WEB',sourceRoot:roots.UNITY_WEB,
+      algorithms:Object.freeze(['DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER',
+        'WEIGHTED_GREEDY_SET_COVER_FOR_RESPONSIBLE_SOURCE_FILES',
+        'PREVIOUS_VERIFIED_RUNTIME_DIFFERENTIAL_GROWTH']),
+      roleImplementationOrder:Object.freeze(steps),
+      cyclicRoleDependencies:Object.freeze(cycleRoles),
+      dependencyEdges:Object.freeze(dependencyEdges),
+      designRequirements:Object.freeze([...requirements.values()]),
+      developmentPackages:Object.freeze(selectedPackages),
+      unresolvedRequirements:Object.freeze([...unselected]),
+      sequence:Object.freeze([
+        'LOAD_LATEST_VERIFIED_DESIGN_AND_CURRENT_CANONICAL_UNITY_SOURCE',
+        'TRACE_DESIGN_STATE_INPUT_OUTPUT_AND_DEPENDENCY_GRAPH',
+        'RANK_UNRESOLVED_PLAYER_VALUE_GAPS_WITH_WEIGHTED_COVERAGE',
+        'DIRECTLY_EDIT_EXISTING_RESPONSIBLE_UNITY_SCRIPTS_SCENES_PREFABS_AND_ASSET_BINDINGS',
+        'RUN_EXISTING_FOCUSED_SOURCE_AND_PRESERVATION_QA',
+        'FOLLOW_LOCKED_F0_THROUGH_F9_CANONICAL_WEBGL_VALIDATION',
+        'REPLAY_REAL_WEBGL_MOBILE_TOUCH_STATE_REWARD_3D_SAVE_AND_INDEPENDENT_REGRESSION',
+        'DIFF_AGAINST_PREVIOUS_MAIN_VERIFIED_UNITY_WEB_GROWTH_EVIDENCE',
+        'REPAIR_FIRST_FAILED_CAUSAL_RESPONSIBILITY_OR_CONTINUE_NEXT_BUILD_UP'
+      ]),
+      designItemsNeverCountAsImplementation:true,sourceCandidatesNeverCountAsRuntimePass:true,
+      unlimitedGenerations:true,existingF0F9SequencePreserved:true,
+      existingSaveBalanceEconomyNetworkAuthorityPreserved:true
+    });
+  })():null;
   return Object.freeze({
     version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
     gameId:id,requestedPlatform:declared,activePlatform:selected,
+    unityWebSourceSync,
     designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
     platformCodingPlans:Object.freeze(platforms),
     roleBindings:Object.freeze(bindings),
+    ...(unityWebDevelopmentAlgorithm?{unityWebDevelopmentAlgorithm}:{}),
+    edgeStateMismatches:Object.freeze(edgeStateMismatches),
+    nativeStateMappingSummary:Object.freeze({
+      authoredRoles:bindings.filter(row=>row.designStatus==='AUTHORED').length,
+      mappedStaticCandidates:bindings.filter(row=>row.nativeStateMapping.state==='STATIC_STATE_WRITE_CANDIDATE_UNVERIFIED').length,
+      unmappedRoles:bindings.filter(row=>row.nativeStateMapping.state==='SOURCE_STATE_KEYS_NOT_MAPPED').map(row=>row.role),
+      edgeMismatches:edgeStateMismatches.length,
+      staticSourceMappingIsNotRuntimeParity:true
+    }),
+    creativeCBinding:hasCreativeGrammar?Object.freeze({
+      themes:Object.freeze(cThemes.map(row=>Object.freeze({name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
+      genres:Object.freeze(cGenres.map(row=>Object.freeze({role:clean(row?.role),name:clean(row?.name),gameplayEffect:clean(row?.gameplayEffect)}))),
+      genreInterlock:clean(creativeGrammar?.cGenreInterlock),
+      abGameplayEffect:clean(creativeGrammar?.cWorldAndGameplayEffect),
+      designAuthored:Boolean(creativeCReady),runtimeVerified:false
+    }):null,
     observedGameCodeFiles:Object.freeze(observedFiles),
     executableCodeCandidateFiles:Object.freeze(codeSignalFiles),
     gapReasons:Object.freeze(uniq(gapReasons)),
@@ -1627,8 +1950,8 @@ function buildAutonomousContentExpansion({
 }
 
 function platformDirectives({identity,goal}){
-  const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. MAIN/A/B/c/@·규칙·상태·진행·멀티는 공통 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
   const unity=`${identity}: 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
@@ -1665,7 +1988,8 @@ export function directivePrompt(d={}){
     'DESIGNED_GAME_VOLUME_ITEMS:',
     volumeRows||'- NO_AUTHORED_CONTENT_ENTRIES_OR_SOURCE_SAFE_MODE',
     `DESIGN_TO_PLATFORM_CODING_CHECK: ${JSON.stringify(d.designToPlatformCodingTrace||{})}`,
-    'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/c/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
+    ...(d.designToPlatformCodingTrace?.unityWebDevelopmentAlgorithm?[`UNITY_WEB_NATIVE_DEVELOPMENT_ALGORITHMS: ${JSON.stringify({algorithms:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.algorithms,designRequirements:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.designRequirements.length,packageCount:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.developmentPackages.length,unresolved:d.designToPlatformCodingTrace.unityWebDevelopmentAlgorithm.unresolvedRequirements,implementationVerified:false,runtimeVerified:false})}`]:[]),
+    'CODING_IMPLEMENTATION_VERDICT: SOURCE_OWNER_CANDIDATES_ONLY. Do not mark a MAIN/A/B/C/@ role, native platform, multiplayer session or 2.5D graphics PASS from design fields or a source marker. Implement and independently replay actual input→authoritative state→result→reconnect, then rerun existing platform QA.',
     `MULTIPLAYER_IMPLEMENTATION: ${JSON.stringify(d.multiplayerImplementation||{})}`,
     ...(d.multiplayerImplementation?.required?[`전 게임 멀티 필수: 기존 서버 권한·클라이언트 입력/동기화 책임 소스에서 접속·참가·준비·시작·이탈·재접속과 목표·승패·보상 일치를 구현한다. 로컬 시뮬레이션이나 플래그만으로 구현 완료라 하지 않는다. 빠진 구현은 기존 BUILD_UP에서 계속 수정·재시도하며 다른 게임과 독립 작업은 계속 진행한다. 실제 2인 이상 같은 세션의 증거를 별도로 남긴다.`]:[]),
     `IDENTITY_ONE_LINE_FANTASY: ${d.identityReinforcement?.oneLineFantasy||d.gameIdentityAndNonNegotiables.identity}`,
@@ -1679,7 +2003,7 @@ export function directivePrompt(d={}){
     `CAUSAL_GRAMMAR_EVIDENCE: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence||{})}`,
     `CAUSAL_GRAMMAR_BUILD_UP_RULE: ${d.identityReinforcement?.causalGrammarEvidence?.rule||'PRESERVE_APPROVED_CAUSAL_GAME_GRAMMAR'}`,
     `EXISTING_GAME_MAIN_A_B_c_AT_MAP: ${JSON.stringify(d.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap||{})}`,
-    'EXISTING_GAME_GRAMMAR_ACTION: 기존게임은 새 장르를 강제로 덮어쓰지 않는다. 현재 설계와 실제 소스에서 MAIN, A/B 대축, c 서브요소, @ 파고들기 근거를 먼저 확인하고 서로 따로 노는 연결을 우선 보강한다. 기존 밸런스·세이브·경제·권한 의미는 보존한다.',
+    'EXISTING_GAME_GRAMMAR_ACTION: 과거 MAIN 소재뿐인 설계를 정식 설계로 보존하지 않는다. 현재 실행 게임의 실제 행동·저장·밸런스·권한을 읽고 MAIN 게임 정체성, A/B 각각 시스템×창작 소재, C 두 소재와 메인·보조 장르, @ 발견·숙련을 새로 설계해 서로 실제 상태를 바꾸게 한다. 설계 문서만으로 구현 완료나 런타임 PASS를 인정하지 않는다.',
     `PRIMARY_GOAL: ${d.thisLoopPrimaryGoal}`,
     `WHY_NOW: ${d.primaryGoalReason}`,
     ...robloxProductionPromptLines(d.productionPlan||d.robloxProductionPlan),
@@ -1781,8 +2105,26 @@ export function buildGameSpecificBuildUpDirective({
   const mainSystem=authoredRole('MAIN'),aSystem=authoredRole('A'),bSystem=authoredRole('B');
   const cSystems=design.signatureSystems.filter(system=>system.grammarRole==='c');
   const delveSystems=design.signatureSystems.filter(system=>system.grammarRole==='DELVE');
-  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&cSystems.length&&delveSystems.length);
-  const reconstructedMain=clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
+  const hasOwnerCreativeGrammar=Boolean(clean(design.creativeGrammar?.mainIdentity)
+    ||clean(design.creativeGrammar?.a?.system)||Array.isArray(design.creativeGrammar?.cThemes));
+  const sourcedCreativeAxes=['a','b'].every(key=>clean(design.creativeGrammar?.[key]?.system)
+    &&clean(design.creativeGrammar?.[key]?.material)
+    &&clean(design.creativeGrammar?.[key]?.materialDomain)
+    &&clean(design.creativeGrammar?.[key]?.stateChange));
+  const cThemes=Array.isArray(design.creativeGrammar?.cThemes)?design.creativeGrammar.cThemes:[];
+  const cGenres=Array.isArray(design.creativeGrammar?.cGenres)?design.creativeGrammar.cGenres:[];
+  const authoredCreativeC=cThemes.length===2
+    &&new Set(cThemes.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&cThemes.every(row=>clean(row?.name)&&clean(row?.gameplayEffect))
+    &&cGenres.length===2
+    &&['PRIMARY','SECONDARY'].every(role=>cGenres.some(row=>row?.role===role&&clean(row?.gameplayEffect)))
+    &&new Set(cGenres.map(row=>clean(row?.name).toLowerCase())).size===2
+    &&clean(design.creativeGrammar?.cGenreInterlock)
+    &&clean(design.creativeGrammar?.cWorldAndGameplayEffect);
+  // V5는 오래된 c 태그로 C를 대신할 수 없다. V4 설계만 기존 c 호환 경로를 유지한다.
+  const authorMapped=Boolean(mainSystem&&aSystem&&bSystem&&delveSystems.length
+    &&(hasOwnerCreativeGrammar?(sourcedCreativeAxes&&authoredCreativeC):cSystems.length));
+  const reconstructedMain=clean(design.creativeGrammar?.mainIdentity)||clean(mainSystem?.name)||clean(design.coreLoop?.[0])||clean(design.coreFun)||anchor;
   const reconstructedMajorAxes=Object.freeze([
     Object.freeze({key:'A',systemId:clean(aSystem?.id)||null,name:clean(aSystem?.name)||clean(design.signatureSystems?.[0]?.name)||secondary,source:authorMapped?'DESIGNER_AUTHORED_ROLE_A':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'}),
     Object.freeze({key:'B',systemId:clean(bSystem?.id)||null,name:clean(bSystem?.name)||clean(design.signatureSystems?.[1]?.name)||clean(design.coreLoop?.[1])||'CURRENT_SECOND_MAJOR_SYSTEM',source:authorMapped?'DESIGNER_AUTHORED_ROLE_B':'LEGACY_DESIGN_FALLBACK_UNVERIFIED'})
@@ -1792,6 +2134,7 @@ export function buildGameSpecificBuildUpDirective({
     :[...design.signatureSystems.slice(2).map(row=>row.name||row.purpose),...design.systemInterconnections.slice(0,4).map(row=>row.trigger)]
   ).slice(0,6);
   const delveEvidence=uniq([
+    ...(design.creativeGrammar?.delveDiscoveries||[]).map(row=>row.discovery),
     ...delveSystems.map(row=>row.name||row.purpose),
     ...design.contentExpansionPlan.flatMap(row=>[row.milestone,row.newGameplay]),
     ...design.narrativeWorldRules,
@@ -1799,15 +2142,21 @@ export function buildGameSpecificBuildUpDirective({
   ]).slice(0,10);
   const existingGameGrammarMap=Object.freeze({
     mode:'EXISTING_GAME_RECONSTRUCTION_FROM_CURRENT_DESIGN_AND_INSPECTED_SOURCE',
-    formula:'MAIN × A × B × c + @',
+    formula:'MAIN × A × B × C + @',
     main:reconstructedMain,
     source:authorMapped?'DESIGNER_AUTHORED_ROLE_IDS_AND_STATE_LINKS':'LEGACY_DESIGN_HEURISTIC_NOT_IMPLEMENTATION_EVIDENCE',
     roleSystemIds:Object.freeze({MAIN:clean(mainSystem?.id)||null,A:clean(aSystem?.id)||null,B:clean(bSystem?.id)||null,c:cSystems.map(row=>clean(row.id)).filter(Boolean),AT:delveSystems.map(row=>clean(row.id)).filter(Boolean)}),
     majorAxes:reconstructedMajorAxes,
     cSubElements:Object.freeze(confirmedSubElements),
+    sourcedAxes:Object.freeze({A:design.creativeGrammar?.a||null,B:design.creativeGrammar?.b||null}),
+    cGenreThemes:Object.freeze(design.creativeGrammar?.cThemes||[]),
+    cPrimarySecondaryGenres:Object.freeze(design.creativeGrammar?.cGenres||[]),
+    cGenreInterlock:clean(design.creativeGrammar?.cGenreInterlock),
+    cCausalWorldEffect:clean(design.creativeGrammar?.cWorldAndGameplayEffect),
+    atUnboundedGrowthRule:clean(design.creativeGrammar?.delveGrowthRule),
     delveAtEvidence:Object.freeze(delveEvidence),
     sourceTreeFingerprint:source.sourceTreeFingerprint,
-    rule:'PRESERVE_CURRENT_GAME_MEANING_FIRST; DISCOVER_MAIN_A_B_c_RELATIONSHIPS_FROM_CURRENT_DESIGN_AND_SOURCE; CLOSE_MISSING_CONNECTIONS_BEFORE_ADDING_UNRELATED_SYSTEMS; @ IS_DELVE_MASTERY_DISCOVERY_REVISIT_REINTERPRETATION_OR_ADVANCED_COMBINATION_NOT_A_GENERAL_SYSTEM_AXIS',
+    rule:'MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT',
     identityRewriteRequired:false,
     existingBalanceSaveEconomyAndAuthorityPreserved:true
   });
@@ -1831,9 +2180,9 @@ export function buildGameSpecificBuildUpDirective({
       systemInterconnections:Object.freeze(design.systemInterconnections||[]),
       expansionPlan:Object.freeze(design.contentExpansionPlan||[]),
       integrityNotes:Object.freeze(design.designIntegrityNotes||[]),
-      formula:'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @',
+      formula:'MAIN × A × B × C + @',
       existingGameGrammarMap,
-      rule:'NEW_CONTENT_MUST_PRESERVE_OR_DEEPEN_THE_APPROVED_CAUSAL_GRAMMAR_AND_MAIN_A_B_c_RELATIONSHIPS; c_IS_SUB_ELEMENT_NOT_MAJOR_AXIS; @ IS_DELVE_LAYER_NOT_GENERAL_SYSTEM; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
+      rule:'NEW_CONTENT_MUST_DEEPEN_MAIN_TOPIC_A_B_SOURCED_SYSTEMS_C_CREATIVE_THEMES_AND_PRIMARY_SECONDARY_GENRE_INTERLOCK; OPTIONAL_LEGACY_c_IS_NOT_C_OR_A_MAJOR_AXIS; @ IS_DELVE_LAYER; DECORATIVE_LORE_OR_PARALLEL_FEATURE_STACK_DOES_NOT_COUNT',
       familiarHumanConflictShouldRemainReadable:true
     }),
     buildUpRule:'EACH_BUILD_UP_MUST_STRENGTHEN_OR_PRESERVE_THE_REPRESENTATIVE_ACTION_CHOICE_WORLD_RULE_SIGNATURE_SYSTEM_OR_GROWTH_IDENTITY; GENERIC_FEATURE_COUNT_DOES_NOT_COUNT',
@@ -2070,8 +2419,16 @@ export function buildGameSpecificBuildUpDirective({
     gameId:id,platform,responsibleSystemsAndFiles:{files:topFiles},qualityGapMap:states,developmentImpact
   });
   const productionPlatform=clean(platform).toUpperCase()==='WEB'&&sourceRoot.split('|').some(root=>posix(root)==='unity-games/'+id)?'UNITY_WEB':platform;
+  // 현재 저장소의 모든 1차 게임용 코드 라이브러리를 기존 제작 지시에서 자동 인덱싱한다.
+  // 실제 게임에 없는 시스템은 추가하지 않고 외부 코드를 임의로 설치하지 않는다.
+  let availableLibraryPaths=[];
+  try{
+    availableLibraryPaths=fs.readdirSync(path.join(repoRoot,'assets'),{withFileTypes:true})
+      .filter(entry=>entry.isFile()&&/^[a-z][a-z0-9-]*\.js$/i.test(entry.name))
+      .map(entry=>'assets/'+entry.name).sort();
+  }catch{}
   const productionPlan=buildRobloxProductionPlan({
-    gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,
+    gameId:id,platform:productionPlatform,design,source,sourceRoot,responsibleFiles:topFiles,availableLibraryPaths,
     previousPlan:previousDirective?.productionPlan||previousDirective?.robloxProductionPlan,focus,
     repair:['CAUSAL_REPAIR'].includes(clean(nextActionDecision?.action).toUpperCase())||keepPriorFocus,
     safeDesignlessMode,
@@ -2100,6 +2457,10 @@ export function buildGameSpecificBuildUpDirective({
     designedGameVolume,
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
+      // 오토 바이옴의 월드 지오메트리·생태계 입력은 검증된 동일 게임 설계에서 가져온다.
+      spatialLayout:design.spatialLayout,
+      spatialDimension:design.spatialDimension,
+      creativeGrammar:design.creativeGrammar,
       coreFun:design.coreFun,
       coreLoop:design.coreLoop,
       signatureSystems:design.signatureSystems,

@@ -35,8 +35,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GAME_SEED_LOCAL_MODEL: gemma3:1b
-  OLLAMA_VERSION: '0.33.3'
   COMPANY_RUNTIME_BRANCH: company-runtime
 
 jobs:
@@ -151,22 +149,14 @@ jobs:
           echo "request_count=$count" >> "$GITHUB_OUTPUT"
           if [ "$reason" = IDLE_24H_AUTONOMOUS_PRODUCTION ]; then echo 'idle_target_count=3' >> "$GITHUB_OUTPUT"; else echo 'idle_target_count=0' >> "$GITHUB_OUTPUT"; fi
 
-      - name: Verified free budget preflight
+      - name: Verified native design budget preflight
         if: steps.finalneed.outputs.model == 'true'
         run: |
-          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls=1 --runner-minutes=20 --output=.autonomous/free-budget-telemetry.json
+          node tools/free-budget-telemetry.mjs --verify-public-repo=true --runner=ubuntu-latest --model-calls=0 --runner-minutes=10 --output=.autonomous/free-budget-telemetry.json
           node -e "const r=require('./.autonomous/free-budget-telemetry.json');if(r.allowed!==true)process.exit(1)"
-          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=1'
+          echo 'GAME_SEED_MODEL_CALLS_MAX_THIS_RUN=0'
 
-      - name: Prepare free local GAME_SEED model
-        if: steps.finalneed.outputs.model == 'true'
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: ${{ env.GAME_SEED_LOCAL_MODEL }}
-          version: ${{ env.OLLAMA_VERSION }}
-          pull-model: 'true'
-
-      - name: Compose GAME_SEED from mixed materials
+      - name: Compute GAME_SEED from canonical Vibe design grammar
         if: steps.finalneed.outputs.model == 'true'
         env:
           GAME_SEED_MARKET_EVIDENCE_FILE: game-seed-market-evidence.json
@@ -192,17 +182,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-game-seed';git config user.email 'game-seed@users.noreply.github.com'
           if cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json; then echo 'persisted=false' >> "$GITHUB_OUTPUT";exit 0;fi
-          git add game-seed-state.json;git commit -m 'runtime: update seed material pool and composed seeds';generated="$(git rev-parse HEAD)";pushed=0
+          # 기존 설계·에셋 생성 작업트리는 건드리지 않고 동일한 runtime 파일만 별도 worktree에서 반영한다.
+          seed_snapshot="$(mktemp)"
+          cp game-seed-state.json "$seed_snapshot"
+          runtime_tree="$(mktemp -d)"
+          trap 'git worktree remove --force "$runtime_tree" >/dev/null 2>&1 || true; rm -f "$seed_snapshot"; rmdir "$runtime_tree" >/dev/null 2>&1 || true' EXIT
+          pushed=0
           for attempt in 1 2 3 4; do
             git fetch origin "$COMPANY_RUNTIME_BRANCH" main
-            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then git checkout -B game-seed-persist "origin/$COMPANY_RUNTIME_BRANCH"; else git checkout -B game-seed-persist origin/main; fi
-            git checkout "$generated" -- game-seed-state.json;git add game-seed-state.json
-            if git diff --cached --quiet; then pushed=1;break;fi
-            git commit -m 'runtime: update seed material pool and composed seeds'
-            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi
-            git reset --hard "$generated";sleep $((attempt*2))
+            if git show-ref --verify --quiet "refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"; then base_ref="origin/$COMPANY_RUNTIME_BRANCH"; else base_ref=origin/main; fi
+            git worktree add --detach "$runtime_tree" "$base_ref"
+            cp "$seed_snapshot" "$runtime_tree/game-seed-state.json"
+            git -C "$runtime_tree" add game-seed-state.json
+            if git -C "$runtime_tree" diff --cached --quiet; then pushed=1;break;fi
+            git -C "$runtime_tree" -c user.name=jaewoon-game-seed -c user.email=game-seed@users.noreply.github.com commit -m 'runtime: update seed material pool and composed seeds'
+            if (cd "$runtime_tree" && git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"); then pushed=1;break;fi
+            git worktree remove --force "$runtime_tree"
+            sleep $((attempt*2))
           done
           test "$pushed" = 1
           echo 'persisted=true' >> "$GITHUB_OUTPUT"
@@ -222,23 +219,24 @@ jobs:
             echo 'GAME_SEED_DESIGN_CONTINUATION=NO_ACTIVE_DESIGN_ONLY'
             exit 0
           fi
+          export LATEST_MAIN_SHA="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          echo "GAME_SEED_CURRENT_DESIGN_MAIN_SHA=$LATEST_MAIN_SHA"
           runs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?branch=main&per_page=100")"
-          current_active="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.GITHUB_SHA;const n=(j.workflow_runs||[]).filter(r=>r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha===sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status)).length;process.stdout.write(String(n));})")"
-          stale_ids="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.GITHUB_SHA;for(const r of (j.workflow_runs||[]))if(r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha!==sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status))console.log(r.id);})")"
+          current_active="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.LATEST_MAIN_SHA;const n=(j.workflow_runs||[]).filter(r=>r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha===sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          stale_ids="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.LATEST_MAIN_SHA;for(const r of (j.workflow_runs||[]))if(r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha!==sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status))console.log(r.id);})")"
           stale_active="$(printf '%s\n' "$stale_ids" | sed '/^$/d' | wc -l | tr -d ' ')"
           echo "ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=$current_active"
           echo "ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=$stale_active"
-          total_active=$((current_active + stale_active))
-          echo 'GAME_SEED_STALE_DESIGN_RUN_POLICY=FINISH_PINNED_ENGINE'
-          if [ "$total_active" -gt 0 ]; then
+          echo 'GAME_SEED_STALE_DESIGN_RUN_POLICY=KEEP_PINNED_ENGINE_BUT_DO_NOT_BLOCK_LATEST'
+          if [ "$current_active" -gt 0 ]; then
             echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=NO'
-            if [ "$current_active" -gt 0 ]; then
-              echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
-            else
-              echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_PINNED_ENGINE_ACTIVE'
-            fi
+            echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
             echo 'GAME_SEED_DESIGN_RUNNING_BATCH_CANCELLED=NO'
             exit 0
+          fi
+          if [ "$stale_active" -gt 0 ]; then
+            echo 'GAME_SEED_DESIGN_STALE_RUNS_NON_BLOCKING=YES'
+            echo 'GAME_SEED_DESIGN_CONTINUATION=DISPATCH_LATEST_HEAD_WHILE_STALE_QUEUED'
           fi
           gh workflow run company-seed-design-runtime.yml --ref main
           echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'

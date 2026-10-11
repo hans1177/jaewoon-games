@@ -179,10 +179,11 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         LoadState();
         BuildWorld();
         Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=PASS");
-        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=PASS");
+        // 실제 모델 바인딩은 확인하지만, 최종 3D·재질·모바일 품질 판정은 브라우저 QA가 한다.
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=character status=SOURCE_BOUND_RUNTIME_UNVERIFIED");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=enemy status=SOURCE_BOUND_RUNTIME_UNVERIFIED");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=environment status=SOURCE_BOUND_RUNTIME_UNVERIFIED");
+        Debug.Log("JAEWOON_UNITY_WEB_QA VISUAL_DOMAIN game=" + GameId + " domain=equipment status=SOURCE_BOUND_RUNTIME_UNVERIFIED");
         int nativeMotionActors = BindNativeMotionActors();
         Debug.Log("JAEWOON_UNITY_WEB_QA MOTION game=" + GameId +
                   " status=" + (nativeMotionActors > 0 ? "STARTED" : "REPAIR_REQUIRED") +
@@ -205,50 +206,67 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         return count;
     }
 
+    // 그래픽: 사내 라이브러리에서 임포트한 실제 Unity Mesh 장면 객체를 사용한다.
+    // 캐릭터·적·상자·지형이 없으면 기본 구/캡슐로 위장하지 않고 검증 실패로 처리한다.
     private void BuildWorld()
     {
-        Camera cam = Camera.main;
-        if (cam == null)
+        Camera cam=Camera.main;
+        if(cam==null)
         {
-            var cameraObject = new GameObject("Main Camera");
-            cam = cameraObject.AddComponent<Camera>();
-            cameraObject.tag = "MainCamera";
+            var cameraObject=new GameObject("Main Camera");
+            cam=cameraObject.AddComponent<Camera>();
+            cameraObject.tag="MainCamera";
         }
-        cam.transform.position = new Vector3(0f, 6.5f, -9f);
-        cam.transform.rotation = Quaternion.Euler(24f, 0f, 0f);
-        cam.backgroundColor = new Color(0.06f,0.08f,0.13f);
+        cam.orthographic=false;
+        cam.transform.position=new Vector3(0f,6.5f,-9f);
+        cam.transform.rotation=Quaternion.Euler(24f,0f,0f);
+        cam.backgroundColor=new Color(0.32f,0.48f,0.57f);
 
-        if (FindFirstObjectByType<Light>() == null)
+        if(FindFirstObjectByType<Light>()==null)
         {
-            var lightObject = new GameObject("Key Light");
-            var light = lightObject.AddComponent<Light>();
-            light.type = LightType.Directional;
-            light.intensity = 1.25f;
-            lightObject.transform.rotation = Quaternion.Euler(48f,-28f,0f);
+            var lightObject=new GameObject("Key Light");
+            var light=lightObject.AddComponent<Light>();
+            light.type=LightType.Directional;
+            light.intensity=1.25f;
+            lightObject.transform.rotation=Quaternion.Euler(48f,-28f,0f);
         }
 
-        var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        ground.name = "Environment_" + Mode;
-        ground.transform.localScale = new Vector3(1.8f,1f,1.8f);
-
-        player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        player.name = "Character_" + GameId;
-        player.transform.position = new Vector3(-2f,1f,0f);
-
-        enemy = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        enemy.name = "Enemy_" + Mode;
-        enemy.transform.position = new Vector3(2f,1f,1f);
-        enemy.transform.localScale = Vector3.one * 1.35f;
-
-        equipment = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        equipment.name = "Equipment_" + Mode;
-        equipment.transform.position = new Vector3(0f,0.8f,-1.5f);
-        equipment.transform.localScale = new Vector3(0.45f,1.6f,0.45f);
-
-        var landmark = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        landmark.name = "Identity_" + Mode;
-        landmark.transform.position = new Vector3(0f,1.5f,3f);
-        landmark.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
+        string[] required={
+            "Environment_ACTION","Trail_ACTION","Character_monster-adventure",
+            "Enemy_ACTION","Equipment_ACTION","Identity_ACTION",
+            "Starter_LeafTurtle","Starter_WaterOtter","Wild_Bat","Wild_Bird",
+            "Elite_RockGator","Elite_StormEagle","Tree_Left_Trunk",
+            "Tree_Left_Crown","Tree_Right_Trunk","Tree_Right_Crown",
+            "World_Rock","World_Lamp"
+        };
+        int worldMeshes=0;
+        int totalTriangles=0;
+        foreach(string assetName in required)
+        {
+            GameObject model=GameObject.Find(assetName);
+            if(model==null)throw new System.InvalidOperationException("UNITY_NATIVE_LIBRARY_MODEL_MISSING:"+assetName);
+            MeshFilter filter=model.GetComponent<MeshFilter>();
+            MeshRenderer renderer=model.GetComponent<MeshRenderer>();
+            if(filter==null||filter.sharedMesh==null||filter.sharedMesh.vertexCount<16
+               ||filter.sharedMesh.subMeshCount<1||renderer==null||!renderer.enabled
+               ||renderer.sharedMaterials.Length!=filter.sharedMesh.subMeshCount)
+                throw new System.InvalidOperationException("UNITY_NATIVE_LIBRARY_MESH_UNBOUND:"+assetName);
+            foreach(Material material in renderer.sharedMaterials)
+                if(material==null||material.shader==null||!material.shader.isSupported)
+                    throw new System.InvalidOperationException("UNITY_NATIVE_LIBRARY_MATERIAL_MISSING:"+assetName);
+            int triangles=0;
+            for(int part=0;part<filter.sharedMesh.subMeshCount;part++)
+                triangles+=(int)filter.sharedMesh.GetIndexCount(part)/3;
+            if(triangles<16)throw new System.InvalidOperationException("UNITY_NATIVE_LIBRARY_TRIANGLES_MISSING:"+assetName);
+            totalTriangles+=triangles;
+            worldMeshes++;
+        }
+        player=GameObject.Find("Character_"+GameId);
+        enemy=GameObject.Find("Enemy_"+Mode);
+        equipment=GameObject.Find("Equipment_"+Mode);
+        Debug.Log("JAEWOON_UNITY_WEB_QA LIBRARY_ASSETS game="+GameId+
+                  " source=CANONICAL_IMPORTED_UNITY_MESH models="+worldMeshes+
+                  " triangles="+totalTriangles+" status=BOUND_RUNTIME_VALIDATION_PENDING");
     }
 
     private void Update()
@@ -258,10 +276,10 @@ public sealed class UnityWebFloorGame : MonoBehaviour
         {
             enemy.transform.Rotate(0f,55f * Time.unscaledDeltaTime,0f,Space.World);
             var p=enemy.transform.position;
-            p.y=1f+Mathf.Sin(motionClock*2.1f)*0.28f;
+            p.y=0.10f+Mathf.Sin(motionClock*2.1f)*0.08f;
             enemy.transform.position=p;
         }
-        if (equipment != null) equipment.transform.Rotate(35f*Time.unscaledDeltaTime,45f*Time.unscaledDeltaTime,0f);
+        if (equipment != null) equipment.transform.rotation=Quaternion.Euler(0f,16f+Mathf.Sin(motionClock*0.7f)*6f,0f);
         if (player != null && started)
         {
             var p=player.transform.position;

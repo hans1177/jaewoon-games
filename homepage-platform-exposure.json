@@ -2,8 +2,8 @@
   "version": 3,
   "authority": "company-runtime",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
-  "centralPolicyFingerprint": "ba07c6f5a2336ca4736da603f58afb5bce5a6def8e02f214512f9dce0e63115e",
-  "centralPolicyVersion": 10,
+  "centralPolicyFingerprint": "f08ea899a3a42b68064fcf0dea66ade0c7332e1e52b7fbb473f30e8c13bfd27e",
+  "centralPolicyVersion": 12,
   "publicSafe": true,
   "internalCompanySurface": true,
   "supportedPlatforms": [
@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-09T08:08:01.701Z",
+  "generatedAt": "2026-10-11T04:02:46.551Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -29,7 +29,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -39,13 +39,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -53,14 +53,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
-            "artifactIdentity": "sha256:ff1cf6a07efdda295239d5249d0c0f385ed09b9cdd393eb72f01495ede1f602c",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": false,
@@ -83,25 +84,25 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37725886882,
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": true,
+            "technicalReady": false,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -109,14 +110,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "cf304e39ae9e7ef56873fc8f98e90b5a3aa354d4",
-            "artifactIdentity": "sha256:c7ae3537e92fd6ba20b839fb6384b42906c05eae86c6f05d853028c396b0efe3",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -127,7 +129,125 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T08:06:08.842Z"
+      "updatedAt": "2026-10-10T10:59:37.448Z"
+    },
+    {
+      "gameId": "ant-simulator",
+      "gameName": "개미 시뮬레이터",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-09T16:57:34.175Z"
     },
     {
       "gameId": "bug-defense",
@@ -200,17 +320,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37725747808,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -231,8 +351,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "ccf9626cb32b0d2904d5796c5f32b9a0d5e884bb",
-            "artifactIdentity": "sha256:97b5230807cd5045840af07cf5502738cc99dcbe261fd405c09d3bccc38a855b",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -243,11 +363,11 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:57:51.192Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
-      "gameId": "cozy-island",
-      "gameName": "포근섬: 작은 왕국 키우기",
+      "gameId": "cat-step",
+      "gameName": "캣 스텝",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -255,20 +375,11 @@
         {
           "platform": "ROBLOX",
           "completion": {
-            "count": 1,
-            "lastCompletedAt": "2026-10-02T10:03:15.240Z",
-            "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36993099109",
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
-            "records": [
-              {
-                "cycleId": "63208f3829048797b49a8dec2b2607a1aff9513d:sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
-                "sourceRevision": "63208f3829048797b49a8dec2b2607a1aff9513d",
-                "artifactIdentity": "sha256:2e83865ec0acb0b0742011cb5b79b42e275d2a72eabfcabc44c95c220c65a0ac",
-                "completedAt": "2026-10-02T10:03:15.240Z",
-                "workflowRunId": 36993099109,
-                "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36993099109"
-              }
-            ]
+            "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
@@ -287,6 +398,354 @@
             "experience": "DEVELOPMENT",
             "checks": {
               "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "chess-battle",
+      "gameName": "체스 배틀",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T03:49:23.432Z"
+    },
+    {
+      "gameId": "core-clash-4v4",
+      "gameName": "코어 전장 4대4",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "cozy-island",
+      "gameName": "포근섬: 작은 왕국 키우기",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -294,13 +753,14 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
-            "artifactIdentity": "sha256:eb7b28d6559f7b4dd375a592ff34a64c9ddb27cfe8d12cf6f2e7d7c947faf0b0",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -324,17 +784,134 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37575604303,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "crystal-defense",
+      "gameName": "수정 디펜스",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -367,7 +944,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:15:28.555Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
       "gameId": "daechung-rpg",
@@ -379,20 +956,11 @@
         {
           "platform": "ROBLOX",
           "completion": {
-            "count": 1,
-            "lastCompletedAt": "2026-10-02T10:04:30.834Z",
-            "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36993292122",
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
-            "records": [
-              {
-                "cycleId": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85:sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
-                "sourceRevision": "b953d4fb6e4121fe7fb62a23eace4ea7c3871f85",
-                "artifactIdentity": "sha256:fc2c92e482f47e15e9ae7db9dd7fab2861b633fbe87d53b14bde0d291c711f6a",
-                "completedAt": "2026-10-02T10:04:30.834Z",
-                "workflowRunId": 36993292122,
-                "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36993292122"
-              }
-            ]
+            "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
@@ -404,13 +972,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -418,13 +986,14 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "6b42bd21445d0ea084d7e48468e84cc883ba14c6",
-            "artifactIdentity": "sha256:4544ddd4e6627a2cab4c9b9299bb474e4c3016797267850e2d9b949c1fea6806",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -448,17 +1017,134 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37718493651,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "defense",
+      "gameName": "숲길 디펜스",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -491,7 +1177,355 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:47:50.211Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "dice-battle-board",
+      "gameName": "주사위 전투 보드",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "egg-heist",
+      "gameName": "알 도둑 대작전",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "exorcist-office",
+      "gameName": "퇴마 사무소",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
       "gameId": "fantasy-survival",
@@ -519,13 +1553,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -533,14 +1567,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
-            "artifactIdentity": "sha256:2c5bdd00cd9523e2c1cc6c731ef2a0ec718515a5986c762f4d67afd545ef1c01",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": false,
@@ -564,17 +1599,134 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37789869176,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "fifty-days",
+      "gameName": "50일",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -607,7 +1759,123 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:15:28.555Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "gem-survivor",
+      "gameName": "보석 생존전",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T03:49:23.432Z"
     },
     {
       "gameId": "horror-escape-room",
@@ -619,28 +1887,11 @@
         {
           "platform": "ROBLOX",
           "completion": {
-            "count": 2,
-            "lastCompletedAt": "2026-10-02T11:36:25.345Z",
-            "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/37001778046",
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
-            "records": [
-              {
-                "cycleId": "eaed72bca6904aae805385fc732b0041fafa46f2:sha256:b9f50157f3da037f9700f84fb3ad6c926c12325bcddd52b364d73622143d7055",
-                "sourceRevision": "eaed72bca6904aae805385fc732b0041fafa46f2",
-                "artifactIdentity": "sha256:b9f50157f3da037f9700f84fb3ad6c926c12325bcddd52b364d73622143d7055",
-                "completedAt": "2026-10-02T11:36:25.345Z",
-                "workflowRunId": 37001778046,
-                "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/37001778046"
-              },
-              {
-                "cycleId": "64469e3cf9f2b7fff816966ca805ba270ba2134d:sha256:f4086db3547946ef62f1eeb5f5966b5ae74bd9111ee47d94d5a55acfcb30302b",
-                "sourceRevision": "64469e3cf9f2b7fff816966ca805ba270ba2134d",
-                "artifactIdentity": "sha256:f4086db3547946ef62f1eeb5f5966b5ae74bd9111ee47d94d5a55acfcb30302b",
-                "completedAt": "2026-10-02T10:29:06.895Z",
-                "workflowRunId": 36995665218,
-                "evidenceUrl": "https://github.com/hans1177/jaewoon-games/actions/runs/36995665218"
-              }
-            ]
+            "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
@@ -652,13 +1903,13 @@
             "ready": true,
             "homepageReady": true,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": true,
             "basis": "OWNER_CONFIRMED",
             "experience": "LOBBY",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": true,
               "exactRuntime": false,
               "lobby": false,
@@ -666,8 +1917,8 @@
               "noRuntimeErrors": false
             },
             "blockers": [],
-            "sourceRevision": "eaed72bca6904aae805385fc732b0041fafa46f2",
-            "artifactIdentity": "sha256:b9f50157f3da037f9700f84fb3ad6c926c12325bcddd52b364d73622143d7055",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": true,
@@ -691,24 +1942,24 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37718096425,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": true,
+            "technicalReady": false,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -716,6 +1967,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -734,11 +1986,11 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:48:28.894Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
-      "gameId": "line-defense",
-      "gameName": "골목 군단 대전",
+      "gameId": "human-go",
+      "gameName": "휴먼 GO",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -807,17 +2059,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37725811242,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -838,8 +2090,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "85a0bdf362499b0e4d3a821ae31a093ff438609f",
-            "artifactIdentity": "sha256:17ac22980cc45176554796f0eb40726e2cf6c7c6d7b67ccca26d7eee171fe061",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -850,7 +2102,589 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:55:23.939Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "human-go-temp",
+      "gameName": "휴먼 GO!",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "insect-survival",
+      "gameName": "곤충 생존기",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "island-village",
+      "gameName": "무인도 마을",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "kingshot-ad",
+      "gameName": "킹샷 광고풍",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "line-defense",
+      "gameName": "골목 군단 대전",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-10T10:59:37.448Z"
     },
     {
       "gameId": "monster-adventure",
@@ -923,17 +2757,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37788607917,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -954,8 +2788,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "fad32e43e67475f8acf3a47d62fe270b3cb8b958",
-            "artifactIdentity": "sha256:fb2eb27ca38eb4e7dcf4fbfac841f190b9422ba68518d013cbe638f7cc65f425",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -966,7 +2800,239 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T08:01:26.407Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "party-rpg",
+      "gameName": "파티 RPG",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T03:49:23.432Z"
+    },
+    {
+      "gameId": "realistic-builder",
+      "gameName": "현실 건축가",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -984,7 +3050,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -994,13 +3060,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1008,6 +3074,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1038,25 +3105,25 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37788438218,
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": true,
+            "technicalReady": false,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1064,14 +3131,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "13db33900c2cd87dd46f9af6eaafe8aa0b026cdc",
-            "artifactIdentity": "sha256:50dba7800d57799b64c9a159a00f92014f82fdd00ed20296179fa07ef220682d",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1082,7 +3150,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:03:32.235Z"
+      "updatedAt": "2026-10-10T10:59:37.448Z"
     },
     {
       "gameId": "seed-casual-realm-weaver",
@@ -1100,7 +3168,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -1110,13 +3178,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1124,14 +3192,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "6f0bb2d9121b8530dcf10bd8eb2220c7c52c7f81",
-            "artifactIdentity": "sha256:d50480c090f300d28257133f2c57acf0d89989b09f4fdcab80dcef4b42356407",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": false,
@@ -1154,25 +3223,25 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37788234922,
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": true,
+            "technicalReady": false,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1180,14 +3249,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "94c5b1c7db0724f6c19f3937780ed5302c06754b",
-            "artifactIdentity": "sha256:d5ebaf6596b4e7abe014eaa4adb11f004573e3c2c5158e6d184f33b94dc7a71f",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1198,7 +3268,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:15:28.555Z"
+      "updatedAt": "2026-10-10T10:59:37.448Z"
     },
     {
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -1216,7 +3286,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -1226,13 +3296,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1240,6 +3310,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1270,25 +3341,25 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37789705298,
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": true,
+            "technicalReady": false,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1296,14 +3367,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "077af9dc48fb7e59e0e2ef7b3ad21cf458d681ee",
-            "artifactIdentity": "sha256:f2b2224013a805b3e065680ef9af084ac8381e2541ac97187f7ca99345d08502",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1314,7 +3386,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T06:58:20.043Z"
+      "updatedAt": "2026-10-10T10:59:37.448Z"
     },
     {
       "gameId": "seed-puzzle-chromatic-cascade",
@@ -1332,6 +3404,124 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-10T10:59:37.448Z"
+    },
+    {
+      "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+      "gameName": "Harbor Days",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
           "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
           "independentQaPassed": false,
@@ -1387,17 +3577,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37789615122,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1418,8 +3608,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "958908552487521a202cf8f1200ec52fb6045042",
-            "artifactIdentity": "sha256:24789649d36dc23caa8ec0aa3b2cded1f4efe1c5daece42992c764bfc5630306",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1430,7 +3620,355 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:11:13.794Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "gameName": "Pocket Foundry",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
+      "gameName": "Shardbound Odyssey",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "gameName": "Last Lantern",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -1448,7 +3986,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
+          "developmentState": "WAITING_SOURCE",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -1458,13 +3996,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": true,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1472,6 +4010,7 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1502,25 +4041,25 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37815511744,
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
-            "designReady": true,
+            "technicalReady": false,
+            "designReady": false,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": true,
+              "design": false,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1528,14 +4067,15 @@
               "noRuntimeErrors": false
             },
             "blockers": [
+              "design",
               "publication",
               "exactRuntime",
               "lobby",
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "cffebe13c27c2d181ca3915e05745171d2f533a4",
-            "artifactIdentity": "sha256:a7874216a705842e25e034ac0d0df035e5702dfa3e10b8313c7f76a6e82fe62d",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1546,11 +4086,129 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T08:01:36.566Z"
+      "updatedAt": "2026-10-10T10:59:37.448Z"
     },
     {
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
       "gameName": "엘도리아 연대기",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-10T10:59:37.448Z"
+    },
+    {
+      "gameId": "simple-rpg",
+      "gameName": "작은 모험 RPG",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -1619,17 +4277,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37869671509,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1650,8 +4308,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "be1b401175ea0708d46e4b14027612b31e98347d",
-            "artifactIdentity": "sha256:1cce053b97ae008a3981379d317a5414c59adea8f3c860173642082573170768",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1662,7 +4320,123 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T06:28:12.563Z"
+      "updatedAt": "2026-10-11T03:49:23.432Z"
+    },
+    {
+      "gameId": "star-frontier",
+      "gameName": "별길 개척자",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
       "gameId": "survival",
@@ -1735,17 +4509,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37788300656,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1766,8 +4540,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "ce0c612f03c0c30747160e49415e3bf2d697e07d",
-            "artifactIdentity": "sha256:0d8743508173605e3c2fcd6a61dc2079aab78aad88b7823cb70bc6af00b1130d",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1778,11 +4552,11 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T08:07:38.524Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     },
     {
-      "gameId": "village-dungeons",
-      "gameName": "마을 던전 RPG",
+      "gameId": "survival2",
+      "gameName": "숲의 생존자들",
       "authority": "company-runtime",
       "internalCompanySurface": true,
       "externalPublicReleaseState": "INTERNAL_ONLY",
@@ -1826,8 +4600,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "5918521b76b85dc8350b4812940232e541cf47a1",
-            "artifactIdentity": "sha256:71f10af46c298783bec4867fffbc8831f7f924d6df0c8628570057680d47fa76",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "executionAvailable": false,
@@ -1851,17 +4625,17 @@
             "records": []
           },
           "developmentState": "NATIVE_DEVELOPMENT",
-          "buildRunId": 37718774143,
+          "buildRunId": null,
           "executionAvailable": false,
-          "runtimePassed": true,
-          "independentQaPassed": true,
-          "regressionPassed": true,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
           "internalReleaseReady": false,
           "releaseReadiness": {
             "version": 1,
             "ready": false,
             "homepageReady": false,
-            "technicalReady": true,
+            "technicalReady": false,
             "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
@@ -1882,8 +4656,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": "04623b035875623f657f3fa05016fef0a24ce594",
-            "artifactIdentity": "sha256:84a42254c0c010fa2c71ab5b4de7004f71ada90fcc5b9e49f6dc263827a061f4",
+            "sourceRevision": null,
+            "artifactIdentity": null,
             "verifiedAt": null
           },
           "internalReleaseState": "NOT_READY",
@@ -1894,7 +4668,591 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-09T07:30:12.280Z"
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "territory-war",
+      "gameName": "영토전쟁",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "tower-choice-rpg",
+      "gameName": "10층 탑 RPG",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
+    },
+    {
+      "gameId": "village-dungeons",
+      "gameName": "마을 던전 RPG",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-10T10:59:37.448Z"
+    },
+    {
+      "gameId": "wild-survival",
+      "gameName": "야생 생존",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "WAITING_SOURCE",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": false,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": false,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "design",
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-09T16:57:34.175Z"
+    },
+    {
+      "gameId": "zombie-survival",
+      "gameName": "좀비 생존기",
+      "authority": "company-runtime",
+      "internalCompanySurface": true,
+      "externalPublicReleaseState": "INTERNAL_ONLY",
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "executionAvailable": false,
+          "historicalInternalRelease": false,
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "placeId": null,
+          "internalUrl": null,
+          "publicUrl": null,
+          "internalLinkSuppressedReason": null
+        },
+        {
+          "platform": "UNITY",
+          "completion": {
+            "count": 0,
+            "lastCompletedAt": null,
+            "evidenceUrl": null,
+            "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
+            "records": []
+          },
+          "developmentState": "NATIVE_DEVELOPMENT",
+          "buildRunId": null,
+          "executionAvailable": false,
+          "runtimePassed": false,
+          "independentQaPassed": false,
+          "regressionPassed": false,
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleaseState": "NOT_READY",
+          "publicReleaseReady": false,
+          "publicRelease": false,
+          "publicReleaseState": "INTERNAL_ONLY",
+          "internalUrl": null,
+          "publicUrl": null
+        }
+      ],
+      "updatedAt": "2026-10-11T04:02:19.976Z"
     }
   ]
 }

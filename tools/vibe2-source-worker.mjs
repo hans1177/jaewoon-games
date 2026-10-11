@@ -536,6 +536,31 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       if(!script.startsWith('assets/')||!script.endsWith('.py'))throw new Error('NATIVE_DCC_SCRIPT_SCOPE_FORBIDDEN:'+script);
       const scriptAbs=path.resolve(cwd,script);
       if(!fs.existsSync(scriptAbs)||!fs.statSync(scriptAbs).isFile())throw new Error('NATIVE_DCC_SCRIPT_MISSING:'+script);
+      // [내부 라이브러리] 계획 이후 원본이 바뀌거나 부모 증거가 없으면 제작 전에 차단한다.
+      const libraryDerivative=recipe?.automaticLibraryDerivative===true;
+      if(libraryDerivative){
+        const parent=clean(recipe.librarySourceAssetId),model=dccRepoPath(recipe.sourceModel);
+        const expected=clean(recipe.librarySourceSha256).toLowerCase();
+        const args=(recipe?.args||[]).map(value=>String(value));
+        const argument=flag=>{const index=args.indexOf(flag);return index<0?null:args[index+1];};
+        if(!/^[a-z0-9][a-z0-9._-]{0,159}$/i.test(parent)||!/^[a-f0-9]{64}$/.test(expected)
+          ||!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(model)
+          ||model.split('/').includes('..')||argument('--source-model')!==model
+          ||argument('--library-parent-id')!==parent
+          ||clean(argument('--library-source-sha256')).toLowerCase()!==expected)
+          throw new Error('NATIVE_DCC_LIBRARY_PARENT_CONTRACT_INVALID:'+clean(recipe.id));
+        const full=path.resolve(cwd,model);
+        const assetsDirectory=path.join(cwd,'assets');
+        const assetsRoot=fs.realpathSync(assetsDirectory);
+        if(fs.lstatSync(assetsDirectory).isSymbolicLink()
+          ||!assetsRoot.startsWith(fs.realpathSync(cwd)+path.sep))
+          throw new Error('NATIVE_DCC_LIBRARY_SOURCE_ROOT_INVALID:'+clean(recipe.id));
+        if(!fs.existsSync(full)||!fs.statSync(full).isFile()
+          ||fs.lstatSync(full).isSymbolicLink()
+          ||!fs.realpathSync(full).startsWith(assetsRoot+path.sep)
+          ||sha256File(full)!==expected)
+          throw new Error('NATIVE_DCC_LIBRARY_SOURCE_CHANGED:'+clean(recipe.id));
+      }
       const outputs=(recipe?.outputs||[]).map(dccRepoPath);
       if(!outputs.length)throw new Error('NATIVE_DCC_OUTPUTS_REQUIRED:'+clean(recipe?.id));
       const recipeFiles=unique([...outputs,recipe?.evidenceJson,recipe?.preview].filter(Boolean).map(dccRepoPath));
@@ -574,6 +599,64 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
           if(!fs.existsSync(file))throw new Error('NATIVE_DCC_EVIDENCE_MISSING:'+evidenceJson);
           evidence=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
         }
+        if(libraryDerivative){
+          const provenance=evidence?.sourceMesh;
+          if(provenance?.libraryParentAssetId!==clean(recipe.librarySourceAssetId)
+            ||provenance?.sourcePath!==dccRepoPath(recipe.sourceModel)
+            ||provenance?.sourceSha256!==clean(recipe.librarySourceSha256).toLowerCase()
+            ||provenance?.sourceFileImmutable!==true
+            ||!Array.isArray(provenance?.transformHistory)||!provenance.transformHistory.length)
+            throw new Error('NATIVE_DCC_LIBRARY_DERIVATIVE_EVIDENCE_INVALID:'+clean(recipe.id));
+        }
+        // 이미지 기반 메쉬의 픽셀 입력·라이선스·실제 추론·다각도 렌더를 독립 검증한다.
+        // Blender가 만든 메타데이터만으로 생성 성공이나 게임 런타임 PASS를 선언하지 않는다.
+        const imageArgs=Array.isArray(recipe?.args)?recipe.args:[];
+        const imageFlag=imageArgs.indexOf('--source-image');
+        if(recipe?.imageToMesh===true||imageFlag>=0){
+          if(imageFlag<0||!imageArgs[imageFlag+1])throw new Error('IMAGE_TO_MESH_INPUT_ARGUMENT_REQUIRED');
+          const imagePath=dccRepoPath(imageArgs[imageFlag+1]);
+          if(!imagePath.startsWith('assets/')||!(/\.(?:png|jpe?g|webp)$/i.test(imagePath)))
+            throw new Error('IMAGE_TO_MESH_INPUT_SCOPE_FORBIDDEN:'+imagePath);
+          const imageFile=path.resolve(cwd,imagePath);
+          if(!fs.existsSync(imageFile)||!fs.statSync(imageFile).isFile())
+            throw new Error('IMAGE_TO_MESH_INPUT_MISSING:'+imagePath);
+          const imageRoot=fs.realpathSync(path.join(cwd,'assets'));
+          const actualImage=fs.realpathSync(imageFile);
+          if(!actualImage.startsWith(imageRoot+path.sep)||fs.lstatSync(imageFile).isSymbolicLink())
+            throw new Error('IMAGE_TO_MESH_LOCAL_SOURCE_SCOPE_INVALID:'+imagePath);
+          const input=sha256File(imageFile),provenance=evidence?.imageToMesh;
+          const modelEngines=new Map([
+            ['VAST-AI-Research/TripoSR','stabilityai/TripoSR'],
+            ['microsoft/TRELLIS.2','microsoft/TRELLIS.2-4B']
+          ]);
+          if(!provenance||!modelEngines.has(provenance.engine)
+            ||provenance.model!==modelEngines.get(provenance.engine)
+            ||provenance.engineLicense!=='MIT'||provenance.offlineInference!==true
+            ||provenance.inputPath!==imagePath||provenance.inputSha256!==input
+            ||provenance.generatedGeometry!==true||provenance.originalImageImmutable!==true
+            ||provenance.runtimeVerified!==false||provenance.rigged!==false
+            ||!['HIGH_FIDELITY','BASELINE'].includes(provenance.modelTier)
+            ||(provenance.engine==='microsoft/TRELLIS.2')!==(provenance.modelTier==='HIGH_FIDELITY')
+            ||!/^[a-f0-9]{64}$/.test(clean(provenance.modelWeightSha256))
+            ||!/^[a-f0-9]{64}$/.test(clean(provenance.engineSourceSha256))
+            ||!['project-original','cc0','cc-by'].includes(clean(provenance.sourceLicense).toLowerCase())
+            ||clean(evidence?.license).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()
+            ||(clean(provenance.sourceLicense).toLowerCase()==='cc-by'&&!clean(provenance.sourceCredit))
+            ||(recipe?.sourceLicense&&clean(recipe.sourceLicense).toLowerCase()!==clean(provenance.sourceLicense).toLowerCase()))
+            throw new Error('IMAGE_TO_MESH_SOURCE_OR_MODEL_PROVENANCE_INVALID:'+clean(recipe?.id));
+          const explicitlyRequested=imageArgs.indexOf('--mesh-model');
+          if(explicitlyRequested>=0){
+            const expected=clean(imageArgs[explicitlyRequested+1]).toLowerCase();
+            if((expected==='trellis2'&&provenance.engine!=='microsoft/TRELLIS.2')
+              ||(expected==='triposr'&&provenance.engine!=='VAST-AI-Research/TripoSR'))
+              throw new Error('IMAGE_TO_MESH_SELECTED_ENGINE_MISMATCH:'+clean(recipe?.id));
+          }
+          const angles=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
+          if(!Array.isArray(evidence?.multiViewPreview)
+            ||angles.some(name=>!evidence.multiViewPreview.includes(name)
+              ||!generated.some(row=>row.path===posix(path.join(path.dirname(evidenceJson),name)))))
+            throw new Error('IMAGE_TO_MESH_MULTIVIEW_RENDER_REQUIRED:'+clean(recipe?.id));
+        }
         const preview=recipe?.preview?dccRepoPath(recipe.preview):null;
         if(preview){const file=path.resolve(cwd,preview);if(!fs.existsSync(file)||!fs.statSync(file).isFile()||fs.statSync(file).size<=0)throw new Error('NATIVE_DCC_PREVIEW_MISSING:'+preview);}
         const declaredMasterGlb=recipe?.masterGlbOutput?dccRepoPath(recipe.masterGlbOutput):null;
@@ -592,6 +675,106 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
         }
         const glbInspection=/\.glb$/i.test(nativeArtifact.path)?masterGlbQa?.inspection||inspectVibeSourceGlb({repoRoot:cwd,source:{path:nativeArtifact.path,sourceHash:nativeArtifact.sha256}}):null;
         if(glbInspection&&glbInspection.status!=='INSPECTED_RECONSTRUCTION_INPUT')throw new Error('NATIVE_GLB_DATA_QA_FAILED:'+clean(recipe?.id)+':'+(glbInspection.issues||[]).join(','));
+        // 공용 오픈소스 모델·의류·게임 오브젝트·설계·비식별 의료·애니·영상의 실제 출력 증거 검증.
+        const moduleName=clean(recipe?.module||'auto').toLowerCase();
+        if(moduleName!=='auto'){
+          const proof=evidence?.openSourceModule;
+          const validKinds=['mesh-ai','human','clothing','object','design','medical','animation','video'];
+          if(!validKinds.includes(moduleName)||proof?.kind!==moduleName
+            ||proof.runtimeVerified!==false||typeof proof.source?.source!=='string'
+            ||proof.source.source.length<10||proof.source.license===undefined){
+            throw new Error('NATIVE_OPEN_SOURCE_MODULE_PROVENANCE_INVALID:'+clean(recipe?.id));
+          }
+          const previewNames=[0,90,180,270].map(n=>'preview-angle-'+String(n).padStart(3,'0')+'.png');
+          if(!Array.isArray(evidence?.multiViewPreview)
+            ||previewNames.some(name=>!evidence.multiViewPreview.includes(name)
+              ||!generated.some(row=>row.path===posix(path.join(path.dirname(evidenceJson),name))))){
+            throw new Error('NATIVE_OPEN_SOURCE_MULTIVIEW_MISSING:'+clean(recipe?.id));
+          }
+          const originalModelPath=clean(recipe?.sourceModel);
+          if(originalModelPath){
+            const modelPath=dccRepoPath(originalModelPath),full=path.resolve(cwd,modelPath);
+            if(!fs.existsSync(full)||!fs.statSync(full).isFile())
+              throw new Error('NATIVE_OPEN_SOURCE_IMPORTED_MODEL_UNVERIFIED:'+modelPath);
+            const modelRoot=fs.realpathSync(path.join(cwd,'assets'));
+            const actualModel=fs.realpathSync(full);
+            if(!actualModel.startsWith(modelRoot+path.sep)||fs.lstatSync(full).isSymbolicLink())
+              throw new Error('NATIVE_OPEN_SOURCE_SOURCE_MODEL_SCOPE_INVALID:'+modelPath);
+            const provenance=evidence?.sourceMesh;
+            if(!modelPath.startsWith('assets/')||!fs.existsSync(full)||!fs.statSync(full).isFile()
+              ||provenance?.sourcePath!==modelPath||provenance.sourceSha256!==sha256File(full)
+              ||provenance.sourceFileImmutable!==true
+              ||(moduleName==='medical'&&(provenance.sanitizedAsserted!==true||proof.clinicalDiagnosisAllowed!==false))
+              ||(recipe.sourceLicense&&clean(provenance.license).toLowerCase()!==clean(recipe.sourceLicense).toLowerCase())){
+              throw new Error('NATIVE_OPEN_SOURCE_IMPORTED_MODEL_UNVERIFIED:'+clean(recipe?.id));
+            }
+          }
+          if(moduleName==='human'&&(!(glbInspection?.inventory?.skins||[]).length
+            ||!(glbInspection?.inventory?.animations||[]).length
+            ||!(glbInspection?.inventory?.meshSkinBindingCount>0))){
+            throw new Error('HUMAN_NATIVE_SKIN_AND_ANIMATION_REQUIRED:'+clean(recipe?.id));
+          }
+          if(moduleName==='animation'||moduleName==='video'){
+            const videoProof=evidence?.videoExport;
+            const videoPath=posix(path.join(path.dirname(evidenceJson),'preview-motion.mp4'));
+            const videoFile=path.resolve(cwd,videoPath);
+            const shotPlan=evidence?.videoExport?.shotPlan;
+            const quality=clean(evidence?.videoExport?.cinematicQuality);
+            const resolution=quality==='high'?640:quality==='preview'?320:0;
+            if(!['studio','dramatic'].includes(clean(evidence?.videoExport?.cinematicStyle))
+              ||!Array.isArray(evidence?.videoExport?.resolution)
+              ||evidence.videoExport.resolution.length!==2
+              ||evidence.videoExport.resolution.some(n=>n!==resolution)
+              ||!Array.isArray(shotPlan)||shotPlan.length!==3
+              ||shotPlan.some((row,index)=>row?.name!==['ESTABLISHING','ACTION_REVEAL','SIGNATURE_CLOSEUP'][index]
+                ||row.frameStart!==index*8||row.frameEnd!==index*8+7
+                ||row.focalLengthMm!==[38,56,76][index]))
+              throw new Error('NATIVE_OPEN_SOURCE_CINEMATIC_SHOT_EVIDENCE_INVALID:'+clean(recipe?.id));
+            const styleFlag=(recipe?.args||[]).indexOf('--cinematic-style');
+            const qualityFlag=(recipe?.args||[]).indexOf('--cinematic-quality');
+            if(styleFlag>=0&&clean(recipe.args[styleFlag+1])!==evidence.videoExport.cinematicStyle
+              ||qualityFlag>=0&&clean(recipe.args[qualityFlag+1])!==quality)
+              throw new Error('NATIVE_OPEN_SOURCE_CINEMATIC_REQUEST_MISMATCH:'+clean(recipe?.id));
+            const glbClips=glbInspection?.inventory?.animations||[];
+            if(!glbClips.length||!(evidence?.motionClips||[]).length
+              ||!videoProof||videoProof.path!=='preview-motion.mp4'
+              ||videoProof.actualFramesRendered!==true||videoProof.runtimeVerified!==false
+              ||videoProof.frames!==24||videoProof.fps!==12
+              ||videoProof.codec!=='MPEG4'||videoProof.format!=='MP4'
+              ||videoProof.sourceGlbSha256!==nativeArtifact.sha256
+              ||!fs.existsSync(videoFile)||fs.statSync(videoFile).size<1024
+              ||videoProof.sha256!==sha256File(videoFile)
+              ||!generated.some(row=>row.path===videoPath&&row.sha256===videoProof.sha256)){
+              throw new Error('NATIVE_OPEN_SOURCE_ANIMATION_VIDEO_OUTPUT_UNVERIFIED:'+clean(recipe?.id));
+            }
+            const header=fs.readFileSync(videoFile).subarray(0,12);
+            if(header.length<12||header.toString('ascii',4,8)!=='ftyp')
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_CONTAINER_INVALID:'+clean(recipe?.id));
+            // [VIDEO QA] Container header and file hash are insufficient: decode real frames.
+            let videoProbe;
+            try{
+              videoProbe=JSON.parse(execFileSync(clean(process.env.VIBE2_FFPROBE_BINARY)||'ffprobe',[
+                '-v','error','-count_frames',
+                '-show_entries','stream=codec_type,codec_name,width,height,nb_read_frames,r_frame_rate:format=duration',
+                '-of','json','-i',videoFile
+              ],{cwd,encoding:'utf8',timeout:60000,maxBuffer:1024*1024,stdio:['ignore','pipe','pipe']}));
+            }catch(error){
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_FFPROBE_REQUIRED:'+clean(recipe?.id)+':'+clean(error?.code||'DECODE_FAILED'));
+            }
+            const streams=Array.isArray(videoProbe?.streams)?videoProbe.streams:[];
+            const stream=streams.find(row=>row.codec_type==='video');
+            const rate=clean(stream?.r_frame_rate).split('/').map(Number);
+            const decodedFps=rate.length===2&&rate[1]>0?rate[0]/rate[1]:0;
+            const decodedDuration=Number(videoProbe?.format?.duration);
+            if(streams.length!==1||stream?.codec_name!=='mpeg4'
+              ||stream?.width!==resolution||stream?.height!==resolution
+              ||Number(stream?.nb_read_frames)!==24||Math.abs(decodedFps-12)>0.001
+              ||!Number.isFinite(decodedDuration)||Math.abs(decodedDuration-2)>0.1){
+              throw new Error('NATIVE_OPEN_SOURCE_VIDEO_FRAME_DECODE_INVALID:'+clean(recipe?.id));
+            }
+          }
+        }
+
         const applicationOutput=generated.find(row=>row.path.endsWith('/application.json'));
         let platformApplication=null;
         if(applicationOutput){
@@ -2317,6 +2500,32 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     return Object.keys(selected).length?'volumeSpec='+group+':'+JSON.stringify(selected):null;
   }).filter(Boolean):[];
   const codingTrace=d?.designToPlatformCodingTrace||{};
+
+  // 유니티 웹 전용: 기존 BUILD_UP 설계 그래프/가중 덮개 결과만 코딩 지시에 전달한다.
+  // 워커가 자체적인 설계 파이프라인이나 별도 프레임워크를 만들지 않도록 책임 파일을 제한한다.
+  const unityWebAlgorithm=codingTrace?.activePlatform==='UNITY_WEB'
+    &&(platformKey==='UNITY_WEB'||platformKey==='WEB')
+    &&clean(d.gameId)===clean(order.gameId)
+    ?codingTrace.unityWebDevelopmentAlgorithm:null;
+  const unityWebOwnedPackages=(unityWebAlgorithm?.developmentPackages||[])
+    .filter(row=>!responsibleFiles.length||(row.responsibleFiles||[]).some(file=>
+      responsibleFiles.some(p=>posix(file)===posix(p)||posix(file).endsWith('/'+posix(p)))));
+  const unityWebDevelopmentLines=unityWebAlgorithm?[
+    'unityWebAlgorithm=DEPENDENCY_GRAPH_KAHN_TOPOLOGICAL_ORDER+WEIGHTED_GREEDY_SET_COVER+PREVIOUS_VERIFIED_RUNTIME_DIFFERENTIAL_GROWTH;status=PLANNING_ONLY',
+    'unityWebDependencies='+JSON.stringify({
+      implementationOrder:(unityWebAlgorithm.roleImplementationOrder||[]).slice(0,20),
+      cyclicRoles:unityWebAlgorithm.cyclicRoleDependencies||[],
+      uncovered:unityWebAlgorithm.unresolvedRequirements||[],
+      totalDesignRequirements:(unityWebAlgorithm.designRequirements||[]).length
+    }),
+    ...unityWebOwnedPackages.slice(0,5).map(row=>'unityWebPackage='+JSON.stringify({
+      sequence:row.sequence,files:row.responsibleFiles,requirements:row.designRequirementIds,
+      acceptance:row.acceptance,runtimeVerified:false
+    })),
+    'unityWebDevelopmentSteps='+JSON.stringify(unityWebAlgorithm.sequence||[]),
+    'unityWebGrowthProof=COMPARE_EXACT_MAIN_VERIFIED_BASELINE_WITH_REAL_NEW_WEBGL_MOBILE_BROWSER_INPUT_STATE_CONTENT_NATIVE_3D_AND_THREE_INDEPENDENT_QA_RUNS; source change, manifest or marker alone never passes; preserve current save/balance/network meaning and canonical F0-F9.'
+  ]:[];
+
   // 모델 프롬프트는 작성된 설계 역할과 실제 소스 소유자 후보를 구분한다.
   // 여기에서 코딩·전투·멀티·WebGL 그래픽 PASS를 만들지 않는다.
   const designRoleRows=(codingTrace?.roleBindings||[]).map(row=>({
@@ -2325,8 +2534,38 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     outputs:(row.stateOutputs||[]).map(clean).filter(Boolean).slice(0,2),
     owner:(row.suggestedExistingOwnerFiles||[]).find(file=>!responsibleFiles.length||responsibleFiles.some(p=>posix(file)===posix(p)||posix(file).endsWith('/'+posix(p))))||
       clean(row.suggestedExistingOwnerFiles?.[0]),
-    status:clean(row.codingStatus)
+    status:clean(row.codingStatus),
+    nativeState:clean(row?.nativeStateMapping?.state),
+    missingInputs:(row?.nativeStateMapping?.missingInputKeys||[]).map(clean).filter(Boolean),
+    missingOutputs:(row?.nativeStateMapping?.missingWrittenOutputKeys||[]).map(clean).filter(Boolean)
   }));
+  // 기존 DESIGN_TO_PLATFORM_CODING_CHECK의 단일 읽기 전용 C# 소스 관측을 재사용한다.
+  // 여기서 Unity 파일을 다시 스캔하면 지문과 소스 책임이 이중화되므로 절대 재검사하지 않는다.
+  const unityWebSync=codingTrace?.unityWebSourceSync;
+  const syncedId=clean(order.gameId);
+  const canonicalUnityWebReference=target==='ROBLOX'
+    &&/^[a-z0-9][a-z0-9-]*$/.test(syncedId)
+    &&clean(d.gameId)===syncedId
+    &&posix(order?.source?.root)===`roblox-games/${syncedId}`
+    &&unityWebSync?.kind==='UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC'
+    &&unityWebSync?.canonicalGameId===syncedId
+    &&clean(unityWebSync.canonicalDesignFingerprint)
+      &&clean(unityWebSync.canonicalDesignFingerprint)===clean(codingTrace.designFingerprint)
+    ?{
+      version:unityWebSync.version,kind:unityWebSync.kind,gameId:syncedId,
+      sourceRoot:unityWebSync.unityWebProjectRoot,
+      sourceAvailable:unityWebSync.unityWebSourceAvailable===true,
+      sourceFingerprint:clean(unityWebSync.unityWebScriptsFingerprint)||null,
+      sourceFiles:(unityWebSync.sourceFiles||[]).slice(0,8),
+      methods:(unityWebSync.sourceMethods||[]).slice(0,8).map(row=>({
+        file:clean(row.file),line:Number(row.line)||0,symbol:clean(row.symbol),
+        signature:boundedPromptText(row.signature,180),
+        stateChangeSource:boundedPromptText(row.stateChangeSource,360)
+      })),
+      sourceStatus:clean(unityWebSync.referenceStatus),
+      verified:false,sourceImplementationPassed:false,robloxRuntimeVerified:false,
+      verificationTransferred:false,directCsCopyForbidden:true
+    }:null;
   const antiCloneAxes=(expansion?.antiCloneContract?.distinctionAxes||[]).map(clean).filter(Boolean);
   const continuityQuestions=(expansion?.continuityAndCausality?.questions||[]).map(clean).filter(Boolean);
   // The planner already binds this failure to the current source. Preserve that identity and
@@ -2352,8 +2591,23 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `gameplayContract=${JSON.stringify({coreFun:d?.gameIdentityAndNonNegotiables?.coreFun,coreLoop:d?.gameIdentityAndNonNegotiables?.coreLoop,signatureSystems:d?.gameIdentityAndNonNegotiables?.signatureSystems,systemInterconnections:d?.designImplementationContext?.systemInterconnections,progressionDirection:d?.gameIdentityAndNonNegotiables?.progressionDirection,grammar:d?.identityReinforcement?.causalGrammarEvidence?.existingGameGrammarMap})}`,
     `designCodePlatform=${clean(codingTrace.activePlatform)||'UNKNOWN'};source=${clean(codingTrace?.platformCodingPlans?.find(row=>row.platform===codingTrace.activePlatform)?.canonicalGameSourceRoot)};mode=${clean(codingTrace.multiplayerMode)};minPlayers=${Number(codingTrace.minimumParticipants||2)};runtime=UNVERIFIED`,
     `designCodeBinding=design:${clean(codingTrace.designFingerprint)||'UNVERIFIED'};source:${clean(codingTrace.sourceTreeFingerprint)||'UNVERIFIED'};verify:EXACT_CURRENT_DESIGN_AND_SOURCE_BEFORE_CLAIM`,
-    ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status}`),
-    'designCodeVerification=MAIN/A/B/c/@ must refer to actual authored rule IDs and existing gameplay state dependencies. Inspect and edit executable owner functions, preserve save/balance and authority, verify real gameplay action/state/result/reconnect in the same platform and its independent QA. Markers, plan labels, source presence, UI-only evidence and unexecuted source tests MUST NOT claim implementation PASS.',
+    ...(canonicalUnityWebReference?[
+      'unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE; the canonical shared design governs MAIN/A/B/C/@ and all game-rule semantics. Compare exact Unity Web C# input, method and state transitions with existing Roblox server/shared/client source and implement the matching behavior in native Luau owner functions. Do not copy Unity C# or placeholder resource, level or save constants. Preserve current authorized combat/balance, progression, economy, rewards, save keys and network server authority. Optimize Roblox touch, StreamingEnabled, server Remote validation/rate-limits, bounded replication and client visual pooling only when relevant. A source reference or marker is never gameplay parity, synchronization QA or runtime PASS. Missing/unverified Unity Web does not block independent Roblox coding. Do not create a wrapper, alternate queue or shadow pipeline.',
+      `unityWebSourceReference=${JSON.stringify(canonicalUnityWebReference)}`
+    ]:[]),
+    ...designRoleRows.map(row=>`designCodeRole=${row.role};id=${row.systemId};in=${row.inputs.join(',')};out=${row.outputs.join(',')};owner=${row.owner};status=${row.status};state=${row.nativeState};missingRead=${row.missingInputs.join(',')||'NONE'};missingWrite=${row.missingOutputs.join(',')||'NONE'}`),
+    ...unityWebDevelopmentLines,
+    ...(Array.isArray(codingTrace.gapReasons)&&codingTrace.gapReasons.length
+      ?[`designCodeGap=${codingTrace.gapReasons.slice(0,12).map(clean).join('|')};action=REPAIR_EXACT_EXISTING_SOURCE_AND_REPLAY_NATIVE_RUNTIME`]:[]),
+    ...(codingTrace?.creativeCBinding?[`designCodeCreativeC=${JSON.stringify({
+      designAuthored:codingTrace.creativeCBinding.designAuthored===true,
+      themes:(codingTrace.creativeCBinding.themes||[]).map(row=>clean(row.name)).slice(0,2),
+      genres:(codingTrace.creativeCBinding.genres||[]).map(row=>({role:clean(row.role),name:clean(row.name)})).slice(0,2),
+      interlock:boundedPromptText(clean(codingTrace.creativeCBinding.genreInterlock),220),
+      abEffect:boundedPromptText(clean(codingTrace.creativeCBinding.abGameplayEffect),220),
+      runtimeVerified:false
+    })}`]:[]),
+    'designCodeVerification=MAIN/A/B/C/@ must follow authored rule IDs and creative C cause/effect. Check missingRead and missingWrite in existing native owner functions, and shared state keys on both sides of each design connection. Static identifiers, assignments and role markers are candidates only; implement exact input/state/result/reconnect behavior, preserve save/balance and authority, and independently replay native platform QA. Legacy c is optional in V5. Never claim implementation PASS from source or design markers.',
     'graphicsContract=Follow company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract.minimumSpatialPresentation: final gameplay world must use real native 3D meshes and depth; flat 2D or 2.5D cannot be a final PASS; UI overlays may remain 2D. Bind compatible library models/materials/motion into actual render or scene consumers, not only manifests or preview paths. Registry bindings, dimension labels and source changes alone do not prove runtime graphics. Require current-source build and actual play evidence; report missing evidence as pending.',
     `primaryGoal=${clean(d.thisLoopPrimaryGoal)}`,
     ...production,
@@ -2407,11 +2661,11 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact&&!responsiblePaths.length)return block;
   const keepPrefixes=focusedRobloxVisual?[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
     'robloxProduction','gameProduction',
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
     'antiClone=','continuity=','derivedRuleEvolution=','contentCompletionAcceptance=','contentRule=',
     ...(focusedPresentation?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
@@ -2422,6 +2676,9 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const anchors=lines.filter(line=>line.startsWith('sourceAnchors='))
     .flatMap(line=>line.slice('sourceAnchors='.length).split(/ \| (?=[^|\r\n]+\.(?:luau?|cs|[cm]?js|tsx?|html):\d+ )/));
   const paths=selectedPath?[selectedPath]:responsiblePaths;
+  // 실제 선택된 Roblox 게임과 일치하는 Unity 원본만 참조한다.
+  const platformBinding=lines.find(line=>line.startsWith('designCodePlatform='))||'';
+  const expectedGameId=/;source=roblox-games\/([a-z0-9][a-z0-9-]*)(?:;|$)/.exec(platformBinding)?.[1]||'';
   const owned=paths.length?anchors.filter(anchor=>{
     const file=anchor.match(/^(.*?):(?:\d+|\?) /)?.[1];
     return file&&paths.some(relative=>posix(file)===posix(relative)||posix(file).endsWith('/'+posix(relative)));
@@ -2435,6 +2692,25 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     }
     if(!compact||line===begin||line===end)return[line];
     if(!keepPrefixes.some(prefix=>line.startsWith(prefix)))return[];
+    // 압축/재시도에서도 같은 게임 Unity Web C# 메서드·정확한 SHA는 지킨다.
+    // 전체 C#는 재전송하지 않고 실제 코딩에 필요한 실행 구간만 축약한다.
+    if(line.startsWith('unityWebSourceReference=')){
+      try{
+        const reference=JSON.parse(line.slice('unityWebSourceReference='.length));
+        const referencePath=posix(clean(reference?.path));
+        const scope=/^unity-games\/([a-z0-9][a-z0-9-]*)\/Assets\/Scripts\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*\.cs$/.exec(referencePath);
+        const segments=referencePath.split('/');
+        if(!scope||segments.some(segment=>!segment||segment==='.'||segment==='..')
+          ||(expectedGameId&&scope[1]!==expectedGameId)
+          ||!/^[0-9a-f]{64}$/.test(clean(reference?.sha256)))return[];
+        return['unityWebSourceReference='+JSON.stringify({
+          path:referencePath,sha256:reference.sha256,
+          sourceStatus:reference.sourceStatus,runtimeVerified:false,
+          methods:(Array.isArray(reference.methods)?reference.methods:[]).slice(0,2)
+            .map(row=>({method:clean(row.method),source:boundedPromptText(clean(row.source),200)}))
+        })];
+      }catch{return[];}
+    }
     if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
@@ -2447,21 +2723,24 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
 
   const essentialPrefixes=[
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
-    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','designCodeRole=','designCodeVerification=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
+    'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
     ...(focusedPresentation||focusedRobloxVisual?['visual=']:['gameplay=','progressionWorld=','uxInput=']),
     'platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ];
   const essential=[];
   const seen=new Set();
-  let essentialAnchors=0;
+  let essentialAnchors=0,unityRefsWritten=0;
   for(const line of compactedLines){
     if(line===begin||line===end){essential.push(line);continue;}
     const prefix=essentialPrefixes.find(value=>line.startsWith(value));
     if(!prefix)continue;
-    // 각 디자이너 역할은 고유하다. 1개만 남기면 A/B/c/@ 구현 연결이 사라진다.
+    // 모든 작성된 역할은 고유하다. 하나만 남기면 A/B/C/@의 인과·구현 연결이 사라진다.
     if(prefix==='designCodeRole='||prefix==='volumeSpec='){
-      // KEEP EVERY MAIN/A/B/c/@ ROLE in the concise contract.
+      // KEEP EVERY AUTHORED MAIN/A/B/C/@ ROLE and optional legacy c in the concise contract.
+    }else if(prefix==='unityWebSourceReference='){
+      if(unityRefsWritten>=2)continue;
+      unityRefsWritten+=1;
     }else if(prefix==='sourceAnchors='){
       if(essentialAnchors>=3)continue;
       essentialAnchors+=1;
@@ -2474,7 +2753,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
+    if(line===begin||line===end||line.startsWith('unityWebSourceReference=')||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);
@@ -3120,8 +3399,72 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     ...(contract.flowSelections||[]).flatMap(row=>row.sourceFiles||[]),
     ...(contract.sourceCandidates||[]).flatMap(row=>[...(row.sourceFiles||[]),row.path])
   ].map(posix).filter(file=>file&&!path.isAbsolute(file)&&!file.split('/').includes('..')&&/^assets\//.test(file)&&/\.(?:lua|luau|js|mjs|cs)$/i.test(file))).sort()).filter(file=>/\.(?:lua|luau|js|mjs|cs)$/i.test(file));
-  if(!allSelectedPaths.length)return context;
-  const apiIndex=buildInternalAssetApiIndex({cwd,paths:allSelectedPaths});
+  const apiIndex=allSelectedPaths.length
+    ?buildInternalAssetApiIndex({cwd,paths:allSelectedPaths})
+    :{text:'',representedSourceCount:0,availableSourceCount:0,unavailableSourceCount:0,signatureCount:0,allSelectedSourcesRepresented:true};
+
+  // 코딩 구현에서만 기존 게임 소스와 승인된 작업 내용을 기준으로 바이브 도구를 동적 매칭한다.
+  // 설계 단계와 실행 스케줄은 건드리지 않으며, 라이브러리 수정본은 다음 작업부터 새 해시로 재탐색한다.
+  const target=clean(order?.target||contract?.target).toLowerCase();
+  const existingSource=context.files.filter(row=>row?.editable!==false).map(row=>String(row?.content||'')).join('\n');
+  const taskRequest=clean(order?.goal||order?.selectedTask?.goal);
+  const signalRules=[
+    ['SAVE',/save|loadgame|loadstate|persist|datastore|checkpoint|serializ|storage|세이브|저장|불러오기/i,/save|persist|datastore|checkpoint|serializ|storage|backup|migration/i],
+    ['COMBAT',/combat|attack|damage|hitbox|health|cooldown|battle|피격|공격|전투|체력|데미지|전투판정/i,/combat|attack|damage|hitbox|health|cooldown|battle|fight|skill/i],
+    ['INVENTORY',/inventory|equipment|item|craft|loot|인벤토리|장비|아이템|제작/i,/inventory|equipment|item|craft|loot/i],
+    ['INPUT',/joystick|touch|input|controller|gesture|pointer|조이스틱|터치|조작/i,/input|controller|touch|joystick|gesture/i],
+    ['INTERFACE',/interface|menu|hud|ui|canvas|screen|layout|button|메뉴|화면|버튼|인터페이스/i,/interface|menu|hud|ui|screen|layout|workbench|presentation/i],
+    ['MOTION',/motion|animat|rig|locomotion|retarget|모션|애니|움직임/i,/motion|animat|rig|retarget|skeleton|locomotion/i],
+    ['WORLD',/world|terrain|environment|biome|scene|map|월드|맵|지형/i,/world|terrain|environment|biome|scene|map/i],
+    ['AUDIO',/audio|sound|music|bgm|오디오|사운드|음악/i,/audio|sound|music|bgm/i],
+    ['ASSET',/asset|mesh|material|render|visual|shader|에셋|메쉬|그래픽/i,/asset|mesh|material|render|visual|shader/i],
+    ['NETWORK',/multiplayer|network|replicat|remoteevent|socket|멀티|네트워크/i,/multiplayer|network|replicat|socket|remote/i],
+    ['PERFORMANCE',/performance|optimi|fps|pooling|성능|최적화/i,/performance|optimi|pooling|profiler/i]
+  ];
+  const sourceSignals=signalRules.filter(([,sourcePattern])=>sourcePattern.test(existingSource)||sourcePattern.test(taskRequest));
+  const toolMatches=[];
+  let scannedTools=0;
+  for(const folder of ['assets','tools']){
+    const directory=path.join(cwd,folder);
+    if(!fs.existsSync(directory)||!fs.statSync(directory).isDirectory())continue;
+    for(const entry of fs.readdirSync(directory,{withFileTypes:true}).filter(row=>row.isFile()&&/\.m?js$/i.test(row.name)).sort((a,b)=>a.name.localeCompare(b.name))){
+      const name=entry.name.toLowerCase();
+      if(folder==='tools'&&name==='vibe2-source-worker.mjs')continue;
+      if(/(?:^|[-_.])(?:design|artbook|seed-author)(?:[-_.]|$)/i.test(name))continue;
+      scannedTools++;
+      const platformName=/(?:^|[-_.])(roblox|unity|godot|unreal)(?:[-_.]|$)/i.exec(name)?.[1]?.toLowerCase();
+      if(platformName&&platformName!==target)continue;
+      const relative=folder+'/'+entry.name,absolute=path.join(directory,entry.name);
+      const raw=fs.readFileSync(absolute,'utf8');
+      const exported=[...raw.matchAll(/^\s*export\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let)\s+([A-Za-z_$][\w$]*)/gm)].map(row=>row[1]);
+      const apiNames=unique(exported).sort();
+      if(!apiNames.length)continue;
+      const searchText=name+' '+apiNames.join(' ');
+      const matchedSignals=sourceSignals.filter(([, ,toolPattern])=>toolPattern.test(searchText)).map(row=>row[0]);
+      const coreTool=/^(?:vibe-(?:workbench|engine-adapter|core-runtime)|game-kit|company-vibe2-(?:coding-architecture|expert-development)|vibe2-(?:incremental-qa|learning-motor))\.(?:m?js)$/i.test(name);
+      if(!matchedSignals.length&&!coreTool)continue;
+      const sha256=crypto.createHash('sha256').update(raw).digest('hex');
+      toolMatches.push(Object.freeze({
+        path:relative,kind:folder==='tools'?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY',
+        signals:Object.freeze(matchedSignals),sha256,
+        exports:Object.freeze(apiNames)
+      }));
+    }
+  }
+  const toolMatchFingerprint=crypto.createHash('sha256').update(JSON.stringify({
+    target,sourceSignals:sourceSignals.map(row=>row[0]),
+    matches:toolMatches.map(row=>[row.path,row.sha256,row.signals])
+  })).digest('hex');
+  const vibeDynamicToolMatch=Object.freeze({
+    target,scannedTools,matchedCount:toolMatches.length,
+    sourceSignals:Object.freeze(sourceSignals.map(row=>row[0])),
+    fingerprint:toolMatchFingerprint,
+    matches:Object.freeze(toolMatches),
+    saveAndCombatAuthority:'EXISTING_GAME_SOURCE_ONLY',
+    newGameplaySystemsAuthorized:false,
+    sourceMutationPerformed:false,
+    runtimeVerified:false
+  });
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
   const start=((generation-1)*batchSize)%allSelectedPaths.length;
@@ -3140,7 +3483,7 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     remaining-=bytes;
     apiFiles.push({path:relative,content:excerpt,truncated:bytes<Buffer.byteLength(raw,'utf8'),editable:false,internalAssetApiContext:true});
   }
-  if(!apiFiles.length&&!apiIndex.text)return context;
+  if(!apiFiles.length&&!apiIndex.text&&!vibeDynamicToolMatch.matchedCount)return context;
   return{
     ...context,
     files:[...context.files,...apiFiles],
@@ -3157,18 +3500,32 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     internalAssetApiIndexAvailableSourceCount:apiIndex.availableSourceCount,
     internalAssetApiIndexUnavailableSourceCount:apiIndex.unavailableSourceCount,
     internalAssetApiIndexSignatureCount:apiIndex.signatureCount,
-    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:apiIndex.allSelectedSourcesRepresented===true
+    internalAssetApiIndexAllSelectedSourcesEveryBuildUp:apiIndex.allSelectedSourcesRepresented===true,
+    vibeDynamicToolMatch
   };
 }
 
 function internalAssetApiIndexGuidance(context={}){
   const index=String(context?.internalAssetApiIndex||'').trim();
-  if(!index)return'';
+  const tools=context?.vibeDynamicToolMatch||{};
+  if(!index&&!tools.matchedCount)return'';
   return [
-    '[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]',
-    'Every selected internal source is represented here on every BUILD_UP. Detailed source excerpts still rotate by generation for compactness; rotation changes implementation detail context only and never removes a family, source, or compatible asset from current BUILD_UP eligibility.',
-    index,
-    '[END INTERNAL ASSET API INDEX]'
+    ...(index?[
+      '[INTERNAL ASSET API INDEX - ALL SELECTED SOURCES]',
+      'Every selected internal source is represented here on every BUILD_UP. Detailed source excerpts rotate by generation only and never remove eligibility.',
+      index,
+      '[END INTERNAL ASSET API INDEX]'
+    ]:[]),
+    ...(tools.matchedCount?[
+      '[VIBE LIBRARY AND DEVELOPMENT TOOL DYNAMIC MATCH - CODING ONLY]',
+      'target='+tools.target+'; scanned='+tools.scannedTools+'; matched='+tools.matchedCount+'; fingerprint='+tools.fingerprint,
+      'Source/applicable signals='+tools.sourceSignals.join('|'),
+      ...tools.matches.map(row=>row.path+' ['+row.kind+'] signals='+row.signals.join('|')+' sha256='+row.sha256+' exports='+row.exports.slice(0,16).join('|')+' exportedCount='+row.exports.length),
+      'These are updated, read-only API references, not code to copy blindly. Inspect matching existing implementation and use only verified-compatible functions in the current responsible source. Development tools are NOT game runtime imports and cannot grant new source mutation, release, save, economy, combat or network authority.',
+      'Apply relevant reusable implementation during this authorized coding task; retain each existing game save key, schema, migration requirement, HP, damage, hitbox, cooldown, drop, reward, AI and combat rules. Reuse safe algorithms without rewriting their gameplay meaning. No gameplay/save/combat system is invented solely because a tool matches.',
+      'Each coding cycle rematches updated library/tool exports and content hashes. Reuse unchanged correct bindings; modify only affected responsible code when a compatible update improves it. Design stage, existing BUILD_UP/F0-F9 chain and QA/runtime authority remain unchanged.',
+      '[END VIBE LIBRARY AND DEVELOPMENT TOOL DYNAMIC MATCH]'
+    ]:[])
   ].join('\n');
 }
 
@@ -3921,7 +4278,38 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       motionStyle:order.assetProduction.motionStyle,
       qualityDNA:order.assetProduction.qualityDNA,
       generatedAssetOutputContract:order.assetProduction.generatedAssetOutputContract,
-      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution
+      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution,
+      // 자산 선택기가 확인한 라이선스 원본을 기존 게임 빌드·그래픽 책임자에게 구조화해 전달한다.
+      // 소스 페이지는 다운로드/검증된 원본이 아니므로 게임 모델처럼 직접 바인딩하지 않는다.
+      onDemandLibrarySupply:Object.freeze({
+        selectionIsNotAcquisition:true,
+        nativeBuildRequiresRegisteredAssetAndRealSource:true,
+        sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
+        selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
+          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
+            ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady===true)
+          .map(row=>Object.freeze({
+            family:row.family,action:row.action,reason:row.reason,
+            selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
+            sourcePage:row.externalAcquisition?.sourceUrl||null,
+            directDownload:row.externalAcquisition?.downloadUrl||null,
+            acquisitionState:row.externalAcquisition?.acquisitionState||null,
+            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||null,
+            licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
+            // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
+            sourceModel:row.libraryReuse?.sourceModel||null,
+            sourceSha256:row.libraryReuse?.expectedSourceSha256||null,
+            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true,
+            sourceAssetImmutable:row.libraryReuse?.originalImmutable===true,
+            materialRefinement:row.materialRefinement||null,
+            assetization:row.assetization||null,
+            nativeDccScript:row.assetization?.nativeDccScript||null,
+            sourceModelField:row.assetization?.nativeSourceModelField||null,
+            runtimeVerified:false,productionVerified:false,
+            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
+              ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
+          })))
+      })
     }),
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'
@@ -6621,6 +7009,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     internalAssetApiIndexUnavailableSourceCount:Number(context.internalAssetApiIndexUnavailableSourceCount||0),
     internalAssetApiIndexSignatureCount:Number(context.internalAssetApiIndexSignatureCount||0),
     internalAssetApiIndexAllSelectedSourcesEveryBuildUp:context.internalAssetApiIndexAllSelectedSourcesEveryBuildUp===true,
+    vibeDynamicToolMatchFingerprint:context.vibeDynamicToolMatch?.fingerprint||null,
+    vibeDynamicToolMatchCount:Number(context.vibeDynamicToolMatch?.matchedCount||0),
+    vibeDynamicToolScanCount:Number(context.vibeDynamicToolMatch?.scannedTools||0),
+    vibeDynamicToolMatchedSaveAndCombat:Object.freeze((context.vibeDynamicToolMatch?.sourceSignals||[]).filter(signal=>signal==='SAVE'||signal==='COMBAT')),
+    vibeDynamicToolRuntimeVerified:false,
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',

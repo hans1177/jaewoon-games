@@ -16,6 +16,22 @@ PLATFORM_RUNTIME_REQUIREMENTS = {
 }
 
 
+# Research-informed difficulty curriculum; verified sample retention is mandatory.
+# He et al. 2025 (DA-KD): https://proceedings.mlr.press/v267/he25c.html
+# He et al. 2026 (D2A2): https://www.sciencedirect.com/science/article/pii/S0957417426003064
+# All verified train windows are sampled exactly once per epoch.
+def difficulty_curriculum_weights(rows):
+    priorities = {
+        "simple": 1.0,
+        "bug": 1.15,
+        "regression": 1.3,
+        "unity-build": 1.4,
+        "roblox-release": 1.4,
+        "uefn-release": 1.4,
+    }
+    return [priorities.get(str(row.get("difficulty") or "simple").strip().lower(), 1.0) for row in rows]
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Vibe2 Qwen LoRA/QLoRA trainer")
     parser.add_argument("--train", required=True)
@@ -256,11 +272,12 @@ def main():
 
     class JsonlDataset(torch.utils.data.Dataset):
         def __init__(self, rows):
-            self.rows, self.coverage = [], []
-            for row in rows:
+            self.rows, self.coverage, self.sampling_weights = [], [], []
+            for row, priority in zip(rows, difficulty_curriculum_weights(rows)):
                 windows, coverage = encode_answer_windows(tokenizer, row, args.max_length)
                 self.rows.extend(windows)
                 self.coverage.append(coverage)
+                self.sampling_weights.extend([priority] * len(windows))
         def __len__(self): return len(self.rows)
         def __getitem__(self, index): return self.rows[index]
 
@@ -272,6 +289,21 @@ def main():
             max_len = batch["input_ids"].shape[1]
             batch["labels"] = torch.tensor([label + [-100] * (max_len - len(label)) for label in labels], dtype=torch.long)
             return batch
+
+    # Preserve every verified example, the exact dataset split, and the untouched holdout.
+    # Prioritize difficult windows without replacement or extra model calls.
+    class DifficultyCurriculumTrainer(Trainer):
+        def _get_train_sampler(self, train_dataset=None):
+            dataset = train_dataset if train_dataset is not None else self.train_dataset
+            weights = getattr(dataset, "sampling_weights", [])
+            if len(weights) != len(dataset) or len(set(weights)) <= 1:
+                return super()._get_train_sampler(train_dataset)
+            return torch.utils.data.WeightedRandomSampler(
+                weights=torch.tensor(weights, dtype=torch.double),
+                num_samples=len(weights),
+                replacement=False,
+                generator=torch.Generator().manual_seed(args.seed),
+            )
 
     train_dataset = JsonlDataset(train_rows)
     eval_dataset = JsonlDataset(eval_rows)
@@ -285,7 +317,7 @@ def main():
         report_to=[], seed=args.seed, data_seed=args.seed,
         bf16=use_cuda and torch.cuda.is_bf16_supported(), fp16=use_cuda and not torch.cuda.is_bf16_supported(), remove_unused_columns=False,
     )
-    trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=Collator())
+    trainer = DifficultyCurriculumTrainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=eval_dataset, data_collator=Collator())
     train_result = trainer.train()
     eval_result = trainer.evaluate()
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
@@ -296,6 +328,14 @@ def main():
     metadata = {
         "version": 5,
         "trainingEncoding": "COMPLETE_ANSWER_CAUSAL_WINDOWS_V2",
+        "difficultyCurriculum": {
+            "mode": "DIFFICULTY_PRIORITY_NO_REPLACEMENT" if len(set(train_dataset.sampling_weights)) > 1 else "BASELINE_UNIFORM",
+            "reference": "DA-KD_2025_AND_D2A2_2026_INSPIRED",
+            "verifiedTrainWindowsRetainedPerEpoch": len(train_dataset),
+            "evalAndFixedHoldoutUntouched": True,
+            "sampleDroppingAllowed": False,
+            "additionalTeacherCalls": False,
+        },
         "answerCoverage": {"train": train_dataset.coverage, "eval": eval_dataset.coverage},
         "encodedTrainWindows": len(train_dataset),
         "encodedEvalWindows": len(eval_dataset),

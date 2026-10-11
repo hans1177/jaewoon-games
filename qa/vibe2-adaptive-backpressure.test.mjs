@@ -164,8 +164,8 @@ test('game-primary keeps adaptive telemetry while reserving to fixed repeat-deve
   const files=tempFiles();
   try{
     const tasks=Array.from({length:40},(_,i)=>({
-      id:`adaptive-task-${i}`,gameId:`g-${i}`,target:'web',department:'development',type:'implementation',
-      goal:'adaptive reservation',status:'queued',sourceRoot:`web-games/g-${i}`,responsibleFiles:['index.html']
+      id:`adaptive-task-${i}`,gameId:`g-${i}`,target:'unity',department:'development',type:'implementation',
+      goal:'adaptive reservation',status:'queued',sourceRoot:`unity-games/g-${i}`,responsibleFiles:['Assets/Scripts/GameCore.cs'],evidence:['unity-web-first-stage']
     }));
     fs.writeFileSync(files.queue,JSON.stringify({maxConcurrentTasks:256,tasks}), 'utf8');
     fs.writeFileSync(files.control,JSON.stringify({version:4,currentMax:20,lastReason:'EXTERNAL_CAPACITY_OBSERVED_19'}),'utf8');
@@ -174,9 +174,9 @@ test('game-primary keeps adaptive telemetry while reserving to fixed repeat-deve
       max:'256',min:'4','reservation-id':'adaptive:1','reservation-run':'adaptive','reserved-at':'2026-09-28T00:00:00Z',output:files.output
     });
     assert.equal(result.adaptiveMaxConcurrentTasks,20);
-    assert.equal(result.reservationMaxConcurrentTasks,64);
-    assert.equal(result.selection?.webGameFlow?.target,2);
-    assert.equal(result.tasks.length,2);
+    assert.equal(result.reservationMaxConcurrentTasks,128);
+    assert.equal(result.selection?.webGameFlow?.target,16);
+    assert.equal(result.tasks.length,40);
   }finally{fs.rmSync(files.dir,{recursive:true,force:true});}
 });
 

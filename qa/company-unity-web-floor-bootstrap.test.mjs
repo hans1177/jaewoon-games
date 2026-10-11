@@ -69,6 +69,15 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     const verifiedLearning=JSON.parse(fs.readFileSync('unity-games/test-survival/Assets/verified-external-learning.json','utf8'));
     const runtime=fs.readFileSync('unity-games/test-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
     const build=fs.readFileSync('unity-games/test-survival/Assets/Editor/UnityWebFloorBuild.cs','utf8');
+    // GitHub bootstrap PR must pass git diff --cached --check on generated C#.
+    assert.doesNotMatch(runtime,/[ \t]+(?=\r?$)/m);
+    assert.doesNotMatch(build,/[ \t]+(?=\r?$)/m);
+    const unityModules=JSON.parse(fs.readFileSync('unity-games/test-survival/Packages/manifest.json','utf8')).dependencies;
+    assert.equal(unityModules['com.unity.modules.imgui'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.physics'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.animation'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.audio'],'1.0.0');
+    assert.equal(unityModules['com.unity.modules.jsonserialize'],'1.0.0');
     assert.equal(source.purpose,'UNITY_WEB_DEVELOPMENT_FLOOR');
     assert.equal(source.presentationState,'BOOTSTRAP_REQUIRES_GRAPHICS_BUILDUP');
     assert.equal(source.upperPlatformReady,false);
@@ -77,6 +86,8 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.equal(source.buildUpDirectiveCompletionClaim,false);
     assert.equal(source.buildUpDirectiveId,null);
     assert.equal(source.buildMethod,'UnityWebFloorBuild.BuildWeb');
+    assert.doesNotMatch(build,/VibeWorldSurface/);
+    assert.doesNotMatch(runtime,/BuildApprovedWorldVisuals/);
     assert.equal(source.verifiedLearningApplication.mandatoryApplicationCoveragePct,100);
     assert.equal(source.verifiedLearningApplication.allRetrievedVerifiedExternalLearningApplied,true);
     assert.equal(source.verifiedLearningApplication.retrievedCount,2);
@@ -111,6 +122,11 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
     assert.match(runtime,/enemy\.transform\.Rotate/);
+    // 2D 오브젝트 검출은 유지하면서 읽기 전용 프로브가 3D 금지 토큰을 생성하지 않게 한다.
+    assert.match(runtime,/foreach \(Renderer candidate in FindObjectsByType<Renderer>\(FindObjectsSortMode\.None\)\)/);
+    assert.match(runtime,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+    assert.match(runtime,/spriteGameplayActors == 0/);
+    assert.doesNotMatch(runtime,/foreach \(SpriteRenderer sprite/);
     for(const dir of ['Art','Prefabs','Materials','Animations']){
       assert.equal(fs.existsSync(path.join('unity-games/test-survival/Assets',dir,'unity-web-floor-domain.json')),true);
     }
@@ -259,9 +275,30 @@ test('Unity Web floor bootstrap runs per game without a global workflow serializ
   assert.match(workflow,/git add "unity-games\/\$GAME_ID"/);
 });
 
+test('Unity Web bootstrap promotes only verified same-scope PR and wakes the exact existing WebGL lane',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const caller=parent.slice(parent.indexOf('  dispatch-unity-web-bootstrap:'),parent.indexOf('  continue-cycle:'));
+  assert.match(workflow,/node tools\/company-unity-web-first-stage\.mjs/);
+  assert.ok(workflow.includes('--validate-only=true'));
+  assert.ok(workflow.includes('git cat-file -e "origin/main:unity-games/$GAME_ID"'));
+  assert.ok(workflow.includes('pr_game_tree" != "$staged_game_tree"'));
+  assert.ok(workflow.includes('git diff --name-only "$staged_game_tree" "$pr_game_tree"'));
+  assert.ok(workflow.includes("jq -Sc 'del(.generatedAt)'"));
+  assert.ok(workflow.includes('.author.login=="github-actions[bot]"'));
+  assert.ok(workflow.includes('gh pr merge'));
+  assert.ok(workflow.includes('--match-head-commit'));
+  assert.equal((workflow.match(/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED/g)||[]).length,2);
+  assert.equal((workflow.match(/gh workflow run company-development-confirmed-runtime\.yml/g)||[]).length,2);
+  assert.equal((workflow.match(/-f game_id="\$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED/g)||[]).length,2);
+  assert.match(workflow,/permissions:\n  contents: write\n  pull-requests: write\n  actions: write/);
+  assert.match(caller,/permissions:\n      contents: write\n      pull-requests: write\n      actions: write/);
+  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
+});
+
 test('Unity Web source bootstrap uses slim control capacity',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
-  assert.match(workflow,/\n  bootstrap:\n\s+runs-on:\s*ubuntu-slim/);
+  assert.match(workflow,/\n  bootstrap:\n\s+concurrency:\n\s+group: unity-web-bootstrap-source-\$\{\{ inputs\.game_id \}\}\n\s+cancel-in-progress: false\n\s+runs-on: ubuntu-slim/);
   assert.doesNotMatch(workflow,/runs-on:\s*ubuntu-latest/);
 });
 
@@ -314,6 +351,7 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(manifest.proceduralEnvironment.layoutHash,createHash('sha256').update(rawLayout).digest('hex'));
     assert.equal(manifest.proceduralEnvironment.seed,'unity-web-layout-1');
     const runtime=fs.readFileSync(path.join(project,'Assets/Scripts/UnityWebFloorGame.cs'),'utf8');
+    assert.doesNotMatch(runtime,/[ \t]+(?=\r?$)/m);
     assert.equal(manifest.proceduralEnvironment.approval,'APPROVED_DESIGN_3D_ONLY');
     assert.equal(manifest.proceduralEnvironment.status,'DATA_AUTHORED_RUNTIME_UNVERIFIED');
     assert.equal(manifest.proceduralEnvironment.renderedInRuntime,false);
@@ -329,6 +367,14 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.equal(layout.maxSlopeDegrees,35);
     assert.equal(layout.heights.length,576);
     assert.equal(layout.types.length,576);
+    assert.ok(Array.isArray(layout.waterBodies)&&Array.isArray(layout.earthBiomes));
+    assert.equal(layout.surfaceMaterials.length,576);
+    assert.ok(layout.buildings.every(lot=>lot.eraStrata.length===4&&lot.era));
+    assert.equal(layout.lifePlan.length,0,'no extra NPC or monsters without an authored roster');
+    assert.equal(layout.environmentSync.actualNativeLifeAndWaterBindingsVerified,false);
+    assert.ok(runtime.includes('surface.subMeshCount=7'));
+    assert.ok(runtime.includes('var groups=new List<int>[7]'));
+    assert.ok(runtime.includes('WorldMaterial(new Color(.18f,.40f,.55f)'));
     assert.ok(layout.types.some(type=>type===1),'approved mountain must include ridge');
     assert.ok(layout.roads.length>0);
     assert.ok(layout.buildings.length>0);
@@ -351,6 +397,44 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
+    // 외부 공식 문서의 PBR/재질 공유 원리를 승인된 3D 월드 출력에 적용하고 스트리핑을 방지한다.
+    const build=fs.readFileSync(path.join(project,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
+    assert.match(runtime,/Resources\.Load<Material>\("VibeWorldSurface"\)/);
+    assert.match(runtime,/WORLD_LIT_MATERIAL_UNAVAILABLE/);
+    assert.doesNotMatch(runtime,/Shader\.Find\(/);
+    assert.match(build,/Shader\.Find\("Standard"\)/);
+    assert.match(build,/Shader\.Find\("Universal Render Pipeline\/Lit"\)/);
+    assert.match(build,/Assets\/Resources\/VibeWorldSurface\.mat/);
+    assert.match(build,/AssetDatabase\.CreateAsset\(sourceMaterial,materialPath\)/);
+    assert.match(build,/if\(sourceMaterial==null\)/);
+    assert.doesNotMatch(build,/AlwaysIncludedShaders/);
+    assert.match(runtime,/material\.SetFloat\("_Metallic",/);
+    assert.match(runtime,/material\.SetFloat\("_Smoothness",/);
+    assert.match(runtime,/material\.SetFloat\("_Glossiness",/);
+    assert.match(runtime,/mesh\.RecalculateNormals\(\)/);
+    assert.match(runtime,/roads\.RecalculateNormals\(\)/);
+    assert.match(runtime,/renderer\.receiveShadows=true/);
+    assert.match(runtime,/renderer\.shadowCastingMode=UnityEngine\.Rendering\.ShadowCastingMode\.Off/);
+    assert.match(runtime,/var fragmentMaterial=WorldMaterial/);
+    assert.match(runtime,/renderer\.sharedMaterial=fragmentMaterial/);
+    // 실행 중 원본 Unity MeshRenderer에서 삼각형·법선·PBR 재질을 실측한 후 화면 픽셀과 대조한다.
+    assert.match(runtime,/GetComponentsInChildren<MeshRenderer>\(true\)/);
+    assert.match(runtime,/visual\.GetTopology\(part\)==MeshTopology\.Triangles/);
+    assert.match(runtime,/visual\.normals\.Length==visual\.vertexCount/);
+    assert.match(runtime,/surfaceMaterial\.shader\.isSupported/);
+    assert.match(runtime,/surfaceMaterial\.shader\.name=="Standard"/);
+    assert.match(runtime,/surfaceMaterial\.shader\.name=="Universal Render Pipeline\/Lit"/);
+    assert.match(runtime,/litMaterialCount==materialCount/);
+    assert.match(runtime,/UNITY_WEB_WORLD=RENDER_SURFACE game=/);
+    assert.match(runtime,/source=UNITY_RUNTIME_LIT_MESH/);
+    assert.match(runtime,/WORLD_RENDER_SURFACE_INVALID/);
+    assert.match(runtime,/renderSurfacePass\?"PASS":"REPAIR_REQUIRED"/);
+
+    assert.match(runtime,/WorldMaterial\(shades\[k\],metallicProfiles\[k\],smoothnessProfiles\[k\]\)/);
+    assert.match(runtime,/WorldMaterial\(new Color\(\.35f,\.33f,\.29f\),\.01f,\.18f\)/);
+    assert.match(runtime,/float\[\] metallicProfiles=\{\.02f/);
+    assert.doesNotMatch(runtime,/WorldMaterial\(Color color\)[\s\S]*Unlit\/Color/);
+
     assert.match(runtime,/baked.CombineMeshes\(models\[k\].ToArray\(\),true,true\)/);
     assert.match(runtime,/var models=new List<CombineInstance>\[9\]/);
     assert.match(runtime,/Mathf.Clamp\(lot.material,0,3\)/);
@@ -509,4 +593,39 @@ test('approved procedural Unity bootstrap never overwrites an existing gameplay 
     process.chdir(original);
     fs.rmSync(root,{recursive:true,force:true});
   }
+});
+
+
+test('Unity Web design admission is independent of native F0 and duplicate source reuse is evidence-safe',()=>{
+  const planner=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
+  const bootstrap=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  assert.match(planner,/item\.minimumDesignContract\?\.pass===true&&[\s\S]*?item\.concurrentTargetPlatforms\.includes\('UNITY'\)/);
+  assert.match(planner,/const nativeAdmitted=platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
+  assert.match(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
+  assert.match(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
+  assert.match(bootstrap,/node tools\/company-shared-context\.mjs --output=\/tmp\/unity-web-bootstrap-context\.json/);
+  assert.match(bootstrap,/group: unity-web-bootstrap-source-/);
+  assert.match(bootstrap,/git diff --name-only "\$staged_game_tree" "\$pr_game_tree"/);
+  assert.match(bootstrap,/changed_files" != "unity-web-floor-source.json"/);
+  assert.match(bootstrap,/jq -Sc 'del\(\.generatedAt\)'/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_PR_DESIGN_OR_LEARNING_DIFFERS/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_PR_TIMESTAMP_ONLY_REUSE/);
+  assert.match(bootstrap,/--match-head-commit/);
+  assert.match(bootstrap,/UNITY_WEB_BOOTSTRAP_RUNTIME_QA=REQUIRED_NOT_YET_VERIFIED/);
+  assert.doesNotMatch(bootstrap,/git push origin HEAD:main/);
+});
+
+test('Unity Web bootstrap skips redundant source generation for already-promoted current main game',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
+  const context=workflow.indexOf('Synchronize central worker context before Unity source work');
+  const early=workflow.indexOf('Detect already-promoted canonical Unity source');
+  const generate=workflow.indexOf('Generate canonical Unity Web floor sources');
+  assert.ok(context>=0&&early>context&&generate>early);
+  assert.ok(workflow.includes('origin/main:unity-games/$GAME_ID/ProjectSettings/ProjectVersion.txt'));
+  assert.ok(workflow.includes("echo 'present=true' >> \"$GITHUB_OUTPUT\""));
+  assert.equal(workflow.split("if: steps.existing.outputs.present != 'true'").length-1,4);
+  assert.ok(workflow.includes('if git cat-file -e "origin/main:unity-games/$GAME_ID"'));
+  assert.ok(workflow.includes('git diff --name-only "$staged_game_tree" "$pr_game_tree"'));
+  assert.ok(workflow.includes('--match-head-commit'));
+  assert.doesNotMatch(workflow,/git push origin HEAD:main/);
 });

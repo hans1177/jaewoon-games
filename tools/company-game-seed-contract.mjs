@@ -1,3 +1,4 @@
+// 파일명: tools/company-game-seed-contract.mjs
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -36,7 +37,7 @@ export const GAME_SEED_POLICY = Object.freeze({
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
   gameplaySketchRequired: true,
-  advancedGameplaySketchVersion: 4,
+  advancedGameplaySketchVersion: 5,
   advancedGameplaySketchRequiredForNewSeeds: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
@@ -122,19 +123,36 @@ function validateGameplaySketch(sketch,errors){
       const fusion=grammar.gameplaySystemFusion;
       if(!fusion||typeof fusion!=='object'||Array.isArray(fusion))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion is required');
       else{
-        if(fusion.formula!=='MAIN × A × B × c')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula must be MAIN × A × B × c');
+        if(fusion.formula!==(version>=5?'MAIN × A × B × C':'MAIN × A × B × c'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.formula does not match its sketch version');
         if(!fusion.main||!isNonEmptyString(fusion.main.name)||!isNonEmptyString(fusion.main.playerAction)||!isNonEmptyString(fusion.main.stateContribution))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.main is incomplete');
         const axes=Array.isArray(fusion.majorAxes)?fusion.majorAxes:[];
         const keys=axes.map(row=>String(row?.key||'').toUpperCase());
         if(axes.length!==2||new Set(keys).size!==2||!['A','B'].every(key=>keys.includes(key)))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes must be exactly A/B');
         for(const row of axes)if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.purpose)||!isNonEmptyString(row?.playerChoice)||!isNonEmptyString(row?.stateContribution))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion major axis ${row?.key||'?'} is incomplete`);
         const subs=Array.isArray(fusion.subElements)?fusion.subElements:[];
-        if(subs.length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements requires at least 2 c elements');
+        if(version===4&&subs.length<2)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.subElements requires at least 2 c elements');
         for(const row of subs){
           const supports=uniq(row?.supports).filter(value=>['MAIN','A','B'].includes(value));
           if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.role)||!isNonEmptyString(row?.variationEffect)||supports.length<1)errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion c sub-element ${row?.name||'?'} is incomplete`);
         }
         if(!Array.isArray(fusion.crossSystemRules)||uniq(fusion.crossSystemRules).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.crossSystemRules requires at least 4 items');
+        if(version>=5){
+          if(fusion.formula!=='MAIN × A × B × C')errors.push('GAMEPLAY_SKETCH grammar V5 requires MAIN × A × B × C');
+          for(const row of axes){
+            for(const field of ['systemFamily','sourceMaterial','sourceDomain','materialRule']){
+              if(!isNonEmptyString(row?.[field]))errors.push(`GAMEPLAY_SKETCH A/B ${row?.key||'?'} missing ${field}: system plus unique creative source required`);
+            }
+          }
+          const c=fusion.themeFusion,themes=Array.isArray(c?.themes)?c.themes:[];
+          if(themes.length!==2||new Set(themes.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2||themes.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.causalEffect)||!['GENRE','MATERIAL'].includes(row?.kind)))errors.push('GAMEPLAY_SKETCH C requires two creative theme sources');
+          const genres=Array.isArray(c?.genres)?c.genres:[];
+          if(genres.length!==2||!['PRIMARY','SECONDARY'].every(role=>genres.some(row=>row?.role===role))
+            ||new Set(genres.map(row=>String(row?.name||'').trim().toLowerCase())).size!==2
+            ||genres.some(row=>!isNonEmptyString(row?.name)||!isNonEmptyString(row?.gameplayEffect))
+            ||!isNonEmptyString(c?.genreInterlock))errors.push('GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay');
+          if(!isNonEmptyString(c?.jointWorldRule)||!isNonEmptyString(c?.abGameplayEffect))errors.push('GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world');
+          if(!isNonEmptyString(fusion.main?.name)||!isNonEmptyString(fusion.main?.purpose))errors.push('GAMEPLAY_SKETCH MAIN game topic/identity missing');
+        }
       }
       const delve=grammar.delveLayer;
       if(!delve||typeof delve!=='object'||Array.isArray(delve))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer is required');
@@ -142,7 +160,7 @@ function validateGameplaySketch(sketch,errors){
         if(delve.formulaSuffix!=='+ @'||delve.role!=='DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer must be + @ and not a general system axis');
         if(!Array.isArray(delve.elements)||delve.elements.length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements');
         for(const row of delve.elements||[]){
-          const links=uniq(row?.connectsTo).filter(value=>['MAIN','A','B','c'].includes(value));
+          const links=uniq(row?.connectsTo).filter(value=>(version>=5?['MAIN','A','B','C','c']:['MAIN','A','B','c']).includes(value));
           if(!isNonEmptyString(row?.name)||!isNonEmptyString(row?.discoveryCondition)||!isNonEmptyString(row?.masteryOrInsight)||!isNonEmptyString(row?.gameplayEffect)||links.length<2)errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.delveLayer element ${row?.name||'?'} is incomplete`);
         }
       }
@@ -150,7 +168,7 @@ function validateGameplaySketch(sketch,errors){
       if(!emergent||typeof emergent!=='object'||Array.isArray(emergent))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre is required');
       else{
         for(const field of ['name','definition','whyNotSingleConventionalGenre'])if(!isNonEmptyString(emergent[field]))errors.push(`GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.${field} is required`);
-        if(emergent.grammarFormula!=='MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula is invalid');
+        if(emergent.grammarFormula!==(version>=5?'MAIN × A × B × C + @':'MATERIAL_CAUSAL_GRAMMAR × (MAIN × A × B × c) + @'))errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.grammarFormula is invalid');
         if(emergent.categoryRole!=='SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE')errors.push('GAMEPLAY_SKETCH.novelGameGrammar.emergentGenre.categoryRole must mark category as hint only');
       }
       if(!Array.isArray(grammar.expansionVectors)||uniq(grammar.expansionVectors).length<4)errors.push('GAMEPLAY_SKETCH.novelGameGrammar.expansionVectors requires at least 4 items');
@@ -220,7 +238,24 @@ export function validateGameSeed(input) {
   }
   if (seed.INITIAL_PLAY_MODE !== undefined && !isNonEmptyString(seed.INITIAL_PLAY_MODE)) errors.push('INITIAL_PLAY_MODE must be project-defined and non-empty');
 
-  validateGameplaySketch(seed.GAMEPLAY_SKETCH,errors);
+  // 메인: 중앙 백필의 미작성 문법은 입장권이 아니라 게임디자이너가 직접 작성할 작업이다.
+  // 입력의 기본 규칙은 계속 검사하고, 최종 MAIN/A/B/C/@ 설계 심사는 별도 원본 설계 검증에서 그대로 강제한다.
+  const provisionalGrammar=seed.novelGrammarBackfill?.authoringPending===true
+    &&String(seed.novelGrammarBackfill?.source||'')==='CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009'
+    &&Number(seed.GAMEPLAY_SKETCH?.version||0)>=5;
+  const deferredAuthoringIssues=new Set([
+    'GAMEPLAY_SKETCH.novelGameGrammar.delveLayer.elements requires at least 4 @ elements',
+    'GAMEPLAY_SKETCH C requires two creative theme sources',
+    'GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay',
+    'GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world'
+  ]);
+  const sketchErrors=[];
+  validateGameplaySketch(seed.GAMEPLAY_SKETCH,sketchErrors);
+  for(const issue of sketchErrors){
+    const creativeAxesUnwritten=/^GAMEPLAY_SKETCH A\/B [AB] missing (?:systemFamily|sourceMaterial|sourceDomain|materialRule): system plus unique creative source required$/.test(issue);
+    if(provisionalGrammar&&(deferredAuthoringIssues.has(issue)||creativeAxesUnwritten))continue;
+    errors.push(issue);
+  }
   validateMarketNumericClaims(seed.MARKET_EVIDENCE_SUMMARY, errors);
   if (seed.DIRECT_COPY === true || seed.COPY_SOURCE_CODE === true || seed.COPY_ASSETS === true) errors.push('direct copying of source code or protected expression/assets is forbidden');
 

@@ -181,11 +181,12 @@ jobs:
               &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
             )
             .sort((a,b)=>Number(a.id)-Number(b.id))[0];
-          if(activeCentralBatch){
+          if(activeCentralBatch&&String(activeCentralBatch.head_sha||'')){
             for(const stale of runs.filter(r=>
               r.path==='.github/workflows/company-development-confirmed-runtime.yml'
               &&String(r.event||'')==='workflow_dispatch'
               &&queued.has(String(r.status||'').toLowerCase())
+              &&String(r.head_sha||'')===String(activeCentralBatch.head_sha)
               &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
             ))add(stale,'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH');
           }
@@ -371,11 +372,15 @@ jobs:
               &&String(r.head_sha||'')!==currentMain
             ))add(stale,'VIBE2_STALE_UNSTARTED_MAIN_PUSH_GAME_PRIMARY_WAKE');
 
+            // 메인: 실제 실행 제목에는 워크플로 이름과 레인이 붙는다.
+            // 결과 있는 neuron 이벤트·다른 브랜치·현재 main·실행 중인 것은 보존한다.
             for(const stale of runs.filter(r=>
               r.path==='.github/workflows/vibe2-continuous-core.yml'
-              &&String(r.display_title||'')==='vibe2-fanin-refill'
+              &&String(r.event||'')==='repository_dispatch'
+              &&String(r.display_title||'').startsWith('Vibe2 Continuous Core · vibe2-fanin-refill · ')
               &&queued.has(String(r.status||'').toLowerCase())
               &&String(r.head_branch||'')==='main'
+              &&String(r.head_sha||'')
               &&String(r.head_sha||'')!==currentMain
             ))add(stale,'VIBE2_STALE_UNSTARTED_FANIN_REFILL');
           }

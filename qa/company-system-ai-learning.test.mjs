@@ -28,6 +28,83 @@ test('ordinary System AI result promotes only after verified Primary-AI acceptan
   assert.equal(result.mastery.knowledgeAttribution.entries['CODE_PATTERN:prior-router'].verifiedApplications,1);
 });
 
+test('verified Unity Web policy and Vibe3 QA bottleneck teaches a reusable cause without repeating failed strategies',()=>{
+  const repair={
+    id:'verified-unity-web-policy-bottleneck',taskType:'bottleneck-repair',
+    department:'infrastructure',status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',
+    failureClass:'CENTRAL_POLICY_OR_SHARED_CONTEXT_MISMATCH',
+    failureStage:'VIBE3_ENGINE_CONTRACT',
+    failureSignature:'UNITY_WEB_PHASE_OLD_CONTRACT',
+    goal:'repair Unity Web Vibe3 policy phase, owner Android hold and QA workflow contract mismatch',
+    responsibleFiles:['.github/workflows/vibe3-engine-contract.yml','company-learning/vibe3-engine-contract.json'],
+    sourceMutationRequired:true,verificationCommands:['node qa/vibe3-engine.test.mjs'],
+    failedStrategyFingerprints:['f'.repeat(64)],
+    evidence:['primary-ai-review:PASS','verification:success','actions-run:38099095941',
+      'changed-file:.github/workflows/vibe3-engine-contract.yml','changed-file:company-learning/vibe3-engine-contract.json',
+      'source-mutation-sha:'+'a'.repeat(40)]
+  };
+  const first=promoteVerifiedSystemAiLearning({
+    systemAiInput:{tasks:[repair]},experienceInput:{version:3,records:[]},
+    libraryInput:{patterns:[]}
+  });
+  assert.equal(first.experienceAdded,1);
+  assert.equal(first.patternsAdded,1);
+  const lesson=first.experience.records[0];
+  assert.match(lesson.problem,/VIBE3_ENGINE_CONTRACT/);
+  assert.ok(lesson.avoidPatterns.includes('RECHECK_CURRENT_MAIN_POLICY_AND_EXACT_FAILED_STAGE_BEFORE_REPEATING_UNITY_WEB_PHASE_OLD_CONTRACT'));
+  assert.ok(lesson.avoidPatterns.includes('FAILED_STRATEGY_SHA256_'+'f'.repeat(64)));
+  assert.equal(lesson.verified,true);
+  assert.equal(lesson.rawModelOutputStored,false);
+  const next=buildSystemAiLearningContext({
+    task:{id:'next-vibe-policy-bottleneck',taskType:'bottleneck-repair',
+      goal:repair.goal,failureSignature:repair.failureSignature,
+      failureStage:repair.failureStage,responsibleFiles:repair.responsibleFiles},
+    experienceInput:first.experience,codePatternsInput:first.library,masteryInput:{}
+  });
+  assert.ok(next.exactKnowledgeIds.includes('EXPERIENCE:'+lesson.id));
+  assert.ok(next.exactKnowledgeIds.includes('CODE_PATTERN:'+first.library.patterns[0].id));
+  assert.match(next.guidance,/STALE_QA_TRIANGULATION/);
+  assert.match(next.guidance,/Vibe3 실행 계약/);
+  assert.equal(next.rawModelOutputIncluded,false);
+  assert.equal(next.authorityExpanded,false);
+  const again=promoteVerifiedSystemAiLearning({
+    systemAiInput:first.queue,experienceInput:first.experience,libraryInput:first.library
+  });
+  assert.equal(again.experienceAdded,0);
+  assert.equal(again.patternsAdded,0);
+});
+
+test('Vibe refuses to learn unverified stale-QA fixes or QA gate weakening',()=>{
+  const base={
+    id:'stale-vibe3-qa',taskType:'qa-contract-repair',failureClass:'STALE_QA_CONTRACT',
+    status:'done',lastOutcome:'PRIMARY_AI_ACCEPTED',
+    failureStage:'VIBE3_ENGINE_CONTRACT',failureSignature:'UNITY_WEB_PHASE_STALE_QA',
+    goal:'align old policy QA with current verified owner Unity Web policy',
+    sourceMutationRequired:true,responsibleFiles:['.github/workflows/vibe3-engine-contract.yml'],
+    evidence:['primary-ai-review:PASS','verification:success','actions-run:1',
+      'changed-file:.github/workflows/vibe3-engine-contract.yml','source-mutation-sha:'+'b'.repeat(40)]
+  };
+  const run=task=>promoteVerifiedSystemAiLearning({systemAiInput:{tasks:[task]},experienceInput:{records:[]},libraryInput:{patterns:[]}});
+  assert.equal(run(base).experienceAdded,0);
+  assert.equal(run({...base,evidence:[...base.evidence,'qa-contract-drift:VERIFIED','current-policy-implementation-agreement:PASS']}).experienceAdded,0);
+  const valid=run({...base,evidence:[...base.evidence,
+    'qa-contract-drift:VERIFIED','current-policy-implementation-agreement:PASS','qa-gate-weakening:NO']});
+  // 실제 worker의 리뷰는 정책·구현 대조를 확인한 다음 자체 PASS 증거만 출력할 수 있다.
+  // 같은 검증을 통과했는데 별도의 수동 승인 표식이 없다는 이유로 학습을 놓치지 않는다.
+  const reviewed=run({...base,evidence:[...base.evidence,
+    'system-ai-qa-contract-review:PASS','qa-contract-drift:VERIFIED','qa-gate-weakening:NO']});
+  assert.equal(reviewed.experienceAdded,1);
+  assert.equal(reviewed.patternsAdded,1);
+  const unchecked=run({...base,evidence:[...base.evidence,
+    'system-ai-qa-contract-review:PASS','qa-contract-drift:VERIFIED']});
+  assert.equal(unchecked.experienceAdded,0);
+  assert.equal(valid.experienceAdded,1);
+  assert.equal(valid.patternsAdded,1);
+  assert.ok(valid.experience.records[0].avoidPatterns.includes('STALE_QA_REQUIRES_CURRENT_POLICY_IMPLEMENTATION_TRIANGULATION'));
+  assert.ok(valid.experience.records[0].avoidPatterns.includes('QA_CONTRACT_REPAIR_MUST_PRESERVE_NATIVE_3D_BROWSER_QA_AND_REGRESSION'));
+  assert.equal(valid.queue.tasks[0].learningPromotion,'PROMOTED');
+});
+
 test('unreviewed System AI PASS candidate is not promoted',()=>{
   const result=promoteVerifiedSystemAiLearning({
     systemAiInput:{tasks:[{
@@ -248,6 +325,8 @@ test('bottleneck System AI receives policy-grounded advanced causal optimization
   ])assert.ok(ids.includes(required),required);
   assert.match(context.guidance,/POLICY-GROUNDED ADVANCED BOTTLENECK PLAYBOOK/);
   assert.match(context.guidance,/STALE_QA_TRIANGULATION/);
+  assert.match(context.guidance,/Vibe3 실행 계약 투영값/);
+  assert.match(context.guidance,/Unity Web 실제 3D/);
   assert.match(context.guidance,/MULTI_HYPOTHESIS_CAUSAL_REPAIR/);
   assert.equal(context.rawModelOutputIncluded,false);
   assert.equal(context.advisoryOnly,true);

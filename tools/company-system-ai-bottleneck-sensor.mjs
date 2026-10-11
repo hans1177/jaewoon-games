@@ -9,6 +9,7 @@ import { systemAiImpactProfile } from './company-system-ai-queue.mjs';
 const clean=v=>String(v??'').trim();
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const terminal=s=>['done','completed','cancelled','verified','failed'].includes(clean(s).toLowerCase());
+const VERIFIED_EXTERNAL_APPLICATION_FAILURE=/\b(?:VERIFIED_EXTERNAL_LEARNING_(?:MISSING|PARTIAL_APPLICATION|TRUNCATED|SILENTLY_IGNORED|NATIVE_SOURCE_STALE)|RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED)\b/i;
 
 function failureSignature(task={}){
   if(clean(task.failureSignature))return clean(task.failureSignature);
@@ -247,15 +248,73 @@ export function analyzeSystemAiBottlenecks({
     })
     .sort((a,b)=>b.size-a.size||a.signature.localeCompare(b.signature));
 
+  // 예약 추천은 실제 예약기와 같은 선행 작업·대표 canary 조건을 사용한다.
+  // 그렇지 않으면 미완료 dependency 하나가 targeted reserve 전체를 실패시킨다.
+  const taskById=new Map(tasks.map(task=>[clean(task.id),task]));
+  const dependencyBlocked=queued.filter(task=>(task.dependencies||[])
+    .some(id=>clean(taskById.get(clean(id))?.status).toLowerCase()!=='done'));
+  const dependencyBlockedIds=new Set(dependencyBlocked.map(task=>clean(task.id)));
+  const activeCanarySignatures=new Set(running.map(task=>impactProfiles.get(clean(task.id)))
+    .filter(profile=>profile?.commonBottleneck===true&&clean(profile.signature))
+    .map(profile=>clean(profile.signature)));
   const disjointQueued=[];
-  for(const task of [...queued].sort((a,b)=>(impactProfiles.get(clean(b.id))?.score||0)-(impactProfiles.get(clean(a.id))?.score||0)
-    ||rankPriority(b.priority)-rankPriority(a.priority)
-    ||clean(a.createdAt).localeCompare(clean(b.createdAt)))){
+  for(const task of queued.filter(task=>!dependencyBlockedIds.has(clean(task.id)))
+    .sort((a,b)=>(impactProfiles.get(clean(b.id))?.score||0)-(impactProfiles.get(clean(a.id))?.score||0)
+      ||rankPriority(b.priority)-rankPriority(a.priority)
+      ||clean(a.createdAt).localeCompare(clean(b.createdAt)))){
     if([...running,...disjointQueued].some(other=>fileOverlap(task,other)))continue;
+    const profile=impactProfiles.get(clean(task.id));
+    const signature=clean(profile?.signature);
+    if(profile?.commonBottleneck===true&&signature){
+      if(activeCanarySignatures.has(signature))continue;
+      activeCanarySignatures.add(signature);
+    }
     disjointQueued.push(task);
   }
 
   const development=developmentFloorSnapshot(developmentQueue);
+
+  // 실제 실패 코드만 감지한다. 선택형 외부 UX 알고리즘의 단순 매칭은 적용 실패가 아니다.
+  const externalLearningApplicationTasks=[];
+  for(const task of gameTasks){
+    const status=clean(task.status).toLowerCase();
+    if(['done','completed','cancelled','verified'].includes(status))continue;
+    const evidence=uniq(task.evidence);
+    const currentFanInMissing=clean(task.lastOutcome)==='FAN_IN_REVIEW_BLOCKED_REQUEUE'
+      ?[...evidence].reverse().find(x=>x.startsWith('package-review-missing:'))||'':'';
+    const failureText=[task.failureSignature,task.blocker,task.lastOutcome,currentFanInMissing,
+      ...evidence.filter(x=>/^(?:failure-cause:|failure-stage:|system-steward:failure-signature:|recovery-exact-stage:)/i.test(x)).slice(-12)].map(clean).join(' ');
+    const match=failureText.match(VERIFIED_EXTERNAL_APPLICATION_FAILURE);
+    if(!match)continue;
+    const signature=match[0].toUpperCase();
+    const responsibleFiles=uniq(task.responsibleFiles);
+    const gameSourceOwned=responsibleFiles.some(file=>/^(?:web|roblox|unity|unreal|godot)-games\//.test(file));
+    const securityBoundary=signature==='RAW_COMMERCIAL_EXPRESSION_COPY_DETECTED';
+    externalLearningApplicationTasks.push({
+      taskId:clean(task.id),gameId:clean(task.gameId)||null,status,signature,
+      responsibleFiles,sourceRoot:clean(task.sourceRoot)||null,
+      recoveryOwner:securityBoundary?'SECURITY_IMMUNE_REVIEW':gameSourceOwned?'VIBE2_VIBE3':'SYSTEM_AI',
+      securityReviewRequired:securityBoundary,
+      recoveryAlreadyQueued:evidence.some(x=>x.startsWith('recovery-queue:')),
+      exactStage:clean(task.currentStep||task.phase)||null,
+      automaticPassClaim:false
+    });
+  }
+  const developmentLearningRows=development.rows.filter(row=>VERIFIED_EXTERNAL_APPLICATION_FAILURE.test(clean(row.failureSignature)));
+  const externalLearningApplications={
+    gameTaskFailures:externalLearningApplicationTasks,
+    developmentFloorFailures:developmentLearningRows.map(row=>({
+      gameId:row.gameId,stage:row.stage,signature:row.failureSignature,classification:row.classification,
+      automaticPassClaim:false
+    })),
+    gameTaskFailureCount:externalLearningApplicationTasks.length,
+    developmentFloorFailureCount:developmentLearningRows.length,
+    securityReviewRequiredCount:externalLearningApplicationTasks.filter(row=>row.securityReviewRequired).length,
+    nativeRepairCount:externalLearningApplicationTasks.filter(row=>row.recoveryOwner==='VIBE2_VIBE3').length,
+    systemRepairCount:externalLearningApplicationTasks.filter(row=>row.recoveryOwner==='SYSTEM_AI').length,
+    optionalAlgorithmMatchesAreNotFailures:true,
+    releaseGateUnchanged:true
+  };
   const caretakerBacklog={};
   for(const task of gameTasks){
     if(task?.postReleaseFocused!==true||terminal(task.status))continue;
@@ -311,6 +370,8 @@ export function analyzeSystemAiBottlenecks({
   const actions=[];
   if(stale.length)actions.push('RECLAIM_STALE_RESERVATIONS');
   if(development.commonFailureCohorts.length)actions.push('DEVELOPMENT_FLOOR_COMMON_FAILURE_CANARY');
+  if(externalLearningApplications.nativeRepairCount||externalLearningApplications.systemRepairCount||externalLearningApplications.developmentFloorFailureCount)actions.push('RECOVER_VERIFIED_EXTERNAL_LEARNING_AT_EXACT_GAME_OR_SYSTEM_STAGE');
+  if(externalLearningApplications.securityReviewRequiredCount)actions.push('ROUTE_EXTERNAL_LEARNING_SECURITY_TO_IMMUNE_REVIEW');
   if(development.dualPlatformPreflightMismatchCount)actions.push('RETRY_EXACT_DUAL_PLATFORM_PREFLIGHT_AFTER_RESPONSIBLE_FIX');
   if(development.pendingCandidateCount)actions.push('RECOVER_VERIFIED_F0_PRIVATE_RUNTIME_HANDOFF');
   if(development.qualityBlockedCount)actions.push('REPAIR_SOURCE_QUALITY_BEFORE_RUNTIME_HANDOFF');
@@ -333,13 +394,14 @@ export function analyzeSystemAiBottlenecks({
     version:1,
     kind:'company-system-ai-bottleneck-snapshot',
     observedAt:new Date(at).toISOString(),
-    queueDepth:{total:tasks.length,queued:queued.length,running:running.length,awaitingSupervisor:awaiting.length},
+    queueDepth:{total:tasks.length,queued:queued.length,running:running.length,awaitingSupervisor:awaiting.length,dependencyBlocked:dependencyBlocked.length},
     staleReservations:stale.map(t=>({taskId:clean(t.id),reservationId:clean(t.reservationId)||null,reservedAt:clean(t.reservedAt)||null})),
     commonFailureCohorts,
     representativeCanaryTaskIds:uniq(commonFailureCohorts.map(x=>x.representativeTaskId)),
     disjointQueuedTaskIds:disjointQueued.map(t=>clean(t.id)).filter(Boolean),
     caretakerHotspots,
     development,
+    externalLearningApplications,
     workflow:{pendingRuns,reservationWaitMs,fanInWaitMs,supervisorReviewWaitMs,observedRunnerQueuedRuns,runnerQueuedRuns,runnerInProgressRuns,observedPrimaryGameQueuedRuns,primaryGameQueuedRuns,joblessOrphanQueuedRuns,joblessOrphanPrimaryRuns,duplicateWorkflowRuns,stalePrimaryRuns,runnerPressure},
     configuredBatch:configured,
     reserveCeiling,
@@ -399,6 +461,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   });
   if(clean(a.output)){fs.mkdirSync(path.dirname(a.output),{recursive:true});fs.writeFileSync(a.output,JSON.stringify(result,null,2)+'\n');}
   console.log('SYSTEM_AI_BOTTLENECK_QUEUE_DEPTH='+result.queueDepth.queued);
+  console.log('SYSTEM_AI_BOTTLENECK_DEPENDENCY_BLOCKED='+result.queueDepth.dependencyBlocked);
   console.log('SYSTEM_AI_DEVELOPMENT_FLOOR_GAMES='+result.development.total);
   console.log('SYSTEM_AI_DEVELOPMENT_F0_EXACT='+result.development.exactF0Count);
   console.log('SYSTEM_AI_DEVELOPMENT_DUAL_PLATFORM_PREFLIGHT_MISMATCH='+result.development.dualPlatformPreflightMismatchCount);
@@ -409,6 +472,11 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_SERVER_SIMULATION_NOT_RUNNING='+result.development.firstFrameServerSimulationNotRunningCount);
   console.log('SYSTEM_AI_DEVELOPMENT_FIRST_FRAME_GROUNDING_FAILED='+result.development.firstFrameGroundingFailedCount);
   console.log('SYSTEM_AI_DEVELOPMENT_SHARED_FAILURE_COHORTS='+result.development.commonFailureCohorts.length);
+  console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_GAME_FAILURES='+result.externalLearningApplications.gameTaskFailureCount);
+  console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_FLOOR_FAILURES='+result.externalLearningApplications.developmentFloorFailureCount);
+  console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_VIBE_REPAIRS='+result.externalLearningApplications.nativeRepairCount);
+  console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SYSTEM_REPAIRS='+result.externalLearningApplications.systemRepairCount);
+  console.log('SYSTEM_AI_VERIFIED_EXTERNAL_APPLICATION_SECURITY_REVIEW='+result.externalLearningApplications.securityReviewRequiredCount);
   console.log('SYSTEM_AI_BOTTLENECK_STALE_RESERVATIONS='+result.staleReservations.length);
   console.log('SYSTEM_AI_BOTTLENECK_COMMON_FAILURE_COHORTS='+result.commonFailureCohorts.length);
   console.log('SYSTEM_AI_BOTTLENECK_RECOMMENDED_BATCH='+result.recommendedBatch);

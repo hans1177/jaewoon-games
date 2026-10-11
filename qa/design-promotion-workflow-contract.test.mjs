@@ -9,9 +9,25 @@ const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runti
 const source=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
 
 test('canonical design runtime dedupes execution without cancelling active work',()=>{
-  assert.match(designRuntime,/group:\s*company-seed-design-runtime/);
+  assert.match(designRuntime,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}/);
   assert.match(designRuntime,/cancel-in-progress:\s*false/);
-  assert.doesNotMatch(designRuntime,/group: company-seed-design-runtime-\$\{\{/);
+  assert.match(designRuntime,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
+});
+
+test('V5 authored identity core is promoted during detailed design, without a new pipeline',()=>{
+  assert.match(designRuntime,/group: company-seed-design-runtime-\$\{\{ github\.sha \}\}\s+cancel-in-progress: false\s+queue: max/);
+  assert.match(designRuntime,/cp\.designerSeed\?\.contentDigest/);
+  assert.match(designRuntime,/GH_TOKEN: \$\{\{ github\.token \}\}/);
+  const persist=designRuntime.indexOf('DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES');
+  const verify=designRuntime.indexOf('s.authorRole==="GAME_DESIGNER_AI"');
+  const dispatch=designRuntime.indexOf('gh workflow run company-design-promotion-sync.yml');
+  assert.ok(persist>=0&&verify>persist&&dispatch>verify);
+  assert.match(designRuntime,/s\.contentDigest===digest/);
+  assert.match(designRuntime,/s\.fingerprint===cp\.fingerprint/);
+  assert.match(designRuntime,/cp\.designerSeed\?\.contentDigest===digest/);
+  assert.match(designRuntime,/promotion_dispatch_marker/);
+  assert.doesNotMatch(designRuntime,/gh workflow run company-development-roblox-runtime\.yml/);
+  assert.doesNotMatch(designRuntime,/gh workflow run company-development-unity-runtime\.yml/);
 });
 
 test('partial design-runtime failure still evaluates each persisted minimum-design-ready game',()=>{
@@ -54,7 +70,7 @@ test('promotion persists only runtime state while machine policy comes from main
   assert.doesNotMatch(promotion,/item\.webValidationRequired!==false\|\|item\.musicValidationRequired!==false/);
   const calls=promotion.match(/node tools\/design-only-promotion-sync\.mjs/g)||[];
   assert.ok(calls.length>=2);
-  assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs/);
+  assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json company-learning\/company-log-map\.json company-learning\/company-architecture-map\.json company-learning\/security-immune-system\.json tools\/design-only-promotion-sync\.mjs/);
   const policyCheckout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
   const policyReset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
   for(const dependency of ['company-homepage-platform-exposure-sync','company-platform-exposure-control','company-shared-context','company-direct-native-design-migration']){
@@ -138,4 +154,39 @@ test('design control jobs use slim runners while per-game design cycles retain f
   assert.match(finish,/if: always\(\) && !cancelled\(\) && needs\.resolve-seed-targets\.outputs\.run == 'true'/);
   assert.match(finish,/- name: Continue seed supply and immediately repeat failed design gates\n\s+if: always\(\) && !cancelled\(\)/);
   assert.match(finish,/gh workflow run company-seed-design-runtime\.yml --repo "\$GITHUB_REPOSITORY" --ref main/);
+});
+
+test('canonical promotion safely discards ephemeral LFS art modifications before runtime checkout',()=>{
+  const persist=promotion.slice(promotion.indexOf('- name: Persist promoted state to company runtime branch'),promotion.indexOf('- name: Dispatch native development and immediate Vibe planner refill'));
+  assert.ok(persist.length>1000);
+  assert.match(persist,/git reset --hard HEAD\s+git clean -fd/);
+  assert.match(persist,/git checkout -f -B design-promotion-persist "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(persist,/git reset --hard "origin\/\$COMPANY_RUNTIME_BRANCH"/);
+  assert.match(persist,/node tools\/design-only-promotion-sync\.mjs/);
+  assert.match(persist,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
+});
+
+test('promotion imports the canonical V5 grammar validator and all transitive seed dependencies from main',()=>{
+  const checkout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
+  const reset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
+  for(const file of ['tools/company-minimum-design-contract.mjs','tools/company-game-seed-contract.mjs','tools/company-design-gate-scoring-v2.mjs']){
+    assert.ok(checkout.split(/\s+/).includes(file),'missing source import in runtime checkout: '+file);
+    assert.ok(reset.split(/\s+/).includes(file),'runtime must never commit code modules: '+file);
+  }
+  assert.match(promotion,/node tools\/design-only-promotion-sync\.mjs/);
+});
+
+test('promotion loads latest four central policies into the isolated runtime worktree',()=>{
+  const checkout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
+  const reset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
+  const policyFiles=[
+    'company-learning/platform-release-roadmap.json',
+    'company-learning/company-log-map.json',
+    'company-learning/company-architecture-map.json',
+    'company-learning/security-immune-system.json'
+  ];
+  for(const file of policyFiles){
+    assert.ok(checkout.split(/\s+/).includes(file),'missing runtime validation policy: '+file);
+    assert.ok(reset.split(/\s+/).includes(file),'canonical policy must not be persisted to runtime branch: '+file);
+  }
 });

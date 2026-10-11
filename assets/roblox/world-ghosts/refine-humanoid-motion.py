@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parent
 PARSER = argparse.ArgumentParser()
@@ -536,6 +536,80 @@ def crouch_pose(t):
     apply_secondary(t, drive=0.52, turn=weight * 0.22)
 
 
+
+# 실제 접지 보정: 관절 키포즈를 보존하고 지면을 디딘 발의 횡(X)/수직(Z)
+# 지점만 유지한다. Root/Hips의 게임 이동, 전진(Y) 거리는 수정하지 않는다.
+# 임의의 QA 한도 완화나 검증 생략이 아니라 실제 FootL/FootR 위치 키를 굽는다.
+GAIT_STANCE_BY_PACE = {
+    'walk': 0.30, 'jog': 0.27, 'run': 0.22, 'sprint': 0.18, 'backward': 0.28,
+}
+GAIT_NAME_TO_PACE = {
+    'hero_walk_hq': 'walk',
+    'hero_jog_hq': 'jog',
+    'hero_run_hq': 'run',
+    'hero_sprint_hq': 'sprint',
+    'hero_backward_hq': 'backward',
+}
+GAIT_CONTACT_ANCHORS = {}
+for _pace in GAIT_STANCE_BY_PACE:
+    for _foot, _phase in [('FootL', 0.0), ('FootR', 0.5)]:
+        reset_pose()
+        gait_pose(_phase, _pace)
+        bpy.context.view_layer.update()
+        _joint = RIG.pose.bones[_foot]
+        GAIT_CONTACT_ANCHORS[(_pace, _foot)] = RIG.matrix_world @ _joint.matrix.translation
+reset_pose()
+
+
+def stabilize_planted_feet(t, pace):
+    """Keep lateral/vertical foot contact while allowing authored forward in-place gait."""
+    stance = GAIT_STANCE_BY_PACE[pace]
+    for side, phase_offset in [('L', 0.0), ('R', 0.5)]:
+        phase = (t + phase_offset) % 1.0
+        if phase <= stance:
+            pin_weight = 1.0
+        elif phase < stance + 0.12:
+            pin_weight = 1.0 - smoothstep((phase - stance) / 0.12)
+        elif phase > 0.85:
+            pin_weight = smoothstep((phase - 0.85) / 0.15)
+        else:
+            continue
+        if pin_weight <= 1e-7:
+            continue
+
+        bone_name = 'Foot' + side
+        bone = RIG.pose.bones[bone_name]
+        original_location = bone.location.copy()
+        bpy.context.view_layer.update()
+        current = RIG.matrix_world @ bone.matrix.translation
+        desired = GAIT_CONTACT_ANCHORS[(pace, bone_name)]
+        # Allow forward motion (Y), but preserve planted lateral (X) and height (Z).
+        delta_world = Vector((desired.x - current.x, 0.0, desired.z - current.z)) * pin_weight
+        if delta_world.length <= 1e-8:
+            continue
+
+        # Solve a real local-space foot translation from the evaluated animated rig.
+        # Do not assume foot-parent axes align with global axes.
+        basis = []
+        step = 0.001
+        for axis in range(3):
+            offset = Vector((0.0, 0.0, 0.0))
+            offset[axis] = step
+            bone.location = original_location + offset
+            bpy.context.view_layer.update()
+            after = RIG.matrix_world @ bone.matrix.translation
+            basis.append((after - current) / step)
+        local_to_world = Matrix((
+            (basis[0].x, basis[1].x, basis[2].x),
+            (basis[0].y, basis[1].y, basis[2].y),
+            (basis[0].z, basis[1].z, basis[2].z),
+        ))
+        if abs(local_to_world.determinant()) < 1e-8:
+            raise AssertionError('FOOT_PLANT_LOCAL_AXES_SINGULAR:'+pace+':'+side)
+        bone.location = original_location + local_to_world.inverted() @ delta_world
+        bpy.context.view_layer.update()
+
+
 def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
@@ -607,6 +681,8 @@ def animate(name, normalized_time):
         crouch_pose(t)
     else:
         raise AssertionError('UNKNOWN_CLIP:' + name)
+    if name in GAIT_NAME_TO_PACE:
+        stabilize_planted_feet(t, GAIT_NAME_TO_PACE[name])
 
 
 for clip_name, duration in CLIPS.items():
@@ -620,7 +696,7 @@ for clip_name, duration in CLIPS.items():
             if pose_bone.name == 'Root':
                 continue
             pose_bone.keyframe_insert('rotation_euler', frame=frame)
-            if pose_bone.name == 'Hips':
+            if pose_bone.name in ('Hips', 'FootL', 'FootR'):
                 pose_bone.keyframe_insert('location', frame=frame)
     action.use_fake_user = True
     for curve_data in action.fcurves:

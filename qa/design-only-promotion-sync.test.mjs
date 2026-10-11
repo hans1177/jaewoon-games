@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {promoteReadyDesignSeeds} from '../tools/design-only-promotion-sync.mjs';
+import {evaluateMinimumDesignContract,latestMinimumDesign,materializeVibeMinimumDesign} from '../tools/company-minimum-design-contract.mjs';
 import {migrateDirectNativeRuntime} from '../tools/company-direct-native-design-migration.mjs';
 
 const write=(root,file,value)=>{
@@ -15,9 +16,12 @@ const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'))
 
 function centralPolicy(root){
   write(root,'company-learning/platform-release-roadmap.json',{
+    authority:'MACHINE_EXECUTION_CONTRACT',
+    developmentAccess:{ROBLOX:'ALWAYS_ALLOWED',UNITY_WEB:'ALWAYS_ALLOWED',UNITY:'OWNER_HOLD'},
     directNativeDualPlatformDevelopment:{
       status:'OWNER_DIRECT_LOCKED',
       mode:'ROBLOX_UNITY_APP_BIDIRECTIONAL_AUTO_PAIR',
+      ownerActiveDevelopmentScope20261009:{activeTargets:['ROBLOX','UNITY_WEB']},
       canonicalDevelopmentAdmissionAuthority:true,
       minimumDesignRequired:true,
       strictDesignScoreRequiredForDevelopmentAdmission:false,
@@ -25,14 +29,21 @@ function centralPolicy(root){
       webDevelopmentStageRemoved:false,
       unityWebEnabled:true,
       unityWebRequired:true,
-      unityWebGateRequired:true,
+      unityWebGateRequired:false,
       unityWebMode:'UPPER_PLATFORM_PREDEVELOPMENT_FULL_DEVELOPMENT_QA_FLOOR',
-      supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
-      automaticPairing:{
-        ROBLOX:['UNITY_WEB_FLOOR','ROBLOX','UNITY'],
-        UNITY:['UNITY_WEB_FLOOR','UNITY','ROBLOX']
+      upperPlatformAdmission:'MINIMUM_DESIGN_READY',
+      development:{
+        unityWebDevelopmentFloorRequiredBeforeUpperPlatformStart:false,
+        upperPlatformDevelopmentStartsOnlyAfterUnityWebReadinessPass:false
       },
-      unityWebValidationSurface:{requiredForDevelopmentAdmission:true}
+      upperPlatformDevelopmentReadinessGate:{
+        gateId:'UPPER_PLATFORM_DEVELOPMENT_READY',
+        allCriteriaRequired:true,
+        targets:['ROBLOX','UNITY']
+      },
+      supportedDevelopmentPlatforms:['ROBLOX','UNITY'],
+      automaticPairing:{ROBLOX:['ROBLOX','UNITY_WEB_FLOOR'],UNITY:['UNITY_WEB_FLOOR']},
+      unityWebValidationSurface:{requiredForDevelopmentAdmission:false}
     }
   });
 }
@@ -481,3 +492,111 @@ test('seed migration starts new designs and unverified or failed sources at sour
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+
+
+test('canonical promotion feeds exactly one grounded Vibe starter into native coding while strict review remains pending',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-minimum-promotion-one-'));
+  try{
+    base(root);
+    const seed=id=>({
+      seedId:'OWNER-'+id.toUpperCase(),gameId:id,gameName:id,
+      status:'ACTIVE',productionClass:'DESIGN_ONLY',GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      DISTINCT_IDENTITY:'웨이브별 곤충 종류와 서식 환경의 상성을 활용하는 수비 전략 게임',
+      CORE_LOOP:['다가오는 웨이브의 위험을 분석한다','제한된 자원으로 수비 유닛을 배치한다','웨이브를 견디고 다음 수비를 준비한다'],
+      CORE_FUN_TO_LEARN:['배치의 선택','적의 종류에 따른 전략 조합'],
+      SAVE_POLICY:'PRESERVE_EXISTING_SAVES',
+      GAMEPLAY_SKETCH:{flowArchitecture:{systemBlueprint:{requiredSystems:[
+        {id:'DEFENSE_PLACEMENT',purpose:'유닛 배치 위치에 따라 사거리와 방어 효율이 변한다'},
+        {id:'WAVE_ENCOUNTER',purpose:'웨이브별 곤충 행동 변화가 대응 전술을 요구한다'}
+      ]}}}
+    });
+    write(root,'game-seed-state.json',{version:1,seeds:[seed('one-defense'),seed('two-defense')]});
+    write(root,'game-catalog.json',{version:1,games:[
+      {id:'one-defense',description:'30웨이브 곤충 디펜스',lifecycleState:'ACTIVE'},
+      {id:'two-defense',description:'곤충 배치 디펜스',lifecycleState:'ACTIVE'}
+    ]});
+    const first=promoteReadyDesignSeeds({root});
+    assert.deepEqual(first.vibeMinimumCreated.map(row=>row.gameId),['one-defense']);
+    assert.deepEqual(first.promoted,['one-defense']);
+    const firstRecord=read(root,first.vibeMinimumCreated[0].file);
+    assert.equal(firstRecord.strictDesignReviewed,false);
+    assert.equal(firstRecord.strictDesignPass,false);
+    assert.equal(firstRecord.runtimePass,false);
+    assert.equal(firstRecord.releasePass,false);
+    assert.equal(firstRecord.content.multiplayerMode,'SINGLE');
+    assert.equal(firstRecord.content.coreNumbersAndBalance.catalogScope,'30웨이브 곤충 디펜스');
+    assert.deepEqual(read(root,'development-queue.json').items.map(item=>item.gameId),['one-defense']);
+    const second=promoteReadyDesignSeeds({root});
+    assert.deepEqual(second.vibeMinimumCreated.map(row=>row.gameId),['two-defense']);
+    assert.deepEqual(new Set(read(root,'development-queue.json').items.map(item=>item.gameId)),
+      new Set(['one-defense','two-defense']));
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('new owner reset does not reuse an older minimum design as the basis for code admission',()=>{
+  const minimumSource=fs.readFileSync('tools/company-minimum-design-contract.mjs','utf8');
+  const promotionSource=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
+  assert.match(minimumSource,/ownerResetAt=0/);
+  assert.match(minimumSource,/String\(existing\.date\)>resetDate/);
+  assert.match(promotionSource,/ownerResetAt=resetIds\.has\(gameId\)\?resetAt:0/);
+  assert.match(promotionSource,/materializeVibeMinimumDesign\(\{root,seed,catalogGame,ownerResetAt\}\)/);
+});
+
+test('V5 owner grammar cannot be replaced with a generic minimum coding starter',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'canonical-grammar-required-'));
+  try{
+    base(root);
+    const seed={
+      gameId:'insect-grammar',seedId:'OWNER-IG',status:'ACTIVE',productionClass:'DESIGN_ONLY',
+      GAME_CATEGORY:'ACTION_SURVIVAL_ROGUELITE',INITIAL_TARGET_PLATFORM:'UNITY',
+      MULTIPLAYER_DESIGN_MODE:'SINGLE',
+      DISTINCT_IDENTITY:'작아진 생존자가 곤충 생태계 속에서 살아남는 생존 게임',
+      CORE_LOOP:['위험한 곤충 지역에서 자원과 적을 찾는다','채집 또는 전투를 선택해 재료를 얻는다','장비로 다음 위험을 해결하고 이동한다'],
+      CORE_FUN_TO_LEARN:['생존과 채집의 의미 있는 갈등'],
+      GAMEPLAY_SKETCH:{version:5,flowArchitecture:{systemBlueprint:{requiredSystems:[
+        {id:'SURVIVAL_VITALS',purpose:'체력과 생존 자원의 상태를 관리한다'},
+        {id:'GATHERING_RESOURCE',purpose:'주변 월드 자원을 실물 인벤토리에 넣는다'}
+      ]}}},
+      novelGrammarBackfill:{authoringPending:true}
+    };
+    write(root,'game-seed-state.json',{version:1,seeds:[seed]});
+    write(root,'game-catalog.json',{version:1,games:[{id:seed.gameId,lifecycleState:'ACTIVE'}]});
+    const pending=materializeVibeMinimumDesign({root,seed,date:'2026-10-10'});
+    assert.equal(pending.created,false);
+    assert.equal(pending.reason,'DESIGN_GRAMMAR_DESIGNER_SEED_PENDING');
+    const promoted=promoteReadyDesignSeeds({root});
+    assert.deepEqual(promoted.vibeMinimumCreated,[]);
+    assert.deepEqual(promoted.promoted,[]);
+    assert.equal(read(root,'development-queue.json').items.length,0);
+    const wrong={...designContent(),signatureSystems:[
+      {id:'SURVIVAL_VITALS',name:'체력 관리',purpose:'곤충 위협 속 체력을 관리한다'},
+      {id:'ITEM_LOOT',name:'전리품',purpose:'곤충에게서 물건을 획득한다'}
+    ]};
+    assert.equal(evaluateMinimumDesignContract({content:wrong},{seed}).pass,false);
+    write(root,'design/insect-grammar/2026-10-10/design-revised.json',{
+      version:5,gameId:seed.gameId,gameplaySketchVersion:5,
+      authorRole:'VIBE2_MINIMUM_DESIGN_PREPARATION',minimumDesignReady:true,
+      strictDesignPass:false,content:wrong
+    });
+    assert.equal(latestMinimumDesign(root,seed.gameId,{seed}),null);
+    assert.equal(materializeVibeMinimumDesign({root,seed,date:'2026-10-10'}).reason,'DESIGN_GRAMMAR_DESIGNER_SEED_PENDING');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('V5 code-admission grammar gate rejects a fake MAIN/A/B/C/@ label without state causality',()=>{
+  const seed={GAMEPLAY_SKETCH:{version:5}};
+  const fake={...designContent(),creativeGrammar:{
+    mainIdentity:'멋진 생존 게임이 문법 구조를 따른다',
+    a:{system:'자원 관리',material:'곤충',materialDomain:'생물',stateChange:'A가 자원 상태를 다음 플레이에 바꾼다'},
+    b:{system:'건축',material:'숲',materialDomain:'생태',stateChange:'B가 거점 조건과 위험을 변화시킨다'},
+    cThemes:[{name:'곤충',kind:'MATERIAL',gameplayEffect:'곤충이 위험을 일으킨다'},{name:'숲',kind:'MATERIAL',gameplayEffect:'숲은 다양한 자원을 제공한다'}],
+    cGenres:[{role:'PRIMARY',name:'생존',gameplayEffect:'생존 위험을 다룬다'},{role:'SECONDARY',name:'탐험',gameplayEffect:'탐험을 하게 만든다'}],
+    delveDiscoveries:[{clue:'나무',discovery:'껍질',newChoice:'더 모은다'}]
+  }};
+  const gate=evaluateMinimumDesignContract({content:fake},{seed});
+  assert.equal(gate.pass,false);
+  assert.equal(gate.creativeGrammarReady,false);
+  assert.ok(gate.blockers.includes('DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE')||gate.blockers.includes('DESIGN_MAIN_A_B_DELVE_REQUIRED'));
+  assert.ok(gate.blockers.includes('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING'));
+});

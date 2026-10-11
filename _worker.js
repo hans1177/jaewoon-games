@@ -388,6 +388,13 @@ async function injectUniversalTouchControls(response){
   const type=response.headers.get('content-type')||'';
   if(!type.includes('text/html'))return response;
   let html=await response.text();
+  // Unity WebGL C# 자체 터치 핸들러가 존재하므로, 레거시 HTML 조이스틱을 주입하지 않는다.
+  if(/createUnityInstance\s*\(/.test(html)&&/\.loader\.js/.test(html)){
+    const headers=new Headers(response.headers);
+    headers.set('Cache-Control','no-store, no-cache, must-revalidate');
+    headers.delete('Content-Length');
+    return new Response(html,{status:response.status,statusText:response.statusText,headers});
+  }
   if(!html.includes('/web-games/_shared/touch-controls.js'))html=html.replace('</body>',UNIVERSAL_TOUCH_SCRIPT+'</body>');
   const headers=new Headers(response.headers);
   headers.set('Cache-Control','no-store, no-cache, must-revalidate');
@@ -420,6 +427,18 @@ export default{
     if(url.pathname==='/company-status.json')return handleRuntimeStatus(request,env);
     if(url.pathname==='/homepage-platform-exposure.json')return handleRuntimeExposure(request,env);
     const response=await env.ASSETS.fetch(request);
+    // 메인 · Unity WebGL 빌드 압축은 Pages Function 응답에서 직접 선언한다.
+    // _headers 설정은 _worker.js가 반환하는 응답에 적용되지 않는다.
+    const unityBundle=url.pathname.match(/^\/web-games\/[a-z0-9-]+\/(?:unity\/)?Build\/[^/]+\.(framework\.js|data|wasm)\.(gz|br)$/i);
+    if(unityBundle&&response.ok){
+      const [,kind,format]=unityBundle;
+      const headers=new Headers(response.headers);
+      headers.set('Content-Type',kind==='framework.js'?'application/javascript; charset=utf-8':kind==='wasm'?'application/wasm':'application/octet-stream');
+      headers.set('Content-Encoding',format==='gz'?'gzip':'br');
+      headers.set('Cache-Control','no-cache, must-revalidate');
+      headers.delete('Content-Length');
+      return new Response(request.method==='HEAD'?null:response.body,{status:response.status,statusText:response.statusText,headers});
+    }
     const webEntry=url.pathname.match(/^\/web-games\/([a-z0-9-]+)(?:\/(?:index\.html)?)?$/i);
     if(webEntry&&response.ok&&(response.headers.get('content-type')||'').includes('text/html')){
       const catalogResponse=await env.ASSETS.fetch(new Request(new URL('/game-catalog.json',request.url)));

@@ -7,9 +7,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { planAssetApplication } from '../assets/asset-selector.js';
-import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace} from '../assets/vibe-motion-director.js';
+import {createCreatureMotionSetProfile,buildAutomaticMotionGapFillPlan,applySemanticGapPreparation,createMotionDirectorPlan,createDuelCombatAuthoringRecipe,createSurvivalPlayerMotionProfile,createSurvivalWildlifeMotionProfile,deriveMotionStyleVariant,auditMotionContinuityTrace,COMMON_GENRE_MOTION_CONTEXTS,resolveCommonMotionGenre,COMMON_CAREER_MOTION_HIERARCHY,COMMON_MONSTER_ACTION_SPECIES,createCommonCareerMotionLoadout,createCommonMonsterActionLoadout} from '../assets/vibe-motion-director.js';
 import {createStudioAssetUniversePlan,DEFAULT_COVERAGE_BASELINES,createSurvivalWildlifeAssetProfile,synchronizeAssetCustomization,createAssetDetailReviewPlan,createAssetRuntimeVisualReviewPlan,auditCommonLibrarySystemDepth,createCompanySeedAssetIdeationPlan,buildInternalAssetLibraryAutomationPlan,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT,INTERNAL_ASSET_REFERENCE_BREADTH_PROFILES,INTERNAL_PROGRESSION_COMPLEXITY_PROFILES,resolveInternalAssetStyleExpressionProfile,INTERNAL_ASSET_STYLE_EXPRESSION_DOMAIN_BINDINGS,STUDIO_3D_ACTOR_ROLE_FAMILIES} from '../assets/vibe-studio-asset-universe.js';
-import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
+import {createVibeReferenceImageStudyRequest,bindVibeReferenceImageObservation,createVibeMapDetailReconstruction,createVibeProceduralWorldLayout} from '../assets/vibe-environment-director.js';
 import {auditVibeRuntimeVisualEvidence,auditVibeRuntimeBeforeAfterComparison} from '../assets/vibe-visual-quality-gate.js';
 import {VIBE_CHARACTER_CUSTOMIZATION_BREADTH_CONTRACT,VIBE_NPC_ROLE_PRODUCTION_CONTRACT,VIBE_NPC_ROLE_MOTION_REQUIREMENTS,createVibeNpcRoleMotionRequirement,createVibeNpcCustomizationPopulation} from '../assets/vibe-character-identity-director.js';
 import {buildRobloxStudioAssetBootstrapPlan} from './company-development-roblox-bootstrap.mjs';
@@ -1117,7 +1117,7 @@ function sourceConsumerPath(value=''){
 function currentAssetConsumerIds(asset={}){
   return unique([...(asset.consumerGameIds||[]),...(asset.sourceBoundConsumerGameIds||[])]);
 }
-const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','AUTHOR','HOLD']);
+const ASSET_SUPPLY_DECISIONS=Object.freeze(['USE','ADAPT','IMPROVE','ACQUIRE_ADAPT','AUTHOR','HOLD']);
 const ASSET_DOMAIN_TO_FAMILIES=Object.freeze({
   CHARACTER_GEAR:Object.freeze(['CHARACTER']),
   CREATURE:Object.freeze(['CREATURE']),
@@ -1176,6 +1176,7 @@ function requiredAssetFamilies({request='',requirements=[]}={}){
 function assetSupplyCandidateAllowed(asset={},target=''){
   if(asset?.catalogActive===false||asset?.rightsPass===false)return false;
   if(/STALE|QUARANTIN|RETIRED|REJECTED/.test((clean(asset?.catalogState)+' '+clean(asset?.status)).toUpperCase()))return false;
+  if(internalAssetHardBlockReason(asset))return false;
   return internalAssetPlatformApplicationMode(asset,target)!=='NOT_SUPPORTED';
 }
 export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',requirements=[],registry={},executionPlan={},sourceConsumerSummary=null}={}){
@@ -1187,6 +1188,51 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const roleEvidenceById=new Map(),unresolvedFamilies=new Set();
   const requestedRolesByFamily=new Map(requiredFamilies.map(family=>[family,unique((requirements||[]).filter(row=>clean(row?.family).toUpperCase()===family).flatMap(row=>[row.role,row.assetRole,row.systemRole,...(Array.isArray(row.roles)?row.roles:[])])).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'))]));
   const requestText=clean(request).toLowerCase();
+  // 기존 원장만 조회한다. 소스 선정은 후보 계획이며 다운/변형/등록은 기존 ASSET_DEVELOPMENT에서 한다.
+  const externalSources=Array.isArray(registry?.externalSources)?registry.externalSources:[];
+  const platform=clean(target).toUpperCase();
+  const spatialFamilies=new Set(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP','WORLD_OBJECT','TERRAIN']);
+  const publicHttps=value=>{
+    try{
+      const url=new URL(clean(value));
+      return url.protocol==='https:'&&!url.username&&!url.password&&Boolean(url.hostname)
+        &&!/(^localhost$|\.localhost$|\.local$|\.internal$)/i.test(url.hostname)
+        &&!/^(\d{1,3}\.){3}\d{1,3}$/.test(url.hostname)&&!url.hostname.includes(':');
+    }catch{return false;}
+  };
+  const externalSourceCandidatesFor=(family,roles=[])=>{
+    const candidates=[];
+    for(const row of externalSources){
+      if(clean(row?.status).toUpperCase()!=='LICENSE_VERIFIED_EXTERNAL_CANDIDATE')continue;
+      if(row?.automaticAcquisitionWhenSelected!==true||row?.commercialUseAllowed===false||row?.derivativesAllowed===false)continue;
+      if(!clean(row.id)||!publicHttps(row.sourceUrl)||!publicHttps(row.licenseEvidenceUrl)||!clean(row.verifiedAt))continue;
+      const license=clean(row.license).toUpperCase().replaceAll('_','-');
+      const freeRights=/^(CC0(?:-1\.0)?|PUBLIC-DOMAIN)$/.test(license);
+      const explicitRights=row.commercialUseAllowed===true&&row.derivativesAllowed===true&&Boolean(license)
+        &&!/NON.?COMMERCIAL|NO.?DERIVATIVES|UNKNOWN|UNVERIFIED|(?:^|-)NC(?:-|$)|(?:^|-)ND(?:-|$)/.test(license);
+      if(!freeRights&&!explicitRights)continue;
+      const targets=unique(row.platformTargets||[]).map(value=>value.toUpperCase());
+      const categories=unique([row.category,...(row.categories||[])]).map(value=>value.toUpperCase());
+      if(!targets.includes(platform)||!categories.includes(family))continue;
+      const terms=[row.name,row.id,...(row.capabilities||[]),...(row.tags||[])]
+        .map(value=>clean(value).toLowerCase().replace(/[_-]/g,' ')).join(' ');
+      const matchedRoles=roles.filter(role=>terms.includes(role.replaceAll('_',' ')));
+      const nameFit=requestText.split(/\s+/).filter(word=>word.length>=4&&terms.includes(word)).length;
+      const direct=clean(row.downloadUrl||row.assetUrl||row.archiveUrl);
+      const hasSafeDirect=publicHttps(direct)&&/\.(?:glb|gltf|fbx|obj|zip)$/i.test(new URL(direct).pathname);
+      candidates.push(freeze({
+        sourceId:clean(row.id),sourceName:clean(row.name),family,license:clean(row.license),
+        sourceUrl:clean(row.sourceUrl),licenseEvidenceUrl:clean(row.licenseEvidenceUrl),
+        licenseSnapshotDate:clean(row.verifiedAt),downloadUrl:hasSafeDirect?direct:null,
+        acquisitionState:hasSafeDirect?'SELECTED_DIRECT_DOWNLOAD_PENDING':'SOURCE_PAGE_RESOLUTION_REQUIRED',
+        matchedRoles:freezeList(matchedRoles),roleCompatibilityRequiresSourceInspection:true,
+        categoryMatchVerified:true,sourceHash:null,downloaded:false,runtimeVerified:false,
+        rawRedistributionAllowed:row.rawRedistributionAllowed===true,
+        roleScore:matchedRoles.length*10+nameFit,spatial3dSourceRequired:spatialFamilies.has(family)
+      }));
+    }
+    return freezeList(candidates.sort((a,b)=>b.roleScore-a.roleScore||a.sourceId.localeCompare(b.sourceId)));
+  };
   const roleEvidence=asset=>{
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const roles=unique([asset.role,asset.subfamily,...(Array.isArray(asset.tags)?asset.tags:[])]).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'));
@@ -1213,7 +1259,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const roleFit=roleEvidence(asset);
     const currentConsumerIds=currentAssetConsumerIds(asset);
     const current=currentConsumerIds.includes(id);
-    if(current){
+    if(current&&assetSupplyCandidateAllowed(asset,target)){
       currentAssets.push(asset);
       currentAssetIds.add(assetId);
       if(family){
@@ -1244,7 +1290,61 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const action=ASSET_SUPPLY_DECISIONS.includes(row.action)?row.action:'HOLD';
     const key=[action,row.assetId||'',row.family||'',row.reason||''].join('|');
     if(actionKeys.has(key))return;actionKeys.add(key);
-    actions.push(Object.freeze({...row,action}));
+    // [라이브러리 재사용] 기존 선택 자산을 버리지 않고 검증 가능한 원본만 파생 제작 후보로 연결한다.
+    // 선택·재질 조정 계획은 실제 파일 제작이나 런타임 승격을 의미하지 않는다.
+    let adaptation=null;
+    if(action==='ADAPT'&&assetById.has(clean(row.assetId))){
+      const base=assetById.get(clean(row.assetId));
+      const family=clean(row.family).toUpperCase(),spatial=spatialFamilies.has(family);
+      const sourceFiles=unique([
+        base?.masterGlb,base?.masterSourcePath,base?.path,
+        ...(Array.isArray(base?.sourceFiles)?base.sourceFiles:[]),
+        ...(Array.isArray(base?.nativeArtifacts)?base.nativeArtifacts:[])
+      ]).map(value=>value.replace(/^\/+/, ''));
+      const sourceModel=spatial?sourceFiles.find(value=>
+        /^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(value)&&!value.split('/').includes('..'))||null:null;
+      const license=clean(base?.license).toLowerCase();
+      const credit=clean(base?.sourceCredit||base?.attribution||base?.credit)||null;
+      const rightsValid=['project-original','cc0','cc-by'].includes(license)
+        &&(license!=='cc-by'||Boolean(credit));
+      const modelReady=Boolean(sourceModel&&rightsValid);
+      const pbr=spatial||family==='MATERIAL';
+      adaptation={
+        libraryReuse:freeze({
+          sourceAssetId:clean(base?.id),sourceModel,
+          sourceLicense:rightsValid?license:null,sourceCredit:credit,
+          expectedSourceSha256:clean(base?.sourceSha256||base?.sha256)||null,
+          sourceFileAndSha256InspectionRequired:true,
+          sourceRoleEvidence:row.roleEvidence||null,
+          derivativeCandidateReady:modelReady,
+          originalImmutable:true,
+          catalogSelectionIsNotNativeArtifact:true
+        }),
+        materialRefinement:freeze({
+          mode:pbr?'SUBTLE_CONTEXT_PBR_REAUTHOR':'NATIVE_FAMILY_ADAPT_NO_PBR',
+          sourceMaterialModificationPerformed:false,
+          allowedAxes:freezeList(pbr?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
+          availableSemanticAtoms:freezeList(pbr?registry?.baseMaterialLibrary?.families?.MATERIAL||[]:[]),
+          paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+          geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true
+        }),
+        assetization:freeze({
+          mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
+          nativeDccScript:modelReady?'assets/native-authoring/build-game-visual.py':null,
+          nativeSourceModelField:modelReady?'task.assetAuthoring.sourceModel':null,
+          nativeSourceLicenseField:modelReady?'task.assetAuthoring.sourceLicense':null,
+          nativeSourceCreditField:modelReady?'task.assetAuthoring.sourceCredit':null,
+          sourceInspectionRequired:true,sourceAndDerivativeSha256Required:true,
+          originalAndTransformHistoryRequired:true,
+          registryWriteOwner:'EXISTING_GRAPHICS_PRODUCTION_SYNC',
+          gameSourceWorkerMayEditCentralRegistry:false,
+          candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
+          nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,
+          newPipelineOrQueueCreated:false
+        })
+      };
+    }
+    actions.push(Object.freeze({...row,...(adaptation||{}),action}));
   };
   for(const repair of qualityActions){
     pushAction({
@@ -1282,8 +1382,56 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
       });
     }else{
       const roles=requestedRolesByFamily.get(family)||[];
-      const unresolved=unresolvedFamilies.has(family)||roles.length===0;
-      pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+      const externalCandidates=id?externalSourceCandidatesFor(family,roles):freezeList([]);
+      if(externalCandidates.length){
+        const selected=externalCandidates[0];
+        const spatial=spatialFamilies.has(family),pbrApplicable=spatial||family==='MATERIAL';
+        pushAction({
+          action:'ACQUIRE_ADAPT',assetId:null,family,
+          reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+          roleEvidence:freeze({requestedRoles:freezeList(roles),matchedRoles:selected.matchedRoles,
+            verifiedRoleMatch:false,requiresActualSourceInspection:true}),
+          externalAcquisition:freeze({
+            sourceId:selected.sourceId,sourceName:selected.sourceName,sourceUrl:selected.sourceUrl,
+            downloadUrl:selected.downloadUrl,license:selected.license,licenseEvidenceUrl:selected.licenseEvidenceUrl,
+            licenseSnapshotDate:selected.licenseSnapshotDate,acquisitionState:selected.acquisitionState,
+            candidateSources:externalCandidates,onDemandOnly:true,bulkPrefetchForbidden:true,
+            sourceHashRequired:true,rightsRevalidationRequired:true,downloadFileIntegrityRequired:true,
+            archiveScriptExecutionForbidden:true,sourceFileMustBeReal3d:spatialFamilies.has(family),
+            staticMeshQaRequired:spatialFamilies.has(family),nativePlatformConversionRequired:true
+          }),
+          materialRefinement:freeze({
+            mode:pbrApplicable?'SUBTLE_CONTEXT_PBR_REAUTHOR':'NATIVE_FAMILY_ADAPT_NO_PBR',
+            sourceMaterialModificationPerformed:false,
+            allowedAxes:freezeList(pbrApplicable?['PBR_BASE_COLOR_TINT','PBR_ROUGHNESS','PBR_METALNESS_WHEN_PHYSICAL','NORMAL_STRENGTH','CONTEXTUAL_LIGHT_WEAR']:[]),
+            availableSemanticAtoms:freezeList(pbrApplicable?(registry?.baseMaterialLibrary?.families?.MATERIAL||[]):[]),
+            paletteMustFollowGameStyleLock:true,originalAssetImmutable:true,
+            derivedAssetPathRequired:true,derivedParentSourceId:selected.sourceId,
+            sourceAndDerivativeSha256Required:true,
+            geometryRigAndGameplaySemanticsPreserved:true,mobileTextureMeshBudgetRequired:true,
+            modelMetadataIsNotProducedFile:true
+          }),
+          assetization:freeze({
+            mode:'EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY',
+            registerOnlyAfterActualBinaryAndLicenseAndStaticQa:true,
+            requiredFields:freezeList(['id','family','path','license','sourceUrl','sourceHash','parentSourceId','transformHistory','platformVariants']),
+            nativeDccScript:spatial?'assets/native-authoring/build-game-visual.py':null,
+            nativeSourceModelField:spatial?'task.assetAuthoring.sourceModel':null,
+            nativeSourceLicenseField:spatial?'task.assetAuthoring.sourceLicense':null,
+            nativeSourceCreditField:spatial?'task.assetAuthoring.sourceCredit':null,
+            nativeOutputFiles:freezeList(spatial?['master.glb','asset.glb','application.json','evidence.json','preview.png']:[]),
+            nativeModelMustBeDownloadedIntoAssets:spatial,
+            generatorEvidenceMustMatchSelectedSourceSha256:true,
+            registryWriteOwner:'EXISTING_GRAPHICS_PRODUCTION_SYNC',
+            gameSourceWorkerMayEditCentralRegistry:false,
+            candidateState:'PREPARED_SOURCE_ONLY',productionVerified:false,runtimeVerified:false,
+            nativeRuntimeBindingAndIndependentQaRequiredForPromotion:true,newPipelineOrQueueCreated:false
+          })
+        });
+      }else{
+        const unresolved=unresolvedFamilies.has(family)||roles.length===0;
+        pushAction({action:unresolved?'HOLD':'AUTHOR',assetId:null,family,reason:unresolved?'ROLE_REQUIREMENT_UNRESOLVED':'CURRENT_GAME_DEMAND_NO_REUSABLE_ASSET',roleEvidence:{requestedRoles:roles,matchedRoles:[],verifiedRoleMatch:false}});
+      }
     }
   }
   const heldVolumeActions=(executionPlan?.nextVolumeActions||[]).filter(row=>
@@ -1313,6 +1461,8 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     nextActions:Object.freeze(actions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldActions:Object.freeze(heldVolumeActions.slice(0,INTERNAL_ASSET_LIBRARY_AUTOMATION_CONTRACT.supplyDecisionSummaryActionLimit)),
     heldVolumeActionCount:heldVolumeActions.length,
+    selectedOnDemandExternalGapCount:actions.filter(row=>row.action==='ACQUIRE_ADAPT').length,
+    externalSourcesDoNotBecomeRegisteredAssetsBySelection:true,
     decisionVocabulary:ASSET_SUPPLY_DECISIONS,
     currentConsumerFields:Object.freeze(['consumerGameIds','sourceBoundConsumerGameIds']),
     intendedConsumerIsNotCurrentUse:true,
@@ -1655,7 +1805,12 @@ export function synchronizeSourceBoundAssetConsumers({repoRoot=process.cwd(),reg
 
 export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),registry=null,persist=true,consumerGameIds=null}={}){
   const registryPath=path.join(repoRoot,'company-asset-library.json');
-  const original=registry||readJson(registryPath,{version:0,assets:[],externalSources:[]});
+  // [원자적 읽기] 같은 원장 바이트를 한 번만 읽어 해시 및 파싱에 공유한다.
+  const registrySnapshot=persist&&fs.existsSync(registryPath)?fs.readFileSync(registryPath,'utf8'):null;
+  const registrySnapshotHash=registrySnapshot===null?null
+    :crypto.createHash('sha256').update(registrySnapshot).digest('hex');
+  const original=registry||(registrySnapshot===null
+    ?readJson(registryPath,{version:0,assets:[],externalSources:[]}):JSON.parse(registrySnapshot));
   // 동기화는 asset top-level 필드만 직접 수정하고 중첩 계약은 교체/읽기만 한다. 3MB registry 전체 JSON deep-copy를 피한다.
   const next={...original,assets:(Array.isArray(original.assets)?original.assets:[]).map(asset=>({...asset}))};
   const gameCatalog=readJson(path.join(repoRoot,'game-catalog.json'),{games:[]});
@@ -1686,8 +1841,160 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     assetsByPackId:registryAssetsByPackId
   }));
 
-  // 공용 자산 분류: 기존 packId/경로는 출처 이력이며 게임 전용 사용 제한이 아니다.
+  // [자동 파생 자산화] 기존 GRAPHICS_PRODUCTION 동기화가 실제 DCC 결과만 PREPARED 후보로 등록한다.
+  // 원본 모델·게임 코드는 불변이며 native 런타임 QA 없이 productionVerified를 올리지 않는다.
   let organizationAssetsChanged=false;
+  const derivedSync={inspected:0,registered:0,rejected:0,failureCounts:{}};
+  const derivedRoot=path.join(repoRoot,'assets','generated');
+  let canonicalAssetRoot='',canonicalDerivedRoot='';
+  try{
+    canonicalAssetRoot=fs.realpathSync(path.join(repoRoot,'assets'));
+    canonicalDerivedRoot=fs.realpathSync(derivedRoot);
+  }catch{}
+  if(canonicalAssetRoot&&canonicalDerivedRoot.startsWith(canonicalAssetRoot+path.sep)){
+    const sourceByPath=new Map(),sourceHashCache=new Map();
+    const sourceFileSha256=full=>{
+      if(!sourceHashCache.has(full)){
+        sourceHashCache.set(full,crypto.createHash('sha256').update(fs.readFileSync(full)).digest('hex'));
+      }
+      return sourceHashCache.get(full);
+    };
+    const allowedSource=asset=>{
+      const license=clean(asset?.license).toLowerCase();
+      return !asset?.parentSourceId&&!asset?.derivedFromAssetId
+        &&['project-original','cc0','cc-by'].includes(license)
+        &&(license!=='cc-by'||Boolean(clean(asset?.sourceCredit||asset?.credit||asset?.attribution)))
+        &&!internalAssetHardBlockReason(asset);
+    };
+    for(const asset of next.assets){
+      if(!allowedSource(asset))continue;
+      for(const raw of unique([asset?.path,asset?.masterGlb,...(asset?.sourceFiles||[])])){
+        const relative=clean(raw).replaceAll('\\','/').replace(/^\/+/,'');
+        if(/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(relative)
+          &&!relative.split('/').includes('..')){
+          const owners=sourceByPath.get(relative)||[];
+          if(!owners.some(row=>row.id===asset.id)){
+            owners.push(asset);
+            sourceByPath.set(relative,owners);
+          }
+        }
+      }
+    }
+    const listDirs=directory=>{
+      try{return fs.readdirSync(directory,{withFileTypes:true}).filter(row=>row.isDirectory()&&/^[a-z0-9][a-z0-9._-]*$/i.test(row.name));}catch{return[];}
+    };
+    const actualFile=relative=>{
+      if(!/^assets\/[a-zA-Z0-9_.\/-]+$/i.test(relative)||relative.split('/').includes('..'))return null;
+      try{
+        const full=path.resolve(repoRoot,relative),real=fs.realpathSync(full);
+        const stat=fs.lstatSync(full);
+        if(!real.startsWith(canonicalAssetRoot+path.sep)||stat.isSymbolicLink()||!stat.isFile()
+          ||stat.size<8||stat.size>64*1024*1024)return null;
+        return{full:real,size:stat.size};
+      }catch{return null;}
+    };
+    for(const platform of ['roblox','unity','web']){
+      const platformRoot=path.join(canonicalDerivedRoot,platform);
+      for(const game of listDirs(platformRoot)){
+        if(consumerGameScope&&!consumerGameScope.has(game.name))continue;
+        for(const type of listDirs(path.join(platformRoot,game.name))){
+          const relative='assets/generated/'+platform+'/'+game.name+'/'+type.name;
+          const assetPath=relative+'/asset.glb',masterPath=relative+'/master.glb';
+          const previewPath=relative+'/preview.png',evidencePath=relative+'/evidence.json';
+          const applicationPath=relative+'/application.json';
+          const files=[assetPath,masterPath,previewPath,evidencePath,applicationPath].map(actualFile);
+          if(!files[3])continue;
+          derivedSync.inspected++;
+          if(files.some(row=>!row)){
+            derivedSync.rejected++;
+            derivedSync.failureCounts.DERIVED_ASSET_ARTIFACT_MISSING=(derivedSync.failureCounts.DERIVED_ASSET_ARTIFACT_MISSING||0)+1;
+            continue;
+          }
+          try{
+            const evidence=readJson(files[3].full),application=readJson(files[4].full);
+            const provenance=evidence?.sourceMesh,sourcePath=clean(provenance?.sourcePath).replaceAll('\\','/');
+            const license=clean(provenance?.license).toLowerCase();
+            const family=clean(evidence?.family).toUpperCase();
+            // 하나의 공용 메시를 환경 팩·개별 건물·소품이 함께 등록할 수 있다.
+            // 첫 번째 경로 소유자가 아닌 실제 family/권리/원본 해시에 일치하는 자산을 선택한다.
+            const expectedParentId=clean(provenance?.libraryParentAssetId);
+            const parent=(sourceByPath.get(sourcePath)||[])
+              .filter(row=>(!expectedParentId||clean(row.id)===expectedParentId)
+                &&clean(row.family||row.category).toUpperCase()===family
+                &&clean(row.license).toLowerCase()===license
+                &&(!clean(row.sourceSha256)||clean(row.sourceSha256)===clean(provenance?.sourceSha256)))
+              .sort((a,b)=>Number(Boolean(clean(b.role)))-Number(Boolean(clean(a.role)))
+                ||(a.sourceFiles||[]).length-(b.sourceFiles||[]).length
+                ||clean(a.id).localeCompare(clean(b.id)))[0]||null;
+            if(!parent||!['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP'].includes(family)
+              ||family!==clean(parent.family||parent.category).toUpperCase()
+              ||license!==clean(parent.license).toLowerCase()
+              ||(license==='cc-by'&&!clean(provenance.attribution))
+              ||provenance?.sourceFileImmutable!==true
+              ||!Array.isArray(provenance?.transformHistory)||provenance.transformHistory.length===0
+              ||provenance.transformHistory.some(row=>!['PBR_ROUGHNESS_STYLE_REAUTHOR','PBR_BASE_COLOR_STYLE_REAUTHOR','PBR_METALNESS_STYLE_REAUTHOR','PBR_NORMAL_STYLE_REAUTHOR','PBR_WEAR_STYLE_REAUTHOR'].includes(clean(row?.kind)))
+              ||evidence?.generator!=='assets/native-authoring/build-game-visual.py'
+              ||evidence?.internalAsset?.library!=='VIBE_STUDIO_ASSET_UNIVERSE'
+              ||evidence?.internalAsset?.state!=='PREPARED_NATIVE_QA_PENDING'
+              ||evidence?.productionVerified!==false||evidence?.companyPromotionEligible!==false
+              ||evidence?.runtimeVerificationState!=='STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING'
+              ||evidence?.pbrMeshQa?.pass!==true
+              ||application?.internalAsset?.originalImmutable!==true
+              ||application?.sourceMesh?.sourcePath!==sourcePath)throw new Error('DERIVED_ASSET_PROVENANCE_INVALID');
+            const originalFile=actualFile(sourcePath);
+            if(!originalFile)throw new Error('DERIVED_ASSET_PARENT_MISSING');
+            const originalHash=sourceFileSha256(originalFile.full);
+            if(!/^[0-9a-f]{64}$/i.test(clean(provenance.sourceSha256))
+              ||originalHash!==provenance.sourceSha256
+              ||(clean(parent.sourceSha256)&&clean(parent.sourceSha256)!==originalHash))throw new Error('DERIVED_ASSET_PARENT_HASH_MISMATCH');
+            const artifactHash=sourceFileSha256(files[0].full);
+            const masterHash=sourceFileSha256(files[1].full);
+            if(artifactHash===originalHash||masterHash===originalHash)throw new Error('DERIVED_ASSET_UNCHANGED_SOURCE');
+            const preview=fs.readFileSync(files[2].full);
+            const previewHash=crypto.createHash('sha256').update(preview).digest('hex');
+            if(preview.length<45||!preview.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+              ||preview.readUInt32BE(8)!==13||preview.toString('ascii',12,16)!=='IHDR'
+              ||preview.readUInt32BE(16)<1||preview.readUInt32BE(16)>4096
+              ||preview.readUInt32BE(20)<1||preview.readUInt32BE(20)>4096
+              ||preview.readUInt32BE(preview.length-12)!==0||preview.toString('ascii',preview.length-8,preview.length-4)!=='IEND'
+              ||evidence?.artifactHash!==artifactHash||evidence?.previewHash!==previewHash
+              ||application?.masterSha256!==artifactHash)throw new Error('DERIVED_ASSET_OUTPUT_HASH_MISMATCH');
+            const staticQa=inspectVibeSourceGlb({repoRoot,source:{path:assetPath,sourceHash:artifactHash}});
+            const masterQa=inspectVibeSourceGlb({repoRoot,source:{path:masterPath,sourceHash:masterHash}});
+            if(staticQa.status!=='INSPECTED_RECONSTRUCTION_INPUT'||masterQa.status!=='INSPECTED_RECONSTRUCTION_INPUT')
+              throw new Error('DERIVED_ASSET_GLB_STATIC_QA_FAILED');
+            const id='derived-'+platform+'-'+game.name+'-'+type.name,existing=registryAssetById.get(id);
+            if(existing?.productionVerified===true||existing?.verifiedCompanyReusable===true)continue;
+            const candidate={
+              id,title:clean(parent.title)||id,family,role:clean(parent.role)||null,
+              status:'PREPARED_SOURCE_ONLY',platform:'SHARED_MASTER',preparedForPlatforms:[platform.toUpperCase()],
+              path:assetPath,masterGlb:masterPath,previewPath,
+              sourceFiles:[sourcePath,assetPath,masterPath],nativeArtifacts:[assetPath,masterPath],
+              sourceHash:originalHash,sourceSha256:originalHash,artifactHash,masterGlbHash:masterHash,
+              license:parent.license,sourceUrl:clean(parent.sourceUrl)||null,
+              sourceCredit:clean(provenance.attribution)||null,parentSourceId:clean(parent.id),
+              transformHistory:[...provenance.transformHistory],generator:evidence.generator,
+              evidenceRef:evidencePath,applicationRef:applicationPath,
+              intendedConsumerGameIds:[game.name],consumerGameIds:[],
+              runtimeVerificationState:'STATIC_BLENDER_QA_PASS_NATIVE_RUNTIME_PENDING',
+              productionVerified:false,verifiedCompanyReusable:false,nativeRuntimeVerified:false,
+              platformVariants:{},platformNativeImportRequired:true
+            };
+            if(existing&&JSON.stringify(Object.fromEntries(Object.keys(candidate).map(key=>[key,existing[key]])))===JSON.stringify(candidate))continue;
+            if(existing)Object.assign(existing,candidate);
+            else{next.assets.push(candidate);registryAssetById.set(id,candidate);}
+            derivedSync.registered++;
+            organizationAssetsChanged=true;
+          }catch(error){
+            derivedSync.rejected++;
+            const raw=clean(error?.message),signature=/^DERIVED_ASSET_[A-Z_]+$/.test(raw)?raw:'DERIVED_ASSET_VALIDATION_FAILED';
+            derivedSync.failureCounts[signature]=(derivedSync.failureCounts[signature]||0)+1;
+          }
+        }
+      }
+    }
+  }
+
   for(const asset of next.assets){
     const family=clean(asset.family||asset.category).toUpperCase();
     const files=unique([
@@ -2043,11 +2350,31 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
   }
   let persisted=false,persistError=null;
   if(persist&&changed){
+    const lockPath=registryPath+'.lock';
+    let lockFd=null,tempPath=null;
     try{
-      fs.writeFileSync(registryPath,JSON.stringify(next,null,2)+'\n','utf8');
+      // [원자적 발행] 배타 잠금 → 최신 원장 비교 → 같은 디렉터리 임시 파일 → fsync → rename.
+      // 생성 파일 및 동기화된 원장 모두 검증되기 전에는 최종 원장을 노출하지 않는다.
+      lockFd=fs.openSync(lockPath,'wx',0o600);
+      const currentHash=fs.existsSync(registryPath)
+        ?crypto.createHash('sha256').update(fs.readFileSync(registryPath)).digest('hex'):null;
+      if(currentHash!==registrySnapshotHash)throw new Error('COMPANY_ASSET_LIBRARY_CONCURRENT_UPDATE');
+      tempPath=registryPath+'.tmp-'+process.pid+'-'+crypto.randomBytes(8).toString('hex');
+      const tempFd=fs.openSync(tempPath,'wx',0o600);
+      try{
+        fs.writeFileSync(tempFd,JSON.stringify(next,null,2)+'\n','utf8');
+        fs.fsyncSync(tempFd);
+      }finally{fs.closeSync(tempFd);}
+      fs.renameSync(tempPath,registryPath);
+      tempPath=null;
       persisted=true;
     }catch(error){
       persistError=clean(error?.message||error);
+    }finally{
+      if(tempPath){try{fs.rmSync(tempPath,{force:true});}catch{}}
+      if(lockFd!==null){
+        try{fs.closeSync(lockFd);}finally{fs.rmSync(lockPath,{force:true});}
+      }
     }
   }
   return freeze({
@@ -2064,6 +2391,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     sourceConsumerBindings:consumerSync.bindings,
     sourceConsumerRelations:consumerSync.relations,
     sourceConsumerRegistry:consumerSync.registry,
+    derivedSync:freeze({...derivedSync}),
     seedCount:seedPlan.seedCount,
     automationPlan:libraryPlan,
     executionAutomationPlan
@@ -2237,6 +2565,43 @@ function nativeDccFamilyForTypes(types=[]){
   if(/prop|furniture/.test(joined))return'PROP';
   return null;
 }
+// 기존 Blender 제작 책임에서 사용하는 로컬 오픈소스 원본과 제작 범위.
+export const VIBE_NATIVE_OPEN_SOURCE_MODULES=freeze({
+  'mesh-ai':freeze({source:'https://github.com/microsoft/TRELLIS.2',baselineSource:'https://github.com/VAST-AI-Research/TripoSR',license:'MIT',
+    algorithmReferences:freezeList(['https://docs.meshy.ai/en/api/image-to-3d','https://arxiv.org/abs/2512.14692']),
+    engine:'PINNED_OFFLINE_TRELLIS2_4B_OR_TRIPOSR_WITH_BLENDER',requiresLocalModel:true,
+    // [권리 검증] 모형의 MIT 허가는 Nvidia 렌더링 의존성의 상업 허가를 대신하지 않는다.
+    permittedCommercialEngine:'VAST-AI-Research/TripoSR',
+    trellis2CommercialRights:'BLOCKED_NVIDIA_NVDIFFRAST_NVDIFFREC',
+    trellis2DependencyLicenseSources:freezeList([
+      'https://github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt',
+      'https://github.com/NVlabs/nvdiffrec/blob/main/LICENSE.txt'
+    ]),
+    types:freezeList(['background','environment','item','weapon','prop'])}),
+  human:freeze({source:'https://github.com/makehumancommunity/mpfb2',
+    license:'GPL-3.0-or-later',outputLicense:'CC0',engine:'MPFB2_HUMAN_RIG_WITH_BLENDER',
+    requiresLocalAddon:true,types:freezeList(CROSS_PLATFORM_3D_CHARACTER_TYPES)}),
+  clothing:freeze({source:'https://github.com/blender/blender',
+    license:'GPL-2.0-or-later',engine:'BLENDER_CLOTHING_GEOMETRY',
+    types:freezeList(['item','prop'])}),
+  object:freeze({source:'https://github.com/blender/blender',
+    license:'GPL-2.0-or-later',engine:'BLENDER_NATIVE_3D_GAME_OBJECT',
+    types:freezeList(['background','environment','item','weapon','prop'])}),
+  design:freeze({source:'https://github.com/blender/blender',
+    compatibleSource:'https://github.com/FreeCAD/FreeCAD',
+    license:'GPL-2.0-or-later',engine:'BLENDER_PARAMETRIC_OR_FREECAD_EXPORTED_SURFACE',
+    types:freezeList(['background','environment','item','weapon','prop'])}),
+  medical:freeze({source:'https://github.com/Slicer/Slicer',
+    license:'BSD-style',engine:'SLICER_SANITIZED_SURFACE_IN_BLENDER',
+    requiresSanitizedSurface:true,clinicalUse:false,types:freezeList(['item','prop'])}),
+  animation:freeze({source:'https://github.com/blender/blender',
+    algorithmReferences:freezeList(['https://www.deepmotion.com/animate-3d-api','https://cascadeur.com/help/tools/physics_tools/autophysics']),
+    license:'GPL-2.0-or-later',engine:'BLENDER_KEYFRAMES_NLA_AND_GLTF_ANIMATION',
+    types:freezeList(['animation','motion','prop','item','weapon','environment','background'])}),
+  video:freeze({source:'https://ffmpeg.org',
+    license:'LGPL-2.1-or-later-or-GPL-depending-on-build',engine:'BLENDER_FRAME_SEQUENCE_TO_FFMPEG_MP4',
+    types:freezeList(['animation','motion','prop','item','weapon','environment','background'])})
+});
 function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',requiredTypes=[]){
   const executor=clean(recipe?.executor||recipe?.engine).toUpperCase();
   const script=clean(recipe?.script||recipe?.recipe||recipe?.path).replaceAll('\\','/').replace(/^\.\//,'');
@@ -2248,59 +2613,186 @@ function normalizeNativeDccAuthoringRecipe(recipe={},asset={},target='',required
   const evidenceJson=clean(recipe?.evidenceJson).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const preview=clean(recipe?.preview).replaceAll('\\','/').replace(/^\.\//,'')||null;
   const editableSource=clean(recipe?.editableSource||script).replaceAll('\\','/').replace(/^\.\//,'')||null;
+  const module=clean(recipe?.module).toLowerCase()||'auto';
+  const cinematicStyle=clean(recipe?.cinematicStyle||'studio').toLowerCase();
+  const cinematicQuality=clean(recipe?.cinematicQuality||'preview').toLowerCase();
+  const sourceModel=clean(recipe?.sourceModel).replaceAll('\\','/')||null;
+  const meshModel=clean(recipe?.meshModel).toLowerCase()||'auto';
   const targetName=clean(target).toLowerCase();
   const typeMatch=!types.length||types.some(type=>requiredTypes.includes(type));
   const targetMatch=!targets.length||targets.includes(targetName)||targets.includes(targetName.toUpperCase().toLowerCase());
   const safePath=value=>Boolean(value&&!path.isAbsolute(value)&&!value.split('/').includes('..'));
   const family=clean(recipe?.family||asset?.family||asset?.category).toUpperCase()||nativeDccFamilyForTypes(types);
   const inferredActorRole=types.find(type=>isCrossPlatform3dActorType(type))||'';
-  const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\\s-]+/g,'_')||null;
+  const role=clean(recipe?.role||asset?.role||asset?.subfamily||inferredActorRole).toUpperCase().replace(/[\s-]+/g,'_')||null;
   const masterGlbRequired=['CHARACTER','CREATURE'].includes(family)||types.some(isCrossPlatform3dActorType);
   const masterGlbOutput=outputs.find(value=>/\.glb$/i.test(value))||null;
-  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)&&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput));
+  const safe=executor==='BLENDER_PYTHON'&&/\.py$/i.test(script)&&safePath(script)&&outputs.length>0&&outputs.every(safePath)
+    &&(!evidenceJson||safePath(evidenceJson))&&(!preview||safePath(preview))&&(!masterGlbRequired||Boolean(masterGlbOutput))
+    &&(module==='auto'||Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,module))&&(!sourceModel||safePath(sourceModel))
+    &&(!/\.fbx$/i.test(sourceModel||'')||['animation','video'].includes(module))
+    &&['auto','triposr','trellis2'].includes(meshModel)
+    &&(!['animation','video'].includes(module)
+      ||(['studio','dramatic'].includes(cinematicStyle)&&['preview','high'].includes(cinematicQuality)));
   const license=clean(recipe?.license||asset?.license)||null;
   return freeze({
-    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    id,assetId:clean(asset?.id)||clean(recipe?.assetId)||null,family:family||null,role,license,executor,script,
+    types:freezeList(types),targetPlatforms:freezeList(targets),args,outputs,evidenceJson,preview,editableSource,
+    module,sourceModel,meshModel,
+    librarySourceAssetId:clean(recipe?.librarySourceAssetId)||null,
+    librarySourceSha256:clean(recipe?.librarySourceSha256)||null,
+    automaticLibraryDerivative:recipe?.automaticLibraryDerivative===true,
+    cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
+    cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,
+    sourceSanitized:recipe?.sourceSanitized===true,
+    imageToMesh:recipe?.imageToMesh===true,sourceImage:clean(recipe?.sourceImage)||null,
+    sourceLicense:clean(recipe?.sourceLicense)||null,sourceCredit:clean(recipe?.sourceCredit)||null,
     typeMatch,targetMatch,safe,runMode:clean(recipe?.runMode||'VERIFY_ONLY').toUpperCase(),
     masterGlbRequired,masterGlbOutput,masterGlbFormat:masterGlbRequired?'GLB_2_0':null,
     primitivePartAssemblyPrototypeOnly:masterGlbRequired,
+    internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
+    materialsMeshesRigAndMotionEnhancementOnly:true,
     runtimeVerificationRequired:true,companyPromotionAllowed:false
   });
 }
 const GENERIC_NATIVE_DCC_TYPES=freezeList(['background','environment','item','weapon','prop']);
-function genericNativeDccRecipeForType({target='',task={},type=''}={}){
+function genericNativeDccRecipeForType({target='',task={},type='',librarySource=null}={}){
   const targetName=clean(target).toLowerCase();
   const typeName=clean(type).toLowerCase();
-  if(!['web','roblox','unity'].includes(targetName)||!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
+  if(!['web','roblox','unity'].includes(targetName))return null;
+  const taskModule=clean(task.assetAuthoring?.modulesByType?.[typeName]||task.assetAuthoring?.module||task.assetModule).toLowerCase().replaceAll('_','-');
+  const aliases={'mesh':'mesh-ai','image-to-3d':'mesh-ai','garment':'clothing','apparel':'clothing',
+    'cad':'design','parametric':'design','prop':'object','game-object':'object','slicer':'medical','anatomy':'medical','medical-3d':'medical',
+    'body':'human','humanoid':'human','character':'human',
+    'animate':'animation','keyframes':'animation','motion-preview':'animation',
+    'render-video':'video','movie':'video','cinematic':'video'};
+  const intentText=clean(task.goal||task.request).toLowerCase();
+  const selectedExplicit=aliases[taskModule]||taskModule;
+  const inferred=!selectedExplicit&&task.assetAuthoring?.automaticModuleSelection!==false
+    ?(/영상.?연출|시네마틱|cinematic|video.?render|영상.?렌더/i.test(intentText)?'video'
+      :/애니메이션.?제작|모션.?제작|animate.?model/i.test(intentText)?'animation'
+      :/의류.?제작|옷.?모델|garment/i.test(intentText)?'clothing'
+      :/오브젝트.?제작|3d.?object/i.test(intentText)?'object':null)
+    :null;
+  const selected=selectedExplicit||inferred||'';
+  if(selected&&selected!=='auto'&&!Object.hasOwn(VIBE_NATIVE_OPEN_SOURCE_MODULES,selected))
+    throw new Error('VIBE_NATIVE_MODULE_UNKNOWN:'+selected);
+  const imageRequested=task.imageToAsset===true||Boolean(clean(task.assetAuthoring?.sourceImage))
+    ||clean(task.assetAuthoring?.mode).toUpperCase()==='IMAGE_TO_3D';
+  const linkedSourceModel=clean(librarySource?.sourceModel);
+  const modelRequested=Boolean(clean(task.assetAuthoring?.sourceModel)||linkedSourceModel);
+  const module=selected&&selected!=='auto'?selected:imageRequested?'mesh-ai'
+    :modelRequested?(/\.fbx$/i.test(clean(task.assetAuthoring?.sourceModel))?'animation':'object'):'auto';
+  const meshModel=clean(task.assetAuthoring?.meshModel||'auto').toLowerCase();
+  const cinematicStyle=clean(task.assetAuthoring?.cinematicStyle||'studio').toLowerCase();
+  const cinematicQuality=clean(task.assetAuthoring?.cinematicQuality||'preview').toLowerCase();
+  if(!['studio','dramatic'].includes(cinematicStyle))throw new Error('VIBE_CINEMATIC_STYLE_UNSUPPORTED');
+  if(!['preview','high'].includes(cinematicQuality))throw new Error('VIBE_CINEMATIC_QUALITY_UNSUPPORTED');
+  if(!['auto','triposr','trellis2'].includes(meshModel))throw new Error('IMAGE_TO_MESH_MODEL_UNSUPPORTED:'+meshModel);
+  if(meshModel!=='auto'&&!imageRequested)throw new Error('IMAGE_TO_MESH_MODEL_REQUIRES_INPUT_IMAGE');
+  // 이 저장소의 제작물은 상업 게임용이다. 권리 미확인 GPU 의존성을 실행 계획에 편입하지 않는다.
+  if(imageRequested&&meshModel==='trellis2')
+    throw new Error('IMAGE_TO_MESH_TRELLIS2_NVIDIA_COMMERCIAL_RIGHTS_UNVERIFIED');
+  if(module==='auto'&&!GENERIC_NATIVE_DCC_TYPES.includes(typeName))return null;
+  if(module!=='auto'&&!VIBE_NATIVE_OPEN_SOURCE_MODULES[module].types.includes(typeName))return null;
+  if(imageRequested&&module==='human')throw new Error('HUMAN_MPFB_REQUIRES_MODEL_OR_LOCAL_ADDON');
+  if(imageRequested&&['animation','video'].includes(module))throw new Error('VIDEO_IMAGE_TO_3D_SEPARATE_AUTHORING_STAGE_REQUIRED');
+  if(imageRequested&&module==='medical')throw new Error('MEDICAL_RAW_IMAGE_PROCESSING_FORBIDDEN');
   const gameSlug=(clean(task?.gameId)||'game').toLowerCase().replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'')||'game';
   const typeSlug=typeName.replace(/[^a-z0-9._-]+/g,'-')||'asset';
   const outputRoot=`assets/generated/${targetName}/${gameSlug}/${typeSlug}`;
   const family=nativeDccFamilyForTypes([typeName]);
   const concept=inferRequestedConcept(task,clean(task.goal||task.request));
-  const expression=resolveInternalAssetStyleExpressionProfile({styleFamily:concept.styles?.[0]?.family,styles:concept.styles,artTone:concept.artTone,overrides:task.styleExpressionOverrides||task.styleExpression?.axes||{}});
+  const expression=resolveInternalAssetStyleExpressionProfile({
+    styleFamily:concept.styles?.[0]?.family,styles:concept.styles,artTone:concept.artTone,
+    overrides:task.styleExpressionOverrides||task.styleExpression?.axes||{}
+  });
+  const imageRow=(Array.isArray(task.referenceImages)?task.referenceImages:[])
+    .find(row=>clean(row?.path||row?.imageRef||row?.imagePath));
+  const sourceImage=clean(task.assetAuthoring?.sourceImage||task.assetImagePath
+    ||imageRow?.path||imageRow?.imageRef||imageRow?.imagePath).replaceAll('\\','/');
+  const sourceModel=clean(task.assetAuthoring?.sourceModel||linkedSourceModel).replaceAll('\\','/');
+  const sourceLicense=clean(task.assetAuthoring?.sourceLicense||librarySource?.sourceLicense
+    ||task.assetAuthoring?.imageLicense||imageRow?.license);
+  const sourceCredit=clean(task.assetAuthoring?.sourceCredit||librarySource?.sourceCredit||imageRow?.attribution||imageRow?.credit);
+  const checkSourceLicense=()=>{
+    if(!['project-original','cc0','cc-by'].includes(sourceLicense.toLowerCase()))
+      throw new Error('IMAGE_TO_MESH_LICENSE_REQUIRED');
+    if(sourceLicense.toLowerCase()==='cc-by'&&!sourceCredit)
+      throw new Error('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED');
+  };
+  if(imageRequested){
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:png|jpe?g|webp)$/i.test(sourceImage)
+      ||sourceImage.split('/').includes('..'))throw new Error('IMAGE_TO_MESH_LOCAL_REPOSITORY_IMAGE_REQUIRED');
+    checkSourceLicense();
+  }
+  if(modelRequested){
+    if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl|fbx)$/i.test(sourceModel)
+      ||sourceModel.split('/').includes('..'))throw new Error('OPEN_SOURCE_LOCAL_SURFACE_REQUIRED');
+    if(/\.fbx$/i.test(sourceModel)&&!['animation','video'].includes(module))
+      throw new Error('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE');
+    checkSourceLicense();
+  }
+  if(imageRequested&&modelRequested)throw new Error('NATIVE_SOURCE_IMAGE_MODEL_MUTUALLY_EXCLUSIVE');
+  if(module==='medical'){
+    if(!modelRequested||task.assetAuthoring?.sourceSanitized!==true)
+      throw new Error('MEDICAL_DEIDENTIFIED_SURFACE_REQUIRED');
+  }
+  if(module==='human'&&modelRequested&&!/\.glb$/i.test(sourceModel))
+    throw new Error('HUMAN_RIGGED_SOURCE_GLB_REQUIRED');
   const requestedSubject=clean(task.assetSubject||task.assetAuthoring?.subject).toLowerCase();
   const subject=['rock','crate'].includes(requestedSubject)?requestedSubject
     :typeName==='prop'&&/\brock\b|\bstone\b|\bboulder\b|바위|돌(?:덩이|멩이|하나|\s)/i.test(clean(task.goal||task.request))?'rock':'generic';
+  const objectKinds=['rock','crate','chair','table','door','tree','machine','weapon','lamp'];
+  const objectKind=objectKinds.includes(requestedSubject)?requestedSubject
+    :objectKinds.find(value=>new RegExp('\\b'+value+'\\b','i').test(clean(task.goal||task.request)))||subject;
   const genre=clean(task.genre||task.genreFamily||task.concept?.genre).slice(0,80);
+  const modelModule=module==='human'?'human':module==='medical'?'medical':
+    module==='auto'?'auto':module;
+  const actualProfile=GENERIC_NATIVE_DCC_TYPES.includes(typeName)?typeName:'prop';
+  const resolvedLicense=(imageRequested||modelRequested)?sourceLicense:(module==='human'?'CC0':'project-original');
+  const renderedViews=module!=='auto'||imageRequested||modelRequested;
   return {
     id:`generated-${gameSlug}-${targetName}-${typeSlug}-blender-v1`,
     assetId:`${gameSlug}-${targetName}-${typeSlug}-generated-v1`,
-    family,
-    license:'project-original',
+    family,license:resolvedLicense,module:modelModule,
+    imageToMesh:imageRequested,meshModel:imageRequested?meshModel:'auto',
+    internalAssetLibrary:'VIBE_STUDIO_ASSET_UNIVERSE',internalAssetState:'PREPARED_NATIVE_QA_PENDING',
+    cinematicStyle:['animation','video'].includes(module)?cinematicStyle:null,
+    cinematicQuality:['animation','video'].includes(module)?cinematicQuality:null,sourceImage:imageRequested?sourceImage:null,
+    sourceModel:modelRequested?sourceModel:null,sourceSanitized:task.assetAuthoring?.sourceSanitized===true,
+    librarySourceAssetId:linkedSourceModel?clean(librarySource?.sourceAssetId):null,
+    librarySourceSha256:linkedSourceModel?clean(librarySource?.sourceSha256):null,
+    automaticLibraryDerivative:Boolean(linkedSourceModel),
+    sourceLicense:(imageRequested||modelRequested)?sourceLicense:null,sourceCredit,
     executor:'BLENDER_PYTHON',
     script:'assets/native-authoring/build-game-visual.py',
     editableSource:'assets/native-authoring/build-game-visual.py',
-    types:[typeName],
-    targetPlatforms:[targetName],
-    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,'--profile',typeName,'--target',targetName,'--subject',subject,'--style-json',JSON.stringify(expression),'--genre',genre],
-    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,`${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,`${outputRoot}/application.json`,`${outputRoot}/evidence.json`],
+    types:[typeName],targetPlatforms:[targetName],
+    args:['--output',outputRoot,'--asset-id',`${gameSlug}-${typeSlug}`,
+      '--profile',actualProfile,'--target',targetName,'--subject',subject,
+      '--style-json',JSON.stringify(expression),'--genre',genre,
+      ...(module!=='auto'?['--module',module]:[]),
+      ...(imageRequested?['--source-image',sourceImage,'--mesh-model',meshModel]:[]),
+      ...(modelRequested?['--source-model',sourceModel]:[]),
+      ...(linkedSourceModel?['--library-parent-id',clean(librarySource.sourceAssetId),
+        '--library-source-sha256',clean(librarySource.sourceSha256)]:[]),
+      ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
+      ...(module==='medical'?['--source-sanitized','yes']:[]),
+      ...(module==='object'?['--object-kind',objectKind]:[]),
+      ...(['animation','video'].includes(module)?['--motion-kind',clean(task.assetAuthoring?.motionKind).toLowerCase()||'sway',
+        '--cinematic-style',cinematicStyle,'--cinematic-quality',cinematicQuality]:[])],
+    outputs:[`${outputRoot}/asset.glb`,`${outputRoot}/master.glb`,
+      `${outputRoot}/preview.png`,`${outputRoot}/preview-master.png`,
+      `${outputRoot}/application.json`,`${outputRoot}/evidence.json`,
+      ...(renderedViews?[0,90,180,270].map(angle=>`${outputRoot}/preview-angle-${String(angle).padStart(3,'0')}.png`):[]),
+      ...(['animation','video'].includes(module)?[`${outputRoot}/preview-motion.mp4`]:[])],
     evidenceJson:`${outputRoot}/evidence.json`,
-    preview:`${outputRoot}/preview.png`,
-    runMode:'VERIFY_ONLY'
+    preview:`${outputRoot}/preview.png`,runMode:'VERIFY_ONLY'
   };
 }
 
-function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},explicitRequestedTypes=[]}={}){
+function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest={},registry={},assetSupplySummary=null,repoRoot=process.cwd(),explicitRequestedTypes=[]}={}){
   const targetName=clean(target).toLowerCase();
   const internalMotion=task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY';
   if(internalMotion&&(targetName!=='roblox'||!/^assets\/roblox\/world-ghosts\/motions\/[a-z0-9-]+$/.test(task.sourceRoot)||task.assetAuthoring?.recipes?.length||task.authoringRecipes?.length))throw new Error('INTERNAL_MOTION_AUTHORING_SCOPE_INVALID');
@@ -2308,7 +2800,30 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
   const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
-  const explicitRecipeRows=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const declaredTaskRecipes=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
+  const requestedCareerId=clean(task?.commonCareerId).toUpperCase();
+  const requestedCareerClip=clean(task?.commonMotionClip);
+  const registeredCareerAsset=Array.isArray(registry?.assets)
+    ?registry.assets.find(asset=>asset?.id==='shared-humanoid-motion-v1'):null;
+  const availableCareerRecipes=registeredCareerAsset?.availableCareerMotionRecipes||[];
+  // 공용 클립은 원본 1개 + 모션 1개 단위로 승인한다. 14개 후보를 한 작업에 일괄 실행하지 않는다.
+  const validCareerPath=requestedCareerId
+    ?createCommonCareerMotionLoadout({careerId:requestedCareerId,platform:'SHARED',
+      bodyPlan:clean(task?.characterBodyPlan||task?.bodyPlan)||'HUMANOID',
+      rigProfile:clean(task?.characterRigProfile||task?.rigProfile)||'HUMANOID'}).careerPath:[];
+  const requestedCareerCandidates=!internalMotion&&!declaredTaskRecipes.length&&(requestedCareerId||requestedCareerClip)
+    ?availableCareerRecipes.filter(recipe=>
+      (!requestedCareerClip||recipe.clipId===requestedCareerClip)
+      &&(!requestedCareerId||validCareerPath.includes(clean(recipe.careerId).toUpperCase())))
+    :[];
+  requestedCareerCandidates.sort((a,b)=>
+    validCareerPath.indexOf(clean(b.careerId).toUpperCase())-validCareerPath.indexOf(clean(a.careerId).toUpperCase())
+    ||clean(a.id).localeCompare(clean(b.id)));
+  if(requestedCareerClip&&!declaredTaskRecipes.length&&(!availableCareerRecipes.some(recipe=>recipe.clipId===requestedCareerClip)
+    ||(requestedCareerId&&requestedCareerCandidates.length===0)))
+    throw new Error('COMMON_CAREER_MOTION_CLIP_NOT_REGISTERED:'+requestedCareerClip);
+  const selectedCareerRecipe=requestedCareerCandidates[0]||null;
+  const explicitRecipeRows=selectedCareerRecipe?[selectedCareerRecipe]:declaredTaskRecipes;
   const explicitRecipeTypes=unique(explicitRecipeRows.flatMap(recipe=>[
     ...(Array.isArray(recipe?.types)?recipe.types:[]),
     clean(recipe?.type)
@@ -2320,12 +2835,58 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const webRequestedActorDccTypes=webNativeTarget
     ?dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&web3dActorRequested(task,type))
     :[];
+  // [자동 재질 파생] 동일 게임 요구와 역할이 일치한 내부 원본만 실제 파일·해시를 검사해 기존 DCC로 연결한다.
+  const materialDerivationRequested=Boolean(clean(task.gameId)&&clean(assetSupplySummary?.gameId))
+    &&!clean(task.assetAuthoring?.sourceModel)&&!clean(task.assetAuthoring?.sourceImage)
+    &&task.assetAuthoring?.automaticLibraryDerivation!==false;
+  const librarySourceByFamily=new Map(),ambiguousLibraryFamilies=new Set();
+  if(materialDerivationRequested){
+    for(const row of assetSupplySummary?.nextActions||[]){
+      if(row?.action!=='ADAPT'||row.roleEvidence?.verifiedRoleMatch!==true
+        ||row.libraryReuse?.derivativeCandidateReady!==true)continue;
+      const sourceModel=clean(row.libraryReuse.sourceModel),license=clean(row.libraryReuse.sourceLicense);
+      if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)||sourceModel.split('/').includes('..'))continue;
+      try{
+        const root=fs.realpathSync(repoRoot),real=fs.realpathSync(path.resolve(repoRoot,sourceModel));
+        if(!real.startsWith(root+path.sep)||!fs.statSync(real).isFile()
+          ||fs.lstatSync(path.resolve(repoRoot,sourceModel)).isSymbolicLink())continue;
+        const size=fs.statSync(real).size;
+        if(size<1||size>64*1024*1024)continue;
+        const sourceSha256=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
+        const expected=clean(row.libraryReuse.expectedSourceSha256).toLowerCase();
+        if(expected&&expected!==sourceSha256)continue;
+        const sourceAssetId=clean(row.libraryReuse.sourceAssetId);
+        if(!/^[a-z0-9][a-z0-9._-]{0,159}$/i.test(sourceAssetId)
+          ||sourceAssetId!==clean(row.assetId)
+          ||!['project-original','cc0','cc-by'].includes(license)
+          ||(license==='cc-by'&&!clean(row.libraryReuse.sourceCredit)))continue;
+        const family=clean(row.family).toUpperCase();
+        if(ambiguousLibraryFamilies.has(family))continue;
+        const previous=librarySourceByFamily.get(family);
+        if(previous&&(previous.sourceAssetId!==sourceAssetId
+          ||previous.sourceModel!==sourceModel||previous.sourceSha256!==sourceSha256)){
+          // 동일 계열의 서로 다른 역할을 임의의 한 원본으로 합치지 않는다.
+          librarySourceByFamily.delete(family);
+          ambiguousLibraryFamilies.add(family);
+          continue;
+        }
+        librarySourceByFamily.set(family,freeze({
+          sourceAssetId,sourceModel,sourceLicense:license,
+          sourceCredit:row.libraryReuse.sourceCredit,sourceSha256
+        }));
+      }catch{} // 원본·권리·해시 불일치는 자동 제작이 아니라 기존 검수/수리 경로로 돌린다.
+    }
+  }
+  const libraryDerivationTypes=decisions.filter(row=>
+    ['background','environment','item','weapon','prop'].includes(clean(row.type).toLowerCase())
+    &&librarySourceByFamily.has(nativeDccFamilyForTypes([row.type]))
+  ).map(row=>clean(row.type).toLowerCase());
   const requestedDccScope=explicitRecipeHasUntyped
     ?dccCapableTypes
-    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
+    :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes,...libraryDerivationTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
   const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
-    ?dccCapableTypes.filter(type=>requestedDccScope.includes(type))
+    ?unique([...dccCapableTypes.filter(type=>requestedDccScope.includes(type)),...libraryDerivationTypes])
     :[];
   const declaredDccTypes=(engineNativeTarget||webNativeTarget)?explicitRecipeTypes:[];
   const nativeTextKinds=targetName==='roblox'?ROBLOX_DIRECT_AUTHORING:targetName==='unity'?UNITY_DIRECT_AUTHORING:webNativeTarget?WEB_DIRECT_AUTHORING:[];
@@ -2363,7 +2924,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const concreteCovers=type=>concreteRecipes.some(row=>!row.types.length||row.types.includes(type));
   const normalizedGeneric=uniqueDccTypes
     .filter(type=>!explicitRecipeTypes.includes(type)&&!concreteCovers(type))
-    .map(type=>genericNativeDccRecipeForType({target:targetName,task,type}))
+    .map(type=>genericNativeDccRecipeForType({target:targetName,task,type,
+      librarySource:librarySourceByFamily.get(nativeDccFamilyForTypes([type]))||null}))
     .filter(Boolean)
     .map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{},target,uniqueDccTypes))
     .filter(row=>row.safe&&row.typeMatch&&row.targetMatch);
@@ -2398,6 +2960,16 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       requiredCapabilities:NATIVE_DCC_AUTHORING,
       explicitRecipes,
       executionRecipes,
+      sharedCareerSource:freeze({
+        selectedClip:selectedCareerRecipe?.clipId||null,
+        selectedCareer:selectedCareerRecipe?.careerId||null,
+        sourceAssetId:selectedCareerRecipe?.assetId||null,
+        sourceFormat:'PLATFORM_NEUTRAL_SKINNED_GLTF',
+        selectedFromExistingCompanyRegistry:selectedCareerRecipe!==null,
+        oneObjectOneClipWorkUnit:true,unverifiedUntilNativeRuntime:true,
+        sharedAssetSourceIsNotEngineSpecific:true,
+        externalGameplayAuthority:false
+      }),
       coveredTypes:freezeList(coveredDccTypes),
       uncoveredTypes:freezeList(uncoveredDccTypes),
       genericRecipeCount:normalizedGeneric.length,
@@ -4007,11 +4579,24 @@ export function buildVibeAssetProductionPlan({
   const highEnd=highEndVisualContract(repoRoot);
   const highEndActive=highEnd?.status==='ACTIVE_EXECUTABLE_CONTRACT';
   const modelRouting=buildAssetModelRouting({task,request,decisions,highEndActive});
+  // 현재 라이브러리와 실제 게임 소비 관계를 한번 결정한 뒤 네이티브 파생 제작에도 동일하게 사용한다.
+  const assetSupplySummary=buildAssetSupplyDecisionSummary({
+    gameId:task.gameId,
+    target:resolvedTarget,
+    request,
+    requirements:flowAssetRequirements,
+    registry:librarySync.sourceConsumerRegistry||companyRegistry,
+    executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
+    sourceConsumerSummary:librarySync.sourceConsumerSync
+  });
   const nativeAuthoringExecution=buildNativeAuthoringExecution({
     target:resolvedTarget,
     task,
     decisions,
     manifest:manifestInput,
+    registry:selectionRegistry,
+    assetSupplySummary,
+    repoRoot,
     explicitRequestedTypes:selector.explicitRequestedTypes||[]
   });
   const companyLibrary=companyGraphicsLibraryContract(repoRoot);
@@ -4156,6 +4741,75 @@ export function buildVibeAssetProductionPlan({
     style:studioUniversePlan?.styleBible?.profileKey||requestedConcept.styles?.[0]?.family||'STYLIZED_FANTASY',
     styles:requestedConcept.styles,modifiers:task.motionStyleModifiers||{}
   });
+  // 기존 GRAPHICS_PRODUCTION 플래너가 공용 계열·종족의 동작 원본을 장르별로 요청한다.
+  // 게임별 판정/체력/쿨다운과 저장은 건드리지 않는다. 알 수 없는 장르는 자동으로 RPG로 바꾸지 않는다.
+  const sharedMotionGenre=resolveCommonMotionGenre(
+    task.commonMotionGenre||task.genre||task.gameplayGenre||task.designGenre
+    ||task.gameplaySketch?.genre||task.flowArchitecture?.genre||robloxAssetSelectionProfile.genre
+  );
+  const sharedMotionGenreValid=Boolean(COMMON_GENRE_MOTION_CONTEXTS[sharedMotionGenre]);
+  // 설계/역할/에셋 요구에서 실존하는 공용 원형만 선택한다. 미등록 역할을 임의 직업으로 포장하지 않는다.
+  const careerInputs=[
+    task.commonCareerId,
+    ...(Array.isArray(task.commonCareerIds)?task.commonCareerIds:[]),
+    ...(Array.isArray(task.characterCareerIds)?task.characterCareerIds:[]),
+    ...(Array.isArray(task.playerClasses)?task.playerClasses:[]),
+    ...(Array.isArray(task.npcRoles)?task.npcRoles:[]),
+    ...flowAssetRequirements.filter(row=>row.family==='CHARACTER')
+      .map(row=>row.careerId||row.classId||row.professionId||row.characterCareerId)
+  ].filter(Boolean);
+  const monsterInputs=[
+    task.commonMonsterSpeciesId,
+    ...(Array.isArray(task.commonMonsterSpeciesIds)?task.commonMonsterSpeciesIds:[]),
+    ...(Array.isArray(task.monsterSpeciesIds)?task.monsterSpeciesIds:[]),
+    ...(Array.isArray(task.enemySpecies)?task.enemySpecies:[]),
+    ...(Array.isArray(task.monsters)?task.monsters:[]),
+    ...(Array.isArray(task.species)?task.species:[]),
+    ...flowAssetRequirements.filter(row=>row.family==='CREATURE')
+      .map(row=>row.speciesId||row.monsterSpeciesId||row.creatureId)
+  ].filter(Boolean);
+  const careerIds=unique(careerInputs.map(value=>clean(typeof value==='object'
+    ?value.careerId||value.classId||value.professionId||value.id||value.role
+    :value).toUpperCase().replace(/[\\s-]+/g,'_')).filter(Boolean));
+  const monsterIds=unique(monsterInputs.map(value=>clean(typeof value==='object'
+    ?value.speciesId||value.monsterSpeciesId||value.creatureId||value.id||value.species
+    :value).toUpperCase().replace(/[\\s-]+/g,'_')).filter(Boolean));
+  const sharedMotionUnresolvedCareers=freezeList(careerIds.filter(id=>!COMMON_CAREER_MOTION_HIERARCHY[id]));
+  const sharedMotionUnresolvedSpecies=freezeList(monsterIds.filter(id=>!COMMON_MONSTER_ACTION_SPECIES[id]));
+  const sharedMotionCareers=freezeList(sharedMotionGenreValid?careerIds
+    .filter(id=>COMMON_CAREER_MOTION_HIERARCHY[id])
+    .map(id=>{
+      const role=careerInputs.find(row=>row&&typeof row==='object'
+        &&clean(row.careerId||row.classId||row.professionId||row.id||row.role).toUpperCase().replace(/[\\s-]+/g,'_')===id)||{};
+      return createCommonCareerMotionLoadout({
+        careerId:id,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+        bodyPlan:role.bodyPlan||task.characterBodyPlan||task.bodyPlan||'HUMANOID',
+        rigProfile:role.rigProfile||task.characterRigProfile||task.rigProfile||'HUMANOID',
+        weaponFamily:role.weaponFamily||(careerIds.length===1?task.characterWeaponFamily||'':''),
+        styleFamily:role.styleFamily||task.styleFamily||'STYLIZED_FANTASY'
+      });
+    }):[]);
+  const sharedMotionMonsters=freezeList(sharedMotionGenreValid?monsterIds
+    .filter(id=>COMMON_MONSTER_ACTION_SPECIES[id])
+    .map(id=>{
+      const role=monsterInputs.find(row=>row&&typeof row==='object'
+        &&clean(row.speciesId||row.monsterSpeciesId||row.creatureId||row.id||row.species).toUpperCase().replace(/[\\s-]+/g,'_')===id)||{};
+      return createCommonMonsterActionLoadout({
+        speciesId:id,genre:sharedMotionGenre,platform:resolvedTarget.toUpperCase(),
+        bodyPlan:role.bodyPlan||(monsterIds.length===1?task.monsterBodyPlan||'':''),
+        rigProfile:role.rigProfile||(monsterIds.length===1?task.monsterRigProfile||'':''),
+        styleFamily:role.styleFamily||task.styleFamily||'STYLIZED_FANTASY',
+        tier:role.tier||role.motionTier||task.commonMonsterMotionTier||'NORMAL'
+      });
+    }):[]);
+  const sharedMotionCareer=sharedMotionCareers[0]||null;
+  const sharedMotionMonster=sharedMotionMonsters[0]||null;
+  const sharedMotionRequestState=!careerIds.length&&!monsterIds.length?'NOT_REQUESTED'
+    :!sharedMotionGenreValid?'GENRE_MAPPING_REQUIRED'
+    :sharedMotionUnresolvedCareers.length||sharedMotionUnresolvedSpecies.length
+      ?(sharedMotionCareers.length||sharedMotionMonsters.length?'PARTIAL_ARCHETYPE_GAP':'ARCHETYPE_SOURCE_GAP')
+      :'PREPARED_SEMANTIC_RUNTIME_UNVERIFIED';
+
   const assetSynchronization=['unity','web'].includes(resolvedTarget)&&studioUniversePlan?.customization?synchronizeAssetCustomization({
     document:sharedCustomizationDocument,
     currentDocument:currentCustomizationDocument,
@@ -4179,7 +4833,8 @@ export function buildVibeAssetProductionPlan({
       librarySets:bootstrapSets,
       externalSources:selectionRegistry?.externalSources||[],
       usage,
-      requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{}
+      requirements:companyLibrary?.autoMotionCoverageGapFill?.baselineMinimums||{},
+      platform:resolvedTarget.toUpperCase()
     });
     const prepared=applySemanticGapPreparation({profile,gapPlan});
     return freeze({
@@ -4245,8 +4900,49 @@ export function buildVibeAssetProductionPlan({
   const mapDetailReconstruction=task.mapReconstruction?createVibeMapDetailReconstruction({
     sketch:task.mapReconstruction.sketch||{},assets:[...universeRepositoryAssets,...(selectionRegistry?.assets||[])],
     styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey,
-    seed:task.mapReconstruction.seed||clean(task.gameId)
+    seed:task.mapReconstruction.seed||clean(task.gameId),
+    gameId:clean(task.gameId),target:resolvedTarget
   }):null;
+  // 월드 제작 지시는 기존 BUILD_UP의 검증 설계에서 자동 발생한다. 별도 옵션이나 파이프라인이 필요 없다.
+  const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
+    ?task.buildUpDirective?.designImplementationContext||null:null;
+  const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
+    &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
+  const spatialFamilies=new Set(['ENVIRONMENT','BUILDING','PROP','CREATURE','CHARACTER','MATERIAL']);
+  const spatialDemand=(task.assetRequirements||[]).some(item=>spatialFamilies.has(clean(item?.family).toUpperCase()))
+    ||/(?:WORLD|MAP|REGION|BIOME|TERRAIN|ENVIRONMENT|DUNGEON|VILLAGE|SETTLEMENT|CAVE|맵|지형|지역|배경|생태|마을|던전|건축|도시|호수|바다)/i.test(request);
+  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0&&spatialDemand
+    ?{
+      approvedDesign:true,
+      seed:clean(task.gameId)||'world',
+      width:Math.max(12,Math.min(48,Math.trunc(Number(designSpatial.width||designSpatial.mapWidth||24))||24)),
+      height:Math.max(12,Math.min(48,Math.trunc(Number(designSpatial.height||designSpatial.mapHeight||24))||24)),
+      cellSize:Math.max(1,Math.min(12,Number(designSpatial.cellSize)||3)),
+      density:.4,
+      biome:clean(designSpatial.biome||designSpatial.geography||verifiedDesign.selectedDesignPlan?.biome||task.worldDna?.biome||task.biome)||'TEMPERATE',
+      climate:clean(designSpatial.climate||task.worldDna?.climate||task.climate)||'TEMPERATE',
+      buildingStyle:clean(designSpatial.architecture||designSpatial.buildingStyle||task.worldDna?.architecture||task.buildingStyle)||'LOCAL',
+      era:clean(designSpatial.era||task.worldEra)||'AUTO',
+      waterMode:clean(designSpatial.waterMode||task.worldDna?.waterMode)||'AUTO',
+      ecologyActors:Array.isArray(designSpatial.ecologyActors)?designSpatial.ecologyActors:[],
+      authoredDungeonSites:Array.isArray(designSpatial.authoredDungeonSites)?designSpatial.authoredDungeonSites:[],
+      source:'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+    }:null;
+  const approvedWorld=task.worldDesign?.approvedDesign===true?task.worldDesign:null;
+  const worldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
+  const proceduralWorldLayout=worldInput&&typeof worldInput==='object'&&!Array.isArray(worldInput)
+    ?createVibeProceduralWorldLayout({
+      ...worldInput,dimension:'3D',gameId:clean(task.gameId),target:resolvedTarget,
+      biome:worldInput.biome||task.worldDna?.biome||task.worldDna?.geography||task.biome||'TEMPERATE',
+      climate:worldInput.climate||task.worldDna?.climate||task.climate||'TEMPERATE',
+      buildingStyle:worldInput.buildingStyle||task.worldDna?.architecture||task.buildingStyle||'LOCAL',
+      era:worldInput.era||task.worldDna?.era||task.worldEra||'AUTO',
+      waterMode:worldInput.waterMode||task.worldDna?.waterMode||'AUTO',
+      ecologyActors:worldInput.ecologyActors||task.approvedEcologyActors||[],
+      authoredDungeonSites:worldInput.authoredDungeonSites||task.approvedDungeonSites||[],
+      styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey||'STYLIZED_FANTASY',
+      libraryAssets:selectionRegistry?.assets||[]})
+    :null;
   const qualityDNA=freeze({
     version:1,
     gameId:clean(task.gameId)||null,
@@ -4564,15 +5260,6 @@ export function buildVibeAssetProductionPlan({
     implementationOwner:'VIBE2_VIBE3_EXISTING_GAME_SOURCE',dataOwner:'GAMEPLAY_AND_SERVER',
     missingGameSystemCannotBeInvented:true,existingGameplayAndSaveMustRemain:true
   });
-  const assetSupplySummary=buildAssetSupplyDecisionSummary({
-    gameId:task.gameId,
-    target:resolvedTarget,
-    request,
-    requirements:flowAssetRequirements,
-    registry:librarySync.sourceConsumerRegistry||companyRegistry,
-    executionPlan:{...executionLibraryPlan,nextQualityActions:activeQualityActions,nextVolumeActions:referenceVolumeActions},
-    sourceConsumerSummary:librarySync.sourceConsumerSync
-  });
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
@@ -4661,6 +5348,9 @@ export function buildVibeAssetProductionPlan({
     motionRepairWorkUnit:task.motionRepairWorkUnit?freeze({...task.motionRepairWorkUnit,required:true,estimatedModificationMinutes:60,objectCount:task.motionRepairWorkUnit.objectCount??1,motionCount:task.motionRepairWorkUnit.motionCount??1,runtimeVerified:false}):null,
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
+    proceduralWorldLayout,
+    autoBiomeSource:worldInput&&worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+      :worldInput?'EXPLICIT_APPROVED_GAME_WORLD':'NO_VERIFIED_SPATIAL_WORLD',
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
       studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
@@ -4849,7 +5539,20 @@ export function buildVibeAssetProductionPlan({
         incompleteSetCount:motionAutoFillPlans.filter(row=>!row.complete).length,
         verifiedCompleteSetCount:motionAutoFillPlans.filter(row=>row.verifiedComplete).length,
         plannedSemanticSeedCount:motionAutoFillPlans.reduce((n,row)=>n+row.semanticSeeds.length,0),
-        plans:freezeList(prioritizedMotionAutoFillPlans)
+        plans:freezeList(prioritizedMotionAutoFillPlans),
+        // 기존 자산 제작·선택 흐름에 묶인 공용 직업/스킬/몬스터 모션 데이터.
+        sharedGenreKits:freeze({
+          state:sharedMotionRequestState,genre:sharedMotionGenre||null,
+          platform:resolvedTarget.toUpperCase(),
+          career:sharedMotionCareer,monster:sharedMotionMonster,
+          careers:sharedMotionCareers,monsters:sharedMotionMonsters,
+          unresolvedCareers:sharedMotionUnresolvedCareers,
+          unresolvedSpecies:sharedMotionUnresolvedSpecies,
+          preparedSemanticCannotBeVerifiedRuntime:true,
+          nativeEngineRigAndContactQaRequired:true,
+          gameplayAndSaveAuthorityRetained:true,
+          newPipelineCreated:false
+        })
       }),
       studioAssetUniverse:freeze({
         enabled:universeActive,
@@ -5158,6 +5861,25 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.baseMotionQualityWorkSession?.defaultMinutes?`[BASE MOTION QUALITY WORK] ${JSON.stringify(plan.companyGraphicsLibrary.baseMotionQualityWorkSession)}. 현재 승인된 내부 자산 모션 수정 1회차는 기존 오브젝트 1개와 기존 동작 1개만 선택한다. task.motionRepairWorkUnit에 실제 objectId/clipId/책임 sourcePath/현재 sourceHash/정확한 sourceWindow와 원본 바인딩 근거를 고정한다. 약 60분은 준비·검수·보고를 제외한 실제 수정 작업량의 추정치다. 같은 동작 안에서 자세·체중 15분, 관절 곡선·접촉 20분, 후행·반동·복귀·루프 15분, 남은 디테일 재수정 10분 분량을 계획한다. 여러 오브젝트나 여러 동작의 수정량을 합산하지 않는다. 같은 대상을 검토가 끝날 때까지 유지하고 별도 워커나 큐를 만들지 않는다. 기존 책임 경로 밖 원본이나 지원하지 않는 authoring 도구가 필요하면 정확한 단계로 남기며 새 권한을 만들지 않는다. 대기나 호출 반복으로 시간을 채우지 않는다. 준비→중심 이동→접촉→반동→회복을 기존 책임 함수에서 수정하고 클립 길이와 기존 판정 이벤트 시점은 보존한다. owner나 ChatGPT를 기다리지 않고 같은 ASSET_DEVELOPMENT 작업을 진행한다. 경과시간·키프레임 수는 품질 증거가 아니며 같은 조건의 전후 비교와 실제 native 재생 전에는 품질 통과나 제작 완료를 주장하지 않는다.`:'',
     plan.internalLibraryEvolution?.nextQualityActions?.length?`[INTERNAL ASSET DETAIL REPAIR] 현재 선택 작업의 activeDetailImprovement 또는 QUALITY_UP_1000.action에 지정된 assetId/sourceFiles/weakestAxis/detailSteps를 기존 책임 함수에 적용한다. 측정이 없는 INSPECT_ASSET_QUALITY는 결함 확정이나 임의 점수 부여가 아니라 현재 원본·동일 조건 비교부터 수행한다. 접합부·재질 반응·상태·모션을 구체적으로 보강하고 preserveAxes와 정체성·게임 의미는 유지한다. 비교와 모바일 예산 확인 전에는 수정 완료나 품질 상승을 주장하지 않는다. 이 목록은 기존 책임 범위를 확대하는 권한이 아니며 다른 게임 소스나 격리 자산을 수정하지 않는다.`:'',
     plan.internalLibraryEvolution?.phase?`[INTERNAL LIBRARY EVOLUTION] ${JSON.stringify(internalLibraryEvolutionGuidanceSummary(plan.internalLibraryEvolution))}. VOLUME_UP에서는 company-asset-library.json#internalAssetLibraryAutomation.nextVolumeActions의 우선순위를 먼저 소비하고 각 항목을 REUSE_EXISTING→DERIVE_VARIANT→RECOMBINE_EXISTING→LICENSE_VERIFIED_FREE_SOURCE_ADAPT→NEW_AUTHORING 순서로 해결한다. 외부 무료 원본은 CC0 또는 상업 이용·수정 허용이 명확하고 출처/계보를 남길 수 있는 경우만 사용한다. 후보 카탈로그가 충분하면 미리 다운로드하지 말고 메타데이터만 유지하며, 실제 선택된 worklist 항목에서 기존 내부자산 재사용·변형·재조합이 부족할 때만 원본을 자동 취득해 회사 스타일·플랫폼에 맞게 수정한다. 소스 카탈로그가 충분한 동안 작업 집중도는 퀄리티와 자동화 디테일에 둔다. 기존 안전 자산의 품질 작업이 있으면 권장 수량과 무관하게 QUALITY_UP_1000을 우선한다. 현재 로블록스 출시·출시 준비 게임에서 실제 사용하는 자산의 최약 축부터 개선하며 신규 수량은 현재 게임에 필요한 결손을 기존 자산 재사용으로 해결할 수 없을 때만 늘린다. 내부 1000점은 production/runtime 검증과 별개이며 실제 런타임 증거 없이 productionVerified를 올리지 않는다. progressionComplexityProfiles는 VERY_SIMPLE/SURVIVAL_SIMPLE/DEEP_RPG 중 게임 설계에 맞는 표현 깊이를 선택하는 자산 표현 프로필이며 게임 규칙 권한이 아니다. Audio roleContractCount와 actualVerifiedAudioAssetCount를 분리하고 실제 검증 음원이 없으면 음원 파일 보유를 주장하지 않는다. BGM·적응형 음악, 환경 BED/NEAR/MID/DISTANT/SCATTER, 동물 울음·하울링, 전투·스킬·상호작용 SFX, 실내외·오클루전·리버브·거리 밴드, 반복 변형 세트를 서로 다른 역할군으로 관리하고 단일 루프 반복으로 볼륨을 가장하지 않는다. 기존 오디오도 매 유지관리 회차마다 변형 폭·공간감·믹스 우선순위·음악 전환·모바일 예산의 최약 축부터 계속 품질업한다. 정상적인 안전 자산 작업은 owner나 ChatGPT 존재를 기다리지 않고 기존 ASSET_DEVELOPMENT 루프에서 autonomousNextAction을 계속 소비한다. 특정 자산이 라이선스·권리·보안 이유로 막히면 그 자산만 격리하고 다음 안전 작업을 계속하며, 기존 자산 품질 작업이 생기면 즉시 QUALITY_UP_1000 최약 축 개선으로 돌아간다. 작업 수나 내부 점수는 실제 게임 품질 통과 증거가 아니다.`:'',
+    ...(plan.assetSupplySummary?.nextActions||[]).filter(row=>row.action==='ADAPT'&&row.libraryReuse).map(row=>
+      '[COMPANY LIBRARY MATERIAL DERIVATIVE] '+JSON.stringify({
+        gameId:plan.gameId,target:plan.target,family:row.family,
+        sourceAssetId:row.libraryReuse.sourceAssetId,sourceModel:row.libraryReuse.sourceModel,
+        sourceLicense:row.libraryReuse.sourceLicense,sourceCredit:row.libraryReuse.sourceCredit,
+        expectedSourceSha256:row.libraryReuse.expectedSourceSha256,
+        sourceRoleEvidence:row.libraryReuse.sourceRoleEvidence,
+        materialRefinement:row.materialRefinement,assetization:row.assetization
+      })+
+      '. 내부 라이브러리에서 역할·게임 스타일이 맞는 실제 3D 원본만 먼저 선택한다. 원본 경로의 실제 파일·해시·상업 이용·수정 권리·메시/리그 호환을 검증하고 원본은 불변으로 둔다. 기존 Blender 제작기 assets/native-authoring/build-game-visual.py에서 게임 Style Lock에 맞춰 색상·거칠기·물리적으로 허용된 금속성·자연스러운 사용감만 소폭 보정한 별도 파생 GLB와 evidence.json을 만든다. 형태·모션·게임 판정·세이브·충돌·멀티 권한은 임의로 바꾸지 않는다. 생성물·변경 이력·원본/파생 SHA256·라이선스 근거가 모두 실제 존재해야 기존 GRAPHICS_PRODUCTION 원장 동기화에서 PREPARED 후보로 자산화한다. 게임 구현 담당은 기존 C#/Luau 렌더러·프리팹에 네이티브 적용하며 회사 원장을 직접 수정하지 않는다. 엔진 실행·모바일·게임 바인딩 검증 전에는 productionVerified와 품질 PASS를 선언하지 않는다. 원본 부재·역할 불일치·라이선스 차단은 기존 gap-fill 또는 authoring 경로로 넘기고 가짜 파일을 등록하지 않는다. 추가 큐·래퍼·우회 파이프라인을 만들지 않는다.',
+    ),
+    ...(plan.assetSupplySummary?.nextActions||[]).filter(row=>row.action==='ACQUIRE_ADAPT').map(row=>
+      '[ON-DEMAND LICENSED ASSET GAP FILL] '+JSON.stringify({
+        gameId:plan.gameId,target:plan.target,family:row.family,
+        requiredRoles:row.roleEvidence?.requestedRoles||[],
+        externalAcquisition:row.externalAcquisition,
+        materialRefinement:row.materialRefinement,assetization:row.assetization
+      })+
+      '. 현재 게임의 실제 결손만 회사 원장에 등록된 출처에서 보충한다. 원본 소스 페이지가 실제 다운로드 링크가 아니면 공식 다운로드 링크 확인 전에는 취득 성공을 주장하지 않는다. 다운 전 최신 라이선스·상업 이용/수정/재배포 조건·출처와 해시를 확인한다. 불분명하거나 NC/ND 또는 스크립트/실행파일 포함 위험 자산은 차단한다. 캐릭터·생물·건물·환경·무기·소품은 실제 3D 메시와 재질이 있는 파일만 받고 정적 구조와 모바일 예산을 검사한다. 기존 원본은 불변으로 보관하고 3D 공간 자산에 한해 기존 ASSET_DEVELOPMENT의 assets/native-authoring/build-game-visual.py를 재사용한다. 다운로드한 로컬 3D 파일은 task.assetAuthoring.sourceModel, 권리는 sourceLicense, 필요 시 출처 표기는 sourceCredit으로 기존 Blender 제작 레시피에 입력한다. 해당 원본은 불변으로 보관하고 실제 PBR 색상·거칠기·금속성·사용감만 현재 게임 Style Lock에 맞춰 소폭 바꾼 별도 파생 모델을 생성한다. 오디오·UI·일반 텍스처 등 비공간 자산은 블렌더 모델로 위장하지 말고 기존 해당 family 원본 처리·네이티브 변형 책임에서 처리한다. 원본·파생 SHA256, 출처·라이선스 증거, 부모 sourceId, 변경 이력, 네이티브 산출물을 확인한 후 기존 GRAPHICS_PRODUCTION의 원장 동기화 책임에서만 company-asset-library.json에 PREPARED 후보로 등록한다. 개별 게임 소스 워커는 중앙 자산 원장을 직접 수정하지 않는다. 다운로드 또는 실제 3D 파생 파일이 없다면 자산을 등록하거나 생성 성공으로 표시하지 않는다. 파일이 생겼더라도 기존 실제 게임 담당 C#/Luau 렌더러와 프리팹에 연결하고 독립 모바일·런타임·회귀 검증 전에는 productionVerified나 품질 PASS로 승격하지 않는다. 역할 호환이 안 되면 다른 검증 후보를 검토한 후에만 신규 제작으로 진행한다. 게임 판정·밸런스·저장·네트워크 권한을 변경하지 않고 새 파이프라인/큐/래퍼 없이 기존 Vibe 제작 경로를 그대로 사용한다.'),
     plan.flowAssetRequirements?.length?`[FLOW-DRIVEN ASSET REQUIREMENTS] ${JSON.stringify(plan.flowAssetRequirements)}. 게임 플로우가 요구한 시각 역할이다. 특정 회사 자산 ID를 고정하지 않고 현재 실행의 최신 company-asset-library.json에서 다시 해석한다. 내부자산 업데이트 후 다음 실행은 자동으로 더 적합한 후보를 재선택할 수 있다. 라이브러리 사용 자격을 장르로 제한하지 않는다. 자산의 원래 장르와 현재 게임 장르가 달라도 후보에서 제외하지 않고 플랫폼·권리·family/role·기술 호환을 먼저 본 뒤 스타일 적응/재조합한다. 장르는 추천 힌트일 뿐 eligibility gate가 아니다. 자산 계층은 gameplay/balance/progression/save/network 권한을 갖지 않는다.`:'',
     plan.flowAssetLoadout?.selections?.length?`[FLOW-DRIVEN ASSET LOADOUT] ${JSON.stringify(plan.flowAssetLoadout)}. selections의 assetId/applicationMode/replacementAction/sourceFiles를 실제 기존 책임 소스 바인딩에 사용한다. unresolved는 없는 자산을 가짜로 만들거나 임의 ID로 채우지 말고 기존 authoring/gap-fill 규칙으로 넘긴다. USE_AS_IS, LIGHT_THEME_ADAPT, STYLE_ADAPT, RECOMBINE_PARTS, NATIVE_REAUTHOR_BASE 중 선택 결과를 따르고 게임 의미는 보존한다.`:'',
     plan.qualityDNA?`[QUALITY DNA] ${JSON.stringify(plan.qualityDNA)}. 이 값은 현재 자산의 임의 점수가 아니라 게임별 최소 제작 하한이다. 각 type의 minimumFloors와 detailLod를 만족시키도록 강한 축은 잠그고 실패한 축만 수정한다. donor는 실패 축만 교체하고 스타일 정체성·출처·잠긴 특징을 보존한다. 검증 상태나 폴리곤/텍스처 수만으로 고퀄 판정하지 않는다.`:'',
@@ -5173,6 +5895,27 @@ export function assetProductionGuidance(plan={}){
     plan.precisionProduction?`[PRECISION PRODUCTION CHAIN] ${JSON.stringify(plan.precisionProduction)}. 검사 결과를 보고서로 끝내지 않는다. 현재 소스와 실제 화면에서 결함을 찾고 정확한 수정 범위를 만든 뒤, 같은 작업에서 editable source와 native derivative를 실제 제작하고 기존 게임 책임 위치에 적용한다. 디테일은 GAME_CAMERA→MID_RANGE→CLOSEUP→CONTACT 순으로 제작하며 실루엣/구조/재질/접촉을 각각 해결한다. 소품 수나 랜덤 노이즈로 디테일을 대신하지 말고 기능·접촉·날씨·손상 원인을 가진 디테일만 만든다. 제작 성공 후 바로 적용 단계로 넘어가며 검사나 수정 계획만 제출하고 멈추지 않는다. 제작 도구가 없을 때만 정확한 AUTHORING 단계와 필요한 원본을 남기고 완료를 주장하지 않는다.`:'',
     ...(plan.sourceGlbReconstruction||[]).map(source=>`[BASIC GLB TO DETAILED ASSET] ${JSON.stringify(source)}. 기본 GLB의 실제 원형·부품·재질·리그·애니메이션을 재사용하고 약한 형태를 재조형한다. 해부학/구조 접합/의복 겹침/눈꺼풀·입술·손발/문·창·지붕/목재·금속·돌·천의 마감과 사용 흔적을 자산 종류에 맞게 풍부하게 만든다. 단순 subdivide나 노이즈·색 변경으로 완성 처리하지 않는다. 원본은 보존하고 실제 DCC에서 파생본을 만든 뒤 morph/socket/리타겟 연결과 Unity/Web GLB·네이티브 변형을 등록한다. 메시·리깅·텍스처 제작 도구가 없으면 AUTHORING_REQUIRED를 유지한다.`),
     plan.mapDetailReconstruction?`[BASIC MAP TO DETAILED WORLD] ${JSON.stringify(plan.mapDetailReconstruction)}. 내비게이션 수준의 기본 지도에서 길·교차로·구역·랜드마크를 읽고 연결 관계를 먼저 보존한다. 지형/배수→대지/건물/골목→식생→기능성 소품→접합/표면/생활 흔적→주변 동작 순서로 재구성한다. 소품을 균일하게 뿌리거나 안개로 가리지 말고 상업/주거/산업/숲 같은 구역 기능과 사용 원인에 따라 디테일을 배치한다. 도로 폭·문 접근·상호작용 영역·필수 시야·모바일 이동을 지키고 원본 동선 겹침과 실제 경로 보행으로 검수한다.`:'',
+    plan.proceduralWorldLayout?`[CANONICAL NATIVE 3D WORLD CONSTRUCTION] ${JSON.stringify((world=>{
+      if(!world?.buildings)return{status:world?.status,issues:world?.issues||[],approvedSourceRequired:true,sourceMutationPerformed:false};
+      return{
+        status:world.status,issues:world.issues,seed:world.seed,size:world.size,dimension:world.dimension,regionalBiome:world.regionalBiome,climate:world.climate,
+        sharedLibraryBinding:world.sharedLibraryBinding,placementDiversity:world.placementDiversity,
+        eraAndCulture:world.eraAndCulture,oceansAndLakes:world.oceansAndLakes,earthBiomes:world.earthBiomes,
+        livingBiomePopulation:world.livingBiomePopulation,geologyAndMaterials:world.geologyAndMaterials,
+        ecologyBalance:world.ecologyBalance,urbanPlanning:world.urbanPlanning,
+        terrainHeightY:world.terrain.map(cell=>+(cell.elevation*8).toFixed(2)),
+        terrainMaterialPalette:[...new Set(world.terrain.map(cell=>cell.surface?.primary))].filter(Boolean).sort(),
+        terrainMaterialIds:(()=>{const palette=[...new Set(world.terrain.map(cell=>cell.surface?.primary))].filter(Boolean).sort();
+          return world.terrain.map(cell=>palette.indexOf(cell.surface?.primary));})(),
+        terrainHabitatPalette:[...new Set(world.terrain.map(cell=>cell.ecology?.habitat))].filter(Boolean).sort(),
+        terrainHabitatIds:(()=>{const palette=[...new Set(world.terrain.map(cell=>cell.ecology?.habitat))].filter(Boolean).sort();
+          return world.terrain.map(cell=>palette.indexOf(cell.ecology?.habitat));})(),
+        roads:world.roads.map(road=>({id:road.id,cells:road.cells.map(cell=>[cell.x,cell.z])})),
+        buildings:world.buildings.map(row=>({stableObjectId:row.stableObjectId,zone:row.zone,planning:row.planning,position:row.position,footprint:row.footprint,doorway:row.doorway,construction:row.construction,modules:row.modules,sourceBinding:row.sourceBinding})),
+        vegetation:world.vegetation.map(row=>({stableObjectId:row.stableObjectId,kind:row.kind,habitat:row.habitat,seasonalAppearance:row.seasonalAppearance,position:row.position,scale:row.scale,sourceBinding:row.sourceBinding,surfaceMaterialBinding:row.surfaceMaterialBinding})),
+        protected:world.protected,runtimeVerified:false
+      };
+    })(plan.proceduralWorldLayout))}. 3D 고도·기초/벽 개구부·문 깊이·지붕·식생을 현재 게임 소스의 실제 Mesh/Prefab/Model로만 구현한다. 공용 에셋 sourceBinding은 참조/변환 작업 입력이며 적용 완료가 아니다. 생물학은 서식지별 시각 부양량·계절 외형만, 지질학은 유역 유출·Voronoi 지층·재질 분포만, 건축/도시공학은 도로망 보행 접근성·건축 골조·홍수 완충·지반 안정성만 이 기존 맵 소스에 반영한다. 고대·중세·현대·미래 건축과 해양·호수·섬·군도 바이옴은 승인된 세계관 텍스트에서 자동 추론하고 게임 고유 스타일을 유지한다. 이미 승인·구현된 NPC·몬스터·생명체 ID만 정확한 서식지·마을·던전 위치 및 기존 AI 행동 함수에 연결한다. 공용 AI는 assets/vibe-ai-role-director.js와 assets/common-ai.js의 기존 안전 계약을 재사용하며, 마을 건설·사냥·습격과 일반/정예/보스/희귀보스/전설 계층은 행동 후보와 시각 변형 제안만 만든다. 서버가 승인한 실제 전이·이동·충돌·보상 근거가 없으면 실행하지 않고, 3D 런타임 화면에서 확인 전에는 AI 행동/진화 완료를 주장하지 않는다. 실제 몬스터/동물 개체 생성 수, 드랍, 보상, 체력, 식량, 기존 저장 오브젝트와 서버 권한은 절대 변경하지 않는다. 수목·지질·건물·도시·환경 공용 자산은 원본 불변으로 게임별 네이티브 파생을 적용하고 비교 검증한다. 선택 후보 전부를 복사하지 말고 역할 호환 원본만 바인딩한다. 실제 네이티브 메시·입체 공간·동선/시야·모바일 화면·성능·저장/전투 불변 조건을 검증하기 전에는 완료 판정 금지. 기존 A* 경로와 fBM 지형 생성 결과에 해시 기반 최소거리 분산 배치를 결합한 제안이며 외부 원본 코드/맵 직접 복제 금지. `:'',
     plan.imageAssetCreation?.enabled?`[IMAGE-TO-ASSET CREATION] ${JSON.stringify(plan.imageAssetCreation)}. 이미지 한 장만 있어도 먼저 실제 픽셀을 관찰하고 검증된 관찰에서 나온 task-local 아이디어를 현재 VOLUME_UP worklist 앞에 우선 배치한다. 중앙 registry에는 원본 사진·관찰·임시 아이디어를 영속 저장하지 않는다. 보이는 실루엣·비율·재질 경계·색·시그니처·미세 마감을 추출하고, 뒷면·가려진 접합부·관절·동작은 창작 설계로 구분한다. 정면 복사판이나 이미지 평면으로 최종 모델을 대신하지 않는다. 공통 GLB 원형/부품 재사용→디테일 조형→의상 맞춤→리깅/표정/동작→Unity/Web 파생으로 이어간다. UI/아이콘/배경에도 적용하고 원본과 같은 카메라·중립 조명·실게임 화면에서 비교한다. 픽셀 접근이나 실제 제작 도구가 없으면 필요한 제작 단계로 남기며 완성 처리하지 않는다.`:'',
     plan.companyGraphicsLibrary?.characterNpcCustomization?.requested?`[CHARACTER NPC CUSTOMIZATION] ${JSON.stringify(plan.companyGraphicsLibrary.characterNpcCustomization)}. 플레이어와 NPC는 같은 체형·머리·얼굴·피부·눈·헤어·수염·흉터·문신·화장·피어싱·종족 파츠·의상·액세서리·표정·보행 자산 풀을 공유한다. NPC는 지역/직업/계층/연령/기후/개인 이력으로 조합 편향만 주고 색상만 다른 복제 NPC를 만들지 않는다. 사진 레퍼런스는 보이는 형태와 재질 아이디어만 source-bound로 사용하고 고유 얼굴·의상·UI를 직접 복제하지 않는다.`:'',
     plan.assetSynchronization?`[UNITY / WEB SHARED VISUAL DOCUMENT] status=${plan.assetSynchronization.status}; issues=${plan.assetSynchronization.issues.join('|')||'NONE'}; document=${JSON.stringify(plan.assetSynchronization.document)}; applications=${JSON.stringify(plan.assetSynchronization.applications)}; motions=${JSON.stringify(plan.assetSynchronization.motions)}. 같은 gameId/revision/sourceHash의 커마·스타일·UI·아이콘·동작 설정을 기존 자산 저장소와 작업주문으로 공유한다. SYNC_CONFLICT면 재조회하며 부분 적용하지 않는다. 플랫폼 변형이나 연결점이 없으면 AUTHORING_REQUIRED로 제작하고 문서만으로 동기화 완료를 주장하지 않는다.`:'',
@@ -5229,6 +5972,11 @@ export function assetProductionGuidance(plan={}){
     plan.companyGraphicsLibrary?.motionBootstrap?.setCount?`모션 시드 세트=${plan.companyGraphicsLibrary.motionBootstrap.setCount}개; archetypes=${plan.companyGraphicsLibrary.motionBootstrap.archetypes.join('|')}; 상태=${plan.companyGraphicsLibrary.motionBootstrap.status}. PREPARED_SEMANTIC은 실제 네이티브 클립 PASS가 아니며 실게임 런타임 검증 후에만 승격한다.`:'',
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?`자동 모션 Gap Fill: auditSets=${plan.companyGraphicsLibrary.motionAutoGapFill.auditedSetCount}; incomplete=${plan.companyGraphicsLibrary.motionAutoGapFill.incompleteSetCount}; semanticSeeds=${plan.companyGraphicsLibrary.motionAutoGapFill.plannedSemanticSeedCount}; fillOrder=${plan.companyGraphicsLibrary.motionAutoGapFill.fillOrder.join('→')}`:'',
     plan.companyGraphicsLibrary?.motionAutoGapFill?.enabled?'빈칸은 호환 검증 모션 재사용→안전한 파생→저장소/외부 검증 후보→PREPARED_SEMANTIC 시드→네이티브 신규 제작 순으로 자동 계획한다. 의미 시드는 자동 생성해도 VERIFIED로 승격하지 않는다.':'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.sharedGenreKits?.state==='PREPARED_SEMANTIC_RUNTIME_UNVERIFIED'
+      ?`공용 직업/몬스터 모션 선택: 장르=${plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.genre}; 직업=${plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.career?.id||'NONE'}; 종족=${plan.companyGraphicsLibrary.motionAutoGapFill.sharedGenreKits.monster?.id||'NONE'}. 캐릭터 역할 상속과 기술 시전/반격/회복/제작 동작, 몬스터 종별 관절·컨택트 곡선은 제작 시드이며 실제 3D 리그 대응·키프레임·장비 접촉·엔진 런타임 검증 후에만 승인한다. 게임별 스타일·장르·기존 밸런스/저장/전투 판정을 유지한다.`
+      :'',
+    plan.companyGraphicsLibrary?.motionAutoGapFill?.sharedGenreKits?.state==='GENRE_MAPPING_REQUIRED'
+      ?'공용 모션이 요청됐지만 지원하는 장르 식별이 빠졌다. 기존 게임 장르를 유지하며 매핑 요청을 남기고 기본 RPG로 덮지 않는다.':'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.enabled?`Studio Asset Universe=${plan.companyGraphicsLibrary.studioAssetUniverse.target}; families=${plan.companyGraphicsLibrary.studioAssetUniverse.families.join('|')}; creatureBodyPlans=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureBodyPlans.length}; species=${plan.companyGraphicsLibrary.studioAssetUniverse.creatureSpecies.length}; biomes=${plan.companyGraphicsLibrary.studioAssetUniverse.biomes.length}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.baseMaterialLibrary?.atomCount?`Composable Base Materials=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.atomCount}; families=${Object.keys(plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.families||{}).join('|')}; mutationAxes=${plan.companyGraphicsLibrary.studioAssetUniverse.baseMaterialLibrary.mutationAxes.join('|')}`:'',
     plan.companyGraphicsLibrary?.studioAssetUniverse?.variantRecipeTemplates?.length?`Variant Recipes=${plan.companyGraphicsLibrary.studioAssetUniverse.variantRecipeTemplates.map(row=>row.id+':'+row.mutationStrength).join('|')}; 일반/지역/세력/정예/보스/히어로 변형은 색상 변경만으로 구분하지 말고 identity budget을 충족한다.`:'',

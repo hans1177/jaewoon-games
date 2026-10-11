@@ -24,6 +24,10 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-asset-production-plan.mjs'
       - 'assets/vibe-studio-asset-universe.js'
+      # Re-enter the existing planner when platform-neutral native master/source or
+      # company asset registrations change; do not create a new authoring queue.
+      - 'assets/shared/**'
+      - 'company-asset-library.json'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-capability-distillation.mjs'
@@ -85,7 +89,7 @@ env:
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
   VIBE2_GAME_PRIMARY_BASELINE_TARGET: '128'
   VIBE2_GAME_PRIMARY_ADAPTIVE_MIN: '128'
-  VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '64'
+  VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS: '128'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
@@ -149,7 +153,7 @@ jobs:
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
-          echo 'VIBE2_PARALLELISM_POLICY=FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_64'
+          echo 'VIBE2_PARALLELISM_POLICY=FIXED_GAME_PRIMARY_REPEAT_DEVELOPMENT_128'
           echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
           test "$VIBE2_24H_LEARNING_PROVIDER" = "LOCAL_OLLAMA"
@@ -163,7 +167,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # GAME_PRIMARY 64슬롯은 논리 용량이며 실제 러너 부족은 GitHub Actions 큐가 흡수한다.
+          # GAME_PRIMARY 128슬롯은 논리 용량이며 실제 러너 부족은 GitHub Actions 큐가 흡수한다.
           # 러너 압력은 관찰하되 GAME_PRIMARY/asset production dispatch 자체를 억제하지 않는다.
           pressure_threshold="${VIBE2_RUNNER_PRESSURE_DISPATCH_THRESHOLD:-4}"
           preplan_pressure='unknown'
@@ -215,7 +219,7 @@ jobs:
           const queuedGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
           const activeAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='ASSET_DEVELOPMENT').length;
           const queuedAsset=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='ASSET_DEVELOPMENT').length;
-          const gameMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS||64));
+          const gameMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS||128));
           const assetMax=Math.max(1,Number(process.env.VIBE2_ASSET_DEVELOPMENT_MAX||63));
           process.stdout.write([
             queuedGame,activeGame,Math.max(0,gameMax-activeGame),
@@ -256,7 +260,30 @@ jobs:
             exit 0
           fi
 
-          body='{"ref":"main","inputs":{"execution_lane":"game-primary","lane_max":"64"}}'
+          # 메인 · 아직 시작하지 않은 정확히 같은 main의 GAME_PRIMARY 호출만 재사용한다.
+          # 다른 SHA·실행 중 작업·자산 작업은 유지하고, 조회 실패 때는 기존 호출을 진행한다.
+          current_main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha' 2>/dev/null || true)"
+          if [[ "$preplan_pressure" =~ ^[0-9]+$ && "$current_main_sha" =~ ^[a-f0-9]{40}$ ]]; then
+            queued_exact_wake="$(CURRENT_MAIN_SHA="$current_main_sha" node <<'NODE'
+          const fs=require('fs');
+          const snapshot=JSON.parse(fs.readFileSync('/tmp/vibe2-preplan-actions-runs.json','utf8'));
+          const queued=new Set(['queued','pending','requested']);
+          const wake=(snapshot.workflow_runs||[]).find(run=>
+            run.path==='.github/workflows/vibe2-continuous-core.yml'
+            &&run.event==='workflow_dispatch'
+            &&run.head_sha===process.env.CURRENT_MAIN_SHA
+            &&queued.has(String(run.status||'').toLowerCase())
+            &&run.display_title==='Vibe2 Continuous Core · workflow_dispatch · game-primary');
+          process.stdout.write(wake?String(wake.id):'');
+          NODE
+            )"
+            if [[ "$queued_exact_wake" =~ ^[0-9]+$ ]]; then
+              echo "VIBE2_PREPLAN_GAME_PRIMARY_DISPATCH=COALESCED_QUEUED_EXACT_MAIN:$queued_exact_wake:$current_main_sha"
+              exit 0
+            fi
+          fi
+
+          body='{"ref":"main","inputs":{"execution_lane":"game-primary","lane_max":"128"}}'
           if curl --fail-with-body --silent --show-error \
             --request POST \
             --header 'Accept: application/vnd.github+json' \
@@ -347,7 +374,11 @@ jobs:
                 node --test qa/vibe2-learning-motor.test.mjs
                 node --test qa/vibe2-auto-planner.test.mjs
                 node --test qa/company-build-up-experience-quality.test.mjs
-                node --test qa/vibe2-native-asset-production.test.mjs
+                # 원본 자산 품질 관련 검증은 계획 단계에서 직접 실행한다.
+                # 전체 124개 native asset 통합 회귀는 독립 Vibe2 Core QA 및 출시 검증에서 그대로 실행한다.
+                # 계획 단계의 범위 축소는 전체 회귀 PASS를 의미하지 않는다.
+                echo 'VIBE2_24H_NATIVE_ASSET_PREFLIGHT=SCOPED_SOURCE_INTEGRITY_FULL_QA_REMAINS_IN_CORE'
+                node --test --test-name-pattern='^(?:asset registry change detection|registry sync change detection|OBJ static validation|source GLB inventory|master GLB rejects|master GLB evidence|native actor binding|licensed FBX motion|all source GLBs|GLB production inspection|GLB world bounds|GLB scene geometry identity|native authoring reviews)' qa/vibe2-native-asset-production.test.mjs
                 node --test qa/vibe2-source-worker.test.mjs
                 node --test qa/vibe2-capability-distillation.test.mjs
                 node --test qa/vibe2-incremental-qa.test.mjs
@@ -677,7 +708,7 @@ jobs:
           const configured = Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS);
           const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : 256;
           const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
-          const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
+          const afterText = `${JSON.stringify(normalized)}\n`;
           if (beforeText !== afterText) {
             fs.writeFileSync(file, afterText, 'utf8');
             console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=YES');
@@ -1025,9 +1056,9 @@ jobs:
           const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
           const recoveryQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='RECOVERY_FAST').length;
           const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
-          const configuredMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS||64));
-          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||64));
-          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||64));
+          const configuredMax=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS||128));
+          const baselineTarget=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_BASELINE_TARGET||128));
+          const adaptiveMin=Math.max(1,Number(process.env.VIBE2_GAME_PRIMARY_ADAPTIVE_MIN||128));
           const controlTarget=Math.max(adaptiveMin,Number(control.currentMax||baselineTarget));
           const effectiveMax=configuredMax;
           const freeWorkerSlots=Math.max(0,effectiveMax-activeGame);
@@ -1050,8 +1081,8 @@ jobs:
           console.log('VIBE2_24H_GAME_PRIMARY_ACTIVE_MAX='+effectiveMax);
           console.log('VIBE2_24H_ADAPTIVE_RECOMMENDED_MAX='+controlTarget);
           console.log('VIBE2_24H_GAME_PRIMARY_RESERVATION_LIMIT_SOURCE=FIXED_REPEAT_DEVELOPMENT_128');
-          console.log('VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=64');
-          console.log('VIBE2_GAME_PRIMARY_REFILL_TARGET=64');
+          console.log('VIBE2_GAME_PRIMARY_FIXED_REPEAT_SLOTS=128');
+          console.log('VIBE2_GAME_PRIMARY_REFILL_TARGET=128');
           console.log('VIBE2_24H_FREE_GAME_WORKER_SLOTS='+freeWorkerSlots);
           console.log('VIBE2_24H_GAME_REFILL_READY='+gameRefillReady);
           console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
@@ -1210,7 +1241,7 @@ jobs:
     uses: ./.github/workflows/vibe2-continuous-core.yml
     with:
       execution_lane: game-primary
-      lane_max: '64'
+      lane_max: '128'
     permissions:
       contents: write
       actions: write

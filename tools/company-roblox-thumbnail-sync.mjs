@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+import {csrfFetch} from './company-roblox-dedicated-experience.mjs';
 
 const clean=v=>String(v??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
@@ -19,21 +20,21 @@ export function resolveRobloxThumbnailTarget({catalog={},queue={},gameId=''}) {
   const source=clean(canonical?.marketing?.thumbnail||game.marketingThumbnail||canonical?.identity?.image||game.image);
   if(!source)throw new Error('ROBLOX_THUMBNAIL_SOURCE_MISSING:'+id);
   if(!source.startsWith('assets/roblox-thumbnails/'))throw new Error('ROBLOX_THUMBNAIL_SOURCE_NOT_CANONICAL:'+source);
+  // 메인: Roblox 공식 서버에 검증된 해당 게임의 전용 universe/place만 업로드한다.
   const item=(queue.items||[]).find(row=>clean(row?.gameId)===id)||{};
-  const candidates=[
-    item.robloxPublicationTarget,
-    item.robloxRuntimeCandidateEvidence,
-    item.robloxInternalReleaseEvidence,
-    item.robloxReleaseEvidence,
-    item.robloxDedicatedExperience
-  ].filter(Boolean);
-  let universeId='';
-  let placeId='';
-  for(const row of candidates){
-    if(validId(row?.universeId)&&validId(row?.placeId)){universeId=clean(row.universeId);placeId=clean(row.placeId);break;}
+  const target=item.robloxPublicationTarget||{};
+  if(target.verified!==true||target.dedicated!==true||target.shared===true
+    ||clean(target.gameId||id)!==id
+    ||!validId(target.universeId)||!validId(target.placeId)){
+    throw new Error('ROBLOX_THUMBNAIL_VERIFIED_DEDICATED_TARGET_MISSING:'+id);
   }
-  if(!validId(universeId))throw new Error('ROBLOX_THUMBNAIL_VERIFIED_UNIVERSE_MISSING:'+id);
-  return Object.freeze({gameId:id,source,universeId,placeId,name:clean(canonical?.identity?.name||game.name||id)});
+  if(!source.startsWith('assets/roblox-thumbnails/'+id+'.')){
+    throw new Error('ROBLOX_THUMBNAIL_WRONG_GAME_SOURCE:'+id);
+  }
+  return Object.freeze({
+    gameId:id,source,universeId:clean(target.universeId),placeId:clean(target.placeId),
+    name:clean(canonical?.identity?.name||game.name||id)
+  });
 }
 
 export function validateCanonicalThumbnail({root='.',target={}}={}) {
@@ -118,12 +119,56 @@ export async function uploadRobloxHomepageThumbnail({
   throw new Error('ROBLOX_THUMBNAIL_PROCESSING_TIMEOUT:'+operationId);
 }
 
+// 메인: 공식 경험 상세 페이지의 이미지는 홈 개인화 썸네일과 별개로 관리한다.
+// 원본 플레이 영상은 Roblox 네이티브 실제 실행 증거 없이는 게시하지 않는다.
+export async function syncRobloxExperienceDetailMedia({
+  universeId,pngPath,cookie='',skipDuplicateUpload=false,fetchImpl=globalThis.fetch
+}={}) {
+  if(!validId(universeId))throw new Error('ROBLOX_DETAIL_UNIVERSE_INVALID');
+  if(!pngPath||!fs.existsSync(pngPath))throw new Error('ROBLOX_DETAIL_PNG_MISSING');
+  const endpoint='https://games.roblox.com/v2/games/'+universeId+'/media?fetchAllExperienceRelatedMedia=true';
+  const observed=await fetchImpl(endpoint,{headers:{accept:'application/json'}});
+  if(!observed.ok)throw new Error('ROBLOX_DETAIL_MEDIA_FETCH_FAILED:HTTP_'+observed.status);
+  let payload={};
+  try{payload=await observed.json();}catch{throw new Error('ROBLOX_DETAIL_MEDIA_INVALID_JSON');}
+  if(!Array.isArray(payload.data))throw new Error('ROBLOX_DETAIL_MEDIA_INVALID_RESPONSE');
+  const images=payload.data.filter(row=>row?.assetType==='Image'||row?.assetTypeId===1);
+  const videos=payload.data.filter(row=>row?.assetType==='Video'||row?.assetTypeId===33||Boolean(row?.videoHash));
+  let imageStatus=images.length?'EXISTING_GAME_DETAIL_IMAGE':'PENDING_IMAGE_UPLOAD';
+  if(!images.length&&skipDuplicateUpload){
+    imageStatus='AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD';
+  }else if(!images.length){
+    if(!clean(cookie))throw new Error('ROBLOX_DETAIL_COOKIE_MISSING');
+    const form=new FormData();
+    form.append('Files',new Blob([fs.readFileSync(pngPath)],{type:'image/png'}),path.basename(pngPath));
+    const result=await csrfFetch({
+      url:'https://publish.roblox.com/v1/games/'+universeId+'/thumbnail/image',
+      cookie,fetchImpl,method:'POST',body:form
+    });
+    if(!result.ok)throw new Error('ROBLOX_DETAIL_IMAGE_UPLOAD_FAILED:HTTP_'+result.status);
+    imageStatus='SUBMITTED_AWAITING_ROBLOX_MODERATION';
+  }
+  return Object.freeze({
+    universeId:clean(universeId),
+    imageStatus,verifiedDetailImage:images.some(row=>row.approved===true),
+    existingImageCount:images.length,
+    approvedRobloxGameplayVideoCount:videos.filter(row=>row.approved===true).length,
+    videoStatus:videos.some(row=>row.approved===true)
+      ?'ROBLOX_NATIVE_PLAYBACK_PROOF_STILL_REQUIRED'
+      :'NATIVE_ROBLOX_GAMEPLAY_VIDEO_NOT_PUBLISHED',
+    checkedAt:new Date().toISOString(),
+    authority:'ROBLOX_OFFICIAL_EXPERIENCE_DETAIL_MEDIA'
+  });
+}
+
 export async function syncRobloxHomepageThumbnail({
   root='.',
   catalogPath='game-catalog.json',
   queuePath='../runtime/development-queue.json',
   gameId='',
   apiKey='',
+  robloxCookie='',
+  detailOnly=false,
   outputPath='',
   renderCommand='rsvg-convert',
   fetchImpl=globalThis.fetch,
@@ -138,6 +183,27 @@ export async function syncRobloxHomepageThumbnail({
   console.log('ROBLOX_THUMBNAIL_SOURCE='+target.source);
   console.log('ROBLOX_THUMBNAIL_SOURCE_SHA256='+validated.sha256);
   console.log('ROBLOX_THUMBNAIL_RENDER=PASS:size='+rendered.size);
+  if(detailOnly){
+    const previous=(queue.items||[]).find(item=>clean(item?.gameId)===target.gameId)?.robloxDetailMediaEvidence||{};
+    const samePreviousUpload=previous.gameId===target.gameId
+      &&previous.universeId===target.universeId
+      &&previous.sourceSha256===validated.sha256
+      &&['SUBMITTED_AWAITING_ROBLOX_MODERATION','AWAITING_APPROVAL_NO_DUPLICATE_UPLOAD'].includes(previous.imageStatus);
+    const media=await syncRobloxExperienceDetailMedia({
+      universeId:target.universeId,pngPath,cookie:robloxCookie,
+      skipDuplicateUpload:samePreviousUpload,fetchImpl
+    });
+    const evidence={
+      version:1,gameId:target.gameId,placeId:target.placeId,
+      sourcePath:target.source,sourceSha256:validated.sha256,
+      renderedPngSha256:rendered.sha256,...media
+    };
+    if(clean(outputPath))writeJson(path.resolve(root,outputPath),evidence);
+    console.log('ROBLOX_DETAIL_IMAGE_STATE='+media.imageStatus);
+    console.log('ROBLOX_DETAIL_MEDIA_VIDEO_STATE='+media.videoStatus);
+    console.log('ROBLOX_DETAIL_MEDIA_VERIFIED='+String(media.verifiedDetailImage));
+    return evidence;
+  }
   const uploaded=await uploadRobloxHomepageThumbnail({
     universeId:target.universeId,pngPath,apiKey,fetchImpl,sleepImpl
   });
@@ -183,6 +249,8 @@ async function main(){
     queuePath:clean(a.queue)||'../runtime/development-queue.json',
     gameId:clean(a['game-id']),
     apiKey:process.env.ROBLOX_OPEN_CLOUD_API_KEY||'',
+    robloxCookie:process.env.ROBLOX_ROBLOSECURITY||process.env.ROBLOX_SECURITY_COOKIE||'',
+    detailOnly:a['detail-only']==='true',
     outputPath:clean(a.output),
     renderCommand:clean(a['render-command'])||'rsvg-convert'
   });

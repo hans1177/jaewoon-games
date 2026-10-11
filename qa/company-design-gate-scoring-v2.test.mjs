@@ -2,6 +2,12 @@
 // 설계 게이트 점수와 필수 문법·멀티·공간 그래픽 회귀 검증
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
+import {computeVibeSeedProposal} from '../tools/company-game-seed-bootstrap.mjs';
+import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-repair.mjs';
+import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
+import {classifyRobloxGenre} from '../tools/roblox-genre-profile.mjs';
+import {buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
@@ -132,6 +138,177 @@ assert.deepEqual(grammarPass.grammarCarryEvidence.carriedMajorAxes,['증언 네�
 assert.ok(grammarPass.grammarCarryEvidence.carriedSubElements.includes('평판'));
 assert.ok(grammarPass.grammarCarryEvidence.carriedDelveElements.includes('거짓말 연쇄'));
 assert.equal(grammarPass.grammarCarryEvidence.emergentGenreCarried,true);
+const v5Seed=structuredClone(grammarSeed);
+v5Seed.GAMEPLAY_SKETCH.version=5;
+const v5Fusion=v5Seed.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion;
+v5Fusion.formula='MAIN × A × B × C';
+v5Fusion.majorAxes[0].sourceMaterial='희극적 오해';
+v5Fusion.majorAxes[1].sourceMaterial='인식론';
+v5Fusion.themeFusion={
+  themes:[{name:'철학',kind:'MATERIAL'},{name:'엽기',kind:'MATERIAL'}],
+  genres:[{role:'PRIMARY',name:'미스터리'},{role:'SECONDARY',name:'코믹'}]
+};
+const authoredV5=structuredClone(grammarDesign);
+authoredV5.content.creativeGrammar={
+  mainIdentity:'소문을 현실로 바꾸며 그 결과를 추리하는 퍼즐극',
+  a:{system:'증언 네트워크',material:'희극적 오해',materialDomain:'연극',stateChange:'소문의 전달 순서에 따라 사람의 믿음과 공간 상태가 달라진다.'},
+  b:{system:'공간 퍼즐',material:'인식론',materialDomain:'철학',stateChange:'증언의 임계값에 따라 문이 열리고 다시 소문의 신뢰도가 변한다.'},
+  abCausality:'증언이 공간 상태를 바꾸며 바뀐 공간에 따라 새로운 증언과 거짓말의 비용이 달라진다.',
+  materialFusion:{
+    contrast:'희극적 오해와 인식론의 낯선 결합이 단순한 설득 퍼즐을 사회적 현실 변화 게임으로 바꾼다.',
+    causalBridge:'주민의 웃긴 오해가 진실의 신뢰도를 바꾸고 그 신뢰도가 지도 구조에 반영된다.',
+    removalConsequence:'오해를 제거하면 장소가 바뀌지 않고 인식론을 제거하면 소문을 검증할 추리 규칙이 사라진다.'
+  },
+  storyCausalChain:{
+    cause:'마을의 소문은 특정 사람이 거짓 증언을 반복하면서 시작되었다.',
+    characterConflict:'마을의 여러 주민은 자신의 체면과 가족을 보호하려고 다른 증언을 믿는다.',
+    playerChoice:'누구의 소문을 먼저 폭로하거나 역이용할지 주인공이 결정한다.',
+    worldChange:'폭로의 순서에 따라 마을 지도에 새 통로가 열리거나 안전한 경로가 막힌다.',
+    nextEvent:'그 지도 변경 때문에 다른 주민의 의심을 받아 다음 사건과 목표가 발생한다.'
+  },
+  abEvolution:{
+    aChangesB:'누구에게 먼저 소문을 퍼뜨리는지에 따라 공간 퍼즐의 열리는 문과 보상이 변화한다.',
+    bChangesA:'공간 퍼즐을 다른 순서로 풀면 주민들의 증언 신뢰도가 달라져 다음 대화 선택이 바뀐다.',
+    lateGameChange:'후반에는 지역 두 곳의 증언과 공간 규칙을 동시에 설계해 병렬 해결법이 열린다.'
+  },
+  cThemes:[{name:'철학',kind:'MATERIAL',gameplayEffect:'진실과 책임의 윤리가 증언 평가 비용을 바꾼다.'},{name:'엽기',kind:'MATERIAL',gameplayEffect:'비정상적인 오해가 숨겨진 경로를 드러낸다.'}],
+  cGenres:[{role:'PRIMARY',name:'미스터리',gameplayEffect:'다양한 단서의 진위를 검증하는 추리가 중심 목표를 이룬다.'},{role:'SECONDARY',name:'코믹',gameplayEffect:'우스운 오해가 현장 증언과 공간 퍼즐의 해법을 실제로 바꾼다.'}],
+  cGenreInterlock:'진실을 찾는 미스터리 과정에 코믹한 오해를 섞으면 증언의 신뢰와 접근 경로가 바뀐다.',
+  cWorldAndGameplayEffect:'철학과 엽기가 만든 사회적 금기가 탐색, 설득, 공간 전개를 변화시킨다.',
+  delveDiscoveries:[
+    {clue:'폐교 서고의 기록을 주민의 반대 증언과 비교한다.',discovery:'낡은 지도에 지워진 비밀 통로의 개방 조건을 알아낸다.',newChoice:'기록을 공개하는 대신 지도를 바꿔 안전한 잠입 경로로 이동한다.'},
+    {clue:'시장 공연이 끝날 때마다 같은 가짜 소문이 퍼지는 원인을 관찰한다.',discovery:'웃음의 강도에 따라 증언 신뢰도가 뒤바뀌는 법칙을 파악한다.',newChoice:'공연 순서를 조정해 주민의 의심을 다른 증인에게 돌린다.'},
+    {clue:'재판 기록에 숨겨진 모순과 증언 순서의 영향을 추적한다.',discovery:'진실을 먼저 밝힐수록 특정 문이 영구 봉쇄되는 규칙을 발견한다.',newChoice:'일부 진실을 보류하고 우회 증거를 모아 봉쇄를 해제한다.'},
+    {clue:'옛 마을로 돌아왔을 때 소문이 달라진 장소를 조사한다.',discovery:'과거 선택을 증언으로 되살리면 지역 배치를 역전할 수 있음을 확인한다.',newChoice:'과거 관계를 수정해 새로운 협상 루트와 귀환 선택지를 연다.'}
+  ],
+  delveGrowthRule:'새 발견과 숙련 단계마다 두 시스템을 교차 응용해 끝없는 고급 운용을 추가한다.',
+  finalGameIdentity:'철학과 엽기 소재, 미스터리와 코믹 장르를 합친 증언 현실변형 퍼즐극'
+};
+const v5Score=scoreDesignGateV2({seed:v5Seed,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(v5Score.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'),false);
+assert.equal(v5Score.grammarCarryEvidence.creativityCarried,true);
+const repeatedCTheme=structuredClone(authoredV5);
+repeatedCTheme.content.creativeGrammar.cThemes[1].name='철학';
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedCTheme,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
+const genreInMaterialSlot=structuredClone(authoredV5);
+genreInMaterialSlot.content.creativeGrammar.cThemes[0].kind='GENRE';
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:genreInMaterialSlot,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_C_TWO_TOPICS_REQUIRED'));
+const repeatedSystem=structuredClone(authoredV5);
+repeatedSystem.content.creativeGrammar.b.system=repeatedSystem.content.creativeGrammar.a.system;
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedSystem,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_A_B_SYSTEM_DISTINCTNESS_MISSING'));
+const repeatedDelve=structuredClone(authoredV5);
+const repeatedDiscovery=repeatedDelve.content.creativeGrammar.delveDiscoveries[0];
+repeatedDelve.content.creativeGrammar.delveDiscoveries=Array.from({length:4},(_,i)=>({
+  clue:repeatedDiscovery.clue+' '+i,
+  discovery:repeatedDiscovery.discovery+' '+i,
+  newChoice:repeatedDiscovery.newChoice+' '+i
+}));
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:repeatedDelve,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_UNBOUNDED_DELVE_DEPTH_MISSING'));
+// V5에는 더 이상 소문자 c 보조 시스템을 강제하지 않는다. C 소재·장르 검증은 별도로 유지한다.
+// 아직 시스템 간에 공통 입출력 키가 없는 V5는 연결 조각 작성 전에 되돌려 수리한다.
+const v5HandoffSeed={GAMEPLAY_SKETCH:{version:5}};
+const noSharedStateRules=['MAIN','A','B','DELVE'].map((grammarRole,index)=>({
+  id:'RULE_'+index,grammarRole,name:'Rule '+index,
+  purpose:'Player choices must affect a connected approved system.',
+  playerChoice:'Choose an action based on current world state.',
+  stateInputs:['ResourceBefore'],stateOutputs:['ResourceAfter']
+}));
+const noHandoffReview=validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']});
+assert.ok(noHandoffReview.some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
+const sharedStateRules=noSharedStateRules.map(row=>({...row,stateInputs:['SharedWorldState'],stateOutputs:['SharedWorldState']}));
+const proseKeyV5=sharedStateRules.map(row=>({...row}));
+proseKeyV5[0]={...proseKeyV5[0],stateInputs:['incoming wave pattern analysis']};
+assert.ok(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:proseKeyV5},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_STATE_KEY_IS_INSTRUCTION'));
+
+assert.equal(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:sharedStateRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
+const oneWayRules=sharedStateRules.map(row=>({...row}));
+oneWayRules[1]={...oneWayRules[1],stateInputs:['AInput'],stateOutputs:['AOutput']};
+assert.ok(validateDesignAuthoringContent({seed:v5HandoffSeed,design:{signatureSystems:oneWayRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'));
+assert.equal(validateDesignAuthoringContent({seed:{GAMEPLAY_SKETCH:{version:4}},design:{signatureSystems:noSharedStateRules},fields:['signatureSystems']})
+  .some(row=>row.code==='DESIGN_RULE_STATE_HANDOFF_UNAVAILABLE'),false);
+
+const withoutLegacyC=structuredClone(authoredV5);
+withoutLegacyC.content.signatureSystems=withoutLegacyC.content.signatureSystems.filter(row=>row.grammarRole!=='c');
+const withoutLegacyCScore=scoreDesignGateV2({seed:v5Seed,designRecord:withoutLegacyC,cycleStatus,robloxGenreProfile:profile});
+assert.equal(withoutLegacyCScore.hardFailures.includes('DESIGN_MAIN_A_B_DELVE_REQUIRED'),false);
+const legacyCRequired=scoreDesignGateV2({seed:grammarSeed,designRecord:{...grammarDesign,content:{...grammarDesign.content,signatureSystems:withoutLegacyC.content.signatureSystems}},cycleStatus,robloxGenreProfile:profile});
+assert.ok(legacyCRequired.hardFailures.includes('DESIGN_MAIN_A_B_c_DELVE_REQUIRED'));
+
+
+const placeholderV5=structuredClone(v5Seed);
+placeholderV5.novelGrammarBackfill={version:5,source:'CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009',authoringPending:true};
+const placeholderGrammar=placeholderV5.GAMEPLAY_SKETCH.novelGameGrammar;
+placeholderGrammar.newPrimaryVerb='AUTO_INTAKE_NOT_AUTHORED';
+placeholderGrammar.worldRule='AUTO_INTAKE_NOT_AUTHORED_WORLD_RULE';
+placeholderGrammar.causalDNAs[0].id='AUTO_INTAKE_NOT_AUTHORED_DNA';
+placeholderGrammar.emergentGenre.name='AUTO_INTAKE_NOT_AUTHORED_GENRE';
+placeholderGrammar.gameplaySystemFusion.main.name='AUTO_INTAKE_NOT_AUTHORED_MAIN';
+placeholderGrammar.gameplaySystemFusion.majorAxes[0].name='AUTO_INTAKE_NOT_AUTHORED_A';
+placeholderGrammar.gameplaySystemFusion.majorAxes[0].sourceMaterial='';
+placeholderGrammar.gameplaySystemFusion.majorAxes[1].name='AUTO_INTAKE_NOT_AUTHORED_B';
+placeholderGrammar.gameplaySystemFusion.majorAxes[1].sourceMaterial='';
+placeholderGrammar.gameplaySystemFusion.themeFusion={themes:[],genres:[],genreInterlock:'',jointWorldRule:'',abGameplayEffect:''};
+const pendingV5Review=scoreDesignGateV2({seed:placeholderV5,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(pendingV5Review.pendingSeedGrammarNotAuthored,true);
+assert.equal(pendingV5Review.pendingSeedStillRequiresCreativeDesign,true);
+assert.equal(pendingV5Review.grammarCarryEvidence,null);
+assert.equal(pendingV5Review.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'),false);
+assert.equal(pendingV5Review.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'),false);
+const pendingMalformed=structuredClone(authoredV5);
+pendingMalformed.content.creativeGrammar.cGenres.pop();
+assert.ok(scoreDesignGateV2({seed:placeholderV5,designRecord:pendingMalformed,cycleStatus,robloxGenreProfile:profile})
+  .hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
+const flaggedButAuthored=structuredClone(v5Seed);
+flaggedButAuthored.novelGrammarBackfill=structuredClone(placeholderV5.novelGrammarBackfill);
+for(const [index,axis] of flaggedButAuthored.GAMEPLAY_SKETCH.novelGameGrammar.gameplaySystemFusion.majorAxes.entries()){
+  axis.systemFamily=index?'PUZZLE_STATE':'NPC_INTERACTION';
+  axis.sourceDomain=index?'PHILOSOPHY':'THEATRE';
+  axis.materialRule=index?'증언 신뢰도가 공간 퍼즐의 접근 조건을 바꾼다.':'희극적 오해가 증언 전달과 대화의 다음 선택 비용을 바꾼다.';
+}
+const flaggedStillPending=scoreDesignGateV2({seed:flaggedButAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(flaggedStillPending.pendingSeedGrammarNotAuthored,true,'filled fields cannot erase authoringPending');
+assert.equal(flaggedStillPending.grammarCarryEvidence,null);
+const confirmedAuthored=structuredClone(flaggedButAuthored);
+confirmedAuthored.novelGrammarBackfill.authoringPending=false;
+const authoredCarry=scoreDesignGateV2({seed:confirmedAuthored,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile});
+assert.equal(authoredCarry.pendingSeedGrammarNotAuthored,false);
+assert.ok(authoredCarry.grammarCarryEvidence,'a non-pending V5 source keeps the authored-seed carry contract');
+const unflaggedIntake=structuredClone(confirmedAuthored);
+unflaggedIntake.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
+assert.equal(scoreDesignGateV2({seed:unflaggedIntake,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile}).pendingSeedGrammarNotAuthored,true);
+const unmarkedPlaceholder=structuredClone(placeholderV5);
+unmarkedPlaceholder.novelGrammarBackfill.authoringPending=false;
+assert.ok(scoreDesignGateV2({seed:unmarkedPlaceholder,designRecord:authoredV5,cycleStatus,robloxGenreProfile:profile})
+  .hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
+
+const genericMaterial=structuredClone(authoredV5);
+genericMaterial.content.creativeGrammar.a.material='자원 수집';
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:genericMaterial,cycleStatus,robloxGenreProfile:profile})
+  .hardFailures.includes('DESIGN_CREATIVE_SOURCE_IS_GAME_MECHANIC'),
+  'a plain resource gathering mechanic cannot masquerade as the A creative source');
+
+const noSurprise=structuredClone(authoredV5);
+delete noSurprise.content.creativeGrammar.materialFusion;
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:noSurprise,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_MATERIAL_FUSION_SURPRISE_UNPROVEN'));
+const noStory=structuredClone(authoredV5);
+delete noStory.content.creativeGrammar.storyCausalChain;
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:noStory,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_STORY_CAUSAL_CHAIN_MISSING'));
+const noEvolution=structuredClone(authoredV5);
+delete noEvolution.content.creativeGrammar.abEvolution;
+assert.ok(scoreDesignGateV2({seed:v5Seed,designRecord:noEvolution,cycleStatus,robloxGenreProfile:profile}).hardFailures.includes('DESIGN_A_B_MUTUAL_EVOLUTION_MISSING'));
+
+const invalidV5=structuredClone(authoredV5);
+invalidV5.content.creativeGrammar.cGenres[1].name='미스터리';
+const invalidResult=scoreDesignGateV2({seed:v5Seed,designRecord:invalidV5,cycleStatus,robloxGenreProfile:profile});
+assert.ok(invalidResult.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
+const noSupportingGenre=structuredClone(authoredV5);
+noSupportingGenre.content.creativeGrammar.cGenres.pop();
+const noSupportingScore=scoreDesignGateV2({seed:v5Seed,designRecord:noSupportingGenre,cycleStatus,robloxGenreProfile:profile});
+assert.ok(noSupportingScore.hardFailures.includes('DESIGN_C_PRIMARY_SECONDARY_GENRES_REQUIRED'));
+
 const grammarDiluted=scoreDesignGateV2({seed:grammarSeed,designRecord,cycleStatus,robloxGenreProfile:profile});
 assert.ok(grammarDiluted.hardFailures.includes('NOVEL_GRAMMAR_DILUTED'));
 assert.ok(grammarDiluted.rejectionReasons.some(reason=>reason.code==='NOVEL_GRAMMAR_DILUTED'));
@@ -255,3 +432,88 @@ assert.ok(preservedValidate(disconnected).some(row=>row.code==='DESIGN_PRESERVAT
 console.log('DESIGN_PRESERVED_MAIN_A_B_c_DELVE_CAUSAL_GRAPH=PASS');
 
 console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
+
+/* 메인: 바이브 자체 설계 계산의 독립 결정론적 문법 검증.
+ * 외부 모델·로컬 모델 호출을 사용하지 않고 실제 프로덕션 설계 함수를 직접 평가한다.
+ * 이 검사는 설계 후보의 문법 확인이며 런타임 게임 PASS 증거가 아니다.
+ */
+{
+  const nativeSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+  const start=nativeSource.indexOf('function computeVibeNativeDesign(){');
+  const end=nativeSource.indexOf('let cachedVibeNativeDesign=',start);
+  assert.ok(start>0&&end>start,'the canonical native design authoring function must exist');
+  assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
+  assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
+  assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE']){
+    const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
+    const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
+      {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
+      {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
+    ]};
+    const proposal=computeVibeSeedProposal(target);
+    const seed={
+      seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
+      status:'ACTIVE',generation:'MATERIAL_COMPOSED',GAME_CATEGORY:category,
+      DISTINCT_IDENTITY:proposal.distinctIdentity,CORE_LOOP:proposal.coreLoop,
+      CORE_FUN_TO_LEARN:proposal.coreFunToLearn,GAMEPLAY_SKETCH:proposal.gameplaySketch,
+      SEED_MATERIAL_IDS:['MAT-001','MAT-002'],TARGET_AUDIENCE:proposal.targetAudience,
+      TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
+      INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
+    };
+    const design=runInNewContext(
+      nativeSource.slice(start,end)+String.fromCharCode(10)+'computeVibeNativeDesign()',
+      {
+        seed,gameId:'native-qa',game:{name:proposal.gameName},
+        seedState:{seedMaterials:target.materials},
+        seedGameplaySketch:proposal.gameplaySketch,
+        pendingSeedGrammarNotAuthored:false,
+        originalMultiplayerMode:proposal.multiplayerDesignMode,
+        allGamesMultiplayerRequired:true,
+        playableRequirements:designPlayabilityRequirements(seed),
+        designAssetFamilies:[],designAssetLibrary:null,
+        seedFlowSystemBlueprint:{},factPack:{},fs,
+        computeVibeSeedProposal,repairDesignRequiredFields,buildConceptSystemBlueprint,
+        clean:value=>String(value??'').trim()
+      }
+    );
+    const feedback=validateDesignAuthoringContent({
+      design,seed,fields:Object.keys(design),
+      multiplayerRequired:true,requirePlayableContract:true
+    });
+    assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
+    const scored=scoreDesignGateV2({
+      seed,designRecord:{content:design,sameModelAsDraft:false},
+      cycleStatus:{status:'IN_PROGRESS'},
+      robloxGenreProfile:classifyRobloxGenre({
+        category,identity:design.identity,coreLoop:design.coreLoop,
+        designText:JSON.stringify(design),multiplayerMode:design.multiplayerMode
+      }),
+      multiplayerRequired:true,requirePlayableContract:true
+    });
+    assert.equal(scored.hardFailures.length,0,category+': '+scored.hardFailures.join(', '));
+    assert.ok(scored.totalScore>=80,category+': '+scored.totalScore);
+    assert.equal(design.platformProfiles.UNITY.unityWebSpatialPresentation.dimension,'3D');
+    assert.equal(design.multiplayerMode,'COOP');
+  }
+}
+
+
+// 메인: 오비 장르는 정상 인정하고 플랫폼 설정 문자열은 장르 판정에서 제외한다.
+for(const item of [
+  {category:'OBBY',identity:'구름길 오비',loop:['장애물 타이밍 관찰','점프와 착지','체크포인트 진행'],genre:'Obby & platformer',subgenre:'Classic Obby'},
+  {category:'OBBY',identity:'수직 타워 오비',loop:['타워 구간 점프','높이별 장애물 통과'],genre:'Obby & platformer',subgenre:'Tower Obby'},
+  {category:'OBBY',identity:'달리기 오비 러너',loop:['자동 이동 중 점프','실패 지점 복구'],genre:'Obby & platformer',subgenre:'Runner'},
+  {category:'PLATFORMER',identity:'횡스크롤 플랫포머',loop:['발판 점프','구간별 기술 숙련'],genre:'Obby & platformer',subgenre:'Classic Obby'},
+  {category:'TYCOON',identity:'학교 타이쿤',loop:['시설 건설','학생과 교사 운영'],genre:'Simulation',subgenre:'Tycoon'},
+  {category:'PUZZLE',identity:'단서 퍼즐',loop:['단서 해독','공간 변환'],genre:'Puzzle',subgenre:null},
+  {category:'SURVIVAL',identity:'협곡 생존',loop:['탐험','재료 제작'],genre:'Survival',subgenre:null}
+]){
+  const actual=classifyRobloxGenre({
+    category:item.category,identity:item.identity,coreLoop:item.loop,multiplayerMode:'COOP',
+    designText:JSON.stringify({platformProfiles:{ROBLOX:{platform:'ROBLOX'},UNITY:{platform:'UNITY'}},platformFitPlan:{targetPlatform:'ROBLOX'}})
+  });
+  assert.equal(actual.genre,item.genre,item.identity+' 기본 장르 유지');
+  assert.equal(actual.subgenre,item.subgenre,item.identity+' 세부 장르 유지');
+  assert.equal(actual.playMode,'COOP',item.identity+' 기존 멀티 규칙 보존');
+}

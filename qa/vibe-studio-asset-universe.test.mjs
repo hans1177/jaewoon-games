@@ -723,8 +723,8 @@ test('building reference image expands into detailed task-local building volume 
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const sourceId='qa-building-reference';
-  const imageRef='conversation://qa-building-reference.png';
-  const sourceHash='abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789';
+  const imageRef='assets/homepage-covers/realistic-builder.webp';
+  const sourceHash=createHash('sha256').update(fs.readFileSync(path.resolve(here,'..',imageRef))).digest('hex');
   const plan=buildVibeAssetProductionPlan({
     task:{
       gameId:'reference-building-volume-test',
@@ -735,6 +735,7 @@ test('building reference image expands into detailed task-local building volume 
         sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
         imageRef,
         sourceHash,
+        license:'project-original',
         domain:'BUILDING',
         purpose:'ASSET_CREATION',
         observation:{
@@ -786,8 +787,8 @@ test('one mixed reference image can seed multiple internal asset domains without
   const here=path.dirname(fileURLToPath(import.meta.url));
   const {buildVibeAssetProductionPlan}=await import('../tools/vibe2-asset-production-plan.mjs');
   const sourceId='qa-mixed-harbor-reference';
-  const imageRef='conversation://qa-mixed-harbor-reference.png';
-  const sourceHash='1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+  const imageRef='assets/homepage-covers/cozy-island.webp';
+  const sourceHash=createHash('sha256').update(fs.readFileSync(path.resolve(here,'..',imageRef))).digest('hex');
   const plan=buildVibeAssetProductionPlan({
     task:{
       gameId:'reference-mixed-scene-volume-test',
@@ -798,6 +799,7 @@ test('one mixed reference image can seed multiple internal asset domains without
         sourceType:'USER_PROVIDED_OR_OWNED_IMAGE',
         imageRef,
         sourceHash,
+        license:'project-original',
         domains:['BUILDING','WORLD_PROP','ENVIRONMENT'],
         purpose:'ASSET_CREATION',
         observation:{
@@ -5519,3 +5521,32 @@ test('asset supply summary indexes registry and quality lookups instead of neste
   assert.doesNotMatch(summarySource,/assets\.find\(/);
 });
 
+
+
+test('company catalog revision only claims synchronized common packs and retains pending maintenance debt',()=>{
+  const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repoRoot,'company-asset-library.json'),'utf8'));
+  const dir=path.join(repoRoot,'assets','roblox');
+  const packs=registry.assets||[];
+  let verifiedCatalogs=0;
+  for(const name of fs.readdirSync(dir).filter(name=>name.startsWith('common-')).sort()){
+    const file=path.join(dir,name,'catalog.json');
+    if(!fs.existsSync(file))continue;
+    const catalog=JSON.parse(fs.readFileSync(file,'utf8'));
+    const pack=packs.find(row=>row.id===catalog.packId);
+    assert.ok(pack,'registered common pack '+catalog.packId);
+    const rows=Array.isArray(catalog.atoms)?catalog.atoms:Array.isArray(catalog.items)?catalog.items:[];
+    assert.equal(pack.catalogVersion,catalog.version,'catalog revision '+catalog.packId);
+    assert.equal(pack.catalogRowCount,rows.length,'catalog row coverage '+catalog.packId);
+    verifiedCatalogs++;
+  }
+  assert.ok(verifiedCatalogs>=14,'common pack coverage must not be dropped');
+  assert.equal(registry.internalAssetLibraryAutomation.lastCatalogSynchronizedVersion,registry.version);
+  const maintenance=registry.internalAssetLibraryAutomation.maintenance||{};
+  const maintenanceVersion=Number(maintenance.synchronizedRegistryVersion)||0;
+  assert.ok(maintenanceVersion<=registry.version,'maintenance cannot point at a future registry');
+  if(maintenanceVersion!==registry.version){
+    assert.equal(maintenance.refreshRequired,true,'unsynchronized asset maintenance must stay explicit');
+    assert.ok(Number(maintenance.assetCount||0)<=packs.length,'unrefreshed maintenance cannot invent current asset count');
+  }
+});

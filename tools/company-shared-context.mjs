@@ -137,6 +137,11 @@ export function compileHomepageCentralPolicy(policy={}){
     if(!runtimeFiles.includes(required))errors.push('HOMEPAGE_RUNTIME_FILE:'+required);
   }
   const managerContract=source.managerContract||{};
+  const listingContract=source.homepageListingContract||{};
+  // 홈페이지에 배포된 게임은 개발 중이어도 노출한다. 실행 검증과 출시 승인은 링크만 제한한다.
+  if(listingContract.allDeployedGamesVisible!==true
+    ||listingContract.gameCardVisibilityIndependentOfReleaseClassification!==true
+    ||listingContract.unverifiedOrMissingGameBuildDisablesPlayButtonOnly!==true)errors.push('HOMEPAGE_ALL_DEPLOYED_GAMES_VISIBILITY_REQUIRED');
   const testingContract=source.testingContract||{};
   const documentationSyncContract=source.documentationSyncContract||{};
   const lobbyGate=policy.developmentLifecycleMachine?.internalPlatformReleaseAndPublicExposureGate?.internalRelease?.lobbyGate||{};
@@ -176,6 +181,7 @@ export function compileHomepageCentralPolicy(policy={}){
       directUnsupervisedPublicWriteForbidden:pipeline.directUnsupervisedPublicWriteForbidden===true
     },
     managerContract,
+    homepageListingContract:listingContract,
     lobbyGate,
     testingContract,
     documentationSyncContract,

@@ -15,10 +15,17 @@ const gameId=String(args['game-id']||'').trim();
 const source=String(args.source||`web-games/${gameId}`).replaceAll('\\','/').replace(/^\/+|\/+$/g,'');
 const output=String(args.output||'').trim();
 const screenshot=String(args.screenshot||'').trim();
+if(screenshot&&!/\.png$/i.test(screenshot))throw new Error('UNITY_WEB_QA_SCREENSHOT_PNG_REQUIRED');
 const port=Number(args.port||4187);
+// 메인 · 공개 배포된 WebGL도 기존 실제 플레이 검증기로 검사한다.
+const publicUrl=String(args['public-url']||'').trim();
+const scenarioId=String(args.scenario||'actual-play').trim();
+if(!['actual-play','independent-qa','regression'].includes(scenarioId))
+  throw new Error('UNITY_WEB_QA_SCENARIO_INVALID:'+scenarioId);
 
 // 메인: 공용 중앙정책과 모든 게임의 실제 Unity 3D 메시 검증을 함께 요구한다.
-const ownerPolicy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+// 중앙정책 경로는 실행 위치(/tmp/unity-web)가 아니라 현재 검증기 원본 위치에서 결정한다.
+const ownerPolicy=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const owner3d=ownerPolicy?.ownerUnityWeb3dOnly20261009;
 if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3D'
   ||owner3d?.nativeUnityMeshAndTriangleRuntimeEvidenceRequiredEveryGame!==true
@@ -27,6 +34,13 @@ if(owner3d?.status!=='OWNER_DIRECT_LOCKED'||owner3d?.finalGameplayDimension!=='3
 
 if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(gameId))throw new Error(`INVALID_GAME_ID:${gameId}`);
 if(source!==`web-games/${gameId}`)throw new Error(`UNITY_WEB_BUILD_OUTPUT_REQUIRED:${source}`);
+if(publicUrl){
+  const target=new URL(publicUrl);
+  if(target.origin!=='https://jaewoon-games.pages.dev'||
+     target.pathname!==`/web-games/${gameId}/unity/`||
+     target.search||target.hash||target.username||target.password)
+    throw new Error('UNITY_WEB_QA_PUBLIC_URL_INVALID');
+}
 if(!fs.existsSync(source))throw new Error(`UNITY_WEB_SOURCE_MISSING:${source}`);
 if(!fs.existsSync(path.join(source,'index.html')))throw new Error('UNITY_WEB_INDEX_MISSING');
 const manifestPath=path.join(source,'unity-web-deploy-manifest.json');
@@ -70,7 +84,7 @@ const contentType=file=>{
 };
 
 const root=process.cwd();
-const server=http.createServer((req,res)=>{
+const server=publicUrl?null:http.createServer((req,res)=>{
   try{
     const pathname=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
     const relative=pathname.replace(/^\/+/, '');
@@ -87,12 +101,42 @@ const server=http.createServer((req,res)=>{
     res.writeHead(500);res.end(String(error?.message||error));
   }
 });
-await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
+if(server)await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve);});
 
 const markers=[];
 const consoleErrors=[];
 const pageErrors=[];
 const failedRequests=[];
+let browser=null;
+
+// 메인: 10분짜리 정식 브라우저 QA 단계보다 먼저, 멈춘 WebGL 실기동을
+// 실패 증거와 정확한 실행 구간으로 남긴다. 시간 초과는 QA 통과로 대체하지 않는다.
+let qaStage='BROWSER_LAUNCH';
+const qaDeadlineMs=8*60*1000;
+const qaDeadline=setTimeout(()=>{
+  const failureSignature='UNITY_WEB_QA_DEADLINE_EXCEEDED:'+scenarioId+':'+qaStage+':'+qaDeadlineMs;
+  const failureEvidence={
+    version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
+    observedRuntimeFailure:true,
+    failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
+    failureSignature,markers,consoleErrors,pageErrors,failedRequests,
+    runtimeSurface:publicUrl?'CLOUDFLARE_PAGES_MOBILE_EMULATION':'LOCAL_MOBILE_EMULATION',
+    generatedAt:new Date().toISOString()
+  };
+  if(output){
+    try{
+      fs.mkdirSync(path.dirname(output),{recursive:true});
+      // 브라우저 종료까지 멈추더라도 기존 임시 성공 근거보다 실패 증거가 우선한다.
+      fs.writeFileSync(output,JSON.stringify(failureEvidence,null,2)+'\n');
+    }catch(error){
+      console.error('UNITY_WEB_QA_DEADLINE_EVIDENCE_WRITE_FAILED='+String(error?.message||error));
+    }
+  }
+  console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+scenarioId+':'+failureSignature);
+  process.exit(124);
+},qaDeadlineMs);
+qaDeadline.unref();
+console.log('UNITY_WEB_QA_DEADLINE_MS='+qaDeadlineMs+' scenario='+scenarioId);
 
 try{
   // 실제 Android Chrome 사용자 에이전트를 사용해 Unity WebGL의 모바일 템플릿 경로를 실행한다.
@@ -100,7 +144,7 @@ try{
   const androidChrome=devices['Pixel 5'];
   if(!androidChrome?.userAgent?.includes('Android'))throw new Error('UNITY_WEB_QA_ANDROID_PROFILE_MISSING');
   const mobileViewport={width:390,height:844};
-  const browser=await chromium.launch({headless:true});
+  browser=await chromium.launch({headless:true});
   const page=await browser.newPage({...androidChrome,viewport:mobileViewport});
   page.on('console',msg=>{
     const text=String(msg.text()||'');
@@ -115,11 +159,26 @@ try{
     return at>0?[token.slice(0,at),token.slice(at+1)]:null;
   }).filter(Boolean));
   const volatileStateKeys=new Set(['game','region','enemy','enemyHp','hp','maxHp','x','y','z','cameraX','cameraY','cameraZ']);
-  const url=`http://127.0.0.1:${port}/${source}/?qa=1`;
+  const url=publicUrl?publicUrl+'?qa=1':`http://127.0.0.1:${port}/${source}/?qa=1`;
   const bootStartedAt=Date.now();
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+  qaStage='WEBGL_BOOT';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
+  const navigation=await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+  if(publicUrl&&navigation?.status()!==200)
+    throw new Error('UNITY_WEB_QA_PUBLIC_HTTP_STATUS_INVALID:'+String(navigation?.status()));
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(4000);
+  // 화면 증거: 부팅 직후 첫 Unity canvas를 저장한다. 이후 플레이가 실패해도 빈 화면 근거는 남는다.
+  const canvas=page.locator('canvas').first();
+  qaStage='BOOT_CANVAS_CAPTURE';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
+  const bootSceneCapture=await canvas.screenshot({scale:'css'});
+  const bootSceneCaptureSha256=crypto.createHash('sha256').update(bootSceneCapture).digest('hex');
+  if(screenshot){
+    const bootScenePath=screenshot.replace(/\.png$/i,'-boot-scene.png');
+    fs.mkdirSync(path.dirname(bootScenePath),{recursive:true});
+    fs.writeFileSync(bootScenePath,bootSceneCapture);
+  }
   const bootMilliseconds=Date.now()-bootStartedAt;
 
   // 바탕화면용 960px 템플릿이 모바일 화면에 축소되어도 터치 로그만으로 통과시키지 않는다.
@@ -154,7 +213,6 @@ try{
   const initialStateLine=markers.slice().reverse().find(x=>x.includes(' STATE '))||'';
   const initialState=parseState(initialStateLine);
 
-  const canvas=page.locator('canvas').first();
   const canvasBox=await canvas.boundingBox();
   if(!canvasBox||canvasBox.width<1||canvasBox.height<1)throw new Error('UNITY_WEB_QA_CANVAS_BOUNDS_MISSING_FOR_TOUCH');
 
@@ -170,18 +228,34 @@ try{
     throw new Error('UNITY_WEB_QA_REAL_MOBILE_ACTION_OFFSCREEN:'+JSON.stringify({touchX,touchY,mobileViewport,canvasBox}));
   }
 
+  // 서로 다른 실제 사용 경로를 검증한다: 정규 Play=키보드→터치,
+  // 독립 QA=터치로 진입, 회귀=저장 복원 뒤 재진입/재전투.
+  const enterMarkerStart=markers.length;
+  qaStage='GAMEPLAY_TOUCH_AND_ACTION';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   let gameplayStartInput='KEYBOARD_DIGIT1';
-  await canvas.focus();
-  await page.keyboard.press('Digit1');
-  await page.waitForTimeout(1200);
-  let enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
-  if(!enteredGameplay){
-    gameplayStartInput='REAL_BROWSER_TOUCH_FALLBACK';
+  let enteredGameplay=false;
+  if(scenarioId==='independent-qa'){
+    gameplayStartInput='REAL_BROWSER_TOUCH_FIRST';
     await page.touchscreen.tap(touchX,touchY);
-    await page.waitForTimeout(900);
-    enteredGameplay=markers.some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    await page.waitForTimeout(1400);
+    enteredGameplay=markers.slice(enterMarkerStart).some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    if(!enteredGameplay)throw new Error('UNITY_WEB_QA_INDEPENDENT_TOUCH_FIRST_START_FAILED');
+  }else{
+    await canvas.focus();
+    await page.keyboard.press('Digit1');
+    await page.waitForTimeout(1200);
+    enteredGameplay=markers.slice(enterMarkerStart).some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    if(!enteredGameplay){
+      gameplayStartInput='REAL_BROWSER_TOUCH_FALLBACK';
+      await page.touchscreen.tap(touchX,touchY);
+      await page.waitForTimeout(900);
+      enteredGameplay=markers.slice(enterMarkerStart).some(x=>(x.includes(' START ')||x.includes(' REGION '))&&!x.includes('region=town'));
+    }
   }
   if(!enteredGameplay)throw new Error('UNITY_WEB_QA_GAMEPLAY_START_MISSING');
+  const enteredRegionStateLine=markers.slice(enterMarkerStart).reverse().find(x=>x.includes(' STATE '))||initialStateLine;
+  const enteredRegionState=parseState(enteredRegionStateLine);
 
   const mobileMarkerStart=markers.length;
   await page.touchscreen.tap(touchX,touchY);
@@ -247,20 +321,49 @@ try{
   }
 
   await canvas.focus();
-  for(let i=0;i<20&&!markers.some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
+  const combatMarkerStart=markers.length;
+  for(let i=0;i<20&&!markers.slice(combatMarkerStart).some(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));i++){
     await page.keyboard.press('Space');
     await page.waitForTimeout(250);
   }
-
-  const actions=markers.filter(x=>x.includes(' ATTACK ')||x.includes(' ACTION '));
-  const progress=markers.filter(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));
-  const coreFunMarkers=markers.filter(x=>x.includes(' CORE_FUN ')&&x.includes('status=PASS'));
+  // 공격/보상 뒤 Unity Native 상태가 갱신되는 것을 직접 기다린다.
+  // 저장·실행 전에 찍힌 과거 PASS 로그나 단순 보상 문자열은 사용하지 않는다.
+  await page.waitForTimeout(2400);
+  const combatMarkers=markers.slice(mobileMarkerStart);
+  const actions=combatMarkers.filter(x=>x.includes(' ATTACK ')||x.includes(' ACTION '));
+  const progress=combatMarkers.filter(x=>x.includes(' REWARD ')||x.includes(' PROGRESS '));
+  const coreFunMarkers=combatMarkers.filter(x=>x.includes(' CORE_FUN ')&&x.includes('status=PASS'));
   if(actions.length<1)throw new Error('UNITY_WEB_QA_CORE_ACTION_EVIDENCE_MISSING');
   if(progress.length<1)throw new Error('UNITY_WEB_QA_PROGRESS_EVIDENCE_MISSING');
   if(coreFunMarkers.length<1)throw new Error('UNITY_WEB_QA_GENRE_CORE_FUN_EVIDENCE_MISSING');
+  const rewardFirstIndex=markers.findIndex((line,index)=>index>=combatMarkerStart
+    &&(line.includes(' REWARD ')||line.includes(' PROGRESS ')));
+  const postRewardStateLine=markers.slice(rewardFirstIndex+1).find(x=>x.includes(' STATE '))||'';
+  const postRewardState=parseState(postRewardStateLine);
+  const changedPostRewardKeys=Object.keys(postRewardState).filter(key=>
+    key in enteredRegionState&&String(postRewardState[key])!==String(enteredRegionState[key]));
+  if(!Object.keys(enteredRegionState).length||!Object.keys(postRewardState).length||!changedPostRewardKeys.length)
+    throw new Error('UNITY_WEB_QA_REAL_GAMEPLAY_STATE_TRANSITION_MISSING');
+  const liveSystemMarkers=markers.slice(combatMarkerStart)
+    .filter(line=>line.includes('JAEWOON_UNITY_WEB_QA SYSTEM_STATE ')&&line.includes('game='+gameId));
+  const preciseActionEvidence={
+    actionAfterLiveEntry:actions.length>0,
+    rewardAfterLiveActions:rewardFirstIndex>=combatMarkerStart,
+    coreFunAfterLiveActions:coreFunMarkers.length>0,
+    stateMeasuredBefore:enteredRegionStateLine,
+    stateMeasuredAfter:postRewardStateLine,
+    changedKeys:changedPostRewardKeys,
+    measuredFromNativeGameState:true
+  };
 
   // 게임플레이 중 실제 브라우저 렌더 루프를 관찰한다. 첫 로딩 시간만으로 FPS PASS를 주장하지 않는다.
-  const framePacing=await page.evaluate(()=>new Promise(resolve=>{
+  qaStage='LIVE_FRAME_SAMPLE';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
+  let frameSampleHostTimeout;
+  let framePacing;
+  try{
+    framePacing=await Promise.race([
+      page.evaluate(()=>new Promise(resolve=>{
     const intervals=[];
     let first=null,previous=null,finished=false;
     const finish=()=>{
@@ -286,7 +389,14 @@ try{
       else requestAnimationFrame(onFrame);
     };
     requestAnimationFrame(onFrame);
-  }));
+      })),
+      new Promise((_,reject)=>{
+        frameSampleHostTimeout=setTimeout(()=>reject(new Error('UNITY_WEB_QA_FRAME_SAMPLE_HOST_TIMEOUT')),15000);
+      })
+    ]);
+  } finally {
+    clearTimeout(frameSampleHostTimeout);
+  }
   // 모바일 소프트웨어 브라우저의 프레임 성능 실패는 끝까지 관찰하고
   // 실제 이동·공격·보상·저장 증거를 보존한다. 상위 QA PASS와 별개인 테스트 공개 근거다.
   const framePacingFailed=framePacing.frameCount<25||!Number.isFinite(framePacing.medianFrameMs)||
@@ -294,8 +404,18 @@ try{
   const performanceBlocked=framePacingFailed||bootMilliseconds>90000;
 
   // 실제 게임 진행 화면의 픽셀을 읽는다. 콘솔 PASS나 단순 스크린샷 파일 존재는 시각 QA가 아니다.
+  qaStage='LIVE_CANVAS_VISUAL_QA';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   const liveCapture=await page.screenshot({fullPage:false});
   const liveCaptureSha256=crypto.createHash('sha256').update(liveCapture).digest('hex');
+  // 승인된 Unity 3D 월드는 웹페이지 전체가 아니라 실제 게임 canvas의 픽셀도 따로 캡처한다.
+  const sceneCapture=await canvas.screenshot({scale:'css'});
+  const sceneCaptureSha256=sceneCapture?crypto.createHash('sha256').update(sceneCapture).digest('hex'):null;
+  if(screenshot&&sceneCapture){
+    const sceneScreenshot=screenshot.replace(/\.png$/i,'-scene.png');
+    fs.mkdirSync(path.dirname(sceneScreenshot),{recursive:true});
+    fs.writeFileSync(sceneScreenshot,sceneCapture);
+  }
   if(screenshot){
     fs.mkdirSync(path.dirname(screenshot),{recursive:true});
     fs.writeFileSync(screenshot,liveCapture);
@@ -325,6 +445,32 @@ try{
       magentaRatio:sampled?magenta/sampled:1,dominantColorRatio:sampled?dominant/sampled:1,
       distinctColorBuckets:histogram.size,source:'REAL_GAMEPLAY_BROWSER_SCREENSHOT'};
   },liveCapture.toString('base64'));
+  // 전경 UI/브라우저 배경이 손상된 재질을 가리지 못하도록 별도의 실제 Unity canvas 픽셀을 분석한다.
+  const scenePixels=sceneCapture?await page.evaluate(async encoded=>{
+    const bytes=Uint8Array.from(atob(encoded),character=>character.charCodeAt(0));
+    const bitmap=await createImageBitmap(new Blob([bytes],{type:'image/png'}));
+    const sampleWidth=96,sampleHeight=Math.max(1,Math.round(sampleWidth*bitmap.height/bitmap.width));
+    const surface=document.createElement('canvas');
+    surface.width=sampleWidth;surface.height=sampleHeight;
+    const context=surface.getContext('2d',{willReadFrequently:true});
+    if(!context)throw new Error('UNITY_WEB_SCENE_PIXEL_READBACK_UNAVAILABLE');
+    context.drawImage(bitmap,0,0,sampleWidth,sampleHeight);
+    bitmap.close();
+    const pixels=context.getImageData(0,0,sampleWidth,sampleHeight).data;
+    const buckets=new Map();let sampled=0,magenta=0;
+    for(let offset=0;offset<pixels.length;offset+=4){
+      const r=pixels[offset],g=pixels[offset+1],b=pixels[offset+2];
+      if(pixels[offset+3]<240)continue;
+      sampled++;
+      if(r>=185&&b>=175&&g<=115&&r>g*1.7&&b>g*1.7)magenta++;
+      const key=((r>>3)<<10)|((g>>3)<<5)|(b>>3);
+      buckets.set(key,(buckets.get(key)||0)+1);
+    }
+    const dominant=Math.max(0,...buckets.values());
+    return {width:sampleWidth,height:sampleHeight,pixelCount:sampled,
+      magentaRatio:sampled?magenta/sampled:1,dominantColorRatio:sampled?dominant/sampled:1,
+      distinctColorBuckets:buckets.size,source:'REAL_UNITY_CANVAS_SCREENSHOT'};
+  },sceneCapture.toString('base64')):null;
   const mobileUiBounds=await page.evaluate(()=>{
     const viewport={width:window.innerWidth,height:window.innerHeight};
     const clipped=[];
@@ -405,10 +551,32 @@ try{
     &&nativeMeshProof.volumetricMeshes<=nativeMeshProof.validMeshes
     &&nativeMeshProof.materialPass===1&&nativeMeshProof.texturePass===1;
   const nativeMeshMissing=!nativeMeshVerified;
+  // 승인된 월드의 실제 메시와 물리 기반 Lit 재질이 실행 중 함께 존재하는지 확인한다.
+  const worldRenderMarker=markers.slice().reverse().find(line=>line.includes('UNITY_WEB_WORLD=RENDER_SURFACE')
+    &&line.includes(`game=${gameId}`)&&line.includes('source=UNITY_RUNTIME_LIT_MESH'))||'';
+  const worldRenderMetric=key=>{
+    const token=worldRenderMarker.split(/\s+/).find(value=>value.startsWith(key+'='));
+    return token===undefined?null:Number(token.slice(key.length+1));
+  };
+  const worldRenderProof={
+    meshes:worldRenderMetric('meshes'),normals:worldRenderMetric('normals'),
+    triangles:worldRenderMetric('triangles'),materials:worldRenderMetric('materials'),
+    litMaterials:worldRenderMetric('litMaterials'),
+  };
+  const renderSurfaceVerified=approvedEnvironment.required!==true||(
+    worldRenderMarker.includes('status=PASS')&&Number.isSafeInteger(worldRenderProof.meshes)
+    &&worldRenderProof.meshes>=2&&worldRenderProof.normals===worldRenderProof.meshes
+    &&Number.isSafeInteger(worldRenderProof.triangles)&&worldRenderProof.triangles>0
+    &&Number.isSafeInteger(worldRenderProof.materials)&&worldRenderProof.materials>0
+    &&worldRenderProof.litMaterials===worldRenderProof.materials);
+  const sceneScreenVerified=Boolean(scenePixels
+    &&scenePixels.pixelCount>=400&&scenePixels.magentaRatio<.12
+    &&scenePixels.dominantColorRatio<.98&&scenePixels.distinctColorBuckets>=8);
   const shaderLikelyMissing=visualPixels.magentaRatio>=.25;
   const blankOrFrozenFrame=visualPixels.pixelCount<100||visualPixels.dominantColorRatio>=.997;
   const visualBlocked=shaderLikelyMissing||blankOrFrozenFrame||mobileUiBounds.clipped.length>0
-    ||nativeUiOffscreen||nativeUiOverlap||nativeUiMissing||nativeMeshMissing;
+    ||nativeUiOffscreen||nativeUiOverlap||nativeUiMissing||nativeMeshMissing
+    ||!renderSurfaceVerified||!sceneScreenVerified;
 
   await canvas.focus();
   await page.keyboard.press('KeyR');
@@ -426,6 +594,8 @@ try{
   if(!persistentChangedKeys.length)throw new Error('UNITY_WEB_QA_PERSISTENT_PROGRESS_STATE_NOT_REFLECTED');
 
   const reloadMarkerStart=markers.length;
+  qaStage='SAVE_RESTORE_AND_REENTRY';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(3500);
@@ -435,6 +605,44 @@ try{
   const restoredKeys=persistentChangedKeys.filter(key=>String(persistedState[key])===String(progressedState[key]));
   if(restoredKeys.length!==persistentChangedKeys.length)throw new Error(`UNITY_WEB_QA_SAVE_RESTORE_MISSING:${persistentChangedKeys.filter(key=>!restoredKeys.includes(key)).join(',')}`);
 
+  // 회귀 검사는 같은 보상 로그를 다시 확인하는 게 아니라 저장 복원된 상태에서
+  // 두 번째 실제 전투/보상을 완료해야 한다.
+  let postReloadReplay=null;
+  if(scenarioId==='regression'){
+    const resumeMarkerStart=markers.length;
+    await canvas.focus();
+    await page.keyboard.press('Digit1');
+    await page.waitForTimeout(1300);
+    let resumed=markers.slice(resumeMarkerStart).some(line=>(line.includes(' START ')||line.includes(' REGION '))&&!line.includes('region=town'));
+    if(!resumed){
+      await page.touchscreen.tap(touchX,touchY);
+      await page.waitForTimeout(1100);
+      resumed=markers.slice(resumeMarkerStart).some(line=>(line.includes(' START ')||line.includes(' REGION '))&&!line.includes('region=town'));
+    }
+    if(!resumed)throw new Error('UNITY_WEB_QA_REGRESSION_REENTRY_AFTER_SAVE_FAILED');
+    const replayMarkerStart=markers.length;
+    await page.touchscreen.tap(touchX,touchY);
+    await page.waitForTimeout(1100);
+    await canvas.focus();
+    for(let i=0;i<20&&!markers.slice(replayMarkerStart).some(line=>line.includes(' REWARD ')||line.includes(' PROGRESS '));i++){
+      await page.keyboard.press('Space');
+      await page.waitForTimeout(250);
+    }
+    await page.waitForTimeout(2400);
+    const replayLines=markers.slice(replayMarkerStart);
+    const inputObserved=replayLines.some(line=>line.includes(' MOBILE_INPUT ')&&line.includes('role=action')&&line.includes('status=PASS'));
+    const actionObserved=replayLines.some(line=>line.includes(' ATTACK ')||line.includes(' ACTION '));
+    const rewardObserved=replayLines.some(line=>line.includes(' REWARD ')||line.includes(' PROGRESS '));
+    const replayedStateLine=replayLines.slice().reverse().find(line=>line.includes(' STATE '))||'';
+    const replayedState=parseState(replayedStateLine);
+    const replayChangedKeys=Object.keys(replayedState).filter(key=>
+      !volatileStateKeys.has(key)&&key in persistedState&&String(replayedState[key])!==String(persistedState[key]));
+    if(!inputObserved||!actionObserved||!rewardObserved||!replayChangedKeys.length)
+      throw new Error('UNITY_WEB_QA_REGRESSION_REAL_SECOND_CYCLE_MISSING');
+    postReloadReplay={pass:true,resumedAfterReload:resumed,mobileInputObserved:inputObserved,
+      actionObserved,rewardObserved,changedPersistentKeys:replayChangedKeys};
+  }
+
   const fatal=[...consoleErrors,...pageErrors,...failedRequests].filter(x=>/abort|out of memory|wasm.*error|failed to fetch|build error|exception/i.test(x));
   if(fatal.length)throw new Error(`UNITY_WEB_FATAL_RUNTIME_ERROR:${fatal.slice(0,5).join(' | ')}`);
 
@@ -442,7 +650,24 @@ try{
     version:1,
     engine:'UNITY_WEB',
     gameId,
+    precisionQa:{
+      version:1,scenarioId,pass:true,gameId,
+      distinctRoute:gameplayStartInput,
+      liveActionState:preciseActionEvidence,
+      liveSystemMarkers,
+      systemTraceCaptureWindow:'POST_REAL_USER_INPUT_PRE_RELOAD',
+      saveRestoreConfirmed:true,
+      secondaryCycleRequired:scenarioId==='regression',
+      secondaryCycle:postReloadReplay,
+      mandatoryDepthSignals:['LIVE_ACTION','LIVE_REWARD','NATIVE_STATE_TRANSITION','SAVE_RESTORE',
+        'MOBILE_TOUCH','NATIVE_3D_MESH','WEBGL_RENDERED_PIXELS'],
+      gameSpecificExtraChecks:mobileMenuInteraction?.pass===true?['MOBILE_NATIVE_MENU_STATE_BINDING']:[],
+      runtimeOrigin:'PLAYWRIGHT_CHROMIUM_ANDROID_PROFILE_REAL_WEBGL_BUILD',
+      markerOnlyPassForbidden:true
+    },
     sourcePath:source,
+    runtimeSurface:publicUrl?'CLOUDFLARE_PAGES_MOBILE_EMULATION':'LOCAL_MOBILE_EMULATION',
+    publicGameUrl:publicUrl||null,
     approvedEnvironment:{
       required:approvedEnvironment.required===true,
       layoutSha256:approvedEnvironment.required===true?approvedEnvironment.layoutSha256:null,
@@ -486,6 +711,17 @@ try{
     visualQa:{
       pass:!visualBlocked,source:'REAL_GAMEPLAY_SCREENSHOT_PIXEL_READBACK',
       screenshotObserved:true,captureSha256:liveCaptureSha256,capturePersisted:Boolean(screenshot),
+      renderedScene:{
+        required:true,
+        source:'REAL_UNITY_CANVAS_SCREENSHOT_AND_OPTIONAL_NATIVE_LIT_MESH_INSPECTION',
+        pass:renderSurfaceVerified&&sceneScreenVerified,
+        bootCaptureSha256:bootSceneCaptureSha256,
+        sceneCaptureSha256,sceneCapturePersisted:Boolean(screenshot&&sceneCapture),
+        pixels:scenePixels,nativeRenderMarker:worldRenderMarker||null,
+        nativeRenderProof:worldRenderMarker?worldRenderProof:null,
+        shaderAndNormalPass:renderSurfaceVerified,visiblePixelPass:sceneScreenVerified,
+        comparedWithLastApprovedGoldenScene:false,realDeviceVerified:false,
+      },
       magentaShaderLikelyMissing:shaderLikelyMissing,
       blankOrFrozenFrame,visualPixels,mobileUiBounds,
       nativeUnityUi:{measurementState:nativeUiMeasured?'UNITY_ONGUI_RUNTIME':'NOT_MEASURED',
@@ -530,6 +766,8 @@ try{
     fs.mkdirSync(path.dirname(output),{recursive:true});
     fs.writeFileSync(output,JSON.stringify(evidence,null,2)+'\n');
   }
+  qaStage='BROWSER_CLOSE';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   await browser.close();
   if(performanceBlocked){
     console.error('UNITY_WEB_GAMEPLAY_QA=REPAIR_REQUIRED:PERFORMANCE');
@@ -539,12 +777,46 @@ try{
   if(visualBlocked)throw new Error('UNITY_WEB_QA_VISUAL_RUNTIME_REPAIR_REQUIRED:'+JSON.stringify({
     shaderLikelyMissing,blankOrFrozenFrame,clippedControls:mobileUiBounds.clipped,
     nativeUiOffscreen,nativeUiOverlap,nativeUiMissing,nativeUiRect,nativeMeshMissing,nativeMeshProof,
-    nativeDepthVerified,nativeDepthProof,visualPixels
+    nativeDepthVerified,nativeDepthProof,visualPixels,
+    renderSurfaceVerified,sceneScreenVerified,worldRenderProof,scenePixels
   }));
   if(renderBudgetExceeded)throw new Error('UNITY_WEB_QA_NATIVE_RENDER_BUDGET_EXCEEDED:'+JSON.stringify({
     drawCalls:nativeDrawCalls,triangles:nativeTriangles,limits:renderBudget
   }));
   console.log('UNITY_WEB_GAMEPLAY_QA=PASS');
+} catch(error) {
+  // 메인 · 오류가 발생하면 기존 플레이 근거를 보존하되 최종 판정은 FAIL로 기록한다.
+  const failureSignature=String(error?.message||error);
+  if(output){
+    let previousEvidence=null;
+    try{if(fs.existsSync(output))previousEvidence=JSON.parse(fs.readFileSync(output,'utf8'));}catch{}
+    const failureEvidence={
+      ...(previousEvidence&&typeof previousEvidence==='object'?previousEvidence:{}),
+      version:2,gameId,scenarioId,pass:false,
+      playableBrowserTest:previousEvidence?.playableBrowserTest===true,
+      observedRuntimeFailure:true,
+      failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
+      failureSignature,markers,consoleErrors,pageErrors,failedRequests,
+      runtimeSurface:publicUrl?'CLOUDFLARE_PAGES_MOBILE_EMULATION':'LOCAL_MOBILE_EMULATION',
+      publicGameUrl:publicUrl||null,
+      generatedAt:new Date().toISOString(),
+    };
+    fs.mkdirSync(path.dirname(output),{recursive:true});
+    fs.writeFileSync(output,JSON.stringify(failureEvidence,null,2)+'\n');
+  }
+  console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+scenarioId+':'+failureSignature);
+  try{
+    if(browser?.isConnected())await browser.close();
+  }catch(closeError){
+    console.error('UNITY_WEB_QA_BROWSER_CLOSE_FAILED='+String(closeError?.message||closeError));
+  }
+  throw error;
 } finally {
-  await new Promise(resolve=>server.close(resolve));
+  qaStage='HTTP_SERVER_CLOSE';
+  // Unity WebGL 요청이 중단돼도 스트리밍 소켓 때문에 작업이 무한 대기하지 않게 한다.
+  if(server)await new Promise(resolve=>{
+    server.close(resolve);
+    server.closeAllConnections();
+  });
+  clearTimeout(qaDeadline);
 }

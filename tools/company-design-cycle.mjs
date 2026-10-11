@@ -4,7 +4,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import http from 'node:http';
 import {loadSeedState,saveSeedState,activeSeedForGame} from './game-seed-state.mjs';
 import {ownerDesignResetSeedForGame} from './owner-design-reset.mjs';
 import {makeAutoMissingDesignSeed,latestUsableDesign} from './company-all-games-design-reset.mjs';
@@ -15,6 +14,8 @@ import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
 import {buildVibeDesignIntelligence,buildDesignEvolutionBrief} from './vibe2-design-intelligence.mjs';
 import {buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary} from './vibe2-asset-production-plan.mjs';
 import {GAME_CONVENIENCE_REFERENCES} from './company-roblox-production-plan.mjs';
+import {computeVibeSeedProposal} from './company-game-seed-bootstrap.mjs';
+import {buildConceptSystemBlueprint} from './company-vibe2-game-flow-architect.mjs';
 
 const ROLES=['planning','graphics','development','qa','audio'];
 const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
@@ -26,15 +27,13 @@ const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
 
 const directive=readJson('company-directive.json',{});
-const localDesignerModel=clean(process.env.COMPANY_VIBE_LOCAL_MODEL||'qwen3:1.7b');
-const localDesignerFallbackReady=clean(process.env.COMPANY_LOCAL_DESIGN_FALLBACK_READY).toLowerCase()==='true';
+const localDesignerModel='VIBE_NATIVE_CAUSAL_DESIGN_V1';
 // Department evidence is computed from the same deterministic gate; no AI review lanes.
 const leadModels={},departmentReviewModels={};
 const reviewModelCount=0,modelPhaseConcurrency=1,maxLoadedModelLanes=1;
 const phaseConcurrency={};
-const modelKeepAlive='PROVIDER_SPECIFIC';
+const modelKeepAlive='NONE';
 // 내부 모델 작성 예산: 준비 단계의 모델 로딩 시간은 제외한다.
-const localDesignerCallTimeoutMs=Math.min(300000,Math.max(30000,Number(process.env.COMPANY_LOCAL_DESIGN_CALL_TIMEOUT_MS)||300000));
 
 // 접수 기록은 실행 메타데이터다. 창작 시드는 아래 identity-core에서 같은 디자이너가 작성한다.
 function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
@@ -68,8 +67,8 @@ function resolveDesignerSeedInput({state,gameId,catalog,brief='',root='.'}){
       const mode=clean(original.multiplayerMode||original.robloxBuildProfile?.playMode).toUpperCase();
       if(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(mode))input.MULTIPLAYER_DESIGN_MODE=mode;
     }
-    // 기존 접수 계약은 유지하되 자동 조합 문법을 디자이너의 창작 결과로 넘기지 않는다.
-    delete input.GAMEPLAY_SKETCH;
+    // 기존 계약의 V5 접수 스케치는 입력으로만 보존한다. 디자인 원본과 PASS 근거는 아니다.
+    // 접수 스케치를 지우면 호환 정규화가 V1 스케치를 채워 새 기본 문법 심사를 무력화한다.
     const inputCheck=validateGameSeed(input);
     if(!inputCheck.pass)input.inputRepairNotes=inputCheck.errors;
     input.GAMEPLAY_SKETCH.source='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN';
@@ -89,17 +88,25 @@ const seedInput=resolveDesignerSeedInput({state:seedState,gameId,catalog,brief:p
 const seed=seedInput.seed;
 if(seedInput.created){saveSeedState(seedState);console.log(`DESIGNER_SEED_INPUT_CREATED=${gameId}`);}
 const seedGameplaySketch=seed.GAMEPLAY_SKETCH&&typeof seed.GAMEPLAY_SKETCH==='object'&&!Array.isArray(seed.GAMEPLAY_SKETCH)?seed.GAMEPLAY_SKETCH:null;
-const seedGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
-const advancedSeedDesignDepth=seedGameplaySketchVersion>=2;
+const inputGameplaySketchVersion=Math.max(1,Number(seedGameplaySketch?.version||1));
+const seedGameplaySketchVersion=Math.max(5,Number(seed?.novelGrammarBackfill?.version||0),inputGameplaySketchVersion);
+// 자동 접수 시드는 필드가 채워져 있어도 디자이너가 작성한 원본 설계가 아니다.
+// 작성 대기 플래그 또는 접수용 출처가 있으면 기존 내용을 정답으로 주입하지 않는다.
+const pendingSeedGrammarNotAuthored=seedGameplaySketchVersion>=5
+  &&(seed?.novelGrammarBackfill?.authoringPending===true
+    ||!seedGameplaySketch
+    ||seedGameplaySketch?.source==='DESIGNER_INTAKE_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN');
+const advancedSeedDesignDepth=inputGameplaySketchVersion>=2;
 const seedFlowArchitecture=seedGameplaySketch?.flowArchitecture&&typeof seedGameplaySketch.flowArchitecture==='object'&&!Array.isArray(seedGameplaySketch.flowArchitecture)?seedGameplaySketch.flowArchitecture:null;
 const seedFlowSystemBlueprint=seedFlowArchitecture?.systemBlueprint&&typeof seedFlowArchitecture.systemBlueprint==='object'?seedFlowArchitecture.systemBlueprint:null;
 const seedFlowAssetRequirements=Array.isArray(seedFlowArchitecture?.assetFlow?.requirements)?seedFlowArchitecture.assetFlow.requirements:[];
 const seedDesignDepthContext={
   source:'GAME_SEED.GAMEPLAY_SKETCH',
-  version:seedGameplaySketchVersion,
-  compatibilityMode:seedGameplaySketchVersion>=4?'V4_CAUSAL_GRAMMAR_INPUT':advancedSeedDesignDepth?'V2_DEPTH_INPUT':'LEGACY_V1_COMPATIBILITY',
-  identityCore:seedGameplaySketch?.identityCore&&typeof seedGameplaySketch.identityCore==='object'?seedGameplaySketch.identityCore:null,
-  novelGameGrammar:seedGameplaySketch?.novelGameGrammar&&typeof seedGameplaySketch.novelGameGrammar==='object'?seedGameplaySketch.novelGameGrammar:null,
+  version:inputGameplaySketchVersion,
+  authoringGrammarVersion:seedGameplaySketchVersion,
+  compatibilityMode:pendingSeedGrammarNotAuthored?'V5_DESIGNER_AUTHORING_PENDING_INPUT':seedGameplaySketchVersion>=5?'V5_OWNER_CREATIVE_GRAMMAR_INPUT':seedGameplaySketchVersion>=4?'V4_CAUSAL_GRAMMAR_INPUT':advancedSeedDesignDepth?'V2_DEPTH_INPUT':'LEGACY_V1_COMPATIBILITY',
+  identityCore:pendingSeedGrammarNotAuthored?null:seedGameplaySketch?.identityCore&&typeof seedGameplaySketch.identityCore==='object'?seedGameplaySketch.identityCore:null,
+  novelGameGrammar:pendingSeedGrammarNotAuthored?null:seedGameplaySketch?.novelGameGrammar&&typeof seedGameplaySketch.novelGameGrammar==='object'?seedGameplaySketch.novelGameGrammar:null,
   playerPromise:clean(seedGameplaySketch?.playerPromise),
   funDrivers:Array.isArray(seedGameplaySketch?.funDrivers)?seedGameplaySketch.funDrivers:[],
   balanceRules:Array.isArray(seedGameplaySketch?.balanceRules)?seedGameplaySketch.balanceRules:[],
@@ -136,7 +143,7 @@ const seedDesignDepthContext={
       expansionSystems:(seedFlowSystemBlueprint.expansionSystems||[]).map(row=>clean(row?.id)).filter(Boolean),
       phasePlan:seedFlowSystemBlueprint.phasePlan||{},
       interconnectionChains:Array.isArray(seedFlowSystemBlueprint.interconnectionChains)?seedFlowSystemBlueprint.interconnectionChains:[],
-      novelGrammarContract:seedFlowSystemBlueprint.novelGrammarContract||null,
+      novelGrammarContract:pendingSeedGrammarNotAuthored?null:seedFlowSystemBlueprint.novelGrammarContract||null,
       libraryReusePolicy:seedFlowSystemBlueprint.libraryReusePolicy||null,
       expansionPolicy:seedFlowSystemBlueprint.expansionPolicy||null
     }:null,
@@ -165,11 +172,11 @@ const ownerPreservationDesign=seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
   &&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
 const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
-const designerRoute={provider:'VIBE_LOCAL_OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
+const designerRoute={provider:'VIBE_NATIVE_FUNCTION',model:localDesignerModel,id:'vibe-native:causal-design-v1'};
 const activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
 const coordinatorModel=localDesignerModel;
-console.log('GAME_DESIGNER_PROVIDER=VIBE_LOCAL_OLLAMA');
+console.log('GAME_DESIGNER_PROVIDER=VIBE_NATIVE_FUNCTION');
 console.log('DESIGN_EXTERNAL_AI_ALLOWED=NO');
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
 console.log('DESIGN_AI_REVIEW_LANES=NONE');
@@ -281,6 +288,8 @@ const threePlatformOnlyPolicyRevision=policyDigest==='976fe18afb5cd559146ab42808
 })();
 const engineFiles=[
   'tools/company-design-cycle.mjs',
+  'tools/company-game-seed-bootstrap.mjs',
+  'tools/company-vibe2-game-flow-architect.mjs',
   'tools/vibe2-design-intelligence.mjs',
   'tools/company-design-gate-scoring-v2.mjs',
   'tools/company-strict-production-review.mjs',
@@ -336,7 +345,8 @@ const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVe
   &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
   &&clean(designCheckpoint?.policyDigest)===policyDigest
   &&(checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
-    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4'].includes(clean(designCheckpoint?.engineDigest))
+    ||(['cc088ad7a8676ded2864387d1c00a39b024f9e9a4e72f50308346406aea805a9','d789690b56a2166b9da23297ff8d43b1b23973637551823b312dca69908c8904','dac95f134b0ededc03820f0bcdc338c5fdb495164c8cd165653789fa6a468cc4',
+      '90e6e16e20dfb1bc6796b44a24100a21a965daefee38c94a33b39a3bc8371f71','e789f879b2f439f502dacde917a018d508b4e44e637dcd1157919f55205a5f92'].includes(clean(designCheckpoint?.engineDigest))
       &&designCheckpoint.fingerprint===createHash('sha256').update(JSON.stringify({...checkpointInputContext,engineDigest:designCheckpoint.engineDigest})).digest('hex')))
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
@@ -389,6 +399,25 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
+}
+// 기존 실행의 호환 체크포인트에 남은 문장형 상태 키는 설계 참조 ID가 아니다.
+// 잘못된 역할 조각만 폐기하고 다른 창작 내용과 정상 규칙 체크포인트는 보존한다.
+const invalidRoleStateTasks=Object.entries(designCheckpoint.tasks||{}).filter(([key,row])=>{
+  if(!key.startsWith('local_authoring_parts::')||!key.includes(':signatureSystems:')||!row?.grammarRole)return false;
+  const inputs=Array.isArray(row.stateInputs)?row.stateInputs:[];
+  const outputs=Array.isArray(row.stateOutputs)?row.stateOutputs:[];
+  const states=[...inputs,...outputs];
+  return !inputs.length||!outputs.length||states.some(key=>typeof key!=='string'
+    ||!/^[^\s:→]{1,80}$/u.test(key)||/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(key));
+}).map(([key])=>key);
+if(invalidRoleStateTasks.length){
+  for(const key of invalidRoleStateTasks){
+    delete designCheckpoint.tasks[key];
+    if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[key];
+    if(designCheckpoint.sliceRepairAttempts)delete designCheckpoint.sliceRepairAttempts[key];
+  }
+  writeJson(checkpointPath,designCheckpoint);
+  console.log('DESIGN_INVALID_STALE_ROLE_STATE_KEYS_REAUTHOR='+invalidRoleStateTasks.length);
 }
 if(priorCheckpointStatus==='PRE_GATE_BLOCKED'&&Object.prototype.hasOwnProperty.call(designCheckpoint.phases||{},'designer_draft')){
   const retryPhases=[
@@ -504,7 +533,49 @@ const REFERENCE_HOMAGE_PLAN={type:'object',required:['inspirations','originality
 const DESIGN_INTEGRITY_PLAN={type:'object',required:['movementAndControlReachable','spawnToFirstActionReachable','progressionReachable','questPrerequisitesSatisfiable','sessionEndReachable','failureRecoveryReachable','mapObjectivesReachable','economyFeasible','counterplayFeasible','bossPhaseTransitionsReachable','multiplayerLifecycleFeasible','saveCompatible','narrativeCausalityConsistent','notes',...(!ownerPreservationDesign?['authoringVersion','flowAudit']:[])],properties:{authoringVersion:{type:'number',enum:[2]},flowAudit:{type:'array',minItems:playableRequirements.phases.length,maxItems:playableRequirements.phases.length,items:{type:'object',required:['phase','reachableBy','blockedCase','recovery','nextPhase'],properties:{phase:{type:'string',enum:playableRequirements.phases},reachableBy:RULE_IDS,blockedCase:{type:'string',maxLength:360},recovery:{type:'string',maxLength:360},nextPhase:{type:'string',maxLength:80}},additionalProperties:false}},movementAndControlReachable:{type:'boolean'},spawnToFirstActionReachable:{type:'boolean'},progressionReachable:{type:'boolean'},questPrerequisitesSatisfiable:{type:'boolean'},sessionEndReachable:{type:'boolean'},failureRecoveryReachable:{type:'boolean'},mapObjectivesReachable:{type:'boolean'},economyFeasible:{type:'boolean'},counterplayFeasible:{type:'boolean'},bossPhaseTransitionsReachable:{type:'boolean'},multiplayerLifecycleFeasible:{type:'boolean'},saveCompatible:{type:'boolean'},narrativeCausalityConsistent:{type:'boolean'},notes:{type:'array',minItems:2,maxItems:12,items:{type:'string',maxLength:420}}},additionalProperties:false};
 const STABILITY_PRIORITY_PLAN={type:'object',required:['signals','priorityRule'],properties:{signals:{type:'array',maxItems:10,items:{type:'object',required:['symptom','severity','causeClass','evidence'],properties:{symptom:{type:'string',maxLength:420},severity:{type:'string',enum:['CRITICAL','HIGH','MEDIUM','LOW']},causeClass:{type:'string',enum:['IMPLEMENTATION_RUNTIME_DEFECT','DESIGN_DEFECT','MIXED_DEFECT','UNRESOLVED_CAUSE']},evidence:{type:'string',maxLength:500}},additionalProperties:false}},priorityRule:{type:'string',maxLength:700}},additionalProperties:false};
 
-const DESIGN={type:'object',required:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],properties:{identity:{type:'string',maxLength:1000},playerFantasy:{type:'string',maxLength:900},coreFun:{type:'string',maxLength:900},coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:340}},signatureSystems:{type:'array',minItems:5,maxItems:12,items:{type:'object',required:['name','purpose','playerChoice','id','grammarRole','stateInputs','stateOutputs'],properties:{id:{type:'string',maxLength:80},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},stateInputs:RULE_IDS,stateOutputs:RULE_IDS,name:{type:'string',maxLength:130},purpose:{type:'string',maxLength:440},playerChoice:{type:'string',maxLength:440}},additionalProperties:false}},systemInterconnections:{type:'array',minItems:5,maxItems:24,items:SYSTEM_INTERCONNECTION},progressionDirection:{type:'string',maxLength:900},progressionEconomyBalance:PROGRESSION_ECONOMY_BALANCE,contentExpansionPlan:{type:'array',minItems:3,maxItems:6,items:CONTENT_EXPANSION},failureRetryRisk:FAILURE_RETRY_RISK,platformFitPlan:PLATFORM_FIT_PLAN,platformProfiles:PLATFORM_PROFILES,webCanonicalDesign:WEB_CANONICAL_DESIGN,platformExpansionPolicy:PLATFORM_EXPANSION_POLICY,visualDirection:{type:'string',maxLength:900},mobileUx:{type:'string',maxLength:900},uxAccessibilityPlan:UX_ACCESSIBILITY_PLAN,artAudioDirection:ART_AUDIO_DIRECTION,marketTargetDirection:{type:'string',maxLength:900},steamExpansionDecision:{type:'string',maxLength:500},multiplayerMode:{type:'string',enum:MULTIPLAYER_MODES},multiplayerExpansionDecision:{type:'string',maxLength:500},designAlternatives:{type:'array',minItems:2,maxItems:3,items:DESIGN_ALTERNATIVE},selectedDesignPlan:SELECTED_DESIGN_PLAN,contentVarietyPlan:CONTENT_VARIETY_PLAN,narrativeDialoguePlan:NARRATIVE_DIALOGUE_PLAN,referenceHomagePlan:REFERENCE_HOMAGE_PLAN,designIntegrityPlan:DESIGN_INTEGRITY_PLAN,stabilityPriorityPlan:STABILITY_PRIORITY_PLAN,technicalAssumptions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},validationQuestions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},implementationTraceability:{type:'array',minItems:3,maxItems:8,items:IMPLEMENTATION_TRACE},openQuestions:{type:'array',maxItems:8,items:{type:'string',maxLength:340}},preservationContract:PRESERVATION_CONTRACT},additionalProperties:false};
+// MAIN×A×B×C+@는 모든 게임에서 원본 설계로 작성한다. 이전 MAIN-only 설계는 재작성 대상이다.
+const CREATIVE_THEME={type:'object',required:['name','kind','gameplayEffect'],properties:{
+  name:{type:'string',minLength:2,maxLength:160},kind:{type:'string',enum:seedGameplaySketchVersion>=5?['MATERIAL']:['GENRE','MATERIAL']},
+  gameplayEffect:{type:'string',minLength:16,maxLength:600}
+},additionalProperties:false};
+const CREATIVE_AXIS={type:'object',required:['system','material','materialDomain','stateChange'],properties:{
+  system:{type:'string',minLength:2,maxLength:180},material:{type:'string',minLength:2,maxLength:180},
+  materialDomain:{type:'string',minLength:2,maxLength:180},stateChange:{type:'string',minLength:20,maxLength:700}
+},additionalProperties:false};
+const CREATIVE_GENRE={type:'object',required:['role','name','gameplayEffect'],properties:{
+  role:{type:'string',enum:['PRIMARY','SECONDARY']},
+  name:{type:'string',minLength:2,maxLength:180},
+  gameplayEffect:{type:'string',minLength:16,maxLength:650}
+},additionalProperties:false};
+const CREATIVE_GRAMMAR={type:'object',required:['mainIdentity','a','b','abCausality','abEvolution','materialFusion','storyCausalChain','cThemes','cGenres','cGenreInterlock','cWorldAndGameplayEffect','delveDiscoveries','delveGrowthRule','finalGameIdentity'],properties:{
+  mainIdentity:{type:'string',minLength:15,maxLength:700},a:CREATIVE_AXIS,b:CREATIVE_AXIS,
+  abCausality:{type:'string',minLength:35,maxLength:900},
+  abEvolution:{type:'object',required:['aChangesB','bChangesA','lateGameChange'],properties:{
+    aChangesB:{type:'string',minLength:25,maxLength:700},
+    bChangesA:{type:'string',minLength:25,maxLength:700},
+    lateGameChange:{type:'string',minLength:25,maxLength:700}
+  },additionalProperties:false},
+  materialFusion:{type:'object',required:['contrast','causalBridge','removalConsequence'],properties:{
+    contrast:{type:'string',minLength:25,maxLength:700},
+    causalBridge:{type:'string',minLength:25,maxLength:700},
+    removalConsequence:{type:'string',minLength:25,maxLength:700}
+  },additionalProperties:false},
+  storyCausalChain:{type:'object',required:['cause','characterConflict','playerChoice','worldChange','nextEvent'],properties:{
+    cause:{type:'string',minLength:20,maxLength:700},
+    characterConflict:{type:'string',minLength:20,maxLength:700},
+    playerChoice:{type:'string',minLength:20,maxLength:700},
+    worldChange:{type:'string',minLength:20,maxLength:700},
+    nextEvent:{type:'string',minLength:20,maxLength:700}
+  },additionalProperties:false},
+  cThemes:{type:'array',minItems:2,maxItems:2,items:CREATIVE_THEME},
+  cGenres:{type:'array',minItems:2,maxItems:2,items:CREATIVE_GENRE},
+  cGenreInterlock:{type:'string',minLength:30,maxLength:900},
+  cWorldAndGameplayEffect:{type:'string',minLength:30,maxLength:900},
+  delveDiscoveries:{type:'array',minItems:4,items:{type:'object',required:['clue','discovery','newChoice'],properties:{clue:{type:'string',minLength:10,maxLength:500},discovery:{type:'string',minLength:10,maxLength:500},newChoice:{type:'string',minLength:15,maxLength:500}},additionalProperties:false}},
+  delveGrowthRule:{type:'string',minLength:25,maxLength:700},
+  finalGameIdentity:{type:'string',minLength:18,maxLength:700}
+},additionalProperties:false};
+const DESIGN={type:'object',required:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],properties:{creativeGrammar:CREATIVE_GRAMMAR,identity:{type:'string',maxLength:1000},playerFantasy:{type:'string',maxLength:900},coreFun:{type:'string',maxLength:900},coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:340}},signatureSystems:{type:'array',minItems:seedGameplaySketchVersion>=5?4:5,maxItems:12,items:{type:'object',required:['name','purpose','playerChoice','id','grammarRole','stateInputs','stateOutputs'],properties:{id:{type:'string',maxLength:80},grammarRole:{type:'string',enum:['MAIN','A','B','c','DELVE']},stateInputs:RULE_IDS,stateOutputs:RULE_IDS,name:{type:'string',maxLength:130},purpose:{type:'string',maxLength:440},playerChoice:{type:'string',maxLength:440}},additionalProperties:false}},systemInterconnections:{type:'array',minItems:5,maxItems:24,items:SYSTEM_INTERCONNECTION},progressionDirection:{type:'string',maxLength:900},progressionEconomyBalance:PROGRESSION_ECONOMY_BALANCE,contentExpansionPlan:{type:'array',minItems:3,maxItems:6,items:CONTENT_EXPANSION},failureRetryRisk:FAILURE_RETRY_RISK,platformFitPlan:PLATFORM_FIT_PLAN,platformProfiles:PLATFORM_PROFILES,webCanonicalDesign:WEB_CANONICAL_DESIGN,platformExpansionPolicy:PLATFORM_EXPANSION_POLICY,visualDirection:{type:'string',maxLength:900},mobileUx:{type:'string',maxLength:900},uxAccessibilityPlan:UX_ACCESSIBILITY_PLAN,artAudioDirection:ART_AUDIO_DIRECTION,marketTargetDirection:{type:'string',maxLength:900},steamExpansionDecision:{type:'string',maxLength:500},multiplayerMode:{type:'string',enum:MULTIPLAYER_MODES},multiplayerExpansionDecision:{type:'string',maxLength:500},designAlternatives:{type:'array',minItems:2,maxItems:3,items:DESIGN_ALTERNATIVE},selectedDesignPlan:SELECTED_DESIGN_PLAN,contentVarietyPlan:CONTENT_VARIETY_PLAN,narrativeDialoguePlan:NARRATIVE_DIALOGUE_PLAN,referenceHomagePlan:REFERENCE_HOMAGE_PLAN,designIntegrityPlan:DESIGN_INTEGRITY_PLAN,stabilityPriorityPlan:STABILITY_PRIORITY_PLAN,technicalAssumptions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},validationQuestions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},implementationTraceability:{type:'array',minItems:3,maxItems:8,items:IMPLEMENTATION_TRACE},openQuestions:{type:'array',maxItems:8,items:{type:'string',maxLength:340}},preservationContract:PRESERVATION_CONTRACT},additionalProperties:false};
 function enforceOwnerPreservationDesign(value){
   if(!ownerPreservationDesign)return value;
   const existingMode=clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
@@ -517,7 +588,7 @@ function enforceOwnerPreservationDesign(value){
     identity:'기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.',
     coreFun:'기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.',
     coreLoop:Array.isArray(seed.CORE_LOOP)&&seed.CORE_LOOP.length>=3?seed.CORE_LOOP.slice(0,8):value.coreLoop,
-    // 보존형 설계에서도 디자이너가 기존 실제 시스템을 MAIN/A/B/c/@로 작성한다.
+    // 보존형 설계에서도 디자이너가 기존 실제 시스템을 MAIN/A/B/C/@로 작성한다.
     // 임의로 두 시스템을 만들어 덮지 않으며 기존 수치·저장·보상을 보존한다.
     signatureSystems:value.signatureSystems,
     systemInterconnections:value.systemInterconnections,
@@ -583,10 +654,37 @@ function enforceOwnerPreservationDesign(value){
 const DESIGN_GATE_FIELDS=['systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','platformProfiles','webCanonicalDesign','platformExpansionPolicy','uxAccessibilityPlan','artAudioDirection','designAlternatives','selectedDesignPlan','contentVarietyPlan','narrativeDialoguePlan','referenceHomagePlan','designIntegrityPlan','stabilityPriorityPlan','implementationTraceability'];
 const DESIGN_BASE_FIELDS=DESIGN.required.filter(key=>!DESIGN_GATE_FIELDS.includes(key));
 const designSliceSchema=fields=>({type:'object',required:[...fields],properties:Object.fromEntries(fields.map(key=>[key,DESIGN.properties[key]])),additionalProperties:false});
+// 게임별 실제 signatureSystems에 이미 존재하는 규칙 ID와 상태 입출력만 다음 설계 조각에 전달한다.
+function authoredStateHandoffContract(signatureSystems=[]){
+  const systems=Array.isArray(signatureSystems)?signatureSystems.filter(row=>clean(row?.id)&&Array.isArray(row?.stateInputs)&&Array.isArray(row?.stateOutputs)):[];
+  const ruleIds=systems.map(row=>clean(row.id));
+  if(new Set(ruleIds).size!==ruleIds.length)return{ruleIds:[],handoffs:[],stateKeys:[]};
+  const handoffs=[];
+  for(const from of systems)for(const to of systems){
+    if(from.id===to.id)continue;
+    const keys=uniq(from.stateOutputs.filter(key=>to.stateInputs.includes(key)));
+    if(keys.length)handoffs.push({fromId:from.id,toId:to.id,stateKeys:keys});
+  }
+  return{ruleIds,handoffs,stateKeys:uniq(handoffs.flatMap(edge=>edge.stateKeys))};
+}
+function designSliceSchemaWithAuthoredHandoffs(fields,signatureSystems=[]){
+  const schema=designSliceSchema(fields);
+  if(fields.includes('signatureSystems')||!fields.includes('systemInterconnections'))return schema;
+  const contract=authoredStateHandoffContract(signatureSystems);
+  if(contract.ruleIds.length<4||!contract.handoffs.length)return schema;
+  const system=schema.properties.systemInterconnections,items=system.items;
+  const properties={
+    ...items.properties,
+    fromId:{...items.properties.fromId,enum:contract.ruleIds},
+    toId:{...items.properties.toId,enum:contract.ruleIds},
+    stateKeys:{...items.properties.stateKeys,items:{...items.properties.stateKeys.items,enum:contract.stateKeys}}
+  };
+  return{...schema,properties:{...schema.properties,systemInterconnections:{...system,items:{...items,properties}}}};
+}
 const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
 const DESIGN_GATE=designSliceSchema(DESIGN_GATE_FIELDS);
 const DESIGN_AUTHORING_SLICES=Object.freeze([
-  {id:'identity-core',fields:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'],predict:1200},
+  {id:'identity-core',fields:['identity','creativeGrammar','playerFantasy','coreFun','coreLoop','signatureSystems','multiplayerMode'],predict:2200},
   {id:'systems-progression',fields:['systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'],predict:1500},
   {id:'content-rules',fields:['contentVarietyPlan'],predict:1800},
   {id:'alternatives',fields:['designAlternatives'],predict:1600},
@@ -618,6 +716,19 @@ function persistDesignerSeed(design,phase){
     sourceStage:'identity-core',phase,status:'AUTHORED_CANDIDATE',
     inputSource:'OWNER_BRIEF_OR_ORIGINAL_OR_REFERENCE_MATERIALS',
     originalSource:seed.DESIGN_BASELINE_SOURCE||null,
+    // 기본 코딩 명세는 같은 디자이너가 검증받은 identity-core에서만 파생한다.
+    // 후보 단계에서는 구현·승인을 허용하지 않으며 기존 승격 게이트가 권한을 결정한다.
+    codingBasis:{
+      state:'DESIGN_CANDIDATE',
+      codeGenerationAuthorized:false,
+      requiredGate:'DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE',
+      identity:content.identity,creativeGrammar:content.creativeGrammar,coreFun:content.coreFun,coreLoop:content.coreLoop,
+      signatureSystems:content.signatureSystems,multiplayerMode:content.multiplayerMode,
+      reusableCodeModules:buildConceptSystemBlueprint({genre:seed.GAME_CATEGORY,baseline:{content}})
+        .libraryReusePolicy.knownReusableLibraries.filter(file=>/^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file))
+        .map(file=>({path:file,source:'EXISTING_REPOSITORY_MODULE',usage:'CANDIDATE_ONLY_VALIDATE_LICENSE_AND_EXISTING_FUNCTION_OWNER'})),
+      targetPlatform:clean(seed.INITIAL_TARGET_PLATFORM)
+    },
     fingerprint:checkpointFingerprint,engineDigest,contentDigest,
     externalSeedRequired:false,designPass:false,runtimePass:false,
     content,updatedAt:new Date().toISOString()
@@ -629,17 +740,26 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
   const merged={...currentDesign};
   // 고정 입력을 앞에 유지해 다음 요청에서도 같은 접두부를 재사용한다.
   // 오너 원본 모드의 호환용 자동 스케치는 설계 원본 입력이 아니다.
-  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n설계 원본은 게임당 하나다. MAIN/A/B/c/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
+  const commonInput=`${['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED'].includes(seed.designInputMode)||seed.autoMissingDesignIntake?'':`GAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,7500)}\n`}SHARED_CONTEXT=${clip(sharedContext,6500)}\n기본설계 문법=MAIN × A × B × C + @. MAIN은 누가 무엇을 반복하는 게임인지 정한다. A와 B는 각각 서로 다른 게임 시스템과 구체적 창작 소재(신화·역사·철학·과학·예술 등 제한 없음)를 결합한다. 자원수집·이동·전투처럼 시스템 동작 자체를 창작 소재라고 쓰지 않는다. A의 선택→B의 상태 변화→다음 A의 새로운 선택을 실제 원인·상태 키로 연결한다. C는 창작 소재 2개와 서로 다른 메인/보조 장르 2개를 융합하고, 보조 장르를 제거하면 플레이 규칙·위험·정보·선택이 바뀌어야 한다. @는 초기 발견 4개 이상(단서→실험→새 선택), 상한 없이 확장하되 단순 수치 강화와 기능 나열은 제외한다. 세계·스토리는 원인→인물 갈등→플레이어 선택→상태 변화→다음 사건으로 생성한다. A/B/C 제거 전후 플레이 차이를 설명한다. 기존 소스·저장·밸런스는 변경하지 말고 검증 전 설계를 통과라고 주장하지 않는다. 설계 원본은 게임당 하나다. MAIN/A/B/C/@와 규칙·상태·진행·멀티 의미는 이 원본에서만 작성한다. platformProfiles는 같은 원본의 플랫폼별 구현 제약이며 별도 게임 설계가 아니다.\nMULTIPLAYER_ALLOWED_MODES=${JSON.stringify(MULTIPLAYER_MODES)}; 모든 게임 멀티 필수 정책이 적용되면 기존 SINGLE은 원본 참고이며 디자이너가 멀티 확장을 직접 작성한다. 기존 COOP/COMPETITIVE/HYBRID 규칙은 보존한다. Unity WebGL도 2.5D 이상 실제 세계 깊이·가림·조명과 모바일 브라우저 플레이 검증 계획을 UNITY 프로필에 설계한다.\nPLAYABILITY_REQUIREMENTS=${JSON.stringify(playableRequirements)}`;
   for(const slice of DESIGN_AUTHORING_SLICES){
     // 웹 호환 뷰와 플랫폼 적용 정책은 마지막에 같은 원본에서 투영한다.
     if(slice.derived)continue;
-    const schema=designSliceSchema(slice.fields);
+    const schema=designSliceSchemaWithAuthoredHandoffs(slice.fields,merged.signatureSystems);
     const existing=Object.fromEntries(slice.fields.filter(field=>Object.prototype.hasOwnProperty.call(merged,field)).map(field=>[field,merged[field]]));
     const taskKey=`${phase}_slices::${slice.id}`;
-    const priorRules=Object.fromEntries(['identity','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionEconomyBalance','failureRetryRisk','multiplayerMode','contentVarietyPlan','designAlternatives','selectedDesignPlan'].filter(field=>!slice.fields.includes(field)&&merged[field]!==undefined).map(field=>[field,merged[field]]));
+    const priorRules=Object.fromEntries(['identity','creativeGrammar','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionEconomyBalance','failureRetryRisk','multiplayerMode','contentVarietyPlan','designAlternatives','selectedDesignPlan'].filter(field=>!slice.fields.includes(field)&&merged[field]!==undefined).map(field=>[field,merged[field]]));
     const dependencyHash=createHash('sha256').update(JSON.stringify(priorRules)).digest('hex');
     const compactRule=value=>typeof value==='string'?clip(value,180):Array.isArray(value)?value.map(compactRule):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,compactRule(item)])):value;
-    const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='contentVarietyPlan'?{regions:value.regions?.map(({id,name,ruleIds})=>({id,name,ruleIds})),abilities:value.abilities,roleTransitions:value.roleTransitions}:field==='designAlternatives'?value.map(plan=>({label:plan.label,strategy:plan.strategy})):field==='selectedDesignPlan'?value:value])));
+    const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='contentVarietyPlan'?{regions:value.regions?.map(({id,name,ruleIds})=>({id,name,ruleIds})),abilities:value.abilities,roleTransitions:value.roleTransitions}:field==='designAlternatives'?value.map(plan=>({label:plan.label,strategy:plan.strategy})):field==='selectedDesignPlan'?value:field==='creativeGrammar'?{
+      mainIdentity:value.mainIdentity,a:value.a,b:value.b,abCausality:value.abCausality,
+      abEvolution:value.abEvolution,cThemes:value.cThemes,cGenres:value.cGenres,
+      cGenreInterlock:value.cGenreInterlock,cWorldAndGameplayEffect:value.cWorldAndGameplayEffect,
+      storyCausalChain:value.storyCausalChain,
+      delveDiscoveries:Array.isArray(value.delveDiscoveries)&&value.delveDiscoveries.length>8
+        ?[...value.delveDiscoveries.slice(0,4),...value.delveDiscoveries.slice(-4)]
+        :value.delveDiscoveries,
+      delveGrowthRule:value.delveGrowthRule,finalGameIdentity:value.finalGameIdentity
+    }:value])));
     designCheckpoint.sliceDependencies||={};
     designCheckpoint.sliceRepairFeedback||={};
     designCheckpoint.sliceRepairAttempts||={};
@@ -652,12 +772,17 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
       const partial=designCheckpoint.slicePartialResults[taskKey]||{};
       const pendingFields=slice.fields.filter(field=>!Object.prototype.hasOwnProperty.call(partial,field));
       const requestedFields=pendingFields.length?pendingFields:slice.fields;
-      const callSchema=designSliceSchema(requestedFields);
+      const callSchema=designSliceSchemaWithAuthoredHandoffs(requestedFields,merged.signatureSystems);
       result=await runCheckpointTask(`${phase}_slices`,slice.id,()=>callDesignerModel(
       system,
-      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/c/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
+      `${commonInput}\n전체 설계를 한 번에 출력하지 말고 현재 필드 묶음만 상세하게 작성하라. 다른 필드는 출력하지 않는다. MAIN/A/B/C/@와 causalDNA 연결은 현재 필드가 담당하는 범위에서 실제 상태 변화로 유지한다. 이미 작성된 설계와 모순시키지 않는다. 원본 규칙과 수치를 보존한다.\nCURRENT_RULE_SOURCE=${['content-rules','selection-variety'].includes(slice.id)?JSON.stringify({...currentRuleSourceContext,lines:playableRequirements.abilityFacts.length?undefined:currentRuleSourceContext.lines,abilityFacts:playableRequirements.abilityFacts}):'원본 수치는 공유 규칙을 따른다'}\nAUTHORED_RULE_IDS_AND_HANDOFFS=${requestedFields.includes('systemInterconnections')?clip(authoredStateHandoffContract(merged.signatureSystems),4000):'NOT_APPLICABLE'}\nSYSTEM_INTERCONNECTION_AUTHORING_RULE=Use actual signatureSystems IDs for fromId/toId and exact overlapping output-to-input state keys; never use coreFun as a rule ID or invent gameplay states.\nSLICE_ID=${slice.id}\nSLICE_FIELDS=${JSON.stringify(requestedFields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(requestedFields))}\nCURRENT_SLICE=${clip({...existing,...partial},3500)}\nSHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}\nAUTHORING_REPAIR_ATTEMPT=${designCheckpoint.sliceRepairAttempts[taskKey]||0}\nAUTHORING_REPAIR_FEEDBACK=${JSON.stringify(feedback.map(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'?{...row,evidence:{path:row.evidence?.path}}:row))}`,
       callSchema,
-      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT')}
+      {predict:slice.predict,includeAssetContext:['ux-presentation','traceability'].includes(slice.id),temperature:phase.includes('revision')?0.16:0.24,numCtx:['content-rules','selection-variety','integrity-stability'].includes(slice.id)?16384:8192,recoverOversized:designCheckpoint.failedTask===slice.id&&/^OLLAMA_DESIGN_(TIMEOUT|OUTPUT_TRUNCATED)/.test(designCheckpoint.lastError||''),isolateFields:requestedFields.includes('systemInterconnections')||feedback.some(row=>row.code==='DESIGN_PLACEHOLDER_CONTENT'),grammarContext:requestedFields.includes('systemInterconnections')
+         ?{...(partial.creativeGrammar||merged.creativeGrammar||{}),
+           authoredRuleHandoffs:authoredStateHandoffContract(merged.signatureSystems),
+           authoredRuleNames:Object.fromEntries((merged.signatureSystems||[]).map(row=>[row.id,row.name])),
+           authoredRuleRoles:Object.fromEntries((merged.signatureSystems||[]).map(row=>[row.grammarRole,row.id]))}
+         :partial.creativeGrammar||merged.creativeGrammar||null}
       ));
       result={...partial,...result};
       feedback=validateDesignAuthoringContent({design:{...merged,...result},seed,fields:slice.fields,multiplayerRequired:allGamesMultiplayerRequired,requirePlayableContract:!ownerPreservationDesign,assetLibrary:designAssetLibrary,sourceText:currentRuleSource,assetFamilies:designAssetFamilies});
@@ -792,7 +917,10 @@ function repairFields(scored){
   const explicit=reasons.flatMap(reason=>reason.fields||[]);
   const axes=uniq([...(scored?.criticalAxisFailures||[]),...reasons.filter(reason=>!reason.fields?.length).map(reason=>reason.axis)]);
   const derived={webCanonicalDesign:['coreLoop','signatureSystems','contentVarietyPlan','progressionEconomyBalance','failureRetryRisk','uxAccessibilityPlan','artAudioDirection'],platformExpansionPolicy:[]};
-  const fields=uniq([...explicit,...axes.flatMap(axis=>AXIS_FIELDS[axis]||[])].flatMap(field=>Object.prototype.hasOwnProperty.call(derived,field)?derived[field]:[field])).filter(field=>DESIGN.required.includes(field));
+  // 시드 인과 문법의 고유 소재·장르·발견이 희석되면 실제 원본 creativeGrammar를 다시 작성한다.
+  // 점수축의 일반 보정만으로는 잘못된 MAIN/A/B/C/@가 그대로 남는 복구 누락을 막는다.
+  const seedGrammarDiluted=reasons.some(reason=>reason.code==='NOVEL_GRAMMAR_DILUTED');
+  const fields=uniq([...explicit,...(seedGrammarDiluted?['creativeGrammar']:[]),...axes.flatMap(axis=>AXIS_FIELDS[axis]||[])].flatMap(field=>Object.prototype.hasOwnProperty.call(derived,field)?derived[field]:[field])).filter(field=>DESIGN.required.includes(field));
   return fields.length?fields:['identity','coreFun','coreLoop','signatureSystems'];
 }
 
@@ -807,19 +935,23 @@ function repairStructureContract(fields){
   if(fields.includes('identity'))rules.push('identity: 공백 포함 최소 60자 이상의 구체적 게임 정체성. 무슨 게임인지와 같은 장르와의 차이를 즉시 읽을 수 있고, 대표 행동·대표 선택·시그니처 세계 규칙이 coreLoop/signatureSystems와 직접 연결되어야 한다.');
   if(fields.includes('playerFantasy'))rules.push('playerFantasy: 공백 포함 최소 40자 이상의 구체적 플레이어 역할·책임·대표 행동·결과 판타지. 관찰자 설명이 아니라 플레이어가 실제로 무엇을 하는지 명시.');
   if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 대표 행동과 반복되는 대표 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시하고 정체성 문장과 같은 플레이 약속을 증명.');
+  if(fields.includes('creativeGrammar'))rules.push('creativeGrammar는 materialFusion에서 A/B 소재가 어떻게 낯설고도 인과적으로 연결되는지·하나를 빼면 사라지는 플레이를 적고, storyCausalChain에서 원인→인물 갈등→플레이어 선택→실제 세계 상태 변화→다음 사건을 적고, abEvolution에서 A→B, B→A, 중후반 두 시스템의 관계 변화가 각각 실제로 일어나는 조건과 피드백을 명시한다. creativeGrammar는 MAIN=기본 게임 주제/정체성, A=게임 시스템+해당 축 창작 소재, B=다른 시스템+해당 축 창작 소재, abCausality=양방향 실제 상태 교환, C=cThemes에 인물·예술·역사·종교·철학·과학·무협·엽기 등 서로 다른 주제/소재 두 개를 각각 kind=MATERIAL로 선택하고, cGenres에 서로 다른 메인 장르(role=PRIMARY)와 보조 장르(role=SECONDARY)를 각각 하나씩 넣는다. 장르 사전은 무제한이다. PRIMARY는 가장 중요한 플레이·갈등·위험을 정의하고 SECONDARY는 그 선택과 A/B 시스템에 실질적 인과 변화를 줘야 한다. cGenreInterlock에 둘의 상호작용과 보조 장르 제거 시 바뀌는 플레이를 명시한다, @=서로 다른 단서·발견·새 선택을 갖는 4개 이상 초기 사례(번호만 다르거나 같은 해결법을 반복한 복제는 금지) 및 상한 없는 발전 규칙, finalGameIdentity=모든 축을 인과적으로 결합한 새 정체성이다. MAIN에만 소재를 붙이고 A/B/C를 빈껍데기로 만들거나 C를 날씨·이벤트 보조 시스템으로 대체하지 않는다. 이미 만들어진 게임의 부족한 이전 설계안도 같은 기준으로 처음부터 다시 작성한다.');
   if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
-  if(fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B/c/DELVE(@) 역할을 각각 포함하는 최소 5개 서로 다른 기존 또는 신규 시스템. 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B와 DELVE(@)를 기존 원본 규칙·상태 입출력으로 구분한다. 최소 4개 고유 역할로 구성하되 c 보조 시스템은 있을 때만 유지하고 C의 두 창작 소재·메인/보조 장르 효과는 creativeGrammar 및 A/B 상태 교환으로 증명한다. 이름·역할·선택을 복제하거나 없는 기능·보상·저장 키를 추가하지 않는다.');
+  if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('signatureSystems: MAIN/A/B/c/DELVE(@) 역할을 각각 포함하는 최소 5개 서로 다른 기존 또는 신규 시스템. 기존 작품은 실제 메커니즘의 역할에 연결하고 밸런스·저장·보상·진행을 임의 변경하지 않는다. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상.');
   if(fields.includes('platformProfiles'))rules.push('Unity WebGL은 게임플레이 화면에 2.5D 또는 3D 그래픽을 설계 단계부터 강제한다. platformProfiles.UNITY.unityWebSpatialPresentation.dimension=2.5D 또는 3D를 명시하고 worldDepth에는 전/중/후경 깊이·3D 월드 오브젝트 등 실제 공간 구성, cameraAndOcclusion에는 깊이 카메라와 오브젝트 가림, lightingAndMaterials에는 입체 조명·접지 그림자·재질, mobileWebglEvidence에는 모바일 WebGL 실제 플레이·전후 비교·독립 QA 방법을 구체적으로 적는다. 평면 스프라이트/DOM 카드·CSS 장식·2D 태그만으로 통과할 수 없다. 2D HUD는 허용하고 기존 체력·공격력·경제·세이브는 그대로 유지한다.');
   if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. JS String.length 기준 각 milestone은 최소 20자, newGameplay/systemImpact는 각각 최소 30자 이상으로 실제 새 플레이와 기존 시스템 영향을 구체적으로 설명.');
   if(fields.includes('uxAccessibilityPlan'))rules.push('menuStructure: 장르·대표 행동·기기에 맞는 정보 구조를 선택한다. 화면 진입/복귀, 전투 중 빠른 선택, 비교 분할창, 탐색형 목록, 빌드 트리, 상황형 바로가기 중 왜 이 구성이 맞는지 대안을 비교한다. convenienceDecisions: 실제 반복 불편 -> 참고 기능의 작동 원리 -> 우리 게임 적용/기각 이유 -> 상태/비용 보호 -> 검증 경로를 적는다. 프리셋 저장·전환, 조건 필터, 일괄 처리 미리보기, 목표에서 재료/지도 바로가기, 선택·필터·스크롤·미완성 작업 복귀 중 관련 기능을 선택한다. 버튼 크기나 메뉴 개수만으로 편의성 개선이라 하지 않는다. 아래 공식 참고는 관찰일의 설계 자료이며 최신 여부와 우리 게임의 효과는 미검증이다. 검증된 이전 경험과 실패도 함께 비교하고 새 작품/업데이트를 참고했다고 출처 없이 주장하지 않는다. REFERENCES='+JSON.stringify(GAME_CONVENIENCE_REFERENCES.map(({match,...row})=>row)));
   if(fields.some(field=>['progressionEconomyBalance','contentExpansionPlan','failureRetryRisk'].includes(field)))rules.push('파고들기/보상: 발견 가능한 단서 -> 조합·숙련·탐험 실험 -> 위험·기회비용·대응법 -> 새 행동/공략/경로/세계관계 -> 다음 탐구거리의 인과를 설계한다. 재화·능력치·아이템 개수 증가만으로 깊이를 주장하지 않는다. 보상은 단기 성공, 세션 목표, 선택적 장기 숙련에서 서로 다른 플레이 변화를 주되 해당 장르와 기존 저장·밸런스를 보존한다. 조합 기록·비교·발견 단서·재도전 준비는 관련 메뉴에 연결하고 정답을 미리 노출하거나 반복 노동을 강제하지 않는다. 구현 전 가설과 실제 플레이 증거를 구분한다.');
-  if(fields.includes('progressionEconomyBalance'))rules.push('재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결한다. 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률·중복 보상의 쓰임·중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다. 보상 중복 수령과 진행 유실은 검증한다. 소확행에 수치/재화 보상을 쓸 수 있으나 그것만으로 깊은 파고들기를 대체하지 않는다. 기존 MAIN/A/B/c/@의 승인된 역할을 편의상 다시 분류하거나 장르에 없는 수집/전투를 강제하지 않는다.');
+  if(fields.includes('progressionEconomyBalance'))rules.push('재미와 보상은 승인된 메인 A/B/C 조합의 큰 재미, 짧은 발견·수집·꾸미기·작은 목표의 소확행, 선택적으로 깊게 투자하는 장기 즐길거리를 구분해 연결한다. 보상 조건·비용·누적 진척·약속한 확정 보상·확률 보상의 실제 확률·중복 보상의 쓰임·중단 후 이어하기를 게임에 맞게 설계하고 메뉴에 보인다. 보상 중복 수령과 진행 유실은 검증한다. 소확행에 수치/재화 보상을 쓸 수 있으나 그것만으로 깊은 파고들기를 대체하지 않는다. 기존 MAIN/A/B/C/@의 승인된 역할을 편의상 다시 분류하거나 장르에 없는 수집/전투를 강제하지 않는다.');
   if(fields.some(field=>['signatureSystems','systemInterconnections','contentExpansionPlan'].includes(field)))rules.push('깊이의 기준은 학문을 가르치거나 학문 소재를 넣는 것이 아니라, 게임 자체를 오래 연구할 만한 규칙·관계·응용의 층위다. 쉽게 시작하는 대표 행동에서 출발해 시스템 상호작용, 상황별 예외와 대가, 조합의 새로운 용도, 여러 유효한 해법, 숙련으로 바뀌는 선택, 발견 후 다음 질문으로 이어지게 한다. MAIN/A/B/C 사이의 인과와 상호 의존을 구체화하고 같은 기능도 상황/조합/숙련에 따라 의미가 달라지는 플레이 사례를 비교한다. 복잡한 용어·기능 개수·끝없는 반복·수치 증가를 깊이로 대체하지 않는다. 단서는 읽을 수 있고 규칙은 일관되어야 하며 보상은 발견과 이해와 숙련에 맞게 약속된다. 지배적 단일 조합, 무한 보상 악용, 진행 막힘, 과도한 인지 부담을 기존 검증에서 확인한다.');
   if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. JS String.length 기준 각 designElement/responsibleSystem은 최소 20자, validationEvidence는 최소 30자 이상으로 검증 방법까지 구체적으로 작성.');
   if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
   if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. JS String.length 기준 fromSystem/toSystem은 각각 최소 16자, trigger/stateChange는 각각 최소 24자 이상으로 구체적으로 작성.');
-  if(fields.includes('signatureSystems'))rules.push('signatureSystems의 id는 고정 규칙 ID다. grammarRole은 MAIN/A/B 각각 하나, c와 DELVE(@)는 하나 이상이다. 각 stateInputs/stateOutputs에는 실제 상태 키만 정의한다. coreLoop 문장, INPUT/SELECT/OUTPUT/STATE 설명, 화살표로 연결한 행동 순서를 상태 키에 넣지 않는다. 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 맵·능력·자산·대안은 이 ID와 상태 키만 참조한다.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('MAIN/A/B/@의 상태 입력과 출력은 실제 게임 상태의 키이며 개별 역할 사이에서 겹쳐야 한다. A→B와 B→A 양방향 경로, MAIN과 모든 역할의 도달 가능한 연결이 있어야 한다. 없는 연결을 뒤 단계에서 가짜 coreFun ID나 임의 상태·보상·저장키로 채우지 말고 지금 역할의 실제 읽기/쓰기 상태를 설계하라.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('signatureSystems의 MAIN/A/B는 각 하나, DELVE(@)는 하나 이상이다. 기존 c 보조 시스템은 선택 사항이며 C를 별도 기계축으로 만들지 말고 A/B의 상태·선택 및 creativeGrammar.cGenres에 연결한다. stateInputs/stateOutputs에는 기존 실제 상태 키만 적고 원본 규칙 ID·저장·경제를 보존한다.');
+  if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('signatureSystems의 id는 고정 규칙 ID다. grammarRole은 MAIN/A/B 각각 하나, c와 DELVE(@)는 하나 이상이다. 각 stateInputs/stateOutputs에는 실제 상태 키만 정의한다. coreLoop 문장, INPUT/SELECT/OUTPUT/STATE 설명, 화살표로 연결한 행동 순서를 상태 키에 넣지 않는다. 감염전은 HumanCount/MonsterCount/EliminatedCount와 능력 자원을 포함한다. 맵·능력·자산·대안은 이 ID와 상태 키만 참조한다.');
   if(fields.includes('systemInterconnections'))rules.push('fromId의 stateOutputs와 toId의 stateInputs에 실제로 존재하는 같은 stateKeys를 연결한다. A/B는 양방향으로 값을 주고받고 MAIN/c/DELVE도 연결돼야 한다. fromSystem/toSystem 설명만 같은 것으로 대체하지 않는다.');
   if(fields.includes('contentVarietyPlan'))rules.push('abilities에는 현재 게임 원본에 실제로 존재하는 능력을 각각 작성한다. 다른 장르의 능력을 추가하지 않는다. id/kind/ownerId/ruleId, trigger, range/rangeUnit, resource/cost, cooldownSeconds, telegraph/avoidance/effect, stateInputs/stateOutputs/source가 필수다. 자원이나 재사용이 없으면 0과 이유를 적는다. 원본 수치가 있는 능력은 rangeKey/costKey/cooldownKey를 원본 technicalAssumptions 키에 연결한다. regions는 공통 id와 ruleIds로 뒤의 전략 비교에 사용한다.');
   if(fields.includes('contentVarietyPlan')&&playableRequirements.infection)rules.push('감염전 abilities에는 원본의 모든 인간 능력·감염 후 능력·몬스터 능력·기본 감염/정화를 각각 작성한다. roleTransitions는 원본 humanRoster 각 id마다 인간 도구와 능력→원본 이름 그대로의 감염 능력, 유지/제거 상태, 바뀌는 선택을 연결한다.');
@@ -828,14 +960,15 @@ function repairStructureContract(fields){
   if(fields.includes('selectedDesignPlan')&&playableRequirements.infection)rules.push('participants에 시작 인원 전원의 고정 id/role/classId를 적는다. 감염되면 같은 id의 진영과 사용 능력이 바뀌고 정화되면 이후 행동할 수 없다. 각 장면의 before/after는 같은 key/value 수치 목록이다. 앞 after를 다음 before로 정확히 이어라. startSeconds/endSeconds는 0부터 연속되고 timeReason은 이동·접촉·재사용 대기 등 필요한 시간의 근거다. actions는 능력 ID, actorId/targetId, atSeconds, distance, energyBefore/energyAfter, hit, response를 기록한다. 모든 입력은 비용과 재사용 시간을 지킨다. 감염 적중은 인간 -1/몬스터 +1, 정화 적중은 몬스터 -1/탈락 +1이다. 첫 접촉에서 감염하지 않고 첫 감염 장면에서 정확히 1회 전환, 인원 불균형, 정화 역전 기회, 결판까지 작성한다. 한 진영 0명 즉시 승패 또는 원본 제한시간 무승부로 끝낸다. roundSeconds와 sessionSeconds를 구분하고 기존 제한시간은 유지한다.');
   if(fields.includes('artAudioDirection'))rules.push('assetBindings마다 필요한 family/role/bodyPlan/behavior/presentation부터 정한 뒤 사용 위치와 ruleIds, 실제 assetId, USE/ADAPT/AUTHOR, selectionReason/improvement/platformAdaptation/validation을 작성한다. 체형이 해당 없는 배경/소리도 공간 형태 또는 음색을 구체화한다. 같은 역할의 재사용 후보가 있으면 기존 자산부터 검토한다. 실제 없는 ID를 만들거나 몬스터 분류만으로 거미를 고르지 않는다. 점수는 역할 적합성 근거가 아니다. AUTHOR는 assetId를 비우고 현재 목록의 정확한 역할 공백과 필요한 제작을 적는다.');
   if(fields.includes('designIntegrityPlan'))rules.push('authoringVersion=2. flowAudit에서 한 판의 모든 phase를 같은 순서로 재생한다. 각 reachableBy는 실제 능력 ID이며 blockedCase/recovery와 nextPhase(마지막 END)를 적는다. 능력 도달·자원 부족·길 막힘·감염 전환·탈락·종료를 확인하고 미해결 모순을 true 선언으로 숨기지 않는다.');
-  if(fields.includes('signatureSystems'))rules.push('시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담는다. MAIN은 중심 행동, A/B는 독립된 상태를 교환하는 두 대축, c는 이들을 변주하는 보조 요소, @는 발견·숙련·재방문 깊이로 역할을 구분한다. 없는 시스템을 억지로 추가하지 않는다.');
+  if(seedGameplaySketchVersion>=5&&fields.includes('signatureSystems'))rules.push('MAIN은 게임 정체성의 대표 행동, A/B는 소재가 융합된 두 상태 교환축, C는 두 창작 소재 및 주·보조 장르로 인한 실제 선택·세계 변화, @는 발견·숙련으로 구별한다. 별도 c 기능을 억지로 추가하지 않는다. 원본 수치·저장·보상을 변경하지 않는다.');
+  if(seedGameplaySketchVersion<5&&fields.includes('signatureSystems'))rules.push('시그니처의 purpose/playerChoice에 발동 조건·자원·시간·전조·상대 대응과 플레이어의 대안을 담는다. MAIN은 중심 행동, A/B는 독립된 상태를 교환하는 두 대축, c는 이들을 변주하는 보조 요소, @는 발견·숙련·재방문 깊이로 역할을 구분한다. 없는 시스템을 억지로 추가하지 않는다.');
   if(fields.includes('contentVarietyPlan'))rules.push('지역은 동선·목적·랜드마크·진입/복귀·위험 보상·재방문 이유가 달라야 한다. 적/도전은 행동 신호·조건·패턴·대응·군집 역할·보상·복구를 각각 적는다. 색상·수치·같은 설명의 반복으로 다양성을 주장하지 않는다.');
   if(fields.includes('progressionEconomyBalance')||fields.includes('failureRetryRisk'))rules.push('자원 획득원·소비처·해금이 새 행동/경로/조합으로 이어지는 흐름과 실패 때 잃는 것/보존하는 것/다음 유효 진입을 명시한다. 기존 수치·보상·저장 의미는 보존한다.');
   if(fields.includes('uxAccessibilityPlan'))rules.push('필요한 메뉴의 진입/뒤로가기·버튼 위치/역할·잠금/활성·로딩/오류·터치영역·중복입력·중단복귀를 실제 첫 입력/성공/실패/성장에 연결한다. 가독성·카메라·색상 의존·음량·입력 접근성과 모바일 성능을 다룬다.');
   if(fields.includes('artAudioDirection'))rules.push('아트/오디오는 캐릭터·배경·재질·광원·동작·효과·카메라·메뉴가 같은 세계 정체성을 유지하게 한다. 기존 자산의 용도·역할과 실제 발생 이벤트를 연결하고 스타일·라이선스·플랫폼 호환을 보존한다.');
   if(fields.includes('narrativeDialoguePlan'))rules.push('서사가 필요하면 사건 원인·선행조건·선택·결과·후속, 캐릭터 욕구/말투/관계/기억/지식범위, 복선·회수·반전을 연결한다. 불필요하면 applicable=false와 빈 배열을 사용한다. 공공영역 원형 또는 추상 기법만 재해석하며 보호된 인물·대사·장면을 복제하지 않는다.');
   if(fields.includes('designIntegrityPlan'))rules.push('이동·첫 행동·진행·선행조건·종료·복구·경제·보스 전환·멀티 입장/이탈/재입장·저장 호환·서사 인과를 실제 규칙과 대조한다. 확인 안 된 조건을 참으로 쓰지 않고 notes에 정확한 미확정 근거를 남긴다.');
-  if(seedGameplaySketchVersion>=4&&seedGameplaySketch?.novelGameGrammar)rules.push('GAMEPLAY_SKETCH v4 emergent grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다. MAIN은 coreFun/coreLoop, A/B 두 대축은 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명한다. c는 독립 대축이 아닌 서브요소로 MAIN/A/B를 변주하고, @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. GAME_CATEGORY를 최종 장르로 복사하지 않는다.');
+  if(seedGameplaySketchVersion>=5&&!pendingSeedGrammarNotAuthored&&seedGameplaySketch?.novelGameGrammar)rules.push('GAMEPLAY_SKETCH v5 owner creative grammar: emergentGenre.name/newPrimaryVerb를 identity 또는 coreFun에 유지하고 causalDNA id 최소 2개를 referenceHomagePlan 또는 narrativeDialoguePlan에 추적 가능하게 남긴다. MAIN은 coreFun/coreLoop, A/B 두 대축은 signatureSystems/systemInterconnections에서 실제 상태 교환으로 증명한다. C의 두 소재와 주·보조 장르는 creativeGrammar의 실제 인과와 플레이 변화로 입증하고 예전 c 서브요소는 필수로 만들지 않는다. @는 contentExpansionPlan/progressionDirection에서 숨은 조합·숙련·재방문·재해석·고급 운용으로 드러나야 한다. GAME_CATEGORY를 최종 장르로 복사하지 않는다.');
   return rules;
 }
 function impactedRolesFromScores(...scores){
@@ -1107,208 +1240,423 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 }
 
 // 내부 디자이너 요청·실행 시간 로그
-async function requestLocalDesignerRaw(prompt,{predict=1600,temperature=0.1,numCtx=8192,timeoutMs=localDesignerCallTimeoutMs,schema=null}={}){
-  const body=JSON.stringify({
-    model:localDesignerModel,
-    prompt,
-    stream:false,
-    think:false,
-    keep_alive:'10m',
-    format:schema||'json',
-    options:{
-      num_predict:Math.min(8192,Math.max(512,Number(predict||1600))),
-      temperature:Number.isFinite(Number(temperature))?Number(temperature):0.1,
-      // 내부 모델의 같은 문장 반복 생성만 억제한다. 구조와 규칙 숫자는 바꾸지 않는다.
-      repeat_penalty:1.15,
-      repeat_last_n:256,
-      num_ctx:Math.min(24576,Math.max(4096,Number(numCtx||8192)))
-    }
+// 파일명: tools/company-design-cycle.mjs / 메인: 바이브 자체 인과 설계 연산
+let nativeDesignVariation=0;
+function computeVibeNativeDesign(){
+  const original=seed.originalDesignContext?.content||{};
+  // 원본 소재명이 존재하는 것만으로 완성된 설계라고 보지 않는다. 검증된 문법만 그대로 재사용한다.
+  const preserved=Boolean(original.creativeGrammar?.a?.material&&original.creativeGrammar?.b?.material
+    &&validateDesignAuthoringContent({design:{creativeGrammar:original.creativeGrammar},seed,fields:['creativeGrammar']}).length===0);
+  const materialIds=new Set(seed.SEED_MATERIAL_IDS||[]);
+  const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
+  const computed=computeVibeSeedProposal({
+    requestId:gameId,category:seed.GAME_CATEGORY,platform:seed.INITIAL_TARGET_PLATFORM,
+    gameName:clean(seed.gameName||game.name),
+    ownerBrief:clean(seed.OWNER_LATEST_DESIGN_REQUEST||seed.OWNER_DESIGN_INTENT),
+    gameDescription:clean(game.description),
+    coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[],
+    materials,variant:nativeDesignVariation
   });
-  return await new Promise((resolve,reject)=>{
-    let settled=false;
-    const finish=(error,value='')=>{
-      if(settled)return;
-      settled=true;
-      clearTimeout(timer);
-      if(req&&!req.destroyed)req.destroy();
-      if(error)reject(error);else resolve(value);
-    };
-    const timer=setTimeout(()=>finish(new Error(`OLLAMA_DESIGN_TIMEOUT ${timeoutMs}ms`)),Math.max(30000,Number(timeoutMs)||localDesignerCallTimeoutMs));
-    const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
-      let data='';
-      res.setEncoding('utf8');
-      res.on('data',chunk=>data+=chunk);
-      res.on('end',()=>{
-        try{
-          if((res.statusCode||0)<200||(res.statusCode||0)>=300)throw new Error(`OLLAMA_DESIGN_HTTP_${res.statusCode} ${clip(data,800)}`);
-          const row=JSON.parse(data);
-          if(row?.error)throw new Error(`OLLAMA_DESIGN_ERROR ${clean(row.error)}`);
-          if(row?.done!==true)throw new Error('OLLAMA_DESIGN_INCOMPLETE_RESPONSE');
-          const raw=clean(row?.response);
-          if(!raw)throw new Error('OLLAMA_DESIGN_EMPTY_RESPONSE');
-          console.log(`DESIGN_LOCAL_TIMING=loadMs:${Math.round(Number(row.load_duration||0)/1e6)}|promptTokens:${Number(row.prompt_eval_count||0)}|promptMs:${Math.round(Number(row.prompt_eval_duration||0)/1e6)}|generatedTokens:${Number(row.eval_count||0)}|generationMs:${Math.round(Number(row.eval_duration||0)/1e6)}`);
-          if(row.done_reason==='length')throw new Error('OLLAMA_DESIGN_OUTPUT_TRUNCATED');
-          finish(null,raw);
-        }catch(error){finish(error);}
-      });
-      res.on('error',finish);
-    });
-    req.on('error',finish);
-    req.end(body);
-  });
-}
-async function callLocalDesignerModel(system,user,schema,{predict=1600,temperature=0.1,repairRequired=null,numCtx=8192,recoverOversized=false,isolateFields=false,includeAssetContext=true}={}){
-  if(!localDesignerFallbackReady)throw new Error('VIBE_LOCAL_DESIGN_FALLBACK_NOT_READY');
-  const timeoutMs=localDesignerCallTimeoutMs;
-  const started=Date.now();
-  const assetContext=includeAssetContext?`DESIGN_ASSET_LIBRARY=${JSON.stringify(designAssetLibraryContext)}\n자산 목록은 사실 근거다. 게임당 설계 원본은 하나이며 플랫폼별 적용만 구분한다. 후보의 역할 적합성을 컨셉과 대조하고 기존 technicalAssumptions/implementationTraceability/artAudioDirection/platformProfiles에 재사용 ID, 개선·추가 제작 필요, 플랫폼 적응을 명시하라. 점수는 내부 평가이며 런타임 품질 통과가 아니다. USE_AS_IS도 실제 게임 검증을 뜻하지 않는다. NATIVE_REAUTHOR_BASE는 네이티브 재제작이며 바이너리 직접 재사용이 아니다. referenceOnly는 참고용이다. UNAVAILABLE은 미확인이며 자산이 없다는 뜻이 아니다. 후보 요약 밖의 호환 자산도 자격을 유지한다. 자산 사정으로 원본 게임 규칙을 바꾸지 마라.`:'DESIGN_ASSET_REVIEW=AFTER_PLAY_FLOW_AND_CONTRADICTION_REPAIR';
-  const prompt=`${system}\n\n${assetContext}\n\n${user}\n\nLOCAL_AUTHORING_RULES=JSON_OBJECT_ONLY;DO_NOT_DECIDE_GATE_PASS_FAIL;PRESERVE_OWNER_INTENT;REPAIR_ONLY_REQUESTED_SCOPE\n문자 수 상한은 목표 분량이 아니다. 각 설명은 필요한 조건·행동·상태 변화를 짧고 완결된 문장으로 작성하고 같은 문장을 반복하지 않는다. 필요한 설명을 마치면 문자열과 JSON을 닫는다. 고정 ID·수치·원본 규칙은 보존한다.`;
-  const identity=createHash('sha256').update(JSON.stringify({system,user,schema,librarySha256:includeAssetContext?designAssetLibraryContext.sha256||null:null,includeAssetContext,...(isolateFields?{isolateFields:true}:{})})).digest('hex');
-  predict=Math.min(8192,Math.max(512,Number(predict)||1600,Number(designCheckpoint.localAuthoringBudgets?.[identity])||0));
-  console.log(`DESIGN_LOCAL_AUTHORING_BUDGET_MS=${timeoutMs}|predict=${predict}|context=${numCtx}|promptChars=${prompt.length}`);
-  const fields=schema?.type==='object'?Object.keys(schema.properties||{}):[];
-  const field=fields.length===1?fields[0]:null;
-  const child=field?schema.properties[field]:null;
-  const objectChild=child?.type==='object'&&Object.keys(child.properties||{}).length>0;
-  const arrayChild=child?.type==='array'&&child.items?.type==='object'&&Number(child.minItems)>0;
-  const canSplit=fields.length>1||objectChild||arrayChild;
-  // 한 규칙의 역할·조건·선택·상태는 같은 모델 응답에서 함께 수정한다.
-  const grammarObject=Boolean(schema.properties?.grammarRole?.enum?.length);
-  const oversizedTextGroup=!grammarObject&&fields.length>1&&fields.every(key=>schema.properties[key].type==='string')
-    &&fields.reduce((sum,key)=>sum+Number(schema.properties[key].maxLength||0),0)>predict;
-  let directCall=true;
-  let requestStarted=started;
-  try{
-    let raw;
-    let splitRequired=canSplit&&((isolateFields&&!grammarObject)||recoverOversized||designCheckpoint.localAuthoringSplits?.[identity]===true||(fields.length>6&&!grammarObject)||oversizedTextGroup||objectChild||arrayChild||fields.includes('signatureSystems'));
-    if(!splitRequired){
-      const requestPrompt=prompt+(isolateFields?'\n현재 한 필드의 실제 조건·행동·상태 변화·대응을 원본 규칙에 근거한 구체적인 문장으로 작성한다. 필드 이름이나 임시 식별자를 내용 대신 복사하지 않는다.': '');
-      try{
-        raw=await requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema});
-      }catch(error){
-        if(/^OLLAMA_DESIGN_OUTPUT_TRUNCATED/.test(error?.message||'')&&!canSplit&&predict<8192){
-          // 더 쪼갤 수 없는 필드는 내용을 버리거나 같은 작은 예산을 반복하지 않는다.
-          recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
-          const previous=predict;
-          predict=Math.min(8192,predict*2);
-          designCheckpoint.localAuthoringBudgets={...designCheckpoint.localAuthoringBudgets,[identity]:predict};
-          persistDesignCheckpoint();
-          console.log(`DESIGN_LOCAL_OUTPUT_BUDGET_REPAIR=${previous}->${predict}|fields=${fields.join(',')}`);
-          requestStarted=Date.now();
-          raw=await requestLocalDesignerRaw(requestPrompt,{predict,temperature,numCtx,timeoutMs,schema});
-        }else{
-          if(!/^OLLAMA_DESIGN_(?:OUTPUT_TRUNCATED|TIMEOUT(?: |$))/.test(error?.message||'')||!canSplit)throw error;
-          recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
-          designCheckpoint.localAuthoringSplits={...designCheckpoint.localAuthoringSplits,[identity]:true};
-          persistDesignCheckpoint();
-          splitRequired=true;
-        }
-      }
-    }
-    if(splitRequired){
-      directCall=false;
-      // 큰 객체·대안 배열과 반복된 빈 내용을 기존 체크포인트의 작은 조각으로 복구한다.
-      console.log(`DESIGN_LOCAL_SPLIT=${arrayChild?'ARRAY_ITEMS':objectChild?'NESTED_OBJECT':'FIELDS'}|fields=${fields.length}`);
-      let merged={};
-      if(objectChild){
-        merged[field]=await runCheckpointTask('local_authoring_parts',`${identity}:${field}`,()=>callLocalDesignerModel(
-          system,`${user}\nLOCAL_OUTPUT_PATH=${field}\n이번 응답은 이 경로의 객체 내용만 출력한다. 부모 키를 다시 감싸지 않는다.`,child,{predict,temperature,numCtx,isolateFields,includeAssetContext}
-        ));
-      }else if(arrayChild){
-        const rows=[];
-        for(let index=0;index<child.minItems;index++){
-          const orderedKey=field==='designAlternatives'?'label':field==='playthrough'?'phase':null;
-          let itemSchema=orderedKey&&child.items.properties?.[orderedKey]?.enum?.[index]
-            ?{...child.items,properties:{...child.items.properties,[orderedKey]:{...child.items.properties[orderedKey],enum:[child.items.properties[orderedKey].enum[index]]}}}
-            :child.items;
-          // 원본 능력의 ID·수치는 생성 대상이 아니다. 현재 소스 사실을 스키마에 고정한다.
-          const fact=field==='abilities'&&typeof playableRequirements!=='undefined'?playableRequirements.abilityFacts[index]:null;
-          const grammarRole=field==='signatureSystems'?['MAIN','A','B','c','DELVE'][index]:null;
-          const human=field==='roleTransitions'&&typeof playableRequirements!=='undefined'?playableRequirements.humanRoster[index]:null;
-          const fixed=fact||grammarRole?{...(fact||{}),...(grammarRole?{grammarRole}:{})}:human?{humanId:human.id,humanTool:human.tool}:{};
-          for(const [key,value] of Object.entries(fixed))if(value!==undefined&&itemSchema.properties?.[key])itemSchema={...itemSchema,properties:{...itemSchema.properties,[key]:{...itemSchema.properties[key],enum:[value]}}};
-          // 파일명: company-design-cycle.mjs / 메인: MAIN/A/B/c/@ 역할별 원본 설계 검사
-          const itemKey=`${identity}:${field}:${index}`;
-          const itemTaskKey=`local_authoring_parts::${itemKey}`;
-          const previousItems=grammarRole?rows.map(row=>({grammarRole:row.grammarRole,id:row.id,name:row.name,stateInputs:row.stateInputs,stateOutputs:row.stateOutputs})):rows;
-          for(let roleAttempt=0;;roleAttempt++){
-            const repairFeedback=grammarRole?designCheckpoint.sliceRepairFeedback?.[itemTaskKey]||[]:[];
-            const value=await runCheckpointTask('local_authoring_parts',itemKey,()=>callLocalDesignerModel(
-              system,`${user}\nLOCAL_OUTPUT_PATH=${field}[${index}]\nPREVIOUS_ARRAY_ITEMS=${JSON.stringify(previousItems)}\n${grammarRole?`CURRENT_GRAMMAR_ROLE=${grammarRole}\nPREVIOUS_RULE_IDS=${JSON.stringify(rows.map(row=>row.id))}\nAUTHORING_GRAMMAR_REPAIR_FEEDBACK=${JSON.stringify(repairFeedback)}\n${grammarRole}의 고유 규칙 ID와 이름, 실제 선택·전술, 읽을 상태와 변경할 상태를 원본 규칙에 따라 직접 작성한다. 앞 역할의 ID나 설명을 복제하지 않는다. 상태 키에는 행동 과정이나 화살표 문장을 쓰지 않는다. 원본 숫자와 멀티플레이·저장 의미를 보존한다.\n`:''}이번 응답은 이 배열 항목의 객체 하나만 출력한다. 이전 항목과 역할·접근을 구분하고 필수 설계 깊이를 유지한다.`,itemSchema,{predict:grammarRole?Math.max(1600,predict):predict,temperature,numCtx,isolateFields,includeAssetContext}
-            ));
-            if(!grammarRole){rows.push(value);break;}
-            const roleIssues=[];
-            const inputKeys=Array.isArray(value?.stateInputs)?value.stateInputs:[];
-            const outputKeys=Array.isArray(value?.stateOutputs)?value.stateOutputs:[];
-            if(value?.grammarRole!==grammarRole)roleIssues.push('DESIGN_GRAMMAR_ROLE_MISMATCH');
-            if(!clean(value?.id)||rows.some(row=>clean(row.id)===clean(value.id)))roleIssues.push('DESIGN_GRAMMAR_RULE_ID_REUSED');
-            if(rows.some(row=>['name','purpose','playerChoice'].filter(key=>clean(value?.[key])===clean(row[key])).length>=2))
-              roleIssues.push('DESIGN_GRAMMAR_ROLE_CONTENT_CLONED');
-            if([...inputKeys,...outputKeys].some(key=>/→|->|\b(?:INPUT|SELECT|OUTPUT|STATE)\s*:/i.test(clean(key))))
-              roleIssues.push('DESIGN_STATE_KEY_IS_INSTRUCTION');
-            if(!inputKeys.length||!outputKeys.length)roleIssues.push('DESIGN_RULE_STATE_MISSING');
-            if(!roleIssues.length){
-              if(designCheckpoint.sliceRepairFeedback)delete designCheckpoint.sliceRepairFeedback[itemTaskKey];
-              rows.push(value);break;
-            }
-            // 실패한 역할만 무효화하고 나머지 역할과 이미 완료된 필드는 재사용한다.
-            delete designCheckpoint.tasks[itemTaskKey];
-            designCheckpoint.sliceRepairFeedback||={};
-            designCheckpoint.sliceRepairAttempts||={};
-            designCheckpoint.sliceRepairFeedback[itemTaskKey]=roleIssues.map(code=>({code,grammarRole,previousRuleIds:rows.map(row=>row.id)}));
-            designCheckpoint.sliceRepairAttempts[itemTaskKey]=(designCheckpoint.sliceRepairAttempts[itemTaskKey]||0)+1;
-            designCheckpoint.failedPhase='local_authoring_parts';
-            designCheckpoint.failedTask=`${field}:${grammarRole}`;
-            designCheckpoint.lastError=`DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED ${roleIssues.join(',')}`;
-            persistDesignCheckpoint();
-            console.log(`DESIGN_GRAMMAR_ROLE_REPAIR=${grammarRole}|${roleIssues.join(',')}|attempt=${designCheckpoint.sliceRepairAttempts[itemTaskKey]}`);
-            if(roleAttempt>=1)throw new Error(designCheckpoint.lastError);
-          }
-        }
-        merged[field]=rows;
-      }else{
-        const midpoint=Math.ceil(fields.length/2);
-        for(const part of (isolateFields?fields.map(field=>[field]):[fields.slice(0,midpoint),fields.slice(midpoint)])){
-          const partSchema={...schema,required:(schema.required||[]).filter(field=>part.includes(field)),properties:Object.fromEntries(part.map(field=>[field,schema.properties[field]]))};
-          const value=await runCheckpointTask('local_authoring_parts',`${identity}:${part.join(',')}`,()=>callLocalDesignerModel(
-            system,`${user}\nCURRENT_OBJECT_FIELDS=${JSON.stringify(merged)}\nLOCAL_REQUIRED_FIELDS=${JSON.stringify(part)}\n이전 지시의 출력 범위 대신 LOCAL_REQUIRED_FIELDS만 출력한다. 먼저 작성된 필드와 일관성을 지키고 필수 구조와 설계 깊이는 유지한다.`,
-            partSchema,{predict,temperature,numCtx,isolateFields,includeAssetContext}
-          ));
-          Object.assign(merged,value);
-        }
-      }
-      assertSchemaValue(merged,schema);
-      raw=JSON.stringify(merged);
-    }
-    const parsed=parseJsonObject(raw);
-    const repairs=[];
-    let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
-    if(typeof repairRequired==='function'){
-      const grounded=repairRequired(normalized);
-      if(grounded?.value)normalized=grounded.value;
-      if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
-    }
-    assertSchemaValue(normalized,schema);
-    const elapsedMs=Date.now()-started;
-    if(directCall){
-      const requestElapsedMs=Date.now()-requestStarted;
-      recordModelHealth(`ollama:${localDesignerModel}`,{success:true,elapsedMs:requestElapsedMs});
-      modelCallStats.push({model:`ollama:${localDesignerModel}`,requestedModel:designerRoute.id,provider:'VIBE_LOCAL_OLLAMA',attempt:1,elapsedMs:requestElapsedMs,predict,mode:'ollama-json-schema',timeoutMs,schemaRepairs:repairs.length});
-    }
-    designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
-    console.log(`DESIGN_AUTHORING_PROVIDER=VIBE_LOCAL_OLLAMA|${localDesignerModel}|ms=${elapsedMs}`);
-    return normalized;
-  }catch(error){
-    if(directCall)recordModelHealth(`ollama:${localDesignerModel}`,{success:false,elapsedMs:Date.now()-requestStarted,error});
-    persistDesignCheckpoint();
-    throw error;
+  const sketch=seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'
+    &&!pendingSeedGrammarNotAuthored?seedGameplaySketch:computed.gameplaySketch;
+  const grammar=sketch.novelGameGrammar;
+  const fusion=grammar.gameplaySystemFusion;
+  const a=fusion.majorAxes.find(row=>row.key==='A'),b=fusion.majorAxes.find(row=>row.key==='B');
+  const c=fusion.themeFusion,main=fusion.main,delve=grammar.delveLayer.elements;
+  const shorten=(value,max=650)=>clean(value).slice(0,max);
+  const name=clean(seed.gameName||game.name||original.identity||seed.DISTINCT_IDENTITY)||main.name;
+  const mainName=clean(main.name||name);
+  const mode=allGamesMultiplayerRequired
+    ?(['COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'COOP')
+    :(['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(originalMultiplayerMode)?originalMultiplayerMode:'SINGLE');
+  const signature=Array.isArray(original.signatureSystems)?original.signatureSystems:[];
+  // 규칙 ID와 상태 배열만 채워진 원본은 재사용하지 않는다. 실제 A↔B·MAIN·@ 인과 연결과
+  // 후속 systemInterconnections의 최소 5개 상태 전달이 가능한 경우에만 원본을 보존한다.
+  const originalRoles=['MAIN','A','B','DELVE'].every(role=>signature.some(row=>row?.grammarRole===role
+    &&row.id&&Array.isArray(row.stateInputs)&&row.stateInputs.length&&Array.isArray(row.stateOutputs)&&row.stateOutputs.length))
+    &&validateDesignAuthoringContent({design:{signatureSystems:signature},seed,fields:['signatureSystems']}).length===0
+    &&signature.reduce((total,from)=>total+signature.filter(to=>from!==to
+      &&Array.isArray(from?.stateOutputs)&&Array.isArray(to?.stateInputs)
+      &&from.stateOutputs.some(key=>to.stateInputs.includes(key))).length,0)>=5;
+  const rulePlan=originalRoles?structuredClone(signature):[
+    {id:'VIBE_MAIN',grammarRole:'MAIN',name:mainName,
+      purpose:shorten(`${main.purpose} 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.`,410),
+      playerChoice:shorten(`${main.playerAction} 이후 다음 행동의 위험과 보상을 직접 선택한다.`,410),
+      stateInputs:['WorldAccessState','IntentState'],stateOutputs:['RouteState','WorldAccessState']},
+    {id:'VIBE_A',grammarRole:'A',name:a.name,
+      purpose:shorten(`${a.purpose} ${a.materialRule} 선택의 결과를 위험과 자원 경로에 반영한다.`,410),
+      playerChoice:shorten(`${a.playerChoice} ${a.sourceMaterial}의 제약을 감수할지 결정한다.`,410),
+      stateInputs:['RouteState','RiskState'],stateOutputs:['RiskState','ResourceState']},
+    {id:'VIBE_B',grammarRole:'B',name:b.name,
+      purpose:shorten(`${b.purpose} ${b.materialRule} 앞선 행동의 결과를 다음 접근 조건으로 되돌린다.`,410),
+      playerChoice:shorten(`${b.playerChoice} ${b.sourceMaterial}의 반작용을 선택한다.`,410),
+      stateInputs:['RiskState','ResourceState'],stateOutputs:['RouteState','RiskState']},
+    {id:'VIBE_DELVE',grammarRole:'DELVE',name:delve[0].name,
+      purpose:shorten(`${delve[0].masteryOrInsight} 숨겨진 조건을 실험한 뒤 새로운 선택과 경로를 연다.`,410),
+      playerChoice:shorten(`${delve[0].discoveryCondition} 실제 발견 결과에 따라 원래 목표로 돌아갈 방법을 선택한다.`,410),
+      stateInputs:['RouteState','RiskState'],stateOutputs:['WorldAccessState','IntentState']}
+  ];
+  const rules=rulePlan.slice(0,12);
+  const roles=Object.fromEntries(rules.filter(row=>['MAIN','A','B','DELVE'].includes(row.grammarRole)).map(row=>[row.grammarRole,row]));
+  const stateNames=[...new Set(rules.flatMap(row=>[...(row.stateInputs||[]),...(row.stateOutputs||[])]))];
+  const handoffs=[];
+  for(const from of rules)for(const to of rules){
+    if(from.id===to.id)continue;
+    const stateKeys=[...new Set((from.stateOutputs||[]).filter(key=>(to.stateInputs||[]).includes(key)))];
+    if(stateKeys.length)handoffs.push({from,to,key:stateKeys[0]});
   }
+  const priority=[['MAIN','A'],['A','B'],['B','A'],['B','DELVE'],['DELVE','MAIN'],['A','DELVE'],['A','MAIN']];
+  const edges=priority.map(([from,to])=>handoffs.find(e=>e.from.id===roles[from]?.id&&e.to.id===roles[to]?.id)).filter(Boolean);
+  for(const edge of handoffs)if(edges.length<6&&!edges.includes(edge))edges.push(edge);
+  const interconnections=edges.slice(0,10).map((edge,index)=>({
+    fromId:edge.from.id,toId:edge.to.id,stateKeys:[edge.key],
+    fromSystem:edge.from.name,toSystem:edge.to.name,
+    trigger:shorten(`${edge.from.playerChoice} 때문에 ${edge.key}가 변한 순간 다음 시스템이 반응한다.`,280),
+    stateChange:shorten(`${edge.key}의 결과를 ${edge.to.name}의 입력으로 전달해 대응 비용과 다음 선택이 변한다.`,350)
+  }));
+  const baseLoop=Array.isArray(seed.CORE_LOOP)&&seed.CORE_LOOP.length>=3
+    ?seed.CORE_LOOP.slice(0,8):computed.coreLoop;
+  const coreLoop=baseLoop.map(value=>shorten(value,330));
+  const identity=shorten(`${name}. ${grammar.emergentGenre.name}. ${mainName}에서 ${a.name}과 ${b.name}이 서로 결과를 되돌려 바꾸며 ${c.genres[0].name}·${c.genres[1].name}의 판단이 실제 세계 상태를 변화시킨다.`,950);
+  const creativeGrammar=preserved&&originalRoles?structuredClone(original.creativeGrammar):{
+    mainIdentity:shorten(`${mainName}: ${name}. ${main.playerAction}과 ${grammar.newPrimaryVerb}를 반복하는 게임이다.`),
+    a:{system:a.name,material:a.sourceMaterial,materialDomain:`${a.sourceDomain.replaceAll('_',' ').toLowerCase()}의 문화·역사 인과 소재`,
+      stateChange:shorten(`${a.materialRule} ${a.stateContribution} 그 결과 ${b.name}의 다음 행동 조건이 달라진다.`)},
+    b:{system:b.name,material:b.sourceMaterial,materialDomain:`${b.sourceDomain.replaceAll('_',' ').toLowerCase()}의 문화·역사 인과 소재`,
+      stateChange:shorten(`${b.materialRule} ${b.stateContribution} 그 결과 ${a.name}의 선택 비용과 경로가 달라진다.`)},
+    abCausality:shorten(`${a.playerChoice} 이후 ${a.stateContribution} 그 결과 ${b.playerChoice}가 바뀌고 ${b.stateContribution} 다시 A의 선택 조건이 달라진다.`),
+    abEvolution:{
+      aChangesB:shorten(`${a.playerChoice} 선택이 ${b.name}의 행동 가능성·비용·위험을 변화시킨다. ${a.materialRule}`),
+      bChangesA:shorten(`${b.playerChoice} 결과가 다음 ${a.name}의 지형 접근·자원 판단·상대 대응을 바꾼다. ${b.materialRule}`),
+      lateGameChange:shorten(`후반에는 ${a.sourceMaterial}와 ${b.sourceMaterial}의 상반된 조건을 역이용해 같은 장소도 서로 다른 경로와 결말로 해결한다.`)
+    },
+    materialFusion:{
+      contrast:shorten(`${a.sourceMaterial}의 원인 규칙과 ${b.sourceMaterial}의 반작용을 ${a.systemFamily}·${b.systemFamily}의 서로 다른 선택에 결합한다.`),
+      causalBridge:shorten(`${a.materialRule} 그 결과 ${b.playerChoice}의 가능성이 달라지고 ${b.materialRule} 다시 첫 시스템의 결과를 바꾼다.`),
+      removalConsequence:shorten(`${a.sourceMaterial}를 제거하면 A의 선행 조건이 사라지고 ${b.sourceMaterial}를 제거하면 B의 결과가 A에 돌아오는 대가와 학습이 사라진다.`)
+    },
+    storyCausalChain:{
+      cause:shorten(`${grammar.storyWorldBindings.emotionalConflict} ${grammar.worldRule}`),
+      characterConflict:shorten(grammar.storyWorldBindings.characterRule),
+      playerChoice:shorten(`${a.playerChoice} 또는 ${b.playerChoice} 중 무엇을 우선할지 판단한다.`),
+      worldChange:shorten(`${grammar.storyWorldBindings.regionRule} ${c.jointWorldRule}`),
+      nextEvent:shorten(`${grammar.storyWorldBindings.storyRule} 다음 사건은 직전 세계·관계 상태를 읽고 발생한다.`)
+    },
+    cThemes:c.themes.map(t=>({name:t.name,kind:'MATERIAL',gameplayEffect:shorten(t.causalEffect,590)})),
+    cGenres:c.genres.map(g=>({role:g.role,name:g.name,gameplayEffect:shorten(g.gameplayEffect,630)})),
+    cGenreInterlock:shorten(c.genreInterlock),
+    cWorldAndGameplayEffect:shorten(`${grammar.worldRule} ${c.jointWorldRule} ${c.abGameplayEffect}`),
+    delveDiscoveries:delve.slice(0,Math.max(4,delve.length)).map(d=>({
+      clue:shorten(`${d.name}: ${d.discoveryCondition}`,490),
+      discovery:shorten(`${d.name}: ${d.masteryOrInsight}`,490),
+      newChoice:shorten(`${d.name}: ${d.gameplayEffect}`,490)
+    })),
+    delveGrowthRule:shorten(`${delve[0].name} 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.`),
+    finalGameIdentity:shorten(`${grammar.emergentGenre.name}. ${grammar.emergentGenre.definition}`)
+  };
+  const abilities=(playableRequirements.abilityFacts||[]).map(row=>({
+    id:row.id,name:row.name||row.id,kind:row.kind,ownerId:row.ownerId,ruleId:roles.B.id,
+    trigger:`원본 ${row.id} 능력의 입력 조건을 충족할 때 기존 책임 시스템이 수행한다.`,
+    range:Number(row.range)||0,rangeUnit:'원본 설정 단위',resource:'원본 설정 자원',
+    cost:Number(row.cost)||0,cooldownSeconds:Number(row.cooldownSeconds)||0,
+    telegraph:'기존 전조와 판정 타이밍을 그대로 사용한다.',avoidance:'기존 회피 입력과 반응 규칙을 보존한다.',
+    effect:'원본 설정에 정의된 대상 상태 변화만 발생한다.',
+    stateInputs:[roles.B.stateInputs[0]],stateOutputs:[roles.B.stateOutputs[0]],
+    source:'현재 원본 구현의 대응 능력 정의',rangeKey:'',costKey:'',cooldownKey:''
+  }));
+  if(!abilities.length)abilities.push(
+    {id:'VIBE_CHOOSE',name:'첫 시스템의 경로 선택',kind:'INTERACTION',ownerId:'PLAYER',ruleId:roles.A.id,
+      trigger:`${a.playerChoice} 실행 전에 접근 가능성과 비용을 확인한다.`,range:0,rangeUnit:'선택 입력',resource:'행동 기회',cost:0,cooldownSeconds:0,
+      telegraph:'선택지의 변화 조건과 현재 위험을 화면에 알린다.',avoidance:'다른 경로를 선택하거나 실행하지 않고 되돌아간다.',
+      effect:'선택 경로와 반응 위험을 계획 상태에 반영한다.',stateInputs:[roles.A.stateInputs[0]],stateOutputs:[roles.A.stateOutputs[0]],
+      source:'시드 인과문법 A의 설계 계약 (실제 구현 전)',rangeKey:'',costKey:'',cooldownKey:''},
+    {id:'VIBE_RESPOND',name:'두 번째 시스템의 대응 선택',kind:'INTERACTION',ownerId:'PLAYER',ruleId:roles.B.id,
+      trigger:`${b.playerChoice} 실행 전에 A의 이전 결과를 읽는다.`,range:0,rangeUnit:'선택 입력',resource:'행동 기회',cost:0,cooldownSeconds:0,
+      telegraph:'상대의 다음 반응과 예상되는 선택 비용을 알린다.',avoidance:'대응을 취소하고 이전 안전 단계로 돌아간다.',
+      effect:'대응 결과를 다음 A의 계획 조건으로 되돌려 보낸다.',stateInputs:[roles.B.stateInputs[0]],stateOutputs:[roles.B.stateOutputs[0]],
+      source:'시드 인과문법 B의 설계 계약 (실제 구현 전)',rangeKey:'',costKey:'',cooldownKey:''}
+  );
+  if(abilities.length===1){
+    const first=abilities[0];
+    abilities.push({...first,id:'VIBE_ALTERNATE',name:'연결된 두 시스템의 상황 대응',kind:'INTERACTION',
+      trigger:'플레이어가 다른 선택으로 위험을 줄일 조건을 확인할 때 실행한다.',
+      source:'기존 시스템의 대안 입력에 대한 설계 요청 (구현 전)'});
+  }
+  const regionIds=['VIBE_ORIGIN','VIBE_REVISIT'];
+  const regions=[
+    {id:regionIds[0],ruleIds:[roles.MAIN.id,roles.A.id],name:`${a.sourceMaterial}의 첫 선택 공간`,
+      traversal:`${a.playerChoice}를 시작하는 출발 위치와 복귀 동선을 제공한다.`,
+      riskReward:'안전한 진행을 선택하면 발견 속도가 늦어지고 어려운 경로에서는 다른 단서를 얻는다.',
+      landmark:`${a.sourceMaterial}의 변화가 드러나는 고유 랜드마크를 첫 진입 때 표시한다.`,
+      encounterPattern:`${a.materialRule} 결과를 읽고 위험·정보 반응이 변화한다.`,
+      resourcePressure:'선택 결과에 따른 자원 접근 가능성과 기회비용을 분리해 보여준다.',
+      storyContext:grammar.storyWorldBindings.regionRule},
+    {id:regionIds[1],ruleIds:[roles.B.id,roles.DELVE.id],name:`${b.sourceMaterial}의 되돌림 공간`,
+      traversal:`${b.playerChoice}의 결과가 이전 구역의 통로를 열거나 닫는다.`,
+      riskReward:'이전 상태를 역이용한 고급 대응은 짧은 경로와 추가 위험 중 하나를 선택하게 한다.',
+      landmark:`${b.sourceMaterial}의 반작용과 발견 단서를 시각적으로 구분한다.`,
+      encounterPattern:`${b.materialRule} 결과를 기준으로 다른 대응법을 요구한다.`,
+      resourcePressure:'처음 얻은 자원을 유지할지 새로운 접근에 재투자할지 기회비용을 제시한다.',
+      storyContext:grammar.storyWorldBindings.storyRule}
+  ];
+  const stateKey=stateNames[0]||'WorldAccessState';
+  const anyA=abilities[0],anyB=abilities[1];
+  const strategy=(index)=>({
+    routeEdges:[{from:regionIds[index],to:regionIds[1-index]}],
+    resourceSites:[{stateKey,regionId:regionIds[index]}],
+    cooperation:[{ruleId:index?roles.B.id:roles.A.id,regionId:regionIds[1-index],abilityId:index?anyB.id:anyA.id}],
+    advantage:index?'B의 반작용을 먼저 확인해 숨은 정보와 역이용 경로를 확보한다.':'A의 안전한 조건부터 확인해 다음 판단의 위험과 비용을 예측한다.',
+    cost:index?'초기 위험을 충분히 파악하지 못해 대응 선택이 실패할 수 있다.':'초기 발견 속도가 느려지고 되돌림 공간의 정보를 나중에 얻게 된다.',
+    bestSituation:index?'반작용의 단서가 이미 알려져 있고 다른 접근 경로를 찾아야 할 때.':'첫 진입에서 위험을 읽고 다음 선택의 조건을 안전하게 학습할 때.'
+  });
+  const alternatives=[0,1].map(index=>({
+    label:index?'PLAN_B':'PLAN_A',strategy:strategy(index),
+    concept:index?`${b.sourceMaterial}의 반작용부터 읽는 역방향 탐색 계획`:`${a.sourceMaterial}의 조건을 우선 학습하는 정방향 탐색 계획`,
+    playerFantasy:index?`정보 부족을 감수하고 ${b.playerChoice}를 먼저 실험한다.`:`${a.playerChoice}의 결과를 축적해 다음 결정을 통제한다.`,
+    genreDirection:index?`보조 ${c.genres[1].name} 판단이 앞서 중심 ${c.genres[0].name} 목표의 순서를 뒤집는다.`:`중심 ${c.genres[0].name} 진행 속에서 보조 ${c.genres[1].name}가 숨겨진 단서를 제공한다.`,
+    coreLoopShift:index?`B 대응→A 조건 재평가→발견 역이용→다음 사건`:`A의 선택→B의 반응→안전한 재방문→다음 사건`,
+    mapTopologyRegionRoles:index?`되돌림 공간→첫 선택 공간으로 위험 경로를 역행한다.`:`첫 선택 공간→되돌림 공간으로 안전 경로를 확장한다.`,
+    landmarksTraversal:index?regions[1].landmark:regions[0].landmark,
+    enemyEcosystemCounterplay:index?`후속 위험의 전조를 보고 먼저 회피한 뒤 뒤집힌 조건을 활용한다.`:`기초 전조를 먼저 학습한 뒤 대응 가능한 반응을 선택한다.`,
+    bossSignatureMoments:index?`누적된 세계 반작용을 역이용해 최종 목표의 접근 조건을 바꾼다.`:`학습한 선행 조건을 결합해 최종 선택 전에 위험을 줄인다.`,
+    progressionEconomy:index?`더 빠른 정보 획득과 높은 초기 위험을 교환하며 성장 경로를 선택한다.`:`낮은 위험과 늦은 발견을 교환하며 자원을 보존한다.`,
+    questStoryEventFlow:index?`${b.sourceMaterial}의 사건부터 해결해 이전 인물의 관계를 다시 해석한다.`:`${a.sourceMaterial}의 갈등을 먼저 해석한 후 인물의 다음 선택을 확인한다.`,
+    failureRetryRecovery:index?`불완전한 정보로 실패하면 이전에 확인한 경로로 되돌아와 다시 추론한다.`:`안전한 선택으로 실패를 학습하고 같은 세계 상태에서 다른 길을 선택한다.`,
+    platformAdaptation:'모바일에서는 같은 조작·상태 결과를 유지하고 화면 깊이와 터치 여백만 플랫폼에 맞춰 조정한다.',
+    implementationScope:`기존 인과 규칙과 ${index?roles.B.id:roles.A.id} 책임 함수에서 입력·상태 전달만 직접 구현한다.`,
+    validationPlan:index?`B→A 결과가 실제 상태에 전달되는지 동일 시드에서 재생 검증한다.`:`A→B 결과와 실패 재시작 시 세계 상태 보존을 재생 검증한다.`
+  }));
+  const phases=playableRequirements.phases||['OPENING','DEVELOPMENT','RESOLUTION'];
+  const roundSeconds=Number(playableRequirements.lockedNumbers?.RoundSeconds)||Math.max(180,phases.length*60);
+  const phaseSeconds=roundSeconds/phases.length;
+  // 설계 시뮬레이션은 규칙의 출력 상태만 갱신한다. 원본 게임 수치나 런타임 검증으로 위장하지 않는다.
+  // 이전 장면의 출력이 다음 장면의 입력으로 이어지는지 정확히 확인할 수 있게 보존한다.
+  const planState=Object.fromEntries(stateNames.map(key=>[key,0]));
+  const stateSnapshot=()=>stateNames.map(key=>({key,value:planState[key]}));
+  const playthrough=phases.map((phase,index)=>{
+    const phaseRule=index===0?roles.A:index===phases.length-1?roles.DELVE:roles.B;
+    const phaseAbility=abilities.find(row=>row.ruleId===phaseRule.id)||abilities[index%abilities.length];
+    const before=stateSnapshot();
+    const reads=phaseRule.stateInputs.filter(key=>Object.hasOwn(planState,key));
+    const outputs=phaseRule.stateOutputs.filter(key=>Object.hasOwn(planState,key));
+    if(!reads.length||!outputs.length)throw new Error('DESIGN_NATIVE_PLAN_STATE_HANDOFF_MISSING');
+    // 다음 시스템이 소비하는 출력 키가 우선이다. 현재 규칙에 없는 상태는 만들지 않는다.
+    const downstream=handoffs.filter(row=>row.from.id===phaseRule.id).flatMap(row=>row.key);
+    const changed=outputs.filter(key=>downstream.includes(key));
+    const stateChangeKeys=changed.length?changed:outputs;
+    for(const key of stateChangeKeys)planState[key]+=1;
+    const after=stateSnapshot();
+    const entryState=index
+      ?`직전 단계 ${phases[index-1]}의 상태 변화에서 이어진다.`
+      :'플레이어가 현재 목표와 경로 상태를 확인한다.';
+    const playerChoice=index===0?a.playerChoice:index===phases.length-1?delve[0].discoveryCondition:b.playerChoice;
+    const actionAndResponse=`${phaseRule.name}의 ${reads.join('·')} 입력을 확인하고 ${stateChangeKeys.join('·')} 출력만 변경한다. ${index===0?a.materialRule:index===phases.length-1?delve[0].gameplayEffect:b.materialRule}`;
+    const nextDecision=index<phases.length-1
+      ?`${phases[index+1]}에서 변경된 ${stateChangeKeys.join('·')}가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.`
+      :'이전에 변한 세계 상태와 발견 정보를 비교하고 새로운 접근 경로 또는 재시작 방법을 고른다.';
+    const energyBefore=Math.max(10,Number(phaseAbility.cost)||0);
+    return {
+      phase,entryState,playerChoice,actionAndResponse,
+      exitState:index===phases.length-1?'한 판의 결과와 다음 선택을 기록한다.':`다음 단계 ${phases[index+1]}의 입장 조건과 세계 상태가 결정된다.`,
+      nextDecision,startSeconds:phaseSeconds*index,endSeconds:phaseSeconds*(index+1),
+      timeReason:`${phase}에서 ${reads.join('·')} 입력과 ${stateChangeKeys.join('·')} 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.`,
+      before,after,
+      actions:[{abilityId:phaseAbility.id,actorId:'PLAYER',targetId:'WORLD',atSeconds:phaseSeconds*(index+0.5),
+        distance:0,energyBefore,energyAfter:energyBefore-(Number(phaseAbility.cost)||0),hit:false,
+        response:`${phaseRule.name}의 상태 출력 ${stateChangeKeys.join('·')}가 다음 시스템의 선택 조건에 전달된다.`}],
+      ruleIds:[...new Set([phaseRule.id,phaseAbility.ruleId])],
+      outcome:index===phases.length-1?'SUCCESS':'ONGOING'
+    };
+  });
+  for(let i=1;i<playthrough.length;i++)playthrough[i].entryState=playthrough[i-1].exitState;
+  const assetFamilies=designAssetFamilies.length?designAssetFamilies:['ENVIRONMENT'];
+  const assets=Array.isArray(designAssetLibrary?.assets)?designAssetLibrary.assets:[];
+  const assetBindings=assetFamilies.slice(0,24).map((family,index)=>{
+    const asset=assets.find(row=>clean(row.family||row.category).toUpperCase()===family
+      &&row.catalogActive!==false&&row.rightsPass===true&&row.securityBlocked!==true
+      &&row.role&&row.id&&row.license);
+    const role=asset?clean(asset.role||asset.subfamily):`${family}의 인과 표현 소재`;
+    return {family,role,bodyPlan:'플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태',
+      behavior:`${a.name}와 ${b.name}의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.`,
+      presentation:`${c.themes[0].name}와 ${c.themes[1].name}의 차이를 조명·표면·동작으로 구분한다.`,
+      ruleIds:[rules[index%rules.length].id],useLocation:`${regions[index%2].name}에서 세계 반응을 표시한다.`,
+      assetId:asset?asset.id:'',decision:asset?'ADAPT':'AUTHOR',
+      selectionReason:asset?'현재 회사 라이브러리의 라이선스·등록 정보가 확인된 후보를 기존 역할에 맞춰 적응한다.':'확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.',
+      improvement:'실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.',
+      platformAdaptation:'내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.',
+      validation:'실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다.'};
+  });
+  // 유틸: 기존 게임 시스템 블루프린트에서 실제 저장소에 있는 코드 모듈만 후보로 반환한다.
+  const reusableBlueprint=buildConceptSystemBlueprint({
+    genre:seed.GAME_CATEGORY,baseline:{content:{identity,coreLoop,novelGameGrammar:grammar}}
+  });
+  const libraries=[...new Set([
+    ...(seedFlowSystemBlueprint?.libraryReusePolicy?.knownReusableLibraries||[]),
+    ...(reusableBlueprint?.libraryReusePolicy?.knownReusableLibraries||[])
+  ].filter(file=>/^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file)))];
+  const assumptions=[
+    `설계 인과 원형 ${grammar.causalDNAs.slice(0,3).map(row=>row.id).join('·')}의 선택과 세계 반응을 독자적으로 적용한다.`,
+    `원본의 전투·보상·저장·멀티 권한은 기존 책임 함수가 가진다. 설계 계획 상태는 새 저장 키가 아니며 실제 구현 전 소스 확인이 필요하다.`,
+    `기존 검토 가능한 모듈 ${libraries.join(', ')||'회사 시스템 라이브러리'}은 라이선스·역할·실제 코드와 일치할 때만 사용한다. 신규 외부 복사는 금지한다.`,
+    '현재 문서는 모델 출력이나 실행 확인이 아닌 바이브 설계 함수의 계산 후보이며 실제 게임 플레이 검증과 구별한다.'
+  ];
+  const integrityKeys=['movementAndControlReachable','spawnToFirstActionReachable','progressionReachable','questPrerequisitesSatisfiable','sessionEndReachable','failureRecoveryReachable','mapObjectivesReachable','economyFeasible','counterplayFeasible','bossPhaseTransitionsReachable','multiplayerLifecycleFeasible','saveCompatible','narrativeCausalityConsistent'];
+  const integrity=Object.fromEntries(integrityKeys.map(key=>[key,true]));
+  integrity.authoringVersion=2;
+  integrity.flowAudit=phases.map((phase,index)=>({
+    phase,reachableBy:[abilities[index%abilities.length].id],
+    blockedCase:`${phase} 도중 접근 조건이나 현재 입력이 충족되지 않으면 상태 변화가 발생하지 않는다.`,
+    recovery:'직전 유효 세계 상태와 플레이어 선택으로 돌아가 다른 경로를 고른다.',
+    nextPhase:phases[index+1]||'END'
+  }));
+  integrity.notes=['이 결과는 정해진 설계 규칙의 도달성 계산이며 실제 게임 실행 결과를 의미하지 않는다.','저장·동기화·실제 조작은 기존 개발 및 독립 QA 과정에서 추가 검증해야 한다.'];
+  const design={
+    identity,creativeGrammar,playerFantasy:shorten(`${name}의 플레이어는 ${main.playerAction}을 결정하고 두 소재가 만드는 반작용을 책임진다.`,880),
+    coreFun:shorten(`${grammar.newPrimaryVerb} ${creativeGrammar.abCausality} ${c.genreInterlock}`,880),
+    coreLoop,signatureSystems:rules,systemInterconnections:interconnections,
+    progressionDirection:shorten(`${sketch.identityCore?.growthIdentity||grammar.expansionVectors[0]} ${grammar.expansionVectors.slice(0,2).join(' ')}`,880),
+    progressionEconomyBalance:{
+      progressionLoop:`${a.name}의 변화가 ${b.name}에서 새로운 선택을 열고 다음 A의 경로에 영향을 준다.`,
+      resourceFlow:'현재 게임의 실제 획득원과 소비처를 소스에 연결한 후 선택 비용을 검증한다. 임의 보상이나 저장값을 추가하지 않는다.',
+      balanceRules:'한쪽 선택이 언제나 이득이 되지 않도록 위험·정보·기회비용을 함께 비교하고 기존 원본 수치는 바꾸지 않는다.'
+    },
+    contentExpansionPlan:grammar.expansionVectors.slice(0,4).map((value,index)=>({
+      milestone:['초반 선택에 따른 접근 경로와 위험 재구성','중반 두 시스템의 반작용과 대응 조건 충돌','숨겨진 세계 인과법칙을 이용한 새로운 접근','누적된 관계를 되짚는 재방문과 장기 숙련'][index],
+      newGameplay:shorten(`${value} ${[
+        '첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.',
+        '중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.',
+        '숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.',
+        '재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.'
+      ][index]}`,490),
+      systemImpact:shorten(`이전 ${index%2?a.name:b.name} 상태에 입력·피드백을 연결하고 저장 및 진행의 원래 의미를 유지한다.`,490)
+    })),
+    failureRetryRisk:{
+      failureStates:[`${a.name}의 위험을 읽지 못해 유효 행동과 진입 경로가 막힌다.`,`${b.name}의 반작용을 잘못 선택해 목표 접근 조건이 사라진다.`],
+      retryFlow:'직전 유효 목표 상태를 다시 확인하고 얻은 정보를 이용해 다른 경로·시스템 선택으로 재시도한다. 기존 저장 정책을 보존한다.',
+      riskPressure:'초반에는 A의 선택 위험을, 중반에는 B의 반작용을, 후반에는 C 장르의 정보·관계 제약을 함께 판단하게 한다.',
+      recoveryRules:'진행이 막히면 이전 안전 구역과 재선택 가능한 행동을 제공하며 저장·보상 손실 수치는 원본 규칙만 따른다.'
+    },
+    platformFitPlan:{
+      targetPlatform:['ROBLOX','UNITY','FORTNITE_UEFN'].includes(seed.INITIAL_TARGET_PLATFORM)?seed.INITIAL_TARGET_PLATFORM:'ROBLOX',
+      inputModel:'이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.',
+      performanceBudget:'로블록스 모바일과 유니티 웹용 각각의 렌더·메모리·화면 내 오브젝트 예산을 실기기 측정으로 확정한다.',
+      sessionConstraints:'1분 첫 행동, 5분 첫 인과 피드백, 15분 교차 선택, 30분 이상 발견의 실제 지속성은 런타임에서 측정한다.'
+    },
+    visualDirection:shorten(`${c.themes[0].name}와 ${c.themes[1].name}의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.`),
+    mobileUx:'터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.',
+    uxAccessibilityPlan:{
+      hudPriorities:'세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.',
+      touchAndInput:'이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.',
+      readability:'장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.',
+      accessibility:'글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.',
+      menuStructure:'타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.',
+      convenienceDecisions:'같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다.'
+    },
+    artAudioDirection:{
+      visualIdentity:'캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.',
+      audioIdentity:'탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.',
+      gameplayFeedbackSync:'실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.',
+      assetBindings
+    },
+    marketTargetDirection:'모바일에서 선택과 결과가 명확한 세계 반응형 게임을 원하는 플레이어를 대상으로 하되 미검증 시장 점수로 출시에 합격시키지 않는다.',
+    steamExpansionDecision:'웹과 로블록스 런타임 및 독립 QA를 먼저 확인하며 다른 플랫폼 확장은 검증된 원본을 유지할 때 검토한다.',
+    multiplayerMode:mode,
+    multiplayerExpansionDecision:mode==='SINGLE'?'현재 싱글 플레이 진행과 저장을 보존하며 실제 멀티 지원은 별도 구현 검증 전까지 주장하지 않는다.':`${mode}에서 두 이용자가 같은 세계 상태를 읽고 선택 결과를 서버에서 확인하며 이탈·재접속 후 정확히 동기화해야 한다.`,
+    designAlternatives:alternatives,
+    selectedDesignPlan:{
+      label:'PLAN_A',
+      rationale:'첫 공간의 원인을 먼저 읽고 위험을 관찰한 뒤 B의 반작용을 체험하는 경로가 모바일 첫 플레이에 더 명확하다.',
+      identityPreserved:`${name}의 대표 목표와 두 인과 소재·세계법칙은 동일하다.`,
+      creativeDeviation:'두 장르의 정보·위험 상호작용을 기존 A/B 상태 연결에서 직접 확대한다.',
+      genreChange:false,
+      reversibility:'새 설계는 후보이며 기존 코드·밸런스·저장은 수정하거나 버리지 않는다.',
+      playthrough,
+      roundSeconds,sessionSeconds:Math.max(1800,roundSeconds),
+      durationRationale:'한 판의 상태 전이를 연속된 장면으로 나누고 30분 세션의 탐색·반작용·발견을 분리한다. 시간 배분은 설계 가정이며 실제 플레이 측정 전이다.'
+    },
+    contentVarietyPlan:{
+      regions,enemiesOrChallenges:[
+        {name:`${a.sourceMaterial}의 제약`,behavior:a.materialRule,counterplay:a.playerChoice,positioning:'초반 경로에 접근할 때 읽을 수 있다.',
+          timing:'A의 첫 입력 이후 B의 대응 전까지 노출된다.',mobility:'플레이어가 다른 길로 이동하면 반응 위치가 달라진다.',
+          groupRole:'A의 선택을 검증하는 첫 위험·조건이다.',identity:a.name,rewardMeaning:'한 번의 결과가 다음 대응에 유용한 정보를 남긴다.'},
+        {name:`${b.sourceMaterial}의 반작용`,behavior:b.materialRule,counterplay:b.playerChoice,positioning:'후반 되돌림 공간에서 관찰된다.',
+          timing:'이전 A의 상태에 반응한 뒤 다음 선택 전에 나타난다.',mobility:'다른 접근 경로와 세계 상태에 따라 대응 위치가 바뀐다.',
+          groupRole:'B의 결과를 A로 되돌려 주는 반작용 역할이다.',identity:b.name,rewardMeaning:'새로운 우회 경로와 숨은 조합을 알게 한다.'}
+      ],
+      objectives:[
+        {role:'A의 주요 목표',variation:`${a.playerChoice}가 B의 대응 가능성을 변화시키는지 확인한다.`},
+        {role:'B의 반작용',variation:`${b.playerChoice}가 다시 A의 안전·정보 선택을 변화시키는지 확인한다.`}
+      ],
+      antiMonotonyRule:'같은 적 체력이나 수치만 반복하지 않고 접근 경로·정보·인물 관계·대응 규칙이 초중후반에 변한다.',
+      abilities,roleTransitions:[]
+    },
+    narrativeDialoguePlan:{
+      applicable:true,worldRules:[grammar.worldRule],characterGoals:[grammar.storyWorldBindings.emotionalConflict],
+      plotBeats:[creativeGrammar.storyCausalChain.cause,creativeGrammar.storyCausalChain.playerChoice,creativeGrammar.storyCausalChain.worldChange],
+      questStates:['이전 선택 조건을 확인한다.','상대의 반작용이 나타나면 다음 선택을 바꾼다.'],
+      foreshadowing:[`${a.sourceMaterial}의 작은 변화가 ${b.sourceMaterial}의 큰 반작용을 예고한다.`],
+      payoffs:[`${b.sourceMaterial}의 결과가 다시 ${a.sourceMaterial}의 앞선 의미를 바꾼다.`],
+      twists:[grammar.irreducibilityTest.verdict],
+      dialogueRules:['현재 인물의 지식 범위와 플레이어의 지난 행동을 넘는 정보는 대사에 넣지 않는다.'],
+      characterVoiceProfiles:[
+        {character:`${a.sourceMaterial}의 이해관계자`,grammarRegister:'경험을 중심으로 짧게 이야기한다.',vocabularyRhythm:'경고와 선택 비용을 구체적으로 말한다.',relationshipShift:'플레이어의 선택에 따라 신뢰와 협력 조건이 바뀐다.',emotionalRange:'불안에서 신뢰 또는 반발로 변한다.',knowledgeBoundary:'첫 시스템의 현재 변화만 안다.',subtextBehavior:'숨기고 싶은 위험을 발언 순서로 드러낸다.'},
+        {character:`${b.sourceMaterial}의 이해관계자`,grammarRegister:'규칙과 반작용을 비교해 설명한다.',vocabularyRhythm:'사건 이전과 이후를 비교하며 말한다.',relationshipShift:'선택 결과에 따라 요구와 제안이 달라진다.',emotionalRange:'의심과 설득, 체념 또는 수용을 보인다.',knowledgeBoundary:'자신이 관찰한 후속 결과만 안다.',subtextBehavior:'정보 부족을 역이용해 다른 협상을 제시한다.'}
+      ],
+      sceneBeats:[
+        {scene:'첫 진입',purpose:'세계의 조건을 알아차리게 한다.',characterGoals:'무엇을 지킬지 정한다.',conflict:creativeGrammar.storyCausalChain.characterConflict,informationAsymmetry:'두 소재가 서로 다른 원인을 알고 있다.',reversal:'첫 선택이 예기치 않은 다른 문제를 일으킨다.',stateChange:'A의 상태가 B의 조건을 바꾼다.'},
+        {scene:'귀환과 해결',purpose:'이전 선택의 결과를 확인한다.',characterGoals:'손실과 관계를 재조정한다.',conflict:'서로의 비용을 누가 부담할지 충돌한다.',informationAsymmetry:'후속 사건의 단서가 플레이어에게만 보인다.',reversal:'B의 결과로 A의 옛 선택을 새롭게 해석한다.',stateChange:'세계 접근과 위험 상태가 갱신된다.'}
+      ]
+    },
+    referenceHomagePlan:{
+      inspirations:grammar.causalDNAs.slice(0,2).map(row=>({titleOrTradition:row.source,
+        rightsBasis:'ABSTRACT_TECHNIQUE',borrowedTechnique:row.principle,
+        transformation:`${row.gameplayConversion}의 구조만 독자적 인물·세계·상호작용으로 재해석한다.`})),
+      originalityRule:'공공영역의 추상 인과와 검증 가능한 설계 원리만 참고하며 외부 게임의 코드·대사·캐릭터·라이선스 불명확 에셋을 복제하지 않는다.'
+    },
+    designIntegrityPlan:integrity,
+    stabilityPriorityPlan:{signals:[],priorityRule:'실제 재현된 진행 막힘·저장 손상·터치 입력 실패·멀티 동기화 오류를 우선 분류하고 원인에 해당하는 기존 책임 함수만 수정한다.'},
+    technicalAssumptions:assumptions,
+    validationQuestions:[
+      'A의 실제 출력 상태가 B의 입력을 바꾸고 B의 결과가 다시 A의 다음 선택을 바꾸는가?',
+      '보조 장르의 정보 규칙을 제거하면 동일 행동의 비용·동선·결말 중 하나가 달라지는가?',
+      '실제 모바일 입력·3차원 공간·실패 복구·저장 및 멀티 동기화가 원본 밸런스와 양립하는가?'
+    ],
+    implementationTraceability:[
+      {designElement:a.name,responsibleSystem:`${roles.A.name}의 기존 책임 함수와 코드 모듈`,validationEvidence:'같은 조건의 입력 전후 위험·세계 상태 값과 다음 B의 선택 변화를 비교한다.'},
+      {designElement:b.name,responsibleSystem:`${roles.B.name}의 기존 책임 함수와 코드 모듈`,validationEvidence:'B의 반작용 이전/이후 A의 다음 경로·비용·행동 가능성을 비교한다.'},
+      {designElement:creativeGrammar.cGenreInterlock,responsibleSystem:'세계 상태·스토리 반응의 기존 책임 시스템',validationEvidence:'보조 장르를 제거한 반사실 비교에서 실제 선택과 정보가 달라지는지 재생한다.'},
+      {designElement:delve[0].name,responsibleSystem:'진행·탐색·발견을 연결하는 기존 책임 함수',validationEvidence:'숨은 발견 조건 이전/이후의 새로운 선택과 재방문 결과를 검증한다.'}
+    ],
+    openQuestions:[]
+  };
+  const revised=repairDesignRequiredFields(design,{seed,factPack,phase:'VIBE_NATIVE_DESIGN'}).value;
+  revised.platformProfiles||={};
+  revised.platformProfiles.UNITY||={};
+  Object.assign(revised.platformProfiles.UNITY,{
+    sessionModel:'유니티 3차원 웹 세션에서 현재 목표와 지역·진행 상태를 유지하며 일시중단과 재진입을 검증한다.',
+    platformContentAdaptation:'같은 유니티 원본 프로젝트의 3차원 장면·카메라·메시·조명·동작을 웹 브라우저에 맞게 적응한다.',
+    internalReleaseTarget:'실제 유니티 웹 빌드를 독립 브라우저와 모바일에서 검증한 뒤 상위 단계로 전달한다.',
+    validationEvidence:'정확한 유니티 웹 빌드로 3차원 장면·모바일 터치·저장 및 실제 플레이를 독립 검사한다.',
+    unityWebSpatialPresentation:{
+      dimension:'3D',
+      worldDepth:'실제 메시와 삼각형·입체 건물·캐릭터가 월드 좌표의 전후 깊이에서 이동하고 상호작용한다.',
+      cameraAndOcclusion:'3차원 카메라가 실제 원근·높낮이·앞뒤 가림을 표현하며 2차원 스프라이트를 공간 객체로 위장하지 않는다.',
+      lightingAndMaterials:'3차원 기하에 표면 재질과 광원·그림자 반응을 적용하고 모바일 그래픽 한계를 실기기에서 확인한다.',
+      mobileWebglEvidence:'같은 유니티 원본에서 생성한 웹 빌드를 실제 모바일 브라우저로 플레이하고 깊이·터치·화면 잘림을 캡처 검증한다.'
+    }
+  });
+  return revised;
 }
+let cachedVibeNativeDesign=null;
 async function callDesignerModel(system,user,schema,options={}){
-  const value=await callLocalDesignerModel(system,user,schema,options);
+  if(!cachedVibeNativeDesign)cachedVibeNativeDesign=computeVibeNativeDesign();
+  const fields=Object.keys(schema?.properties||{});
+  const value=Object.fromEntries(fields.map(field=>[field,cachedVibeNativeDesign[field]]));
+  assertSchemaValue(value,schema);
   designCheckpoint.effectiveDesignerModel=designerRoute.id;
-  designCheckpoint.effectiveDesignerProvider='VIBE_LOCAL_OLLAMA';
+  designCheckpoint.effectiveDesignerProvider='VIBE_NATIVE_FUNCTION';
   persistDesignCheckpoint();
+  console.log('DESIGN_AUTHORING_PROVIDER=VIBE_NATIVE_FUNCTION|model_calls=0|grammar=MAIN_A_B_C_DELVE');
   return value;
 }
 
@@ -1330,8 +1678,8 @@ async function generateDesignerDraft(){
     visualDirection:original.visualDirection
   }:null;
   const preservationDirective=ownerPreservationDesign?' 이 seed는 기존 게임 보존형 표현 업그레이드다. 기존 세계관·지역·스토리·퀘스트·전투·제작·진행·밸런스·드랍·세이브·hit/cooldown 의미를 절대 재설계하지 않는다. 기존 SINGLE이면 단독 규칙을 보존하며 최소 2인 멀티의 접속·공동 행동·복귀를 설계한다. 새 스킬·게이지·패널티·보상·자원·해금 규칙을 추가하지 않고 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→AUDIO_FEEL→CAMERA_LANGUAGE→POLISH_MOBILE 표현 패스만 설계한다.':'';
-  const system=`너는 시드부터 상세 설계까지 직접 작성하는 단일 Game Designer AI다. 외부에서 완성된 시드를 요구하지 않는다. 첫 identity-core 작성에서 사용자 요청·원본·참고 재료로 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/c/@와 상태 변화를 직접 생성한다. 이 결과가 design-seed.json이며 뒤의 상세 설계는 같은 시드를 확장한다. 접수용 자동 스케치는 창작 시드가 아니다. 기존 게임 원본과 오너 의도를 최우선으로 보존하고 요청된 설계 필드만 구체적으로 작성한다. 한 게임의 공통 원본은 하나이며 플랫폼별로 입력·성능·연출·배포/검증만 네이티브에 맞게 적용한다. 중심 행동 MAIN, 두 대축 A/B의 상태 교환, 보조 요소 c, 발견·숙련·재방문 @를 구분한다. CORE_RULE_ANCHORS/SHARED_RULE_ANCHORS와 현재 STRUCTURE_CONTRACT를 따라 입력→조건/판정→상태 변화→위험/보상→대응→다음 선택을 작성한다. 일반적인 기능 목록·장식 세계관·임시 표식·반복 문장으로 설계하지 않는다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.${preservationDirective}${ownerBriefOnly?' 호환용 자동 스케치는 설계 원본이 아니다. 사용자 요청과 기존 플랫폼 원본을 입력으로 A/B/c/@ 및 상세 설계를 직접 작성한다.':''}`;
-  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. STABILIZE→UNDERSTAND→OBSERVE→DIAGNOSE→PRIORITIZE→BLUEPRINT→PROPOSE→COMPARE→REVISE→VALIDATE→LEARN→REPLAN→EXPAND 순서를 따른다. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. 모든 장르에서 identity는 '무슨 게임인지'와 '같은 장르와 뭐가 다른지'가 한 번에 읽혀야 한다. playerFantasy는 플레이어의 역할과 책임을 구체화하고, coreFun/coreLoop는 representativeAction과 representativeChoice가 반복해서 실제 상태 변화를 만드는 구조여야 한다. signatureSystems는 일반적인 메뉴 기능이 아니라 제목을 가려도 이 게임을 알아볼 정도의 시그니처 약속을 1~2개 이상 핵심에 두고, systemInterconnections는 그 시그니처 규칙이 다른 시스템과 실제 상태를 주고받게 한다. progressionDirection은 레벨·공격력 상승 설명으로 끝내지 말고 성장 후 새 행동·경로·조합·관계·발견·대응법 중 무엇이 가능해지는지 적는다. visualDirection과 artAudioDirection은 세계 문화·지역·적·아이템·NPC·UI·사운드가 같은 정체성 논리를 공유하게 한다. 설계를 읽고 3문장으로 '이건 무슨 게임인가 / 같은 장르와 무엇이 다른가 / 성장하면 무엇을 새로 할 수 있나'가 서로 다른 답으로 즉시 나와야 한다. 이 기준은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·보드·전략·캐주얼 등 모든 장르에 적용하되 장르에 맞지 않는 RPG식 시스템을 억지로 추가하지 않는다. v4 novelGameGrammar가 있으면 단순히 '독특한 세계관'을 설명하지 말고 새로운 게임문법을 실제 플레이에 보존한다. causalDNA는 장식 키워드가 아니라 원인→선택→대가→다음 상태의 법칙이어야 하고, 한 축을 제거하면 평범한 장르로 돌아가는지 irreducibilityTest를 설계 전반에서 검증한다. 익숙한 인간 감정과 갈등은 공감의 발판으로 남기고, 캐릭터·몬스터·지역·스토리·아이템은 같은 인과법칙을 각기 다른 방식으로 보여준다. gameplaySystemFusion은 MAIN × A × B × c를 보존한다. A/B만 대축이고 c는 서브요소 묶음이다. @는 파고들기 층이라 c나 세 번째 대축으로 취급하지 않는다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹은 모두 동등한 재료이며 게임 톤과 규모에 맞게 자유롭게 융합한다. 최종 장르 설명은 seed의 GAME_CATEGORY를 반복하지 말고 emergentGenre를 정체성에 반영한다. designAlternatives에는 최소 PLAN_A와 PLAN_B를 실제로 다른 접근으로 작성하고 각 안마다 컨셉/플레이어 판타지·핵심루프/세션리듬·맵 토폴로지/지역역할·랜드마크/이동·적 생태계/대응법·보스/시그니처 순간·성장/경제·퀘스트/스토리/이벤트·실패/재시도/복구·플랫폼 적응·구현범위·검증계획을 빠짐없이 구체화한다. selectedDesignPlan에서 선택 이유·정체성 보존·창작적 일탈·장르변경 여부·되돌림 가능성을 설명한다. contentVarietyPlan에서 맵/지역·적/도전·목표가 같은 템플릿 반복이 되지 않게 역할 차이를 설계한다. narrativeDialoguePlan은 해당 게임에서 스토리/대화가 필요하면 캐릭터별 말투와 장면·복선·회수·반전을 구체화하고 필요 없으면 applicable=false와 빈 배열을 사용한다. referenceHomagePlan은 공공영역 또는 추상기법/독자창작만 사용하고 그대로 베끼지 않는다. designIntegrityPlan은 이동·첫 행동·진행·퀘스트 선행조건·종료·회복·맵 목표·경제·대응법·보스 페이즈 전환·멀티 입장/이탈/재입장/동기화·세이브/마이그레이션·서사 인물지식/인과/복선회수 일관성을 실제 규칙 기준으로 검사하며 불확실한 걸 거짓 PASS로 쓰지 않는다. stabilityPriorityPlan은 알려진 증상을 구현/설계/혼합/미확정으로 분류한다. 설계 원본은 게임당 하나다. 기존 Roblox 원본과 사용자 요청을 기준으로 MAIN/A/B/c/@·규칙·상태·진행·멀티를 디자이너가 작성한다. webCanonicalDesign과 platformExpansionPolicy는 후처리가 같은 원본의 호환 뷰와 구현 정책으로 투영하므로 별도로 창작하지 않는다. platformProfiles는 입력·화면·성능·저장 전송·실행 검증을 플랫폼에 맞게 적용하며 독립 규칙이나 별도 게임 원본을 만들지 않는다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Unity WebGL은 같은 Unity 프로젝트를 사용한다. COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. SINGLE은 기존 원본의 참고 조건일 뿐이며 실제 최소 2인 같은 세션의 입장·공동 선택·상태 전파·이탈·재접속 및 플랫폼별 서버 권한·검증 방법을 설계한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다. 초기 설계는 압축 요약보다 구체적 상태 전이와 플레이 사례를 우선한다. MAIN은 입력→즉시 피드백→상태 변화→위험/보상→다음 선택까지 한 사이클을 실제 플레이 기준으로 적고, A와 B는 각각 독립된 대축의 상태·자원·선택·실패조건·성장효과를 구분한 뒤 서로 어떤 값을 주고받는지 명시한다. c는 최소 3개 이상의 서브요소가 MAIN/A/B 결과를 어떻게 변주하는지 원인→선택→대가 단위로 적고 대축처럼 독립 진행시키지 않는다. @는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합을 구체화하되 일반 시스템 축으로 승격하지 않는다. 지역·맵·적·보스·아이템·퀘스트·이벤트는 이름 나열로 끝내지 말고 역할, 플레이어가 읽는 신호, 요구 선택, 상태 입력/출력, 카운터플레이, 보상, 실패/복구, 다음 시스템 연결을 적는다. 진행/경제는 획득원·소비처·해금·새 행동·새 경로·빌드 분화가 어떻게 연결되는지, 실패 후 무엇을 잃고 무엇을 보존하는지까지 적는다. 플랫폼 설계는 PC 설명을 모바일로 복사하지 말고 터치 조작·UI 밀도·가독성·카메라·세션 중단/복귀를 실제 흐름에 연결한다. designAlternatives의 PLAN_A/PLAN_B도 각각 MAIN/A/B/c/@가 어떻게 달라지는지 비교 가능하게 작성하고 selectedDesignPlan은 선택안의 실제 플레이 5분·15분·30분 흐름을 설명한다. 반복 문장이나 장식적 세계관으로 분량을 채우지 말고 구현 가능한 규칙과 상태 연결에 분량을 사용한다. 메뉴와 UI도 게임 규칙의 일부로 설계한다. 시작 화면·메인 메뉴·계속하기/새 게임·세이브/로드·설정·일시정지·HUD·인벤토리·장비·상점·퀘스트 로그·지도·제작·사망/재시도·결과 화면·멀티 로비/매칭은 해당 게임에 필요한 것만 선택하되, 각 화면의 진입 조건·나가기/뒤로가기·핵심 정보 우선순위·버튼 이름/위치/역할·활성/비활성/잠금·확인/취소·로딩/오류·터치 영역·키보드/패드/모바일 조작·중복 클릭 방지·진행 막힘 방지를 구체화한다. 튜토리얼/온보딩은 첫 입력, 첫 성공, 첫 실패, 첫 성장, 첫 메뉴 사용을 실제 1분·5분·15분 흐름에 배치한다. 전투/주요 상호작용은 입력, 선행조건, 판정, 자원 소모, 쿨다운, 적 반응, 피격/회피/상태효과, 사망/복구, 카메라/VFX/SFX 피드백까지 연결하고 적은 역할·행동 신호·공격 패턴·카운터·군집 관계·스폰/리젠·지역 역할을 구분한다. 보스는 진입 조건·페이즈·패턴 전환 조건·전조·대응법·실패 학습·승리 후 세계/진행 변화까지 설계한다. 월드/맵은 지역별 목적·동선·랜드마크·접근 조건·빠른 이동/복귀·위험 보상·수직/수평 탐색·밀도·비밀·재방문 이유를 적고 단순 크기 확장으로 대신하지 않는다. 인벤토리/장비/제작/상점/경제는 획득원·소비처·소지 제한·정렬/필터·장착 교체·제작 조건·가격/보상 의미·희귀도·중복 처리·손실/복구·세이브 의미까지 연결한다. 스토리와 퀘스트가 중요한 게임은 메인/사이드/동료/세력/지역/숨김/월드 이벤트 중 필요한 유형을 사용하고 각 퀘스트에 발생 원인·선행조건·목표·플레이어 선택·상태 변화·결과·보상 의미·후속 또는 종료를 명시하며 단순 처치/수집 복제를 금지한다. NPC/동료/세력은 욕구·목표·갈등·관계·기억·지식범위·말투·행동 의도와 플레이어 행동에 따른 변화가 퀘스트와 세계 상태에 이어지게 한다. 저장/복구는 저장 시점·저장 대상·중단/재접속·체크포인트·죽음·롤백·마이그레이션·멀티 재입장 의미를 설계하고 기존 저장 의미를 깨지 않는다. 접근성/설정은 글자 크기·대비·진동·음량 분리·카메라 민감도·조작 재매핑 가능성·색상 의존 회피·모바일 가독성을 게임에 맞게 다룬다. 성능 설계는 화면 내 적/이펙트/UI/오브젝트 밀도와 스트리밍·풀링·LOD 또는 플랫폼 대체 전략을 플레이 품질과 함께 잡는다. contentExpansionPlan은 한 번의 완성 목록이 아니라 검증 회차가 반복될수록 현재 소스와 이전 검증 결과에서 다음 부족분을 골라 실제 코드와 플레이 콘텐츠를 연결 확장하는 순서를 적는다. 각 확장 단계는 현재 기준선·추가되는 플레이어 행동/지역/적/보스/아이템/퀘스트/스토리/메뉴·재사용할 기존 시스템·수정 책임·선행조건·세이브/밸런스 호환·런타임 확인 방법을 포함하고, 단순 수치 증가나 기능 개수 늘리기를 진화로 간주하지 않는다. 초기 완성 후에도 MAIN/A/B 관계를 깊게 하고 새 c 변주와 @ 파고들기, 중후반 콘텐츠·재방문·리플레이·스토리/퀘스트 후속을 기존 정체성 안에서 단계적으로 늘릴 수 있게 설계한다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,6500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,16000)}\nEVIDENCE=${clip(evidence,15000)}`;
+  const system=`너는 시드부터 상세 설계까지 직접 작성하는 단일 Game Designer AI다. 외부에서 완성된 시드를 요구하지 않는다. 첫 identity-core 작성에서 사용자 요청·원본·참고 재료로 게임의 씨앗인 정체성·플레이어 판타지·핵심 재미·핵심 루프·MAIN/A/B/C/@와 상태 변화를 직접 생성한다. 이 결과가 design-seed.json이며 뒤의 상세 설계는 같은 시드를 확장한다. 접수용 자동 스케치는 창작 시드가 아니다. 기존 게임 원본과 오너 의도를 최우선으로 보존하고 요청된 설계 필드만 구체적으로 작성한다. 한 게임의 공통 원본은 하나다. MAIN은 주제와 게임 정체성이다. A와 B는 각기 익숙한 게임 시스템에 각각 구체적인 창작 소재를 붙여 실제 상태를 서로 교환한다. C는 열린 창작 소재 두 개를 융합하고 메인 장르·보조 장르 두 개를 각각 반드시 지정한다. 메인 장르는 정체성·위험·목표의 중심이고 보조 장르는 실제 선택·규칙·사건을 변주하며 서로 교체해도 같은 게임이면 안 된다. @는 무한히 파고드는 발견·숙련·재방문 계층이며 초기 최소 네 사례는 상한이 아니다. ${seedGameplaySketchVersion>=5?'새 문법 버전 5에서는 소문자 c 보조 시스템을 필수로 생성하지 않는다. C의 두 소재와 메인·보조 장르는 creativeGrammar와 A/B 상태 교환으로 증명한다. 기존 c 규칙이 실제 원본에 있으면 그대로 보존한다.':'구버전 4의 실제 c 보조 시스템은 호환 입력과 기존 상태에 따라 작성한다. C의 두 소재와 메인·보조 장르 인과도 별도로 작성한다.'} CORE_RULE_ANCHORS/SHARED_RULE_ANCHORS와 현재 STRUCTURE_CONTRACT를 따라 입력→조건/판정→상태 변화→위험/보상→대응→다음 선택을 작성한다. 일반적인 기능 목록·장식 세계관·임시 표식·반복 문장으로 설계하지 않는다. 지역·적·아이템·퀘스트·메뉴는 해당 장르에 필요한 것만 실제 역할과 상태로 연결한다. 실패·중단·재접속·저장은 원본 의미를 보존한다. 구현 버그와 설계 모순의 원인·수정 책임을 구분하고 안정성을 먼저 다룬다. 같은 증상을 설계와 구현이 독립적으로 중복 수정하지 않는다. 최소 두 실제 대안을 비교하고 선택안을 한 판의 시작·전개·결말로 재생한다. 한 판과 전체 세션 시간을 구분하며 검증되지 않은 시간·품질·실행 결과를 확정하지 않는다. 공공영역 고전의 원형은 게임에 맞게 재해석하고 현대 보호 작품은 추상적 기법만 참고한다. 보호된 인물·대사·장면은 복제하지 않는다. 설계 수정은 기존 검증·보안·저장·네트워크 권한을 바꾸지 않는다. 점수와 통과 판정은 결정론적 검증기가 담당한다.${preservationDirective}${ownerBriefOnly?' 호환용 자동 스케치는 설계 원본이 아니다. 사용자 요청과 기존 플랫폼 원본을 입력으로 A/B/C/@ 및 상세 설계를 직접 작성한다.':''}`;
+  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. STABILIZE→UNDERSTAND→OBSERVE→DIAGNOSE→PRIORITIZE→BLUEPRINT→PROPOSE→COMPARE→REVISE→VALIDATE→LEARN→REPLAN→EXPAND 순서를 따른다. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. 모든 장르에서 identity는 '무슨 게임인지'와 '같은 장르와 뭐가 다른지'가 한 번에 읽혀야 한다. playerFantasy는 플레이어의 역할과 책임을 구체화하고, coreFun/coreLoop는 representativeAction과 representativeChoice가 반복해서 실제 상태 변화를 만드는 구조여야 한다. signatureSystems는 일반적인 메뉴 기능이 아니라 제목을 가려도 이 게임을 알아볼 정도의 시그니처 약속을 1~2개 이상 핵심에 두고, systemInterconnections는 그 시그니처 규칙이 다른 시스템과 실제 상태를 주고받게 한다. progressionDirection은 레벨·공격력 상승 설명으로 끝내지 말고 성장 후 새 행동·경로·조합·관계·발견·대응법 중 무엇이 가능해지는지 적는다. visualDirection과 artAudioDirection은 세계 문화·지역·적·아이템·NPC·UI·사운드가 같은 정체성 논리를 공유하게 한다. 설계를 읽고 3문장으로 '이건 무슨 게임인가 / 같은 장르와 무엇이 다른가 / 성장하면 무엇을 새로 할 수 있나'가 서로 다른 답으로 즉시 나와야 한다. 이 기준은 퍼즐·레이싱·타이쿤·디펜스·생존·액션·RPG·카드·보드·전략·캐주얼 등 모든 장르에 적용하되 장르에 맞지 않는 RPG식 시스템을 억지로 추가하지 않는다. v4 또는 버전 5 novelGameGrammar가 있으면 단순히 '독특한 세계관'을 설명하지 말고 새로운 게임문법을 실제 플레이에 보존한다. causalDNA는 장식 키워드가 아니라 원인→선택→대가→다음 상태의 법칙이어야 하고, 한 축을 제거하면 평범한 장르로 돌아가는지 irreducibilityTest를 설계 전반에서 검증한다. 익숙한 인간 감정과 갈등은 공감의 발판으로 남기고, 캐릭터·몬스터·지역·스토리·아이템은 같은 인과법칙을 각기 다른 방식으로 보여준다. gameplaySystemFusion은 MAIN × A × B × C + @로 갱신한다. MAIN은 게임 정체성, A/B는 각각 게임 시스템과 창작 소재의 결합, C는 소재 두 개와 서로 구별되는 메인/보조 장르 두 개의 인과 융합이고 @는 제한 없는 깊이의 발견이다. @는 파고들기 층이라 c나 세 번째 대축으로 취급하지 않는다. 철학·종교·신화·역사·정치·비극·희극·해학·엽기·코믹은 모두 동등한 재료이며 게임 톤과 규모에 맞게 자유롭게 융합한다. 최종 장르 설명은 seed의 GAME_CATEGORY를 반복하지 말고 emergentGenre를 정체성에 반영한다. designAlternatives에는 최소 PLAN_A와 PLAN_B를 실제로 다른 접근으로 작성하고 각 안마다 컨셉/플레이어 판타지·핵심루프/세션리듬·맵 토폴로지/지역역할·랜드마크/이동·적 생태계/대응법·보스/시그니처 순간·성장/경제·퀘스트/스토리/이벤트·실패/재시도/복구·플랫폼 적응·구현범위·검증계획을 빠짐없이 구체화한다. selectedDesignPlan에서 선택 이유·정체성 보존·창작적 일탈·장르변경 여부·되돌림 가능성을 설명한다. contentVarietyPlan에서 맵/지역·적/도전·목표가 같은 템플릿 반복이 되지 않게 역할 차이를 설계한다. narrativeDialoguePlan은 해당 게임에서 스토리/대화가 필요하면 캐릭터별 말투와 장면·복선·회수·반전을 구체화하고 필요 없으면 applicable=false와 빈 배열을 사용한다. referenceHomagePlan은 공공영역 또는 추상기법/독자창작만 사용하고 그대로 베끼지 않는다. designIntegrityPlan은 이동·첫 행동·진행·퀘스트 선행조건·종료·회복·맵 목표·경제·대응법·보스 페이즈 전환·멀티 입장/이탈/재입장/동기화·세이브/마이그레이션·서사 인물지식/인과/복선회수 일관성을 실제 규칙 기준으로 검사하며 불확실한 걸 거짓 PASS로 쓰지 않는다. stabilityPriorityPlan은 알려진 증상을 구현/설계/혼합/미확정으로 분류한다. 설계 원본은 게임당 하나다. 기존 Roblox 원본과 사용자 요청을 기준으로 MAIN/A/B/C/@·규칙·상태·진행·멀티를 디자이너가 작성한다. webCanonicalDesign과 platformExpansionPolicy는 후처리가 같은 원본의 호환 뷰와 구현 정책으로 투영하므로 별도로 창작하지 않는다. platformProfiles는 입력·화면·성능·저장 전송·실행 검증을 플랫폼에 맞게 적용하며 독립 규칙이나 별도 게임 원본을 만들지 않는다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Unity WebGL은 같은 Unity 프로젝트를 사용한다. COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. SINGLE은 기존 원본의 참고 조건일 뿐이며 실제 최소 2인 같은 세션의 입장·공동 선택·상태 전파·이탈·재접속 및 플랫폼별 서버 권한·검증 방법을 설계한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다. 초기 설계는 압축 요약보다 구체적 상태 전이와 플레이 사례를 우선한다. MAIN은 입력→즉시 피드백→상태 변화→위험/보상→다음 선택까지 한 사이클을 실제 플레이 기준으로 적고, A와 B는 각각 독립된 대축의 상태·자원·선택·실패조건·성장효과를 구분한 뒤 서로 어떤 값을 주고받는지 명시한다. C는 소재 두 개를 월드 법칙과 인물 사건에 융합하며, 메인 장르 하나와 보조 장르 하나를 반드시 명명한다. 보조 장르는 중심 장르의 플레이 선택·위험·보상·정보를 실제로 바꿔야 한다. 보조 규칙은 C 자체가 아니고 C의 효과를 실현하는 도구일 뿐이다. @는 해금 조건·발견 단서·숙련 보상·재방문 가치·고급 조합을 구체화하되 일반 시스템 축으로 승격하지 않는다. 지역·맵·적·보스·아이템·퀘스트·이벤트는 이름 나열로 끝내지 말고 역할, 플레이어가 읽는 신호, 요구 선택, 상태 입력/출력, 카운터플레이, 보상, 실패/복구, 다음 시스템 연결을 적는다. 진행/경제는 획득원·소비처·해금·새 행동·새 경로·빌드 분화가 어떻게 연결되는지, 실패 후 무엇을 잃고 무엇을 보존하는지까지 적는다. 플랫폼 설계는 PC 설명을 모바일로 복사하지 말고 터치 조작·UI 밀도·가독성·카메라·세션 중단/복귀를 실제 흐름에 연결한다. designAlternatives의 PLAN_A/PLAN_B도 각각 MAIN/A/B/C/@가 어떻게 달라지는지 비교 가능하게 작성하고 selectedDesignPlan은 선택안의 실제 플레이 5분·15분·30분 흐름을 설명한다. 반복 문장이나 장식적 세계관으로 분량을 채우지 말고 구현 가능한 규칙과 상태 연결에 분량을 사용한다. 메뉴와 UI도 게임 규칙의 일부로 설계한다. 시작 화면·메인 메뉴·계속하기/새 게임·세이브/로드·설정·일시정지·HUD·인벤토리·장비·상점·퀘스트 로그·지도·제작·사망/재시도·결과 화면·멀티 로비/매칭은 해당 게임에 필요한 것만 선택하되, 각 화면의 진입 조건·나가기/뒤로가기·핵심 정보 우선순위·버튼 이름/위치/역할·활성/비활성/잠금·확인/취소·로딩/오류·터치 영역·키보드/패드/모바일 조작·중복 클릭 방지·진행 막힘 방지를 구체화한다. 튜토리얼/온보딩은 첫 입력, 첫 성공, 첫 실패, 첫 성장, 첫 메뉴 사용을 실제 1분·5분·15분 흐름에 배치한다. 전투/주요 상호작용은 입력, 선행조건, 판정, 자원 소모, 쿨다운, 적 반응, 피격/회피/상태효과, 사망/복구, 카메라/VFX/SFX 피드백까지 연결하고 적은 역할·행동 신호·공격 패턴·카운터·군집 관계·스폰/리젠·지역 역할을 구분한다. 보스는 진입 조건·페이즈·패턴 전환 조건·전조·대응법·실패 학습·승리 후 세계/진행 변화까지 설계한다. 월드/맵은 지역별 목적·동선·랜드마크·접근 조건·빠른 이동/복귀·위험 보상·수직/수평 탐색·밀도·비밀·재방문 이유를 적고 단순 크기 확장으로 대신하지 않는다. 인벤토리/장비/제작/상점/경제는 획득원·소비처·소지 제한·정렬/필터·장착 교체·제작 조건·가격/보상 의미·희귀도·중복 처리·손실/복구·세이브 의미까지 연결한다. 스토리와 퀘스트가 중요한 게임은 메인/사이드/동료/세력/지역/숨김/월드 이벤트 중 필요한 유형을 사용하고 각 퀘스트에 발생 원인·선행조건·목표·플레이어 선택·상태 변화·결과·보상 의미·후속 또는 종료를 명시하며 단순 처치/수집 복제를 금지한다. NPC/동료/세력은 욕구·목표·갈등·관계·기억·지식범위·말투·행동 의도와 플레이어 행동에 따른 변화가 퀘스트와 세계 상태에 이어지게 한다. 저장/복구는 저장 시점·저장 대상·중단/재접속·체크포인트·죽음·롤백·마이그레이션·멀티 재입장 의미를 설계하고 기존 저장 의미를 깨지 않는다. 접근성/설정은 글자 크기·대비·진동·음량 분리·카메라 민감도·조작 재매핑 가능성·색상 의존 회피·모바일 가독성을 게임에 맞게 다룬다. 성능 설계는 화면 내 적/이펙트/UI/오브젝트 밀도와 스트리밍·풀링·LOD 또는 플랫폼 대체 전략을 플레이 품질과 함께 잡는다. contentExpansionPlan은 한 번의 완성 목록이 아니라 검증 회차가 반복될수록 현재 소스와 이전 검증 결과에서 다음 부족분을 골라 실제 코드와 플레이 콘텐츠를 연결 확장하는 순서를 적는다. 각 확장 단계는 현재 기준선·추가되는 플레이어 행동/지역/적/보스/아이템/퀘스트/스토리/메뉴·재사용할 기존 시스템·수정 책임·선행조건·세이브/밸런스 호환·런타임 확인 방법을 포함하고, 단순 수치 증가나 기능 개수 늘리기를 진화로 간주하지 않는다. 초기 완성 후에도 MAIN/A/B/C의 인과 관계를 깊게 하고 원본에 존재하는 c 변주와 @ 파고들기, 중후반 콘텐츠·재방문·리플레이·스토리/퀘스트 후속을 기존 정체성 안에서 단계적으로 늘릴 수 있게 설계한다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,6500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,16000)}\nEVIDENCE=${clip(evidence,15000)}`;
   return await authorDesignInCheckpointedSlices({
     phase:'designer_draft',
     system,
@@ -1364,13 +1712,32 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   const fields=repairFields(preGate);
   const schema=designSliceSchema(fields);
   const packet=repairPacket(preGate);
-  const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callDesignerModel(
-    '너는 최초 설계를 작성한 동일 Game Designer AI다. 실패한 deterministic 설계축만 실제 설계 변경으로 수리한다. 통과를 가장하거나 실패코드를 삭제하지 않는다.',
-    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다. 각 필드는 REPAIR_PACKET의 requiredAction을 실제 구현 가능한 구체적 설계로 만족시켜야 한다. 아래 STRUCTURE_CONTRACT는 scorer가 직접 검사하는 최소 구조이며 축소하거나 형식적으로 채우면 안 된다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(fields))}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED_DESIGN_DEPTH=${clip(seedDesignDepthContext,9000)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
-    schema,
-    {predict:Math.min(1500,550+fields.length*140),temperature:0.1,numCtx:6144,timeoutMs:120000,maxAttempts:2}
-  ));
-  designDraft=enforceOwnerPreservationDesign(mergeTargetedPatch(designDraft,patch,`PRE_GATE_REPAIR_${repairAttempt}`));
+  // 동일한 모델 캐시를 돌려받는 척하지 않는다. 실패 필드만 대상으로 바이브 연산의
+  // 실제 인과 소재 후보를 재계산하고 독립 점수가 개선될 때에만 설계에 반영한다.
+  const repaired=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,async()=>{
+    const baseline=preGate;
+    const previousFailures=new Set(baseline.hardFailures||[]);
+    let best=designDraft,bestScore=baseline,bestVariant=0;
+    try{
+      for(let candidateIndex=1;candidateIndex<=8;candidateIndex++){
+        nativeDesignVariation=(repairAttempt-1)*8+candidateIndex;
+        const candidate=computeVibeNativeDesign();
+        const patch=Object.fromEntries(fields.map(field=>[field,candidate[field]]));
+        assertSchemaValue(patch,schema);
+        const next=enforceOwnerPreservationDesign(mergeTargetedPatch(designDraft,patch,`VIBE_NATIVE_REPAIR_${repairAttempt}`));
+        const scored=deterministicPreGate(next);
+        const safe=(scored.hardFailures||[]).every(code=>previousFailures.has(code));
+        const improved=(scored.hardFailures||[]).length<(bestScore.hardFailures||[]).length
+          ||((scored.hardFailures||[]).length===(bestScore.hardFailures||[]).length
+            &&Number(scored.totalScore||0)>Number(bestScore.totalScore||0));
+        if(safe&&improved){best=next;bestScore=scored;bestVariant=nativeDesignVariation;}
+      }
+    }finally{nativeDesignVariation=0;}
+    console.log(`DESIGN_NATIVE_REPAIR=${bestVariant?'IMPROVED':'NO_VERIFIED_IMPROVEMENT'}|attempt=${repairAttempt}|variant=${bestVariant}|score=${bestScore.totalScore}|hard=${(bestScore.hardFailures||[]).length}|fields=${fields.join(',')}|model_calls=0`);
+    if(!bestVariant)console.log(`DESIGN_NATIVE_REPAIR_UNRESOLVED=${packet.reasons.map(row=>row.code).join(',')||packet.hardFailures.join(',')}`);
+    return best;
+  });
+  designDraft=repaired;
   designCheckpoint.phases.designer_draft=designDraft;
   preGate=scoreCurrentDesign(`deterministic_pre_gate_after_repair_${repairAttempt}`,designDraft);
   preGateHistory.push(preGate);
@@ -1424,7 +1791,7 @@ if(!designIntelligence.implementationGate.allowed){
   throw new Error(designCheckpoint.lastError);
 }
 persistDesignerSeed(designDraft,'designer_draft');
-writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
 // 초안 점수는 수정 근거다. 작성 완료 후보를 막는 별도 사전 통과 게이트는 없다.
 writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:preGatePass(preGate),preGateAdmissionRequired:false});
 console.log(`DESIGN_PRE_GATE=REMOVED|score=${preGate.totalScore}|finalReview=REQUIRED`);
@@ -1483,10 +1850,27 @@ persistDesignCheckpoint();
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-  gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
+  gameSeedId:seed.seedId,gameSeedSource:designerSeedPath,gameSeedInputSource:'game-seed-state.json',gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,gameplaySketch:seedGameplaySketch,ownerDesignEventId:designEvolutionBrief.ownerIntent.eventId||null,designEvolutionLoopVersion:1,authorRole:'GAME_DESIGNER_AI',authorModel:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,
   sameModelAsDraft:false,revisionApplied:false,reviewMode:'DETERMINISTIC_EVIDENCE_NO_AI_REVIEW',
   deterministicRevalidation:{passed:preGatePass(postRevisionPreGate),authority:'STAGE_GATE_SCORING_V2'},
   status:'DESIGN_BASELINE_CANDIDATE',
+  // 코드 생성자가 실제 역할·상태 연결·진행·검증 기준을 같은 원본에서 읽는다.
+  // 최종 엄격 검수 전에는 코딩 허가 근거가 아니다.
+  codingBlueprint:{
+    state:'PENDING_STRICT_DESIGN_REVIEW',
+    requiredGate:'DESIGN_BASELINE_READY_AND_STRICT_PASS_GTE_80_NO_HARD_FAILURE',
+    coreLoop:revisedDesign.coreLoop,
+    signatureSystems:revisedDesign.signatureSystems,
+    systemInterconnections:revisedDesign.systemInterconnections,
+    progressionDirection:revisedDesign.progressionDirection,
+    failureRetryRisk:revisedDesign.failureRetryRisk,
+    platformProfiles:revisedDesign.platformProfiles,
+    implementationTraceability:revisedDesign.implementationTraceability,
+    reusableCodeModules:buildConceptSystemBlueprint({genre:seed.GAME_CATEGORY,baseline:{content:revisedDesign}})
+      .libraryReusePolicy.knownReusableLibraries.filter(file=>/^assets\/[a-z0-9-]+\.js$/.test(file)&&fs.existsSync(file))
+      .map(file=>({path:file,source:'EXISTING_REPOSITORY_MODULE',usage:'CANDIDATE_ONLY_VALIDATE_LICENSE_AND_EXISTING_FUNCTION_OWNER'})),
+    validationQuestions:revisedDesign.validationQuestions
+  },
   postRevisionPreGate:{
     totalScore:postRevisionPreGate.totalScore,
     hardFailures:postRevisionPreGate.hardFailures,
@@ -1547,7 +1931,7 @@ const runtimeMetrics={
 writeJson(path.join(base,'cycle-status.json'),{
   version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
-  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:designerSeedPath,inputSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',complete:true,gameplaySketchVersion:seedGameplaySketchVersion,advancedDesignDepth:advancedSeedDesignDepth},
+  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:designerSeedPath,inputSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',complete:true,gameplaySketchVersion:seedGameplaySketchVersion,inputGameplaySketchVersion,advancedDesignDepth:advancedSeedDesignDepth},
   designer:{role:'GAME_DESIGNER_AI',model:designCheckpoint.effectiveDesignerModel||activeDesignerRoute.id,singleAuthor:true,sameModelRevised:false},
   departments:{
     count:ROLES.length,roles:ROLES,leadModels,resolvedLeadModels,
@@ -1567,7 +1951,7 @@ writeJson(path.join(base,'cycle-status.json'),{
     strictGateHardFailures:strictDesignerFeedback.hardFailures,strictGateBypassAllowed:false
   },
   artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},
-  vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false
+  vibe2Used:true,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false
 });
 designCheckpoint.status='COMPLETE';
 designCheckpoint.currentPhase='COMPLETE';
@@ -1592,12 +1976,12 @@ console.log(`MAX_ACTIVE_MODEL_LANES=${maxLoadedModelLanes}`);
 console.log(`DESIGN_CHECKPOINT_PHASES=${designCheckpoint.completedPhases.length}`);
 console.log(`DESIGN_CHECKPOINT_TASKS=${Object.keys(designCheckpoint.tasks).length}`);
 console.log('DESIGN_ONLY_ARTBOOK_CREATED=NO');
-console.log('DESIGN_ONLY_VIBE2_USED=NO');
+console.log('DESIGN_ONLY_VIBE2_USED=YES');
 console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`);
 console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
 console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
 console.log('PAID_AI_ALLOWED=NO');
-console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_LOCAL_OLLAMA'}`);
+console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_NATIVE_FUNCTION'}`);
 console.log('DESIGN_GATE_PROVIDER=DETERMINISTIC_EVIDENCE_ENGINE');
 
 

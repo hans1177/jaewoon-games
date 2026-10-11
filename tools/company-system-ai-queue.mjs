@@ -239,10 +239,57 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
   const queue=normalizeSystemAiQueue(queueInput),task=normalizeTask(taskInput);
   const signature=failureSignatureOf(task);
   const live=queue.tasks.filter(x=>!['done','completed','cancelled','verified'].includes(clean(x.status).toLowerCase()));
-  const directDependents=live.filter(x=>(x.dependencies||[]).includes(task.id)).map(x=>x.id);
+  // HEFT-inspired critical-path priority with unit task costs (no invented runtime estimates).
+  // Topcuoglu et al., IEEE TPDS 2002, doi:10.1109/71.993206.
+  // Reach only recorded dependencies; preserve cycle safety and existing task authority.
+  const dependentMap=new Map(live.map(x=>[x.id,[]]));
+  for(const child of live){
+    for(const dependency of child.dependencies||[]){
+      if(dependency!==child.id&&dependentMap.has(dependency))dependentMap.get(dependency).push(child.id);
+    }
+  }
+  const directDependents=dependentMap.get(task.id)||[];
+  const transitiveDependents=new Set(),visited=new Set([task.id]);
+  let frontier=[task.id],breadthDepth=0;
+  while(frontier.length){
+    const next=[];
+    for(const parentId of frontier){
+      for(const childId of dependentMap.get(parentId)||[]){
+        if(visited.has(childId))continue;
+        visited.add(childId);
+        transitiveDependents.add(childId);
+        next.push(childId);
+      }
+    }
+    if(next.length)breadthDepth++;
+    frontier=next;
+  }
+  // Kahn longest-path DP: a converging downstream node must retain its longest
+  // upstream chain, not merely the earliest breadth-first visit.
+  const reachableIds=[task.id,...transitiveDependents];
+  const incoming=new Map(reachableIds.map(id=>[id,0]));
+  for(const id of reachableIds){
+    for(const childId of dependentMap.get(id)||[]){
+      if(childId!==task.id&&incoming.has(childId))incoming.set(childId,incoming.get(childId)+1);
+    }
+  }
+  const depths=new Map([[task.id,0]]),readyIds=[task.id];
+  for(let index=0;index<readyIds.length;index++){
+    const parentId=readyIds[index],parentDepth=depths.get(parentId)||0;
+    for(const childId of dependentMap.get(parentId)||[]){
+      if(childId===task.id||!incoming.has(childId))continue;
+      depths.set(childId,Math.max(depths.get(childId)||0,parentDepth+1));
+      const remaining=incoming.get(childId)-1;
+      incoming.set(childId,remaining);
+      if(remaining===0)readyIds.push(childId);
+    }
+  }
+  // Invalid cyclic dependencies cannot execute; keep scoring finite and
+  // preserve the observed breadth-depth floor without inventing runtime costs.
+  const criticalPathDepth=Math.max(breadthDepth,...depths.values());
   const signatureCohort=signature?live.filter(x=>x.id!==task.id&&failureSignatureOf(x)===signature).map(x=>x.id):[];
   const explicitCohort=Math.max(0,Number(numericEvidence(task,'cohort-size:')??0));
-  const blockedIds=unique([...(task.blockedTaskIds||[]),...(task.relatedTaskIds||[]),...directDependents,...signatureCohort]);
+  const blockedIds=unique([...(task.blockedTaskIds||[]),...(task.relatedTaskIds||[]),...transitiveDependents,...signatureCohort]);
   const blockedTaskCount=Math.max(blockedIds.length,Math.max(0,explicitCohort-1));
   const recurrenceCount=Math.max(task.recurrenceCount||0,task.retries||0,signatureCohort.length);
   const dependencyCentrality=Math.max(directDependents.length,task.relatedTaskIds?.length||0);
@@ -255,6 +302,7 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
     Math.min(50,blockedTaskCount)*28+
     Math.min(20,recurrenceCount)*22+
     Math.min(50,dependencyCentrality)*16+
+    Math.min(20,criticalPathDepth)*8+
     ageHours*0.75-
     repairRisk*24
   ));
@@ -264,13 +312,15 @@ export function systemAiImpactProfile(taskInput={},queueInput={tasks:[]},{at=Dat
     commonBottleneck:Boolean(signature&&(signatureCohort.length>0||explicitCohort>1||task.relatedTaskIds?.length>1||task.blockedTaskIds?.length>1)),
     blockedTaskCount,
     blockedTaskIds:blockedIds,
+    transitiveBlockedTaskCount:transitiveDependents.size,
+    criticalPathDepth,
     recurrenceCount,
     dependencyCentrality,
     ageHours:Number(ageHours.toFixed(2)),
     severity,
     repairRisk,
     cohortSize:Math.max(1,signatureCohort.length+1,explicitCohort,blockedTaskCount+1),
-    components:{severity,blockedTaskCount,recurrenceCount,dependencyCentrality,ageHours:Number(ageHours.toFixed(2)),repairRisk}
+    components:{severity,blockedTaskCount,recurrenceCount,dependencyCentrality,criticalPathDepth,transitiveBlockedTaskCount:transitiveDependents.size,ageHours:Number(ageHours.toFixed(2)),repairRisk}
   };
 }
 function overlap(a,b){const s=new Set(a.responsibleFiles||[]);return (b.responsibleFiles||[]).some(x=>s.has(x));}
@@ -503,6 +553,10 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
   const wanted=unique(ids),excluded=new Set(unique(excludedGameIds));
   if(!wanted.length)throw new Error('SYSTEM_AI_TARGET_IDS_REQUIRED');
   const byId=new Map(queue.tasks.map(t=>[t.id,t]));
+  const profiles=new Map(queue.tasks.map(task=>[task.id,systemAiImpactProfile(task,queue,{at})]));
+  const commonCanarySignatures=new Set(active.map(task=>profiles.get(task.id))
+    .filter(profile=>profile?.commonBottleneck===true&&clean(profile.signature))
+    .map(profile=>clean(profile.signature)));
   const chosen=[];
   for(const id of wanted){
     const task=byId.get(id);
@@ -511,11 +565,32 @@ export function reserveSystemAiTargets(queueInput,{ids=[],reservationId='',lease
     if(task.status!=='queued')continue;
     if(!dependencyReady(task,queue))throw new Error('SYSTEM_AI_TARGET_DEPENDENCY_NOT_READY:'+id);
     if([...active,...chosen].some(other=>overlap(task,other)))continue;
+    // 센서가 제공한 타깃도 일반 batch와 동일하게 공통 실패 canary 한 건만 예약한다.
+    const impact=profiles.get(task.id);
+    const signature=clean(impact?.signature);
+    if(impact?.commonBottleneck===true&&signature){
+      if(commonCanarySignatures.has(signature))continue;
+      commonCanarySignatures.add(signature);
+    }
     chosen.push(task);
   }
   const chosenIds=new Set(chosen.map(x=>x.id)),stamp=now();
   const rid=clean(reservationId)||`system-ai-target:${Date.now()}`;
-  const tasks=queue.tasks.map(t=>chosenIds.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
+  const tasks=queue.tasks.map(t=>{
+    if(!chosenIds.has(t.id))return t;
+    const impact=profiles.get(t.id);
+    return{
+      ...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null,
+      impactScore:impact.score,impactComponents:impact.components,
+      evidence:unique([...(t.evidence||[]),
+        `system-ai-impact-score:${impact.score}`,
+        `system-ai-blocked-task-count:${impact.blockedTaskCount}`,
+        `system-ai-common-bottleneck:${impact.commonBottleneck?'YES':'NO'}`,
+        ...(impact.commonBottleneck&&impact.signature?[`system-ai-representative-canary:${impact.signature}`]:[]),
+        ...(t.previousReservationId?[`system-ai-handoff-to-reservation:${rid}`]:[])
+      ])
+    };
+  });
   return{queue:{...queue,tasks},reserved:tasks.filter(t=>chosenIds.has(t.id)),reservationId:rid,reclaimed:reclaimed.reclaimed,coalesced:compacted.coalesced,coalescedGroups:compacted.groups,rewired:compacted.rewired,scopeReconciled:compacted.scopeReconciled,completedReused:compacted.completedReused||0};
 }
 export function applySystemAiResults(queueInput,results=[]){
