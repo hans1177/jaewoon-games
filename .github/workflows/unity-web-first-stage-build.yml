@@ -225,11 +225,13 @@ jobs:
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
           console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
           NODE
+          # 기존 3D F0 검사는 동일하게 실패 처리하면서 정확한 오류를 자동 수리로 전달한다.
+          # pipefail은 tee가 실제 검증 실패 종료코드를 숨기지 못하게 한다.
           node tools/company-unity-web-first-stage.mjs \
             --game-id="$GAME_ID" \
             --source-root="$PROJECT_PATH" \
             --build-method="$BUILD_METHOD" \
-            --validate-only
+            --validate-only 2>&1 | tee "$RUNNER_TEMP/unity-web-preflight.log"
 
       - name: Bind canonical Unity source tree
         id: source
@@ -1129,6 +1131,15 @@ jobs:
           echo 'required=true' >> "$GITHUB_OUTPUT"
           failure_stage=UNITY_WEB_BUILD_OR_READINESS
           failure_signature=REPAIR_REQUIRED
+          # Unity 컴파일 이전 실패도 게임/책임 파일 수준으로 정확히 수리하도록 증거를 전달한다.
+          preflight_log="$RUNNER_TEMP/unity-web-preflight.log"
+          if [ -s "$preflight_log" ]; then
+            preflight_signature="$(grep -oE 'UNITY_WEB_[A-Z0-9_]+:[A-Za-z0-9._:/-]+' "$preflight_log" | tail -n 1 || true)"
+            if [ -n "$preflight_signature" ]; then
+              failure_stage=UNITY_WEB_SOURCE_PREFLIGHT
+              failure_signature="$preflight_signature"
+            fi
+          fi
           # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
           for filename in unity-web-post-deploy-mobile.json unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
             evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"
@@ -1141,7 +1152,7 @@ jobs:
             fi
           done
           failure_stage="$(printf '%s' "$failure_stage" | tr -cd 'a-zA-Z0-9_:' | cut -c1-96)"
-          failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:-' | cut -c1-128)"
+          failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:/-' | cut -c1-128)"
           echo "failure_stage=${failure_stage:-UNITY_WEB_UNKNOWN}" >> "$GITHUB_OUTPUT"
           echo "failure_signature=${failure_signature:-UNKNOWN}" >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
