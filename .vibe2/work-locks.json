@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-19gd2ou",
+      "worker": "vibe2",
+      "taskId": "seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1",
+      "gameId": "seed-idle-growth-rpg-crystal-bloom",
+      "files": [
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/GameCore.cs",
+        "unity-games/seed-idle-growth-rpg-crystal-bloom/Assets/Scripts/RuntimeBootstrap.cs"
+      ],
+      "baseSha": "036a0411adeeb74d73b1039f3aee20f9d75a93d1",
+      "runId": "38094980734",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T00:19:28.336Z",
+      "expiresAt": "2026-10-11T01:04:28.336Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:seed-idle-growth-rpg-crystal-bloom-unity-web-base-implementation-v1"
+      ]
+    }
+  ]
 }
