@@ -150,8 +150,6 @@ public static class UnityWebFloorBuild
                 throw new Exception("UNITY_WEB_NATIVE_PRESENTATION_SOURCE_MISSING:"+sourcePath);
             Debug.Log("UNITY_WEB_NATIVE_PRESENTATION_SOURCE=SOURCE_READY_RUNTIME_UNVERIFIED:"+sourcePath);
         }
-        // 기존 공식 Unity 빌드 안에서만 회사 공용 리그·동작 GLB를 네이티브 메시로 변환한다.
-        UnityCompanyAssets.Prepare();
         if(!AssetDatabase.IsValidFolder(SceneFolder))AssetDatabase.CreateFolder("Assets","Scenes");
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
             ?EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single)
