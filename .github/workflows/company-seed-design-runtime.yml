@@ -105,7 +105,7 @@ jobs:
             echo 'COMPANY_RUNTIME_STATE=NOT_CREATED'
             exit 0
           fi
-          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 --filter=blob:none origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
           for runtime_path in game-seed-state.json design; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
               git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
@@ -427,7 +427,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin "$COMPANY_RUNTIME_BRANCH"
+          git fetch --no-tags --depth=1 --filter=blob:none origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
           game_path="design/${{ matrix.target.game_id }}"
           for runtime_path in game-seed-state.json "$game_path"; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"; fi
