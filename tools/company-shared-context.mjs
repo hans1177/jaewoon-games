@@ -136,6 +136,13 @@ export function compileHomepageCentralPolicy(policy={}){
   for(const required of ['development-queue.json','game-catalog.json','company-status.json','homepage-platform-exposure.json']){
     if(!runtimeFiles.includes(required))errors.push('HOMEPAGE_RUNTIME_FILE:'+required);
   }
+  const deploymentHomepagePublication=source.deploymentHomepagePublication||{};
+  if(Number(source.version)>=13){
+    for(const field of ['homepagePublicationRequired','existingDeploymentsMustBeReconciled','realPublishedExecutionTargetRequired','renderedHomepageExecutionLinkRequired','missingLinkMustRequeueExistingHomepageManager','qaVerdictIndependentOfLink','missingBuildMustNotCreateLaunchLink','heldPlatformActivationForbidden']){
+      if(deploymentHomepagePublication[field]!==true)errors.push('HOMEPAGE_DEPLOYMENT_POLICY_REQUIRED:'+field);
+    }
+    if(!deploymentHomepagePublication.successfulDeploymentWorkflows?.length)errors.push('HOMEPAGE_DEPLOYMENT_EVENT_BINDINGS_REQUIRED');
+  }
   const managerContract=source.managerContract||{};
   const listingContract=source.homepageListingContract||{};
   // 홈페이지에 배포된 게임은 개발 중이어도 노출한다. 실행 검증과 출시 승인은 링크만 제한한다.
@@ -182,6 +189,7 @@ export function compileHomepageCentralPolicy(policy={}){
     },
     managerContract,
     homepageListingContract:listingContract,
+    deploymentHomepagePublication,
     lobbyGate,
     testingContract,
     documentationSyncContract,

@@ -579,3 +579,22 @@ test('homepage sparse fast QA includes real Roblox and Unity source files used b
   assert.match(fast,/sparse-checkout-cone-mode: false/);
   assert.match(fast,/node qa\/game-catalog-normalization\.test\.mjs/);
 });
+
+
+test('every deployment requests existing supervised homepage publication without activating held platforms',async()=>{
+  const {compileHomepageCentralPolicy}=await import('../tools/company-shared-context.mjs');
+  const compiled=compileHomepageCentralPolicy(roadmap);
+  assert.equal(compiled.valid,true,compiled.errors.join(','));
+  const rule=compiled.contract.deploymentHomepagePublication;
+  assert.equal(rule.scope,'EVERY_EXISTING_AND_FUTURE_PLATFORM_DEPLOYMENT');
+  const events=workflow.slice(workflow.indexOf('  workflow_run:'),workflow.indexOf('  schedule:'));
+  for(const name of rule.successfulDeploymentWorkflows)assert.ok(events.includes('      - '+name+'\n'),name);
+  for(const field of ['homepagePublicationRequired','existingDeploymentsMustBeReconciled','realPublishedExecutionTargetRequired','renderedHomepageExecutionLinkRequired','missingLinkMustRequeueExistingHomepageManager','qaVerdictIndependentOfLink','missingBuildMustNotCreateLaunchLink','heldPlatformActivationForbidden']){
+    const changed=structuredClone(roadmap);
+    changed.serverHomepageIntegration.deploymentHomepagePublication[field]=false;
+    const result=compileHomepageCentralPolicy(changed);
+    assert.equal(result.valid,false,field);
+    assert.ok(result.errors.includes('HOMEPAGE_DEPLOYMENT_POLICY_REQUIRED:'+field));
+    assert.notEqual(result.fingerprint,compiled.fingerprint);
+  }
+});

@@ -1,8 +1,8 @@
 {
-  "version": 560,
+  "version": 561,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-10-07",
+  "recordedAt": "2026-10-11",
   "priority": [
     "ROBLOX",
     "UNITY"
@@ -6781,7 +6781,30 @@
     }
   },
   "serverHomepageIntegration": {
-    "version": 12,
+    "version": 13,
+    "deploymentHomepagePublication": {
+      "authority": "OWNER_DIRECTIVE_2026-10-11",
+      "scope": "EVERY_EXISTING_AND_FUTURE_PLATFORM_DEPLOYMENT",
+      "homepagePublicationRequired": true,
+      "existingDeploymentsMustBeReconciled": true,
+      "realPublishedExecutionTargetRequired": true,
+      "renderedHomepageExecutionLinkRequired": true,
+      "missingLinkMustRequeueExistingHomepageManager": true,
+      "qaVerdictIndependentOfLink": true,
+      "missingBuildMustNotCreateLaunchLink": true,
+      "heldPlatformActivationForbidden": true,
+      "successfulDeploymentWorkflows": [
+        "Company Status Sync",
+        "Unity Web Development Floor",
+        "Company DEVELOPMENT_CONFIRMED Roblox Private Runtime Candidate Deployment",
+        "Company DEVELOPMENT_CONFIRMED Roblox F9 Final Review",
+        "Company DEVELOPMENT_CONFIRMED Unity Runtime",
+        "Vibe2 Candidate Release Gate",
+        "Unity Cloud Android Test",
+        "Unity Local PC Android APK",
+        "Unity Hybrid Android Build"
+      ]
+    },
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "serverRuntimeBranch": "company-runtime",
