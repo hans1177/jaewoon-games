@@ -1055,6 +1055,53 @@
       },
       "learningState": "TRACE_ONLY",
       "liveState": "SOURCE_AND_SCHEDULING_VERIFIED_ADVISORY_CANDIDATE;LATEST_QA_AND_RUNTIME_PENDING"
+    },
+    {
+      "id": "assistant_roblox_gameplay_sourcebind_reconciliation_20261012",
+      "date": "2026-10-12",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "engine": "ROBLOX",
+      "domains": [
+        "GAMEPLAY_PRODUCT_READINESS",
+        "SOURCE_BIND",
+        "F0",
+        "PACKAGE",
+        "QA"
+      ],
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "The scanner truncated code after native-foundation-sentinel-v1, hiding real gameplay; delayed same-revision package and F0 results could overwrite a newer TARGET_PLATFORM_SOURCE_BIND source repair state.",
+      "decision": "Exclude only a structurally recognized managed foundation block, count gameplay on both sides, and retain current source repair against delayed checkpoint persistence. Preserve already integrated PR7620/7630 behavior and all non-source-repair lanes.",
+      "change": "Applied scoped gameplay scanner and F0/package persistence fixes with regression tests from PR7574 onto latest main; no F0-F9 reorder, new wrapper/shadow pipeline, gameplay balance, or save format edits.",
+      "evidence": [
+        "pull-request:7574",
+        "merged-pull-request:7620",
+        "merged-pull-request:7630",
+        "source-main:ee48f544036a9446b4771158ef7f8d3a15894e10",
+        "source:tools/company-development-roblox-gameplay-product-readiness.mjs",
+        "source:.github/workflows/company-development-roblox-runtime.yml",
+        "qa:in-memory-real-simple-rpg-fixture-5-assertions:PASS_WITH_STUBBED_IMPORTS",
+        "qa:qa/company-development-roblox-gameplay-product-readiness.test.mjs:NEW_REGRESSION_CI_PENDING",
+        "qa:qa/company-development-roblox-package.test.mjs:NEW_REGRESSION_CI_PENDING"
+      ],
+      "reusablePatterns": [
+        "STRIP_ONLY_STRUCTURALLY_BOUND_MANAGED_CODE_BEFORE_SCORING_GAMEPLAY",
+        "TEST_REAL_GAMEPLAY_BEFORE_AND_AFTER_FOUNDATION_WITH_GENERIC_SKELETON_REJECTION",
+        "FENCE_LATE_SAME_SOURCE_F0_AND_PACKAGE_STATE_PERSISTENCE_BY_ACTIVE_SOURCE_REPAIR_STAGE",
+        "CONNECT_VERIFIED_REPAIR_TO_EXISTING_CANONICAL_VIBE_RETRIEVAL_AND_LEARNING_ONLY"
+      ],
+      "avoidPatterns": [
+        "TRUNCATE_EVERYTHING_AFTER_SENTINEL",
+        "CREDIT_FOUNDATION_SCAFFOLD_AS_GAMEPLAY",
+        "ALLOW_STALE_SAME_REVISION_RESULTS_TO_ERASE_NEW_SOURCE_BIND_FAILURE",
+        "PROMOTE_STATIC_QA_TO_NATIVE_RUNTIME_OR_TRAINED_MODEL_PASS"
+      ],
+      "qa": [
+        "real-source in-memory boundary fixture 5 assertions PASS with stubbed imports, not full Node regression",
+        "repository Node tests and latest-head CI required before merge",
+        "Roblox runtime, F9, deployment and model training NOT_VERIFIED"
+      ],
+      "learningState": "TRACE_ONLY",
+      "liveState": "SOURCE_PATCH_AWAITING_REMOTE_CI;NO_ENGINE_OR_RELEASE_PASS"
     }
   ]
 }
