@@ -35,6 +35,9 @@ const clearReservation=task=>({...task,reservationId:null,reservationRunId:null,
 function staleRunningIds(queue,{nowMs=Date.now(),staleMs=45*60*1000}={}){
   return new Set(queue.tasks.filter(task=>{
     if(clean(task.status).toLowerCase()!=='running'||waitBlocker(task.blocker))return false;
+    // A long GitHub runner wait is not proof of a dead worker; exact run-status
+    // recovery in the canonical reserve path owns completed/superseded run IDs.
+    if(/^\d+$/.test(clean(task.reservationRunId)))return false;
     const at=Date.parse(clean(task.reservedAt));
     return !Number.isFinite(at)||nowMs-at>Math.max(60_000,Number(staleMs)||45*60*1000);
   }).map(task=>task.id));
