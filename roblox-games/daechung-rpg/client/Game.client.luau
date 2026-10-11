@@ -420,6 +420,9 @@ verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotio
 
 end
 
+-- 안내 UI는 게임의 기존 HUD/메뉴가 소유한다. 학습 바인딩은 화면 위에 문구를 추가하지 않는다.
+verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
+
 -- Roblox skill VFX / camera / motion feedback.
 local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
@@ -434,6 +437,65 @@ local function playVerifiedLearningActionFeedback(control, serverConfirmed)
     end
     scale.Scale = 0.94
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+  end
+
+  -- 메뉴 클릭은 버튼 응답만. 전투/카메라 연출은 서버가 확인한 해당 행동만 사용한다.
+  if serverConfirmed~=true then return end
+  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
+
+  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
+  local camera = workspace.CurrentCamera
+  if camera then
+    local baseFov = camera.FieldOfView
+    verifiedLearningTweenService:Create(camera, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = math.clamp(baseFov + 3, 40, 100)}):Play()
+    task.delay(0.09, function()
+      if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
+    end)
+  end
+  end
+
+  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
+  local character = verifiedLearningPlayer.Character
+  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+  if character and rootPart then
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "VerifiedLearningSkillImpact"
+    highlight.FillTransparency = 0.35
+    highlight.OutlineTransparency = 0.12
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Parent = character
+    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
+    local sparkles = Instance.new("Sparkles")
+    sparkles.Name = "VerifiedLearningSkillSparkles"
+    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
+    sparkles.Parent = rootPart
+    local impactAttachment = Instance.new("Attachment")
+    impactAttachment.Name = "VerifiedLearningSkillAttachment"
+    impactAttachment.Parent = rootPart
+    local particles = Instance.new("ParticleEmitter")
+    particles.Name = "VerifiedLearningSkillParticles"
+    particles.Rate = 0
+    particles.Lifetime = NumberRange.new(0.18, 0.32)
+    particles.Speed = NumberRange.new(5, 9)
+    particles.SpreadAngle = Vector2.new(45, 45)
+    particles.LightEmission = 0.7
+    particles.Parent = impactAttachment
+    particles:Emit(18)
+    local impactLight = Instance.new("PointLight")
+    impactLight.Name = "VerifiedLearningSkillLight"
+    impactLight.Color = Color3.fromRGB(160, 215, 255)
+    impactLight.Brightness = 2.2
+    impactLight.Range = 10
+    impactLight.Parent = rootPart
+    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
+    task.delay(0.24, function()
+      if impactAttachment then impactAttachment:Destroy() end
+      if impactLight then impactLight:Destroy() end
+      if sparkles then sparkles:Destroy() end
+      if highlight then highlight:Destroy() end
+    end)
+  end
   end
 
 end
