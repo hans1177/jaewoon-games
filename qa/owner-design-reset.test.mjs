@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
-import {runOwnerAllGamesDesignReset} from '../tools/company-all-games-design-reset.mjs';
+import {runOwnerAllGamesDesignReset,autoEnrollMissingDesignSeeds} from '../tools/company-all-games-design-reset.mjs';
 
 test('active owner reset seeds stay DESIGN_ONLY inputs even when catalog development has already started',()=>{
   const queue=JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));
@@ -346,14 +346,25 @@ test('missing design is admitted as a brief without invented mechanics or gramma
     assert.equal(result.seed.DESIGN_BASELINE_SOURCE,null);
     assert.equal(result.seed.OWNER_LATEST_DESIGN_REQUEST,'Design this game from my request.');
     assert.equal(result.seed.GAMEPLAY_SKETCH.novelGameGrammar,undefined);
-    const intake=fs.readFileSync('tools/company-all-games-design-reset.mjs','utf8');
-    const body=intake.match(/function upgradeCanonicalNovelGrammarSeed\(seed,game,timestamp\)\{([\s\S]*?)\n\}/)[1];
-    // The isolated function's original caller supplies clean(); mirror that dependency in this test.
-    const upgrade=new Function('seed','game','timestamp','clean',body);
-    const clean=value=>String(value??'').trim();
-    assert.equal(upgrade(result.seed,{},'now',clean),false,'brief must not reach automatic grammar generation');
-    assert.equal(upgrade({...result.seed,designInputMode:'DESIGNER_SELF_SEED'}, {},'now',clean),false,
-      'designer-authored game intake must not be replaced by synthetic grammar');
+    // 실제 접수 경로는 브리프를 보존하고 디자이너 재작성 요청만 표시한다.
+    for(const mode of ['OWNER_BRIEF_AND_ORIGINAL_ONLY','DESIGNER_SELF_SEED']){
+      const seed={...result.seed,designInputMode:mode};
+      fs.writeFileSync(path.join(dir,'game-catalog.json'),JSON.stringify({games:[{id:'x',name:'X',lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'}]}));
+      fs.writeFileSync(path.join(dir,'game-seed-state.json'),JSON.stringify({version:2,seeds:[seed]}));
+      const enrolled=autoEnrollMissingDesignSeeds({root:dir,timestamp:'2026-10-12T00:00:00Z'});
+      assert.deepEqual(enrolled.grammarUpgraded,['x']);
+      const persisted=JSON.parse(fs.readFileSync(path.join(dir,'game-seed-state.json'),'utf8')).seeds[0];
+      assert.equal(persisted.OWNER_LATEST_DESIGN_REQUEST,seed.OWNER_LATEST_DESIGN_REQUEST);
+      assert.deepEqual(persisted.CORE_LOOP,seed.CORE_LOOP);
+      assert.deepEqual(persisted.GAMEPLAY_SKETCH,seed.GAMEPLAY_SKETCH);
+      assert.equal(persisted.novelGrammarBackfill.authoringPending,true);
+      assert.equal(persisted.designEvolutionSignals[0].status,'OPEN');
+      assert.equal(persisted.DESIGN_BASELINE_SOURCE,null);
+      const beforeRepeat=fs.readFileSync(path.join(dir,'game-seed-state.json'),'utf8');
+      const repeated=autoEnrollMissingDesignSeeds({root:dir,timestamp:'2026-10-13T00:00:00Z'});
+      assert.deepEqual(repeated.grammarUpgraded,[],'pending brief must not restart every intake');
+      assert.equal(fs.readFileSync(path.join(dir,'game-seed-state.json'),'utf8'),beforeRepeat);
+    }
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
