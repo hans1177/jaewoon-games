@@ -4166,7 +4166,7 @@ test('company registry sync automatically ingests verified-byte PBR derivatives 
     fs.writeFileSync(path.join(outDir,'master.glb'),derived);
     const artifactHash=createHash('sha256').update(derived).digest('hex');
     assert.notEqual(sourceHash,artifactHash);
-    const preview=Buffer.from([137,80,78,71,13,10,26,10,0,0,0,0]);
+    const preview=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD9kAAAAASUVORK5CYII=','base64');
     fs.writeFileSync(path.join(outDir,'preview.png'),preview);
     const parent={id:'shared-source',title:'Source',family:'PROP',role:'environment-prop',
       path:'assets/shared/source.glb',sourceFiles:['assets/shared/source.glb'],
