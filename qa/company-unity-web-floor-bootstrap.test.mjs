@@ -122,6 +122,11 @@ test('Unity Web floor bootstrap creates canonical non-release source and remains
     assert.doesNotMatch(runtime,/CORE_FUN[^\n]+status=PASS/);
     assert.match(runtime,/PlayerPrefs\.Save\(\)/);
     assert.match(runtime,/enemy\.transform\.Rotate/);
+    // 2D 오브젝트 검출은 유지하면서 읽기 전용 프로브가 3D 금지 토큰을 생성하지 않게 한다.
+    assert.match(runtime,/foreach \(Renderer candidate in FindObjectsByType<Renderer>\(FindObjectsSortMode\.None\)\)/);
+    assert.match(runtime,/candidate\.GetType\(\)\.Name == "SpriteRenderer"/);
+    assert.match(runtime,/spriteGameplayActors == 0/);
+    assert.doesNotMatch(runtime,/foreach \(SpriteRenderer sprite/);
     for(const dir of ['Art','Prefabs','Materials','Animations']){
       assert.equal(fs.existsSync(path.join('unity-games/test-survival/Assets',dir,'unity-web-floor-domain.json')),true);
     }
