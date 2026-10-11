@@ -2,6 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import { gzipSync, gunzipSync, brotliCompressSync, brotliDecompressSync } from 'node:zlib';
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const worker=fs.readFileSync('_worker.js','utf8');
@@ -80,4 +84,33 @@ test('Cloudflare Pages header patterns use one splat and include Unity compresse
     assert.equal(lines[start+2].trim(),'Content-Encoding: '+(suffix.endsWith('.gz')?'gzip':'br'));
     assert.equal(lines[start+3].trim(),'Cache-Control: no-cache, must-revalidate');
   }
+});
+
+// 회귀: 기존 배포 단계가 실제 파일 해시로 Unity 캐시를 갱신하고 저장 식별자는 보존한다.
+test('Unity publication versions every bundle URL and updates it after a rebuild',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  const start=workflow.indexOf('          python3 - "$out" "$GAME_ID" <<\'PY\'\n');
+  assert.ok(start>=0);
+  const python=workflow.slice(start).split('\n').slice(1).join('\n').split('\n          PY')[0].replace(/^          /gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-cache-'));
+  try{
+    const bundle=path.join(root,'Build');fs.mkdirSync(bundle);
+    const names=['demo.loader.js','demo.data.gz','demo.framework.js.gz','demo.wasm.gz'];
+    for(const name of names)fs.writeFileSync(path.join(bundle,name),'real-bundle-'+name);
+    fs.writeFileSync(path.join(root,'index.html'),'<script>var loaderUrl=buildUrl+"/demo.loader.js";var config={dataUrl:buildUrl+"/demo.data.gz",frameworkUrl:buildUrl+"/demo.framework.js.gz",codeUrl:buildUrl+"/demo.wasm.gz",companyName:"Jaewoon Games",productName:"Demo",productVersion:"1.0"};</script>');
+    for(const revision of ['initial','rebuilt']){
+      if(revision==='rebuilt')fs.appendFileSync(path.join(bundle,'demo.data.gz'),'changed');
+      execFileSync('python3',['-',root,'demo'],{input:python,cwd:root});
+      const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+      for(const name of names){
+        const version=createHash('sha256').update(fs.readFileSync(path.join(bundle,name))).digest('hex').slice(0,16);
+        assert.ok(html.includes('/'+name+'?v='+version+'"'),name+' must have a content-bound URL');
+      }
+      assert.equal((html.match(/\?v=/g)||[]).length,4);
+      assert.ok(html.includes('productName:"Demo",productVersion:"1.0"'),'game save identity stays unchanged');
+      const manifest=JSON.parse(fs.readFileSync(path.join(root,'unity-web-deploy-manifest.json'),'utf8'));
+      assert.equal(manifest.bundleComplete,true);
+      assert.deepEqual(manifest.requiredGroups.data,['Build/demo.data.gz']);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

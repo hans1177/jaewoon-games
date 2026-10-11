@@ -451,7 +451,8 @@ test('Unity Web homepage links verify actual deployable assets and separate QA b
   assert.match(block,/manifest\.bundleComplete!==true/);
   assert.match(block,/manifest\.requiredDimension!=='3D'/);
   assert.match(block,/manifest\.canonicalSourceRoot!==`unity-games\/\$\{id\}`/);
-  assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),5000\)/);
+  assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),10000\)/);
+  assert.match(block,/Math\.min\(4,pending\.length\)/);
   assert.match(block,/method:'HEAD'/);
   assert.match(block,/\['loader','data','framework','wasm'\]/);
   assert.match(block,/unityWebAvailable:true/);

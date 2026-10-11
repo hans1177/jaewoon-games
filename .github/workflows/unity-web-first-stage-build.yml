@@ -463,7 +463,7 @@ jobs:
           # Cloudflare Pages serves each static asset only up to 25 MiB.
           # Fail before publication instead of exposing a homepage link to an undeployable bundle.
           python3 - "$out" "$GAME_ID" <<'PY'
-          import hashlib, json, pathlib, sys
+          import hashlib, json, pathlib, re, sys
           root=pathlib.Path(sys.argv[1])
           game=sys.argv[2]
           build=root/'Build'
@@ -490,6 +490,17 @@ jobs:
                   oversized.append(f'{file.name}:{size}')
           if oversized:
               raise SystemExit('Cloudflare Pages 25MiB asset limit exceeded: '+' | '.join(oversized))
+          # 파일 바이트가 바뀌면 Unity IndexedDB와 브라우저 캐시의 주소도 바꾼다.
+          # 이전 이중 압축 응답을 재사용하지 않으며 게임 저장 키는 건드리지 않는다.
+          index=root/'index.html'
+          html=index.read_text(encoding='utf-8')
+          for group in groups.values():
+              for file in group:
+                  version=hashlib.sha256(file.read_bytes()).hexdigest()[:16]
+                  pattern=r'([\"\'](?:Build/|/))'+re.escape(file.name)+r'(?:\?[^\"\']*)?([\"\'])'
+                  html=re.sub(pattern,lambda match:match[1]+file.name+'?v='+version+match[2],html)
+          html=html.replace('alert(message);','unityShowBanner(String(message), "error"); console.error(message);')
+          index.write_text(html,encoding='utf-8')
           manifest={
               'version':1,
               'engine':'UNITY_WEB',
