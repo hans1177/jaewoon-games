@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "exorcist-office-build-up-g1-5237e023714d",
-  "directiveFingerprint": "5237e023714dd0e30b647232266ab3e76140106b274bc8fca52ebe09db865dfc",
+  "directiveId": "exorcist-office-build-up-g1-639707ef7034",
+  "directiveFingerprint": "639707ef7034ea7be1f27b77d56d92c62fb3f88f716175cabb2f08208f292a4e",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "exorcist-office",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/exorcist-office",
-  "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+  "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
   "designFingerprint": "093e2fd25f8f0656211a8c82f7e5db08b8284dcaddd0de23c6fe8170d3805b45",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+        "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "093e2fd25f8f0656211a8c82f7e5db08b8284dcaddd0de23c6fe8170d3805b45",
-    "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+    "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+    "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3680,7 +3680,7 @@
       "audio": 4,
       "audioDynamics": 31,
       "ui": 89,
-      "uiFlow": 61,
+      "uiFlow": 63,
       "entryFlow": 12,
       "loadingFlow": 0,
       "input": 96,
@@ -3712,7 +3712,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "score": 176
+        "score": 178
       },
       {
         "file": "roblox-games/exorcist-office/default.project.json",
@@ -3722,7 +3722,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 22,
+        "line": 64,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -3730,7 +3730,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 189,
+        "line": 197,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -3786,7 +3786,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 336,
+        "line": 344,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -3810,7 +3810,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 413,
+        "line": 421,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -3818,7 +3818,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 266,
+        "line": 274,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -3850,15 +3850,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 61,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAtom",
-        "context": "local function hasStudioAtom(familyOrAtom, atom)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 75,
+        "line": 26,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -3866,7 +3858,15 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 57,
+        "line": 112,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAtom",
+        "context": "local function hasStudioAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/exorcist-office/client/Game.client.luau",
+        "line": 22,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -3874,7 +3874,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 71,
+        "line": 108,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -3889,9 +3889,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-verified-external-learning-required",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5043,8 +5043,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 181717,
-        "largestFileBytes": 85586,
+        "sourceBytes": 143667,
+        "largestFileBytes": 85610,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5244,7 +5244,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+    "sourceFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5498,7 +5498,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 22,
+        "line": 64,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -5507,7 +5507,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 189,
+        "line": 197,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -5701,7 +5701,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+    "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6101,12 +6101,12 @@
           },
           {
             "file": "roblox-games/exorcist-office/client/Game.client.luau",
-            "symbol": "hasStudioAtom",
+            "symbol": "hasStudioAssetAtom",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/exorcist-office/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "symbol": "hasStudioAtom",
             "kind": "FUNCTION"
           },
           {
@@ -6985,7 +6985,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+    "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7385,12 +7385,12 @@
           },
           {
             "file": "roblox-games/exorcist-office/client/Game.client.luau",
-            "symbol": "hasStudioAtom",
+            "symbol": "hasStudioAssetAtom",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/exorcist-office/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "symbol": "hasStudioAtom",
             "kind": "FUNCTION"
           },
           {
@@ -8228,7 +8228,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 22,
+        "line": 64,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -8240,7 +8240,7 @@
       },
       {
         "file": "roblox-games/exorcist-office/client/Game.client.luau",
-        "line": 189,
+        "line": 197,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -8446,11 +8446,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "368abf9856c79ec16bd01ddca6825f1b026ca3ea308ce46b58504e452c6b16b3",
+      "sourceTreeFingerprint": "b343ab1f50cf3b5637724b781b55fd0861322736e3a0adc15c9926eb646a0c0f",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-verified-external-learning-required"
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8565,5 +8565,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T12:00:43.261Z"
+  "generatedAt": "2026-10-11T13:42:06.949Z"
 }

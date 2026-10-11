@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "realistic-builder-build-up-g1-7dfbf6389af3",
-  "directiveFingerprint": "7dfbf6389af350d14531253d4130556d1209f7839091b0c2964d4fd4769ae418",
+  "directiveId": "realistic-builder-build-up-g1-e73ee5b817d1",
+  "directiveFingerprint": "e73ee5b817d1fcf7eb3989cf0ee3a6a90ba37b7436d55a323bc37226ab4f8922",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "realistic-builder",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/realistic-builder",
-  "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+  "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
   "designFingerprint": "f9377ba28128c8bd91b2847136bd20d21d673e6dca0ab2ad320c962f85ff7e7d",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "제작과 거점 구축의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+        "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "f9377ba28128c8bd91b2847136bd20d21d673e6dca0ab2ad320c962f85ff7e7d",
-    "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+    "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+    "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3947,9 +3947,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -3957,12 +3959,12 @@
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -5309,7 +5311,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+    "sourceFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5766,7 +5768,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+    "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7182,7 +7184,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+    "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -8775,11 +8777,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "442da8eb49df08b5610d15fa8858290e7cb9cff5dd59edaf4088fc745ff35645",
+      "sourceTreeFingerprint": "94491e03223c96f9ddef90b4a255461146f56607a19c323227942cc85bd6f7ac",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8895,5 +8897,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T10:13:19.763Z"
+  "generatedAt": "2026-10-11T13:42:07.783Z"
 }

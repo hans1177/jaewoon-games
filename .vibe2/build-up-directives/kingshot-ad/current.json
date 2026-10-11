@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "kingshot-ad-build-up-g1-b841e495c638",
-  "directiveFingerprint": "b841e495c63855c38a0ed998567c194aa433d4a18eb68e8716acc196f9f0998b",
+  "directiveId": "kingshot-ad-build-up-g1-cb833fffbcd7",
+  "directiveFingerprint": "cb833fffbcd74db1776bc3277e459578f06cd5fb47759a578bed073e762f639e",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "kingshot-ad",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/kingshot-ad",
-  "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+  "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
   "designFingerprint": "6d7df87cf4871e87268b2d3425b52f4ac3921309da5b33d421bfe6fc0c5243c1",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+        "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "6d7df87cf4871e87268b2d3425b52f4ac3921309da5b33d421bfe6fc0c5243c1",
-    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+    "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+    "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3930,9 +3930,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "roblox-build-package-failed",
+    "blockers": [
+      "roblox-build-package:roblox-build-package-failed"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -3940,12 +3942,12 @@
   },
   "multiplayerImplementation": {
     "required": true,
-    "policyVersion": 1,
+    "policyVersion": 2,
     "developmentAdmissionGate": false,
     "missingImplementationAction": "EXISTING_BUILD_UP_LOCAL_IMPLEMENTATION_AND_RETRY",
     "otherGamesAndIndependentWorkContinue": true,
     "actualMultiplayerPlayVerified": false,
-    "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT"
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
   },
   "qualityGapMap": [
     {
@@ -5284,7 +5286,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+    "sourceFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5741,7 +5743,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+    "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7064,7 +7066,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+    "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -8564,11 +8566,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "14387df091eec04610fb49698bfd2fe4f9290a625dc1c707b5c6e3014df32438",
+      "sourceTreeFingerprint": "dc045285546c0a4d2536e87dffb7aaf7b1858af4b5aa1579b7d16116f75d27da",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "roblox-build-package-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8683,5 +8685,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T10:13:19.424Z"
+  "generatedAt": "2026-10-11T13:42:07.646Z"
 }

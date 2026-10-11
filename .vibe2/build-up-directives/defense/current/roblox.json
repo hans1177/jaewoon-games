@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "defense-build-up-g1-f44530c34d80",
-  "directiveFingerprint": "f44530c34d808825c0852c2beeb745a33e0cea3157da621d09b0afda5ad7c74f",
+  "directiveId": "defense-build-up-g1-fd839bef3791",
+  "directiveFingerprint": "fd839bef37911926037f816e4c6c1ecf288325eacd90443817e60f60934ae185",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "defense",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/defense",
-  "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+  "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
   "designFingerprint": "8769e3aeef9c372bdb2a93f013105cee59d21e8dea21c9ecc16cfd68a50605a2",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+        "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "8769e3aeef9c372bdb2a93f013105cee59d21e8dea21c9ecc16cfd68a50605a2",
-    "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+    "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+    "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3714,7 +3714,7 @@
       "audio": 4,
       "audioDynamics": 31,
       "ui": 89,
-      "uiFlow": 65,
+      "uiFlow": 67,
       "entryFlow": 12,
       "loadingFlow": 0,
       "input": 96,
@@ -3746,7 +3746,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "score": 175
+        "score": 177
       },
       {
         "file": "roblox-games/defense/default.project.json",
@@ -3756,7 +3756,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 22,
+        "line": 64,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -3764,7 +3764,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 189,
+        "line": 197,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -3820,7 +3820,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 336,
+        "line": 344,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -3844,7 +3844,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 413,
+        "line": 421,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -3852,7 +3852,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 266,
+        "line": 274,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -3884,15 +3884,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 61,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAtom",
-        "context": "local function hasStudioAtom(familyOrAtom, atom)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 75,
+        "line": 26,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -3900,7 +3892,15 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 57,
+        "line": 112,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAtom",
+        "context": "local function hasStudioAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/defense/client/Game.client.luau",
+        "line": 22,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -3908,7 +3908,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 71,
+        "line": 108,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -3923,9 +3923,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-verified-external-learning-required",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -5077,8 +5077,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 181846,
-        "largestFileBytes": 85474,
+        "sourceBytes": 143844,
+        "largestFileBytes": 85498,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5278,7 +5278,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+    "sourceFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -5532,7 +5532,7 @@
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 22,
+        "line": 64,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "currentBehavior": "local function reportNativeFoundationReady()",
@@ -5541,7 +5541,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 189,
+        "line": 197,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -5735,7 +5735,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+    "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6169,12 +6169,12 @@
           },
           {
             "file": "roblox-games/defense/client/Game.client.luau",
-            "symbol": "hasStudioAtom",
+            "symbol": "hasStudioAssetAtom",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/defense/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "symbol": "hasStudioAtom",
             "kind": "FUNCTION"
           },
           {
@@ -7053,7 +7053,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+    "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7487,12 +7487,12 @@
           },
           {
             "file": "roblox-games/defense/client/Game.client.luau",
-            "symbol": "hasStudioAtom",
+            "symbol": "hasStudioAssetAtom",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/defense/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "symbol": "hasStudioAtom",
             "kind": "FUNCTION"
           },
           {
@@ -8330,7 +8330,7 @@
     "sourceAnchors": [
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 22,
+        "line": 64,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -8342,7 +8342,7 @@
       },
       {
         "file": "roblox-games/defense/client/Game.client.luau",
-        "line": 189,
+        "line": 197,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -8548,11 +8548,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "fcfa504eda0d5701bd11c3c868774aa5b9a2f08747964d81cc3496a83a3d1658",
+      "sourceTreeFingerprint": "0a6be620e385daf7aac721aee979cc667b74380056350ccf3d6d26e1ef14d767",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-verified-external-learning-required"
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8667,5 +8667,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T12:00:43.092Z"
+  "generatedAt": "2026-10-11T13:42:06.687Z"
 }
