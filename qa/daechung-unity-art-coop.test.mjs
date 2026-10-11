@@ -123,3 +123,15 @@ test('기존 모바일 전투 버튼과 비정식 공개 테스트 빌드 요청
     assert.equal(buildRequest.buildMethod, 'JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb');
     assert.match(buildRequest.purpose, /PUBLIC_BROWSER_TEST/);
 });
+
+
+test('Daechung Unity Roslyn CS1002/CS1003 error at animation frame return is repaired without changing native combat',()=>{
+    const observed='if (clip.Frames[frameIndex] == null) return; 공격 판정은 GameCore가 유지한다.';
+    assert.match(observed,/return; 공격 판정은 GameCore가 유지한다\./);
+    assert.doesNotMatch(visuals,/return; 공격 판정은 GameCore가 유지한다\./);
+    assert.match(visuals,/if \(clip\.Frames\[frameIndex\] == null\) return; \/\/ 공격 판정은 GameCore가 유지한다\./);
+    assert.match(visuals,/public void Tick\(float now\)/);
+    assert.match(visuals,/_model\.transform\.localRotation = Quaternion\.Euler/);
+    assert.match(gameplay,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+    assert.match(core,/daechung-rpg-save-v1/);
+});
