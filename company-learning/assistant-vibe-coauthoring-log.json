@@ -952,6 +952,58 @@
       ],
       "learningState": "TRACE_ONLY",
       "liveState": "PR7630_SOURCE_REPAIR_AND_PR7663_STATIC_ADVISORY_KNOWLEDGE_PENDING_REQUIRED_CI;NO_TRAINING_SAMPLE_OR_WEIGHT_PROMOTION"
+    },
+    {
+      "id": "assistant_vibe_automatic_trace_ingress_20261012",
+      "date": "2026-10-12",
+      "gameId": "cross-game",
+      "engine": "cross-engine",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "GPT coauthoring records were persisted but were not read by the existing Vibe 24H learning feed.",
+      "decision": "Read every registered assistant action through the existing feed, retain unverified actions for review, and pass only source-verified records through the existing distillation validator.",
+      "change": "PR7665 added assistant trace input and existing-runner change trigger, per-action provenance hashes, unchanged-record deduplication and explicit verification dispositions. Missing or malformed supplied trace input fails rather than silently claiming a complete capture.",
+      "evidence": [
+        "source:https://github.com/hans1177/jaewoon-games/commit/7efe095afd571c24cb84e588381b92c78be0ab50",
+        "qa:qa/company-system-ai-learning.test.mjs#assistant actions enter the existing learning feed automatically",
+        "qa:qa/vibe2-external-ai-distillation.test.mjs",
+        "local-cli:assistant-actions-captured=19:verification-required=19:promoted=0",
+        "remote-run:38181270504:pending"
+      ],
+      "reusablePatterns": [
+        "Connect persisted assistant action records to the existing learning feed and existing scheduler rather than adding a parallel learning pipeline.",
+        "Classify every registered action with its content hash and verification disposition; self-reported success and learningState alone must not create verified knowledge.",
+        "Require traceable independent source or runtime evidence before distillation, preserve failed and unverified actions as review candidates, and keep native runtime and weight promotion separate."
+      ],
+      "avoidPatterns": [
+        "Do not claim that repository trace ingestion monitors all ChatGPT conversations or unrecorded tool calls.",
+        "Do not promote static code checks into gameplay, touch, engine, release or model-weight success."
+      ],
+      "qa": [
+        "existing learning/feed regression37 PASS",
+        "combined latest-main knowledge retrieval regression38 PASS",
+        "existing canonical learning pipeline contract PASS",
+        "source security findings0",
+        "native runtime NOT_RUN",
+        "remote24H execution result NOT_YET_VERIFIED"
+      ],
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "scope": "STATIC_CODE_CONTRACT_ONLY",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/7efe095afd571c24cb84e588381b92c78be0ab50",
+          "qa:qa/company-system-ai-learning.test.mjs#assistant actions enter the existing learning feed automatically",
+          "qa:qa/vibe2-external-ai-distillation.test.mjs"
+        ]
+      },
+      "learningState": "TRACE_ONLY",
+      "liveState": "SOURCE_VERIFIED_ADVISORY_CANDIDATE;REMOTE_INGESTION_PENDING;NO_NATIVE_RUNTIME_OR_WEIGHT_CREDIT"
     }
   ]
 }
