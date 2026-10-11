@@ -19,8 +19,41 @@
       "modified",
       "evidence"
     ],
-    "blockedLicenses": ["NC", "NON_COMMERCIAL", "UNKNOWN", "UNCLEAR", "UNKNOWN_MODIFICATION_RIGHTS", "LOST_PROVENANCE"],
+    "blockedLicenses": [
+      "NC",
+      "NON_COMMERCIAL",
+      "UNKNOWN",
+      "UNCLEAR",
+      "UNKNOWN_MODIFICATION_RIGHTS",
+      "LOST_PROVENANCE"
+    ],
     "rule": "asset-manifest/animated-assets는 후보 카탈로그이며 이 장부에 실제 검증 증거가 없는 외부에셋은 공개판 승격에 사용할 수 없다"
   },
-  "entries": []
+  "entries": [
+    {
+      "id": "tinytreats-homely-house-cc0-v1",
+      "source": "Tiny Treats - Homely House (1.0)",
+      "sourceUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/tree/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+      "creator": "Isa Lousberg",
+      "license": "CC0",
+      "commercialUse": true,
+      "modificationUse": true,
+      "attribution": "Optional: www.isalousberg.com",
+      "verifiedAt": "2026-10-11",
+      "targetGame": "SHARED_COMMON_3D_LIBRARY",
+      "purpose": "32 3D model sources for existing native game-specific adaptation",
+      "modified": false,
+      "evidence": {
+        "licenseUrl": "https://github.com/TinyTreats-Game-Assets/Tiny-Treats-Homely-House-1.0/blob/75ad29a12b4e26dd1c7abda1e1486d6d731d8e16/LICENSE.txt",
+        "sourceCommit": "75ad29a12b4e26dd1c7abda1e1486d6d731d8e16",
+        "sourceObjCount": 32,
+        "unchangedModelGitBlobHashes": "company-asset-library.json",
+        "sourceSha256": "company-asset-library.json",
+        "sourceGeometryQa": "OBJ_STATIC_GEOMETRY_PASS",
+        "derivedMaterialFallback": "assets/shared/homely-house/*.mtl",
+        "nativeRuntimeVerification": "PENDING",
+        "publicReleaseClaimed": false
+      }
+    }
+  ]
 }
