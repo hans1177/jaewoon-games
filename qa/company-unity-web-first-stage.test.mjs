@@ -647,7 +647,7 @@ test('Unity technical prototype is rejected as canonical first-stage source',()=
 
 test('Unity Web readiness publication uses PR instead of direct main write',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
-  assert.match(workflow,/Create verified Unity Web readiness PR/);
+  assert.match(workflow,/Publish every verified Unity Web build via reviewed PR/);
   assert.match(workflow,/gh pr create/);
   assert.match(workflow,/UNITY_WEB_DIRECT_MAIN_WRITE=NO/);
   assert.equal(workflow.includes(['git','push','origin','HEAD:main'].join(' ')),false);
@@ -665,7 +665,7 @@ test('Unity Web reviewed promotion binds candidate Unity source and verified Web
   assert.match(workflow,/vibe2_task_id:/);
   assert.match(workflow,/vibe2_candidate_branch:/);
 
-  const start=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
+  const start=workflow.indexOf('      - name: Publish every verified Unity Web build via reviewed PR');
   const end=workflow.indexOf('\n\n  settle-vibe2-failure:',start);
   assert.ok(start>=0&&end>start);
   const section=workflow.slice(start,end);
@@ -691,7 +691,7 @@ test('Unity Web reviewed promotion binds candidate Unity source and verified Web
 
 test('verified unscoped Unity Web deployment resumes the existing Vibe game cycle only after main publication',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
-  const start=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
+  const start=workflow.indexOf('      - name: Publish every verified Unity Web build via reviewed PR');
   const end=workflow.indexOf('      - name: Mark Unity Web floor repair requirement',start);
   assert.ok(start>=0&&end>start);
   const section=workflow.slice(start,end);
@@ -735,7 +735,7 @@ test('Unity Web build never directly fans out; main-bound readiness evidence own
   assert.equal(fan.sourceTreeExactMatchRequired,true);
   assert.match(workflow,/Evaluate upper-platform development readiness/);
   assert.match(workflow,/upper-platform-development-readiness\.json/);
-  assert.match(workflow,/Create verified Unity Web readiness PR/);
+  assert.match(workflow,/Publish every verified Unity Web build via reviewed PR/);
   assert.doesNotMatch(workflow,/Fan verified Unity Web into exact Roblox and Unity development/);
   assert.doesNotMatch(workflow,/gh workflow run company-development-confirmed-runtime\.yml/);
 });
@@ -768,12 +768,12 @@ test('all playable Unity Web builds publish separately without claiming full 3D 
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
   const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
-  const publish=workflow.indexOf('      - name: Create verified Unity Web readiness PR');
+  const publish=workflow.indexOf('      - name: Publish every verified Unity Web build via reviewed PR');
   const repair=workflow.indexOf('      - name: Mark Unity Web floor repair requirement');
   const section=workflow.slice(publish,repair);
   assert.ok(publish>=0&&repair>publish,'publish browser test before marking upper-platform repair');
   assert.ok(section.includes("steps.readiness.outcome == 'success'"));
-  assert.ok(section.includes("(github.event_name == 'push' || inputs.publish_to_main == true)"));
+  assert.ok(!section.includes("inputs.publish_to_main == true"),"검증된 빌드는 기존 게시 흐름으로 자동 진입");
   assert.ok(section.includes('runtime_dir="web-games/$GAME_ID/unity"'));
   assert.ok(!section.includes('rm -rf "web-games/$GAME_ID"'));
   assert.ok(workflow.includes('manifest.homepageDevelopmentTest'));
@@ -782,10 +782,10 @@ test('all playable Unity Web builds publish separately without claiming full 3D 
   assert.ok(section.includes('test -s "$runtime_dir/unity-web-regression.json"'));
   assert.ok(section.includes('UPPER_PLATFORM_DEVELOPMENT_READY=$READINESS_PASS'));
   assert.ok(section.includes('if [ -n "$VIBE2_TASK_ID" ] && [ "$READINESS_PASS" = \'true\' ]; then'));
-  assert.ok(workflow.includes("if: steps.readiness.outputs.pass != 'true'"));
+  assert.ok(workflow.includes("(steps.readiness.outputs.pass != 'true' || steps.publish.outcome == 'failure')"));
   assert.match(homepage,/for\(const href of \[/);
   assert.ok(homepage.includes('/unity/'));
-  assert.match(homepage,/complete=probes\.every\(response=>response\?\.ok===true\)/);
+  assert.match(homepage,/if\(!probes\.every\(response=>response\?\.ok===true\)\)continue/);
   assert.match(headers,/\/web-games\/\*\.wasm\.gz\n  Content-Type: application\/wasm\n  Content-Encoding: gzip/);
   assert.doesNotMatch(headers,/^\/web-games\/[^\n]*\*[^\n]*\*/m);
   const worker=fs.readFileSync(path.join(repo,'_worker.js'),'utf8');
@@ -938,7 +938,7 @@ test('Unity Web actual browser failure signatures reach the existing Vibe repair
   const settlement=workflow.slice(workflow.indexOf('  settle-vibe2-failure:'),workflow.indexOf('\n  repair-vibe2:'));
   assert.match(workflow,/failure_stage: \$\{\{ steps\.repair\.outputs\.failure_stage \}\}/);
   assert.match(workflow,/failure_signature: \$\{\{ steps\.repair\.outputs\.failure_signature \}\}/);
-  assert.match(repair,/always\(\) && !cancelled\(\) && steps\.readiness\.outputs\.pass != 'true'/);
+  assert.match(repair,/always\(\) && !cancelled\(\) && \(steps\.readiness\.outputs\.pass != 'true' \|\| steps\.publish\.outcome == 'failure'\)/);
   assert.match(repair,/unity-web-gameplay-validation\.json unity-web-independent-qa\.json unity-web-regression\.json/);
   assert.match(repair,/\.observedRuntimeFailure == true/);
   assert.match(repair,/UNITY_WEB_REPAIR_FAILURE_SIGNATURE=/);

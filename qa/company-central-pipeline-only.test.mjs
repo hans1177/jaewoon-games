@@ -203,7 +203,7 @@ test('unscoped development coordinator dedupes against active push and manual ba
   assert.match(development,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
 });
 
-test('native development trigger ownership avoids duplicate central plus child push execution',()=>{
+test('native child workflow changes stay child-owned while source wakes preserve platform holds',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const roblox=read('.github/workflows/company-development-roblox-runtime.yml');
   const unity=read('.github/workflows/company-development-unity-runtime.yml');
@@ -226,7 +226,7 @@ test('native development trigger ownership avoids duplicate central plus child p
     'qa/company-upper-platform-admission.test.mjs',
     'qa/company-unity-web-gameplay-validation.test.mjs',
   ]) assert.ok(!developmentPush.includes(nonRuntimeWake),nonRuntimeWake);
-  assert.match(development,/group: company-development-confirmed-\$\{\{ \(github\.event_name == 'push' && 'main-push'\) \|\| github\.run_id \}\}/);
+  assert.match(development,/group: company-development-confirmed-\$\{\{ github\.run_id \}\}/);
   assert.doesNotMatch(development,/group: company-development-confirmed-\$\{\{[^\n]*inputs\.game_id/);
   assert.match(development,/group: company-development-confirmed-[\s\S]{0,260}?cancel-in-progress: false/);
   assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
@@ -237,11 +237,13 @@ test('native development trigger ownership avoids duplicate central plus child p
     '.github/workflows/company-development-roblox-runtime-continuation.yml',
     '.github/workflows/company-development-roblox-headless-fast-mvp.yml',
     '.github/workflows/company-development-unity-runtime.yml',
-    'unity-games/**',
   ]) assert.ok(!developmentPush.includes(childPath),childPath);
   assert.ok(robloxPush.includes('.github/workflows/company-development-roblox-runtime.yml'));
   assert.ok(robloxPush.includes('tools/company-development-roblox-build-preflight.mjs'));
   assert.ok(unityPush.includes('unity-games/**'));
+  for(const source of ['unity-games/**','roblox-games/**'])assert.ok(developmentPush.includes(source));
+  assert.match(unity,/if\(androidDevelopmentHeld\)return false/);
+  assert.match(unity,/developmentAccess\?\.UNITY==='OWNER_HOLD'/);
 });
 
 test('owner horror edits automatically re-enter the canonical development flow',()=>{
@@ -912,7 +914,9 @@ test('Unity Web actual play supplies boot proof without a duplicate browser smok
   assert.match(web,/UNITY_WEB_ACTUAL_PLAY_BOOT_EVIDENCE_REQUIRED/);
   assert.match(web,/checks\.some\(e=>e\.playableBrowserTest!==true\|\|e\.boot\?\.pass!==true\)/);
   assert.match(web,/UNITY_WEB_BOOT_SMOKE=PASS:ACTUAL_PLAY_EVIDENCE/);
-  assert.match(web,/const checks=\[play,independent,regression\];/);
+  assert.match(web,/const checks=scenarios\.map/);
+  assert.match(web,/const \[play,independent,regression\]=checks;/);
+  for(const scenario of ['actual-play','independent-qa','regression'])assert.ok(web.includes("['"+scenario+"',"));
   assert.match(web,/bootSmoke:'PASS'/);
   assert.match(web,/Run Unity Web actual browser play/);
 });

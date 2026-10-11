@@ -708,10 +708,13 @@ function ownerResumableCatalogGame(game={}){
 }
 function focusedCaretakerPolicy(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot)?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||{};
+  if(policy.enabled===true&&policy.completionPursuit?.enabled===true
+    &&(policy.targetFocusedGames!==3||policy.maxFocusedGames!==3||new Set(policy.ownerFocusedGameIds||[]).size!==3||policy.ownerFocusedGameIds.length!==3))throw new Error('FOCUSED_BUILD_COMPLETION_REQUIRES_THREE_DISTINCT_GAMES');
   return{
     enabled:policy.enabled===true,
     ownerIds:new Set((Array.isArray(policy.ownerFocusedGameIds)?policy.ownerFocusedGameIds:[]).map(clean).filter(Boolean)),
-    includeAllReleaseConfirmed:policy.includeAllReleaseConfirmed===true
+    includeAllReleaseConfirmed:policy.includeAllReleaseConfirmed===true,
+    completionPursuit:policy.completionPursuit?.enabled===true?policy.completionPursuit:null
   };
 }
 function focusedCaretakerProject(project={},repoRoot=process.cwd()){
@@ -848,12 +851,17 @@ function platformAdaptationInstruction(engine=''){
   ].join('\n');
   return'';
 }
+const DESIGN_IMPLEMENTATION_GOAL='\n[DESIGN_IMPLEMENTATION_FLOW] 구현 순서는 MAIN 첫 플레이→A↔B 공유 상태와 선택의 결과→c/@ 변형과 성장→해당 컨셉의 배경·연출이다. 이미 실측된 차단 오류는 먼저 수리하고, 필수 설계 항목의 GAP가 남았으면 무관한 장식 확장으로 회차를 소비하지 않는다. 오토 바이옴은 승인된 동일 게임 공간 설계의 지형·바이옴·기후·동선·랜드마크·예약 영역을 기존 생성 도구에 전달하고 전경/플레이 중경/원경을 실제 Luau 소스에 구현한다. 설계 공간 정보가 없으면 임의 기본 숲을 적용하지 말고 기존 설계 보완 경로로 돌린다. MAIN/A/B/c/@ 설계 원본의 규칙 ID와 기준선 버전을 실제 Luau 파일·책임 함수·입력/상태 전이/출력 및 같은 빌드의 플레이 시나리오에 대응시킨다. 장르 핵심 루프, 컨셉·세계·스토리 진행, 시스템 연결·실패 복구, 그래픽·모션·VFX·오디오·UI, 첫 플레이→세션 완료→재도전→필요한 저장 복구를 PASS/GAP/NOT_APPLICABLE로 근거와 함께 판정한다. 실제 플레이의 첫 진입·진행·실패·재도전 화면을 같은 소스/패키지에 묶고 기존 golden scene 및 runtimeVisualReview 픽셀 검사로 자산 누락·UI 겹침·잘림·가독성·스타일을 검수한다. 캐릭터 동작은 연속 프레임/실행 증거로 검증하고 정지 이미지로 동작 성공을 주장하지 않는다. 썸네일·생성 이미지·메타데이터는 실제 플레이 화면 증거를 대신하지 못한다. 발견한 문제는 기존 BUILD_UP 책임 소스에 연결해 수정한 뒤 같은 화면에서 재촬영한다. 현재 책임 범위의 GAP를 실제 구현하고 다음 GAP를 기존 BUILD_UP에 연결한다. 소스 검사·작업 시간·학습 기록만으로 실제 플레이 GAP를 닫지 않는다. 동일 소스/패키지의 기존 F0~F9 검증을 유지하고 검증 학습 재사용도 새 빌드에서 재검증한다.';
+const FOCUSED_BUILD_COMPLETION_GOAL='\n[FOCUSED_BUILD_COMPLETION] 집중개발 3개 게임의 완성까지 같은 게임을 유지한다. 집중 여부와 관계없이 모든 게임은 같은 설계 구현·플레이 검증 규칙을 따른다.';
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
   const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];
   const supervised=supervisedWebBuildRequired(project,goal);
   const adaptation=project.firstStageUnityWeb===true?'':platformAdaptationInstruction(project.engine);
-  const adaptedGoal=adaptation?goal+adaptation:goal;
+  let adaptedGoal=adaptation?goal+adaptation:goal;
+  if(project.engine==='roblox')adaptedGoal+=DESIGN_IMPLEMENTATION_GOAL;
   const focused=project.ownerFocusedCaretaker===true,ownerResume=project.ownerResumableBuildUp===true,recentOwnerWeb=project.ownerRecentWebPriority===true,unlimitedRepair=focused||ownerResume||project.engine==='roblox'||project.firstStageUnityWeb===true;
+  const completion=focused&&project.engine==='roblox'?project.focusCompletionContract:null;
+  if(completion)adaptedGoal+=FOCUSED_BUILD_COMPLETION_GOAL;
   const portfolioValueScore=project.engine==='roblox'
     ? Math.min(100,(project.queueRobloxQualityBuildUpRequired?35:0)
       +(project.queueRobloxInternalReleaseReady?20:0)
@@ -870,6 +878,7 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
     supervisionContract:supervised?supervisedWebBuildContract():null,
     packageLongWorkProtected:(focused||ownerResume)||undefined,packageRole:focused?'implementation-owner':ownerResume?'owner-resumable-build-up':undefined,
     focusedCaretaker:focused||undefined,caretakerStickyOwnership:focused||undefined,ownerResumableBuildUp:ownerResume||undefined,
+    focusCompletionContract:completion||undefined,
     evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...(focused?['focused-caretaker:yes','focused-caretaker-role:implementation-owner']:[]),...(ownerResume?['owner-resumable-build-up:YES','owner-resumable-build-up-source:catalog-owner-direct','owner-resumable-build-up-perpetual:YES']:[]),...(recentOwnerWeb?['web-internal-priority:recent-owner-work','web-internal-priority-scope:WEB_ONLY','owner-recent-web-source-revision:'+clean(project.ownerWebSourceRevision)]:[]),...baselineEvidence,...(project.engine==='unity'&&project.firstStageUnityWeb===true?['unity-web-first-stage']:[]),...extraEvidence,...(adaptation?[`platform-adaptation:${project.engine==='roblox'?'SOCIAL_FAST_SESSION':'DEEP_IMMERSIVE_SESSION'}`]:[]),...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
   };
   plannedTask.neuralDiagnosis=buildNeuralDiagnosis({task:plannedTask,project});
@@ -2481,9 +2490,11 @@ function applyRobloxQualityRepairDirective(directive,project,platformLane){
   if(platformLane!=='roblox'||project.queueRobloxQualityBuildUpRequired!==true)return directive;
   const studioQualityFailure=project.queueRobloxQualityBuildUpEvidence||null;
   const packageFailure=studioQualityFailure?.authority==='roblox-package-asset-binding-failure';
-  const runtimeObserved=!packageFailure;
+  const f0Failure=studioQualityFailure?.authority==='roblox-f0-gameplay-product-readiness-failure';
+  const runtimeObserved=!packageFailure&&!f0Failure;
   const reason=packageFailure
     ?'current source package asset binding failure requires game-side source repair; internal assets must remain unchanged'
+    :f0Failure?'current source F0 design-bound gameplay gaps require source repair before real runtime testing'
     :'current source Studio product-quality failure requires source repair before another observation';
   return{
     ...directive,
@@ -2643,6 +2654,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const roblox=platform==='ROBLOX';
   const qualityFailure=roblox&&project?.queueRobloxQualityBuildUpRequired===true;
   const packageAssetFailure=qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-package-asset-binding-failure';
+  const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
     platform,
     studioQualityFailure:qualityFailure?project.queueRobloxQualityBuildUpEvidence||null:null,
@@ -2652,7 +2664,7 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
       ...(samePlatform?project?.queueRoutingBlockers||[]:[]),
       ...(qualityFailure?project?.queueRobloxQualityFailureKinds||[]:[])
     ].map(clean).filter(Boolean),
-    runtimeObserved:!packageAssetFailure&&((samePlatform&&project?.queueRuntimeObserved===true)
+    runtimeObserved:!sourceOnlyQualityFailure&&((samePlatform&&project?.queueRuntimeObserved===true)
       ||(roblox&&project?.queueRobloxRuntimeObserved===true)||qualityFailure),
     runtimePassed:!qualityFailure&&(samePlatform&&project?.queueRuntimeObserved===true
       ?project?.queueRuntimePassed===true:(roblox&&project?.queueRobloxRuntimePassed===true)),
@@ -3395,7 +3407,9 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
       const repairRequired=project.queueRobloxQualityBuildUpRequired===true;
       const staleDecision=repairRequired&&(candidate.buildUpDirective.nextActionDecision?.action!=='CAUSAL_REPAIR'
         ||candidate.buildUpDirective.effectivenessMeasurement?.previousGeneration?.classification!=='REGRESSION');
-      if(staleDecision||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
+      const staleSourceObservation=repairRequired&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(studioQualityFailure?.authority)
+        &&candidate.buildUpDirective.playtestRuntimeFindings?.runtimeObserved!==false;
+      if(staleDecision||staleSourceObservation||JSON.stringify(candidate.buildUpDirective.playtestRuntimeFindings?.studioQualityFailure??null)!==JSON.stringify(studioQualityFailure)){
         candidate=bindSharedBuildUpDirective(candidate,applyRobloxQualityRepairDirective({
           ...candidate.buildUpDirective,
           playtestRuntimeFindings:{...candidate.buildUpDirective.playtestRuntimeFindings,studioQualityFailure}
@@ -3447,6 +3461,14 @@ function synchronizeQueuedBuildUpDirectives(queue,projects,repoRoot){
         !==JSON.stringify(candidate.graphicsReplacementContract?.menuDiversity?.existingGameInterfaceSync)){
         candidate=refreshed;changed+=1;
       }
+    }
+    if(lane==='roblox'&&!clean(candidate.goal).includes('[DESIGN_IMPLEMENTATION_FLOW]')){
+      candidate={...candidate,goal:clean(candidate.goal)+DESIGN_IMPLEMENTATION_GOAL};
+    }
+    if(lane==='roblox'&&project.ownerFocusedCaretaker===true&&project.focusCompletionContract?.enabled===true){
+      candidate={...candidate,priority:'critical',focusedCaretaker:true,caretakerStickyOwnership:true,
+        packageLongWorkProtected:true,packageRole:'implementation-owner',focusCompletionContract:project.focusCompletionContract,
+        goal:clean(candidate.goal).includes('[FOCUSED_BUILD_COMPLETION]')?candidate.goal:clean(candidate.goal)+FOCUSED_BUILD_COMPLETION_GOAL};
     }
     const checkedCandidate={
       ...candidate,
@@ -3854,7 +3876,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   }
   const microSupersede=supersedeLegacyMicroTasksForStudioQuality(queue);
   queue=microSupersede.queue;
-  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue).map(project=>({...project,ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot)}));
+  const focusCompletionContract=focusedCaretakerPolicy(repoRoot).completionPursuit;
+  const allProjects=collectProjects(status,catalog,repoRoot,developmentQueue).map(project=>({...project,ownerFocusedCaretaker:focusedCaretakerProject(project,repoRoot),focusCompletionContract}));
   const holisticPriorityDeferral=deprioritizeQueuedGenericPolishForHolisticBackfill(queue,allProjects,repoRoot);
   queue=holisticPriorityDeferral.queue;
   const buildUpDirectiveBackfill=synchronizeQueuedBuildUpDirectives(queue,allProjects,repoRoot);

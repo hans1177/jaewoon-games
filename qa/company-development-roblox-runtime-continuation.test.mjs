@@ -100,6 +100,61 @@ test('Unity-Web-first dual platform runtime preflight repairs the observed platf
   assert.ok(nonConfirmed.blockers.includes('confirmed-production-class-required'));
 });
 
+test('owner-active Roblox preflight admits exact packages while preserving evidence and target guards',()=>{
+  const item={
+    gameId:'gem-survivor',productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform:'UNITY',targetPlatform:'UNITY',
+    platformExecutionMode:'OWNER_ACTIVE_PLATFORMS_SAME_GAME',concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+  };
+  const inspect=patch=>inspectRobloxBuildPreflight({item:{...item,...patch},directive});
+  assert.equal(inspect({}).pass,true);
+  assert.equal(inspect({concurrentTargetPlatforms:['ROBLOX']}).pass,true);
+  for(const patch of [
+    {concurrentTargetPlatforms:['UNITY']},{concurrentTargetPlatforms:[]},
+    {platformExecutionMode:'UNKNOWN'},{robloxBuildOrPackagePassed:false},
+    {robloxBuildSourceRevision:'c'.repeat(40)},{robloxBuildArtifactIdentity:'unbound'},
+    {productionClass:'DESIGN_ONLY'},
+  ])assert.equal(inspect(patch).pass,false,JSON.stringify(patch));
+  assert.equal(item.selectedPlatform,'UNITY');
+  assert.equal(item.robloxBuildPreflightPassed,undefined);
+});
+
+test('continuation retries owner-active platform-only failures without reviving other failed reviews',()=>{
+  const header="          import fs from 'node:fs';";
+  const start=preflight.indexOf(header);
+  const end=preflight.indexOf('\n          NODE',start);
+  const script=preflight.slice(start,end).replace(/^\s*import .*;$/gm,'');
+  const base={
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',selectedPlatform:'UNITY',
+    platformExecutionMode:'OWNER_ACTIVE_PLATFORMS_SAME_GAME',concurrentTargetPlatforms:['ROBLOX','UNITY'],
+    robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:'sha256:'+'b'.repeat(64),
+    robloxBuildPassedAt:'2026-10-11T12:00:00Z',robloxBuildPreflightFailedAt:'2026-10-11T13:00:00Z',
+    robloxBuildPreflightEvidence:{blockers:['roblox-platform-required']},
+  };
+  const expected=['gem-survivor','zombie-survival','tower-choice-rpg','fantasy-survival'];
+  const items=expected.map(gameId=>({...base,gameId}));
+  items.push(
+    {...base,gameId:'mixed-blockers',robloxBuildPreflightEvidence:{blockers:['roblox-platform-required','source-revision-mismatch']}},
+    {...base,gameId:'model-blocked',robloxBuildPreflightEvidence:{blockers:['model-review-blocked']}},
+    {...base,gameId:'held-only',concurrentTargetPlatforms:['UNITY']},
+    {...base,gameId:'stale-package',robloxBuildSourceRevision:'c'.repeat(40)},
+    {...base,gameId:'inactive',status:'DISABLED'},
+  );
+  const written=[];
+  runInNewContext(script,{
+    fs:{readFileSync:file=>JSON.stringify(file.endsWith('development-queue.json')?{items}:{roblox:{validationMode:'HEADLESS_FAST_MVP'}}),appendFileSync:(_,value)=>written.push(value)},
+    ownerFocusedSecondaryPlatformEligible:()=>false,
+    process:{env:{GITHUB_OUTPUT:'output'}},console:{log:()=>{}},
+  });
+  const matrix=JSON.parse(written.find(line=>line.startsWith('matrix=')).slice('matrix='.length));
+  assert.deepEqual(matrix.include.map(row=>row.gameId),expected);
+  assert.ok(matrix.include.every(row=>row.secondaryOwnerFocus===false));
+  assert.ok(items.every(item=>item.robloxBuildPreflightPassed===undefined));
+});
+
 test('Roblox preflight continuation revisits only explicit verified dual platform admission after legacy failure',()=>{
   assert.ok(preflight.includes("toUpperCase()==='UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'"));
   assert.ok(preflight.includes("toUpperCase()==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'"));

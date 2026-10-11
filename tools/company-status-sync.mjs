@@ -163,6 +163,7 @@ export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   company.policy ||= {};
   const policy=company.policy;
   policy.sourceOfTruth=centralPolicyPath;
+  policy.focusedDevelopmentCaretakers=machine?.developmentLifecycleMachine?.focusedDevelopmentCaretakers||null;
   policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
   policy.primaryPlatform='ROBLOX';
   policy.allowedTargetPlatforms=[...supported];
@@ -553,23 +554,25 @@ export function runCompanyStatusSync({filesystem=fs}={}){
 
   const focusPolicy=portfolio?.developmentFocusPolicy||null;
   const focusSelection=focusPolicy?selectContinuousTarget({portfolio,artbooks,catalog,queueState:{version:2,attempts:[]},filesystem}):null;
-  const focusedGameIds=Array.isArray(focusSelection?.focusedGameIds)?focusSelection.focusedGameIds:[];
+  const completionFocus=company.policy?.focusedDevelopmentCaretakers;
+  const buildCompletionFocus=completionFocus?.enabled===true&&completionFocus?.completionPursuit?.enabled===true;
+  const focusedGameIds=buildCompletionFocus?[...(completionFocus.ownerFocusedGameIds||[])]:Array.isArray(focusSelection?.focusedGameIds)?focusSelection.focusedGameIds:[];
   const nextDevelopmentGameIds=Array.isArray(focusSelection?.nextDevelopmentGameIds)?focusSelection.nextDevelopmentGameIds:[];
   const nextFocusGameIds=Array.isArray(focusSelection?.nextFocusGameIds)?focusSelection.nextFocusGameIds:[];
-  const projectById=new Map((portfolio?.projects||[]).map(project=>[project.id,project]));
+  const projectById=new Map((portfolio?.projects||[]).flatMap(project=>[[project.id,project],[project.slug,project]]));
   const catalogBySlug=new Map((catalog?.games||[]).map(game=>[game.id,game]));
   const focusedGames=focusedGameIds.map((id,index)=>{
-    const project=projectById.get(id);if(!project)return null;
+    const project=projectById.get(id)||(buildCompletionFocus?{id,slug:id}:null);if(!project)return null;
     const publicGame=catalogBySlug.get(project.slug)||{};
-    const platform=selectedPlatformOf(project,publicGame);
+    const platform=buildCompletionFocus?'ROBLOX':selectedPlatformOf(project,publicGame);
     const ready=targetPlatformReady(project,publicGame,platform,filesystem);
-    return {slot:index+1,gameId:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:'auto-ranked',lane:'selected-platform',selectedPlatform:platform||null,targetPlatformReady:ready,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
+    return {slot:index+1,gameId:buildCompletionFocus?id:project.id,slug:project.slug,name:project.name||publicGame.name||project.slug,score:focusScore(project),slotRole:buildCompletionFocus?'owner-build-completion':'auto-ranked',lane:'selected-platform',selectedPlatform:platform||null,targetPlatformReady:ready,homepageCategory:publicGame.homepageCategory||null,webPath:publicGame.webPath||null};
   }).filter(Boolean);
-  const targetSlots=Math.max(0,Number(focusPolicy?.targetFocusedGames??focusPolicy?.maxFocusedGames??focusedGames.length)||0);
+  const targetSlots=Math.max(0,Number(buildCompletionFocus?completionFocus.targetFocusedGames:focusPolicy?.targetFocusedGames??focusPolicy?.maxFocusedGames??focusedGames.length)||0);
   company.operations.autonomousFocus={
-    enabled:Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,
-    selection:focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,
-    source:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
+    enabled:buildCompletionFocus||Boolean(focusPolicy),targetSlots,filledSlots:focusedGames.length,preferredGameIds:[],focusedGameIds,games:focusedGames,nextFocusGameIds,nextDevelopmentGameIds,
+    selection:buildCompletionFocus?'THREE_OWNER_FOCUSED_BUILD_COMPLETION':focusPolicy?.selection||null,platformPriority:[...PLATFORM_PRIORITY],priorityMeaning:'DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE',activeDevelopmentRunId:supervision.activeDevelopmentRunId||null,syncIntervalMs:30000,updatedAtKst:supervision.dateKst||company.updatedAt||null,
+    source:buildCompletionFocus?[centralPolicyPath,portfolioPath,catalogPath,'tools/company-status-sync.mjs']:[portfolioPath,artbooksPath,catalogPath,'tools/autonomous-24h-work-planner.mjs'],
   };
   company.operations.productionClasses={...classResult.state,source:[portfolioPath,catalogPath,artbooksPath,'tools/company-status-sync.mjs']};
   delete company.operations.productionTiers;

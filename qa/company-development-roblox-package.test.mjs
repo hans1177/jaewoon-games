@@ -385,6 +385,31 @@ test('Roblox binding rejects nonempty lists and comments while accepting actual 
   assert.equal(robloxStudioAssetFamilyBoundInText('local root=Instance.new("Frame")\nlocal theme=studioAssetFamily("UI")[1]\nroot.BackgroundColor3=theme.Color','UI'),true);
 });
 
+test('Roblox binding follows multiline selected-atom branches and same-object type guards',()=>{
+  const source=fs.readFileSync(new URL('../roblox-games/daechung-rpg/client/Game.client.luau',import.meta.url),'utf8');
+  for(const family of ['WEAPON','CREATURE','PROP'])assert.equal(robloxStudioAssetFamilyBoundInText(source,family),true,family);
+  const cozy=fs.readFileSync(new URL('../roblox-games/cozy-island/client/Game.client.luau',import.meta.url),'utf8');
+  assert.equal(robloxStudioAssetFamilyBoundInText(cozy,'CREATURE'),true,'selected atom early return must preserve the existing consumer');
+
+  const guard='if not instance:IsA("MeshPart") then return end\nlocal name = instance.Name:lower()\n';
+  const selection='if name == "lamp"\n  and table.find(studioAssetFamily("PROP"), "LAMP") then\n';
+  const render='  instance.Material = Enum.Material.Metal\n';
+  assert.equal(robloxStudioAssetFamilyBoundInText(guard+selection+render+'end','PROP'),true);
+  const rejected=[
+    guard+selection+'  print("selected")\nelse\n'+render+'end',
+    guard+selection+'  print("selected")\nend\n'+render,
+    guard.replace('instance:IsA','other:IsA')+selection+render+'end',
+    guard.replace('then return','and ready then return')+selection+render+'end',
+    guard+'instance = {}\n'+selection+render+'end',
+    guard+'end\nlocal function unrelated(instance)\n'+selection+render+'end',
+    'if instance:IsA("MeshPart") and #\n  studioAssetFamily("PROP") > 0 then\n'+render+'end',
+    guard+selection+'  instance:SetAttribute("AssetFamily", "PROP")\nend',
+    'if table.find(studioAssetFamily("PROP"), "LAMP") then return end\nif instance:IsA("MeshPart") then\n'+render+'end',
+    'if not table.find(studioAssetFamily("PROP"), "LAMP") then return end\nend\nlocal function unrelated(instance)\nif instance:IsA("MeshPart") then\n'+render+'end',
+  ];
+  for(const text of rejected)assert.equal(robloxStudioAssetFamilyBoundInText(text,'PROP'),false,text);
+});
+
 test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-test-'));
   try{

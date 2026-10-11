@@ -6,16 +6,22 @@ import net from 'node:net';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { once } from 'node:events';
+import { selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const ROOT=process.cwd();
 const catalog=JSON.parse(fs.readFileSync(path.join(ROOT,'game-catalog.json'),'utf8'));
-const gameIds=(catalog.games||[])
-  .filter(game=>String(game.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED')
+const policy=JSON.parse(fs.readFileSync(path.join(ROOT,'company-learning/platform-release-roadmap.json'),'utf8'));
+const gameIds=selectDevelopmentWebValidationGames({catalog,policy})
   .map(game=>String(game.id||'').trim())
   .filter(Boolean)
   .sort();
 
-assert.ok(gameIds.length>=10,'DEVELOPMENT_CONFIRMED browser smoke requires current game catalog');
+assert.ok((catalog.games||[]).length>=10,'DEVELOPMENT_CONFIRMED browser smoke requires current game catalog');
+if(!gameIds.length){
+  console.log('DEVELOPMENT_WEB_BROWSER_SMOKE=NOT_APPLICABLE');
+  console.log('DEVELOPMENT_WEB_BROWSER_SMOKE_REASON=OWNER_NATIVE_ONLY_SCOPE_WITHOUT_PUBLIC_WEB_PLAYABILITY_CLAIMS');
+  process.exit(0);
+}
 
 function mime(file){
   const ext=path.extname(file).toLowerCase();

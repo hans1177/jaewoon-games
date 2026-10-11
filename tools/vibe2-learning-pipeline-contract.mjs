@@ -1,3 +1,5 @@
+// 파일명: tools/vibe2-learning-pipeline-contract.mjs
+// 임포트: 기존 학습 계약과 중앙 정책을 읽는다.
 import fs from 'node:fs';
 
 const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -127,7 +129,9 @@ eq(roadmap.externalAiLearningPipeline?.directSourceWrite, false, 'central extern
 eq(roadmap.externalAiLearningPipeline?.directProductionPass, false, 'central external AI direct production pass');
 eq(roadmap.learningClosedLoopContract?.externalAiRetrieval?.independentlyVerifiedDistilledOnly, true, 'central independently verified distilled retrieval only');
 eq(roadmap.webCompanion?.role, 'UNITY_WEB_FULL_DEVELOPMENT_QA_LOOP_COMPATIBILITY_ALIAS', 'central Web role');
-eq(roadmap.webCompanion?.developmentAdmissionGate, true, 'central Web development admission');
+// 중앙 정책: 호환 별칭이 실제 Unity Web 개발 진입 권한을 그대로 반영해야 한다.
+eq(typeof roadmap.directNativeDualPlatformDevelopment?.unityWebDevelopmentLane?.nativeDevelopmentAdmissionAuthority, 'boolean', 'central Unity Web development admission authority');
+eq(roadmap.webCompanion?.developmentAdmissionGate, roadmap.directNativeDualPlatformDevelopment.unityWebDevelopmentLane.nativeDevelopmentAdmissionAuthority, 'central Web development admission');
 eq(roadmap.webCompanion?.cannotReplaceNativeRuntimeEvidence, true, 'central Web native evidence boundary');
 
 const ingestWorkflow = readText(contract.implementationBindings.ingestWorkflow);

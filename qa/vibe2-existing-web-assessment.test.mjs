@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { assessExistingWebSource } from '../tools/vibe2-existing-web-assessment.mjs';
+import { assessExistingWebSource, selectDevelopmentWebValidationGames } from '../tools/vibe2-existing-web-assessment.mjs';
 
 const baseline={content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}};
 
@@ -91,9 +91,10 @@ test('stale high validation does not hide current approved scope gaps',()=>{
 });
 
 
-test('development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
+test('active or publicly playable development-confirmed Web entries have parseable startup code and no missing local script entry',()=>{
   const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-  const developmentGames=(catalog.games||[]).filter(game=>String(game.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED');
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const developmentGames=selectDevelopmentWebValidationGames({catalog,policy});
   const checked=[];
   for(const game of developmentGames){
     const root=path.join('web-games',String(game.id||''));
@@ -144,5 +145,16 @@ test('development-confirmed Web entries have parseable startup code and no missi
     }
     checked.push(game.id);
   }
-  assert.equal(checked.length,developmentGames.length,'every DEVELOPMENT_CONFIRMED game must be checked');
+  assert.equal(checked.length,developmentGames.length,'every active or publicly playable DEVELOPMENT_CONFIRMED Web game must be checked');
+});
+
+
+test('native-only development hold excludes withdrawn Web prototypes but keeps all Web playability claims',()=>{
+  const game=(id,extra={})=>({id,productionClass:'DEVELOPMENT_CONFIRMED',...extra});
+  const catalog={games:[game('native'),game('withdrawn',{canonical:{sources:{web:{playable:false,state:'WITHDRAWN_SIMPLE_PROTOTYPE'}}}}),game('public',{homepageWebPlayable:true}),game('canonical-public',{canonical:{sources:{web:{playable:true}}}})]};
+  const policy={directNativeDualPlatformDevelopment:{ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['ROBLOX']}}};
+  assert.deepEqual(selectDevelopmentWebValidationGames({catalog,policy}).map(game=>game.id),['public','canonical-public']);
+  assert.equal(selectDevelopmentWebValidationGames({catalog,policy:{}}).length,4);
+  policy.directNativeDualPlatformDevelopment.ownerActiveDevelopmentScope20261009.activeTargets.push('UNITY_WEB');
+  assert.equal(selectDevelopmentWebValidationGames({catalog,policy}).length,4);
 });

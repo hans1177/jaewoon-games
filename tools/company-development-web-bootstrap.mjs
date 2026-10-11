@@ -232,22 +232,24 @@ function priorityDevelopmentContext(context={}){
   const flow=context?.gameplaySketch?.flowArchitecture||{};
   return{
     version:context?.version||null,
+    // 제작 지시: 가변 작업 목록이 잘려도 검증 경계와 저장 계약을 먼저 전달한다.
+    protectedSaveKeys:context?.dependencyAnalysis?.protectedSaveKeys||[],
+    codingArchitecture:{
+      developmentMode:context?.codingArchitecture?.developmentMode||null,
+      microRuntimeContract:(context?.codingArchitecture?.microRuntimeTests||[])[0]?.cannotSubstituteFor
+        ?'TARGETED_REPAIR_ITERATION_ONLY; CANNOT_SUBSTITUTE_FOR_'+String((context.codingArchitecture.microRuntimeTests||[])[0].cannotSubstituteFor)
+        :'TARGETED_REPAIR_ITERATION_ONLY; CANNOT_SUBSTITUTE_FOR_FULL_CANONICAL_PROMOTION_VALIDATION',
+      priorityExecutionSummary:context?.codingArchitecture?.priorityExecutionSummary||null,
+      stateOwnershipSystems:(context?.codingArchitecture?.stateOwnership||[]).map(row=>row?.system).filter(Boolean),
+      invariantIds:(context?.codingArchitecture?.invariants||[]).map(row=>row?.id).filter(Boolean),
+      assetIntegration:context?.codingArchitecture?.assetIntegration||null
+    },
     patchPlan:{
       mode:context?.patchPlan?.mode||null,
       developmentMode:context?.patchPlan?.developmentMode||null,
       tasks:(context?.patchPlan?.tasks||[]).map(row=>row?.id).filter(Boolean),
       forbidden:context?.patchPlan?.forbidden||[],
       verificationOrder:context?.patchPlan?.verificationOrder||[]
-    },
-    codingArchitecture:{
-      developmentMode:context?.codingArchitecture?.developmentMode||null,
-      priorityExecutionSummary:context?.codingArchitecture?.priorityExecutionSummary||null,
-      stateOwnershipSystems:(context?.codingArchitecture?.stateOwnership||[]).map(row=>row?.system).filter(Boolean),
-      invariantIds:(context?.codingArchitecture?.invariants||[]).map(row=>row?.id).filter(Boolean),
-      microRuntimeContract:(context?.codingArchitecture?.microRuntimeTests||[])[0]?.cannotSubstituteFor
-        ?'TARGETED_REPAIR_ITERATION_ONLY; CANNOT_SUBSTITUTE_FOR_'+String((context.codingArchitecture.microRuntimeTests||[])[0].cannotSubstituteFor)
-        :'TARGETED_REPAIR_ITERATION_ONLY; CANNOT_SUBSTITUTE_FOR_FULL_CANONICAL_PROMOTION_VALIDATION',
-      assetIntegration:context?.codingArchitecture?.assetIntegration||null
     },
     gameplayFlow:{
       source:context?.gameplaySketch?.source||null,
@@ -265,8 +267,7 @@ function priorityDevelopmentContext(context={}){
       mode:context?.repairLoop?.mode||null,
       retryContract:context?.repairLoop?.retryContract||[]
     },
-    runtimeValidationPlan:{mode:context?.runtimeValidationPlan?.mode||null},
-    protectedSaveKeys:context?.dependencyAnalysis?.protectedSaveKeys||[]
+    runtimeValidationPlan:{mode:context?.runtimeValidationPlan?.mode||null}
   };
 }
 

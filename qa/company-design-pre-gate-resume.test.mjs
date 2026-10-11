@@ -1146,6 +1146,10 @@ test('native grammar authoring uses same repository systems and does not mint fa
   assert.match(native,/A/);
   assert.match(native,/sourceMaterial/);
   assert.match(native,/delveDiscoveries/);
+  assert.match(native,/targetPlatform:'ROBLOX'/);
+  assert.match(native,/원본 언어는 Roblox Luau/);
+  assert.match(native,/revised\.platformProfiles\.ROBLOX/);
+  assert.match(native,/기존 F0~F9 및 Roblox 클라우드 API/);
   assert.match(native,/unityWebSpatialPresentation:\{/);
   assert.match(native,/dimension:'3D'/);
   assert.match(native,/실제 플레이 측정 전/);
@@ -1263,4 +1267,48 @@ test('design runtime scheduler requeues structurally stale strict PASS and memoi
   const passingReads=reads;
   assert.equal(valid({gameId:'demo'}).date,'2026-10-10');
   assert.equal(reads,passingReads,'동일 실행의 중복 성공 검사 제거');
+});
+
+// 설계 장면: 기존 상태 전달과 원본 시간은 유지하며 실제 실행 증거로 승격하지 않는다.
+test('detailed opening carries input cancellation and next choice through the original phase states',()=>{
+  const start=design.indexOf("  const phases=playableRequirements.phases||",design.indexOf('function computeVibeNativeDesign(){'));
+  const end=design.indexOf('  const assetFamilies=',start);
+  const rules={
+    A:{id:'A',name:'길 선택',stateInputs:['route'],stateOutputs:['risk']},
+    B:{id:'B',name:'위험 대응',stateInputs:['risk'],stateOutputs:['route']},
+    DELVE:{id:'D',name:'숨은 길',stateInputs:['route'],stateOutputs:['risk']}
+  };
+  const phases=runInNewContext(design.slice(start,end)+'\nplaythrough',{
+    playableRequirements:{phases:['OPENING','MIDDLE','END'],lockedNumbers:{RoundSeconds:300}},
+    stateNames:['route','risk'],roles:rules,
+    abilities:[{id:'choose',ruleId:'A',trigger:'기존 접근 조건',avoidance:'취소하고 원래 길로 복귀',cost:3}],
+    handoffs:[{from:rules.A,key:'risk'},{from:rules.B,key:'route'},{from:rules.DELVE,key:'risk'}],
+    regions:[{name:'기존 입구',landmark:'기존 탑'}],
+    a:{playerChoice:'길을 선택한다',materialRule:'선택이 위험을 바꾼다'},
+    b:{playerChoice:'위험에 대응한다',materialRule:'대응이 다음 길을 바꾼다'},
+    delve:[{discoveryCondition:'단서를 비교한다',gameplayEffect:'다른 접근을 발견한다'}]
+  });
+  assert.equal(phases.length,3);
+  assert.match(phases[0].entryState,/기존 입구.*기존 탑/);
+  assert.match(phases[0].actionAndResponse,/입력:.*판정:.*성공:.*실패·취소:/);
+  assert.match(phases[0].actionAndResponse,/기존 상태를 보존/);
+  assert.equal(phases[1].entryState,phases[0].exitState);
+  assert.deepEqual(JSON.parse(JSON.stringify(phases[1].before)),JSON.parse(JSON.stringify(phases[0].after)));
+  assert.equal(phases.at(-1).endSeconds,300);
+  assert.ok(phases.every(row=>row.actions[0].hit===false&&row.timeReason.includes('미검증')));
+});
+
+test('A and B keep every shared state key in both directions',()=>{
+  const start=design.indexOf('  const handoffs=[];',design.indexOf('function computeVibeNativeDesign(){'));
+  const end=design.indexOf('  const baseLoop=',start);
+  const roles={MAIN:{id:'MAIN',name:'목표',stateInputs:['intent'],stateOutputs:['route'],playerChoice:'경로 확인'},
+    A:{id:'A',name:'탐색',stateInputs:['route'],stateOutputs:['risk','resource'],playerChoice:'위험과 재료 선택'},
+    B:{id:'B',name:'제작',stateInputs:['risk','resource'],stateOutputs:['route'],playerChoice:'다음 경로를 열 도구 선택'},
+    DELVE:{id:'DELVE',name:'발견',stateInputs:['route'],stateOutputs:['intent'],playerChoice:'다시 탐색'}};
+  const edges=runInNewContext(design.slice(start,end)+'\ninterconnections',{
+    roles,rules:Object.values(roles),shorten:(value,max)=>String(value).slice(0,max)
+  });
+  assert.deepEqual(Array.from(edges.find(row=>row.fromId==='A'&&row.toId==='B').stateKeys),['risk','resource']);
+  assert.deepEqual(Array.from(edges.find(row=>row.fromId==='B'&&row.toId==='A').stateKeys),['route']);
+  assert.match(edges.find(row=>row.fromId==='A'&&row.toId==='B').stateChange,/취소·조건 미충족이면 출력과 후속 선택을 보존/);
 });

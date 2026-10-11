@@ -50,10 +50,10 @@ function studioAssetRefreshState({root='',assetLibrary={}}={}){
   if(!fs.existsSync(clientFile))return {required:true,refreshRequired:true,libraryVersion:Number(expected.libraryVersion||0),reason:'CLIENT_MISSING'};
   const config=fs.readFileSync(configFile,'utf8');
   const client=fs.readFileSync(clientFile,'utf8');
-  const libraryVersion=Number(config.match(/LibraryVersion\s*=\s*(\d+)/)?.[1]||0);
+  const libraryVersion=Number(config.match(/\bLibraryVersion\s*=\s*(\d+)/)?.[1]||0);
   const sourceUsageFingerprint=clean(config.match(/SourceUsageFingerprint\s*=\s*["']([0-9a-f]{64})["']/i)?.[1]);
   const sourceUsageLibraryVersion=Number(config.match(/SourceUsageLibraryVersion\s*=\s*(\d+)/)?.[1]||0);
-  const bindingVersion=Number(config.match(/BindingVersion\s*=\s*(\d+)/)?.[1]||0);
+  const bindingVersion=Number(config.match(/\bBindingVersion\s*=\s*(\d+)/)?.[1]||0);
   const clientBindingVersion=Number(client.match(/STUDIO_ASSET_BINDING_VERSION\s*=\s*(\d+)/)?.[1]||0);
   const expectedBindingVersion=Number(expected.bindingVersion||0);
   const expectedSourceUsageFingerprint=clean(expected.buildUpAssetSourceUsageFingerprint);
