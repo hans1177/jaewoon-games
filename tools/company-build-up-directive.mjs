@@ -586,7 +586,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     const detail=value&&typeof value==='object'&&!Array.isArray(value)?value:{step:clean(value)};
     const title=clean(detail.name||detail.milestone||detail.designElement||detail.role||detail.humanId
       ||(detail.fromSystem&&detail.toSystem&&clean(detail.fromSystem)+' → '+clean(detail.toSystem))
-      ||detail.step||detail.id)||family+' #'+(index+1);
+      ||detail.step||detail.phase||detail.id)||family+' #'+(index+1);
     const authoredId=clean(detail.id||detail.ruleId||detail.humanId);
     const names=uniq([authoredId,detail.name,detail.milestone,detail.designElement,title])
       .filter(name=>name.length>=3).map(name=>name.toLowerCase());
@@ -598,8 +598,8 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
       return element&&names.some(name=>element===name||element.includes(name));
     });
     const playerChoice=clean(detail.playerChoice||detail.counterplay||detail.riskReward||detail.changedChoice||detail.variation);
-    const trigger=clean(detail.trigger||detail.encounterPattern||detail.traversal||detail.milestone);
-    const stateChange=clean(detail.stateChange||detail.effect||detail.systemImpact||detail.rewardMeaning||detail.newGameplay);
+    const trigger=clean(detail.trigger||detail.entryState||detail.encounterPattern||detail.traversal||detail.milestone);
+    const stateChange=clean(detail.stateChange||detail.actionAndResponse||detail.effect||detail.systemImpact||detail.rewardMeaning||detail.newGameplay);
     const identity=family+':'+title.toLowerCase();
     const review=[];
     if(family==='SIGNATURE_SYSTEM'&&!playerChoice)review.push('PLAYER_CHOICE_UNSPECIFIED');
@@ -613,7 +613,11 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
         (clean(row?.fromId)===authoredId||clean(row?.toId)===authoredId)).flatMap(row=>[row.fromId,row.toId]))
     ]);
     // 개수 확보가 아니라 실제 플레이 연결·실패 복귀·기존 시스템 책임에 대한 구현 조건.
-    const requiredBehavior=family==='CORE_LOOP'?[
+    const requiredBehavior=family==='PLAYTHROUGH'?[
+      'ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED',
+      'CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE',
+      'PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE'
+    ]:family==='CORE_LOOP'?[
       'CURRENT_STEP_IS_REACHABLE_FROM_PREVIOUS_SESSION_OR_LOOP_STATE',
       'PLAYER_ACTION_TRANSITIONS_TO_NEXT_AUTHORED_LOOP_STEP',
       'SUCCESS_FAILURE_AND_RETRY_FEEDBACK_OBSERVABLE'
@@ -624,7 +628,8 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     ]:family==='SYSTEM_CONNECTION'?[
       'FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS',
       'TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE',
-      'TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES'
+      'TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES',
+      'SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE'
     ]:family==='CONTENT_MILESTONE'&&preservationOnly?[
       'PRESENTATION_MILESTONE_BINDS_ONLY_TO_EXISTING_GAME_STATE',
       'NO_NEW_GAMEPLAY_RULE_PROGRESSION_BALANCE_SAVE_OR_NETWORK_SEMANTIC',
@@ -632,6 +637,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     ]:family==='CONTENT_MILESTONE'?[
       'MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE',
       'NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL',
+      'NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER',
       'MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED'
     ]:family==='VARIETY_REGIONS'?[
       'NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE',
@@ -677,7 +683,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
       designReviewNeeded:Object.freeze(review),
       requiredBehavior:Object.freeze(requiredBehavior),
       buildUpStatus:'AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED',
-      observableAcceptance:clean(trace?.validationEvidence)
+      observableAcceptance:clean(detail.validationEvidence||trace?.validationEvidence)
         ||'실제 '+title+' 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증',
       requiredStages:Object.freeze([
         'INSPECT_EXISTING_RESPONSIBLE_FUNCTION','IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE',
@@ -686,7 +692,7 @@ function buildDesignedGameVolume({design={},source={},safeDesignlessMode=false}=
     }));
   };
   if(!safeDesignlessMode){
-    const groups=[['CORE_LOOP',design.coreLoop],['SIGNATURE_SYSTEM',design.signatureSystems],
+    const groups=[['PLAYTHROUGH',design.selectedDesignPlan?.playthrough],['CORE_LOOP',design.coreLoop],['SIGNATURE_SYSTEM',design.signatureSystems],
       ['SYSTEM_CONNECTION',design.systemInterconnections],['CONTENT_MILESTONE',design.contentExpansionPlan]];
     for(const [name,rows] of Object.entries(design.contentVarietyPlan||{}).sort(([a],[b])=>a.localeCompare(b))){
       if(Array.isArray(rows))groups.push(['VARIETY_'+name.toUpperCase(),rows]);
@@ -955,13 +961,14 @@ export function buildDesignToPlatformCodingTrace({
         genericOnly?'GENERIC_WEB_FLOOR_NOT_GAMEPLAY_AUTHORITY':'SOURCE_NOT_AVAILABLE',
       verificationTransferred:false,sourceImplementationPassed:false,robloxRuntimeVerified:false,
       ruleOwner:'COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT',
-      codeConversion:'REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS',
+      codeConversion:'IMPLEMENT_APPROVED_DESIGN_IN_ORIGINAL_ROBLOX_LUAU_OWNER_FUNCTIONS',
+      originalSourcePlatform:'ROBLOX',originalSourceLanguage:'LUAU',unitySourceIsOriginal:false,
       optimizationTarget:'ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE',
       protectedState:'SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY',
       sourceReferenceOnly:true,directCsCopyForbidden:true,shadowPipelineForbidden:true,
       nextAction:available
-        ?'COMPARE_UNITY_WEB_CURRENT_SOURCE_METHODS_WITH_SHARED_DESIGN_AND_ROBLOX_OWNER_CODE_THEN_NATIVE_IMPLEMENT_AND_INDEPENDENT_QA'
-        :'CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE'
+        ?'OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL'
+        :'CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION'
     });
   })():null;
   const unityDepth=design?.platformProfiles?.UNITY?.unityWebSpatialPresentation||{};
@@ -1173,6 +1180,7 @@ export function buildDesignToPlatformCodingTrace({
   return Object.freeze({
     version:1,authority:'GAME_DESIGN_TO_EXISTING_PLATFORM_BUILD_UP_LINK',
     gameId:id,requestedPlatform:declared,activePlatform:selected,
+    originalSourcePlatform:'ROBLOX',originalSourceLanguage:'LUAU',
     unityWebSourceSync,
     designFingerprint:sha(JSON.stringify(design)),sourceTreeFingerprint:clean(sourceObservation?.sourceTreeFingerprint)||null,
     multiplayerMode:mode||null,multiplayerRequired:mandatory,minimumParticipants:mandatory?2:1,
@@ -1951,7 +1959,7 @@ function buildAutonomousContentExpansion({
 
 function platformDirectives({identity,goal}){
   const web=`${identity}: 게임당 하나인 공통 설계 원본을 기준으로 "${goal}"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.`;
-  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
+  const roblox=`${identity}: 동일 공통 목표 "${goal}"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.`;
   const unity=`${identity}: 동일 공통 원본의 규칙과 상태를 보존하며 "${goal}"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.`;
   const fortnite=`${identity}: 동일 공통 목표 "${goal}"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.`;
   return{
@@ -2229,6 +2237,7 @@ export function buildGameSpecificBuildUpDirective({
   const designedGameVolume=buildDesignedGameVolume({
     design:{
       ...design,
+      selectedDesignPlan:authoredDesign.selectedDesignPlan||design.selectedDesignPlan,
       coreLoop:Array.isArray(authoredDesign.coreLoop)?authoredDesign.coreLoop:design.coreLoop,
       signatureSystems:Array.isArray(authoredDesign.signatureSystems)?authoredDesign.signatureSystems:design.signatureSystems,
       systemInterconnections:Array.isArray(authoredDesign.systemInterconnections)?authoredDesign.systemInterconnections:design.systemInterconnections,

@@ -1,5 +1,5 @@
 // 파일명: qa/company-design-multiplayer-mode-contract.test.mjs
-// 설계 단계의 중앙 멀티플레이·MAIN/A/B/c/@·Unity WebGL 2.5D 이상 의무 검증
+// 설계 단계의 중앙 멀티플레이·MAIN/A/B/C/@·최종 3D 정책 및 기존 프로필 호환 검증
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -53,9 +53,11 @@ test('Roblox multiplayer design semantics pass through the static source contrac
   assert.match(robloxQa,/actualPlatformRuntime:true/);
 });
 
-test('all design stages require MAIN/A/B/c/@ and the inherited multiplayer modes are never single-only',()=>{
+test('design stages preserve V5 MAIN/A/B/C/@ and legacy c roles with multiplayer modes',()=>{
   const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
-  assert.match(design,/signatureSystems:\{type:'array',minItems:5/);
+  assert.match(design,/signatureSystems:\{type:'array',minItems:seedGameplaySketchVersion>=5\?4:5/);
+  assert.match(design,/최소 4개 고유 역할로 구성하되 c 보조 시스템은 있을 때만 유지/);
+  assert.match(design,/MAIN\/A\/B\/c\/DELVE\(@\) 역할을 각각 포함하는 최소 5개/);
   assert.match(design,/required:\['name','purpose','playerChoice','id','grammarRole','stateInputs','stateOutputs'\]/);
   assert.match(design,/signatureSystems:value\.signatureSystems/);
   assert.match(design,/systemInterconnections:value\.systemInterconnections/);
@@ -65,10 +67,13 @@ test('all design stages require MAIN/A/B/c/@ and the inherited multiplayer modes
   assert.deepEqual(modes,['COOP','COMPETITIVE','HYBRID']);
 });
 
-test('Unity WebGL requires 2.5D or 3D spatial presentation in the existing authored platform profile',()=>{
+test('final gameplay requires native 3D while legacy spatial authoring profiles remain readable',()=>{
   const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   const central=policy.livingMotionVisualQualityContract.minimumSpatialPresentation;
-  assert.equal(central.minimumFinalGameplayDimension,'2.5D');
+  assert.equal(central.minimumFinalGameplayDimension,'3D');
+  assert.equal(central.accepted2_5DTechniquesAreNotFinalPass,true);
+  assert.equal(central.runtimeEvidenceRequired,true);
+  assert.equal(central.beforeAfterVisualComparisonRequired,true);
   assert.equal(central.flat2DFinalGameplayForbidden,true);
   assert.equal(central.uiOverlayMayRemain2D,true);
   assert.match(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);

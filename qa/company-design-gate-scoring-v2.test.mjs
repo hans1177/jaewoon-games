@@ -8,7 +8,7 @@ import {repairDesignRequiredFields} from '../tools/company-design-prepromotion-r
 import {CAUSAL_DNA_LIBRARY} from '../tools/game-seed-state.mjs';
 import {classifyRobloxGenre} from '../tools/roblox-genre-profile.mjs';
 import {buildConceptSystemBlueprint} from '../tools/company-vibe2-game-flow-architect.mjs';
-import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
+import {designPlayabilityRequirements,DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2,validateDesignAuthoringContent} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
 assert.equal(Object.values(DESIGN_GATE_WEIGHTS).reduce((a,b)=>a+b,0),100);
@@ -390,7 +390,7 @@ const authoredRejections=(candidate)=>validateDesignAuthoringContent({
 const validSpatial=authoredSpatialDesign();
 assert.deepEqual(
   authoredRejections(validSpatial).filter(row=>[
-    'DESIGN_MULTIPLAYER_CONTRADICTION','DESIGN_MAIN_A_B_c_DELVE_REQUIRED','DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'
+    'DESIGN_MULTIPLAYER_CONTRADICTION','DESIGN_MAIN_A_B_DELVE_REQUIRED','DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'
   ].includes(row.code)),[],
   'structured design evidence does not imply actual multiplayer or browser runtime PASS'
 );
@@ -399,10 +399,10 @@ singleOnly.multiplayerMode='SINGLE';
 assert.ok(authoredRejections(singleOnly).some(row=>row.code==='DESIGN_MULTIPLAYER_CONTRADICTION'));
 const noDelve=authoredSpatialDesign();
 noDelve.signatureSystems.pop();
-assert.ok(authoredRejections(noDelve).some(row=>row.code==='DESIGN_MAIN_A_B_c_DELVE_REQUIRED'));
+assert.ok(authoredRejections(noDelve).some(row=>row.code==='DESIGN_MAIN_A_B_DELVE_REQUIRED'));
 const duplicateAxis=authoredSpatialDesign();
 duplicateAxis.signatureSystems[2].grammarRole='A';
-assert.ok(authoredRejections(duplicateAxis).some(row=>row.code==='DESIGN_MAIN_A_B_c_DELVE_REQUIRED'));
+assert.ok(authoredRejections(duplicateAxis).some(row=>row.code==='DESIGN_MAIN_A_B_DELVE_REQUIRED'));
 const flatWorld=authoredSpatialDesign();
 flatWorld.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2D';
 assert.ok(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
@@ -464,6 +464,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     const design=runInNewContext(
       nativeSource.slice(start,end)+String.fromCharCode(10)+'computeVibeNativeDesign()',
       {
+        nativeDesignVariation:0,validateDesignAuthoringContent,
         seed,gameId:'native-qa',game:{name:proposal.gameName},
         seedState:{seedMaterials:target.materials},
         seedGameplaySketch:proposal.gameplaySketch,

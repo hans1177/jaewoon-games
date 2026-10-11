@@ -708,11 +708,12 @@ local function layoutControls()
  objective.AnchorPoint=Vector2.zero;objective.Position=UDim2.fromOffset(8,72)
  objective.Size=UDim2.new(1,-16,0,38)
  gatherHint.Position=UDim2.fromOffset(8,116)
- controls.Size=UDim2.fromOffset(244,64)
+ -- 낮은 가로 화면에서는 메뉴와 탭을 좌우로 나눠 터치 영역을 보존한다.
+ controls.Size=UDim2.fromOffset(landscape and math.min(244,size.X-284)or 244,64)
  controls.AnchorPoint=landscape and Vector2.new(1,1)or Vector2.new(.5,1)
  controls.Position=landscape and UDim2.new(1,-8,1,-110)or UDim2.new(.5,0,1,-110)
- actionPopup.AnchorPoint=landscape and Vector2.new(.5,0)or Vector2.new(.5,.5)
- actionPopup.Position=landscape and UDim2.new(.5,0,0,8)or UDim2.fromScale(.5,.5)
+ actionPopup.AnchorPoint=landscape and Vector2.zero or Vector2.new(.5,.5)
+ actionPopup.Position=landscape and UDim2.fromOffset(8,8)or UDim2.fromScale(.5,.5)
  actionPopup.ZIndex=20
  for _,b in ipairs(actionButtons)do b.ZIndex=21 end
  local ready=startupOverlay.Parent==nil

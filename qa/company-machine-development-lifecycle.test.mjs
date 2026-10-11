@@ -164,12 +164,10 @@ assert.doesNotMatch(webRuntime,/WEB_GAMEPLAY_MUSIC_GATE=REQUIRED/);
 assert.match(webRuntime,/company-minimum-design-contract\.mjs/);
 assert.match(webRuntime,/company-selected-platform-router\.mjs/);
 
-// Keep coordinator admission run-scoped: GitHub replaces pending runs that share one
-// concurrency group even when cancel-in-progress is false. The existing active-batch
-// scan remains responsible for idempotent work rather than GitHub pending replacement.
+// 같은 개정의 수동 전체 배치만 합치고, 개별 게임과 다른 개정 실행은 독립시킨다.
 const coordinatorGate=webRuntime.split('\n  coordinator-gate:\n')[1]?.split('\n  native-plan:\n')[0]||'';
 assert.ok(coordinatorGate.length>0);
-assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ github\.run_id \}\}/);
+assert.match(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ \(github\.event_name == 'workflow_dispatch' && !inputs\.game_id && format\('batch-\{0\}', github\.sha\)\) \|\| github\.run_id \}\}/);
 assert.doesNotMatch(coordinatorGate,/group: company-development-confirmed-coordinator-gate-\$\{\{ inputs\.game_id/);
 assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_OLDEST_ACTIVE_RUN=/);
 assert.match(coordinatorGate,/DEVELOPMENT_COORDINATOR_ADMISSION=DEDUPED_ACTIVE_BATCH/);
@@ -285,10 +283,12 @@ assert.match(designCycle,/DESIGN_PRE_GATE=REMOVED/);
 assert.doesNotMatch(designCycle,/status:'PRE_GATE_BLOCKED'/);
 assert.match(designCycle,/DESIGN_CHECKPOINT_RESUME=YES/);
 assert.doesNotMatch(designCycle,/delete designCheckpoint\.phases\[key\]/);
-assert.match(designCycle,/DESIGN_LOCAL_SPLIT=/);
-assert.match(designCycle,/arrayChild\?'ARRAY_ITEMS':objectChild\?'NESTED_OBJECT':'FIELDS'/);
-assert.match(designCycle,/OUTPUT_TRUNCATED\|TIMEOUT/);
-assert.match(designCycle,/localAuthoringSplits/);
+assert.match(designCycle,/DESIGN_SLICE_REPAIR_SCOPE=/);
+assert.match(designCycle,/DESIGN_SLICE_CONTENT_REPAIR=/);
+assert.match(designCycle,/slicePartialResults/);
+assert.match(designCycle,/sliceDependencies/);
+assert.match(designCycle,/DESIGN_FULL_FLOW_CONTENT_VALID=YES/);
+assert.match(designCycle,/DESIGN_CHECKPOINTED_SLICES_COMPLETE=/);
 assert.doesNotMatch(designCycle,/generativelanguage|callExternalDesignerModel/);
 
 

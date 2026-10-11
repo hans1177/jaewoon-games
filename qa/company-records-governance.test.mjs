@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import {validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
+import {planCentralDocumentFormatting,validateCompanyRecord,scanCompanyRecords,extractChangeRecordReferences,extractCentralPolicyReferences,extractCentralDocumentReferences,classifyCentralChangeRecordRetention,planCentralDocumentArchive,planCentralCurrentUsePrune,planCompanionCurrentUsePrune,evaluateCentralDocumentBudget,inspectCentralDocument,inspectCentralDocumentBudgets,discoverCentralArchiveCandidates} from '../tools/company-records-governance.mjs';
 
 const root=process.cwd();
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -352,4 +352,17 @@ test('central candidate discovery reports historical-shaped nested state but nev
   assert.ok(rows.some(row=>row.path==='workerState.latestRun'));
   assert.ok(!rows.some(row=>row.path==='workerState.currentContract'));
   assert.equal(roadmap.workerState.latestRun.id,123);
+});
+
+
+test('central formatting preserves every rule, is idempotent, and cannot hide an over-budget document',()=>{
+  const policy={security:{deny:['secret','bypass'],required:true},grammar:['MAIN','A','B','c','@'],nested:{한글:{value:'그대로'}}};
+  const text=JSON.stringify(policy,null,2)+'\n';
+  const budget=Buffer.byteLength(JSON.stringify(policy,null,1)+'\n');
+  const result=planCentralDocumentFormatting(text,{hardMaxUtf8Bytes:budget});
+  assert.equal(result.changed,true);
+  assert.deepEqual(JSON.parse(result.text),policy);
+  assert.equal(planCentralDocumentFormatting(result.text,{hardMaxUtf8Bytes:budget}).changed,false);
+  assert.throws(()=>planCentralDocumentFormatting(text,{hardMaxUtf8Bytes:10}),/policy review required/);
+  assert.throws(()=>planCentralDocumentFormatting(text),/budget required/);
 });

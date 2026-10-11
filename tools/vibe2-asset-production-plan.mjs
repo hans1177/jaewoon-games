@@ -3028,7 +3028,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ?dccCapableTypes
     :unique([...(explicitRequestedTypes||[]),...explicitRecipeTypes,...webRequestedActorDccTypes,...libraryDerivationTypes].map(value=>clean(value).toLowerCase()).filter(Boolean));
   const mandatoryActorGlbTypes=dccCapableTypes.filter(type=>isCrossPlatform3dActorType(type)&&requestedDccScope.includes(type));
-  const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion
+  const automaticDccTypes=(engineNativeTarget||webNativeTarget)&&!internalMotion&&!selectedCareerRecipe
     ?unique([...dccCapableTypes.filter(type=>requestedDccScope.includes(type)),...libraryDerivationTypes])
     :[];
   const declaredDccTypes=(engineNativeTarget||webNativeTarget)?explicitRecipeTypes:[];
@@ -3052,7 +3052,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
     ].flatMap(value=>clean(value).toLowerCase().split(/[^a-z0-9가-힣]+/)).filter(value=>value.length>=2&&!genericRecipeTokens.has(value)));
     return rawTokens.some(token=>requestText.includes(token));
   };
-  const registryRecipeRows=(internalMotion?[]:manifestAssets)
+  const registryRecipeRows=(internalMotion||selectedCareerRecipe?[]:manifestAssets)
     .filter(asset=>recipeAssetRelevant(asset))
     .flatMap(asset=>(Array.isArray(asset?.authoringRecipes)?asset.authoringRecipes:[]).map(recipe=>({recipe,asset})));
   const normalizedExplicit=explicitRecipeRows.map(recipe=>normalizeNativeDccAuthoringRecipe(recipe,{
@@ -5100,7 +5100,8 @@ export function buildVibeAssetProductionPlan({
     ?task.buildUpDirective?.designImplementationContext||null:null;
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
-  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0
+  const authoredProceduralWorld=designSpatial?.proceduralWorld&&typeof designSpatial.proceduralWorld==='object'&&!Array.isArray(designSpatial.proceduralWorld)?designSpatial.proceduralWorld:null;
+  const automaticWorld=designSpatial&&(authoredProceduralWorld||clean(designSpatial.biome||designSpatial.geography))
     ?{
       approvedDesign:true,
       seed:clean(task.gameId)||'world',
@@ -5115,6 +5116,10 @@ export function buildVibeAssetProductionPlan({
       waterMode:clean(designSpatial.waterMode||task.worldDna?.waterMode)||'AUTO',
       ecologyActors:Array.isArray(designSpatial.ecologyActors)?designSpatial.ecologyActors:[],
       authoredDungeonSites:Array.isArray(designSpatial.authoredDungeonSites)?designSpatial.authoredDungeonSites:[],
+      // Preserve the authored biome, climate, dimensions, seed and reserved routes.
+      // An explicitly unapproved nested layout may never inherit approval from its parent.
+      ...authoredProceduralWorld,
+      approvedDesign:authoredProceduralWorld?authoredProceduralWorld.approvedDesign===true:true,
       source:'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
     }:null;
   const approvedWorld=task.worldDesign?.approvedDesign===true?task.worldDesign:null;

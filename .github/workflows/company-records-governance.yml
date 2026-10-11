@@ -118,6 +118,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Fit central documents without changing policy data
+        run: node tools/company-records-governance.mjs --central-format
+
       - name: Verify pruning tool
         run: |
           set -euo pipefail
@@ -130,7 +133,7 @@ jobs:
           set -euo pipefail
           node tools/company-records-governance.mjs --central-auto-prune | tee /tmp/central-auto-prune.log
           git diff --check
-          if git diff --quiet -- company-learning/platform-release-roadmap.json company-learning/company-architecture-map.json company-learning/company-log-map.json company-records/operations; then
+          if git diff --quiet -- company-learning/platform-release-roadmap.json company-learning/company-architecture-map.json company-learning/company-log-map.json company-learning/security-immune-system.json company-records/operations; then
             echo "changed=NO" >> "$GITHUB_OUTPUT"
             echo 'CENTRAL_POLICY_CURRENT_USE_PRUNE=NO_CHANGE'
           else
@@ -148,7 +151,7 @@ jobs:
           git config user.name 'jaewoon-records-governance'
           git config user.email 'actions@users.noreply.github.com'
           git switch -c "$branch"
-          git add company-learning/platform-release-roadmap.json company-learning/company-architecture-map.json company-learning/company-log-map.json company-records/operations
+          git add company-learning/platform-release-roadmap.json company-learning/company-architecture-map.json company-learning/company-log-map.json company-learning/security-immune-system.json company-records/operations
           git commit -m 'records: auto-prune unused central policy'
           head_sha="$(git rev-parse HEAD)"
           git push origin "$branch"

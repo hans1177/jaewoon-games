@@ -178,6 +178,30 @@ const readJsonRel=rel=>JSON.parse(readTextRel(rel));
 const readCentralRoadmap=()=>readJsonRel(CENTRAL_POLICY_REL);
 const escapeRegExp=value=>String(value??'').replace(/[|\\{}()[\]^$+*?.-]/g,'\\$&');
 
+// Formatting never removes policy data, including security rules consumed as whole documents.
+export function planCentralDocumentFormatting(text,{hardMaxUtf8Bytes}={}){
+  const document=JSON.parse(text);
+  if(!Number.isFinite(hardMaxUtf8Bytes)||hardMaxUtf8Bytes<=0)throw new Error('central document budget required');
+  if(utf8Bytes(text)<=hardMaxUtf8Bytes)return {text,changed:false};
+  for(const indent of [2,1]){
+    const formatted=JSON.stringify(document,null,indent)+'\n';
+    if(utf8Bytes(formatted)<=hardMaxUtf8Bytes)return {text:formatted,changed:formatted!==text};
+  }
+  throw new Error('central document remains above hard limit; policy review required');
+}
+export function formatCentralDocuments(){
+  // Prepare every result before writing: an oversized document leaves all four untouched.
+  const plans=Object.entries(CENTRAL_DOCUMENT_BUDGETS).map(([key,budget])=>{
+    const text=readTextRel(budget.sourcePath);
+    const hardMaxUtf8Bytes=key==='policy'
+      ?Number(JSON.parse(text).centralDocumentRetention?.maxUtf8Bytes||1120000)
+      :budget.hardMaxUtf8Bytes;
+    return {...planCentralDocumentFormatting(text,{hardMaxUtf8Bytes}),sourcePath:budget.sourcePath};
+  });
+  for(const plan of plans)if(plan.changed)fs.writeFileSync(path.join(ROOT,plan.sourcePath),plan.text);
+  return plans.filter(plan=>plan.changed).map(plan=>plan.sourcePath);
+}
+
 function pathValue(root,dotted=''){
   let current=root;
   for(const key of clean(dotted).split('.').filter(Boolean)){
@@ -838,9 +862,14 @@ export function archiveCentralDocument({createdAt=new Date().toISOString(),sourc
 
 function main(){
   const args=process.argv.slice(2);
+  if(args.includes('--central-format')){
+    console.log('CENTRAL_DOCUMENT_FORMATTED='+JSON.stringify(formatCentralDocuments()));
+    return;
+  }
   if(args.includes('--central-auto-prune')){
     const result=archiveCentralCurrentUse();
     const companion=archiveCentralCompanionCurrentUse();
+    console.log('CENTRAL_DOCUMENT_FORMATTED='+JSON.stringify(formatCentralDocuments()));
     console.log('CENTRAL_POLICY_AUTO_PRUNE_CHANGED='+(result.changed?'YES':'NO'));
     console.log('CENTRAL_POLICY_AUTO_PRUNE_PATHS='+result.plan.archivedPaths.length);
     console.log('CENTRAL_POLICY_AUTO_PRUNE_REDUCED_BYTES='+result.plan.reducedBytes);

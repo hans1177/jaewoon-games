@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
+import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
@@ -390,3 +391,23 @@ test('owner feature removal survives repeated evolution and only a newer explici
   assert.notEqual(next.ownerChangeFingerprint,previous.ownerChangeFingerprint);
 });
 
+
+test('asset worker keeps the same authored auto-biome as the spatial design and never upgrades explicit nonapproval',()=>{
+  const spec={approvedDesign:true,seed:'authored-snow-valley',dimension:'3D',width:16,height:20,cellSize:4,density:.25,biome:'SNOW',climate:'COLD',buildingStyle:'GOTHIC',reservedCells:[{x:2,z:3}]};
+  const build=world=>buildVibeAssetProductionPlan({repoRoot:'/nonexistent-biome-fixture',target:'roblox',task:{gameId:'snow-valley',goal:'environment background',buildUpDirective:{designContextMode:'APPROVED_OR_MINIMUM_DESIGN',designImplementationContext:{spatialLayout:{dimension:'3D',proceduralWorld:world}}}},manifest:{assets:[]},presetCatalog:{presets:[]}});
+  const plan=build(spec);
+  assert.equal(plan.autoBiomeEvaluation.source,'LATEST_VERIFIED_GAME_SPATIAL_DESIGN');
+  assert.equal(plan.proceduralWorldLayout.seed,spec.seed);
+  assert.equal(plan.proceduralWorldLayout.regionalBiome,'SNOW');
+  assert.equal(plan.proceduralWorldLayout.climate,'COLD');
+  assert.deepEqual(plan.proceduralWorldLayout.size,{width:16,height:20,cellSize:4});
+  assert.equal(plan.autoBiomeEvaluation.runtimeVerified,false);
+  assert.equal(plan.autoBiomeEvaluation.gameSourceMutationPerformed,false);
+  const unapproved=build({...spec,approvedDesign:false});
+  assert.equal(unapproved.proceduralWorldLayout.status,'APPROVED_DESIGN_REQUIRED');
+  const invalid=build({...spec,reservedCells:'invalid'});
+  assert.equal(invalid.proceduralWorldLayout.status,'INVALID_GENERATION_INPUT');
+  const unspecified=build(undefined);
+  assert.equal(unspecified.proceduralWorldLayout.status,'APPROVED_DESIGN_REQUIRED');
+  assert.equal(unspecified.autoBiomeEvaluation.missingDesignMustRouteToExistingDesignPipeline,true);
+});

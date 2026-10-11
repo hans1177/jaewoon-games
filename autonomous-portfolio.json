@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "status": "ACTIVE",
   "fixedProjectCount": false,
   "publicStableBranch": "main",
@@ -46,7 +46,8 @@
   },
   "developmentFocusPolicy": {
     "maxFocusedGames": 3,
-    "targetFocusedGames": 2,
+    "selectionAuthority": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.focusedDevelopmentCaretakers",
+    "targetFocusedGames": 3,
     "focusedGameCountIsWipGuidanceNotPortfolioCap": true,
     "focusStage": "RELEASE_CONFIRMED",
     "fillVacantFocusedSlots": true,
