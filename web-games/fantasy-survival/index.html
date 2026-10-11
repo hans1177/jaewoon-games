@@ -3109,20 +3109,26 @@ function updatePet(dt,now){
  }
 }
 function nearestSporeTarget(p,w){
- // 메인: 태양석 구슬은 시선 방향의 적을 우선 조준하고, 다른 유도 무기는 기존 최근접 조준 유지
+ // 전투 · 태양석 구슬은 실제 화면의 정면 몬스터를 먼저 유도한다.
+ // 포자 추적 무기의 기존 최근접 유도 및 무기 사거리·위력·공격 간격은 불변.
  const range=Number(w?.range)||760,cam=state.camera,viewPad=40;
  const left=cam.x-viewPad,top=cam.y-viewPad,right=cam.x+innerWidth+viewPad,bottom=cam.y+innerHeight+viewPad;
  const fx=Number(p.faceX)||0,fy=Number(p.faceY)||0,fl=Math.hypot(fx,fy)||1;
- let nearest=null,nearestDist=range,forward=null,forwardDist=range;
+ let nearest=null,nearestDist=range,forward=null,forwardDist=range,straight=null,straightDist=range;
  for(const e of state.enemies){
   if(e.hp<=0||e.area!==state.area||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&performance.now()<(e.submergedUntil||0)))continue;
   if(e.x+e.type.r<left||e.x-e.type.r>right||e.y+e.type.r<top||e.y-e.type.r>bottom)continue;
   const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy);
   if(d>range+e.type.r)continue;
-  if(d<nearestDist){nearest=e;nearestDist=d}
-  if(w?.sunMagic&&d<forwardDist&&(dx*fx+dy*fy)/((d||1)*fl)>=.35){forward=e;forwardDist=d}
+  if(w?.sunMagic){
+   const projection=(dx*fx+dy*fy)/fl;
+   if(projection<=0||projection/(d||1)<.35)continue;
+   const sideGap=Math.abs(dx*fy-dy*fx)/fl;
+   if(sideGap<=Math.max(40,e.type.r+18)&&d<straightDist){straight=e;straightDist=d}
+   if(d<forwardDist){forward=e;forwardDist=d}
+  }else if(d<nearestDist){nearest=e;nearestDist=d}
  }
- return w?.sunMagic&&forward?forward:nearest
+ return w?.sunMagic?(straight||forward):nearest
 }
 function fireSporeSeeker(now,p,w,target){
  const dx=target.x-p.x,dy=target.y-p.y,d=Math.hypot(dx,dy)||1,speed=w.sunMagic?460:360;
@@ -3175,6 +3181,9 @@ function attack(){
  let hit=false;
  for(const e of state.enemies){
    if(e.area!==state.area||e.hp<=0||(e.type.mood==='harmless'&&!e.type.huntable)||(e.type.labBoss&&now<(e.submergedUntil||0)))continue;
+   // 전투 · 화면 밖 적을 허공 타격으로 처리하지 않는다.
+   const cam=state.camera;
+   if(e.x+e.type.r<cam.x||e.x-e.type.r>cam.x+innerWidth||e.y+e.type.r<cam.y||e.y-e.type.r>cam.y+innerHeight)continue;
    const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy);if(d>currentRange()+e.type.r)continue;
    const dot=(dx*p.faceX+dy*p.faceY)/(d||1);if(dot<-.18)continue;
    if(e.type.burrower)e.provokedByPlayer=true;
