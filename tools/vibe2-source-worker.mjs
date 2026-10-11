@@ -4252,19 +4252,27 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
         nativeBuildRequiresRegisteredAssetAndRealSource:true,
         sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
         selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
-          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR')
+          .filter(row=>['ADAPT','ACQUIRE_ADAPT','AUTHOR'].includes(row.action))
           .map(row=>Object.freeze({
             family:row.family,action:row.action,reason:row.reason,
-            selectedSourceId:row.externalAcquisition?.sourceId||null,
+            selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
             sourcePage:row.externalAcquisition?.sourceUrl||null,
             directDownload:row.externalAcquisition?.downloadUrl||null,
             acquisitionState:row.externalAcquisition?.acquisitionState||null,
-            license:row.externalAcquisition?.license||null,
+            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||null,
             licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
+            // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
+            sourceModel:row.libraryReuse?.sourceModel||null,
+            sourceSha256:row.libraryReuse?.expectedSourceSha256||null,
+            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true,
+            sourceAssetImmutable:row.libraryReuse?.originalImmutable===true,
+            materialRefinement:row.materialRefinement||null,
+            assetization:row.assetization||null,
             nativeDccScript:row.assetization?.nativeDccScript||null,
             sourceModelField:row.assetization?.nativeSourceModelField||null,
             runtimeVerified:false,productionVerified:false,
             nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
+              ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
           })))
       })
     }),
