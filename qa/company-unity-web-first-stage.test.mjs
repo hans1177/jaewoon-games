@@ -99,11 +99,12 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH/);
   assert.match(workflow,/UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED/);
   assert.equal(request.registryVersionRequired,companyRegistry.version);
-  assert.deepEqual(request.registryAssetIds,[
+  assert.deepEqual(request.registryAssetIds.slice(0,3),[
     'unity-fantasy-survival-tree-trunk-v1',
     'unity-fantasy-survival-tree-crown-v1',
     'unity-fantasy-survival-tree-materials-v1'
   ]);
+  assert.equal(request.registryAssetIds.length,22,'expanded internal Unity asset loadout must be source registered');
   assert.match(build,/SOURCE_READY_RUNTIME_UNVERIFIED/,'import preflight cannot claim runtime QA');
   assert.match(build,/mesh\.GetIndexCount\(submesh\)/,'Editor import QA must work with unreadable meshes');
   assert.match(game,/mesh\.GetIndexCount\(submesh\)/,'WebGL runtime must use non-readable-safe mesh index metadata');
@@ -202,6 +203,63 @@ test('Fantasy Survival removes dead monster touch hitboxes through the existing 
   assert.match(workflow,/repair-vibe2:/);
 });
 
+
+test('Fantasy Survival Unity Web uses real shared library meshes, UI and action timing sources without changing game authority',()=>{
+  const project='unity-games/fantasy-survival/Assets/';
+  const game=fs.readFileSync(project+'Scripts/UnityWebFloorGame.cs','utf8');
+  const editor=fs.readFileSync(project+'Editor/UnityWebFloorBuild.cs','utf8');
+  const reg=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const request=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  const nativeAssets=request.registryAssetIds.map(id=>reg.assets.find(asset=>asset.id===id));
+  assert.ok(nativeAssets.every(Boolean),'every requested asset is in the company registry');
+  assert.equal(new Set(request.registryAssetIds).size,request.registryAssetIds.length);
+  assert.equal(request.registryVersionRequired,reg.version);
+  assert.deepEqual([...new Set(nativeAssets.map(a=>a.family))].sort(),
+    ['BUILDING','CHARACTER','CREATURE','ENVIRONMENT','MATERIAL','MOTION','PROP','UI','WEAPON']);
+  for(const asset of nativeAssets){
+    assert.equal(asset.platform,'UNITY');
+    assert.equal(asset.originalSourceImmutable,true);
+    assert.equal(asset.productionVerified,false);
+    assert.equal(asset.nativeRuntimeVerified,false);
+    assert.ok(asset.sourceParentPath.startsWith('assets/'));
+    const relative=asset.path.replace(/^\/+/, '');
+    assert.equal(asset.nativeArtifactHash,createHash('sha256').update(fs.readFileSync(relative)).digest('hex'));
+    assert.equal(asset.sourceHash,createHash('sha256').update(fs.readFileSync(asset.sourceParentPath)).digest('hex'));
+  }
+  for(const name of ['MagicForestRock','MagicForestChest','MagicForestCrate','MagicForestWall','MagicForestDoor',
+    'MagicForestFoundation','MagicForestRoof','MagicForestLamp','MagicForestRoad','MagicForestTorso','MagicForestCape',
+    'MagicForestShoulder','MagicForestCanine','MagicForestClaw','MagicForestSword','MagicForestGrip']){
+    assert.match(editor,new RegExp('CompanyAssets/'+name+'\\.obj'));
+    const model=fs.readFileSync(project+'Resources/CompanyAssets/'+name+'.obj','utf8');
+    assert.match(model,/mtllib MagicForestDetailMaterials\.mtl/);
+    assert.match(model,/Parent Git blob [0-9a-f]{40}/);
+    assert.ok((model.match(/^v /gm)||[]).length>=30);
+    assert.ok((model.match(/^f /gm)||[]).length>=20);
+  }
+  const ui=JSON.parse(fs.readFileSync(project+'Resources/CompanyAssets/MagicForestUI.json','utf8'));
+  const motion=JSON.parse(fs.readFileSync(project+'Resources/CompanyAssets/MagicForestMotion.json','utf8'));
+  assert.equal(ui.source,'assets/roblox/common-ui-v1/RobloxCommonUI.luau');
+  assert.equal(motion.source,'assets/roblox/common-motion-v1/RobloxCommonMotion.luau');
+  assert.equal(motion.runtimeVerification,'PENDING_UNITY_WEB');
+  assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestUI"\)/);
+  assert.match(game,/Resources\.Load<TextAsset>\("CompanyAssets\/MagicForestMotion"\)/);
+  assert.match(game,/BindCompanyVisual\("MagicForestRock"/);
+  assert.match(game,/BindCompanyVisual\("MagicForestRoad"/);
+  assert.match(game,/BindCompanyVisual\("MagicForestTorso"/);
+  assert.match(game,/SyncPlayerWeaponVisual\(\)/);
+  assert.match(game,/AnimatePlayerPresentation\(movement\.magnitude\)/);
+  assert.match(game,/AnimateMonsterPresentation\(m,presentationWalking\)/);
+  assert.match(game,/ApplyCompanyUiSkin\(\)/);
+  assert.match(game,/BeginPlayerAction\(2\)/);
+  assert.match(game,/BeginPlayerAction\(3\)/);
+  assert.match(game,/monsterColliders\.Remove\(collider\)/);
+  assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
+  assert.equal(request.productionVerified,false);
+  assert.equal(request.fullGameplayPassAuthority,false);
+  assert.match(editor,/UNITY_WEB_NATIVE_PRESENTATION_SOURCE_MISSING/);
+  assert.doesNotMatch(game,/sharedMesh\.triangles\.Length/);
+});
+
 test('native asset registry preflight runs before Unity editor and fails closed on tampered source',()=>{
   const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   const begin=workflow.indexOf('      - name: Verify Unity Web development-floor contract');
@@ -225,12 +283,20 @@ test('native asset registry preflight runs before Unity editor and fails closed 
     'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj',
     'unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl'
   ];
+  // 확장된 내부 라이브러리 원본/네이티브 파생까지 동일한 기존 해시 게이트에서 검사한다.
+  const declaration=JSON.parse(fs.readFileSync('.build-requests/unity-web/fantasy-survival.json','utf8'));
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  for(const id of declaration.registryAssetIds){
+    const row=registry.assets.find(asset=>asset.id===id);
+    assert.ok(row,'registered native source required: '+id);
+    paths.push(row.sourceParentPath,String(row.path).replace(/^\/+/,'')); 
+  }
   const invoke=()=>execFileSync(process.execPath,['--input-type=module','--eval',code],{
     cwd:root,encoding:'utf8',timeout:15000,
     env:{...process.env,GAME_ID:'fantasy-survival',PROJECT_PATH:'unity-games/fantasy-survival'}
   });
   try{
-    for(const relative of paths){
+    for(const relative of new Set(paths)){
       const dest=path.join(root,relative);
       fs.mkdirSync(path.dirname(dest),{recursive:true});
       fs.copyFileSync(relative,dest);
