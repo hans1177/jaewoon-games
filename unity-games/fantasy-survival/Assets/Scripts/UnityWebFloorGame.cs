@@ -417,6 +417,10 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private float playerActionStart,playerActionUntil,playerActionDuration;
     private int playerActionKind;
     private Texture2D uiPanelTexture,uiButtonTexture,uiButtonActiveTexture,uiInsetTexture;
+    // 특수효과 · 라이브러리의 실제 3D 메시를 최대 8개 재활용한다. 전투 판정과 독립.
+    private readonly GameObject[] hitVisuals=new GameObject[8];
+    private readonly float[] hitVisualUntil=new float[8];
+    private int nextHitVisual;
 
     // 메인 · 초기화
     private void Awake()
@@ -792,6 +796,45 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         GUI.skin.textField.normal.textColor=Color.white;
     }
 
+    // 스킬 이펙트 · 이미 등록된 회사 라이브러리 메시만 소비하는 짧은 타격 잔상.
+    // 8개 풀이므로 히트가 반복되어도 객체/재질이 무제한 증식하지 않는다.
+    private void ShowHitVisual(Monster target)
+    {
+        if(target==null || target.obj==null || worldRoot==null)return;
+        int slot=nextHitVisual++%hitVisuals.Length;
+        GameObject visual=hitVisuals[slot];
+        if(visual==null)
+        {
+            visual=BindCompanyVisual("MagicForestClaw",worldRoot.transform,
+                Vector3.zero,Vector3.one*.26f,Quaternion.identity);
+            if(visual==null)return;
+            hitVisuals[slot]=visual;
+            foreach(Renderer renderer in visual.GetComponentsInChildren<Renderer>(true))
+            {
+                renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+                renderer.receiveShadows=false;
+            }
+        }
+        visual.transform.position=target.obj.transform.position+Vector3.up*1.0f;
+        visual.transform.rotation=Quaternion.Euler(-26f,(nextHitVisual*71)%360,34f);
+        visual.transform.localScale=Vector3.one*.34f;
+        hitVisualUntil[slot]=Time.time+.24f;
+        visual.SetActive(true);
+    }
+
+    private void UpdateHitVisuals()
+    {
+        for(int i=0;i<hitVisuals.Length;i++)
+        {
+            GameObject visual=hitVisuals[i];
+            if(visual==null || !visual.activeSelf)continue;
+            float remaining=hitVisualUntil[i]-Time.time;
+            if(remaining<=0f){visual.SetActive(false);continue;}
+            visual.transform.Rotate(0f,420f*Time.deltaTime,240f*Time.deltaTime,Space.World);
+            visual.transform.localScale=Vector3.one*(.18f+.16f*Mathf.Clamp01(remaining/.24f));
+        }
+    }
+
     // 모션 · 게임 로직을 변경하지 않고 실제 공용 관절 클립만 재생한다.
     private static void PlayNativeMotion(Animation motion,string state)
     {
@@ -959,6 +1002,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         blocks.Clear();
         monsterColliders.Clear();
         blockColliders.Clear();
+        foreach(GameObject visual in hitVisuals)if(visual!=null)visual.SetActive(false);
     }
 
     // 메인 · 기존 몬스터 정보를 3D로 표현
@@ -1292,6 +1336,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(target==null||target.hp<=0f)return;
         target.hp=Mathf.Max(0f,target.hp-Mathf.Max(0f,damage));
         target.hitPoseUntil=Time.time+motionProfile.hitSeconds;
+        // 피해 판정이 발생한 상대에게만 잔상을 표시한다. 허공 타격은 효과도 처치도 없다.
+        if(damage>0f)ShowHitVisual(target);
         if(target.hp<=0f)
         {
             if(!target.ally)
@@ -1372,6 +1418,27 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             Tint(sphere,sand?new Color(.89f,.73f,.33f):new Color(.74f,.49f,.98f));
             Collider collider=sphere.GetComponent<Collider>();
             if(collider!=null)Destroy(collider);
+            // 투사체 · 단색 구체를 회사의 네이티브 바위 결정 메시와 자산 재질 궤적으로 표현.
+            GameObject crystal=BindCompanyVisual("MagicForestRock",sphere.transform,
+                Vector3.zero,Vector3.one*.72f,Quaternion.identity);
+            if(crystal!=null)sphere.GetComponent<Renderer>().enabled=false;
+            GameObject trailSource=Resources.Load<GameObject>("CompanyAssets/MagicForestSword");
+            Renderer trailSourceRenderer=trailSource!=null?trailSource.GetComponentInChildren<Renderer>():null;
+            if(trailSourceRenderer!=null && trailSourceRenderer.sharedMaterial!=null)
+            {
+                TrailRenderer trail=sphere.AddComponent<TrailRenderer>();
+                trail.sharedMaterial=trailSourceRenderer.sharedMaterial;
+                trail.time=.24f;
+                trail.startWidth=sand?.23f:.28f;
+                trail.endWidth=0f;
+                trail.minVertexDistance=.09f;
+                trail.numCapVertices=3;
+                trail.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+                trail.receiveShadows=false;
+                Color color=sand?new Color(.98f,.76f,.30f,1f):new Color(.76f,.46f,.99f,1f);
+                trail.startColor=color;
+                trail.endColor=new Color(color.r,color.g,color.b,0f);
+            }
             homingSpells.Add(new HomingSpell{targetId=target.runtimeId,
                 damage=damage,speed=sand?18f:21f,expiresAt=Time.time+3.5f,
                 sandEffect=sand,obj=sphere});
@@ -1401,6 +1468,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void Update()
     {
         if(screenMode!=ScreenMode.Playing)return;
+        UpdateHitVisuals();
         float dt=Mathf.Min(Time.deltaTime,.05f);
         if(panel==Panel.None)
         {
