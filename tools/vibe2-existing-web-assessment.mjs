@@ -63,6 +63,18 @@ function scopeMetrics(html='',baseline={}){
 }
 export const EXISTING_WEB_STRATEGIES=Object.freeze(['KEEP_AND_CONTINUE','PARTIAL_REPAIR','MAJOR_REWORK','FULL_REBUILD']);
 
+// DEVELOPMENT_CONFIRMED is a native production state, not a Web release claim.
+// Publicly playable Web entries still require validation during an owner development hold.
+export function selectDevelopmentWebValidationGames({catalog={},policy={}}={}){
+  const scope=policy.directNativeDualPlatformDevelopment?.ownerActiveDevelopmentScope20261009||policy.ownerActiveDevelopmentScope20261009;
+  const webDevelopmentHeld=scope?.status==='ACTIVE'
+    &&!['WEB','UNITY_WEB'].some(target=>(scope.activeTargets||[]).includes(target));
+  return(catalog.games||[]).filter(game=>
+    clean(game.productionClass).toUpperCase()==='DEVELOPMENT_CONFIRMED'
+    &&(!webDevelopmentHeld||game.homepageWebPlayable===true||game.canonical?.sources?.web?.playable===true)
+  );
+}
+
 export function assessExistingWebSource({html='',baseline={},approvedDesign=false,validationScore=null,sourceExists=true}={}){
   const text=String(html||''),bytes=Buffer.byteLength(text,'utf8'),signals=gameplaySignals(text),scope=scopeMetrics(text,baseline);
   const prototypeMarkers=[/FULL APPROVED WEB COMPANION/i,/검증\s*(?:루프|패널|체크리스트)/i,/data-session-stage=/i,/STATUS:\s*준비/i,/승인\s*분량\s*전체\s*구현/i].filter(re=>re.test(text)).length;

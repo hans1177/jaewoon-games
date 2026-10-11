@@ -968,16 +968,16 @@ test('runner pressure suppresses only optional speculative variants while preser
   assert.ok(reserved.tasks.every(task=>task.neuronExpectedVariants===1));
 });
 
-test('reserve-batch reads adaptive runner pressure and restores speculation after pressure clears',()=>{
+test('reserve-batch reads adaptive pressure while preserving native primary coverage without native speculation',()=>{
   const makeFiles=(name,control)=>{
     const dir=fs.mkdtempSync(path.join(os.tmpdir(),name));
     const queueFile=path.join(dir,'queue.json');
     const controlFile=path.join(dir,'control.json');
     const batchFile=path.join(dir,'batch.json');
     fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:4,tasks:[{
-      id:'risky-web',gameId:'risky-web',target:'web',department:'development',type:'implementation',
+      id:'risky-roblox',gameId:'gem-survivor',target:'roblox',department:'development',type:'implementation',
       goal:'targeted runtime repair',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
-      sourceRoot:'web-games/risky-web',responsibleFiles:['index.html']
+      sourceRoot:'roblox-games/gem-survivor',responsibleFiles:['server/Game.server.luau']
     }]},null,2));
     fs.writeFileSync(controlFile,JSON.stringify(control,null,2));
     return{queueFile,controlFile,batchFile};
@@ -1013,9 +1013,9 @@ test('reserve-batch reads adaptive runner pressure and restores speculation afte
   assert.equal(restored.speculativeExpansion.allowed,true);
   assert.equal(restored.speculativeExpansionAllowed,true);
   assert.equal(restored.tasks.length,1);
-  assert.equal(restored.matrix[0].speculativeVariants,3);
+  assert.equal(restored.matrix[0].speculativeVariants,1);
   assert.equal(healthyBatch.scheduler.primaryTaskCount,1);
-  assert.equal(healthyBatch.scheduler.workerCount,3);
+  assert.equal(healthyBatch.scheduler.workerCount,1);
   assert.equal(healthyBatch.scheduler.speculativeExpansionAllowed,true);
   assert.equal(healthyBatch.scheduler.speculativeExpansionReason,'AVAILABLE');
 });

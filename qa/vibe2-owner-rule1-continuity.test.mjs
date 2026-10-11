@@ -40,7 +40,7 @@ test('verified task completion is stored as checkpoint evidence rather than done
 
 test('empty queue and failed subjobs preserve next-cycle continuity while external runner queue owns physical backpressure',()=>{
   const repeat=roadmap.fixedAutonomousDevelopmentOperatingContract?.repeatDevelopmentConcurrency;
-  assert.equal(repeat?.fixedSlots,64);
+  assert.equal(repeat?.fixedSlots,128);
   assert.equal(repeat?.runnerPressurePolicy,'EXTERNAL_GITHUB_ACTIONS_QUEUE_OWNS_PHYSICAL_BACKPRESSURE');
   assert.equal(repeat?.runnerPressureMaySuppressGamePrimaryDispatch,false);
   assert.equal(repeat?.runnerPressureMaySuppressNextCycleRefill,false);
