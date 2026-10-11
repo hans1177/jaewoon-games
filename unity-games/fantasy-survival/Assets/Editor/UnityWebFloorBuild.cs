@@ -51,6 +51,19 @@ public static class UnityWebFloorBuild
         if(report.summary.result!=BuildResult.Succeeded)throw new Exception("ANDROID_BUILD_FAILED:"+report.summary.result);
     }
 
+
+    // 자산 · 얇은 도로 메시는 X/Z 면적과 최소 높이를 따로 검사한다.
+    private static bool RoadHasDepth(GameObject model)
+    {
+        foreach (MeshFilter filter in model.GetComponentsInChildren<MeshFilter>(true))
+        {
+            if (filter == null || filter.sharedMesh == null) continue;
+            Vector3 size = filter.sharedMesh.bounds.size;
+            if (size.x > .2f && size.z > .2f && size.y > .002f) return true;
+        }
+        return false;
+    }
+
     private static void EnsureScene()
     {
         // Build 전 검사 · 기존 Unity 프로젝트에 실제 네이티브 3D 자산이 임포트됐는지 확인한다.
@@ -119,6 +132,8 @@ public static class UnityWebFloorBuild
                 throw new Exception("UNITY_WEB_NATIVE_PRESENTATION_SOURCE_MISSING:"+sourcePath);
             Debug.Log("UNITY_WEB_NATIVE_PRESENTATION_SOURCE=SOURCE_READY_RUNTIME_UNVERIFIED:"+sourcePath);
         }
+        // 기존 공식 Unity 빌드 안에서만 회사 공용 리그·동작 GLB를 네이티브 메시로 변환한다.
+        UnityCompanyAssets.Prepare();
         if(!AssetDatabase.IsValidFolder(SceneFolder))AssetDatabase.CreateFolder("Assets","Scenes");
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
             ?EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single)
