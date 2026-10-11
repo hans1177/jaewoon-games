@@ -457,6 +457,45 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             ground.transform.localScale = new Vector3(16f, .9f, 80f);
             Tint(ground, regionColors[i]);
         }
+        // 그래픽 · 공용 3D OBJ 원본에서 Unity Y축/재질에 맞춰 파생 제작한 실제 메시를 연결한다.
+        // 기존 Tree/Rock 콜라이더와 채집 판정은 그대로 두고, 시각 모델만 교체한다.
+        GameObject treeTrunkSource = Resources.Load<GameObject>("CompanyAssets/MagicForestTrunk");
+        GameObject treeCrownSource = Resources.Load<GameObject>("CompanyAssets/MagicForestCrown");
+        // 메시 임포트의 Read/Write가 꺼져 있어도 3D 지오메트리 검증이 가능해야 한다.
+        // 읽기 제한된 Mesh.triangles 접근은 WebGL 초기화를 예외로 중단할 수 있다.
+        int trunkIndices = 0, crownIndices = 0;
+        bool trunkHasDepth = false, crownHasDepth = false;
+        if (treeTrunkSource != null)
+        {
+            foreach (MeshFilter filter in treeTrunkSource.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        trunkIndices += (int)mesh.GetIndexCount(submesh);
+                Vector3 size = mesh.bounds.size;
+                if (size.x > .1f && size.y > 1f && size.z > .1f) trunkHasDepth = true;
+            }
+        }
+        if (treeCrownSource != null)
+        {
+            foreach (MeshFilter filter in treeCrownSource.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        crownIndices += (int)mesh.GetIndexCount(submesh);
+                Vector3 size = mesh.bounds.size;
+                if (size.x > .1f && size.y > 1f && size.z > .1f) crownHasDepth = true;
+            }
+        }
+        bool treeNativeReady = trunkIndices >= 300 && crownIndices >= 600
+            && trunkHasDepth && crownHasDepth
+            && treeTrunkSource.GetComponentInChildren<Renderer>() != null
+            && treeCrownSource.GetComponentInChildren<Renderer>() != null;
+        int nativeTreeCount = 0;
         for (int i = 0; i < 85; i++)
         {
             float x = (i * 19 % 77) - 38f;
@@ -476,8 +515,37 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 crown.transform.localPosition = Vector3.up * .85f;
                 crown.transform.localScale = new Vector3(4.5f, .9f, 4.5f);
                 Tint(crown, new Color(.19f + i % 3 * .05f, .39f, .22f));
+
+                if (treeNativeReady)
+                {
+                    GameObject trunkVisual = Instantiate(treeTrunkSource, worldRoot.transform);
+                    trunkVisual.name = "TreeNativeTrunk_" + i;
+                    trunkVisual.transform.position = new Vector3(x, 0f, z);
+                    trunkVisual.transform.rotation = Quaternion.Euler(0f, i * 37f, 0f);
+                    trunkVisual.transform.localScale = new Vector3(.43f, .72f, .43f);
+
+                    GameObject crownVisual = Instantiate(treeCrownSource, worldRoot.transform);
+                    crownVisual.name = "TreeNativeCrown_" + i;
+                    crownVisual.transform.position = new Vector3(x, 3.65f, z);
+                    crownVisual.transform.rotation = trunkVisual.transform.rotation;
+                    crownVisual.transform.localScale = new Vector3(.70f, .65f, .70f);
+                    foreach (Collider visualCollider in trunkVisual.GetComponentsInChildren<Collider>())
+                        Destroy(visualCollider);
+                    foreach (Collider visualCollider in crownVisual.GetComponentsInChildren<Collider>())
+                        Destroy(visualCollider);
+                    // 채집/상호작용 영역의 물리 콜라이더를 삭제하지 않는다.
+                    trunk.GetComponent<Renderer>().enabled = false;
+                    crown.GetComponent<Renderer>().enabled = false;
+                    // 원래 잎구체의 보이지 않는 충돌체가 실제 나무 채집 Raycast를 막지 않게 한다.
+                    // Tree 몸통의 기존 콜라이더와 자원 판정은 그대로 유지한다.
+                    Collider oldCrownCollider = crown.GetComponent<Collider>();
+                    if (oldCrownCollider != null) Destroy(oldCrownCollider);
+                    nativeTreeCount++;
+                }
             }
         }
+        Debug.Log("MAGIC_FOREST_NATIVE_ASSET_BINDING=" + (treeNativeReady ? "SOURCE_BOUND_RUNTIME_QA_REQUIRED" : "ASSET_REPAIR_REQUIRED")
+            + " prefab=CompanyAssets/MagicForestTrunk+MagicForestCrown nativeTreeCount=" + nativeTreeCount);
         GameObject character = new GameObject("Player_3D");
         character.transform.SetParent(worldRoot.transform);
         character.transform.position = Vector3.zero;

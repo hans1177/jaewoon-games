@@ -31,7 +31,7 @@ namespace JaewoonGames.DaechungRpg
         private Coroutine _combatRoutine;
         private Coroutine _travelRoutine;
         // 그래픽: 원격 에셋을 유지하고 오프라인 전용 아트·사냥터 장면을 제공한다.
-        private SpriteRenderer _backdrop;
+        private MeshRenderer _backdrop;
         private MeshRenderer _depthGround;
         private MeshRenderer _depthPath;
         private Material _treeCanopyMaterial;
@@ -108,19 +108,20 @@ namespace JaewoonGames.DaechungRpg
             _enemy.SetVisible(false);
             _coopPartner = new AnimatedActor("CoopPartner", new Vector3(-0.8f, -1.65f, -0.45f), true);
             _coopPartner.SetVisible(false);
-            var backdropObject = new GameObject("DaechungRegionBackground");
+            // 그래픽 · 지역 그림은 3D 무대 뒤쪽 메시에 투영한다. 캐릭터는 전부 입체 MeshRenderer다.
+            var backdropObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            backdropObject.name = "DaechungRegionBackground";
             backdropObject.transform.SetParent(transform, false);
-            _backdrop = backdropObject.AddComponent<SpriteRenderer>();
-            _backdrop.sortingOrder = -30;
+            var backdropCollider = backdropObject.GetComponent<Collider>();
+            if (backdropCollider != null) UnityEngine.Object.Destroy(backdropCollider);
+            _backdrop = backdropObject.GetComponent<MeshRenderer>();
             var pixelShader = Shader.Find("Jaewoon/DaechungPixelArt");
-            if (pixelShader != null)
-            {
-                var material = new Material(pixelShader);
-                _backdrop.sharedMaterial = material;
-                _player.SetMaterial(material);
-                _enemy.SetMaterial(material);
-                _coopPartner.SetMaterial(material);
-            }
+            if (pixelShader == null || !pixelShader.isSupported)
+                pixelShader = Shader.Find("Unlit/Texture");
+            if (pixelShader == null || !pixelShader.isSupported)
+                pixelShader = Shader.Find("Standard");
+            if (pixelShader != null && pixelShader.isSupported)
+                _backdrop.sharedMaterial = new Material(pixelShader);
             SetRegionVisual("town");
             InstallLocalActor(_player, "hero");
             InstallLocalActor(_enemy, "skeleton");
@@ -329,9 +330,13 @@ namespace JaewoonGames.DaechungRpg
                 sprite = CreateBackdrop(id);
                 _regions[id] = sprite;
             }
-            _backdrop.sprite = sprite;
-            _backdrop.transform.position = new Vector3(0f, 0f, 8f);
-            _backdrop.transform.localScale = Vector3.one * 3.0f;
+            // 기존 지역별 아트는 텍스처로 보존하되 Unity 2D Renderer는 사용하지 않는다.
+            if (_backdrop.sharedMaterial != null)
+                _backdrop.sharedMaterial.mainTexture = sprite.texture;
+            _backdrop.transform.position = new Vector3(0f, 0f, 9f);
+            _backdrop.transform.localScale = new Vector3(
+                sprite.rect.width / sprite.pixelsPerUnit * 3f,
+                sprite.rect.height / sprite.pixelsPerUnit * 3f, 1f);
 
             // 그래픽: 같은 Unity 카메라에서 원근 투영하는 실제 XZ 지형과 길.
             // 단순 2D 배경 확대가 아니라 지역마다 색이 바뀌는 3D 깊이 기하를 렌더한다.
@@ -453,7 +458,8 @@ namespace JaewoonGames.DaechungRpg
                     materialsValid &= renderer.sharedMaterial != null
                         && renderer.sharedMaterial.shader != null && renderer.sharedMaterial.shader.isSupported;
                 }
-                var backdropTexture = _backdrop != null && _backdrop.sprite != null ? _backdrop.sprite.texture : null;
+                var backdropTexture = _backdrop != null && _backdrop.sharedMaterial != null
+                    ? _backdrop.sharedMaterial.mainTexture : null;
                 bool textureDecoded = backdropTexture != null && backdropTexture.width > 0 && backdropTexture.height > 0;
                 bool geometryPass = inspected >= 2 && validMeshes == inspected && triangles > 0
                     && volumetricMeshes > 0 && materialsValid && textureDecoded;
@@ -992,7 +998,6 @@ namespace JaewoonGames.DaechungRpg
 
             private readonly Dictionary<string, Clip> _clips = new Dictionary<string, Clip>(StringComparer.OrdinalIgnoreCase);
             private readonly GameObject _root;
-            private readonly SpriteRenderer _renderer;
             // 실제 Unity Native Mesh는 기존 액션 상태를 렌더할 뿐 게임플레이/저장 권한이 없다.
             private readonly GameObject _model;
             private readonly Transform _body, _head, _leftArm, _rightArm, _leftLeg, _rightLeg;
@@ -1009,9 +1014,6 @@ namespace JaewoonGames.DaechungRpg
                 _root = new GameObject(name);
                 _root.transform.position = position;
                 _root.transform.localScale = Vector3.one * 1.4f;
-                _renderer = _root.AddComponent<SpriteRenderer>();
-                _renderer.flipX = faceRight;
-                _renderer.sortingOrder = 10;
                 _faceRight = faceRight;
                 // 렌더러의 기존 생성 책임 안에서 3D 모델을 한 번만 만든다.
                 var shader = Shader.Find("Standard");
@@ -1038,7 +1040,6 @@ namespace JaewoonGames.DaechungRpg
                     new Vector3(-0.14f, 0.17f, 0f), new Vector3(0.17f, 0.31f, 0.17f), _accent);
                 _rightLeg = CreatePart(_model.transform, "RightLeg", PrimitiveType.Capsule,
                     new Vector3(0.14f, 0.17f, 0f), new Vector3(0.17f, 0.31f, 0.17f), _accent);
-                _renderer.enabled = false;
                 FaceRight(faceRight);
             }
 
@@ -1070,7 +1071,20 @@ namespace JaewoonGames.DaechungRpg
                         && mesh.bounds.size.y > 0.02f && mesh.bounds.size.z > 0.02f;
                 }
             }
-            public bool SpriteVisible => _renderer.enabled && _renderer.gameObject.activeInHierarchy;
+            public bool SpriteVisible
+            {
+                get
+                {
+                    // QA · 가짜 0 표시가 아니라 현재 실제 활성화된 2D Renderer가 있는지 검사한다.
+                    foreach (var renderer in _root.GetComponentsInChildren<Renderer>(true))
+                    {
+                        if (renderer != null && renderer.enabled && renderer.gameObject.activeInHierarchy
+                            && renderer.GetType().Name == "SpriteRenderer")
+                            return true;
+                    }
+                    return false;
+                }
+            }
 
             public void SetIdentity(string id)
             {
@@ -1098,18 +1112,15 @@ namespace JaewoonGames.DaechungRpg
             public void SetTint(Color tint)
             {
                 _tint = tint;
-                _renderer.color = tint;
                 if (_skin != null)
                     _skin.color = new Color(_baseColor.r * tint.r, _baseColor.g * tint.g, _baseColor.b * tint.b);
             }
             public void FaceRight(bool facingRight)
             {
                 _faceRight = facingRight;
-                _renderer.flipX = facingRight;
                 if (_model != null) _model.transform.localRotation =
                     Quaternion.Euler(0f, facingRight ? -16f : 16f, 0f);
             }
-            public void SetMaterial(Material material) { _renderer.sharedMaterial = material; }
 
             public bool Loaded { get; set; }
             public bool Dead { get; set; }
@@ -1122,7 +1133,6 @@ namespace JaewoonGames.DaechungRpg
 
             public void SetVisible(bool visible)
             {
-                _renderer.enabled = visible && _skin == null;
                 if (_model != null) _model.SetActive(visible && _skin != null);
             }
 
@@ -1162,8 +1172,9 @@ namespace JaewoonGames.DaechungRpg
                     }
                 }
 
-                _renderer.sprite = clip.Frames[frameIndex];
-                // 기존 Clip 시간에 맞춘 네이티브 3D 자세만 갱신한다. 공격 판정은 GameCore가 유지한다.
+                // 기존 프레임 시간에 맞춰 같은 캐릭터의 네이티브 3D 포즈만 갱신한다.
+                // 기존 텍스처 프레임은 로딩·동작 타이밍 메타데이터로 유지한다.
+                if (clip.Frames[frameIndex] == null) return; // 공격 판정은 GameCore가 유지한다.
                 if (_skin == null || !_model.activeInHierarchy) return;
                 bool walking = _currentAction == "walk";
                 bool attacking = _currentAction == "attack";

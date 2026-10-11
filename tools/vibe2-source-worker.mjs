@@ -4244,7 +4244,38 @@ export function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=fal
       motionStyle:order.assetProduction.motionStyle,
       qualityDNA:order.assetProduction.qualityDNA,
       generatedAssetOutputContract:order.assetProduction.generatedAssetOutputContract,
-      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution
+      nativeAuthoringExecution:order.assetProduction.nativeAuthoringExecution,
+      // 자산 선택기가 확인한 라이선스 원본을 기존 게임 빌드·그래픽 책임자에게 구조화해 전달한다.
+      // 소스 페이지는 다운로드/검증된 원본이 아니므로 게임 모델처럼 직접 바인딩하지 않는다.
+      onDemandLibrarySupply:Object.freeze({
+        selectionIsNotAcquisition:true,
+        nativeBuildRequiresRegisteredAssetAndRealSource:true,
+        sourceOwnership:'EXISTING_GRAPHICS_PRODUCTION',
+        selectedActions:Object.freeze((order.assetProduction.assetSupplySummary?.nextActions||[])
+          .filter(row=>row.action==='ACQUIRE_ADAPT'||row.action==='AUTHOR'
+            ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady===true)
+          .map(row=>Object.freeze({
+            family:row.family,action:row.action,reason:row.reason,
+            selectedSourceId:row.externalAcquisition?.sourceId||row.libraryReuse?.sourceAssetId||null,
+            sourcePage:row.externalAcquisition?.sourceUrl||null,
+            directDownload:row.externalAcquisition?.downloadUrl||null,
+            acquisitionState:row.externalAcquisition?.acquisitionState||null,
+            license:row.externalAcquisition?.license||row.libraryReuse?.sourceLicense||null,
+            licenseEvidenceUrl:row.externalAcquisition?.licenseEvidenceUrl||null,
+            // 내부 후보는 원본·해시·권리 검증 뒤 기존 Blender 제작 책임이 파생한다.
+            sourceModel:row.libraryReuse?.sourceModel||null,
+            sourceSha256:row.libraryReuse?.expectedSourceSha256||null,
+            sourceInspectionRequired:row.libraryReuse?.sourceFileAndSha256InspectionRequired===true,
+            sourceAssetImmutable:row.libraryReuse?.originalImmutable===true,
+            materialRefinement:row.materialRefinement||null,
+            assetization:row.assetization||null,
+            nativeDccScript:row.assetization?.nativeDccScript||null,
+            sourceModelField:row.assetization?.nativeSourceModelField||null,
+            runtimeVerified:false,productionVerified:false,
+            nativeBuildBlockedByUnacquiredSource:row.action==='ACQUIRE_ADAPT'&&!row.externalAcquisition?.downloadUrl
+              ||row.action==='ADAPT'&&row.libraryReuse?.derivativeCandidateReady!==true
+          })))
+      })
     }),
     'Apply in the existing consumer; actual runtime QA remains required.',
     '[ASSET IMPLEMENTATION CONTRACT END]'

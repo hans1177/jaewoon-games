@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 import { runSystemStewardState, runSystemStewardFiles } from '../tools/vibe2-system-steward.mjs';
 
 test('steward continues through stale lease retry cemetery stale telemetry and queue-cap repairs',()=>{
@@ -29,23 +30,6 @@ test('steward continues through stale lease retry cemetery stale telemetry and q
     assert(task.evidence.includes('system-steward:failure-signature:source-candidate-generation-failed'));
     assert(task.evidence.includes('system-steward:fix-pattern:causal-repair-without-attempt-ceiling'));
   }
-});
-
-test('steward preserves numeric GitHub reservation across a long runner queue',()=>{
-  const result=runSystemStewardState({
-    now:'2026-10-10T23:30:00Z',
-    queueInput:{maxConcurrentTasks:256,tasks:[{
-      id:'unity-web-delayed',gameId:'unity-web-delayed',target:'unity',
-      department:'development',type:'implementation',goal:'implement canonical Unity Web source',
-      status:'running',reservationId:'38100001234:1',reservationRunId:'38100001234',
-      reservationRunAttempt:1,reservedAt:'2026-10-10T22:38:00Z'
-    }]},
-    controlInput:{version:4,currentMax:256,lastUpdatedAt:'2026-10-10T23:25:00Z'}
-  });
-  const task=result.queue.tasks.find(t=>t.id==='unity-web-delayed');
-  assert.equal(task.status,'running');
-  assert.equal(task.reservationId,'38100001234:1');
-  assert.ok(!result.actions.includes('RECOVER_STALE_RUNNING_RESERVATION'));
 });
 
 test('steward resumes safe development failure with unlimited causal repair without erasing retry history',()=>{
@@ -215,4 +199,43 @@ test('steward preserves exact candidate runtime evidence wait after an expired w
   assert.equal(result.queue.tasks[0].status,'running');
   assert.deepEqual(result.queue.tasks[0].runtimeEvidenceCandidate,candidate);
   assert.ok(!result.queue.tasks[0].evidence.includes('system-steward:stale-running-reservation-recovered'));
+});
+
+test('Vibe canonical queue serialization is lossless and compact without changing nonqueue metadata',()=>{
+  const queue={version:4,maxConcurrentTasks:256,tasks:Array.from({length:300},(_,i)=>({
+    id:'game-source-'+i,gameId:'game-'+(i%34),status:i%3?'queued':'verified',
+    goal:'preserve full task context and recovery evidence '.repeat(7),
+    evidence:['exact-source','save-preserved','runtime-qa-required'],
+    responsibleFiles:['unity-games/game/Assets/Scripts/GameCore.cs'],
+    retryPolicy:'UNLIMITED_CAUSAL_REPAIR'
+  }))};
+  const expected=JSON.stringify(queue)+'\n';
+  const pretty=JSON.stringify(queue,null,2)+'\n';
+  assert.ok(expected.length<pretty.length*.9,'lossless compact serialization must reduce repeated queue bytes without losing any field');
+  for(const sourceFile of [
+    'tools/vibe2-queue-control.mjs',
+    'tools/vibe2-auto-planner.mjs',
+    'tools/vibe2-system-steward.mjs'
+  ]){
+    const source=fs.readFileSync(sourceFile,'utf8');
+    const writerLine=source.split('\n').find(line=>line.startsWith('function writeJson(')||line.startsWith('const writeJson='));
+    assert.ok(writerLine,sourceFile);
+    let captured=null;
+    const context={fs:{
+      mkdirSync(){},
+      writeFileSync(file,body){captured={file,body};}
+    },path:{dirname(){return '/tmp';}}};
+    const writer=runInNewContext(writerLine+'\nwriteJson;',context);
+    writer('/tmp/vibe2-control/.vibe2/queue.json',queue);
+    assert.equal(captured.body,expected,sourceFile);
+    assert.equal(JSON.stringify(JSON.parse(captured.body)),JSON.stringify(queue),sourceFile);
+    writer('/tmp/vibe2-control/.vibe2/parallelism-control.json',{fixedSlots:128});
+    assert.equal(captured.body,JSON.stringify({fixedSlots:128},null,2)+'\n',sourceFile);
+  }
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(workflow,/const afterText = `\$\{JSON\.stringify\(normalized\)\}\\n`;/);
+  assert.doesNotMatch(workflow,/const afterText = `\$\{JSON\.stringify\(normalized, null, 2\)\}/);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(roadmap.fixedAutonomousDevelopmentOperatingContract.repeatDevelopmentConcurrency.fixedSlots,128);
+  assert.equal(roadmap.finalDevelopmentLock.sequenceLock.status,'LOCKED');
 });

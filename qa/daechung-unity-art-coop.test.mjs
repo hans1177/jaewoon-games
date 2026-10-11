@@ -49,12 +49,18 @@ test('실제 제작 애니메이션 시트의 크기와 비어 있지 않은 픽
     assert.match(visuals, /Shader\.Find\("Jaewoon\/DaechungPixelArt"\)/);
 });
 
-test('2.5D 카메라·실제 공간 지형·지역별 깊이 표현과 WebGL 성능 게이트를 유지한다', () => {
+test('3D 원근 카메라·공간 지형·입체 배우와 WebGL 성능 게이트를 유지한다', () => {
     assert.match(visuals, /camera\.orthographic\s*=\s*false/);
     assert.match(visuals, /camera\.transform\.LookAt/);
-    assert.match(visuals, /_sceneCamera\.fieldOfView = Mathf\.Clamp/);
+    assert.match(visuals, /_baseCameraFieldOfView = Mathf\.Clamp\(/);
+    assert.match(visuals, /_sceneCamera\.fieldOfView = revealActive \? Mathf\.Max\(34f, _baseCameraFieldOfView - 8f\) : _baseCameraFieldOfView/);
     assert.match(visuals, /_lastCameraAspect = _sceneCamera\.aspect/);
     assert.match(visuals, /new GameObject\("DaechungDepthGround"\)/);
+    assert.match(visuals, /GameObject\.CreatePrimitive\(PrimitiveType\.Quad\)/);
+    assert.match(visuals, /private MeshRenderer _backdrop/);
+    assert.doesNotMatch(visuals, /AddComponent<SpriteRenderer>/);
+    assert.match(visuals, /HasVisibleVolumetricMesh/);
+    assert.match(visuals, /SPATIAL_DEPTH game=daechung-rpg/);
     assert.match(visuals, /new GameObject\("DaechungDepthPath"\)/);
     assert.match(visuals, /AddComponent<MeshFilter>\(\)/);
     assert.match(visuals, /new Vector3\(-24f, -1\.85f, 8f\)/);
@@ -116,4 +122,16 @@ test('기존 모바일 전투 버튼과 비정식 공개 테스트 빌드 요청
     assert.equal(buildRequest.sourceCommit, '');
     assert.equal(buildRequest.buildMethod, 'JaewoonGames.DaechungRpg.Editor.AndroidTestBuild.BuildWeb');
     assert.match(buildRequest.purpose, /PUBLIC_BROWSER_TEST/);
+});
+
+
+test('Daechung Unity Roslyn CS1002/CS1003 error at animation frame return is repaired without changing native combat',()=>{
+    const observed='if (clip.Frames[frameIndex] == null) return; 공격 판정은 GameCore가 유지한다.';
+    assert.match(observed,/return; 공격 판정은 GameCore가 유지한다\./);
+    assert.doesNotMatch(visuals,/return; 공격 판정은 GameCore가 유지한다\./);
+    assert.match(visuals,/if \(clip\.Frames\[frameIndex\] == null\) return; \/\/ 공격 판정은 GameCore가 유지한다\./);
+    assert.match(visuals,/public void Tick\(float now\)/);
+    assert.match(visuals,/_model\.transform\.localRotation = Quaternion\.Euler/);
+    assert.match(gameplay,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+    assert.match(core,/daechung-rpg-save-v1/);
 });

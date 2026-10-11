@@ -693,7 +693,10 @@ test('Daechung 3D visual actor and world repair emits measured native-depth evid
   assert.match(actor,/GameObject\.CreatePrimitive\(shape\)/);
   assert.match(actor,/part\.GetComponent<MeshRenderer>\(\)\.sharedMaterial = material/);
   assert.match(actor,/UnityEngine\.Object\.Destroy\(collider\)/);
-  assert.match(actor,/_renderer\.enabled = false/);
+  assert.doesNotMatch(actor,/AddComponent<SpriteRenderer>/);
+  assert.match(actor,/GetComponentsInChildren<Renderer>\(true\)/);
+  assert.match(source,/GameObject\.CreatePrimitive\(PrimitiveType\.Quad\)/);
+  assert.match(source,/_backdrop\.sharedMaterial\.mainTexture = sprite\.texture/);
   assert.match(actor,/HasVisibleVolumetricMesh/);
   assert.match(actor,/_model\.transform\.localRotation = Quaternion\.Euler/);
   for(const symbol of ['SetIdentity','SetTint','FaceRight','SetVisible','AddClip','Play','Tick'])
@@ -710,4 +713,50 @@ test('Daechung 3D scene work keeps the canonical combat, touch and save authorit
   assert.doesNotMatch(source,/PlayerPrefs\.DeleteAll|DeleteKey\(|SaveKey\s*=|experienceReward\s*=|goldReward\s*=/);
   assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
   assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+});
+
+
+test('Unity native source F0 failure carries exact signature and file into existing causal-repair workflow',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const start=workflow.indexOf('- name: Verify Unity Web development-floor contract');
+  const end=workflow.indexOf('- name: Bind canonical Unity source tree',start);
+  const f0=workflow.slice(start,end);
+  const repair=workflow.slice(workflow.indexOf('- name: Mark Unity Web floor repair requirement'));
+  assert.ok(start>=0&&end>start);
+  assert.match(f0,/set -euo pipefail/);
+  assert.ok(f0.includes('--validate-only 2>&1 | tee "$RUNNER_TEMP/unity-web-preflight.log"'));
+  assert.doesNotMatch(f0,/continue-on-error: true/);
+  assert.ok(repair.includes('preflight_log="$RUNNER_TEMP/unity-web-preflight.log"'));
+  assert.ok(repair.includes('failure_stage=UNITY_WEB_SOURCE_PREFLIGHT'));
+  assert.ok(repair.includes('failure_signature="$preflight_signature"'));
+  assert.ok(repair.includes("tr -cd 'a-zA-Z0-9_.:/-'"));
+  assert.ok(repair.includes('for filename in unity-web-post-deploy-mobile.json'));
+  assert.ok(repair.includes("echo 'required=true'"));
+  assert.ok(repair.includes('exit 42'));
+  assert.ok(workflow.includes('repair-vibe2:'));
+  const error='Error: UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs';
+  const extracted=error.match(/UNITY_WEB_[A-Z0-9_]+:[A-Za-z0-9._:/-]+/g)?.at(-1);
+  assert.equal(extracted,'UNITY_WEB_2D_GAMEPLAY_FORBIDDEN_REDEVELOP_3D:unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs');
+  assert.equal(extracted.replace(/[^a-zA-Z0-9_.:/-]/g,'').slice(0,128),extracted);
+});
+
+
+test('Unity WebGL Roslyn compilation errors preserve the real source file, line and code for existing Vibe repair',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const build=workflow.slice(workflow.indexOf('- name: Build Unity Web'),workflow.indexOf('- name: Collect Unity Web output'));
+  const repair=workflow.slice(workflow.indexOf('- name: Mark Unity Web floor repair requirement'));
+  assert.ok(build.includes('set -euo pipefail'));
+  assert.ok(build.includes('-logFile /dev/stdout 2>&1 | tee "$RUNNER_TEMP/unity-web-build.log"'));
+  assert.ok(!build.includes('continue-on-error: true'));
+  assert.ok(repair.includes('compiler_log="$RUNNER_TEMP/unity-web-build.log"'));
+  assert.ok(repair.includes("sed -nE 's#^.*(Assets/[A-Za-z0-9._/-]+\\.cs)"));
+  assert.ok(repair.includes('failure_stage=UNITY_WEB_CSHARP_COMPILE'));
+  assert.ok(repair.includes('failure_signature="UNITY_WEB_CSHARP_COMPILE_ERROR:$compiler_failure"'));
+  assert.ok(repair.includes('for filename in unity-web-post-deploy-mobile.json'));
+  assert.ok(repair.includes('exit 42'));
+  const roslyn='Assets/Scripts/PrototypeAnimatedVisuals.cs(1177,69): error CS1002: ; expected';
+  const extracted=roslyn.match(/(Assets\/[A-Za-z0-9._/-]+\.cs)\(([0-9]+),[0-9]+\): error (CS[0-9]+):/);
+  assert.deepEqual(extracted.slice(1),['Assets/Scripts/PrototypeAnimatedVisuals.cs','1177','CS1002']);
+  const signature='UNITY_WEB_CSHARP_COMPILE_ERROR:'+extracted[1]+':'+extracted[2]+':'+extracted[3];
+  assert.equal(signature.replace(/[^a-zA-Z0-9_.:/-]/g,'').slice(0,128),signature);
 });

@@ -1,17 +1,30 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-full-platform-homepage-20261011-fantasy-survival-modules-rebuild",
+  "requestId": "owner-fantasy-native-library-registration-and-unreadable-mesh-fix-20261011",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
   "sourceCommit": "",
   "outputRoot": "web-games/fantasy-survival",
-  "purpose": "RUN_EXISTING_UNITY_WEB_DEVELOPMENT_FLOOR_WITH_NATIVE_3D_PERSPECTIVE_WORLD_REAL_TOUCH_GAMEPLAY_SAVE_BROWSER_QA_AND_REGRESSION; KEEP_REPAIR_REQUIRED_IF_NOT_PROVEN; DO_NOT_CLAIM_RELEASE_OR_USE_LEGACY_HTML_AS_UNITY",
+  "purpose": "REBUILD_EXISTING_UNITY_WEB_PROJECT_WITH_ACTUAL_COMPANY_LIBRARY_NATIVE_3D_TREE_MESHES_AND_PBR_MATERIAL_DERIVATIVES; DO_NOT_CHANGE_GAMEPLAY_OR_SAVE; INDEPENDENT_BROWSER_AND_MOBILE_QA_REQUIRED",
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
   "upperPlatformReadinessRequired": true,
   "homepageCardVisibleRegardlessOfBuildResult": true,
-  "repairCause": "EXACT_COMPILER_FAILURE_MISSING_NATIVE_AUDIO_AND_JSON_MODULES"
+  "repairCause": "NATIVE_IMPORTED_MODEL_STATIC_QA_AND_WEBGL_GPU_ONLY_MESH_INDEX_READABILITY",
+  "nativeAssetSourcePaths": [
+    "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+    "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+    "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+  ],
+  "assetValidationStatus": "REGISTERED_SOURCE_BOUND_RUNTIME_QA_PENDING",
+  "productionVerified": false,
+  "registryAssetIds": [
+    "unity-fantasy-survival-tree-trunk-v1",
+    "unity-fantasy-survival-tree-crown-v1",
+    "unity-fantasy-survival-tree-materials-v1"
+  ],
+  "registryVersionRequired": 131
 }

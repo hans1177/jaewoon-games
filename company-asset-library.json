@@ -1,8 +1,8 @@
 {
-  "version": 130,
+  "version": 131,
   "kind": "company-asset-library",
   "authority": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.companyGraphicsLibrary24h",
-  "updatedAt": "2026-10-11T00:27:01.105Z",
+  "updatedAt": "2026-10-11T02:32:31.121Z",
   "publicInspectionSurface": true,
   "productionPassAuthority": false,
   "rules": {
@@ -76083,6 +76083,232 @@
       "runtimeVerificationState": "PREPARED_SKINNED_GLB_NATIVE_RUNTIME_PENDING",
       "externalLicenseAcquisitionRequired": false,
       "originalAssetStable": true
+    },
+    {
+      "id": "unity-fantasy-survival-tree-trunk-v1",
+      "title": "마력숲 네이티브 나무 줄기",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "TREE_TRUNK",
+      "role": "THICK_RESOURCE_TREE_TRUNK",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "originalAssetId": "roblox-survival-tree_trunk_thick",
+      "parentAssetId": "roblox-survival-tree_trunk_thick",
+      "sourceParentId": "roblox-survival-tree_trunk_thick",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/tree_trunk_thick.obj",
+      "sourceParentGitBlobSha": "3e84abf4611370908c86576e3fa5372b16b3d4b2",
+      "sourceHash": "7cd1eca2c7383d7fbf369fb33c20ab63547cf1d7b9ceefd0d64e6d5b000cca70",
+      "sourceSha256": "7cd1eca2c7383d7fbf369fb33c20ab63547cf1d7b9ceefd0d64e6d5b000cca70",
+      "nativeArtifactHash": "84ae024e9e4e89671aef54424eb509254b98ee64b6744b7b5980bc2853454911",
+      "nativeArtifactGitBlobSha": "d6b4ba93a4455e68930a7408b2d33fff2d0f76f4",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/tree_trunk_thick.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/survival-core-world-v1/tree_trunk_thick.obj",
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj"
+        ],
+        "support": [
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        ]
+      },
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+          "sourceAssetId": "roblox-survival-tree_trunk_thick",
+          "artifactSha256": "84ae024e9e4e89671aef54424eb509254b98ee64b6744b7b5980bc2853454911"
+        }
+      },
+      "materialLibrary": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "3e84abf4611370908c86576e3fa5372b16b3d4b2",
+          "sourceSha256": "7cd1eca2c7383d7fbf369fb33c20ab63547cf1d7b9ceefd0d64e6d5b000cca70",
+          "targetSha256": "84ae024e9e4e89671aef54424eb509254b98ee64b6744b7b5980bc2853454911"
+        },
+        {
+          "kind": "MTL_DIFFUSE_TINT",
+          "sourcePath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+          "derivedPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 526,
+        "faces": 363
+      },
+      "originalSourceImmutable": true,
+      "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-tree-crown-v1",
+      "title": "마력숲 네이티브 나무 수관",
+      "category": "ENVIRONMENT",
+      "family": "ENVIRONMENT",
+      "subfamily": "TREE_CROWN",
+      "role": "ROUND_RESOURCE_TREE_CANOPY",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "originalAssetId": "roblox-survival-tree_crown_round",
+      "parentAssetId": "roblox-survival-tree_crown_round",
+      "sourceParentId": "roblox-survival-tree_crown_round",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/tree_crown_round.obj",
+      "sourceParentGitBlobSha": "f15c80484182a4757126736bf9039694576a9ef9",
+      "sourceHash": "e3c647aec1e2b73ba13d53693d7e58d2b842c2ac8496d3696d31cb7e6bb87148",
+      "sourceSha256": "e3c647aec1e2b73ba13d53693d7e58d2b842c2ac8496d3696d31cb7e6bb87148",
+      "nativeArtifactHash": "84832b4a032fca19d61ff2cdcbefb7701172d383e79b8da07b5b43b5983c2b6d",
+      "nativeArtifactGitBlobSha": "5ff056b1629066eb70b241acf8b4dbeeb4b632ca",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/tree_crown_round.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+      ],
+      "fileRoles": {
+        "models": [
+          "assets/roblox/survival-core-world-v1/tree_crown_round.obj",
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+        ],
+        "support": [
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        ]
+      },
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+          "sourceAssetId": "roblox-survival-tree_crown_round",
+          "artifactSha256": "84832b4a032fca19d61ff2cdcbefb7701172d383e79b8da07b5b43b5983c2b6d"
+        }
+      },
+      "materialLibrary": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "transformHistory": [
+        {
+          "kind": "PLATFORM_NATIVE_Y_UP_AND_PROPORTION_ADAPT",
+          "sourceBlobSha": "f15c80484182a4757126736bf9039694576a9ef9",
+          "sourceSha256": "e3c647aec1e2b73ba13d53693d7e58d2b842c2ac8496d3696d31cb7e6bb87148",
+          "targetSha256": "84832b4a032fca19d61ff2cdcbefb7701172d383e79b8da07b5b43b5983c2b6d"
+        },
+        {
+          "kind": "MTL_DIFFUSE_TINT",
+          "sourcePath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+          "derivedPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        }
+      ],
+      "geometrySourceEvidence": {
+        "vertices": 868,
+        "faces": 728
+      },
+      "originalSourceImmutable": true,
+      "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
+    },
+    {
+      "id": "unity-fantasy-survival-tree-materials-v1",
+      "title": "마력숲 나무 공용 표면 재질 파생",
+      "category": "MATERIAL",
+      "family": "MATERIAL",
+      "subfamily": "FOREST_TREE_SURFACE",
+      "role": "TREE_SURFACE_MTL",
+      "platform": "UNITY",
+      "platforms": [
+        "UNITY"
+      ],
+      "status": "REPO_ASSET",
+      "license": "project-original",
+      "parentAssetId": "roblox-survival-core-world-v1",
+      "sourceParentId": "roblox-survival-core-world-v1",
+      "sourceParentPath": "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+      "sourceHash": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+      "sourceSha256": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+      "nativeArtifactHash": "79d38b5736805db8f536205190bd78a898b5602175af8d2ca571bfccbbd35343",
+      "nativeArtifactGitBlobSha": "b10d4560962846aa7fc23a1e8b96478227d152fb",
+      "path": "/unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "sourceFiles": [
+        "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "nativeArtifacts": [
+        "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+      ],
+      "fileRoles": {
+        "support": [
+          "assets/roblox/survival-core-world-v1/survival-core-world.mtl",
+          "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl"
+        ]
+      },
+      "platformVariants": {
+        "UNITY": {
+          "path": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+          "artifactSha256": "79d38b5736805db8f536205190bd78a898b5602175af8d2ca571bfccbbd35343"
+        }
+      },
+      "transformHistory": [
+        {
+          "kind": "MTL_DIFFUSE_TINT",
+          "sourceSha256": "e20ce9a706aca2afa0507913d52c9917643d726f2c9fe49498b3e1d54ace78a0",
+          "targetSha256": "79d38b5736805db8f536205190bd78a898b5602175af8d2ca571bfccbbd35343",
+          "originalSourceImmutable": true
+        }
+      ],
+      "originalSourceImmutable": true,
+      "derivedAssetPath": "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMaterials.mtl",
+      "intendedConsumerGameIds": [
+        "fantasy-survival"
+      ],
+      "consumerGameIds": [],
+      "companyCommonBase": true,
+      "reuseScope": "COMPANY_COMMON_BASE",
+      "gameExclusive": false,
+      "productionVerified": false,
+      "verifiedCompanyReusable": false,
+      "nativeRuntimeVerified": false,
+      "runtimeVerificationState": "SOURCE_BOUND_UNITY_WEB_RUNTIME_PENDING",
+      "gameplayAuthority": false,
+      "saveAuthority": false
     }
   ],
   "research": [

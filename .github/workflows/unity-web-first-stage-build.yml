@@ -223,13 +223,46 @@ jobs:
           if(c?.canonicalGameSourceRoot!=='unity-games/<gameId>/') throw new Error('canonical Unity source changed');
           if(c?.publicWebBuildRoot!=='web-games/<gameId>/') throw new Error('Web build output changed');
           if(gate?.gateId!=='UPPER_PLATFORM_DEVELOPMENT_READY'||gate?.allCriteriaRequired!==true) throw new Error('upper-platform readiness gate missing');
+          // 빌드 비용이 큰 Unity Editor 설치 전, 이번 게임이 요구한 네이티브 자산 원본/파생 해시를 검증한다.
+          // 이 단계는 SOURCE_READY만 증명하며 WebGL 런타임/독립 QA PASS를 절대로 대신하지 않는다.
+          const declarationPath='.build-requests/unity-web/'+process.env.GAME_ID+'.json';
+          if(fs.existsSync(declarationPath)){
+            const declaration=JSON.parse(fs.readFileSync(declarationPath,'utf8'));
+            const ids=Array.isArray(declaration.registryAssetIds)?declaration.registryAssetIds:[];
+            if(ids.length){
+              const crypto=await import('node:crypto');
+              const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+              const nativeRoot=process.env.PROJECT_PATH+'/Assets/Resources/';
+              if(!Number.isInteger(declaration.registryVersionRequired)
+                ||registry.version<declaration.registryVersionRequired)
+                throw new Error('UNITY_WEB_NATIVE_ASSET_REGISTRY_VERSION_STALE');
+              for(const id of ids){
+                const asset=(registry.assets||[]).find(row=>row.id===id);
+                if(!asset||asset.platform!=='UNITY'||!asset.license||asset.originalSourceImmutable!==true)
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_REGISTRY_MISSING_OR_UNSAFE:'+id);
+                const native=String(asset.path||'').replace(/^\/+/, '');
+                const parent=String(asset.sourceParentPath||'').replace(/^\/+/, '');
+                if(!native.startsWith(nativeRoot)||native.includes('..')||!parent.startsWith('assets/')
+                  ||parent.includes('..')||!fs.existsSync(native)||!fs.existsSync(parent))
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_SOURCE_PATH_INVALID:'+id);
+                const sha=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+                if(asset.nativeArtifactHash!==sha(native)||asset.sourceHash!==sha(parent))
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_SHA256_MISMATCH:'+id);
+                if(asset.productionVerified===true&&asset.nativeRuntimeVerified!==true)
+                  throw new Error('UNITY_WEB_NATIVE_ASSET_UNVERIFIED_PROMOTION:'+id);
+              }
+              console.log('UNITY_WEB_NATIVE_ASSET_SOURCE_SHA256=VALIDATED_RUNTIME_UNVERIFIED count='+ids.length);
+            }
+          }
           console.log('UNITY_WEB_DEVELOPMENT_FLOOR_CONTRACT=PASS');
           NODE
+          # 기존 3D F0 검사는 동일하게 실패 처리하면서 정확한 오류를 자동 수리로 전달한다.
+          # pipefail은 tee가 실제 검증 실패 종료코드를 숨기지 못하게 한다.
           node tools/company-unity-web-first-stage.mjs \
             --game-id="$GAME_ID" \
             --source-root="$PROJECT_PATH" \
             --build-method="$BUILD_METHOD" \
-            --validate-only
+            --validate-only 2>&1 | tee "$RUNNER_TEMP/unity-web-preflight.log"
 
       - name: Bind canonical Unity source tree
         id: source
@@ -398,6 +431,8 @@ jobs:
           BUILD_METHOD: ${{ steps.request.outputs.build_method }}
         run: |
           set -euo pipefail
+          # Roslyn/Unity 실제 컴파일 실패를 검증 통과로 숨기지 않고 원인 로그로 보존한다.
+          # 기존 set -euo pipefail이 파이프 전체에 실제 Unity 종료코드를 적용한다.
           "$UNITY_EDITOR_PATH" \
             -batchmode \
             -nographics \
@@ -405,7 +440,7 @@ jobs:
             -buildTarget WebGL \
             -projectPath "$GITHUB_WORKSPACE/$PROJECT_PATH" \
             -executeMethod "$BUILD_METHOD" \
-            -logFile /dev/stdout
+            -logFile /dev/stdout 2>&1 | tee "$RUNNER_TEMP/unity-web-build.log"
 
       - name: Collect Unity Web output
         id: output
@@ -1129,6 +1164,25 @@ jobs:
           echo 'required=true' >> "$GITHUB_OUTPUT"
           failure_stage=UNITY_WEB_BUILD_OR_READINESS
           failure_signature=REPAIR_REQUIRED
+          # Unity 컴파일 이전 실패도 게임/책임 파일 수준으로 정확히 수리하도록 증거를 전달한다.
+          preflight_log="$RUNNER_TEMP/unity-web-preflight.log"
+          if [ -s "$preflight_log" ]; then
+            preflight_signature="$(grep -oE 'UNITY_WEB_[A-Z0-9_]+:[A-Za-z0-9._:/-]+' "$preflight_log" | tail -n 1 || true)"
+            if [ -n "$preflight_signature" ]; then
+              failure_stage=UNITY_WEB_SOURCE_PREFLIGHT
+              failure_signature="$preflight_signature"
+            fi
+          fi
+          # C# 실제 오류의 책임 파일·줄·코드를 기존 바이브 수리 경로로 전달한다.
+          # sed는 증거 텍스트만 추출하며, 입력값을 명령으로 실행하지 않는다.
+          compiler_log="$RUNNER_TEMP/unity-web-build.log"
+          if [ -s "$compiler_log" ]; then
+            compiler_failure="$(sed -nE 's#^.*(Assets/[A-Za-z0-9._/-]+\.cs)\(([0-9]+),[0-9]+\): error (CS[0-9]+):.*$#\1:\2:\3#p' "$compiler_log" | head -n 1 || true)"
+            if [ -n "$compiler_failure" ]; then
+              failure_stage=UNITY_WEB_CSHARP_COMPILE
+              failure_signature="UNITY_WEB_CSHARP_COMPILE_ERROR:$compiler_failure"
+            fi
+          fi
           # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
           for filename in unity-web-post-deploy-mobile.json unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
             evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"
@@ -1141,7 +1195,7 @@ jobs:
             fi
           done
           failure_stage="$(printf '%s' "$failure_stage" | tr -cd 'a-zA-Z0-9_:' | cut -c1-96)"
-          failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:-' | cut -c1-128)"
+          failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:/-' | cut -c1-128)"
           echo "failure_stage=${failure_stage:-UNITY_WEB_UNKNOWN}" >> "$GITHUB_OUTPUT"
           echo "failure_signature=${failure_signature:-UNKNOWN}" >> "$GITHUB_OUTPUT"
           echo 'UNITY_WEB_FLOOR_STATE=REPAIR_REQUIRED'
