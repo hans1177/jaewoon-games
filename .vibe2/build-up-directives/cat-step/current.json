@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "cat-step-build-up-g6-38bc3d4e78ef",
-  "directiveFingerprint": "38bc3d4e78efd9de251535d6b97619083375c1817e02621ccf80011fa6aa1741",
-  "previousDirectiveFingerprint": "70e7cdc3a12fcd99f97e733f30bb2c03774e09ad4688c5b054d0df015424fb0f",
-  "forbiddenRepeatFingerprint": "70e7cdc3a12fcd99f97e733f30bb2c03774e09ad4688c5b054d0df015424fb0f",
+  "directiveId": "cat-step-build-up-g7-4872efd7c686",
+  "directiveFingerprint": "4872efd7c686641906021de5fa6cf9266e9f4f66e798af08ae55c9ead3d2bc54",
+  "previousDirectiveFingerprint": "38bc3d4e78efd9de251535d6b97619083375c1817e02621ccf80011fa6aa1741",
+  "forbiddenRepeatFingerprint": "38bc3d4e78efd9de251535d6b97619083375c1817e02621ccf80011fa6aa1741",
   "gameId": "cat-step",
   "gameName": "캣 스텝",
-  "generation": 6,
+  "generation": 7,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/cat-step",
-  "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+  "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
   "designFingerprint": "34ea8132bb6c0d35b7db8e7c7028c491f277ec552bf7561679c4ea609278cd3a",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "공간 상태 변환의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+        "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -247,6 +247,8 @@
     "gameId": "cat-step",
     "requestedPlatform": "ROBLOX",
     "activePlatform": "ROBLOX",
+    "originalSourcePlatform": "ROBLOX",
+    "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": {
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
@@ -264,16 +266,19 @@
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
       "ruleOwner": "COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT",
-      "codeConversion": "REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS",
+      "codeConversion": "IMPLEMENT_APPROVED_DESIGN_IN_ORIGINAL_ROBLOX_LUAU_OWNER_FUNCTIONS",
+      "originalSourcePlatform": "ROBLOX",
+      "originalSourceLanguage": "LUAU",
+      "unitySourceIsOriginal": false,
       "optimizationTarget": "ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE",
       "protectedState": "SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY",
       "sourceReferenceOnly": true,
       "directCsCopyForbidden": true,
       "shadowPipelineForbidden": true,
-      "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
+      "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "34ea8132bb6c0d35b7db8e7c7028c491f277ec552bf7561679c4ea609278cd3a",
-    "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+    "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -359,39 +364,41 @@
             "WorldAccessState"
           ],
           "inspectedExecutableFiles": [
-            "roblox-games/cat-step/client/Game.client.luau"
+            "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/shared/RobloxCommonUI.luau"
         ],
         "inspectedSymbols": [
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "stroke",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "bindVerifiedLearningControl",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "syncVerifiedLearningCharacterMotion",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           }
         ],
@@ -463,39 +470,41 @@
             "ResourceState"
           ],
           "inspectedExecutableFiles": [
-            "roblox-games/cat-step/client/Game.client.luau"
+            "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/shared/RobloxCommonUI.luau"
         ],
         "inspectedSymbols": [
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "stroke",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "bindVerifiedLearningControl",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "syncVerifiedLearningCharacterMotion",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           }
         ],
@@ -560,39 +569,41 @@
             "RiskState"
           ],
           "inspectedExecutableFiles": [
-            "roblox-games/cat-step/client/Game.client.luau"
+            "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/shared/RobloxCommonUI.luau"
         ],
         "inspectedSymbols": [
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "stroke",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "bindVerifiedLearningControl",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "syncVerifiedLearningCharacterMotion",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           }
         ],
@@ -657,39 +668,41 @@
             "IntentState"
           ],
           "inspectedExecutableFiles": [
-            "roblox-games/cat-step/client/Game.client.luau"
+            "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
         },
         "suggestedExistingOwnerFiles": [
           "roblox-games/cat-step/shared/GameConfig.luau",
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+          "roblox-games/cat-step/shared/RobloxCommonUI.luau"
         ],
         "inspectedSymbols": [
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "stroke",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "bindVerifiedLearningControl",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "syncVerifiedLearningCharacterMotion",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "hasStudioAssetAtom",
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           }
         ],
@@ -742,11 +755,17 @@
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/client/Game.client.luau"
+      "roblox-games/cat-step/client/Game.client.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
     ],
     "executableCodeCandidateFiles": [
-      "roblox-games/cat-step/client/Game.client.luau"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/client/Game.client.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -768,10 +787,11 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+    "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
-    "authoredItemCount": 47,
+    "authoredItemCount": 50,
     "authoredCounts": {
+      "PLAYTHROUGH": 3,
       "CORE_LOOP": 3,
       "SIGNATURE_SYSTEM": 4,
       "SYSTEM_CONNECTION": 6,
@@ -792,7 +812,7 @@
       "IMPLEMENTATION_TRACE": 4
     },
     "namedSourceCandidateCount": 0,
-    "sourceReviewRequiredCount": 47,
+    "sourceReviewRequiredCount": 50,
     "implementationVerifiedCount": 0,
     "runtimeVerifiedCount": 0,
     "authoredCountsAreNotImplementedOrPlayableCounts": true,
@@ -810,6 +830,294 @@
       "PRESERVE_EXISTING_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY"
     ],
     "items": [
+      {
+        "ref": "PLAYTHROUGH[0]",
+        "family": "PLAYTHROUGH",
+        "index": 0,
+        "title": "OPENING",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "OPENING",
+          "entryState": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+          "playerChoice": "관찰한 단서의 순서와 의미를 조합하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+          "actionAndResponse": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 단서 조합의 경로와 비용이 바뀐다. 플레이어 입력의 결과로 B의 대응 가능성이 변한다.",
+          "exitState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "DEVELOPMENT의 다른 위험·경로·정보 선택으로 진행한다.",
+          "startSeconds": 0,
+          "endSeconds": 60,
+          "timeReason": "OPENING에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 1
+            },
+            {
+              "key": "RouteState",
+              "value": 2
+            },
+            {
+              "key": "RiskState",
+              "value": 3
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 2
+            },
+            {
+              "key": "RouteState",
+              "value": 3
+            },
+            {
+              "key": "RiskState",
+              "value": 4
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 30,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "A의 선택 결과가 B의 대응 위험과 비용을 바꾼다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "ONGOING"
+        },
+        "playerChoice": "관찰한 단서의 순서와 의미를 조합하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+        "trigger": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+        "stateChange": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 단서 조합의 경로와 비용이 바뀐다. 플레이어 입력의 결과로 B의 대응 가능성이 변한다.",
+        "linkedRuleIds": [
+          "VIBE_A"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 OPENING 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
+      {
+        "ref": "PLAYTHROUGH[1]",
+        "family": "PLAYTHROUGH",
+        "index": 1,
+        "title": "DEVELOPMENT",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "DEVELOPMENT",
+          "entryState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+          "actionAndResponse": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 공간 상태 변환의 정보·대응이 바뀐다. A의 다음 선택 상태가 달라진다.",
+          "exitState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "RESOLUTION의 다른 위험·경로·정보 선택으로 진행한다.",
+          "startSeconds": 60,
+          "endSeconds": 120,
+          "timeReason": "DEVELOPMENT에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 2
+            },
+            {
+              "key": "RouteState",
+              "value": 3
+            },
+            {
+              "key": "RiskState",
+              "value": 4
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 2
+            },
+            {
+              "key": "IntentState",
+              "value": 3
+            },
+            {
+              "key": "RouteState",
+              "value": 4
+            },
+            {
+              "key": "RiskState",
+              "value": 5
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_RESPOND",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 90,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "B의 선택 결과가 다음 A의 위험과 경로에 전달된다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_B"
+          ],
+          "outcome": "ONGOING"
+        },
+        "playerChoice": "변한 공간 규칙을 이용해 새 접근 경로를 시험하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+        "trigger": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+        "stateChange": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 공간 상태 변환의 정보·대응이 바뀐다. A의 다음 선택 상태가 달라진다.",
+        "linkedRuleIds": [
+          "VIBE_B"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 DEVELOPMENT 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
+      {
+        "ref": "PLAYTHROUGH[2]",
+        "family": "PLAYTHROUGH",
+        "index": 2,
+        "title": "RESOLUTION",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "RESOLUTION",
+          "entryState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다.",
+          "actionAndResponse": "단서 조합에서 평소에는 불가능했던 대안 경로와 선택을 연다. 앞선 결과를 되돌아보며 최종 목표와 재시작 여부를 결정한다.",
+          "exitState": "한 판의 결과와 다음 선택을 기록한다.",
+          "nextDecision": "획득한 정보와 현재 원본 규칙의 실패·복구 경로에서 다음 플레이를 선택한다.",
+          "startSeconds": 120,
+          "endSeconds": 180,
+          "timeReason": "RESOLUTION에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 2
+            },
+            {
+              "key": "IntentState",
+              "value": 3
+            },
+            {
+              "key": "RouteState",
+              "value": 4
+            },
+            {
+              "key": "RiskState",
+              "value": 5
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 3
+            },
+            {
+              "key": "IntentState",
+              "value": 4
+            },
+            {
+              "key": "RouteState",
+              "value": 5
+            },
+            {
+              "key": "RiskState",
+              "value": 6
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 150,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "A의 선택 결과가 B의 대응 위험과 비용을 바꾼다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "SUCCESS"
+        },
+        "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다.",
+        "trigger": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+        "stateChange": "단서 조합에서 평소에는 불가능했던 대안 경로와 선택을 연다. 앞선 결과를 되돌아보며 최종 목표와 재시작 여부를 결정한다.",
+        "linkedRuleIds": [
+          "VIBE_A"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 RESOLUTION 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
       {
         "ref": "CORE_LOOP[0]",
         "family": "CORE_LOOP",
@@ -1140,7 +1448,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 업보와 인과응보의 퍼즐 세계 → 단서 조합 × 업보와 인과응보 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1184,7 +1493,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 단서 조합 × 업보와 인과응보 → 공간 상태 변환 × 신화 속 트릭스터의 질서 역전 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1228,7 +1538,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 공간 상태 변환 × 신화 속 트릭스터의 질서 역전 → 단서 조합 × 업보와 인과응보 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1272,7 +1583,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 공간 상태 변환 × 신화 속 트릭스터의 질서 역전 → 금기와 기회의 교차 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1316,7 +1628,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 금기와 기회의 교차 → 업보와 인과응보의 퍼즐 세계 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1360,7 +1673,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 단서 조합 × 업보와 인과응보 → 금기와 기회의 교차 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1395,6 +1709,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1430,6 +1745,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1465,6 +1781,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1500,6 +1817,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -3669,71 +3987,275 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=3",
+      "CURRENT_SOURCE_FILES=6",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 31,
-      "progression": 75,
-      "ai": 36,
-      "save": 29,
-      "multiplayer": 2,
-      "animation": 46,
-      "motionStates": 180,
-      "gameFeel": 29,
-      "vfx": 23,
-      "camera": 27,
+      "combat": 95,
+      "progression": 410,
+      "ai": 60,
+      "save": 65,
+      "multiplayer": 11,
+      "animation": 54,
+      "motionStates": 662,
+      "gameFeel": 35,
+      "vfx": 41,
+      "camera": 26,
       "audio": 4,
-      "audioDynamics": 16,
-      "ui": 151,
-      "uiFlow": 41,
-      "entryFlow": 6,
+      "audioDynamics": 15,
+      "ui": 963,
+      "uiFlow": 1121,
+      "entryFlow": 12,
       "loadingFlow": 0,
-      "input": 56,
-      "map": 107,
-      "landmark": 6,
-      "interaction": 29,
-      "inventory": 6,
-      "equipment": 3,
-      "settings": 2,
-      "feedback": 72,
-      "session": 4,
-      "content": 69,
-      "choice": 24,
-      "connection": 2,
-      "performance": 14,
-      "lighting": 39,
+      "input": 119,
+      "map": 195,
+      "landmark": 34,
+      "interaction": 255,
+      "inventory": 241,
+      "equipment": 65,
+      "settings": 25,
+      "feedback": 99,
+      "session": 19,
+      "content": 443,
+      "choice": 1644,
+      "connection": 8,
+      "performance": 23,
+      "lighting": 63,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 3
+      "errorRecovery": 16
     },
     "topFiles": [
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "score": 1517
+      },
       {
         "file": "roblox-games/cat-step/shared/GameConfig.luau",
         "score": 245
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "score": 170
+        "score": 153
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "score": 6
       },
       {
         "file": "roblox-games/cat-step/default.project.json",
         "score": 2
+      },
+      {
+        "file": "roblox-games/cat-step/client/MaterialPresentation.client.luau",
+        "score": 1
       }
     ],
     "sourceAnchors": [
       {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 278,
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3921,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3960,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3937,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 130
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3993,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4011,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 114
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2761,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2872,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3466,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3957,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3973,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3990,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4027,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4101,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 1050,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 2581,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateItemStateBadges",
+        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 3933,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4164,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4319,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4373,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 4885,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.AdaptActionMenu",
+        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
+        "score": 82
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 75,
+        "line": 706,
+        "kind": "FUNCTION",
+        "symbol": "layoutTouchControls",
+        "context": "local function layoutTouchControls()",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "line": 1010,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "stroke",
         "context": "local function stroke(target, transparency)",
@@ -3741,7 +4263,23 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 355,
+        "line": 717,
+        "kind": "FUNCTION",
+        "symbol": "showMenu",
+        "context": "local function showMenu(kind)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 231,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 306,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -3749,7 +4287,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 208,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -3757,7 +4295,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 31,
+        "line": 32,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -3765,7 +4303,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 68,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "round",
         "context": "local function round(target, radius)",
@@ -3773,7 +4311,15 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 690,
+        "line": 98,
+        "kind": "FUNCTION",
+        "symbol": "makeButton",
+        "context": "local function makeButton(parent, name, text, color)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 641,
         "kind": "FUNCTION",
         "symbol": "buildStaircase",
         "context": "local function buildStaircase()",
@@ -3781,15 +4327,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 755,
-        "kind": "FUNCTION",
-        "symbol": "showMenu",
-        "context": "local function showMenu(kind)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 780,
+        "line": 742,
         "kind": "FUNCTION",
         "symbol": "beginRun",
         "context": "local function beginRun()",
@@ -3797,7 +4335,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 788,
+        "line": 750,
         "kind": "FUNCTION",
         "symbol": "finishRun",
         "context": "local function finishRun()",
@@ -3805,15 +4343,23 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 917,
+        "line": 879,
         "kind": "FUNCTION",
         "symbol": "attemptJump",
         "context": "local function attemptJump(direction)",
         "score": 34
       },
       {
+        "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "line": 299,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.Apply",
+        "context": "function RobloxCommonMaterials.Apply(part, atomId, options)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 27,
+        "line": 28,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -3821,7 +4367,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 84,
+        "line": 85,
         "kind": "FUNCTION",
         "symbol": "makeText",
         "context": "local function makeText(parent, name, text, size, font)",
@@ -3829,15 +4375,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 97,
-        "kind": "FUNCTION",
-        "symbol": "makeButton",
-        "context": "local function makeButton(parent, name, text, color)",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 113,
+        "line": 114,
         "kind": "FUNCTION",
         "symbol": "tweenAndWait",
         "context": "local function tweenAndWait(target, duration, properties, style, direction)",
@@ -3845,7 +4383,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 127,
+        "line": 128,
         "kind": "FUNCTION",
         "symbol": "laneX",
         "context": "local function laneX(lane)",
@@ -3853,7 +4391,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 131,
+        "line": 132,
         "kind": "FUNCTION",
         "symbol": "platformY",
         "context": "local function platformY(index)",
@@ -3861,7 +4399,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 615,
+        "line": 566,
         "kind": "FUNCTION",
         "symbol": "jumpDuration",
         "context": "local function jumpDuration()",
@@ -3869,7 +4407,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 623,
+        "line": 574,
         "kind": "FUNCTION",
         "symbol": "updateHud",
         "context": "local function updateHud()",
@@ -3877,7 +4415,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 635,
+        "line": 586,
         "kind": "FUNCTION",
         "symbol": "nextLaneFrom",
         "context": "local function nextLaneFrom(lane)",
@@ -3885,7 +4423,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 648,
+        "line": 599,
         "kind": "FUNCTION",
         "symbol": "createPlatform",
         "context": "local function createPlatform(lane, index, number)",
@@ -3893,26 +4431,10 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 681,
+        "line": 632,
         "kind": "FUNCTION",
         "symbol": "clearPlatforms",
         "context": "local function clearPlatforms()",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 705,
-        "kind": "FUNCTION",
-        "symbol": "setControlsEnabled",
-        "context": "local function setControlsEnabled(enabled)",
-        "score": 26
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 768,
-        "kind": "FUNCTION",
-        "symbol": "resetRun",
-        "context": "local function resetRun()",
         "score": 26
       }
     ]
@@ -3920,19 +4442,19 @@
   "previousVersionDelta": {
     "previousGoal": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 5,
-    "previousSourceTreeFingerprint": "787cad7d8369f31709b2697b65f3b9f8798da70b4ee48cb5e543c9e01ee2677f",
-    "currentSourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+    "previousGeneration": 6,
+    "previousSourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+    "currentSourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-    "failureSignature": "roblox-build-package-failed",
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
     "blockers": [
-      "roblox-build-package:roblox-build-package-failed"
+      "roblox-runtime-evidence-pending"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -4086,8 +4608,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CRAFTING",
@@ -4131,8 +4653,8 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "GAP",
-      "reason": "required multiplayer implementation or reconnect recovery is incomplete; continue existing BUILD_UP"
+      "state": "PASS",
+      "reason": "multiplayer source signals found; actual multi-client gameplay remains unverified by source inspection"
     },
     {
       "domain": "INPUT",
@@ -4566,8 +5088,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4647,8 +5169,8 @@
     },
     {
       "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "모든 게임은 멀티 구현이 필수다. 기존 SINGLE 원본은 디자이너가 COOP/COMPETITIVE/HYBRID 중 게임에 맞는 확장을 작성하며 기존 멀티 규칙은 보존한다. 기존 방 생성·참가·준비·시작·이탈을 서버 판정으로 연결한다. 참가자·준비·기존 모드를 표시하고 대기 중 안전한 공동 연습을 제공한다. 결과 화면에 각자 재도전 의사를 표시하고 기존 참가 규칙으로 인원을 유지하되 이탈자 때문에 무한 대기하지 않게 한다. 방장 이탈·late join·재접속을 기존 규칙으로 복구하고 실제 2인 이상의 행동·목표·승패·보상 일치와 중복 지급 방지를 검수한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4990,16 +5512,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "MULTIPLAYER_AND_SYNC",
-      "state": "GAP",
-      "reason": "required multiplayer implementation or reconnect recovery is incomplete; continue existing BUILD_UP"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5032,9 +5544,9 @@
   ],
   "primaryFocus": "USABILITY",
   "thisLoopPrimaryGoal": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
-  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"업보와 인과응보의 퍼즐 세계\", 현재 책임 소스는 roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/cat-step/client/Game.client.luau::stroke, roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl, roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion, roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom, roblox-games/cat-step/client/Game.client.luau::round, roblox-games/cat-step/client/Game.client.luau::buildStaircase, roblox-games/cat-step/client/Game.client.luau::showMenu이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
+  "primaryGoalReason": "현재 검증 신호와 소스에서 USABILITY를 우선한다. 게임 고유 앵커는 \"업보와 인과응보의 퍼즐 세계\", 현재 책임 소스는 roblox-games/cat-step/client/Game.client.luau::layoutTouchControls, roblox-games/cat-step/client/Game.client.luau::stroke, roblox-games/cat-step/client/Game.client.luau::showMenu, roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl, roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion, roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom, roblox-games/cat-step/client/Game.client.luau::round이며 실제 source delta와 효과 증거가 다음 결정을 좌우한다.",
   "gameplayImplementationDirectives": [
-    "우선 책임 소스 앵커 roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/cat-step/client/Game.client.luau::stroke, roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl, roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion, roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom, roblox-games/cat-step/client/Game.client.luau::round, roblox-games/cat-step/client/Game.client.luau::buildStaircase, roblox-games/cat-step/client/Game.client.luau::showMenu에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
+    "우선 책임 소스 앵커 roblox-games/cat-step/client/Game.client.luau::layoutTouchControls, roblox-games/cat-step/client/Game.client.luau::stroke, roblox-games/cat-step/client/Game.client.luau::showMenu, roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback, roblox-games/cat-step/client/Game.client.luau::bindVerifiedLearningControl, roblox-games/cat-step/client/Game.client.luau::syncVerifiedLearningCharacterMotion, roblox-games/cat-step/client/Game.client.luau::hasStudioAssetAtom, roblox-games/cat-step/client/Game.client.luau::round에서 현재 행동→상태 변화→피드백 연결을 직접 수정하고 wrapper나 우회 경로를 추가하지 않는다.",
     "업보와 인과응보의 퍼즐 세계를 설명/마커가 아니라 실제 authoritative game state와 플레이어 입력에 연결하고 성공·실패·재시도 경로를 완성한다.",
     "단서 조합 × 업보와 인과응보가 다음 선택을 바꾸도록 상태 변화와 피드백을 연결한다.",
     "기획 루프 1 \"Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.\": 현재 책임 함수와 실제 조작 경로를 대조한다. 누락되면 기존 구현에서 보강하고, 입력 전 조건→실제 입력→장르에 맞는 상태/화면 변화→다음 단계 연결을 같은 플랫폼에서 재현한다. 버튼 제목이나 공통 점수 증가만으로 이 단계를 구현했다고 판정하지 않는다.",
@@ -5089,8 +5601,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 94951,
-        "largestFileBytes": 43235,
+        "sourceBytes": 379659,
+        "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5122,8 +5634,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 6,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=5; uncoveredBefore=6.",
+    "themeDepth": 7,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=6; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5133,9 +5645,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 6
+        "PRESENTATION_WORLD_COHESION": 7
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -5176,19 +5689,12 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 146,
+        "score": 128,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 42,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
         ]
       },
       {
@@ -5199,11 +5705,9 @@
         ]
       },
       {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 26,
-        "gapDomains": [
-          "MULTIPLAYER_AND_SYNC"
-        ]
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 24,
+        "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5218,6 +5722,11 @@
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 14,
         "gapDomains": []
       }
     ],
@@ -5294,11 +5803,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 6,
-    "previousGeneration": 5,
+    "generation": 7,
+    "previousGeneration": 6,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
-    "priorSourceFingerprint": "787cad7d8369f31709b2697b65f3b9f8798da70b4ee48cb5e543c9e01ee2677f",
+    "sourceFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
+    "priorSourceFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -5531,7 +6040,7 @@
   ],
   "platformAdaptationDirectives": {
     "WEB": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "ROBLOX": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
     "UNITY": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UNITY_WEB": "캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
@@ -5545,21 +6054,24 @@
     "responsibleFiles": [
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/default.project.json"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cat-step/default.project.json",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 278,
+        "line": 706,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "symbol": "layoutTouchControls",
+        "currentBehavior": "local function layoutTouchControls()",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 layoutTouchControls의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 75,
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "stroke",
         "currentBehavior": "local function stroke(target, transparency)",
@@ -5568,7 +6080,25 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 355,
+        "line": 717,
+        "kind": "FUNCTION",
+        "symbol": "showMenu",
+        "currentBehavior": "local function showMenu(kind)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 showMenu의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 231,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "currentBehavior": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 306,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "currentBehavior": "local function bindVerifiedLearningControl(control)",
@@ -5577,7 +6107,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 208,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "currentBehavior": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -5586,7 +6116,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 31,
+        "line": 32,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "currentBehavior": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -5595,36 +6125,18 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 68,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "round",
         "currentBehavior": "local function round(target, radius)",
         "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 round의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 690,
-        "kind": "FUNCTION",
-        "symbol": "buildStaircase",
-        "currentBehavior": "local function buildStaircase()",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 buildStaircase의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 755,
-        "kind": "FUNCTION",
-        "symbol": "showMenu",
-        "currentBehavior": "local function showMenu(kind)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 showMenu의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
     "serverClientResponsibility": [
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "playVerifiedLearningActionFeedback",
+        "symbol": "layoutTouchControls",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       },
@@ -5636,6 +6148,18 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
+        "symbol": "showMenu",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "role": "CLIENT_INPUT_OR_PRESENTATION",
+        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
         "symbol": "bindVerifiedLearningControl",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
@@ -5655,18 +6179,6 @@
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
         "symbol": "round",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "buildStaircase",
-        "role": "CLIENT_INPUT_OR_PRESENTATION",
-        "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "symbol": "showMenu",
         "role": "CLIENT_INPUT_OR_PRESENTATION",
         "authorityRule": "damage/reward/currency/inventory/progression/save authoritative mutation remains server-owned when applicable"
       }
@@ -5741,19 +6253,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/cat-step/shared/GameConfig.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+    "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6089,13 +6604,143 @@
         "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
         "sourceAnchors": [
           {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateItemStateBadges",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionProgress",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.AdaptActionMenu",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
+            "symbol": "layoutTouchControls",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "stroke",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/client/Game.client.luau",
+            "symbol": "showMenu",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/client/Game.client.luau",
+            "symbol": "playVerifiedLearningActionFeedback",
             "kind": "FUNCTION"
           },
           {
@@ -6120,12 +6765,12 @@
           },
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "buildStaircase",
+            "symbol": "makeButton",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "showMenu",
+            "symbol": "buildStaircase",
             "kind": "FUNCTION"
           },
           {
@@ -6144,6 +6789,11 @@
             "kind": "FUNCTION"
           },
           {
+            "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.Apply",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "studioAssetFamily",
             "kind": "FUNCTION"
@@ -6151,11 +6801,6 @@
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "makeText",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "makeButton",
             "kind": "FUNCTION"
           },
           {
@@ -6197,16 +6842,6 @@
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "clearPlatforms",
             "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "setControlsEnabled",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "resetRun",
-            "kind": "FUNCTION"
           }
         ],
         "designTraceability": [
@@ -6234,7 +6869,10 @@
       },
       "sourceFiles": [
         "roblox-games/cat-step/client/Game.client.luau",
-        "roblox-games/cat-step/shared/GameConfig.luau"
+        "roblox-games/cat-step/shared/GameConfig.luau",
+        "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "roblox-games/cat-step/client/MaterialPresentation.client.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6365,6 +7003,16 @@
           "runtimeVerified": false
         },
         {
+          "id": "CONDITIONAL_LOOT_FILTER",
+          "game": "Diablo IV",
+          "sourceUrl": "https://news.blizzard.com/en-us/article/24267729/prepare-for-the-reckoning-lord-of-hatred-draws-near",
+          "observedAt": "2026-10-07",
+          "principle": "Reusable conditions reduce irrelevant loot information; filters can be shared.",
+          "adaptation": "Expose filter state and reset; filtering must not delete rewards or silently auto-sell.",
+          "authority": "DESIGN_REFERENCE_ONLY",
+          "runtimeVerified": false
+        },
+        {
           "id": "TRAVEL_FAVORITES",
           "game": "No Man's Sky",
           "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
@@ -6397,7 +7045,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -6421,7 +7069,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -6433,7 +7081,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         }
       ],
@@ -6513,6 +7161,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -6549,11 +7198,48 @@
           "id": "CHARACTER_PROGRESSION",
           "library": "assets/character-progression.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -6582,11 +7268,13 @@
         {
           "id": "ECONOMY_LOOT_SHOP",
           "library": "assets/economy-loot-shop.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6599,6 +7287,7 @@
           "id": "INPUT_ACTIONS",
           "library": "assets/input-actions.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -6666,11 +7355,13 @@
         {
           "id": "RESOURCE_GATHERING",
           "library": "assets/resource-gathering.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6730,11 +7421,13 @@
         {
           "id": "STAT_MODIFIERS",
           "library": "assets/stat-modifiers.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6746,11 +7439,31 @@
         {
           "id": "STATE_MACHINE",
           "library": "assets/state-machine.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATUS_EFFECTS",
+          "library": "assets/status-effects.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6799,6 +7512,7 @@
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -6841,7 +7555,10 @@
       ],
       "sourceFiles": [
         "roblox-games/cat-step/client/Game.client.luau",
-        "roblox-games/cat-step/shared/GameConfig.luau"
+        "roblox-games/cat-step/shared/GameConfig.luau",
+        "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "roblox-games/cat-step/client/MaterialPresentation.client.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -6932,6 +7649,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -6968,7 +7686,62 @@
           "id": "CHARACTER_PROGRESSION",
           "library": "assets/character-progression.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ECONOMY_LOOT_SHOP",
+          "library": "assets/economy-loot-shop.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -6986,6 +7759,7 @@
           "id": "INPUT_ACTIONS",
           "library": "assets/input-actions.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -7009,6 +7783,78 @@
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "RESOURCE_GATHERING",
+          "library": "assets/resource-gathering.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STAT_MODIFIERS",
+          "library": "assets/stat-modifiers.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATE_MACHINE",
+          "library": "assets/state-machine.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATUS_EFFECTS",
+          "library": "assets/status-effects.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -7058,6 +7904,7 @@
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -7168,19 +8015,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/cat-step/client/Game.client.luau"
+          "roblox-games/cat-step/client/Game.client.luau",
+          "roblox-games/cat-step/client/MaterialPresentation.client.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/cat-step/shared/GameConfig.luau"
+          "roblox-games/cat-step/shared/GameConfig.luau",
+          "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+          "roblox-games/cat-step/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+    "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7516,13 +8366,143 @@
         "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
         "sourceAnchors": [
           {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateItemStateBadges",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionProgress",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.AdaptActionMenu",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "playVerifiedLearningActionFeedback",
+            "symbol": "layoutTouchControls",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "stroke",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/client/Game.client.luau",
+            "symbol": "showMenu",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/cat-step/client/Game.client.luau",
+            "symbol": "playVerifiedLearningActionFeedback",
             "kind": "FUNCTION"
           },
           {
@@ -7547,12 +8527,12 @@
           },
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "buildStaircase",
+            "symbol": "makeButton",
             "kind": "FUNCTION"
           },
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "showMenu",
+            "symbol": "buildStaircase",
             "kind": "FUNCTION"
           },
           {
@@ -7571,6 +8551,11 @@
             "kind": "FUNCTION"
           },
           {
+            "file": "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.Apply",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "studioAssetFamily",
             "kind": "FUNCTION"
@@ -7578,11 +8563,6 @@
           {
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "makeText",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "makeButton",
             "kind": "FUNCTION"
           },
           {
@@ -7624,16 +8604,6 @@
             "file": "roblox-games/cat-step/client/Game.client.luau",
             "symbol": "clearPlatforms",
             "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "setControlsEnabled",
-            "kind": "FUNCTION"
-          },
-          {
-            "file": "roblox-games/cat-step/client/Game.client.luau",
-            "symbol": "resetRun",
-            "kind": "FUNCTION"
           }
         ],
         "designTraceability": [
@@ -7661,7 +8631,10 @@
       },
       "sourceFiles": [
         "roblox-games/cat-step/client/Game.client.luau",
-        "roblox-games/cat-step/shared/GameConfig.luau"
+        "roblox-games/cat-step/shared/GameConfig.luau",
+        "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "roblox-games/cat-step/client/MaterialPresentation.client.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -7792,6 +8765,16 @@
           "runtimeVerified": false
         },
         {
+          "id": "CONDITIONAL_LOOT_FILTER",
+          "game": "Diablo IV",
+          "sourceUrl": "https://news.blizzard.com/en-us/article/24267729/prepare-for-the-reckoning-lord-of-hatred-draws-near",
+          "observedAt": "2026-10-07",
+          "principle": "Reusable conditions reduce irrelevant loot information; filters can be shared.",
+          "adaptation": "Expose filter state and reset; filtering must not delete rewards or silently auto-sell.",
+          "authority": "DESIGN_REFERENCE_ONLY",
+          "runtimeVerified": false
+        },
+        {
           "id": "TRAVEL_FAVORITES",
           "game": "No Man's Sky",
           "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
@@ -7824,7 +8807,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -7848,7 +8831,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -7860,7 +8843,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         }
       ],
@@ -7940,6 +8923,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -7976,11 +8960,48 @@
           "id": "CHARACTER_PROGRESSION",
           "library": "assets/character-progression.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -8009,11 +9030,13 @@
         {
           "id": "ECONOMY_LOOT_SHOP",
           "library": "assets/economy-loot-shop.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8026,6 +9049,7 @@
           "id": "INPUT_ACTIONS",
           "library": "assets/input-actions.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -8093,11 +9117,13 @@
         {
           "id": "RESOURCE_GATHERING",
           "library": "assets/resource-gathering.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8157,11 +9183,13 @@
         {
           "id": "STAT_MODIFIERS",
           "library": "assets/stat-modifiers.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8173,11 +9201,31 @@
         {
           "id": "STATE_MACHINE",
           "library": "assets/state-machine.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATUS_EFFECTS",
+          "library": "assets/status-effects.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8226,6 +9274,7 @@
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -8268,7 +9317,10 @@
       ],
       "sourceFiles": [
         "roblox-games/cat-step/client/Game.client.luau",
-        "roblox-games/cat-step/shared/GameConfig.luau"
+        "roblox-games/cat-step/shared/GameConfig.luau",
+        "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+        "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+        "roblox-games/cat-step/client/MaterialPresentation.client.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8359,6 +9411,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -8395,7 +9448,62 @@
           "id": "CHARACTER_PROGRESSION",
           "library": "assets/character-progression.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ECONOMY_LOOT_SHOP",
+          "library": "assets/economy-loot-shop.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -8413,6 +9521,7 @@
           "id": "INPUT_ACTIONS",
           "library": "assets/input-actions.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -8436,6 +9545,78 @@
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "RESOURCE_GATHERING",
+          "library": "assets/resource-gathering.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STAT_MODIFIERS",
+          "library": "assets/stat-modifiers.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATE_MACHINE",
+          "library": "assets/state-machine.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATUS_EFFECTS",
+          "library": "assets/status-effects.js",
+          "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -8485,6 +9666,7 @@
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
+            "roblox-games/cat-step/shared/RobloxCommonUI.luau",
             "roblox-games/cat-step/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -8560,24 +9742,27 @@
     "files": [
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/default.project.json"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cat-step/default.project.json",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 278,
+        "line": 706,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66,
-        "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "symbol": "layoutTouchControls",
+        "context": "local function layoutTouchControls()",
+        "score": 74,
+        "currentBehavior": "local function layoutTouchControls()",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 layoutTouchControls의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::layoutTouchControls이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 75,
+        "line": 76,
         "kind": "FUNCTION",
         "symbol": "stroke",
         "context": "local function stroke(target, transparency)",
@@ -8589,7 +9774,31 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 355,
+        "line": 717,
+        "kind": "FUNCTION",
+        "symbol": "showMenu",
+        "context": "local function showMenu(kind)",
+        "score": 58,
+        "currentBehavior": "local function showMenu(kind)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 showMenu의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::showMenu이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 231,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 50,
+        "currentBehavior": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
+        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::playVerifiedLearningActionFeedback이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
+        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
+      },
+      {
+        "file": "roblox-games/cat-step/client/Game.client.luau",
+        "line": 306,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -8601,7 +9810,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 208,
+        "line": 209,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -8613,7 +9822,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 31,
+        "line": 32,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -8625,7 +9834,7 @@
       },
       {
         "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 68,
+        "line": 69,
         "kind": "FUNCTION",
         "symbol": "round",
         "context": "local function round(target, radius)",
@@ -8633,30 +9842,6 @@
         "currentBehavior": "local function round(target, radius)",
         "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 round의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::round이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 690,
-        "kind": "FUNCTION",
-        "symbol": "buildStaircase",
-        "context": "local function buildStaircase()",
-        "score": 34,
-        "currentBehavior": "local function buildStaircase()",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 buildStaircase의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::buildStaircase이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
-        "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
-      },
-      {
-        "file": "roblox-games/cat-step/client/Game.client.luau",
-        "line": 755,
-        "kind": "FUNCTION",
-        "symbol": "showMenu",
-        "context": "local function showMenu(kind)",
-        "score": 34,
-        "currentBehavior": "local function showMenu(kind)",
-        "intendedBehavior": "USABILITY primary goal \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 showMenu의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"캣 스텝을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 퍼즐. 업보와 인과응보의 퍼즐 세계에서 단서 조합 × 업보와 인과응보과 공간 상태 변환 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 퍼즐·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
-        "whyThisAnchor": "roblox-games/cat-step/client/Game.client.luau::showMenu이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/cat-step/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       }
     ],
@@ -8670,26 +9855,20 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI",
-      "GAMEPLAY",
-      "MULTIPLAYER_SERVER"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
-      "STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED"
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
-    "securityRelevant": true,
+    "securityRelevant": false,
     "openCloudWorldChecks": [
       "SERVER_BOOT",
       "FINITE_WORLD_BOUNDS",
@@ -8709,7 +9888,10 @@
     "plannedFiles": [
       "roblox-games/cat-step/client/Game.client.luau",
       "roblox-games/cat-step/shared/GameConfig.luau",
-      "roblox-games/cat-step/default.project.json"
+      "roblox-games/cat-step/shared/RobloxCommonUI.luau",
+      "roblox-games/cat-step/shared/RobloxCommonMaterials.luau",
+      "roblox-games/cat-step/default.project.json",
+      "roblox-games/cat-step/client/MaterialPresentation.client.luau"
     ],
     "impact": {
       "version": 1,
@@ -8717,26 +9899,20 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI",
-        "GAMEPLAY",
-        "MULTIPLAYER_SERVER"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
-        "REMOTE_AUTHORITY_AND_SYNC_QA",
-        "SECURITY_AUTHORITY_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
       "conditionalQa": [
-        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
-        "STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED"
+        "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
       ],
-      "securityRelevant": true,
+      "securityRelevant": false,
       "openCloudWorldChecks": [
         "SERVER_BOOT",
         "FINITE_WORLD_BOUNDS",
@@ -8761,15 +9937,11 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
-      "REMOTE_AUTHORITY_AND_SYNC_QA",
-      "SECURITY_AUTHORITY_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
     "conditionalQa": [
-      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE",
-      "STUDIO_MCP_ONLY_IF_ACTUAL_MULTI_CLIENT_REQUIRED"
+      "STUDIO_MCP_ONLY_IF_RENDER_TOUCH_CAMERA_UNPROVABLE"
     ],
     "openCloudWorldChecks": [
       "SERVER_BOOT",
@@ -8793,11 +9965,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "709521b2e1b172ce0ca393dec5b9372d3c0f1c35293d3f3e86957919c1fa2d4c",
+      "sourceTreeFingerprint": "391eef6ce44729bf0706cf556fbaaafdd550edf500d9e952a7762e951f2e29fa",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "failureSignature": "roblox-build-package-failed"
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8849,7 +10021,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 7,
+    "nextGeneration": 8,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8906,11 +10078,10 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "EQUIPMENT_LOADOUT",
       "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T13:45:16.715Z"
+  "generatedAt": "2026-10-11T22:41:32.082Z"
 }

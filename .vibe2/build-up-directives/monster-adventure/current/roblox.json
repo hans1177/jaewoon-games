@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "monster-adventure-build-up-g17-c81137991057",
-  "directiveFingerprint": "c8113799105708bd9b07eced50887594051280d78e1185a15c12bd6b75848d87",
-  "previousDirectiveFingerprint": "ad7727997357e6a27444861d05243e9463358365e2c8d20f639a43acb5d1648f",
-  "forbiddenRepeatFingerprint": "ad7727997357e6a27444861d05243e9463358365e2c8d20f639a43acb5d1648f",
+  "directiveId": "monster-adventure-build-up-g18-e6e06edb1b73",
+  "directiveFingerprint": "e6e06edb1b73365efce1a3b280720fe40f21f2fb5163e67755e09418ca9acaf7",
+  "previousDirectiveFingerprint": "c8113799105708bd9b07eced50887594051280d78e1185a15c12bd6b75848d87",
+  "forbiddenRepeatFingerprint": "c8113799105708bd9b07eced50887594051280d78e1185a15c12bd6b75848d87",
   "gameId": "monster-adventure",
   "gameName": "몬스터 어드벤처",
-  "generation": 17,
+  "generation": 18,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/monster-adventure",
-  "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+  "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
   "designFingerprint": "7da58e27d3a6516aa4de2f9604dc24ab5d9a117a5683260a6f0c7f519a1b8bd1",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+        "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -278,7 +278,7 @@
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "7da58e27d3a6516aa4de2f9604dc24ab5d9a117a5683260a6f0c7f519a1b8bd1",
-    "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -365,7 +365,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/monster-adventure/server/Game.server.luau",
-            "roblox-games/monster-adventure/client/Game.client.luau"
+            "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -373,14 +373,9 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/monster-adventure/server/Game.server.luau",
           "roblox-games/monster-adventure/shared/GameConfig.luau",
-          "roblox-games/monster-adventure/client/Game.client.luau"
+          "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
-          {
-            "file": "roblox-games/monster-adventure/client/Game.client.luau",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          },
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler1",
@@ -399,6 +394,11 @@
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/monster-adventure/server/Game.server.luau",
+            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -471,7 +471,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/monster-adventure/server/Game.server.luau",
-            "roblox-games/monster-adventure/client/Game.client.luau"
+            "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -479,14 +479,9 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/monster-adventure/server/Game.server.luau",
           "roblox-games/monster-adventure/shared/GameConfig.luau",
-          "roblox-games/monster-adventure/client/Game.client.luau"
+          "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
-          {
-            "file": "roblox-games/monster-adventure/client/Game.client.luau",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          },
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler1",
@@ -505,6 +500,11 @@
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/monster-adventure/server/Game.server.luau",
+            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -570,7 +570,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/monster-adventure/server/Game.server.luau",
-            "roblox-games/monster-adventure/client/Game.client.luau"
+            "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -578,14 +578,9 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/monster-adventure/server/Game.server.luau",
           "roblox-games/monster-adventure/shared/GameConfig.luau",
-          "roblox-games/monster-adventure/client/Game.client.luau"
+          "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
-          {
-            "file": "roblox-games/monster-adventure/client/Game.client.luau",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          },
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler1",
@@ -604,6 +599,11 @@
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/monster-adventure/server/Game.server.luau",
+            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -669,7 +669,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/monster-adventure/server/Game.server.luau",
-            "roblox-games/monster-adventure/client/Game.client.luau"
+            "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -677,14 +677,9 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/monster-adventure/server/Game.server.luau",
           "roblox-games/monster-adventure/shared/GameConfig.luau",
-          "roblox-games/monster-adventure/client/Game.client.luau"
+          "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
-          {
-            "file": "roblox-games/monster-adventure/client/Game.client.luau",
-            "symbol": "render",
-            "kind": "FUNCTION"
-          },
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler1",
@@ -703,6 +698,11 @@
           {
             "file": "roblox-games/monster-adventure/server/Game.server.luau",
             "symbol": "scopeHandler4",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/monster-adventure/server/Game.server.luau",
+            "symbol": "scopeHandler5",
             "kind": "FUNCTION"
           }
         ],
@@ -755,13 +755,19 @@
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
+      "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
       "roblox-games/monster-adventure/shared/GameConfig.luau",
       "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/server/Game.server.luau"
+      "roblox-games/monster-adventure/server/Game.server.luau",
+      "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+      "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
     ],
     "executableCodeCandidateFiles": [
+      "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
       "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/server/Game.server.luau"
+      "roblox-games/monster-adventure/server/Game.server.luau",
+      "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+      "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -783,7 +789,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -4017,70 +4023,138 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=4",
+      "CURRENT_SOURCE_FILES=7",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 89,
-      "progression": 144,
-      "ai": 30,
-      "save": 49,
-      "multiplayer": 13,
-      "animation": 41,
-      "motionStates": 159,
-      "gameFeel": 29,
-      "vfx": 25,
-      "camera": 33,
+      "combat": 153,
+      "progression": 479,
+      "ai": 54,
+      "save": 85,
+      "multiplayer": 22,
+      "animation": 49,
+      "motionStates": 638,
+      "gameFeel": 35,
+      "vfx": 43,
+      "camera": 32,
       "audio": 4,
-      "audioDynamics": 15,
-      "ui": 61,
-      "uiFlow": 34,
-      "entryFlow": 6,
+      "audioDynamics": 14,
+      "ui": 868,
+      "uiFlow": 1116,
+      "entryFlow": 12,
       "loadingFlow": 0,
-      "input": 68,
-      "map": 112,
-      "landmark": 8,
-      "interaction": 29,
-      "inventory": 6,
-      "equipment": 3,
-      "settings": 2,
-      "feedback": 71,
-      "session": 11,
-      "content": 107,
-      "choice": 22,
-      "connection": 1,
-      "performance": 31,
-      "lighting": 39,
+      "input": 128,
+      "map": 200,
+      "landmark": 36,
+      "interaction": 257,
+      "inventory": 241,
+      "equipment": 65,
+      "settings": 25,
+      "feedback": 98,
+      "session": 26,
+      "content": 481,
+      "choice": 1642,
+      "connection": 7,
+      "performance": 40,
+      "lighting": 63,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 13
+      "errorRecovery": 26
     },
     "topFiles": [
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "score": 1517
+      },
       {
         "file": "roblox-games/monster-adventure/shared/GameConfig.luau",
         "score": 302
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "score": 219
+        "score": 203
       },
       {
         "file": "roblox-games/monster-adventure/server/Game.server.luau",
         "score": 190
       },
       {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+        "score": 6
+      },
+      {
         "file": "roblox-games/monster-adventure/default.project.json",
         "score": 2
+      },
+      {
+        "file": "roblox-games/monster-adventure/client/MaterialPresentation.client.luau",
+        "score": 1
       }
     ],
     "sourceAnchors": [
       {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3921,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3960,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3937,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 130
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3993,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4011,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 114
+      },
+      {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 649,
+        "line": 600,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
+        "score": 106
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 2761,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 106
       },
       {
@@ -4132,16 +4206,80 @@
         "score": 98
       },
       {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 2872,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98
+      },
+      {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 283,
+        "line": 284,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
         "score": 90
       },
       {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3466,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3957,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3973,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3990,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4027,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4101,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 148,
+        "line": 149,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindTrack",
         "context": "local function verifiedLearningBindTrack(state, track)",
@@ -4149,10 +4287,74 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 668,
+        "line": 619,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 1050,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 2581,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateItemStateBadges",
+        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 3933,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4164,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4319,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4373,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 4885,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.AdaptActionMenu",
+        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
         "score": 82
       },
       {
@@ -4164,12 +4366,12 @@
         "score": 74
       },
       {
-        "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 469,
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+        "line": 1010,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
       },
       {
         "file": "roblox-games/monster-adventure/server/Game.server.luau",
@@ -4181,7 +4383,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 166,
+        "line": 167,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningCreateFootIk",
         "context": "local function verifiedLearningCreateFootIk(state, side)",
@@ -4189,7 +4391,15 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 546,
+        "line": 422,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 50
+      },
+      {
+        "file": "roblox-games/monster-adventure/client/Game.client.luau",
+        "line": 497,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -4197,7 +4407,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 195,
+        "line": 196,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningBindMotionActor",
         "context": "local function verifiedLearningBindMotionActor(character)",
@@ -4205,7 +4415,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 397,
+        "line": 398,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningTryBindMotionInstance",
         "context": "local function verifiedLearningTryBindMotionInstance(instance)",
@@ -4229,7 +4439,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 27,
+        "line": 28,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
@@ -4244,8 +4454,16 @@
         "score": 34
       },
       {
+        "file": "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+        "line": 299,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.Apply",
+        "context": "function RobloxCommonMaterials.Apply(part, atomId, options)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 23,
+        "line": 24,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
@@ -4253,7 +4471,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 144,
+        "line": 145,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningHorizontal",
         "context": "local function verifiedLearningHorizontal(v)",
@@ -4264,9 +4482,9 @@
   "previousVersionDelta": {
     "previousGoal": "몬스터 어드벤처. 신화 속 트릭스터의 질서 역전·순교와 집단 결속 생활. 몬스터 어드벤처에서 사회관계 선택 × 신화 속 트릭스터의 질서 역전과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 16,
-    "previousSourceTreeFingerprint": "d0e8b58266c59d1f9fbd47a833a4234f08ce77252040e93044246fe733dc197a",
-    "currentSourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "previousGeneration": 17,
+    "previousSourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "currentSourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -4274,9 +4492,9 @@
     "platform": "ROBLOX",
     "studioQualityFailure": null,
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-verified-external-learning-required",
+    "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-verified-external-learning-required:ROBLOX_VERIFIED_EXTERNAL_LEARNING_REFRESH_REQUIRED"
+      "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -4430,8 +4648,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CRAFTING",
@@ -4440,8 +4658,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -4910,8 +5128,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4928,8 +5146,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5334,16 +5552,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5433,8 +5641,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 137968,
-        "largestFileBytes": 48175,
+        "sourceBytes": 392559,
+        "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5466,8 +5674,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 11,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=10; uncoveredBefore=5.",
+    "themeDepth": 12,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5477,12 +5685,12 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 11
+        "PRESENTATION_WORLD_COHESION": 12
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -5526,27 +5734,12 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 48,
+        "score": 30,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
           "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 46,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
-        ]
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 34,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
         ]
       },
       {
@@ -5557,7 +5750,17 @@
         ]
       },
       {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 22,
+        "gapDomains": []
+      },
+      {
         "theme": "QUEST_STORY_PROGRESSION_CHAIN",
+        "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "score": 16,
         "gapDomains": []
       },
@@ -5645,11 +5848,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 17,
-    "previousGeneration": 16,
+    "generation": 18,
+    "previousGeneration": 17,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
-    "priorSourceFingerprint": "d0e8b58266c59d1f9fbd47a833a4234f08ce77252040e93044246fe733dc197a",
+    "sourceFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "priorSourceFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -5897,12 +6100,15 @@
       "roblox-games/monster-adventure/shared/GameConfig.luau",
       "roblox-games/monster-adventure/server/Game.server.luau",
       "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/default.project.json"
+      "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+      "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+      "roblox-games/monster-adventure/default.project.json",
+      "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 649,
+        "line": 600,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -5965,7 +6171,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 283,
+        "line": 284,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "currentBehavior": "local function verifiedLearningMotionFailureReason(state)",
@@ -6100,19 +6306,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/monster-adventure/client/Game.client.luau"
+          "roblox-games/monster-adventure/client/Game.client.luau",
+          "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/monster-adventure/shared/GameConfig.luau"
+          "roblox-games/monster-adventure/shared/GameConfig.luau",
+          "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+          "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -6196,19 +6405,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/monster-adventure/client/Game.client.luau"
+          "roblox-games/monster-adventure/client/Game.client.luau",
+          "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/monster-adventure/shared/GameConfig.luau"
+          "roblox-games/monster-adventure/shared/GameConfig.luau",
+          "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+          "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -6251,12 +6463,15 @@
       "roblox-games/monster-adventure/shared/GameConfig.luau",
       "roblox-games/monster-adventure/server/Game.server.luau",
       "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/default.project.json"
+      "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+      "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+      "roblox-games/monster-adventure/default.project.json",
+      "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 649,
+        "line": 600,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -6340,7 +6555,7 @@
       },
       {
         "file": "roblox-games/monster-adventure/client/Game.client.luau",
-        "line": 283,
+        "line": 284,
         "kind": "FUNCTION",
         "symbol": "verifiedLearningMotionFailureReason",
         "context": "local function verifiedLearningMotionFailureReason(state)",
@@ -6361,15 +6576,13 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI",
-      "GAMEPLAY"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -6397,7 +6610,10 @@
       "roblox-games/monster-adventure/shared/GameConfig.luau",
       "roblox-games/monster-adventure/server/Game.server.luau",
       "roblox-games/monster-adventure/client/Game.client.luau",
-      "roblox-games/monster-adventure/default.project.json"
+      "roblox-games/monster-adventure/shared/RobloxCommonUI.luau",
+      "roblox-games/monster-adventure/shared/RobloxCommonMaterials.luau",
+      "roblox-games/monster-adventure/default.project.json",
+      "roblox-games/monster-adventure/client/MaterialPresentation.client.luau"
     ],
     "impact": {
       "version": 1,
@@ -6405,15 +6621,13 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI",
-        "GAMEPLAY"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
@@ -6445,7 +6659,6 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -6474,11 +6687,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+      "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-verified-external-learning-required"
+      "failureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -6530,7 +6743,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 18,
+    "nextGeneration": 19,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -6587,12 +6800,10 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "EQUIPMENT_LOADOUT",
-      "SYSTEM_CONNECTION",
       "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T22:22:32.730Z"
+  "generatedAt": "2026-10-11T22:41:30.929Z"
 }
