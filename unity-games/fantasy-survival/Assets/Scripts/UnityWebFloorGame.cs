@@ -1317,15 +1317,33 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         BeginPlayerAction(id=="sunstone-greatsword"?5:1);
         float range=(sand||orb)?22f:id=="sunstone-greatsword"?4.5f:
             id=="sunstone-dagger"?2.0f:mummy?3.5f:2.8f;
-        Monster target=null;
-        float nearest=range;
+        // 전투 · 실제 화면과 공격 방향에 맞는 대상만 공격한다. 구슬은 정면 적을 우선 유도한다.
+        // 모래정령 추적 지팡이의 기존 전체 방향 유도와 무기 수치는 보존한다.
+        Monster target=null, alignedTarget=null;
+        float nearest=range, alignedNearest=range;
         foreach(Monster m in monsters)
         {
-            if(m.hp<=0f||m.ally||m.obj==null)continue;
-            float d=Vector3.Distance(player.position,m.obj.transform.position);
+            if(m.hp<=0f||m.ally||m.obj==null||!m.obj.activeInHierarchy)continue;
+            Vector3 offset=m.obj.transform.position-player.position;
+            offset.y=0f;
+            float d=offset.magnitude;
+            if(d>=range)continue;
+            if(!sand)
+            {
+                Vector3 viewport=mainCamera.WorldToViewportPoint(m.obj.transform.position+Vector3.up*.85f);
+                if(viewport.z<=0f||viewport.x<0f||viewport.x>1f||viewport.y<0f||viewport.y>1f)continue;
+                float facing=Vector3.Dot(player.forward,offset.normalized);
+                if(facing<(orb?.35f:-.18f))continue;
+                if(orb)
+                {
+                    float sideways=Mathf.Abs(Vector3.Dot(player.right,offset));
+                    if(sideways<=2f && d<alignedNearest){alignedTarget=m;alignedNearest=d;}
+                }
+            }
             if(d<nearest){nearest=d;target=m;}
         }
-        if(target==null){info="공격 범위에 몬스터가 없어.";return;}
+        if(orb && alignedTarget!=null)target=alignedTarget;
+        if(target==null){info=orb?"정면에 유도할 몬스터가 없어.":"공격 범위에 몬스터가 없어.";return;}
         int damage=weapon!=null?Mathf.Max(5,weapon.power):5;
         if(sand||orb)
         {
