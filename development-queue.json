@@ -22339,10 +22339,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
+      "currentStep": "ROBLOX_F0_SOURCE_PREFLIGHT",
+      "canonicalState": "F0_SOURCE_PREFLIGHT_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T10:51:37.532Z",
-      "updatedAt": "2026-10-11T00:14:01.586Z",
+      "updatedAt": "2026-10-11T00:23:16.904Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -22862,22 +22862,22 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxRuntimePassed": false,
       "routingBlockers": [
-        "roblox-runtime-candidate-deploy-pending"
+        "roblox-f0-gameplay-product-readiness-failed"
       ],
       "robloxBuildOrPackagePassed": true,
       "robloxBuildSourceRevision": "dcdb73a3400fad96c2f33d55ace32dc96112bffa",
       "robloxBuildArtifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
-      "robloxBuildPassedAt": "2026-10-10T21:52:35.648Z",
+      "robloxBuildPassedAt": "2026-10-11T00:23:16.904Z",
       "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": true,
-      "robloxBuildPreflightPassedAt": "2026-10-10T21:52:35.648Z",
+      "robloxBuildPreflightPassedAt": "2026-10-11T00:23:16.904Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
         "version": 2,
         "gameId": "dice-battle-board",
         "pass": true,
         "state": "PASS",
-        "checkedAt": "2026-10-10T21:18:22.525Z",
+        "checkedAt": "2026-10-11T00:04:38.254Z",
         "sourceRevision": "dcdb73a3400fad96c2f33d55ace32dc96112bffa",
         "artifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
         "secondaryOwnerFocus": false,
@@ -22921,30 +22921,30 @@
         "blockers": [],
         "authority": "roblox-vibe-shared-model-build-preflight"
       },
-      "robloxFoundationF0Passed": true,
-      "robloxFoundationF0PassedAt": "2026-10-10T23:32:34.943Z",
+      "robloxFoundationF0Passed": false,
+      "robloxFoundationF0PassedAt": null,
       "robloxFoundationF0Evidence": {
         "version": 5,
         "gameId": "dice-battle-board",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-10T23:32:30.967Z",
+        "checkedAt": "2026-10-11T00:04:38.846Z",
         "sourcePath": "roblox-games/dice-battle-board",
         "sourceRevision": "dcdb73a3400fad96c2f33d55ace32dc96112bffa",
         "artifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
         "rebuiltArtifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
-        "artifactRunId": 38092494978,
-        "buildUpAssetSourceUsageFingerprint": null,
-        "assetSelectionFingerprint": null,
+        "artifactRunId": 38090930284,
+        "buildUpAssetSourceUsageFingerprint": "834e95e270d126b82309e9ebc43d05a3875a5438eae6e715d45dc899bd230d78",
+        "assetSelectionFingerprint": "054983fb71fcef66a7d43b430a2289d15c9543f757c27bd57a6b61de7ecc67d4",
         "observedAssetSelectionFingerprint": "054983fb71fcef66a7d43b430a2289d15c9543f757c27bd57a6b61de7ecc67d4",
-        "assetLibraryVersion": null,
+        "assetLibraryVersion": 129,
         "observedAssetLibraryVersion": 129,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
         "saveExists": true,
         "multiplayerApplicable": true,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -22962,27 +22962,122 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "dice-battle-board",
           "pass": false,
           "blockers": [
-            "DESIGN_PLAY_MODE_MISMATCH:SINGLE:COOP",
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE"
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SAVE",
+            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "SAVE": false,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": false
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+              "capabilities": [
+                "PROGRESSION"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+              "capabilities": [
+                "SESSION_FLOW"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+              "capabilities": [
+                "SESSION_FLOW",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "업보와 인과응보의 퍼즐 세계",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "단서 조합 × 업보와 인과응보",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "공간 상태 변환 × 신화 속 트릭스터의 질서 역전",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -22992,11 +23087,11 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "N/A",
-            "World": "N/A",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "N/A",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -23007,32 +23102,37 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 0,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
-              "rows": [],
-              "pass": true
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
             },
             "placeholder": {
               "pass": true,
@@ -23043,34 +23143,39 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "05f708e01b40508a0ae033aade4e83a514c877bac4b71fd5562fcdcf893d03d9",
           "antiSkeletonPassed": true,
-          "designGenre": null,
+          "designGenre": "Strategy",
           "sourceGenre": "Strategy",
-          "designPlayMode": "SINGLE",
+          "designPlayMode": "COOP",
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "N/A",
-          "World": "N/A",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "N/A",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -23102,37 +23207,39 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
-      "robloxHeadlessFastMvpPassed": true,
+      "robloxHeadlessFastMvpPassed": false,
       "robloxHeadlessFastMvpEvidence": {
         "version": 5,
         "gameId": "dice-battle-board",
         "platform": "ROBLOX",
         "validationMode": "HEADLESS_SOURCE_PREFLIGHT_F0",
-        "checkedAt": "2026-10-10T23:32:30.967Z",
+        "checkedAt": "2026-10-11T00:04:38.846Z",
         "sourcePath": "roblox-games/dice-battle-board",
         "sourceRevision": "dcdb73a3400fad96c2f33d55ace32dc96112bffa",
         "artifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
         "rebuiltArtifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
-        "artifactRunId": 38092494978,
-        "buildUpAssetSourceUsageFingerprint": null,
-        "assetSelectionFingerprint": null,
+        "artifactRunId": 38090930284,
+        "buildUpAssetSourceUsageFingerprint": "834e95e270d126b82309e9ebc43d05a3875a5438eae6e715d45dc899bd230d78",
+        "assetSelectionFingerprint": "054983fb71fcef66a7d43b430a2289d15c9543f757c27bd57a6b61de7ecc67d4",
         "observedAssetSelectionFingerprint": "054983fb71fcef66a7d43b430a2289d15c9543f757c27bd57a6b61de7ecc67d4",
-        "assetLibraryVersion": null,
+        "assetLibraryVersion": 129,
         "observedAssetLibraryVersion": 129,
         "nativeLanguageCompilePassed": true,
         "nativeCompilerVersion": "0.739",
         "playMode": "COOP",
         "saveExists": true,
         "multiplayerApplicable": true,
-        "sourcePreflightPassed": true,
+        "sourcePreflightPassed": false,
         "f0SourceIntegrityPassed": true,
         "sourceStartupMarkersPassed": true,
         "gameStartPassed": false,
@@ -23150,27 +23257,122 @@
         "combatOrRoundMarkersPassed": true,
         "datastoreContractPassed": true,
         "multiplayerSyncContractPassed": true,
-        "protectedStatePreserved": true,
+        "protectedStatePreserved": false,
         "exactRevision": true,
-        "gameplayProductReadinessRequired": false,
+        "gameplayProductReadinessRequired": true,
         "gameplayProductReadiness": {
           "version": 1,
           "gameId": "dice-battle-board",
           "pass": false,
           "blockers": [
-            "DESIGN_PLAY_MODE_MISMATCH:SINGLE:COOP",
-            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE"
+            "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
+            "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
+            "MISSING_GAMEPLAY_CAPABILITY:WORLD",
+            "MISSING_GAMEPLAY_CAPABILITY:CONTENT_ENTITY",
+            "MISSING_GAMEPLAY_CAPABILITY:COMBAT",
+            "MISSING_GAMEPLAY_CAPABILITY:ENEMY_AI",
+            "MISSING_GAMEPLAY_CAPABILITY:PROGRESSION",
+            "MISSING_GAMEPLAY_CAPABILITY:SAVE",
+            "MISSING_GAMEPLAY_CAPABILITY:MULTIPLAYER",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:0",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:1",
+            "CORE_LOOP_STEP_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:0",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:1",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:2",
+            "SIGNATURE_SYSTEM_UNIMPLEMENTED:3"
           ],
           "requiredCapabilities": [
             "CORE_GAMEPLAY_STATE",
-            "MOBILE_UI"
+            "SESSION_FLOW",
+            "WORLD",
+            "CONTENT_ENTITY",
+            "COMBAT",
+            "ENEMY_AI",
+            "PROGRESSION",
+            "SAVE",
+            "MOBILE_UI",
+            "MULTIPLAYER"
           ],
           "implementedCapabilities": {
             "CORE_GAMEPLAY_STATE": false,
-            "MOBILE_UI": true
+            "SESSION_FLOW": false,
+            "WORLD": false,
+            "CONTENT_ENTITY": false,
+            "COMBAT": false,
+            "ENEMY_AI": false,
+            "PROGRESSION": false,
+            "SAVE": false,
+            "MOBILE_UI": true,
+            "MULTIPLAYER": false
           },
-          "coreLoopTrace": [],
-          "signatureSystemTrace": [],
+          "coreLoopTrace": [
+            {
+              "index": 0,
+              "step": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+              "capabilities": [
+                "PROGRESSION"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "step": "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+              "capabilities": [
+                "SESSION_FLOW"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "step": "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+              "capabilities": [
+                "SESSION_FLOW",
+                "PROGRESSION"
+              ],
+              "pass": false
+            }
+          ],
+          "signatureSystemTrace": [
+            {
+              "index": 0,
+              "name": "업보와 인과응보의 퍼즐 세계",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 1,
+              "name": "단서 조합 × 업보와 인과응보",
+              "capabilities": [
+                "WORLD",
+                "CONTENT_ENTITY",
+                "COMBAT",
+                "ENEMY_AI"
+              ],
+              "pass": false
+            },
+            {
+              "index": 2,
+              "name": "공간 상태 변환 × 신화 속 트릭스터의 질서 역전",
+              "capabilities": [
+                "CORE_GAMEPLAY_STATE"
+              ],
+              "pass": false
+            },
+            {
+              "index": 3,
+              "name": "금기와 기회의 교차",
+              "capabilities": [
+                "WORLD"
+              ],
+              "pass": false
+            }
+          ],
           "placeholderDebt": {
             "primitiveConstructionCount": 0,
             "meshConstructionCount": 0,
@@ -23180,11 +23382,11 @@
           },
           "studioQualitySheet": {
             "Core": "MISSING",
-            "Content": "N/A",
-            "World": "N/A",
-            "Combat": "N/A",
-            "AI": "N/A",
-            "Progression": "N/A",
+            "Content": "MISSING",
+            "World": "MISSING",
+            "Combat": "MISSING",
+            "AI": "MISSING",
+            "Progression": "MISSING",
             "UI": "POLISHED",
             "Graphics": "ROUGH",
             "Motion": "POLISHED",
@@ -23195,32 +23397,37 @@
           },
           "studioReadiness": {
             "ai": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 0,
-              "pass": true
+              "pass": false
             },
             "combatFeel": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "worldTopology": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "firstTenMinutes": {
               "signalCount": 3,
               "pass": false
             },
             "midLateGame": {
-              "applicable": false,
+              "applicable": true,
               "signalCount": 1,
-              "pass": true
+              "pass": false
             },
             "systemConnections": {
-              "rows": [],
-              "pass": true
+              "rows": [
+                {
+                  "id": "WORLD_TO_CONTENT",
+                  "pass": false
+                }
+              ],
+              "pass": false
             },
             "placeholder": {
               "pass": true,
@@ -23231,34 +23438,39 @@
               "meaningfulGameplayFunctionCount": 0
             },
             "criticalGaps": [
-              "FIRST_10_MINUTES_FLOW"
+              "AI_STATE_DEPTH",
+              "COMBAT_FEEL_CHAIN",
+              "WORLD_TOPOLOGY_AND_LANDMARKS",
+              "FIRST_10_MINUTES_FLOW",
+              "MID_LATE_GAME_DEPTH",
+              "SYSTEM_CONNECTION_CHAIN"
             ],
             "f9SourceQualityReady": false
           },
           "runtimeRequirements": {
-            "worldRequired": false,
-            "minimumBasePartCount": 1,
-            "spawnRequired": false,
-            "landmarkRequired": false,
+            "worldRequired": true,
+            "minimumBasePartCount": 5,
+            "spawnRequired": true,
+            "landmarkRequired": true,
             "objectiveRequired": false,
             "serverBootRequired": true,
             "simulationRequired": true,
             "actualPlayRequired": true
           },
-          "designFingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "designFingerprint": "05f708e01b40508a0ae033aade4e83a514c877bac4b71fd5562fcdcf893d03d9",
           "antiSkeletonPassed": true,
-          "designGenre": null,
+          "designGenre": "Strategy",
           "sourceGenre": "Strategy",
-          "designPlayMode": "SINGLE",
+          "designPlayMode": "COOP",
           "sourcePlayMode": "COOP"
         },
         "studioQualitySheet": {
           "Core": "MISSING",
-          "Content": "N/A",
-          "World": "N/A",
-          "Combat": "N/A",
-          "AI": "N/A",
-          "Progression": "N/A",
+          "Content": "MISSING",
+          "World": "MISSING",
+          "Combat": "MISSING",
+          "AI": "MISSING",
+          "Progression": "MISSING",
           "UI": "POLISHED",
           "Graphics": "ROUGH",
           "Motion": "POLISHED",
@@ -23290,12 +23502,14 @@
           "multiplayerSync": true,
           "sessionEndRestart": true,
           "errorGuards": true,
-          "gameplayProductReadiness": true,
+          "gameplayProductReadiness": false,
           "f0SourceIntegrity": true
         },
-        "pass": true,
-        "state": "PASS",
-        "blockers": [],
+        "pass": false,
+        "state": "BLOCKED",
+        "blockers": [
+          "gameplayProductReadiness"
+        ],
         "authority": "roblox-headless-source-preflight-f0"
       },
       "robloxHeadlessFinalReviewPassed": false,
@@ -23327,13 +23541,13 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "VIBE_SHARED_MODEL_BUILD_PREFLIGHT",
-      "robloxFailureStage": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
-      "robloxFailureSignature": "ROBLOX_RUNTIME_CANDIDATE_DEPLOY_PENDING",
+      "robloxFailureStage": "F0_GAMEPLAY_PRODUCT_READINESS",
+      "robloxFailureSignature": "ROBLOX_F0_GAMEPLAY_PRODUCT_READINESS_FAILED",
       "robloxBuildUpAssetSourceUsageFingerprint": "834e95e270d126b82309e9ebc43d05a3875a5438eae6e715d45dc899bd230d78",
       "robloxBuildUpAssetSourceUsageLibraryVersion": 129,
       "robloxBuildAssetSelectionFingerprint": "054983fb71fcef66a7d43b430a2289d15c9543f757c27bd57a6b61de7ecc67d4",
       "robloxBuildAssetLibraryVersion": 129,
-      "robloxExactRevisionPassed": true,
+      "robloxExactRevisionPassed": false,
       "robloxQualityBuildUpRequired": true,
       "robloxQualityBuildUpSourceRevision": "dcdb73a3400fad96c2f33d55ace32dc96112bffa",
       "robloxQualityFailureClass": "GAMEPLAY_PRODUCT_READINESS",
@@ -23343,8 +23557,8 @@
         "sourceRevision": "dcdb73a3400fad96c2f33d55ace32dc96112bffa",
         "artifactIdentity": "sha256:5a9e4e52bb1250cd6473bf4b8e9dbc0db7d8b55f28cc297e5263a6af5b013f53",
         "authority": "roblox-f0-gameplay-product-readiness-failure",
-        "workflowRunId": 38078676528,
-        "testedAt": "2026-10-10T21:52:35.648Z",
+        "workflowRunId": 38090930284,
+        "testedAt": "2026-10-11T00:23:16.904Z",
         "qualityFailureKinds": [
           "MISSING_GAMEPLAY_CAPABILITY:CORE_GAMEPLAY_STATE",
           "MISSING_GAMEPLAY_CAPABILITY:SESSION_FLOW",
@@ -88633,7 +88847,7 @@
       ]
     }
   ],
-  "updatedAt": "2026-10-11T00:23:10.872Z",
+  "updatedAt": "2026-10-11T00:23:16.904Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
