@@ -461,14 +461,38 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         // 기존 Tree/Rock 콜라이더와 채집 판정은 그대로 두고, 시각 모델만 교체한다.
         GameObject treeTrunkSource = Resources.Load<GameObject>("CompanyAssets/MagicForestTrunk");
         GameObject treeCrownSource = Resources.Load<GameObject>("CompanyAssets/MagicForestCrown");
-        MeshFilter trunkMesh = treeTrunkSource != null ? treeTrunkSource.GetComponentInChildren<MeshFilter>() : null;
-        MeshFilter crownMesh = treeCrownSource != null ? treeCrownSource.GetComponentInChildren<MeshFilter>() : null;
-        bool treeNativeReady = trunkMesh != null && trunkMesh.sharedMesh != null
-            && crownMesh != null && crownMesh.sharedMesh != null
-            && trunkMesh.sharedMesh.triangles.Length >= 300
-            && crownMesh.sharedMesh.triangles.Length >= 600
-            && trunkMesh.sharedMesh.bounds.size.y > 1f
-            && crownMesh.sharedMesh.bounds.size.y > 1f
+        // 메시 임포트의 Read/Write가 꺼져 있어도 3D 지오메트리 검증이 가능해야 한다.
+        // 읽기 제한된 Mesh.triangles 접근은 WebGL 초기화를 예외로 중단할 수 있다.
+        int trunkIndices = 0, crownIndices = 0;
+        bool trunkHasDepth = false, crownHasDepth = false;
+        if (treeTrunkSource != null)
+        {
+            foreach (MeshFilter filter in treeTrunkSource.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        trunkIndices += (int)mesh.GetIndexCount(submesh);
+                Vector3 size = mesh.bounds.size;
+                if (size.x > .1f && size.y > 1f && size.z > .1f) trunkHasDepth = true;
+            }
+        }
+        if (treeCrownSource != null)
+        {
+            foreach (MeshFilter filter in treeCrownSource.GetComponentsInChildren<MeshFilter>(true))
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                for (int submesh = 0; submesh < mesh.subMeshCount; submesh++)
+                    if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
+                        crownIndices += (int)mesh.GetIndexCount(submesh);
+                Vector3 size = mesh.bounds.size;
+                if (size.x > .1f && size.y > 1f && size.z > .1f) crownHasDepth = true;
+            }
+        }
+        bool treeNativeReady = trunkIndices >= 300 && crownIndices >= 600
+            && trunkHasDepth && crownHasDepth
             && treeTrunkSource.GetComponentInChildren<Renderer>() != null
             && treeCrownSource.GetComponentInChildren<Renderer>() != null;
         int nativeTreeCount = 0;
