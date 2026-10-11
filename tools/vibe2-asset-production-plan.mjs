@@ -2742,6 +2742,8 @@ function genericNativeDccRecipeForType({target='',task={},type='',librarySource=
       ...(module!=='auto'?['--module',module]:[]),
       ...(imageRequested?['--source-image',sourceImage,'--mesh-model',meshModel]:[]),
       ...(modelRequested?['--source-model',sourceModel]:[]),
+      ...(linkedSourceModel?['--library-parent-id',clean(librarySource.sourceAssetId),
+        '--library-source-sha256',clean(librarySource.sourceSha256)]:[]),
       ...(imageRequested||modelRequested?['--source-license',sourceLicense,'--source-credit',sourceCredit]:[]),
       ...(module==='medical'?['--source-sanitized','yes']:[]),
       ...(module==='object'?['--object-kind',objectKind]:[]),
@@ -2804,7 +2806,7 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const materialDerivationRequested=Boolean(clean(task.gameId)&&clean(assetSupplySummary?.gameId))
     &&!clean(task.assetAuthoring?.sourceModel)&&!clean(task.assetAuthoring?.sourceImage)
     &&task.assetAuthoring?.automaticLibraryDerivation!==false;
-  const librarySourceByFamily=new Map();
+  const librarySourceByFamily=new Map(),ambiguousLibraryFamilies=new Set();
   if(materialDerivationRequested){
     for(const row of assetSupplySummary?.nextActions||[]){
       if(row?.action!=='ADAPT'||row.roleEvidence?.verifiedRoleMatch!==true
@@ -2813,15 +2815,30 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
       if(!/^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(sourceModel)||sourceModel.split('/').includes('..'))continue;
       try{
         const root=fs.realpathSync(repoRoot),real=fs.realpathSync(path.resolve(repoRoot,sourceModel));
-        if(!real.startsWith(root+path.sep)||!fs.statSync(real).isFile())continue;
+        if(!real.startsWith(root+path.sep)||!fs.statSync(real).isFile()
+          ||fs.lstatSync(path.resolve(repoRoot,sourceModel)).isSymbolicLink())continue;
         const size=fs.statSync(real).size;
         if(size<1||size>64*1024*1024)continue;
         const sourceSha256=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
-        const expected=clean(row.libraryReuse.expectedSourceSha256);
+        const expected=clean(row.libraryReuse.expectedSourceSha256).toLowerCase();
         if(expected&&expected!==sourceSha256)continue;
-        if(!['project-original','cc0','cc-by'].includes(license))continue;
-        librarySourceByFamily.set(clean(row.family).toUpperCase(),freeze({
-          sourceAssetId:row.assetId,sourceModel,sourceLicense:license,
+        const sourceAssetId=clean(row.libraryReuse.sourceAssetId);
+        if(!/^[a-z0-9][a-z0-9._-]{0,159}$/i.test(sourceAssetId)
+          ||sourceAssetId!==clean(row.assetId)
+          ||!['project-original','cc0','cc-by'].includes(license)
+          ||(license==='cc-by'&&!clean(row.libraryReuse.sourceCredit)))continue;
+        const family=clean(row.family).toUpperCase();
+        if(ambiguousLibraryFamilies.has(family))continue;
+        const previous=librarySourceByFamily.get(family);
+        if(previous&&(previous.sourceAssetId!==sourceAssetId
+          ||previous.sourceModel!==sourceModel||previous.sourceSha256!==sourceSha256)){
+          // 동일 계열의 서로 다른 역할을 임의의 한 원본으로 합치지 않는다.
+          librarySourceByFamily.delete(family);
+          ambiguousLibraryFamilies.add(family);
+          continue;
+        }
+        librarySourceByFamily.set(family,freeze({
+          sourceAssetId,sourceModel,sourceLicense:license,
           sourceCredit:row.libraryReuse.sourceCredit,sourceSha256
         }));
       }catch{} // 원본·권리·해시 불일치는 자동 제작이 아니라 기존 검수/수리 경로로 돌린다.
