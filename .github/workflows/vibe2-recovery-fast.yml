@@ -85,10 +85,14 @@ jobs:
 
             # Source the failing step only from GitHub's own job conclusions. Never execute log text.
             deployment_args=()
-            if [ "${GITHUB_EVENT_NAME}" = workflow_run ] && jq -e '.workflow_run.conclusion == "failure"' "$GITHUB_EVENT_PATH" >/dev/null; then
-              failed_run_id="$(jq -r '.workflow_run.id' "$GITHUB_EVENT_PATH")"
+            failed_run_id="$(node -e "const e=require(process.env.GITHUB_EVENT_PATH);if(e.workflow_run?.conclusion==='failure')process.stdout.write(String(e.workflow_run.id||''))")"
+            if [ "${GITHUB_EVENT_NAME}" = workflow_run ] && [ -n "$failed_run_id" ]; then
               [[ "$failed_run_id" =~ ^[0-9]+$ ]]
-              if ! gh api "repos/$GITHUB_REPOSITORY/actions/runs/$failed_run_id/jobs?per_page=100" > /tmp/vibe2-recovery-fast/deployment-jobs.json; then
+              if ! curl --fail-with-body --silent --show-error \
+                --header 'Accept: application/vnd.github+json' \
+                --header "Authorization: Bearer $GH_TOKEN" \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$failed_run_id/jobs?per_page=100" > /tmp/vibe2-recovery-fast/deployment-jobs.json; then
                 printf '%s\n' '{"jobs":[]}' > /tmp/vibe2-recovery-fast/deployment-jobs.json
                 echo "DEPLOYMENT_FAILED_RUN_JOBS=UNAVAILABLE_CAUSAL_TRIAGE_REQUIRED"
               fi
