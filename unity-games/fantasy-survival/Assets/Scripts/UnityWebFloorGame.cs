@@ -369,6 +369,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private readonly List<Species> species = new List<Species>();
     private readonly List<Recipe> recipes = new List<Recipe>();
     private readonly List<Monster> monsters = new List<Monster>();
+    private readonly List<GameObject> fallenVisuals = new List<GameObject>();
     private readonly List<HomingSpell> homingSpells = new List<HomingSpell>();
     private readonly List<SpawnBlock> blocks = new List<SpawnBlock>();
     private readonly List<string> crafted = new List<string>();
@@ -842,6 +843,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         materials["fiber"] = 0;
         equippedWeapon = "";
         displayedWeaponId = "__reset__";
+        playerActionUntil=0f;
         if (creative)
         {
             LoadCreative();
@@ -862,6 +864,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private void ClearEntities()
     {
         foreach (Monster m in monsters) if (m.obj != null) Destroy(m.obj);
+        foreach(GameObject corpse in fallenVisuals)if(corpse!=null)Destroy(corpse);
+        fallenVisuals.Clear();
         foreach (HomingSpell spell in homingSpells) if (spell.obj != null) Destroy(spell.obj);
         homingSpells.Clear();
         foreach (BuiltStructure building in buildings) if (building.obj != null) Destroy(building.obj);
@@ -1066,8 +1070,16 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 {
                     // 충돌체 맵의 죽은 몬스터 참조까지 함께 지운다.
                     foreach(Collider collider in m.obj.GetComponentsInChildren<Collider>())
+                    {
                         monsterColliders.Remove(collider);
-                    Destroy(m.obj);
+                        collider.enabled=false;
+                    }
+                    if(m.ally)Destroy(m.obj);
+                    else
+                    {
+                        fallenVisuals.Add(m.obj);
+                        StartCoroutine(PlayNativeDeathMotion(m.obj));
+                    }
                 }
                 monsters.RemoveAt(i);
                 continue;
@@ -1076,6 +1088,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             {
                 m.attackPlayer=false;
                 m.opponentId=-1;
+                AnimateMonsterPresentation(m,false);
                 continue;
             }
             Monster opponent=m.ally?FindMonster(m.allyTargetId):(m.creative?FindMonster(m.opponentId):null);
@@ -1124,6 +1137,30 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 }
             }
             AnimateMonsterPresentation(m,presentationWalking);
+        }
+    }
+
+    // 모션 · 사망 몬스터의 충돌/AI는 즉시 제거하고 시각 자산만 짧게 넘어지게 한다.
+    private System.Collections.IEnumerator PlayNativeDeathMotion(GameObject body)
+    {
+        if(body==null)yield break;
+        float duration=Mathf.Clamp(motionProfile.deathSeconds*.52f,.38f,.85f);
+        float elapsed=0f;
+        Quaternion original=body.transform.rotation;
+        Vector3 originalScale=body.transform.localScale;
+        while(elapsed<duration && body!=null)
+        {
+            elapsed+=Mathf.Min(Time.deltaTime,.05f);
+            float t=Mathf.Clamp01(elapsed/duration);
+            float easing=Mathf.Sin(t*Mathf.PI*.5f);
+            body.transform.rotation=original*Quaternion.Euler(0f,0f,76f*easing);
+            body.transform.localScale=Vector3.Scale(originalScale,new Vector3(1f,1f-t*.22f,1f));
+            yield return null;
+        }
+        if(body!=null)
+        {
+            fallenVisuals.Remove(body);
+            Destroy(body);
         }
     }
 
