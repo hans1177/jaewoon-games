@@ -44,6 +44,9 @@ test('current-game asset gap selects licensed external source for on-demand PBR 
   assert.deepEqual(action.materialRefinement.availableSemanticAtoms,['WOOD','STONE','MOD_WORN']);
   assert.equal(action.materialRefinement.sourceMaterialModificationPerformed,false);
   assert.equal(action.assetization.registerOnlyAfterActualBinaryAndLicenseAndStaticQa,true);
+  assert.equal(action.assetization.nativeDccScript,'assets/native-authoring/build-game-visual.py');
+  assert.equal(action.assetization.nativeSourceModelField,'task.assetAuthoring.sourceModel');
+  assert.equal(action.assetization.gameSourceWorkerMayEditCentralRegistry,false);
   assert.equal(action.assetization.productionVerified,false);
   assert.equal(plan.selectedOnDemandExternalGapCount,1);
   assert.equal(plan.runtimeVerificationGranted,false);
