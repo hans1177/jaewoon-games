@@ -8,7 +8,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {analyzeVibeSurfaceDistribution,assetProductionGuidance,buildAllGameDynamicLibraryBindingPlan,buildAssetSupplyDecisionSummary,buildVibeAssetProductionPlan,discoverExistingRobloxGameAssets,discoverRuntimeVisualEvidence,inspectVibeSourceObj,inspectVibeSourceGlb,evaluateCrossPlatform3dMasterGlb,isCrossPlatform3dActorType,crossPlatform3dActorFamilyForType,synchronizeCompanyCommonAssetRegistry} from '../tools/vibe2-asset-production-plan.mjs';
-import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings} from '../tools/vibe2-source-worker.mjs';
+import {observeAssetReferenceImages,observeAssetRuntimeCaptures,buildPrompt,deterministicRobloxBuildUpCandidate,buildInternalAssetSourceUsageContract,inspectRobloxNativeCandidateQuality,executeDeclaredNativeDccAuthoringVerification,evaluateNativeAssetAuthoringCandidate,collectNativeAssetRuntimePromotionCandidates,persistedGeneratedAssetBindings,buildInternalAssetApiIndex,attachSelectedInternalAssetApiContext} from '../tools/vibe2-source-worker.mjs';
 import {createVibeReferenceImageStudyRequest,createVibeMapDetailReconstruction} from '../assets/vibe-environment-director.js';
 import {findPresentationQualityTask,findRobloxStudioAssetBackfillTask,findWeatherPresentationTask,planVibe2AutonomousTasks} from '../tools/vibe2-auto-planner.mjs';
 import {runIncrementalQa} from '../tools/vibe2-incremental-qa.mjs';
@@ -1076,6 +1076,53 @@ test('Vibe source asset consumption is genre-agnostic fit-first and incrementall
   assert.equal(a.adaptiveSignalRouting.unknownEventMayNotInventAssetIdFactoryRoleOrState,true);
   assert.equal(a.adaptiveSignalRouting.selectedApplicableFamiliesIntersectionRequired,true);
   assert.deepEqual(a.sourceCandidates[0].sourceFiles,['assets/roblox/common-tools-v1/RobloxCommonTools.luau']);
+});
+
+// 자산 · 모든 게임이 공유하는 라이브러리 SHA/API 재사용은 실제 원본 변경 시 다시 계산한다.
+test('all-game internal asset source hash and API cache reuse unchanged models but immediately rebind changed motion sources',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-asset-fast-import-'));
+  const relative='assets/common-motion-fast.mjs';
+  const source=path.join(root,relative);
+  try{
+    fs.mkdirSync(path.dirname(source),{recursive:true});
+    fs.writeFileSync(source,'export function OriginalMotion() { return "walk"; }\\n','utf8');
+    const order={
+      target:'unity',gameId:'fantasy-test',
+      assetProduction:{
+        baseMaterialLoadout:{families:{MOTION:['WALK','ATTACK','HIT','DEATH']}},
+        allGameDynamicLibraryBinding:{
+          registryAssetCount:1,evaluatedAssetCount:1,compatibleCandidateCount:1,
+          fingerprint:'source-bound-asset-test',
+          familyCandidates:{MOTION:[{assetId:'internal-motion',family:'MOTION',role:'ACTOR',
+            sourceFiles:[relative],nativeArtifacts:[]}]} 
+        }
+      }
+    };
+    const a=buildInternalAssetSourceUsageContract(order,{cwd:root});
+    const b=buildInternalAssetSourceUsageContract(order,{cwd:root});
+    assert.equal(a.selectedSourceHashes[0].status,'SOURCE_HASHED');
+    assert.deepEqual(a.selectedSourceHashes,b.selectedSourceHashes);
+    assert.equal(a.fingerprint,b.fingerprint);
+    const signaturesA=buildInternalAssetApiIndex({cwd:root,paths:a.selectedSourcePaths});
+    assert.match(signaturesA.text,/OriginalMotion/);
+    const edit={files:[{path:'Assets/Scripts/Actor.cs',editable:true,content:'public class Actor {}'}],bytes:0};
+    const contextA=attachSelectedInternalAssetApiContext(edit,{cwd:root,contract:a,order});
+    assert.match(contextA.internalAssetApiIndex,/OriginalMotion/);
+    assert.equal(contextA.internalAssetApiIndexAllSelectedSourcesEveryBuildUp,true);
+    assert.ok(contextA.internalAssetApiContextFiles.includes(relative));
+    // 파일 해시 변경은 이전 프롬프트/프리팹을 그대로 재사용하는 근거가 될 수 없다.
+    fs.writeFileSync(source,'export function RevisedActionMotion() { return "attack-hit-death"; }\\n','utf8');
+    const c=buildInternalAssetSourceUsageContract(order,{cwd:root});
+    assert.notEqual(c.fingerprint,a.fingerprint);
+    assert.notEqual(c.selectedSourceHashes[0].sha256,a.selectedSourceHashes[0].sha256);
+    const signaturesB=buildInternalAssetApiIndex({cwd:root,paths:c.selectedSourcePaths});
+    assert.match(signaturesB.text,/RevisedActionMotion/);
+    assert.doesNotMatch(signaturesB.text,/OriginalMotion/);
+    const contextB=attachSelectedInternalAssetApiContext(edit,{cwd:root,contract:c,order});
+    assert.match(contextB.internalAssetApiIndex,/RevisedActionMotion/);
+    assert.equal(contextB.internalAssetApiIndexAllSelectedSourcesEveryBuildUp,true);
+    assert.deepEqual(c.exactFamilies.MOTION,['ATTACK','DEATH','HIT','WALK']);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
 test('Vibe source rotates detailed API context while keeping the full eligibility index',()=>{
