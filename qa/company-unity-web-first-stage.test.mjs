@@ -961,9 +961,9 @@ test('Fantasy Survival WebGL preserves native colliders and persisted guardian a
     'UnityEngine.Animation','UnityEngine.AnimationClip','UnityEngine.AnimationState']){
     assert.ok(linker.includes('fullname="'+type+'" preserve="all"'),type+' cannot be removed by WebGL stripping');
   }
-  assert.match(importer,/AnimationUtility\\.SetAnimationClips\\(animation, actionClips\\.ToArray\\(\\)\\)/);
-  assert.match(importer,/AnimationUtility\\.GetAnimationClips\\(persisted\\)/);
-  assert.match(importer,/UNITY_COMPANY_PERSISTED_ACTION_CLIP_MISSING/);
-  assert.match(nativeGame,/MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING/);
-  assert.match(nativeGame,/GameObject\\.CreatePrimitive\\(primitive\\)/);
+  assert.ok(importer.includes('AnimationUtility.SetAnimationClips(animation, actionClips.ToArray())'));
+  assert.ok(importer.includes('AnimationUtility.GetAnimationClips(persisted)'));
+  assert.ok(importer.includes('UNITY_COMPANY_PERSISTED_ACTION_CLIP_MISSING'));
+  assert.ok(nativeGame.includes('MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING'));
+  assert.ok(nativeGame.includes('GameObject.CreatePrimitive(primitive)'));
 });
