@@ -525,6 +525,20 @@ test('Unity monster adventure keeps real UV-less source meshes and uses triplana
   }
 });
 
+// 메인: 유니티 웹 사전검사 실패와 실제 라이선스 실패를 분리한다.
+test('Unity Web only enforces license activation when activation was attempted',()=>{
+  const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
+  const start=workflow.indexOf('      - name: Enforce Unity activation');
+  const end=workflow.indexOf('      - name: Build Unity Web',start);
+  assert.ok(start>=0&&end>start);
+  const step=workflow.slice(start,end);
+  assert.ok(step.includes("if: ${{ always() && steps.license.outcome != 'skipped' }}"));
+  assert.match(step,/steps\.license\.outcome/);
+  assert.match(step,/exit 198/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_FAILURE_STAGE=/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_FAILURE_SIGNATURE=/);
+});
+
 test('Unity Web uses one shared retained editor cache per exact version without weakening runtime QA',()=>{
   const workflow=fs.readFileSync(path.join(repo,'.github','workflows','unity-web-first-stage-build.yml'),'utf8');
   const steps=[
