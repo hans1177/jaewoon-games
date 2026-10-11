@@ -37,7 +37,12 @@ test('Unity WebGL keeps its native touch interface without injecting the legacy 
 test('Unity WebGL compressed assets preserve bytes and declare correct response encoding',async()=>{
   const NativeResponse=globalThis.Response;
   globalThis.Response=class extends NativeResponse{
-    constructor(body,init={}){super(body,init);this.encodeBody=init.encodeBody||'automatic';}
+    constructor(body,init={}){
+      super(body,init);this.encodeBody=init.encodeBody||'automatic';
+      // Cloudflare는 임의 스트림에 수동으로 붙인 Content-Length를 유지하지 않는다.
+      if(body instanceof ArrayBuffer||ArrayBuffer.isView(body))this.headers.set('Content-Length',String(body.byteLength));
+      else if(body instanceof ReadableStream)this.headers.delete('Content-Length');
+    }
   };
   try{
   const edge=await import('data:text/javascript;base64,'+Buffer.from(worker).toString('base64'));
@@ -51,11 +56,20 @@ test('Unity WebGL compressed assets preserve bytes and declare correct response 
   ]){
     const bytes=compress(plain);
     const url='https://example.test/web-games/'+route;
-    const env={ASSETS:{fetch:async()=>new Response(bytes,{headers:{'Content-Type':'application/octet-stream'}})}};
+    const env={ASSETS:{fetch:async()=>new Response(new ReadableStream({start(controller){controller.enqueue(bytes);controller.close();}}),{headers:{'Content-Type':'application/octet-stream'}})}};
     const res=await edge.default.fetch(new Request(url),env);
     assert.equal(res.headers.get('Content-Encoding'),encoding,route);
     assert.equal(res.headers.get('Content-Type'),contentType,route);
     assert.equal(res.headers.get('Cache-Control'),'no-cache, must-revalidate');
+    assert.equal(Number(res.headers.get('Content-Length')),bytes.length,'Unity must know the real compressed download size');
+    // 실제 배포된 Unity 로더로 다운로드 도중 막대가 0%에서 움직이는지 확인한다.
+    const loader=fs.readFileSync('web-games/daechung-rpg/unity/Build/daechung-rpg.loader.js','utf8');
+    const progressFn=loader.slice(loader.indexOf('function T('),loader.indexOf('function E('));
+    const registerFn=loader.slice(loader.indexOf('function k('),loader.indexOf('function x('));
+    const observed=[];
+    const progress=Function('m','r',progressFn+registerFn+';return T;')({downloadProgress:{}},value=>observed.push(value));
+    progress(url,{type:'progress',loaded:bytes.length/2,total:bytes.length,lengthComputable:res.headers.has('Content-Length')});
+    assert.ok(observed[0]>0&&observed[0]<0.9,'partial download must not look frozen');
     const body=Buffer.from(await res.arrayBuffer());
     assert.deepEqual(body,bytes,'compressed bytes must not be modified');
     // Cloudflare가 자동 모드에서 수행하는 전송 압축까지 재현한다. 브라우저는 한 번만 해제한다.
@@ -97,7 +111,7 @@ test('Unity publication versions every bundle URL and updates it after a rebuild
     const bundle=path.join(root,'Build');fs.mkdirSync(bundle);
     const names=['demo.loader.js','demo.data.gz','demo.framework.js.gz','demo.wasm.gz'];
     for(const name of names)fs.writeFileSync(path.join(bundle,name),'real-bundle-'+name);
-    fs.writeFileSync(path.join(root,'index.html'),'<script>var loaderUrl=buildUrl+"/demo.loader.js";var config={dataUrl:buildUrl+"/demo.data.gz",frameworkUrl:buildUrl+"/demo.framework.js.gz",codeUrl:buildUrl+"/demo.wasm.gz",companyName:"Jaewoon Games",productName:"Demo",productVersion:"1.0"};</script>');
+    fs.writeFileSync(path.join(root,'index.html'),'<script>var loaderUrl=buildUrl+"/demo.loader.js";var config={dataUrl:buildUrl+"/demo.data.gz",frameworkUrl:buildUrl+"/demo.framework.js.gz",codeUrl:buildUrl+"/demo.wasm.gz",companyName:"Jaewoon Games",productName:"Demo",productVersion:"1.0"};\n// config.devicePixelRatio = 1;\n</script>');
     for(const revision of ['initial','rebuilt']){
       if(revision==='rebuilt')fs.appendFileSync(path.join(bundle,'demo.data.gz'),'changed');
       execFileSync('python3',['-',root,'demo'],{input:python,cwd:root});
@@ -107,6 +121,7 @@ test('Unity publication versions every bundle URL and updates it after a rebuild
         assert.ok(html.includes('/'+name+'?v='+version+'"'),name+' must have a content-bound URL');
       }
       assert.equal((html.match(/\?v=/g)||[]).length,4);
+      assert.ok(html.includes('\nconfig.devicePixelRatio = 1;\n'),'mobile rendering uses CSS pixel resolution');
       assert.ok(html.includes('productName:"Demo",productVersion:"1.0"'),'game save identity stays unchanged');
       const manifest=JSON.parse(fs.readFileSync(path.join(root,'unity-web-deploy-manifest.json'),'utf8'));
       assert.equal(manifest.bundleComplete,true);

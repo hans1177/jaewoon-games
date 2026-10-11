@@ -500,6 +500,8 @@ jobs:
                   pattern=r'([\"\'](?:Build/|/))'+re.escape(file.name)+r'(?:\?[^\"\']*)?([\"\'])'
                   html=re.sub(pattern,lambda match:match[1]+file.name+'?v='+version+match[2],html)
           html=html.replace('alert(message);','unityShowBanner(String(message), "error"); console.error(message);')
+          # 모바일 화면 배율 때문에 첫 프레임과 렌더링이 과부하되지 않도록 기존 설정을 활성화한다.
+          html=html.replace('// config.devicePixelRatio = 1;','config.devicePixelRatio = 1;')
           index.write_text(html,encoding='utf-8')
           manifest={
               'version':1,

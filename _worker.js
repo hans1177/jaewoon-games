@@ -440,9 +440,11 @@ export default{
       headers.set('Content-Type',kind==='framework.js'?'application/javascript; charset=utf-8':kind==='wasm'?'application/wasm':'application/octet-stream');
       headers.set('Content-Encoding',format==='gz'?'gzip':'br');
       headers.set('Cache-Control','no-cache, must-revalidate');
-      headers.delete('Content-Length');
-      // 이미 압축된 Unity 번들을 다시 압축하지 않고 그대로 전달한다.
-      return new Response(request.method==='HEAD'?null:response.body,{status:response.status,statusText:response.statusText,headers,encodeBody:'manual'});
+      // 파일 크기가 없는 스트림은 Unity 진행률을 다운로드 완료까지 0%에 묶는다.
+      // Pages의 25MiB 이하 정적 번들을 고정 길이 응답으로 보내 크기와 압축을 함께 보존한다.
+      const body=request.method==='HEAD'?null:await response.arrayBuffer();
+      if(body)headers.set('Content-Length',String(body.byteLength));
+      return new Response(body,{status:response.status,statusText:response.statusText,headers,encodeBody:'manual'});
     }
     const webEntry=url.pathname.match(/^\/web-games\/([a-z0-9-]+)(?:\/(?:index\.html)?)?$/i);
     if(webEntry&&response.ok&&(response.headers.get('content-type')||'').includes('text/html')){
