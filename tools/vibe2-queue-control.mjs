@@ -324,6 +324,9 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
     if (task.status !== 'running') return task;
     if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
     if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
+    // GitHub Actions can queue workers longer than this lease. Only the existing
+    // observed completed/superseded-run path may reclaim a numeric run reservation.
+    if (/^\d+$/.test(clean(task.reservationRunId))) return task;
     const reservedAtMs = Date.parse(clean(task.reservedAt));
     const leaseMissing = !Number.isFinite(reservedAtMs);
     const expired = !leaseMissing && (Number(nowMs) - reservedAtMs) > Math.max(60_000, Number(staleMs) || DEFAULT_STALE_RUNNING_MS);
