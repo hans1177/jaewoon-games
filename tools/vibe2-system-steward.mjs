@@ -16,7 +16,7 @@ const readJson=(file,fallback={})=>{
   if(!clean(raw))return fallback;
   return JSON.parse(raw);
 };
-const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
+const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});const compactQueue=/(?:^|\/)\.vibe2\/queue\.json$/.test(String(file).replaceAll('\\','/'));fs.writeFileSync(file,JSON.stringify(value,null,compactQueue?0:2)+'\n','utf8');};
 const uniq=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
 const parseArgs=(argv=process.argv.slice(2))=>Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));
 const safeTask=t=>t?.requiresOwnerDecision!==true&&t?.protectedChange!==true&&t?.paidResourceRequired!==true;
