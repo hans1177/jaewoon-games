@@ -1154,7 +1154,7 @@ test('Unity Web graph and source packages survive focused Vibe worker compressio
   assert.doesNotMatch(roblox,/unityWebAlgorithm=/);
 });
 
-test('Roblox coding reads the same game Unity Web C# origin with exact change fingerprint and native-only authority',()=>{
+test('Roblox Luau remains original while optional Unity compatibility references retain exact fingerprints',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-roblox-source-sync-'));
   const gameId='source-sync-example';
   const unityFile='unity-games/'+gameId+'/Assets/Scripts/GameCore.cs';
@@ -1216,8 +1216,9 @@ test('Roblox coding reads the same game Unity Web C# origin with exact change fi
     });
     const prompt=directivePrompt(directive);
     assert.match(prompt,/UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC/);
-    assert.match(prompt,/REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS/);
-    assert.match(prompt,/Roblox 서버 권한/);
+    assert.match(prompt,/IMPLEMENT_APPROVED_DESIGN_IN_ORIGINAL_ROBLOX_LUAU_OWNER_FUNCTIONS/);
+    assert.equal(directive.designToPlatformCodingTrace.originalSourceLanguage,'LUAU');
+    assert.equal(directive.designToPlatformCodingTrace.unityWebSourceSync.unitySourceIsOriginal,false);
     assert.equal(directive.designToPlatformCodingTrace.unityWebSourceSync.verificationTransferred,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -1333,8 +1334,16 @@ test('design volume tracks every authored system, region, encounter, ability and
     fromId:'habitat-rule',toId:'predator-rule',fromSystem:'서식지 상성',toSystem:'포식 관계',
     stateKeys:['habitat'],trigger:'웨이브 시작',stateChange:'배치 상성 상태 변경'
   }];
+  approved.content.selectedDesignPlan={playthrough:[{
+    phase:'OPENING',entryState:'기존 저장의 온실 입구',playerChoice:'조사하거나 뒤로 가기',
+    actionAndResponse:'조사 조건을 확인하고 단서를 표시하며 취소 시 상태 보존',
+    exitState:'첫 단서 확인',nextDecision:'방어 위치 선택',ruleIds:['habitat-rule'],
+    before:[{key:'habitat',value:0}],after:[{key:'habitat',value:1}]
+  }]};
   approved.content.contentExpansionPlan=[
-    {milestone:'온실 해금',newGameplay:'북쪽 경로와 온실 전투가 이어진다',systemImpact:'서식지 선택과 다음 웨이브 상태 연결'}
+    {milestone:'온실 해금',newGameplay:'북쪽 경로와 온실 전투가 이어진다',systemImpact:'서식지 선택과 다음 웨이브 상태 연결',
+      trigger:'기존 방어 완료 상태',playerChoice:'온실 진입 또는 기존 지역 복귀',ruleIds:['habitat-rule'],stateKeys:['habitat'],
+      failureRecovery:'취소 시 저장 보존',validationEvidence:'실제 진입과 취소에서 다음 선택 상태를 비교'}
   ];
   approved.content.contentVarietyPlan={
     regions:[{id:'north-greenhouse',name:'북쪽 온실',traversal:'우회 통로',riskReward:'위험 지역',
@@ -1366,6 +1375,15 @@ test('design volume tracks every authored system, region, encounter, ability and
   });
   const volume=d.designedGameVolume;
   assert.equal(volume.mode,'APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION');
+  assert.equal(volume.authoredCounts.PLAYTHROUGH,1);
+  const opening=volume.items.find(row=>row.family==='PLAYTHROUGH');
+  assert.equal(opening.trigger,'기존 저장의 온실 입구');
+  assert.equal(opening.designDetail.nextDecision,'방어 위치 선택');
+  assert.ok(opening.requiredBehavior.includes('PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE'));
+  const expansion=volume.items.find(row=>row.family==='CONTENT_MILESTONE');
+  assert.equal(expansion.trigger,'기존 방어 완료 상태');
+  assert.deepEqual(expansion.linkedRuleIds,['habitat-rule']);
+  assert.equal(expansion.observableAcceptance,'실제 진입과 취소에서 다음 선택 상태를 비교');
   assert.equal(volume.authoredCounts.CORE_LOOP,5);
   assert.equal(volume.authoredCounts.SIGNATURE_SYSTEM,2);
   assert.equal(volume.authoredCounts.SYSTEM_CONNECTION,1);
@@ -1470,6 +1488,20 @@ test('focused game worker keeps one exact approved content item in compact sourc
   assert.match(compacted,/volumeSpec=WORLD:/);
   assert.match(compacted,/encounterPattern/);
   assert.match(compacted,/volumeRequiredBehavior=NATIVE_3D_REGION_ENTRY_EXIT_AND_ROUTE_REACHABLE/);
+  row.primaryFocus='CORE_FUN';
+  row.designedGameVolume.items.push({ref:'PLAYTHROUGH[0]',family:'PLAYTHROUGH',title:'OPENING',
+    sourceCandidates:[],requiredBehavior:['PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE'],
+    designDetail:{phase:'OPENING',entryState:'기존 입구',playerChoice:'조사 또는 복귀',
+      actionAndResponse:'조건 확인 후 상태 변경; 취소는 저장 보존',exitState:'단서 확인',nextDecision:'NEXT_ROUTE_CHOICE',
+      before:[{key:'RouteState',value:0}],after:[{key:'RouteState',value:1}]}});
+  const scene=compact(guide({target:'roblox',gameId:'game-one',buildUpDirective:row},[owner]),{compact:true,responsiblePaths:[owner]});
+  assert.match(scene,/volumeImplementation=ref:PLAYTHROUGH\[0\]/);
+  assert.match(scene,/volumeSpec=PLAY_ENTRY:/);
+  assert.match(scene,/volumeSpec=PLAY_ACTION:/);
+  assert.match(scene,/volumeSpec=PLAY_RESULT:/);
+  assert.match(scene,/NEXT_ROUTE_CHOICE/);
+  assert.match(scene,/PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE/);
+
 });
 
 test('large authored game content volume keeps all entries without cloning a full implementation prompt per item',()=>{

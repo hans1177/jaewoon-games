@@ -1,5 +1,5 @@
 {
-  "version": 563,
+  "version": 564,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -28013,6 +28013,23 @@
       "validatedMotionLibraryPreferredBeforeAuthoring": true,
       "animatorRigBlendSpeedSyncAndContactRequiredWhenApplicable": true,
       "hardFailure": "ROBLOX_CHARACTER_MOTION_MANNEQUIN"
+    },
+    "sourceAuthority": {
+      "platform": "ROBLOX",
+      "language": "LUAU",
+      "sourceRoot": "roblox-games/<gameId>/",
+      "designGrammar": "MAIN_A_B_C_AT",
+      "unitySourceIsOriginal": false,
+      "designSystemContentMustBindExistingLuauOwners": true,
+      "sourceDiffAndExactRuntimeEvidenceRequired": true,
+      "basicDesignDetail": {
+        "existingFieldsOnly": true,
+        "firstPlay": "ENTRY_INPUT_CONDITION_SUCCESS_OR_CANCEL_FEEDBACK_NEXT_CHOICE",
+        "systemConnection": "A_OUTPUT_TO_B_INPUT_AND_B_OUTPUT_TO_A_INPUT_WITH_SHARED_STATE_KEYS",
+        "contentExpansion": "PRECONDITION_NEW_CHOICE_EXISTING_RULE_IDS_STATE_CHANGE_FAILURE_RECOVERY_VERIFICATION",
+        "plannedValuesAreRuntimeEvidence": false,
+        "newPipelineOrFloorRequired": false
+      }
     }
   },
   "robloxHomepageThumbnailSyncContract": {

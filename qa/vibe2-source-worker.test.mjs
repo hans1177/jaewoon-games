@@ -50,6 +50,8 @@ test('Roblox native coding consumes the existing same-game Unity Web trace witho
   });
   const initial=prompt(order);
   assert.match(initial,/unityWebSyncRule=READ_ONLY_SAME_GAME_UNITY_CSHARP_SOURCE_REFERENCE/);
+  assert.match(initial,/Roblox Luau is the original source language/);
+  assert.match(initial,/C# is optional compatibility evidence only/);
   assert.ok(initial.includes(sourceFile));
   assert.ok(initial.includes('0123456789abcdef'));
   assert.ok(initial.includes('ApplyDamage'));
