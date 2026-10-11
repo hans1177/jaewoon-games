@@ -181,11 +181,12 @@ jobs:
               &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
             )
             .sort((a,b)=>Number(a.id)-Number(b.id))[0];
-          if(activeCentralBatch){
+          if(activeCentralBatch&&String(activeCentralBatch.head_sha||'')){
             for(const stale of runs.filter(r=>
               r.path==='.github/workflows/company-development-confirmed-runtime.yml'
               &&String(r.event||'')==='workflow_dispatch'
               &&queued.has(String(r.status||'').toLowerCase())
+              &&String(r.head_sha||'')===String(activeCentralBatch.head_sha)
               &&/^DEVELOPMENT cycle \| batch \|/.test(String(r.display_title||''))
             ))add(stale,'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH');
           }
