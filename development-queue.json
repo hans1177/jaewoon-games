@@ -20904,10 +20904,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T10:51:37.532Z",
-      "updatedAt": "2026-10-11T23:42:12.022Z",
+      "updatedAt": "2026-10-11T23:44:13.419Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -21473,7 +21473,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null,
       "robloxInternalReleasePublished": false,
       "robloxPublicRelease": false,
-      "robloxBuildFailedAt": "2026-10-11T23:40:18.066Z",
+      "robloxBuildFailedAt": "2026-10-11T23:44:13.419Z",
       "robloxRuntimeRetryCount": 0
     },
     {
@@ -40898,10 +40898,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T11:22:33.580Z",
-      "updatedAt": "2026-10-11T23:42:12.022Z",
+      "updatedAt": "2026-10-11T23:44:13.419Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -41465,7 +41465,7 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxBuildFailedAt": "2026-10-11T23:40:18.066Z",
+      "robloxBuildFailedAt": "2026-10-11T23:44:13.419Z",
       "robloxRuntimeRetryCount": 0,
       "robloxInternalReleasePublished": false,
       "robloxPublicRelease": false
@@ -41533,10 +41533,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T11:32:10.554Z",
-      "updatedAt": "2026-10-11T23:42:12.022Z",
+      "updatedAt": "2026-10-11T23:44:13.419Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -42124,7 +42124,7 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxBuildFailedAt": "2026-10-11T23:40:18.066Z",
+      "robloxBuildFailedAt": "2026-10-11T23:44:13.419Z",
       "robloxRuntimeRetryCount": 0,
       "robloxInternalReleasePublished": false,
       "robloxPublicRelease": false
@@ -53724,10 +53724,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-10T15:27:55.406Z",
-      "updatedAt": "2026-10-11T23:42:12.022Z",
+      "updatedAt": "2026-10-11T23:44:13.419Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -54291,7 +54291,7 @@
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
       "robloxStudioAssetRuntimeBindingEvidence": null,
-      "robloxBuildFailedAt": "2026-10-11T23:40:18.066Z",
+      "robloxBuildFailedAt": "2026-10-11T23:44:13.419Z",
       "robloxRuntimeRetryCount": 0,
       "robloxInternalReleasePublished": false,
       "robloxPublicRelease": false
@@ -54901,7 +54901,7 @@
       "updatedAt": "2026-10-11T23:42:12.022Z"
     }
   ],
-  "updatedAt": "2026-10-11T23:42:12.022Z",
+  "updatedAt": "2026-10-11T23:44:13.419Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -54967,5 +54967,6 @@
   "internalConcurrencyCap": null,
   "externalCapacityOnlyBoundary": true,
   "automaticFeatureExpansionFreezeForbidden": true,
-  "executionContractVersion": 1
+  "executionContractVersion": 1,
+  "robloxTechnicalParallelism": null
 }
