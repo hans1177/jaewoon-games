@@ -215,9 +215,9 @@ internal static class UnityCompanyAssets
         string source = "Assets/Editor/MagicForest" + key + ".bytes";
         string output = "Assets/Resources/CompanyAssets/MagicForest" + key;
         string prefab = output + ".prefab";
-        GameObject old = AssetDatabase.LoadAssetAtPath<GameObject>(prefab);
-        if (old != null && old.GetComponent<Animation>() != null &&
-            old.GetComponentInChildren<SkinnedMeshRenderer>() != null) return;
+        // 재빌드 시 이전 메시·애니메이션 프리팹을 무조건 재생성한다.
+        // 원본 GLB가 바뀐 경우 기존 프리팹 재사용은 실제 소스 불일치를 숨긴다.
+        // 다른 게임이나 제작/저장 데이터는 건드리지 않는다.
         string project = Directory.GetParent(Application.dataPath).FullName;
         string physical = Path.Combine(project, source);
         if (!File.Exists(physical)) throw new Exception("UNITY_COMPANY_MASTER_NOT_FOUND:" + source);
