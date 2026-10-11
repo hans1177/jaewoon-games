@@ -6,7 +6,7 @@ import { gzipSync, gunzipSync, brotliCompressSync, brotliDecompressSync } from '
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const worker=fs.readFileSync('_worker.js','utf8');
 const touch=fs.readFileSync('web-games/_shared/touch-controls.js','utf8');
-test('homepage uses touch/click direct launch without keyboard launch wiring',()=>{assert.match(homepage,/dataset\.touchLaunch='true'/);assert.match(homepage,/window\.location\.href=target/);assert.doesNotMatch(homepage,/addEventListener\('keydown'/);assert.doesNotMatch(homepage,/tabindex="0"/);});
+test('homepage uses touch/click direct launch without keyboard launch wiring',()=>{assert.match(homepage,/dataset\.touchLaunch='true'/);assert.match(homepage,/window\.location\.href=target/);assert.doesNotMatch(homepage,/addEventListener\('keydown'/);assert.doesNotMatch(homepage,/<(?:a|button)\b[^>]*tabindex="0"[^>]*class="(?:homeFocusBtn|foldGameBtn)/);});
 test('all Web HTML routes receive touch controls',()=>{assert.match(worker,/url\.pathname\.startsWith\('\/web-games\/'\)/);assert.match(worker,/\/web-games\/_shared\/touch-controls\.js/);assert.match(worker,/injectUniversalTouchControls/);});
 test('homepage mobile layout keeps readable single-column cards and large touch targets',()=>{
   assert.match(homepage,/@media\(max-width:700px\)/);
@@ -31,6 +31,11 @@ test('Unity WebGL keeps its native touch interface without injecting the legacy 
 });
 
 test('Unity WebGL compressed assets preserve bytes and declare correct response encoding',async()=>{
+  const NativeResponse=globalThis.Response;
+  globalThis.Response=class extends NativeResponse{
+    constructor(body,init={}){super(body,init);this.encodeBody=init.encodeBody||'automatic';}
+  };
+  try{
   const edge=await import('data:text/javascript;base64,'+Buffer.from(worker).toString('base64'));
   const plain=Buffer.from('function unityRuntimeLoaded(){return 1;}');
   for(const [route,encoding,compress,decompress,contentType] of [
@@ -49,13 +54,19 @@ test('Unity WebGL compressed assets preserve bytes and declare correct response 
     assert.equal(res.headers.get('Cache-Control'),'no-cache, must-revalidate');
     const body=Buffer.from(await res.arrayBuffer());
     assert.deepEqual(body,bytes,'compressed bytes must not be modified');
-    assert.deepEqual(decompress(body),plain);
+    // Cloudflare가 자동 모드에서 수행하는 전송 압축까지 재현한다. 브라우저는 한 번만 해제한다.
+    const wire=res.encodeBody==='manual'?body:compress(body);
+    const browserBytes=decompress(wire);
+    assert.deepEqual(browserBytes,plain,'browser must receive decoded runtime, never a second compressed layer');
+    assert.equal(res.encodeBody,'manual');
   }
   const head=await edge.default.fetch(new Request('https://example.test/web-games/daechung-rpg/unity/Build/daechung-rpg.data.gz',{method:'HEAD'}),{
     ASSETS:{fetch:async()=>new Response(null,{headers:{'Content-Type':'application/octet-stream'}})}
   });
   assert.equal(head.headers.get('Content-Encoding'),'gzip');
   assert.equal(await head.text(),'');
+  assert.equal(head.encodeBody,'manual');
+  }finally{globalThis.Response=NativeResponse;}
 });
 
 test('Cloudflare Pages header patterns use one splat and include Unity compressed assets',()=>{
