@@ -1,4 +1,4 @@
-// UnityWebFloorGame.cs
+// 파일명: unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs
 // 임포트 · 3D 마력숲 게임 소스
 using System;
 using System.Collections.Generic;
@@ -307,6 +307,11 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     {
         public float x, z, hp;
         public int progress, level, resource, actions, wood, stone;
+        // 저장 · 같은 기존 키에서 누락된 필드를 선택적으로 확장한다. 구버전 데이터의 null은 허용.
+        public int fiber;
+        public List<string> crafted;
+        public string equippedWeapon;
+        public List<BuildingRecord> buildings;
         public LegacyBlock[] blocks;
         public LegacyMonster[] monsters;
     }
@@ -546,6 +551,16 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         Debug.Log("MAGIC_FOREST_NATIVE_ASSET_BINDING=" + (treeNativeReady ? "SOURCE_BOUND_RUNTIME_QA_REQUIRED" : "ASSET_REPAIR_REQUIRED")
             + " prefab=CompanyAssets/MagicForestTrunk+MagicForestCrown nativeTreeCount=" + nativeTreeCount);
+        // 자원 · 원본 웹의 섬유 노드를 3D 채집 대상으로 연결한다. 기존 나무/돌 보상은 불변.
+        for (int i = 0; i < 36; i++)
+        {
+            float x = (i * 29 % 69) - 34f;
+            float z = (i * 37 % 69) - 34f;
+            if (Mathf.Abs(x) < 5f && Mathf.Abs(z) < 5f) continue;
+            CreatePart(worldRoot.transform, PrimitiveType.Capsule, "Fiber",
+                new Vector3(x, .42f, z), new Vector3(.48f, .60f, .48f),
+                new Color(.30f, .59f, .34f), true);
+        }
         GameObject character = new GameObject("Player_3D");
         character.transform.SetParent(worldRoot.transform);
         character.transform.position = Vector3.zero;
@@ -792,7 +807,13 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             if(m.ally && FindMonster(m.allyTargetId)==null)m.hp=0f;
             if(m.hp<=0)
             {
-                if(m.obj!=null)Destroy(m.obj);
+                if(m.obj!=null)
+                {
+                    // 충돌체 맵의 죽은 몬스터 참조까지 함께 지운다.
+                    foreach(Collider collider in m.obj.GetComponentsInChildren<Collider>())
+                        monsterColliders.Remove(collider);
+                    Destroy(m.obj);
+                }
                 monsters.RemoveAt(i);
                 continue;
             }
@@ -1079,6 +1100,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         holdTriggered=false;
     }
 
+    // 건축물 · 제작과 일반/크리에이티브 복원은 동일한 실물 생성 함수를 사용한다.
+    private void PlaceStructure(string recipeId, Vector3 location)
+    {
+        GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
+        building.name="Built_"+recipeId;
+        building.transform.SetParent(worldRoot.transform);
+        building.transform.position=location;
+        building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
+        Tint(building,new Color(.55f,.4f,.27f));
+        buildings.Add(new BuiltStructure { recipeId=recipeId, obj=building });
+    }
+
     // 메인 · 제작 (크리에이티브에서는 재료를 사용하지 않는다)
     private void Craft(Recipe recipe)
     {
@@ -1106,17 +1139,10 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         crafted.Add(recipe.id);
         if(recipe.kind=="weapon")equippedWeapon=recipe.id;
         if(recipe.kind=="structure")
-        {
-            GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
-            building.name="Built_"+recipe.id;
-            building.transform.SetParent(worldRoot.transform);
-            building.transform.position=player.position+player.forward*2.5f+Vector3.up*.65f;
-            building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
-            Tint(building,new Color(.55f,.4f,.27f));
-            buildings.Add(new BuiltStructure { recipeId=recipe.id, obj=building });
-        }
+            PlaceStructure(recipe.id,player.position+player.forward*2.5f+Vector3.up*.65f);
         info=recipe.name+" 제작 완료";
         if(creative)SaveCreative();
+        else SaveNormalCounters();
     }
 
     private void Gather()
@@ -1127,14 +1153,14 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         foreach(Collider col in Physics.OverlapSphere(position,3.1f))
         {
             string n=col.gameObject.name;
-            if(n!="Tree" && n!="Rock")continue;
+            if(n!="Tree" && n!="Rock" && n!="Fiber")continue;
             float d=Vector3.Distance(position,col.transform.position);
-            if(d<nearest){nearest=d;material=n=="Tree"?"wood":"stone";}
+            if(d<nearest){nearest=d;material=n=="Tree"?"wood":n=="Rock"?"stone":"fiber";}
         }
         if(material==""){info="가까운 나무나 돌이 없어.";return;}
         if(!materials.ContainsKey(material))materials[material]=0;
         materials[material]++;
-        info=(material=="wood"?"나무":"돌")+" 1개 채집";
+        info=(material=="wood"?"나무":material=="stone"?"돌":"섬유")+" 1개 채집";
     }
 
     // 저장 · 크리에이티브 데이터는 기존 일반 저장 키에 쓰지 않는다
@@ -1158,6 +1184,18 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             currentHp=Mathf.Clamp(old.hp,1f,100f);
             materials["wood"]=Mathf.Max(0,old.wood);
             materials["stone"]=Mathf.Max(0,old.stone);
+            materials["fiber"]=Mathf.Max(0,old.fiber);
+            if(old.crafted!=null)
+                foreach(string id in old.crafted)
+                    if(recipes.Exists(r=>r.id==id))crafted.Add(id);
+            if(!string.IsNullOrEmpty(old.equippedWeapon)
+                && crafted.Contains(old.equippedWeapon)
+                && recipes.Exists(r=>r.id==old.equippedWeapon && r.kind=="weapon"))
+                equippedWeapon=old.equippedWeapon;
+            if(old.buildings!=null)
+                foreach(BuildingRecord entry in old.buildings)
+                    if(entry!=null && buildings.Count<300 && recipes.Exists(r=>r.id==entry.recipeId && r.kind=="structure"))
+                        PlaceStructure(entry.recipeId,entry.position);
         }
         catch(Exception){info="기존 일반 저장 읽기 실패 · 새 게임 진행";}
     }
@@ -1174,8 +1212,15 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             progress=progress,level=level,resource=resource,actions=actions,
             wood=materials.ContainsKey("wood")?materials["wood"]:0,
             stone=materials.ContainsKey("stone")?materials["stone"]:0,
+            fiber=materials.ContainsKey("fiber")?materials["fiber"]:0,
+            crafted=new List<string>(crafted),
+            equippedWeapon=equippedWeapon,
+            buildings=new List<BuildingRecord>(),
             blocks=new LegacyBlock[0],monsters=new LegacyMonster[0]
         };
+        foreach(BuiltStructure built in buildings)
+            if(built.obj!=null)
+                data.buildings.Add(new BuildingRecord { recipeId=built.recipeId, position=built.obj.transform.position });
         PlayerPrefs.SetString(LegacyNormalSaveKey,JsonUtility.ToJson(data));
         PlayerPrefs.Save();
     }
@@ -1243,13 +1288,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         {
             if(buildings.Count>=300)break;
             if(recipes.Find(x=>x.id==item.recipeId && x.kind=="structure")==null)continue;
-            GameObject building=GameObject.CreatePrimitive(PrimitiveType.Cube);
-            building.name="Built_"+item.recipeId;
-            building.transform.SetParent(worldRoot.transform);
-            building.transform.position=item.position;
-            building.transform.localScale=new Vector3(1.4f,1.3f,1.4f);
-            Tint(building,new Color(.55f,.4f,.27f));
-            buildings.Add(new BuiltStructure { recipeId=item.recipeId, obj=building });
+            PlaceStructure(item.recipeId,item.position);
         }
         if(record.blocks!=null)foreach(BlockRecord b in record.blocks)
         {
