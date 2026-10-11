@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {
   createVibeSourceGraph,
   rankVibeResponsibleSources,
@@ -93,4 +94,25 @@ assert.equal(art.art.selfTransformExistingAssets,true);
 assert.equal(art.art.originalOverwriteForbidden,true);
 assert.equal(art.art.variantTournament,true);
 
+// 회귀: 바이브 학습 계약과 검증기가 현재 중앙정책을 서로 다른 과거 버전으로 배우지 않게 한다.
+const currentRoadmap=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
+const currentVibe3=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe3-engine-contract.json',import.meta.url),'utf8'));
+const currentWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe3-engine-contract.yml',import.meta.url),'utf8');
+assert.equal(currentRoadmap.currentPhase,'ROBLOX_AND_UNITY_WEB_ONLY_CONTINUOUS_DEVELOPMENT');
+assert.equal(currentVibe3.platformRoadmap.currentPhase,currentRoadmap.currentPhase);
+assert.deepEqual(currentRoadmap.ownerActiveDevelopmentScope20261009.activeTargets,['ROBLOX','UNITY_WEB']);
+assert.deepEqual(currentRoadmap.ownerActiveDevelopmentScope20261009.ownerHeldTargets,['UNITY_ANDROID','FORTNITE_UEFN']);
+assert.equal(currentRoadmap.ownerActiveDevelopmentScope20261009.unityWebDistinctGameTarget,16);
+assert.equal(currentRoadmap.ownerActiveDevelopmentScope20261009.gamePrimaryLogicalWorkers,128);
+assert.equal(currentRoadmap.ownerActiveDevelopmentScope20261009.unityAndroidDevelopmentAllowed,false);
+assert.equal(currentRoadmap.ownerActiveDevelopmentScope20261009.unityWeb3dOnlyRequired,true);
+assert.equal(currentRoadmap.ownerUnityWeb3dOnly20261009.finalGameplayDimension,'3D');
+assert.equal(currentRoadmap.finalDevelopmentLock.sequenceLock.status,'LOCKED');
+assert.equal(currentVibe3.unityWebFirstStage.developmentAdmissionAuthority,currentRoadmap.unityWebFirstStage.developmentAdmissionAuthority);
+assert.equal(currentVibe3.unityWebFirstStage.nativeDevelopmentMayRunWithoutWebBuild,currentRoadmap.unityWebFirstStage.nativeDevelopmentMayRunWithoutWebBuild);
+assert.match(currentWorkflow,/owner Unity Web 3D\/active targets\/logical slots\/locked development contract changed/);
+assert.ok(currentWorkflow.includes("dual?.upperPlatformAdmission!=='MINIMUM_DESIGN_READY'"));
+assert.ok(currentWorkflow.includes("targetPlatformDevelopment?.admissionGate!=='MINIMUM_DESIGN_READY'"));
+
 console.log('PASS Vibe3 Pump tournament, repair loop, trajectory and asset variants');
+console.log('PASS verified owner Unity Web 3D, platform holds and Vibe3 policy projection');

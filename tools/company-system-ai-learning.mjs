@@ -52,11 +52,19 @@ function generalizedSystem(task={}){
 
 // ── 검증 승격 시에만 재사용하는 최소 단계/서명 키 (원본 모델 출력 보존 금지). ──
 function verifiedRecoveryKey(task={}) {
-  if(clean(task.taskType).toLowerCase()!=='bottleneck-repair')return null;
+  const kind=clean(task.taskType).toLowerCase();
+  if(!['bottleneck-repair','qa-contract-repair'].includes(kind))return null;
+  const evidence=new Set(uniq(task.evidence));
+  const staleQa=kind==='qa-contract-repair'||upper(task.failureClass)==='STALE_QA_CONTRACT';
+  // 오래된 QA 조건의 성공적 수리를 학습하려면 최신 정책·구현 대조와
+  // 독립 QA 검토에서 강도 저하가 없었다는 검증 표식이 먼저 필요하다.
+  if(staleQa&&!(evidence.has('qa-contract-drift:VERIFIED')
+    &&evidence.has('current-policy-implementation-agreement:PASS')
+    &&evidence.has('qa-gate-weakening:NO')))return null;
   const stage=upper(task.failureStage).replace(/[^A-Z0-9_]/g,'_').slice(0,80);
   const signature=upper(task.failureSignature).replace(/[^A-Z0-9_]/g,'_').slice(0,100);
   if(!stage||!signature)return null;
-  return {stage,signature,failedStrategies:uniq(task.failedStrategyFingerprints)
+  return {stage,signature,staleQa,failedStrategies:uniq(task.failedStrategyFingerprints)
     .filter(x=>/^[0-9a-f]{64}$/i.test(x)).slice(0,8)};
 }
 function knowledgeRefs(task={}){
@@ -109,6 +117,9 @@ export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInpu
     if(mutationRequired&&(!files.length||!revision))return task;
     if(!evidence.length)return task;
     const system=generalizedSystem(task),recovery=verifiedRecoveryKey(task);
+    // 허위 QA 계약 복구 결과가 일반 성공 경험으로 우회 승격되지 않게 한다.
+    if((clean(task.taskType).toLowerCase()==='qa-contract-repair'
+      ||upper(task.failureClass)==='STALE_QA_CONTRACT')&&!recovery)return task;
     const fingerprint='system_ai_'+hash([task.id,task.lastOutcome,system,...evidence.sort()].join('|'));
     const expId='exp_'+fingerprint;
     if(!expIds.has(expId)){
@@ -124,7 +135,15 @@ export function promoteVerifiedSystemAiLearning({systemAiInput={},experienceInpu
         reusablePatterns:[`VERIFIED_SYSTEM_AI_${system}_SCOPED_EXECUTION_WITH_DETERMINISTIC_VERIFICATION`,
           ...(recovery?[`VERIFIED_${recovery.stage}_${recovery.signature}_CAUSE_SCOPED_REPAIR`]:[])],
         avoidPatterns:['SYSTEM_AI_SELF_ACCEPTANCE','RAW_MODEL_OUTPUT_REUSE_WITHOUT_VERIFICATION',
-          ...(recovery?recovery.failedStrategies.map(x=>'FAILED_STRATEGY_SHA256_'+x):[])],
+          ...(recovery?[
+            'RECHECK_CURRENT_MAIN_POLICY_AND_EXACT_FAILED_STAGE_BEFORE_REPEATING_'+recovery.signature,
+            'DO_NOT_REPEAT_FAILED_STRATEGY_WITHOUT_NEW_CAUSAL_EVIDENCE',
+            ...(recovery.staleQa?[
+              'STALE_QA_REQUIRES_CURRENT_POLICY_IMPLEMENTATION_TRIANGULATION',
+              'QA_CONTRACT_REPAIR_MUST_PRESERVE_NATIVE_3D_BROWSER_QA_AND_REGRESSION'
+            ]:[]),
+            ...recovery.failedStrategies.map(x=>'FAILED_STRATEGY_SHA256_'+x)
+          ]:[])],
         verified:true,reusable:true,independentlyVerified:true,
         authority:gate.marketing?'VERIFIED_SYSTEM_AI_MARKETING_LEARNING':'VERIFIED_SYSTEM_AI_LEARNING',
         sourceSystemAiTaskId:clean(task.id),sourceRevision:revision,

@@ -146,7 +146,7 @@
       "ROBLOX",
       "UNITY"
     ],
-    "currentPhase": "UNITY_WEB_DEVELOPMENT_FLOOR_THEN_ROBLOX_UNITY_UPPER_PLATFORM_DEVELOPMENT",
+    "currentPhase": "ROBLOX_AND_UNITY_WEB_ONLY_CONTINUOUS_DEVELOPMENT",
     "unityExistingPathPreserved": true,
     "platformSpecificEvidenceRequired": true,
     "portableVerifiedExperienceSharedThroughV3Memory": true,
@@ -247,12 +247,12 @@
       "fullAutomatedGateMayUseCoreFunMarkerWhenRealTouchAndProgressEvidenceAlsoPass": true
     },
     "status": "OWNER_DIRECT_LOCKED",
-    "developmentAdmissionAuthority": true,
+    "developmentAdmissionAuthority": false,
     "legacyCompatibilityOnly": false,
     "validationSurfaceOnly": false,
     "nativeGateAuthority": true,
     "homepageTestSurface": true,
-    "nativeDevelopmentMayRunWithoutWebBuild": false,
+    "nativeDevelopmentMayRunWithoutWebBuild": true,
     "nativeReleaseMayRunWithoutWebBuild": true,
     "machinePolicyAuthority": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.upperPlatformDevelopmentReadinessGate",
     "humanReadableSyncDocumentRequired": false,
