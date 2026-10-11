@@ -2,6 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import { gzipSync, gunzipSync, brotliCompressSync, brotliDecompressSync } from 'node:zlib';
 const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const worker=fs.readFileSync('_worker.js','utf8');
@@ -79,5 +83,48 @@ test('Cloudflare Pages header patterns use one splat and include Unity compresse
     assert.ok(start>=0,pattern);
     assert.equal(lines[start+2].trim(),'Content-Encoding: '+(suffix.endsWith('.gz')?'gzip':'br'));
     assert.equal(lines[start+3].trim(),'Cache-Control: no-cache, must-revalidate');
+  }
+});
+
+// 회귀: 기존 배포 단계가 실제 파일 해시로 Unity 캐시를 갱신하고 저장 식별자는 보존한다.
+test('Unity publication versions every bundle URL and updates it after a rebuild',()=>{
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  const start=workflow.indexOf('          python3 - "$out" "$GAME_ID" <<\'PY\'\n');
+  assert.ok(start>=0);
+  const python=workflow.slice(start).split('\n').slice(1).join('\n').split('\n          PY')[0].replace(/^          /gm,'');
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'unity-cache-'));
+  try{
+    const bundle=path.join(root,'Build');fs.mkdirSync(bundle);
+    const names=['demo.loader.js','demo.data.gz','demo.framework.js.gz','demo.wasm.gz'];
+    for(const name of names)fs.writeFileSync(path.join(bundle,name),'real-bundle-'+name);
+    fs.writeFileSync(path.join(root,'index.html'),'<script>var loaderUrl=buildUrl+"/demo.loader.js";var config={dataUrl:buildUrl+"/demo.data.gz",frameworkUrl:buildUrl+"/demo.framework.js.gz",codeUrl:buildUrl+"/demo.wasm.gz",companyName:"Jaewoon Games",productName:"Demo",productVersion:"1.0"};</script>');
+    for(const revision of ['initial','rebuilt']){
+      if(revision==='rebuilt')fs.appendFileSync(path.join(bundle,'demo.data.gz'),'changed');
+      execFileSync('python3',['-',root,'demo'],{input:python,cwd:root});
+      const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+      for(const name of names){
+        const version=createHash('sha256').update(fs.readFileSync(path.join(bundle,name))).digest('hex').slice(0,16);
+        assert.ok(html.includes('/'+name+'?v='+version+'"'),name+' must have a content-bound URL');
+      }
+      assert.equal((html.match(/\?v=/g)||[]).length,4);
+      assert.ok(html.includes('productName:"Demo",productVersion:"1.0"'),'game save identity stays unchanged');
+      const manifest=JSON.parse(fs.readFileSync(path.join(root,'unity-web-deploy-manifest.json'),'utf8'));
+      assert.equal(manifest.bundleComplete,true);
+      assert.deepEqual(manifest.requiredGroups.data,['Build/demo.data.gz']);
+    }
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('missing Unity assets stay 404 instead of a successful compressed homepage',async()=>{
+  assert.ok(fs.existsSync('404.html'),'Pages needs a root 404 to disable its SPA success fallback');
+  const edge=await import('data:text/javascript;base64,'+Buffer.from(worker).toString('base64'));
+  for(const method of ['GET','HEAD']){
+    const response=await edge.default.fetch(new Request('https://example.test/web-games/demo/Build/demo.data.gz',{method}),{
+      ASSETS:{fetch:async()=>new Response('missing',{status:404,headers:{'Content-Encoding':'gzip','Content-Type':'application/octet-stream'}})}
+    });
+    assert.equal(response.status,404);
+    assert.equal(response.headers.get('Content-Encoding'),null);
+    assert.equal(response.headers.get('Cache-Control'),'no-store');
+    if(method==='HEAD')assert.equal(await response.text(),'');
   }
 });

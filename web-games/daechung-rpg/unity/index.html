@@ -57,12 +57,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/daechung-rpg.loader.js";
+      var loaderUrl = buildUrl + "/daechung-rpg.loader.js?v=6d77256d296f1fe4";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/daechung-rpg.data.gz",
-        frameworkUrl: buildUrl + "/daechung-rpg.framework.js.gz",
-        codeUrl: buildUrl + "/daechung-rpg.wasm.gz",
+        dataUrl: buildUrl + "/daechung-rpg.data.gz?v=3500dfe7fa4ed3dd",
+        frameworkUrl: buildUrl + "/daechung-rpg.framework.js.gz?v=e5b723e91da4b9b9",
+        codeUrl: buildUrl + "/daechung-rpg.wasm.gz?v=7ed5570324bca3b9",
         streamingAssetsUrl: "StreamingAssets",
 
         // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
@@ -139,7 +139,8 @@
                 };
 
               }).catch((message) => {
-                alert(message);
+                unityShowBanner(String(message), "error");
+                console.error(message);
               });
             };
 

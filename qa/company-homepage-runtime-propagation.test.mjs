@@ -128,11 +128,47 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   const card=api.buildCard(dev);
   assert.match(card,/Roblox · 개발 중/);
   assert.match(card,/Unity 앱 · 개발 중/);
-  assert.match(card,/Unity Web · 빌드없음/);
+  assert.match(card,/Unity Web · 확인 중/);
+  assert.match(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web · 빌드없음/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityWebAction"/);
   assert.match(card,/data-direct-play=""/);
+});
+
+// 회귀: 실행 링크는 선택적 QA 문서 장애와 무관하고, 하위 Unity 경로도 카드에 남아야 한다.
+test('versioned Unity-only catalog routes remain visible when optional QA JSON is broken',async()=>{
+  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  const html='<script>createUnityInstance(canvas,{dataUrl:"Build/demo.data.gz?v=abc",frameworkUrl:"Build/demo.framework.js.gz?v=abc",codeUrl:"Build/demo.wasm.gz?v=abc"});</script><script src="Build/demo.loader.js?v=abc"></script>';
+  let manifestEnabled=false;
+  const manifest={engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,homepageVerified:true,requiredDimension:'3D',canonicalSourceRoot:'unity-games/demo',sourceCommit:'a'.repeat(40),unitySourceTreeSha256:'b'.repeat(64),buildTreeSha256:'c'.repeat(64),requiredGroups:{loader:['Build/demo.loader.js'],data:['Build/demo.data.gz'],framework:['Build/demo.framework.js.gz'],wasm:['Build/demo.wasm.gz']}};
+  let missing=false;
+  const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces,developmentRows,buildCard})',{
+    document:{readyState:'loading',addEventListener(){}},AbortController,setTimeout,clearTimeout,
+    fetch:async(url,options={})=>{
+      if(!String(url).includes('/unity/'))return{ok:false};
+      if(String(url).includes('index.html'))return{ok:true,text:async()=>html};
+      if(String(url).includes('deploy-manifest'))return{ok:manifestEnabled,json:async()=>manifest};
+      if(options.method==='HEAD')return{ok:!missing};
+      return{ok:true,json:async()=>{throw new Error('invalid optional QA JSON');}};
+    }
+  });
+  api.setExposure({unityWebEnabled:true,games:[]});
+  const catalog={games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/demo/unity/'}]};
+  assert.equal(api.developmentRows(catalog,{}).length,1);
+  for(const withManifest of [false,true]){
+    manifestEnabled=withManifest;
+    const snapshots=[];
+    const result=await api.bindAvailableUnityWebSurfaces(catalog,snapshot=>snapshots.push(snapshot));
+    assert.equal(result.games[0].unityWebAvailable,true);
+    assert.equal(result.games[0].unityWebVerified,false);
+    assert.equal(snapshots[0].games[0].unityWebTestUrl,'/web-games/demo/unity/');
+    assert.match(api.buildCard(result.games[0]),/href="\/web-games\/demo\/unity\/"/);
+  }
+  missing=true;
+  const rejected=await api.bindAvailableUnityWebSurfaces(catalog);
+  assert.equal(rejected.games[0].unityWebAvailable,false);
+  assert.equal(api.developmentRows(rejected,{}).length,1,'missing build disables only the link');
 });
 
 test('card gallery uses the exact shared Roblox thumbnail and verified video frames',()=>{

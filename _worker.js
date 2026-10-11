@@ -430,6 +430,10 @@ export default{
     // 메인 · Unity WebGL 빌드 압축은 Pages Function 응답에서 직접 선언한다.
     // _headers 설정은 _worker.js가 반환하는 응답에 적용되지 않는다.
     const unityBundle=url.pathname.match(/^\/web-games\/[a-z0-9-]+\/(?:unity\/)?Build\/[^/]+\.(framework\.js|data|wasm)\.(gz|br)$/i);
+    if(unityBundle&&response.status===404){
+      // 정적 파일 오류 페이지에는 Unity 압축 헤더를 적용하지 않는다.
+      return new Response(request.method==='HEAD'?null:'Unity build asset not found',{status:404,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+    }
     if(unityBundle&&response.ok){
       const [,kind,format]=unityBundle;
       const headers=new Headers(response.headers);
