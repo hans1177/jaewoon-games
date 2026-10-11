@@ -1,13 +1,13 @@
 {
   "version": 1,
   "kind": "UNITY_WEB_DEVELOPMENT_FLOOR_BUILD",
-  "requestId": "owner-fantasy-unityweb-repair-native-source-hashes-and-redeploy-20261011",
+  "requestId": "owner-fantasy-unityweb-cc0-world-actors-webgl-first-merge-20261011",
   "gameId": "fantasy-survival",
   "projectPath": "unity-games/fantasy-survival",
   "buildMethod": "UnityWebFloorBuild.BuildWeb",
   "sourceCommit": "",
   "outputRoot": "web-games/fantasy-survival",
-  "purpose": "REBUILD_FANTASY_SURVIVAL_WEBGL_AFTER_VERIFIED_INTERNAL_NATIVE_MESH_HASH_REPAIR; EXISTING_QA_THEN_AUTOMATIC_REVIEWED_CLOUDFLARE_DEPLOY; GAME_LOGIC_BALANCE_SAVE_PRESERVED",
+  "purpose": "REBUILD_CANONICAL_FANTASY_SURVIVAL_UNITY_WEBGL_WITH_CC0_VILLAGES_EXISTING_SKINNED_ACTORS_AND_MOTIONS; ACTUAL_BROWSER_QA_AND_REVIEWED_DEPLOY; GAMEPLAY_SAVE_BALANCE_UNCHANGED",
   "fullGameplayPassAuthority": false,
   "releaseAuthority": false,
   "webPrototypeFallbackForbidden": true,
@@ -38,7 +38,7 @@
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestUI.json",
     "unity-games/fantasy-survival/Assets/Resources/CompanyAssets/MagicForestMotion.json"
   ],
-  "assetValidationStatus": "REGISTERED_SOURCE_BOUND_UNITY_WEB_ALL_FAMILIES_RUNTIME_QA_PENDING",
+  "assetValidationStatus": "COMMON_CC0_3D_VILLAGE_SOURCE_AND_EXISTING_SKINNED_CHARACTER_REGISTERED_WEBGL_RUNTIME_QA_PENDING",
   "productionVerified": false,
   "registryAssetIds": [
     "unity-fantasy-survival-tree-trunk-v1",
@@ -64,5 +64,5 @@
     "unity-fantasy-survival-ui-v1",
     "unity-fantasy-survival-motion-v1"
   ],
-  "registryVersionRequired": 136
+  "registryVersionRequired": 137
 }
