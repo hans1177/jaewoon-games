@@ -1174,7 +1174,7 @@ namespace JaewoonGames.DaechungRpg
 
                 // 기존 프레임 시간에 맞춰 같은 캐릭터의 네이티브 3D 포즈만 갱신한다.
                 // 기존 텍스처 프레임은 로딩·동작 타이밍 메타데이터로 유지한다.
-                if (clip.Frames[frameIndex] == null) return; 공격 판정은 GameCore가 유지한다.
+                if (clip.Frames[frameIndex] == null) return; // 공격 판정은 GameCore가 유지한다.
                 if (_skin == null || !_model.activeInHierarchy) return;
                 bool walking = _currentAction == "walk";
                 bool attacking = _currentAction == "attack";
