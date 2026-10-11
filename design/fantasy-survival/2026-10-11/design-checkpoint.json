@@ -3,7 +3,7 @@
   "gameId": "fantasy-survival",
   "date": "2026-10-11",
   "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "fingerprint": "94aa9d9d1cc41c0e2f96d33439723593c19b698479cd4e310a27381234c42f11",
+  "fingerprint": "691536af28d96356323670136f13db96ab489e8e3f9f039f38b15bf66e919857",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
   "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
   "status": "IN_PROGRESS",
@@ -1044,21 +1044,21 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-11T07:06:43.282Z",
-  "updatedAt": "2026-10-11T07:06:43.401Z",
+  "createdAt": "2026-10-11T07:33:23.055Z",
+  "updatedAt": "2026-10-11T07:33:23.191Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 136,
-    "sha256": "2c9f3bb0e7064bdd6457e1722f793db90262d49e548486bbd917ad86cd8a1d31",
-    "inventoryCount": 767,
+    "version": 137,
+    "sha256": "3c63ddb5d846eac76196ee8b0b6afbc6b422b679ef26e48fc477b008aa18244c",
+    "inventoryCount": 799,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 767,
-        "eligibleAssetCount": 458,
+        "evaluatedAssetCount": 799,
+        "eligibleAssetCount": 490,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1075,8 +1075,12 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
+            "FENCE",
             "FOUNDATION",
             "GABLE_SURVIVAL_ROOF",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
             "ROOF_GABLE",
             "SINGLE_SURVIVAL_DOOR",
@@ -1114,13 +1118,16 @@
             "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
+            "COBBLESTONES",
             "CORE_WORLD_PACK",
             "DIRT_TRAVEL_PATH",
+            "FOLIAGE",
             "FOREST_PATH",
             "MEDIUM_RESOURCE_ROCK",
             "RESOURCE_ROCK",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+            "THICK_RESOURCE_TREE_TRUNK",
+            "TREE"
           ],
           "MOTION": [
             "ACTION_TIMING_BINDING",
@@ -1191,8 +1198,12 @@
             "WALK"
           ],
           "PROP": [
+            "BENCH",
+            "BOOTS",
             "CRATE",
+            "DOORMAT",
             "LAMP",
+            "LETTER",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1204,6 +1215,8 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
+            "MAILBOX",
+            "PACKAGE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "STORAGE_CHEST",
@@ -1497,24 +1510,32 @@
           },
           {
             "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-survival-back_cape",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1530,13 +1551,18 @@
           },
           {
             "family": "ENVIRONMENT",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1551,29 +1577,38 @@
                 "run"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
           {
             "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -1590,6 +1625,7 @@
                 "boss"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
               "verifiedRoleMatch": true
             }
           },
@@ -1605,6 +1641,7 @@
                 "boss"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
@@ -1622,8 +1659,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 767,
-        "eligibleAssetCount": 458,
+        "evaluatedAssetCount": 799,
+        "eligibleAssetCount": 490,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1640,8 +1677,12 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
+            "FENCE",
             "FOUNDATION",
             "GABLE_SURVIVAL_ROOF",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
             "ROOF_GABLE",
             "SINGLE_SURVIVAL_DOOR",
@@ -1679,13 +1720,16 @@
             "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
+            "COBBLESTONES",
             "CORE_WORLD_PACK",
             "DIRT_TRAVEL_PATH",
+            "FOLIAGE",
             "FOREST_PATH",
             "MEDIUM_RESOURCE_ROCK",
             "RESOURCE_ROCK",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+            "THICK_RESOURCE_TREE_TRUNK",
+            "TREE"
           ],
           "MOTION": [
             "ACTION_TIMING_BINDING",
@@ -1756,8 +1800,12 @@
             "WALK"
           ],
           "PROP": [
+            "BENCH",
+            "BOOTS",
             "CRATE",
+            "DOORMAT",
             "LAMP",
+            "LETTER",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1769,6 +1817,8 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
+            "MAILBOX",
+            "PACKAGE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "STORAGE_CHEST",
@@ -2062,24 +2112,32 @@
           },
           {
             "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-survival-back_cape",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -2095,13 +2153,18 @@
           },
           {
             "family": "ENVIRONMENT",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -2116,29 +2179,38 @@
                 "run"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
           {
             "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -2155,6 +2227,7 @@
                 "boss"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
               "verifiedRoleMatch": true
             }
           },
@@ -2170,6 +2243,7 @@
                 "boss"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
@@ -2187,8 +2261,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 767,
-        "eligibleAssetCount": 458,
+        "evaluatedAssetCount": 799,
+        "eligibleAssetCount": 490,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -2205,8 +2279,12 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
+            "FENCE",
             "FOUNDATION",
             "GABLE_SURVIVAL_ROOF",
+            "GATE",
+            "GROUND_TILE",
+            "HOUSE",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
             "ROOF_GABLE",
             "SINGLE_SURVIVAL_DOOR",
@@ -2244,13 +2322,16 @@
             "STARTER_HERO_WATER"
           ],
           "ENVIRONMENT": [
+            "COBBLESTONES",
             "CORE_WORLD_PACK",
             "DIRT_TRAVEL_PATH",
+            "FOLIAGE",
             "FOREST_PATH",
             "MEDIUM_RESOURCE_ROCK",
             "RESOURCE_ROCK",
             "ROUND_RESOURCE_TREE_CANOPY",
-            "THICK_RESOURCE_TREE_TRUNK"
+            "THICK_RESOURCE_TREE_TRUNK",
+            "TREE"
           ],
           "MOTION": [
             "ACTION_TIMING_BINDING",
@@ -2321,8 +2402,12 @@
             "WALK"
           ],
           "PROP": [
+            "BENCH",
+            "BOOTS",
             "CRATE",
+            "DOORMAT",
             "LAMP",
+            "LETTER",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -2334,6 +2419,8 @@
             "LORE_MORGUE_TAG",
             "LORE_SURGERY_NOTE",
             "LORE_TORN_TICKET",
+            "MAILBOX",
+            "PACKAGE",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
             "STORAGE_CHEST",
@@ -2627,24 +2714,32 @@
           },
           {
             "family": "BUILDING",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-fence-corner-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "CHARACTER",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-survival-back_cape",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -2660,13 +2755,18 @@
           },
           {
             "family": "ENVIRONMENT",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-cobblestones-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -2681,29 +2781,38 @@
                 "run"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
           {
             "family": "PROP",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "ADAPT",
+            "assetId": "external-tinytreats-bench-a-v1",
+            "applicationMode": "STYLE_ADAPT",
+            "reason": "REUSABLE_LIBRARY_ADAPTATION",
             "roleEvidence": {
               "requestedRoles": [],
-              "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "matchedRoles": [
+                "survival"
+              ],
+              "currentSourceBound": false,
+              "genericFamilyRequest": false,
+              "verifiedRoleMatch": true
             }
           },
           {
             "family": "SKILL",
-            "action": "HOLD",
-            "assetId": null,
-            "reason": "ROLE_REQUIREMENT_UNRESOLVED",
+            "action": "USE",
+            "assetId": "roblox-common-skill-area-field",
+            "applicationMode": "USE_AS_IS",
+            "reason": "REUSABLE_LIBRARY_MATCH",
             "roleEvidence": {
               "requestedRoles": [],
               "matchedRoles": [],
-              "verifiedRoleMatch": false
+              "currentSourceBound": false,
+              "genericFamilyRequest": true,
+              "verifiedRoleMatch": true
             }
           },
           {
@@ -2720,6 +2829,7 @@
                 "boss"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": false,
               "verifiedRoleMatch": true
             }
           },
@@ -2735,6 +2845,7 @@
                 "boss"
               ],
               "currentSourceBound": false,
+              "genericFamilyRequest": true,
               "verifiedRoleMatch": true
             }
           },
@@ -2753,6 +2864,176 @@
       }
     },
     "assetFacts": {
+      "external-tinytreats-fence-corner-v1": {
+        "family": "BUILDING",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-fence-corner-v1",
+          "sourceModel": "assets/shared/homely-house/fence_corner.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "91d63f5805cc1cb3e083df492230ef893ebbda6c3416d1d4eeec91c0cbcf00ef",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "FENCE",
+        "sourcePath": "/assets/shared/homely-house/fence_corner.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "roblox-survival-back_cape": {
+        "family": "CHARACTER",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true
+        },
+        "role": "BACK_CAPE_MODULE",
+        "sourcePath": "/assets/roblox/survival-combat-parts-v1/back_cape.obj",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 800.5,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "external-tinytreats-cobblestones-v1": {
+        "family": "ENVIRONMENT",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-cobblestones-v1",
+          "sourceModel": "assets/shared/homely-house/cobblestones.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "7f73b894481234248a998e226d5d95682edcd99a0a3ef859ab6366960a76cbd9",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "COBBLESTONES",
+        "sourcePath": "/assets/shared/homely-house/cobblestones.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
       "roblox-common-motion-run": {
         "family": "MOTION",
         "roleEvidence": {
@@ -2761,6 +3042,7 @@
             "run"
           ],
           "currentSourceBound": false,
+          "genericFamilyRequest": true,
           "verifiedRoleMatch": true
         },
         "role": "RUN",
@@ -2769,6 +3051,101 @@
         "license": "project-original",
         "referenceOnly": false,
         "auditScore": 917.1,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "PENDING_STUDIO",
+        "productionVerified": false
+      },
+      "external-tinytreats-bench-a-v1": {
+        "family": "PROP",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [
+            "survival"
+          ],
+          "currentSourceBound": false,
+          "genericFamilyRequest": false,
+          "verifiedRoleMatch": true
+        },
+        "libraryReuse": {
+          "sourceAssetId": "external-tinytreats-bench-a-v1",
+          "sourceModel": "assets/shared/homely-house/bench_A.obj",
+          "sourceLicense": "cc0",
+          "sourceCredit": null,
+          "expectedSourceSha256": "4803016de8b7aea1037cb1984d2a333119db784e87e6747964f4d5b040124f6b",
+          "sourceFileAndSha256InspectionRequired": true,
+          "sourceRoleEvidence": {
+            "requestedRoles": [],
+            "matchedRoles": [
+              "survival"
+            ],
+            "currentSourceBound": false,
+            "genericFamilyRequest": false,
+            "verifiedRoleMatch": true
+          },
+          "derivativeCandidateReady": true,
+          "originalImmutable": true,
+          "catalogSelectionIsNotNativeArtifact": true
+        },
+        "materialRefinement": {
+          "mode": "SUBTLE_CONTEXT_PBR_REAUTHOR",
+          "sourceMaterialModificationPerformed": false,
+          "allowedAxes": [
+            "PBR_BASE_COLOR_TINT",
+            "PBR_ROUGHNESS",
+            "PBR_METALNESS_WHEN_PHYSICAL",
+            "NORMAL_STRENGTH",
+            "CONTEXTUAL_LIGHT_WEAR"
+          ],
+          "availableSemanticAtoms": [],
+          "paletteMustFollowGameStyleLock": true,
+          "originalAssetImmutable": true,
+          "geometryRigAndGameplaySemanticsPreserved": true,
+          "mobileTextureMeshBudgetRequired": true
+        },
+        "assetization": {
+          "mode": "EXISTING_COMPANY_ASSET_REGISTRY_AND_NATIVE_AUTHORING_ONLY",
+          "nativeDccScript": "assets/native-authoring/build-game-visual.py",
+          "nativeSourceModelField": "task.assetAuthoring.sourceModel",
+          "nativeSourceLicenseField": "task.assetAuthoring.sourceLicense",
+          "nativeSourceCreditField": "task.assetAuthoring.sourceCredit",
+          "sourceInspectionRequired": true,
+          "sourceAndDerivativeSha256Required": true,
+          "originalAndTransformHistoryRequired": true,
+          "registryWriteOwner": "EXISTING_GRAPHICS_PRODUCTION_SYNC",
+          "gameSourceWorkerMayEditCentralRegistry": false,
+          "candidateState": "PREPARED_SOURCE_ONLY",
+          "productionVerified": false,
+          "runtimeVerified": false,
+          "nativeRuntimeBindingAndIndependentQaRequiredForPromotion": true,
+          "newPipelineOrQueueCreated": false
+        },
+        "role": "BENCH",
+        "sourcePath": "/assets/shared/homely-house/bench_A.obj",
+        "platform": "SHARED_3D_SOURCE",
+        "license": "CC0",
+        "referenceOnly": false,
+        "auditScore": null,
+        "auditState": "UNKNOWN",
+        "qualityGap": null,
+        "runtimeState": "SOURCE_ACQUIRED_NATIVE_BINDING_PENDING",
+        "productionVerified": false
+      },
+      "roblox-common-skill-area-field": {
+        "family": "SKILL",
+        "roleEvidence": {
+          "requestedRoles": [],
+          "matchedRoles": [],
+          "currentSourceBound": false,
+          "genericFamilyRequest": true,
+          "verifiedRoleMatch": true
+        },
+        "role": "AREA",
+        "sourcePath": "/assets/roblox/common-skill-v1/RobloxCommonSkillPresentation.luau",
+        "platform": "ROBLOX",
+        "license": "project-original",
+        "referenceOnly": false,
+        "auditScore": 908.1,
         "auditState": "UNKNOWN",
         "qualityGap": null,
         "runtimeState": "PENDING_STUDIO",
@@ -2784,6 +3161,7 @@
             "boss"
           ],
           "currentSourceBound": false,
+          "genericFamilyRequest": false,
           "verifiedRoleMatch": true
         },
         "role": "WAVE_FORECAST_RIBBON",
@@ -2805,6 +3183,7 @@
             "boss"
           ],
           "currentSourceBound": false,
+          "genericFamilyRequest": true,
           "verifiedRoleMatch": true
         },
         "role": "BOSS",
