@@ -1029,6 +1029,7 @@ jobs:
           import fs from 'node:fs';
           import crypto from 'node:crypto';
           import {failureSignature} from './tools/company-selected-platform-router.mjs';
+          import {auditUnityWebNativeSystems} from './tools/company-upper-platform-admission.mjs';
           import {evaluateInternalRelease} from './tools/company-platform-exposure-control.mjs';
           const yes=v=>String(v).toLowerCase()==='true';
           const build=yes(process.env.BUILD_PASS);
@@ -1043,8 +1044,9 @@ jobs:
           const unityMultiplayer=String(design?.content?.platformProfiles?.UNITY?.multiplayerRuntime||'').trim().toUpperCase();
           const singleMode=multiplayerMode==='SINGLE'||multiplayerMode==='SINGLE_PLAYER'||/SINGLE[-_ ]?PLAYER|NETWORKING REMAINS DISABLED|LOCAL GAMEPLAY AUTHORITY/.test(unityMultiplayer);
           const multiplayerRequired=Boolean((multiplayerMode||unityMultiplayer)&&!singleMode);
-          const mp=currentItem.unityMultiplayerQaEvidence||{};
-          const multiplayerPass=!multiplayerRequired||(mp.pass===true&&Number(mp.participantCount||0)>=2&&mp.authoritativeSync===true);
+          const mp=multiplayerRequired?auditUnityWebNativeSystems({repoRoot:process.cwd(),gameId:process.env.GAME_ID,designRecord:design,sourceRevision:process.env.SOURCE_REVISION}).multiplayer:{};
+          console.log('MULTIPLAYER_VERIFICATION_SCOPE=STATIC_CODE_CONTRACT');
+          const multiplayerPass=!multiplayerRequired||(mp.pass===true&&mp.verificationScope==='STATIC_CODE_CONTRACT'&&mp.sourceRevision===process.env.SOURCE_REVISION);
           const canonical=process.env.MEETING_STATE||'WAITING_TARGET_PLATFORM_VALIDATION';
           const runtimeRun=Number(process.env.RUNTIME_RUN_NEW||process.env.RUNTIME_RUN_OLD||0)||null;
           const qaRun=Number(process.env.QA_RUN_NEW||process.env.QA_RUN_OLD||0)||null;
@@ -1134,7 +1136,7 @@ jobs:
               F4:floor('F4',f4Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION'),
               F5:floor('F5',f5Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA'),
               F6:floor('F6',f6Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA'),
-              F7:{state:multiplayerRequired?(f7Pass?'PASS':'FAIL'):'NOT_APPLICABLE',authority:multiplayerRequired?'UNITY_MULTIPLAYER_QA_EVIDENCE':'VERIFIED_DESIGN_SINGLE_PLAYER',participantCount:Number(mp.participantCount||0),authoritativeSync:mp.authoritativeSync===true},
+              F7:{state:multiplayerRequired?(f7Pass?'PASS':'FAIL'):'NOT_APPLICABLE',authority:multiplayerRequired?'EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT':'VERIFIED_DESIGN_SINGLE_PLAYER',verificationScope:'STATIC_CODE_CONTRACT',sourceContract:mp,participantCount:null,actualMultiplayerPlayVerified:false},
               F8:floor('F8',f8Pass,'EXACT_ANDROID_BLACK_BOX_SINGLE_SESSION_PLUS_INDEPENDENT_QA'),
               F9:{state:f9Pass?'PASS':'FAIL',authority:'F0_TO_F8_EVIDENCE_FAN_IN_NO_RUNTIME_REPLAY'}
             },

@@ -1,5 +1,5 @@
 {
-  "version": 187,
+  "version": 188,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -3558,5 +3558,19 @@
     "runtimeAuthority": "company-runtime",
     "allDeployedCardCountRecorded": true,
     "playAndReleaseTruthSeparate": true
+  },
+  "multiplayerStaticCompletionEvidence": {
+    "verificationScope": "STATIC_CODE_CONTRACT",
+    "completionStatus": "PASS_STATIC_CODE_CONTRACT",
+    "requiredFields": [
+      "gameId",
+      "sourceRevision",
+      "checks"
+    ],
+    "actualMultiplayerPlayVerified": false,
+    "runtimeParticipantCountNotInvented": true,
+    "unityAdditionalFields": [
+      "sourceHashes"
+    ]
   }
 }

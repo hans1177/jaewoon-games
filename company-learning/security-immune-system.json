@@ -1,5 +1,5 @@
 {
-  "version": 88,
+  "version": 89,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -1384,5 +1384,13 @@
     "falseRuntimeQaOrReleaseForbidden": true,
     "lockedF0F9SequenceUnchanged": true,
     "fixedPwaAndChatProtected": true
+  },
+  "multiplayerStaticCompletionSecurity": {
+    "source": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.multiplayerImplementation",
+    "serverAuthorityAndRemoteValidationPreserved": true,
+    "exactSourceBindingRequired": true,
+    "missingImplementationMustFail": true,
+    "staticPassIsActualRuntimePlay": false,
+    "lockedF0F9SequenceUnchanged": true
   }
 }

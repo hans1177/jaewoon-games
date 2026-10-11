@@ -85,6 +85,7 @@ function reusableArtifact(cwd,order){
   const expectedRoot=posix(order?.source?.root);
   if(posix(cached.sourceRoot)!==expectedRoot)throw new Error('exploration handoff source root 불일치');
   if(cached.codingAnalysisVersion!==CODING_ANALYSIS_VERSION)return null;
+  try{const mode=readJson(path.join(cwd,'company-learning/platform-release-roadmap.json'))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope;if(mode&&cached?.editContract?.gameRepair?.multiplayerLifecycle?.verificationScope!==mode)return null;}catch{}
   const root=path.resolve(cwd,expectedRoot);
   for(const row of cached.fileDigests||[]){
     const file=path.resolve(root,row.path);
@@ -235,7 +236,7 @@ function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSym
   };
 }
 
-function compileEditContract({order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null}={}){
+function compileEditContract({cwd=process.cwd(),order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[],diagnosticReplayBaseline=null}={}){
   const sourceAnalysis=analyzeExistingGameSource(sourceText);
   const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
   const codingArchitecture=buildCodingArchitecture({
@@ -300,6 +301,8 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const repairMode=repairRepeatCount>=3?'ROOT_CAUSE_MODE':'FOCUSED_REPAIR';
   const saveRequired=(sourceAnalysis.storageKeys||[]).length>0||/(?:localStorage|indexedDB|PlayerPrefs|DataStoreService|save|load|persist|저장|불러오기)/i.test(sourceText);
   const multiplayerRequired=/(?:RemoteEvent|RemoteFunction|NetworkVariable|Netcode|Photon|Mirror|multiplayer|server.?authorit|client.?server|co-?op|pvp|멀티|협동|동기화)/i.test(sourceText+' '+requirementText);
+  let multiplayerVerificationScope='AUTOMATED_HARNESS';
+  try{multiplayerVerificationScope=readJson(path.join(cwd,'company-learning/platform-release-roadmap.json'))?.directNativeDualPlatformDevelopment?.multiplayerImplementation?.verificationScope||multiplayerVerificationScope;}catch{}
   const classifiedTargets=unique(testTargets||[]);
   const gameRepair={
     version:1,
@@ -331,6 +334,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       minimumPlayers:2,
       userAssistanceRequired:false,
       manualOwnerParticipationMayNotBeRequiredForPass:true,
+      verificationScope:multiplayerVerificationScope,
       testTargets:classifiedTargets.filter(value=>/(?:multi|network|sync|join|rejoin|server|client|remote)/i.test(value)).slice(0,8),
       automation:{
         required:repairRequired&&multiplayerRequired,
@@ -346,7 +350,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
           'DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK'
         ],
         deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable:true,
-        actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:true,
+        actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:multiplayerVerificationScope!=='STATIC_CODE_CONTRACT',
         unavailableAutomationAction:'KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION',
         userReportedSuccessCannotReplaceMachineEvidence:true
       }
@@ -541,7 +545,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const diagnosticReplayBaseline=verifyDiagnosticReplayBaseline({order,target,root});
   const editContract=target==='system'
     ?compileSystemEditContract({order,responsibleFiles:responsible,testTargets})
-    :compileEditContract({order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
+    :compileEditContract({cwd,order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets,diagnosticReplayBaseline});
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
     version:1,
@@ -595,9 +599,9 @@ export function explorationGuidance(handoff={}){
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
       ...(handoff.editContract.causalReplay?.required===true?[
         `[CAUSAL REPLAY CONTRACT] mode=${handoff.editContract.causalReplay.mode||'PLAN_ONLY'}; prepatch=${handoff.editContract.causalReplay.prePatchReproduced===true?'REPRODUCED':'NOT_REPRODUCED'}; executable=${handoff.editContract.causalReplay.executable===true?'YES':'NO'}`,
-`[GAME REPAIR CONTRACT] required=${handoff.editContract.gameRepair?.required===true?'YES':'NO'}; mode=${handoff.editContract.gameRepair?.repairMode||'FOCUSED_REPAIR'}; repeat=${Number(handoff.editContract.gameRepair?.repeatCount||0)}; save=${handoff.editContract.gameRepair?.saveMigration?.required===true?'REQUIRED':'N/A'}; multiplayer=${handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?'AUTONOMOUS_2PLUS_CLIENT_REQUIRED':'N/A'}; owner-help=${handoff.editContract.gameRepair?.multiplayerLifecycle?.userAssistanceRequired===false?'FORBIDDEN_AS_REQUIREMENT':'N/A'}; full-regression=${handoff.editContract.gameRepair?.fullRegressionFanInRequired===true?'REQUIRED':'NO'}`,
+`[GAME REPAIR CONTRACT] required=${handoff.editContract.gameRepair?.required===true?'YES':'NO'}; mode=${handoff.editContract.gameRepair?.repairMode||'FOCUSED_REPAIR'}; repeat=${Number(handoff.editContract.gameRepair?.repeatCount||0)}; save=${handoff.editContract.gameRepair?.saveMigration?.required===true?'REQUIRED':'N/A'}; multiplayer=${handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?(handoff.editContract.gameRepair.multiplayerLifecycle.verificationScope||'AUTOMATED_HARNESS'):'N/A'}; owner-help=${handoff.editContract.gameRepair?.multiplayerLifecycle?.userAssistanceRequired===false?'FORBIDDEN_AS_REQUIREMENT':'N/A'}; full-regression=${handoff.editContract.gameRepair?.fullRegressionFanInRequired===true?'REQUIRED':'NO'}`,
         handoff.editContract.gameRepair?.repairMode==='ROOT_CAUSE_MODE'?'ROOT CAUSE MODE: 같은 실패에 미세패치를 더 쌓지 말고 last-known-good/first-broken/current와 책임 그래프를 비교해 원인 분류 후 기존 책임 시스템을 직접 수정한다.':'',
-        handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?'MULTIPLAYER REPAIR: 사용자에게 두 번째 클라이언트나 수동 재현을 요구하지 않는다. 자동 2+ 클라이언트/결정론적 하네스로 동시행동·이탈·재접속·늦은 참가·서버 권한 동기화를 검증한다. 플랫폼 런타임이 없으면 PASS로 가장하지 말고 자동 재큐/미검증 상태를 유지한다.':'',
+        handoff.editContract.gameRepair?.multiplayerLifecycle?.required===true?handoff.editContract.gameRepair.multiplayerLifecycle.verificationScope==='STATIC_CODE_CONTRACT'?'MULTIPLAYER REPAIR: 현재 서버·클라이언트 소스의 권한·송수신·참가자·재접속 정적 계약을 검사하고 PASS_STATIC_CODE_CONTRACT로 완료한다. 실제 2인 실행을 필수로 요구하지 않으며 실제 플레이 완료로 표기하지 않는다.':'MULTIPLAYER REPAIR: 사용자에게 두 번째 클라이언트나 수동 재현을 요구하지 않는다. 자동 2+ 클라이언트/결정론적 하네스로 동시행동·이탈·재접속·늦은 참가·서버 권한 동기화를 검증한다. 플랫폼 런타임이 없으면 PASS로 가장하지 말고 자동 재큐/미검증 상태를 유지한다.':'',
         ...(handoff.editContract.causalReplay.mode==='DIAGNOSTIC_RESCAN'&&handoff.editContract.causalReplay.executable===true?[
           `CAUSAL DIAGNOSTIC TARGET=${handoff.editContract.causalReplay.diagnosticType||'UNKNOWN'}:${handoff.editContract.causalReplay.diagnosticFile||'UNKNOWN'}; line=${handoff.editContract.causalReplay.diagnosticLine??'UNKNOWN'}; needle=${handoff.editContract.causalReplay.diagnosticNeedle||'UNKNOWN'}; verified-system=${handoff.editContract.causalReplay.verifiedResponsibleSystem||'UNKNOWN'}`,
           handoff.editContract.causalReplay.diagnosticMicroTask?`CAUSAL DIAGNOSTIC REPAIR=${handoff.editContract.causalReplay.diagnosticMicroTask}`:'' ,

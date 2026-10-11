@@ -1,5 +1,5 @@
 {
-  "version": 335,
+  "version": 336,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -7422,5 +7422,14 @@
     "interfaceValidator": "tools/company-roblox-production-plan.mjs::validateInterfaceBlueprint",
     "experienceTrace": "tools/vibe2-capability-distillation.mjs",
     "retrieval": "tools/vibe2-learning-motor.mjs"
+  },
+  "multiplayerStaticCompletionTopology": {
+    "source": "company-learning/platform-release-roadmap.json#directNativeDualPlatformDevelopment.multiplayerImplementation",
+    "robloxOwner": "tools/company-development-roblox-runtime-foundation.mjs::validateRobloxMultiplayerSourceContract",
+    "unityOwner": "tools/company-upper-platform-admission.mjs::auditUnityWebNativeSystems",
+    "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT",
+    "runtimeExecutionRequired": false,
+    "existingF0F9SequencePreserved": true,
+    "noNewPipeline": true
   }
 }

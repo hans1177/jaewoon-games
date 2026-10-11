@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
 import {
   classifyUpperPlatformAdmission,
   unitySourceTreeSha256,
@@ -16,6 +17,41 @@ const write=(root,rel,data)=>{
   fs.mkdirSync(path.dirname(file),{recursive:true});
   fs.writeFileSync(file,typeof data==='string'?data:JSON.stringify(data,null,2));
 };
+test('Unity multiplayer completes from exact static source and rejects missing receive, stale source and marker-only code',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'multiplayer-static-'));
+  const file='unity-games/daechung-rpg/Assets/Scripts/MultiplayerSession.cs';
+  const source=fs.readFileSync(file,'utf8');
+  try{
+    write(root,file,source);
+    write(root,'multiplayer/worker.js',fs.readFileSync('multiplayer/worker.js','utf8'));
+    const bridge='unity-games/daechung-rpg/Assets/Plugins/WebGL/DaechungSocket.jslib';
+    write(root,bridge,fs.readFileSync(bridge,'utf8'));
+    execFileSync('git',['init','-q'],{cwd:root});
+    execFileSync('git',['add','.'],{cwd:root});
+    execFileSync('git',['-c','user.name=QA','-c','user.email=qa@example.invalid','commit','-qm','fixture'],{cwd:root});
+    const sourceRevision=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+    const inspect=(revision=sourceRevision)=>auditUnityWebNativeSystems({repoRoot:root,gameId:'daechung-rpg',sourceRevision:revision}).multiplayer;
+    const pass=inspect();
+    assert.equal(pass.pass,true,JSON.stringify(pass.checks));
+    assert.equal(pass.verificationScope,'STATIC_CODE_CONTRACT');
+    assert.equal(pass.runtimeTwoClientExecutionRequired,false);
+    assert.equal(pass.actualMultiplayerPlayVerified,false);
+    assert.equal(pass.participantCount,null);
+    assert.equal(pass.sourceHashes.length,3);
+    write(root,file,source+'\n// new revision\n');
+    assert.equal(inspect().checks.exactSourceBinding,false);
+    write(root,file,source.replaceAll('OnMultiplayerSocket','MissingReceiver'));
+    assert.equal(inspect('').checks.receive,false);
+    assert.equal(inspect('').pass,false);
+    write(root,file,source.replace('private void Update()','private void UnusedTick()'));
+    assert.equal(inspect('').checks.reconnect,false);
+    write(root,file,'public class Marker { /* '+source.replaceAll('*/','* /')+' */ }');
+    assert.equal(inspect('').pass,false);
+    write(root,file,source);
+    fs.unlinkSync(path.join(root,bridge));
+    assert.equal(inspect('').checks.transportBridge,false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 const baseItem=gameId=>({
   gameId,
   minimumDesignContract:{pass:true},

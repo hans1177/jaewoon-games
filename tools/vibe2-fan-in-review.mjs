@@ -143,7 +143,13 @@ function gameRepairEvidenceFailures(row={}){
   if(clean(repair.originalScenarioReplay)!=='PASS')failures.push('game-repair-original-scenario');
   if(clean(repair.invariants)!=='PASS')failures.push('game-repair-invariants');
   if(!['PASS','NOT_APPLICABLE'].includes(clean(repair.saveMigration)))failures.push('game-repair-save-migration');
-  if(!['PASS_AUTOMATED_HARNESS','NOT_APPLICABLE'].includes(clean(repair.multiplayerLifecycle)))failures.push('game-repair-multiplayer-lifecycle');
+  if(!['PASS_STATIC_CODE_CONTRACT','PASS_AUTOMATED_HARNESS','NOT_APPLICABLE'].includes(clean(repair.multiplayerLifecycle)))failures.push('game-repair-multiplayer-lifecycle');
+  if(repair.multiplayerLifecycle==='PASS_STATIC_CODE_CONTRACT'){
+    const source=repair.multiplayerSourceContract||{};
+    if(source.pass!==true||source.verificationScope!=='STATIC_CODE_CONTRACT'||source.actualMultiplayerPlayVerified!==false
+      ||!Object.keys(source.checks||{}).length||!Object.values(source.checks).every(value=>value===true)
+      ||!source.sourceHashes?.length||!source.sourceHashes.every(row=>/^[a-f0-9]{64}$/.test(clean(row.sha256))))failures.push('game-repair-multiplayer-static-evidence');
+  }
   if(clean(repair.multiplayerLifecycle)!=='NOT_APPLICABLE'&&repair?.multiplayerAutomation?.userAssistanceRequired!==false)failures.push('game-repair-multiplayer-must-be-machine-verified');
   if(repair.readyForFanIn!==true)failures.push('game-repair-ready-for-fan-in');
   return[...new Set(failures)];
