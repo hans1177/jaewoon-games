@@ -4619,7 +4619,7 @@ test('Unity resource calls bind existing native source assets without claiming r
     fs.mkdirSync(resources,{recursive:true});
     fs.mkdirSync(scripts,{recursive:true});
     for(const name of ['Tree','Rock']){
-      fs.writeFileSync(path.join(resources,name+'.obj'),'o '+name+'\\nv 0 0 0\\nv 1 0 0\\nv 0 1 0\\nf 1 2 3\\n');
+      fs.writeFileSync(path.join(resources,name+'.obj'),'o '+name+'\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n');
     }
     fs.writeFileSync(path.join(scripts,'NativeWorld.cs'),[
       'GameObject tree=Resources.Load<GameObject>("CompanyAssets/Tree");',
@@ -4627,7 +4627,7 @@ test('Unity resource calls bind existing native source assets without claiming r
       'GameObject BindCompanyVisual(string id,Transform parent,Vector3 position,Vector3 scale,Quaternion rotation) {',
       ' return Resources.Load<GameObject>("CompanyAssets/"+id);',
       '}'
-    ].join('\\n'));
+    ].join('\n'));
     const assets=['Tree','Rock'].map(name=>({
       id:'sample-'+name.toLowerCase(),family:'ENVIRONMENT',
       path:'unity-games/sample/Assets/Resources/CompanyAssets/'+name+'.obj',
@@ -4662,13 +4662,13 @@ test('Roblox native asset uses are counted while unconsumed configuration atoms 
       '  } },',
       '  -- STUDIO_ASSET_BINDING_END',
       '}'
-    ].join('\\n'));
+    ].join('\n'));
     fs.writeFileSync(path.join(game,'client','Game.client.luau'),[
       'local studioAssetFamilies = Config.StudioAssets.Families',
       'if hasStudioAssetAtom("FRAME_PANEL") then root.Visible=true end',
       'local wind = table.find(studioAssetFamily("AUDIO"), "ENV_WIND")',
       '-- if hasStudioAssetAtom("BUTTON_PRIMARY") then fake=true end'
-    ].join('\\n'));
+    ].join('\n'));
     const registry={assets:[
       {id:'frame',family:'UI',atomId:'FRAME_PANEL'},
       {id:'unused-button',family:'UI',atomId:'BUTTON_PRIMARY'},
