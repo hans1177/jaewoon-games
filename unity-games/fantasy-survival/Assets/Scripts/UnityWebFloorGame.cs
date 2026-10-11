@@ -421,7 +421,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
     private readonly HashSet<string> missingNativeAssets = new HashSet<string>();
     private LibraryUiTheme uiTheme = new LibraryUiTheme();
     private LibraryMotion motionProfile = new LibraryMotion();
-    private Transform playerLeftArm,playerRightArm,playerLeftLeg,playerRightLeg,playerNativeTorso;
+    private Transform playerLeftArm,playerRightArm;
     private GameObject playerWeaponVisual;
     private Animation playerNativeMotion;
     private string displayedWeaponId = "";
@@ -769,48 +769,36 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
                 new Vector3(0,-.26f,0),new Vector3(.17f,.12f,.17f),Quaternion.Euler(0,i*19f,0));
             if(nativeHerb!=null)fiberNode.GetComponent<Renderer>().enabled=false;
         }
+        // 캐릭터 · 기존 위치/입력/저장 책임은 그대로 두고 공용 네이티브 Rogue 리그만 표시한다.
+        // Capsule/Sphere 임시 몸통이 실제 캐릭터를 가리거나 배포본에 남지 않도록 생성하지 않는다.
         GameObject character = new GameObject("Player_3D");
         character.transform.SetParent(worldRoot.transform);
         character.transform.position = Vector3.zero;
         player = character.transform;
-        GameObject playerBody=CreatePart(character.transform, PrimitiveType.Capsule, "Body",
-            Vector3.up * 1f, new Vector3(.7f,.82f,.52f), new Color(.33f,.65f,.51f), false);
-        CreatePart(character.transform, PrimitiveType.Sphere, "Head", Vector3.up * 2.07f,
-            Vector3.one * .63f, new Color(.90f,.75f,.61f), false);
-        CreatePart(character.transform, PrimitiveType.Cube, "Bag", new Vector3(0,1.25f,-.36f),
-            new Vector3(.64f,.68f,.22f), new Color(.36f,.24f,.15f), false);
-        playerLeftArm=CreatePart(character.transform, PrimitiveType.Capsule, "LeftArm",
-            new Vector3(-.55f,1.32f,0),new Vector3(.24f,.48f,.24f),new Color(.30f,.53f,.38f),false).transform;
-        playerRightArm=CreatePart(character.transform, PrimitiveType.Capsule, "RightArm",
-            new Vector3(.55f,1.32f,0),new Vector3(.24f,.48f,.24f),new Color(.30f,.53f,.38f),false).transform;
-        playerLeftLeg=CreatePart(character.transform,PrimitiveType.Capsule,"LeftLeg",
-            new Vector3(-.24f,.43f,0),new Vector3(.25f,.64f,.30f),new Color(.29f,.42f,.36f),false).transform;
-        playerRightLeg=CreatePart(character.transform,PrimitiveType.Capsule,"RightLeg",
-            new Vector3(.24f,.43f,0),new Vector3(.25f,.64f,.30f),new Color(.29f,.42f,.36f),false).transform;
-        GameObject torso=BindCompanyVisual("MagicForestTorso",character.transform,
-            new Vector3(0,.32f,0),new Vector3(.43f,.43f,.43f),Quaternion.identity);
-        if(torso!=null){playerNativeTorso=torso.transform;playerBody.GetComponent<Renderer>().enabled=false;}
-        BindCompanyVisual("MagicForestCape",character.transform,new Vector3(0,.34f,-.27f),
-            new Vector3(.37f,.42f,.38f),Quaternion.identity);
-        BindCompanyVisual("MagicForestShoulder",character.transform,new Vector3(.44f,1.43f,0),
-            new Vector3(.26f,.26f,.26f),Quaternion.Euler(0,90f,0));
-        // 캐릭터 · 공용 GLB의 스킨/관절/액션을 Unity가 변환한 프리팹으로 실제 렌더링.
-        GameObject nativeActor=BindCompanyVisual("MagicForestTraveler",character.transform,
+        GameObject nativeActor=BindCompanyVisual("MagicForestRogue",character.transform,
             Vector3.zero,Vector3.one*1.12f,Quaternion.identity);
-        if(nativeActor!=null)
+        if(nativeActor==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_ROGUE_PREFAB_MISSING");
+        playerNativeMotion=nativeActor.GetComponent<Animation>();
+        SkinnedMeshRenderer playerSkin=nativeActor.GetComponentInChildren<SkinnedMeshRenderer>(true);
+        if(playerNativeMotion==null || playerSkin==null || playerSkin.sharedMesh==null
+            || playerSkin.sharedMesh.vertexCount<100 || playerSkin.bones==null || playerSkin.bones.Length<3
+            || playerNativeMotion["IDLE_BREATH"]==null || playerNativeMotion["RUN"]==null
+            || playerNativeMotion["ROGUE_TRAP"]==null || playerNativeMotion["ROGUE_CLOAK"]==null
+            || playerNativeMotion["ATTACK_LIGHT_SLASH"]==null || playerNativeMotion["ATTACK_HEAVY"]==null
+            || playerNativeMotion["HIT_FRONT"]==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_ROGUE_RIG_OR_MOTION_INVALID");
+        foreach(Transform bone in nativeActor.GetComponentsInChildren<Transform>(true))
         {
-            playerNativeMotion=nativeActor.GetComponent<Animation>();
-            if(playerNativeMotion!=null)
-            {
-                foreach(Renderer oldRenderer in character.GetComponentsInChildren<Renderer>())
-                    if(!oldRenderer.transform.IsChildOf(nativeActor.transform))oldRenderer.enabled=false;
-                foreach(Transform bone in nativeActor.GetComponentsInChildren<Transform>())
-                    if(bone.name=="WeaponGrip"){playerRightArm=bone;break;}
-                PlayNativeMotion(playerNativeMotion,"IDLE_BREATH");
-            }
+            if(bone.name=="WeaponGrip")playerRightArm=bone;
+            if(bone.name=="Shoulder_L")playerLeftArm=bone;
         }
-        Debug.Log("MAGIC_FOREST_INTERNAL_LIBRARY="+(playerNativeMotion!=null
-            ? "UNITY_SKINNED_ACTOR_UI_MOTION_SOURCE_BOUND_RUNTIME_QA_REQUIRED":"ASSET_REPAIR_REQUIRED"));
+        if(playerRightArm==null || playerLeftArm==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_ROGUE_BONE_MISSING");
+        playerSkin.enabled=true;
+        PlayNativeMotion(playerNativeMotion,"IDLE_BREATH");
+        Debug.Log("MAGIC_FOREST_PLAYER_CHARACTER=ROGUE_SKINNED_3D_SOURCE_BOUND_RUNTIME_QA_REQUIRED"
+            +" vertices="+playerSkin.sharedMesh.vertexCount+" bones="+playerSkin.bones.Length);
         FollowCamera(true);
     }
 
@@ -949,51 +937,20 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             skinned?Quaternion.identity:Quaternion.Euler(-85f,0,25f));
     }
 
+    // 모션 · 공용 Rogue 리그의 실제 관절 클립만 재생한다. 전투/채집/제작의 판정은 변경하지 않는다.
     private void AnimatePlayerPresentation(float movement)
     {
-        if(playerLeftArm==null || playerRightArm==null)return;
+        if(playerNativeMotion==null || playerRightArm==null)
+            throw new InvalidOperationException("MAGIC_FOREST_PLAYER_ROGUE_RUNTIME_RIG_LOST");
         SyncPlayerWeaponVisual();
-        if(playerNativeMotion!=null)
-        {
-            // 이동·채집·제작·공격·피격은 전부 동일한 스킨드 캐릭터 애니메이션을 소비.
-            string state=Time.time<playerActionUntil
-                ? playerActionKind==2?"TRAVELER_PICKUP":playerActionKind==3?"TRAVELER_INTERACT":
-                    playerActionKind==4?"HIT_FRONT":playerActionKind==5?"ATTACK_HEAVY":"ATTACK_LIGHT_SLASH"
-                : movement>.12f?"RUN":"IDLE_BREATH";
-            PlayNativeMotion(playerNativeMotion,state);
-            return;
-        }
-        float cycle=Time.time*(2f*Mathf.PI/Mathf.Max(.3f,motionProfile.walkSeconds));
-        float stride=movement>.02f?Mathf.Sin(cycle)*29f*movement:0f;
-        playerLeftLeg.localRotation=Quaternion.Euler(stride,0f,0f);
-        playerRightLeg.localRotation=Quaternion.Euler(-stride,0f,0f);
-        playerLeftArm.localRotation=Quaternion.Euler(-stride*.7f,0f,-8f);
-        playerRightArm.localRotation=Quaternion.Euler(stride*.7f,0f,8f);
-        if(playerNativeTorso!=null)
-            playerNativeTorso.localRotation=Quaternion.Euler(movement>.02f?Mathf.Sin(cycle*2f)*2.4f:Mathf.Sin(Time.time*1.9f)*.7f,0f,0f);
-        if(Time.time<playerActionUntil)
-        {
-            float phase=Mathf.Clamp01((Time.time-playerActionStart)/Mathf.Max(.15f,playerActionDuration));
-            float strike=Mathf.Sin(phase*Mathf.PI);
-            if(playerActionKind==4)
-            {
-                playerLeftArm.localRotation=Quaternion.Euler(-35f*strike,0,-17f);
-                playerRightArm.localRotation=Quaternion.Euler(-35f*strike,0,17f);
-            }
-            else if(playerActionKind==3)
-            {
-                playerLeftArm.localRotation=Quaternion.Euler(-45f+15f*strike,0,-15f);
-                playerRightArm.localRotation=Quaternion.Euler(-55f+25f*strike,0,15f);
-            }
-            else
-            {
-                playerRightArm.localRotation=Quaternion.Euler(-18f-105f*strike,0,8f);
-                playerLeftArm.localRotation=Quaternion.Euler(20f*strike,0,-8f);
-            }
-        }
+        string state=Time.time<playerActionUntil
+            ? playerActionKind==2?"ROGUE_TRAP":playerActionKind==3?"ROGUE_CLOAK":
+                playerActionKind==4?"HIT_FRONT":playerActionKind==5?"ATTACK_HEAVY":"ATTACK_LIGHT_SLASH"
+            : movement>.12f?"RUN":"IDLE_BREATH";
+        PlayNativeMotion(playerNativeMotion,state);
     }
 
-    private void AnimateMonsterPresentation(Monster monster,bool isMoving)
+        private void AnimateMonsterPresentation(Monster monster,bool isMoving)
     {
         if(monster.nativeMotion!=null)
         {
