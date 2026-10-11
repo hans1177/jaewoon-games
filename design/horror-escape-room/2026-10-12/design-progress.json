@@ -2,24 +2,30 @@
   "version": 2,
   "gameId": "horror-escape-room",
   "date": "2026-10-12",
-  "engineDigest": "55a13b04795194c55a7d68b603a3371017b7a7caa34b1b1db95fb4d5d6588fbf",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
-  "cachedTaskCount": 2,
+  "engineDigest": "aea0f5af2f8e2c88de1ae14f9d4a0d4891ccc8105acd2fa7f36632b580011c19",
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "deterministic_department_evidence"
+  ],
+  "completedPhaseCount": 3,
+  "cachedTaskCount": 11,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
-  "failedTask": "content-rules",
-  "lastError": "schema minItems mismatch: root.contentVarietyPlan.roleTransitions",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "designerSeed": {
     "file": "design/horror-escape-room/2026-10-12/design-seed.json",
-    "contentDigest": "12e45be1c3d8d96942d8f38c9af9d324f2d204366664809234337baf8b69acf7",
+    "contentDigest": "77942d8d178c79ba941825d5ffafafa044094f1edb991e8c0765751b68c6f036",
     "authorModel": "vibe-native:causal-design-v1",
     "status": "AUTHORED_CANDIDATE"
   },
   "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-11T23:12:43.174Z"
+  "updatedAt": "2026-10-11T23:49:32.631Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
