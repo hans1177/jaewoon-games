@@ -791,7 +791,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         bool skinned=playerNativeMotion!=null;
         playerWeaponVisual=BindCompanyVisual(blade?"MagicForestSword":"MagicForestGrip",playerRightArm,
             skinned?new Vector3(0,-.08f,0):new Vector3(0,-.25f,.16f),
-            skinned?Vector3.one*(blade?.24f:.33f):new Vector3(1.45f,.80f,1.45f),
+            skinned?Vector3.one*(blade ? 0.24f:.33f):new Vector3(1.45f,.80f,1.45f),
             skinned?Quaternion.identity:Quaternion.Euler(-85f,0,25f));
     }
 
@@ -1039,7 +1039,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(actorKey!="")
         {
             GameObject rigVisual=BindCompanyVisual("MagicForest"+actorKey,root.transform,
-                new Vector3(0f,0f,0f),Vector3.one*scale*(humanoid?.90f:1.0f),
+                new Vector3(0f,0f,0f),Vector3.one*scale*(humanoid ? 0.90f:1.0f),
                 Quaternion.Euler(0f,humanoid?0f:180f,0f));
             if(rigVisual!=null)
             {
