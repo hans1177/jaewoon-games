@@ -137,6 +137,8 @@ test('Fantasy Survival Unity reconnects missing fiber harvesting and restores no
   assert.match(game,/fiber=materials\.ContainsKey\("fiber"\)/);
   assert.match(game,/crafted=new List<string>\(crafted\)/);
   assert.match(game,/if\(creative\)SaveCreative\(\);\s*else SaveNormalCounters\(\)/);
+  assert.match(game,/if\(screenMode==ScreenMode.Playing\)\s*\{\s*if\(creative\)SaveCreative\(\);\s*else SaveNormalCounters\(\)/,
+    'returning to title saves a real normal session without rewriting saves from title options');
   assert.equal((game.match(/private void PlaceStructure\(/g)||[]).length,1,'single owner handles building creation and restoration');
   assert.match(game,/PlaceStructure\(recipe\.id,player\.position/);
   assert.match(game,/PlaceStructure\(entry\.recipeId,entry\.position\)/);
