@@ -77,10 +77,12 @@ jobs:
             const concurrentRoblox=(
                 String(item.platformExecutionMode||'').toUpperCase()==='ROBLOX_UNITY_CONCURRENT_SAME_GAME'
                 ||String(item.platformExecutionMode||'').toUpperCase()==='UNITY_WEB_FLOOR_THEN_ROBLOX_UNITY_CONCURRENT'
+                ||String(item.platformExecutionMode||'').toUpperCase()==='OWNER_ACTIVE_PLATFORMS_SAME_GAME'
               )
               &&Array.isArray(item.concurrentTargetPlatforms)
               &&item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='ROBLOX')
-              &&item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='UNITY');
+              &&(String(item.platformExecutionMode||'').toUpperCase()==='OWNER_ACTIVE_PLATFORMS_SAME_GAME'
+                ||item.concurrentTargetPlatforms.some(value=>String(value||'').toUpperCase()==='UNITY'));
             const secondaryOwnerFocus=platform!=='ROBLOX'&&!concurrentRoblox&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
             if(platform!=='ROBLOX'&&!concurrentRoblox&&!secondaryOwnerFocus)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
