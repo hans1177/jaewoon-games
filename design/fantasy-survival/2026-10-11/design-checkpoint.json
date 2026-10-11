@@ -3,7 +3,7 @@
   "gameId": "fantasy-survival",
   "date": "2026-10-11",
   "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "fingerprint": "77d2d6da24f2297805497ef9044dcbefc15787fe8650124f83d78c44c5cba795",
+  "fingerprint": "c1099db9070205d5b0fd2da1ebe6f8c5c6908da9e91477243f420652b2492e17",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
   "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
   "status": "IN_PROGRESS",
@@ -1044,21 +1044,21 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-11T05:40:59.699Z",
-  "updatedAt": "2026-10-11T05:40:59.816Z",
+  "createdAt": "2026-10-11T06:23:37.389Z",
+  "updatedAt": "2026-10-11T06:23:37.549Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 131,
-    "sha256": "70ee1383696f25664a0420b768972ef3002ef206c04827769ade621e8b6623e5",
-    "inventoryCount": 748,
+    "version": 135,
+    "sha256": "1936d9cc1df99bd5895b40682e728954e37fae114d5ab6debcc1fc7b2f561932",
+    "inventoryCount": 767,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 748,
-        "eligibleAssetCount": 439,
+        "evaluatedAssetCount": 767,
+        "eligibleAssetCount": 458,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1075,20 +1075,29 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
+            "FOUNDATION",
             "GABLE_SURVIVAL_ROOF",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
+            "ROOF_GABLE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
+            "SOLID_TIMBER_WALL",
+            "WOOD_DOOR",
+            "WOOD_WALL"
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
             "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
+            "SHOULDER_GEAR",
+            "SURVIVAL_TORSO_CLOTH_MODULE",
+            "TRAVELER_CAPE",
+            "TRAVELER_TORSO"
           ],
           "CREATURE": [
             "ARACHNID",
+            "CANINE_HEAD",
             "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW",
             "CREATURE_CLAW_MODULE",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
@@ -1107,11 +1116,14 @@
           "ENVIRONMENT": [
             "CORE_WORLD_PACK",
             "DIRT_TRAVEL_PATH",
+            "FOREST_PATH",
             "MEDIUM_RESOURCE_ROCK",
+            "RESOURCE_ROCK",
             "ROUND_RESOURCE_TREE_CANOPY",
             "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
+            "ACTION_TIMING_BINDING",
             "BED_LIE_DOWN",
             "BLEND_NEUTRAL",
             "BLOCK_HOLD",
@@ -1179,6 +1191,8 @@
             "WALK"
           ],
           "PROP": [
+            "CRATE",
+            "LAMP",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1192,6 +1206,7 @@
             "LORE_TORN_TICKET",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
+            "STORAGE_CHEST",
             "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
@@ -1304,6 +1319,7 @@
             "INVENTORY_CONTAINER_PANEL",
             "INVENTORY_FULL_SCREEN",
             "INVENTORY_GRID",
+            "INVENTORY_MENU_TOUCH_UI",
             "INVENTORY_OVERWEIGHT_RESOLUTION",
             "INVENTORY_SLOT",
             "INVENTORY_SMART_SORT_PREVIEW",
@@ -1462,7 +1478,9 @@
             "CROSS_GUARD_MODULE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
+            "MODULAR_COMBAT_PARTS_PACK",
+            "SWORD_BLADE",
+            "SWORD_GRIP"
           ]
         },
         "candidates": [
@@ -1604,8 +1622,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 748,
-        "eligibleAssetCount": 439,
+        "evaluatedAssetCount": 767,
+        "eligibleAssetCount": 458,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -1622,20 +1640,29 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
+            "FOUNDATION",
             "GABLE_SURVIVAL_ROOF",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
+            "ROOF_GABLE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
+            "SOLID_TIMBER_WALL",
+            "WOOD_DOOR",
+            "WOOD_WALL"
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
             "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
+            "SHOULDER_GEAR",
+            "SURVIVAL_TORSO_CLOTH_MODULE",
+            "TRAVELER_CAPE",
+            "TRAVELER_TORSO"
           ],
           "CREATURE": [
             "ARACHNID",
+            "CANINE_HEAD",
             "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW",
             "CREATURE_CLAW_MODULE",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
@@ -1654,11 +1681,14 @@
           "ENVIRONMENT": [
             "CORE_WORLD_PACK",
             "DIRT_TRAVEL_PATH",
+            "FOREST_PATH",
             "MEDIUM_RESOURCE_ROCK",
+            "RESOURCE_ROCK",
             "ROUND_RESOURCE_TREE_CANOPY",
             "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
+            "ACTION_TIMING_BINDING",
             "BED_LIE_DOWN",
             "BLEND_NEUTRAL",
             "BLOCK_HOLD",
@@ -1726,6 +1756,8 @@
             "WALK"
           ],
           "PROP": [
+            "CRATE",
+            "LAMP",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -1739,6 +1771,7 @@
             "LORE_TORN_TICKET",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
+            "STORAGE_CHEST",
             "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
@@ -1851,6 +1884,7 @@
             "INVENTORY_CONTAINER_PANEL",
             "INVENTORY_FULL_SCREEN",
             "INVENTORY_GRID",
+            "INVENTORY_MENU_TOUCH_UI",
             "INVENTORY_OVERWEIGHT_RESOLUTION",
             "INVENTORY_SLOT",
             "INVENTORY_SMART_SORT_PREVIEW",
@@ -2009,7 +2043,9 @@
             "CROSS_GUARD_MODULE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
+            "MODULAR_COMBAT_PARTS_PACK",
+            "SWORD_BLADE",
+            "SWORD_GRIP"
           ]
         },
         "candidates": [
@@ -2151,8 +2187,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 748,
-        "eligibleAssetCount": 439,
+        "evaluatedAssetCount": 767,
+        "eligibleAssetCount": 458,
         "requiredFamilies": [
           "AUDIO",
           "BUILDING",
@@ -2169,20 +2205,29 @@
         "availableRoles": {
           "AUDIO": [],
           "BUILDING": [
+            "FOUNDATION",
             "GABLE_SURVIVAL_ROOF",
             "RECTANGULAR_SURVIVAL_FOUNDATION",
+            "ROOF_GABLE",
             "SINGLE_SURVIVAL_DOOR",
-            "SOLID_TIMBER_WALL"
+            "SOLID_TIMBER_WALL",
+            "WOOD_DOOR",
+            "WOOD_WALL"
           ],
           "CHARACTER": [
             "BACK_CAPE_MODULE",
             "HUMANOID",
             "LIGHT_SHOULDER_MODULE",
-            "SURVIVAL_TORSO_CLOTH_MODULE"
+            "SHOULDER_GEAR",
+            "SURVIVAL_TORSO_CLOTH_MODULE",
+            "TRAVELER_CAPE",
+            "TRAVELER_TORSO"
           ],
           "CREATURE": [
             "ARACHNID",
+            "CANINE_HEAD",
             "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW",
             "CREATURE_CLAW_MODULE",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
@@ -2201,11 +2246,14 @@
           "ENVIRONMENT": [
             "CORE_WORLD_PACK",
             "DIRT_TRAVEL_PATH",
+            "FOREST_PATH",
             "MEDIUM_RESOURCE_ROCK",
+            "RESOURCE_ROCK",
             "ROUND_RESOURCE_TREE_CANOPY",
             "THICK_RESOURCE_TREE_TRUNK"
           ],
           "MOTION": [
+            "ACTION_TIMING_BINDING",
             "BED_LIE_DOWN",
             "BLEND_NEUTRAL",
             "BLOCK_HOLD",
@@ -2273,6 +2321,8 @@
             "WALK"
           ],
           "PROP": [
+            "CRATE",
+            "LAMP",
             "LORE_ATTENDANCE_BOOK",
             "LORE_CAROUSEL_PHOTO",
             "LORE_CLOWN_LOST_ITEM",
@@ -2286,6 +2336,7 @@
             "LORE_TORN_TICKET",
             "RESOURCE_CHEST",
             "RESOURCE_CRATE",
+            "STORAGE_CHEST",
             "SURVIVAL_LANTERN_LAMP"
           ],
           "SKILL": [
@@ -2398,6 +2449,7 @@
             "INVENTORY_CONTAINER_PANEL",
             "INVENTORY_FULL_SCREEN",
             "INVENTORY_GRID",
+            "INVENTORY_MENU_TOUCH_UI",
             "INVENTORY_OVERWEIGHT_RESOLUTION",
             "INVENTORY_SLOT",
             "INVENTORY_SMART_SORT_PREVIEW",
@@ -2556,7 +2608,9 @@
             "CROSS_GUARD_MODULE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
+            "MODULAR_COMBAT_PARTS_PACK",
+            "SWORD_BLADE",
+            "SWORD_GRIP"
           ]
         },
         "candidates": [
