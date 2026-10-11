@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-simulator-tycoon-i-adopt-me-build-up-g2-33f97b8acacd",
-  "directiveFingerprint": "33f97b8acacd88156f4c188630bdf05d0a392d7e5bf5530fa880d92aac142310",
-  "previousDirectiveFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
-  "forbiddenRepeatFingerprint": "de5e2a67c0b720291c4e910c9d445f8089ffd81be61c12664b0efe4880faedf4",
+  "directiveId": "seed-roblox-simulator-tycoon-i-adopt-me-build-up-g3-85d030e7804d",
+  "directiveFingerprint": "85d030e7804dda3638cb4ef70b371f4b76bd38d70aa5d21c1645be5160e3d112",
+  "previousDirectiveFingerprint": "33f97b8acacd88156f4c188630bdf05d0a392d7e5bf5530fa880d92aac142310",
+  "forbiddenRepeatFingerprint": "33f97b8acacd88156f4c188630bdf05d0a392d7e5bf5530fa880d92aac142310",
   "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
   "gameName": "Pocket Foundry",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
-  "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+  "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
   "designFingerprint": "4c8d03dfcc12efa45be32e4f2fdfa3e21fa45e101abcc23214eb750961c49d14",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 대응 전술의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+        "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -273,7 +273,7 @@
       "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
     },
     "designFingerprint": "4c8d03dfcc12efa45be32e4f2fdfa3e21fa45e101abcc23214eb750961c49d14",
-    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -778,7 +778,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 47,
     "authoredCounts": {
@@ -3698,53 +3698,51 @@
     "sourceObservations": [
       "CURRENT_SOURCE_FILES=4",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
-      "AUDIO_IMPLEMENTATION_SPARSE",
-      "INVENTORY_EQUIPMENT_FLOW_SPARSE",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 24,
-      "progression": 117,
+      "combat": 41,
+      "progression": 123,
       "ai": 18,
       "save": 36,
       "multiplayer": 5,
-      "animation": 27,
-      "motionStates": 94,
-      "gameFeel": 20,
-      "vfx": 15,
-      "camera": 25,
-      "audio": 0,
+      "animation": 29,
+      "motionStates": 128,
+      "gameFeel": 29,
+      "vfx": 24,
+      "camera": 27,
+      "audio": 4,
       "audioDynamics": 16,
-      "ui": 52,
-      "uiFlow": 27,
+      "ui": 58,
+      "uiFlow": 35,
       "entryFlow": 6,
       "loadingFlow": 0,
-      "input": 45,
-      "map": 91,
-      "landmark": 4,
+      "input": 48,
+      "map": 107,
+      "landmark": 10,
       "interaction": 30,
-      "inventory": 3,
-      "equipment": 0,
-      "settings": 1,
-      "feedback": 66,
+      "inventory": 7,
+      "equipment": 3,
+      "settings": 2,
+      "feedback": 67,
       "session": 4,
-      "content": 48,
-      "choice": 9,
-      "connection": 0,
-      "performance": 12,
-      "lighting": 33,
+      "content": 74,
+      "choice": 22,
+      "connection": 2,
+      "performance": 13,
+      "lighting": 39,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 10
+      "errorRecovery": 11
     },
     "topFiles": [
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/shared/GameConfig.luau",
-        "score": 201
+        "score": 249
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "score": 132
+        "score": 151
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/server/Game.server.luau",
@@ -3752,7 +3750,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/default.project.json",
-        "score": 2
+        "score": 4
       }
     ],
     "sourceAnchors": [
@@ -3798,7 +3796,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 167,
+        "line": 223,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -3806,7 +3804,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 343,
+        "line": 399,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -3822,7 +3820,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 244,
+        "line": 300,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -3830,7 +3828,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 97,
+        "line": 153,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -3851,15 +3849,31 @@
         "symbol": "setNumber",
         "context": "local function setNumber(player, name, value)",
         "score": 42
+      },
+      {
+        "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+        "line": 26,
+        "kind": "FUNCTION",
+        "symbol": "hasStudioAssetAtom",
+        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
+        "score": 34
+      },
+      {
+        "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+        "line": 22,
+        "kind": "FUNCTION",
+        "symbol": "studioAssetFamily",
+        "context": "local function studioAssetFamily(family)",
+        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "Pocket Foundry을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 전략. 업보와 인과응보의 전략 세계에서 경로와 방어 배치 × 업보와 인과응보과 적 대응 전술 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
-    "currentSourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "currentSourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -4018,8 +4032,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
@@ -4033,8 +4047,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -4088,8 +4102,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "MENU_FLOW",
@@ -4148,8 +4162,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "REPLAYABILITY_VARIATION",
@@ -4228,8 +4242,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "ENVIRONMENTAL_MOTION",
@@ -4494,8 +4508,8 @@
     },
     {
       "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "인벤토리의 획득·스택·정렬·선택·사용·장착·교체·버리기/보존·가득 참 처리를 모바일 터치에서 끊김 없이 연결하고 현재 장착 상태를 명확히 표시한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4521,8 +4535,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4620,8 +4634,8 @@
     },
     {
       "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "음량·카메라/흔들림·감도·UI 크기/가독성 등 현재 게임에 필요한 설정을 접근 가능한 메뉴에 두고 설정 변경이 즉시 반영·저장되게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4728,8 +4742,8 @@
     },
     {
       "domain": "AUDIO_MUSIC_SFX",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "배경음악은 지역/상태/전투 강도 전환과 연결하고, 핵심 행동·위험 전조·피격·보상·UI SFX를 서로 구별해 화면을 보지 않아도 중요한 사건을 인지할 수 있게 한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4872,8 +4886,8 @@
     },
     {
       "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "핵심 action의 animation impact, damage/state change, VFX, camera, audio가 같은 사건 타임라인에 맞게 발생하도록 오프셋을 정리한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4927,32 +4941,12 @@
   ],
   "detectedGaps": [
     {
-      "domain": "INVENTORY_USABILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "EQUIPMENT_LOADOUT",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
     {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "SETTINGS_ACCESSIBILITY",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
-      "domain": "AUDIO_MUSIC_SFX",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     },
@@ -4980,11 +4974,6 @@
       "domain": "MATERIALS",
       "state": "GAP",
       "reason": "placeholder or primitive-heavy implementation remains"
-    },
-    {
-      "domain": "AUDIO_VISUAL_TIMING",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
     }
   ],
   "primaryFocus": "USABILITY",
@@ -5046,8 +5035,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 92334,
-        "largestFileBytes": 37003,
+        "sourceBytes": 85093,
+        "largestFileBytes": 43346,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5079,8 +5068,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 2,
-    "selectedThemeReason": "5 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
+    "themeDepth": 3,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5090,9 +5079,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 2
+        "PRESENTATION_WORLD_COHESION": 3
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
@@ -5129,22 +5119,19 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 230,
+        "score": 200,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
           "CHARACTER_VISUALS",
-          "ENEMY_VISUALS",
-          "AUDIO_VISUAL_TIMING"
+          "ENEMY_VISUALS"
         ]
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 66,
+        "score": 42,
         "gapDomains": [
-          "INVENTORY_USABILITY",
-          "EQUIPMENT_LOADOUT",
-          "SYSTEM_CONNECTION"
+          "EQUIPMENT_LOADOUT"
         ]
       },
       {
@@ -5152,13 +5139,6 @@
         "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
-        ]
-      },
-      {
-        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 26,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
         ]
       },
       {
@@ -5174,6 +5154,11 @@
       {
         "theme": "MID_LATE_ENDGAME_COMPLETION",
         "score": 16,
+        "gapDomains": []
+      },
+      {
+        "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "score": 14,
         "gapDomains": []
       }
     ],
@@ -5250,11 +5235,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
-    "priorSourceFingerprint": "5fd637fd4c3ff8c35c3b89ac4f27576c805345a04b1d0e74aa4397bf2106cd9d",
+    "sourceFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
+    "priorSourceFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -5338,11 +5323,11 @@
       },
       {
         "track": "INVENTORY_AND_EQUIPMENT",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "AUDIO_MUSIC_AND_FEEDBACK",
-        "status": "WEAK_OR_MISSING"
+        "status": "PRESENT"
       },
       {
         "track": "VFX_CAMERA_AND_IMPACT_SYNC",
@@ -5372,10 +5357,7 @@
       "MOBILE_TOUCH_AND_ACCESSIBILITY",
       "PERFORMANCE_AND_RUNTIME_STABILITY"
     ],
-    "weakestTracks": [
-      "AUDIO_MUSIC_AND_FEEDBACK",
-      "INVENTORY_AND_EQUIPMENT"
-    ],
+    "weakestTracks": [],
     "loop": [
       "OBSERVE_CURRENT_RUNTIME_AND_PLAYER_FLOW",
       "RANK_WEAKEST_APPLICABLE_TRACKS",
@@ -5555,7 +5537,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 167,
+        "line": 223,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
@@ -5564,7 +5546,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 343,
+        "line": 399,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -5713,7 +5695,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6124,6 +6106,16 @@
             "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/server/Game.server.luau",
             "symbol": "setNumber",
             "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+            "symbol": "hasStudioAssetAtom",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+            "symbol": "studioAssetFamily",
+            "kind": "FUNCTION"
           }
         ],
         "designTraceability": [
@@ -6419,6 +6411,24 @@
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ASSET_LIBRARY",
+          "library": "assets/asset-library.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -6783,6 +6793,24 @@
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ASSET_LIBRARY",
+          "library": "assets/asset-library.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -6955,7 +6983,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+    "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7366,6 +7394,16 @@
             "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/server/Game.server.luau",
             "symbol": "setNumber",
             "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+            "symbol": "hasStudioAssetAtom",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
+            "symbol": "studioAssetFamily",
+            "kind": "FUNCTION"
           }
         ],
         "designTraceability": [
@@ -7661,6 +7699,24 @@
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ASSET_LIBRARY",
+          "library": "assets/asset-library.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -8025,6 +8081,24 @@
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ASSET_LIBRARY",
+          "library": "assets/asset-library.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -8216,7 +8290,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 167,
+        "line": 223,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
         "context": "local function playVerifiedLearningActionFeedback(control)",
@@ -8228,7 +8302,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me/client/Game.client.luau",
-        "line": 343,
+        "line": 399,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -8374,7 +8448,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "2b9f9a5eefaf2f9ef79b10b29cbea95c2a268cf11db2e97e3b393f70c1654952",
+      "sourceTreeFingerprint": "a3b70ab8d2d20e75f033d73764320f8817e8bfd88a0187a2c4f05b098018d65c",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -8430,7 +8504,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8487,14 +8561,11 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "INVENTORY_USABILITY",
       "EQUIPMENT_LOADOUT",
-      "SYSTEM_CONNECTION",
-      "SETTINGS_ACCESSIBILITY",
       "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T12:00:43.923Z"
+  "generatedAt": "2026-10-11T13:13:57.375Z"
 }
