@@ -804,6 +804,15 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         obj.transform.localPosition = localPos;
         obj.transform.localScale = localScale;
         Tint(obj, color);
+        // 물리 · CreatePrimitive의 콜라이더 유형을 직접 참조해 WebGL 스트리핑을 방지한다.
+        // 정상 생성된 충돌체는 그대로 두고, 누락된 경우에만 같은 기본 형태로 보완한다.
+        if(keepCollider && obj.GetComponent<Collider>()==null)
+        {
+            if(primitive==PrimitiveType.Cube)obj.AddComponent<BoxCollider>();
+            else if(primitive==PrimitiveType.Sphere)obj.AddComponent<SphereCollider>();
+            else if(primitive==PrimitiveType.Capsule || primitive==PrimitiveType.Cylinder)
+                obj.AddComponent<CapsuleCollider>();
+        }
         if (!keepCollider) Destroy(obj.GetComponent<Collider>());
         return obj;
     }
