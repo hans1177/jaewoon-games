@@ -100,6 +100,34 @@ const pageErrors=[];
 const failedRequests=[];
 let browser=null;
 
+// 메인: 10분짜리 정식 브라우저 QA 단계보다 먼저, 멈춘 WebGL 실기동을
+// 실패 증거와 정확한 실행 구간으로 남긴다. 시간 초과는 QA 통과로 대체하지 않는다.
+let qaStage='BROWSER_LAUNCH';
+const qaDeadlineMs=8*60*1000;
+const qaDeadline=setTimeout(()=>{
+  const failureSignature='UNITY_WEB_QA_DEADLINE_EXCEEDED:'+scenarioId+':'+qaStage+':'+qaDeadlineMs;
+  const failureEvidence={
+    version:2,gameId,scenarioId,pass:false,playableBrowserTest:false,
+    observedRuntimeFailure:true,
+    failureStage:'UNITY_WEB_ACTUAL_BROWSER_'+scenarioId.toUpperCase().replaceAll('-','_'),
+    failureSignature,markers,consoleErrors,pageErrors,failedRequests,
+    generatedAt:new Date().toISOString()
+  };
+  if(output){
+    try{
+      fs.mkdirSync(path.dirname(output),{recursive:true});
+      // 브라우저 종료까지 멈추더라도 기존 임시 성공 근거보다 실패 증거가 우선한다.
+      fs.writeFileSync(output,JSON.stringify(failureEvidence,null,2)+'\n');
+    }catch(error){
+      console.error('UNITY_WEB_QA_DEADLINE_EVIDENCE_WRITE_FAILED='+String(error?.message||error));
+    }
+  }
+  console.error('UNITY_WEB_QA_CAUSAL_FAILURE='+scenarioId+':'+failureSignature);
+  process.exit(124);
+},qaDeadlineMs);
+qaDeadline.unref();
+console.log('UNITY_WEB_QA_DEADLINE_MS='+qaDeadlineMs+' scenario='+scenarioId);
+
 try{
   // 실제 Android Chrome 사용자 에이전트를 사용해 Unity WebGL의 모바일 템플릿 경로를 실행한다.
   const {chromium,devices}=await import('playwright');
@@ -123,11 +151,15 @@ try{
   const volatileStateKeys=new Set(['game','region','enemy','enemyHp','hp','maxHp','x','y','z','cameraX','cameraY','cameraZ']);
   const url=`http://127.0.0.1:${port}/${source}/?qa=1`;
   const bootStartedAt=Date.now();
+  qaStage='WEBGL_BOOT';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(4000);
   // 화면 증거: 부팅 직후 첫 Unity canvas를 저장한다. 이후 플레이가 실패해도 빈 화면 근거는 남는다.
   const canvas=page.locator('canvas').first();
+  qaStage='BOOT_CANVAS_CAPTURE';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   const bootSceneCapture=await canvas.screenshot({scale:'css'});
   const bootSceneCaptureSha256=crypto.createHash('sha256').update(bootSceneCapture).digest('hex');
   if(screenshot){
@@ -187,6 +219,8 @@ try{
   // 서로 다른 실제 사용 경로를 검증한다: 정규 Play=키보드→터치,
   // 독립 QA=터치로 진입, 회귀=저장 복원 뒤 재진입/재전투.
   const enterMarkerStart=markers.length;
+  qaStage='GAMEPLAY_TOUCH_AND_ACTION';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   let gameplayStartInput='KEYBOARD_DIGIT1';
   let enteredGameplay=false;
   if(scenarioId==='independent-qa'){
@@ -311,6 +345,8 @@ try{
   };
 
   // 게임플레이 중 실제 브라우저 렌더 루프를 관찰한다. 첫 로딩 시간만으로 FPS PASS를 주장하지 않는다.
+  qaStage='LIVE_FRAME_SAMPLE';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   let frameSampleHostTimeout;
   let framePacing;
   try{
@@ -356,6 +392,8 @@ try{
   const performanceBlocked=framePacingFailed||bootMilliseconds>90000;
 
   // 실제 게임 진행 화면의 픽셀을 읽는다. 콘솔 PASS나 단순 스크린샷 파일 존재는 시각 QA가 아니다.
+  qaStage='LIVE_CANVAS_VISUAL_QA';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   const liveCapture=await page.screenshot({fullPage:false});
   const liveCaptureSha256=crypto.createHash('sha256').update(liveCapture).digest('hex');
   // 승인된 Unity 3D 월드는 웹페이지 전체가 아니라 실제 게임 canvas의 픽셀도 따로 캡처한다.
@@ -544,6 +582,8 @@ try{
   if(!persistentChangedKeys.length)throw new Error('UNITY_WEB_QA_PERSISTENT_PROGRESS_STATE_NOT_REFLECTED');
 
   const reloadMarkerStart=markers.length;
+  qaStage='SAVE_RESTORE_AND_REENTRY';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForSelector('canvas',{state:'visible',timeout:90000});
   await page.waitForTimeout(3500);
@@ -712,6 +752,8 @@ try{
     fs.mkdirSync(path.dirname(output),{recursive:true});
     fs.writeFileSync(output,JSON.stringify(evidence,null,2)+'\n');
   }
+  qaStage='BROWSER_CLOSE';
+  console.log('UNITY_WEB_QA_STAGE='+scenarioId+':'+qaStage);
   await browser.close();
   if(performanceBlocked){
     console.error('UNITY_WEB_GAMEPLAY_QA=REPAIR_REQUIRED:PERFORMANCE');
@@ -750,5 +792,11 @@ try{
   }
   throw error;
 } finally {
-  await new Promise(resolve=>server.close(resolve));
+  qaStage='HTTP_SERVER_CLOSE';
+  // Unity WebGL 요청이 중단돼도 스트리밍 소켓 때문에 작업이 무한 대기하지 않게 한다.
+  await new Promise(resolve=>{
+    server.close(resolve);
+    server.closeAllConnections();
+  });
+  clearTimeout(qaDeadline);
 }
