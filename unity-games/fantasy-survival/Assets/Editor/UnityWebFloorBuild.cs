@@ -66,6 +66,24 @@ public static class UnityWebFloorBuild
 
     private static void EnsureScene()
     {
+        // 그래픽 · 공용 스킨드 GLB의 실제 본/액션 클립을 기존 Unity 빌드 진입점에서 변환한다.
+        // 변환 실패는 웹 빌드를 중단하며 준비된 소스만으로 출시 PASS를 만들지 않는다.
+        UnityCompanyAssets.Prepare();
+        foreach(string role in new[]{"Traveler","Rogue","Guardian","Archer","Mage",
+            "Wolf","Golem","Spider","Serpent","Beetle"})
+        {
+            string prefab="Assets/Resources/CompanyAssets/MagicForest"+role+".prefab";
+            GameObject actor=AssetDatabase.LoadAssetAtPath<GameObject>(prefab);
+            if(actor==null || actor.GetComponent<Animation>()==null)
+                throw new Exception("UNITY_COMPANY_ACTOR_ANIMATION_MISSING:"+role);
+            SkinnedMeshRenderer skin=actor.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if(skin==null || skin.sharedMesh==null || skin.sharedMesh.vertexCount<100 || skin.bones.Length<3)
+                throw new Exception("UNITY_COMPANY_ACTOR_SKIN_MISSING:"+role);
+            int clipCount=0;
+            foreach(AnimationState state in actor.GetComponent<Animation>())if(state.clip!=null)clipCount++;
+            if(clipCount<5)throw new Exception("UNITY_COMPANY_ACTOR_ACTION_COVERAGE_MISSING:"+role);
+            Debug.Log("UNITY_COMPANY_ACTOR_SKINNED_ACTION=SOURCE_READY_RUNTIME_UNVERIFIED:"+role+":clips="+clipCount);
+        }
         // Build 전 검사 · 기존 Unity 프로젝트에 실제 네이티브 3D 자산이 임포트됐는지 확인한다.
         // 파일명이나 원장 메타데이터만으로 메시 품질 및 배포 통과로 인정하지 않는다.
         string[] modelPaths =
