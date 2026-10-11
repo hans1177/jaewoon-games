@@ -3487,7 +3487,9 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
       if(!apiNames.length)continue;
       const searchText=name+' '+apiNames.join(' ');
       const matchedSignals=sourceSignals.filter(([, ,toolPattern])=>toolPattern.test(searchText)).map(row=>row[0]);
-      const coreTool=/^(?:vibe-(?:workbench|engine-adapter|core-runtime)|game-kit|company-vibe2-(?:coding-architecture|expert-development)|vibe2-(?:incremental-qa|learning-motor))\.(?:m?js)$/i.test(name);
+      // [바이브 개발도구 · 모든 게임] 핵심 자산·바이옴·개발·검증 API는 목표 키워드에 의존하지 않는다.
+      // 이 목록은 기존 GRAPHICS_PRODUCTION/BUILD_UP의 읽기 전용 참조이며 새 실행 구조가 아니다.
+      const coreTool=/^(?:vibe-(?:workbench|engine-adapter|core-runtime|art-pipeline|environment-director)|game-kit|company-vibe2-(?:coding-architecture|expert-development)|vibe2-(?:asset-production-plan|auto-planner|incremental-qa|learning-motor))\.(?:m?js)$/i.test(name);
       if(!matchedSignals.length&&!coreTool)continue;
       toolMatches.push(Object.freeze({
         path:relative,kind:folder==='tools'?'DEVELOPMENT_TOOL_READ_ONLY':'LIBRARY_REFERENCE_READ_ONLY',
@@ -3505,6 +3507,20 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
     sourceSignals:Object.freeze(sourceSignals.map(row=>row[0])),
     fingerprint:toolMatchFingerprint,
     matches:Object.freeze(toolMatches),
+    coreDevelopmentToolPaths:Object.freeze([
+      'assets/vibe-art-pipeline.js',
+      'assets/vibe-environment-director.js',
+      'tools/vibe2-asset-production-plan.mjs',
+      'tools/vibe2-auto-planner.mjs',
+      'tools/vibe2-incremental-qa.mjs'
+    ]),
+    coreDevelopmentToolMatchedCount:toolMatches.filter(row=>[
+      'assets/vibe-art-pipeline.js',
+      'assets/vibe-environment-director.js',
+      'tools/vibe2-asset-production-plan.mjs',
+      'tools/vibe2-auto-planner.mjs',
+      'tools/vibe2-incremental-qa.mjs'
+    ].includes(row.path)).length,
     saveAndCombatAuthority:'EXISTING_GAME_SOURCE_ONLY',
     newGameplaySystemsAuthorized:false,
     sourceMutationPerformed:false,
@@ -3512,7 +3528,7 @@ export function attachSelectedInternalAssetApiContext(context,{cwd=process.cwd()
   });
   const batchSize=Math.max(1,Number(contract?.synchronization?.apiContextBatchSize||4));
   const generation=Math.max(1,Number(order?.selectedTask?.buildUpGeneration||order?.buildUpGeneration||order?.selectedTask?.buildUpDirective?.generation||order?.buildUpDirective?.generation||1));
-  const start=((generation-1)*batchSize)%allSelectedPaths.length;
+  const start=allSelectedPaths.length?((generation-1)*batchSize)%allSelectedPaths.length:0;
   const selectedPaths=[];
   for(let i=0;i<Math.min(batchSize,allSelectedPaths.length);i++)selectedPaths.push(allSelectedPaths[(start+i)%allSelectedPaths.length]);
   const existing=new Set(context.files.map(row=>posix(row?.path)));
@@ -3566,6 +3582,7 @@ function internalAssetApiIndexGuidance(context={}){
       'target='+tools.target+'; scanned='+tools.scannedTools+'; matched='+tools.matchedCount+'; fingerprint='+tools.fingerprint,
       'Source/applicable signals='+tools.sourceSignals.join('|'),
       ...tools.matches.map(row=>row.path+' ['+row.kind+'] signals='+row.signals.join('|')+' sha256='+row.sha256+' exports='+row.exports.slice(0,16).join('|')+' exportedCount='+row.exports.length),
+      'Every game source BUILD_UP must consume the existing Vibe development-tool APIs. Always evaluate the current game with the existing asset production planner, environment director Auto Biome, visual coordination and targeted QA tools; do not create a second engine or workflow. Auto Biome must respect the same game verified spatial design and return APPROVED_DESIGN_REQUIRED when there is no approved map rather than inventing one.',
       'These are updated, read-only API references, not code to copy blindly. Inspect matching existing implementation and use only verified-compatible functions in the current responsible source. Development tools are NOT game runtime imports and cannot grant new source mutation, release, save, economy, combat or network authority.',
       'Apply relevant reusable implementation during this authorized coding task; retain each existing game save key, schema, migration requirement, HP, damage, hitbox, cooldown, drop, reward, AI and combat rules. Reuse safe algorithms without rewriting their gameplay meaning. No gameplay/save/combat system is invented solely because a tool matches.',
       'Each coding cycle rematches updated library/tool exports and content hashes. Reuse unchanged correct bindings; modify only affected responsible code when a compatible update improves it. Design stage, existing BUILD_UP/F0-F9 chain and QA/runtime authority remain unchanged.',
