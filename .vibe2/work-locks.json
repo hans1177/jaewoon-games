@@ -1,5 +1,26 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1l79shb",
+      "worker": "vibe2",
+      "taskId": "SYS-ARCH-a1137738a157-v1",
+      "gameId": "__vibe_system__",
+      "files": [
+        "tools/vibe2-source-worker.mjs",
+        "qa/vibe2-source-worker.test.mjs"
+      ],
+      "baseSha": "cb4e22a3d34b052a1733e8894518ffbdc867e7fb",
+      "runId": "38166085345",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T19:37:44.933Z",
+      "expiresAt": "2026-10-11T20:22:44.933Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:SYS-ARCH-a1137738a157-v1"
+      ]
+    }
+  ]
 }
