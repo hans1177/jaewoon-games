@@ -677,3 +677,37 @@ test('published Unity WebGL validation permits only exact official game URLs',()
     'https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/#bad'
   ])assert.throws(()=>check(url,'daechung-rpg',URL),/UNITY_WEB_QA_PUBLIC_URL_INVALID/);
 });
+
+
+test('Daechung 3D visual actor and world repair emits measured native-depth evidence rather than inventing PASS',()=>{
+  const source=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  const actor=source.slice(source.indexOf('private sealed class AnimatedActor'));
+  assert.match(source,/SPATIAL_DEPTH game=daechung-rpg source=UNITY_WORLD_MESH_DEPTH/);
+  assert.match(source,/Mathf\.RoundToInt\(Mathf\.Max\(0f, maxZ - minZ\) \* 100f\)/);
+  assert.match(source,/mesh\.bounds\.size\.z > 0\.02f/);
+  assert.match(source,/spriteGameplayActors=\{spriteGameplayActors\}/);
+  assert.match(source,/worldMeshes3d=\{worldMeshes3d\}/);
+  assert.match(source,/gameplayActors3d=\{gameplayActors3d\}/);
+  assert.match(source,/DaechungWorldTreeTrunk_/);
+  assert.match(source,/DaechungWorldTreeCanopy_/);
+  assert.match(actor,/GameObject\.CreatePrimitive\(shape\)/);
+  assert.match(actor,/part\.GetComponent<MeshRenderer>\(\)\.sharedMaterial = material/);
+  assert.match(actor,/UnityEngine\.Object\.Destroy\(collider\)/);
+  assert.match(actor,/_renderer\.enabled = false/);
+  assert.match(actor,/HasVisibleVolumetricMesh/);
+  assert.match(actor,/_model\.transform\.localRotation = Quaternion\.Euler/);
+  for(const symbol of ['SetIdentity','SetTint','FaceRight','SetVisible','AddClip','Play','Tick'])
+    assert.match(actor,new RegExp('\\b'+symbol+'\\('));
+  assert.match(source,/actor\.SetIdentity\(id\)/);
+});
+
+test('Daechung 3D scene work keeps the canonical combat, touch and save authority untouched',()=>{
+  const source=fs.readFileSync(new URL('../unity-games/daechung-rpg/Assets/Scripts/PrototypeAnimatedVisuals.cs',import.meta.url),'utf8');
+  assert.match(source,/public void PlayCombatExchange\(bool enemyDefeated, bool playerDefeated\)/);
+  assert.match(source,/private IEnumerator CombatExchangeRoutine\(bool enemyDefeated, bool playerDefeated\)/);
+  assert.match(source,/public void ShowTown\(\)/);
+  assert.match(source,/public void ShowBattle\(\)/);
+  assert.doesNotMatch(source,/PlayerPrefs\.DeleteAll|DeleteKey\(|SaveKey\s*=|experienceReward\s*=|goldReward\s*=/);
+  assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
+  assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
+});
