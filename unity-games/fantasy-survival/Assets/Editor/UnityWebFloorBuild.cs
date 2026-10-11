@@ -53,6 +53,41 @@ public static class UnityWebFloorBuild
 
     private static void EnsureScene()
     {
+        // Build 전 검사 · 기존 Unity 프로젝트에 실제 네이티브 3D 자산이 임포트됐는지 확인한다.
+        // 파일명이나 원장 메타데이터만으로 메시 품질 및 배포 통과로 인정하지 않는다.
+        string[] modelPaths =
+        {
+            "Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+        };
+        foreach (string modelPath in modelPaths)
+        {
+            GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+            if (model == null) throw new Exception("UNITY_WEB_NATIVE_ASSET_IMPORT_FAILED:" + modelPath);
+            MeshFilter[] filters = model.GetComponentsInChildren<MeshFilter>(true);
+            Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true);
+            int triangles = 0;
+            bool hasDepth = false, hasMaterial = false;
+            foreach (MeshFilter filter in filters)
+            {
+                if (filter == null || filter.sharedMesh == null) continue;
+                Mesh mesh = filter.sharedMesh;
+                triangles += mesh.triangles.Length / 3;
+                Vector3 bounds = mesh.bounds.size;
+                if (bounds.x > .1f && bounds.y > .1f && bounds.z > .1f) hasDepth = true;
+            }
+            foreach (Renderer renderer in renderers)
+            {
+                if (renderer == null) continue;
+                foreach (Material material in renderer.sharedMaterials)
+                    if (material != null && material.shader != null) hasMaterial = true;
+            }
+            if (triangles < 150 || !hasDepth || !hasMaterial)
+                throw new Exception("UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED:" + modelPath
+                    + ":triangles=" + triangles + ":depth=" + hasDepth + ":material=" + hasMaterial);
+            Debug.Log("UNITY_WEB_NATIVE_ASSET_IMPORT=SOURCE_READY_RUNTIME_UNVERIFIED:"
+                + modelPath + ":triangles=" + triangles);
+        }
         if(!AssetDatabase.IsValidFolder(SceneFolder))AssetDatabase.CreateFolder("Assets","Scenes");
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
             ?EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single)
