@@ -3,69 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1o4clj7",
-      "worker": "vibe2",
-      "taskId": "human-go-temp-studio-evolution-roblox-usability-v1",
-      "gameId": "human-go-temp",
-      "files": [
-        "roblox-games/human-go-temp/client/Game.client.luau",
-        "roblox-games/human-go-temp/shared/GameConfig.luau",
-        "roblox-games/human-go-temp/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:33:25.628Z",
-      "expiresAt": "2026-10-11T03:18:25.628Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:human-go-temp-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-17jgj5t",
-      "worker": "vibe2",
-      "taskId": "insect-survival-studio-evolution-roblox-usability-v1",
-      "gameId": "insect-survival",
-      "files": [
-        "roblox-games/insect-survival/client/Game.client.luau",
-        "roblox-games/insect-survival/shared/GameConfig.luau",
-        "roblox-games/insect-survival/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:33:53.795Z",
-      "expiresAt": "2026-10-11T03:18:53.795Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:insect-survival-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
-      "id": "wl-pzr821",
-      "worker": "vibe2",
-      "taskId": "territory-war-studio-evolution-roblox-usability-v1",
-      "gameId": "territory-war",
-      "files": [
-        "roblox-games/territory-war/client/Game.client.luau",
-        "roblox-games/territory-war/shared/GameConfig.luau",
-        "roblox-games/territory-war/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:34:08.387Z",
-      "expiresAt": "2026-10-11T03:19:08.387Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:territory-war-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-1jjgvzl",
       "worker": "vibe2",
       "taskId": "island-village-studio-evolution-roblox-stability-v1",
@@ -670,6 +607,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-karakasa-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-iu1odo",
+      "worker": "vibe2",
+      "taskId": "internal-motion-rokurokubi-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/rokurokubi/init.luau"
+      ],
+      "baseSha": "01b9569c9fe892bf614fcf736f951d82ece72960",
+      "runId": "38104101272",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T03:19:22.423Z",
+      "expiresAt": "2026-10-11T04:04:22.423Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-rokurokubi-walk-v1"
       ]
     }
   ]
