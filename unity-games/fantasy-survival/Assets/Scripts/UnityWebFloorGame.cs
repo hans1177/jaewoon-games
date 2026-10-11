@@ -594,6 +594,11 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         }
         Debug.Log("MAGIC_FOREST_NATIVE_ASSET_BINDING=" + (treeNativeReady ? "SOURCE_BOUND_RUNTIME_QA_REQUIRED" : "ASSET_REPAIR_REQUIRED")
             + " prefab=CompanyAssets/MagicForestTrunk+MagicForestCrown nativeTreeCount=" + nativeTreeCount);
+        // 환경 · 라이브러리 길 메시에는 콜라이더를 만들지 않고 원래 이동 규칙을 유지한다.
+        for(int i=0;i<5;i++)
+            BindCompanyVisual("MagicForestRoad",worldRoot.transform,
+                new Vector3((i-2)*14f,-.005f,6.5f),new Vector3(1.12f,.44f,1.12f),
+                Quaternion.Euler(0f,(i%2)*180f,0f));
         // 자원 · 원본 웹의 섬유 노드를 3D 채집 대상으로 연결한다. 기존 나무/돌 보상은 불변.
         for (int i = 0; i < 36; i++)
         {
@@ -752,7 +757,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             ||equippedWeapon.Contains("blade")||equippedWeapon.Contains("cleaver")
             ||equippedWeapon.Contains("saber")||equippedWeapon.Contains("greatsword");
         playerWeaponVisual=BindCompanyVisual(blade?"MagicForestSword":"MagicForestGrip",playerRightArm,
-            new Vector3(0,-.25f,.16f),new Vector3(.34f,.34f,.34f),Quaternion.Euler(-85f,0,25f));
+            new Vector3(0,-.25f,.16f),new Vector3(1.45f,.80f,1.45f),Quaternion.Euler(-85f,0,25f));
     }
 
     private void AnimatePlayerPresentation(float movement)
