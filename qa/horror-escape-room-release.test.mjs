@@ -539,8 +539,8 @@ test('기존 4개 단말 목표와 비상구 탈출 루프가 실제 승리조�
  assert.match(server,/prompt\.Name="EscapePrompt"/);
  assert.match(server,/workspace:SetAttribute\("SurvivorEscapeTriggered",true\)/);
  assert.match(server,/if workspace:GetAttribute\("SurvivorEscapeTriggered"\)==true then endRound\("SURVIVOR"\)/);
- assert.match(client,/목표 · 단말 %d\/%d 작동 → 몬스터 정화 → 탈출/);
- assert.match(client,/목표 · 인간 추적 → 감염 → 전멸/);
+ assert.match(client,/objectiveLine\.Text=string\.format\("단말 %d\/%d · 정화 후 탈출",objectivesDone,objectivesTotal\)/);
+ assert.match(client,/if role=="MONSTER"then\s+objectiveLine\.Text="인간을 찾아 감염"/);
 });
 
 test('verified learning 바인딩은 임시 LoadingScreen 대신 지속 ScreenGui를 사용한다',()=>{
