@@ -385,7 +385,8 @@ jobs:
           license-version: 6.x
 
       - name: Enforce Unity activation
-        if: always()
+        # 사전검사 실패에서는 미실행 라이선스를 별도 실패로 기록하지 않는다. 실제 인증 실패는 계속 차단.
+        if: ${{ always() && steps.license.outcome != 'skipped' }}
         shell: bash
         run: |
           set -euo pipefail
