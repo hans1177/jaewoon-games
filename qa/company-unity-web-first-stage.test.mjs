@@ -86,7 +86,7 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.match(game,/Collider oldCrownCollider = crown\.GetComponent<Collider>\(\)/);
   assert.match(game,/Destroy\(oldCrownCollider\)/,'hidden canopy collider must not block resource raycast');
   assert.match(game,/trunk\.name = i % 4 == 0 \? "Rock" : "Tree"/,'existing harvest target names remain');
-  assert.match(game,/if\(n!="Tree" && n!="Rock"\)continue;/,'existing harvesting logic retained');
+  assert.match(game,/if\(n!="Tree" && n!="Rock" && n!="Fiber"\)continue;/,'existing tree/rock harvesting retained and missing fiber reconnected');
   assert.match(game,/MAGIC_FOREST_NATIVE_ASSET_BINDING=.*ASSET_REPAIR_REQUIRED/,'runtime failure remains visible');
   assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
   assert.match(build,/UnityWebFloorBuild/);
@@ -114,6 +114,92 @@ test('Fantasy Survival reauthored company 3D tree assets reach the canonical Uni
   assert.equal(request.projectPath,'unity-games/fantasy-survival');
   assert.equal(request.buildMethod,'UnityWebFloorBuild.BuildWeb');
   assert.equal(request.fullGameplayPassAuthority,false,'source and metadata are not runtime pass evidence');
+});
+
+// [마력숲 Vibe 회귀] 웹 원본의 섬유·제작/저장 의미를 Unity 네이티브 책임 함수에서 보존한다.
+
+// [마력숲 기동 회귀] 원본 Unity 월드가 실제로 준비됐을 때만 부팅 표식을 기록한다.
+test('Fantasy Survival bootstrap boot marker follows the actual camera/player/world readiness gate',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const awake=game.slice(game.indexOf('private void Awake()'),game.indexOf('private static float ParseFloat('));
+  assert.match(awake,/BuildWorld\(\);/);
+  assert.match(awake,/worldRoot == null \|\| !worldRoot\.activeInHierarchy \|\| player == null/);
+  assert.match(awake,/mainCamera == null \|\| !mainCamera\.isActiveAndEnabled \|\| species\.Count == 0 \|\| recipes\.Count == 0/);
+  assert.match(awake,/status=REPAIR_REQUIRED reason=NATIVE_WORLD_BOOT_INCOMPLETE/);
+  assert.match(awake,/throw new InvalidOperationException\("MAGIC_FOREST_NATIVE_WORLD_BOOT_INCOMPLETE"\)/);
+  assert.match(awake,/JAEWOON_UNITY_WEB_QA BOOT game=.*status=PASS/);
+  assert.ok(awake.indexOf('BuildWorld();')<awake.indexOf('worldRoot == null'));
+  assert.ok(awake.indexOf('worldRoot == null')<awake.indexOf('status=PASS'));
+  assert.match(game,/if\(material==""\)\{info="가까운 나무·돌·섬유가 없어\.";return;\}/);
+});
+
+test('Fantasy Survival Unity reconnects missing fiber harvesting and restores normal equipment and structures',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const web=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
+  assert.match(web,/best\.kind==='fiber'\)p\.fiber\+=amount/);
+  assert.match(web,/fiber:p\.fiber/);
+  assert.match(game,/CreatePart\(worldRoot\.transform,\s*PrimitiveType\.Capsule,\s*"Fiber"/);
+  assert.match(game,/if\(n!="Tree" && n!="Rock" && n!="Fiber"\)continue/);
+  assert.match(game,/material=n=="Tree"\?"wood":n=="Rock"\?"stone":"fiber"/);
+  assert.match(game,/material=="stone"\?"돌":"섬유"/);
+  // 기존 PlayerPrefs 키의 구버전 데이터도 nullable 추가 필드로 마이그레이션한다.
+  assert.match(game,/private const string LegacyNormalSaveKey = SavePrefix \+ "world_v1"/);
+  assert.match(game,/public int fiber;/);
+  assert.match(game,/public List<string> crafted;/);
+  assert.match(game,/public List<BuildingRecord> buildings;/);
+  assert.match(game,/if\(old\.crafted!=null\)/);
+  assert.match(game,/if\(old\.buildings!=null\)/);
+  assert.match(game,/materials\["fiber"\]=Mathf\.Max\(0,old\.fiber\)/);
+  assert.match(game,/fiber=materials\.ContainsKey\("fiber"\)/);
+  assert.match(game,/crafted=new List<string>\(crafted\)/);
+  assert.match(game,/if\(creative\)SaveCreative\(\);\s*else SaveNormalCounters\(\)/);
+  assert.match(game,/if\(screenMode==ScreenMode.Playing\)\s*\{\s*if\(creative\)SaveCreative\(\);\s*else SaveNormalCounters\(\)/,
+    'returning to title saves a real normal session without rewriting saves from title options');
+  assert.equal((game.match(/private void PlaceStructure\(/g)||[]).length,1,'single owner handles building creation and restoration');
+  assert.match(game,/PlaceStructure\(recipe\.id,player\.position/);
+  assert.match(game,/PlaceStructure\(entry\.recipeId,entry\.position\)/);
+  assert.match(game,/PlaceStructure\(item\.recipeId,item\.position\)/);
+});
+
+// [마력숲 저장 회귀] 채집 직후 유지하고 앱이 타이틀인 동안에는 이전 세션을 다시 저장하지 않는다.
+test('Fantasy Survival saves normal gathered fiber immediately and prevents title-screen app lifecycle save overwrite',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const gather=game.slice(game.indexOf('private void Gather()'),game.indexOf('private void LoadNormalCounters()'));
+  assert.match(gather,/materials\[material\]\+\+;/);
+  assert.match(gather,/if\(!creative\)SaveNormalCounters\(\)/);
+  assert.ok(gather.indexOf('materials[material]++')<gather.indexOf('SaveNormalCounters()'));
+  const lifecycle=game.slice(game.indexOf('private void OnApplicationPause('),game.indexOf('private void OnGUI()'));
+  assert.match(lifecycle,/if\(!paused \|\| screenMode!=ScreenMode\.Playing\)return/);
+  assert.match(lifecycle,/if\(screenMode!=ScreenMode\.Playing\)return/);
+  assert.equal((lifecycle.match(/if\(creative\)SaveCreative\(\);/g)||[]).length,2);
+  assert.equal((lifecycle.match(/else SaveNormalCounters\(\);/g)||[]).length,2);
+});
+
+test('Fantasy Survival mobile gather control stays separate from movement and attack on compact screens',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const hud=game.slice(game.indexOf('private void OnGUI('),game.indexOf('private void DrawPanel('));
+  assert.match(hud,/new Rect\(w\*\.5f-sz\*\.5f,yy-sz,sz,sz\),"채집"/);
+  assert.match(hud,/GUI\.RepeatButton\(new Rect\(12\+sz\*2,yy,sz,sz\),"◀"\)/);
+  assert.match(hud,/new Rect\(w-sz-14,yy-sz,sz,sz\),"공격"/);
+  for(const width of [240,320,360,390,412]){
+    const size=Math.max(50,Math.min(width*.16,74));
+    const gatherLeft=width*.5-size*.5,gatherRight=gatherLeft+size;
+    const topArrowRight=12+size,attackLeft=width-size-14;
+    assert(gatherLeft>=topArrowRight,'gather must not overlap upward movement control');
+    assert(gatherRight<=attackLeft,'gather must not overlap attack control');
+  }
+});
+
+test('Fantasy Survival removes dead monster touch hitboxes through the existing update flow and retains Vibe repair routing',()=>{
+  const game=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const update=game.slice(game.indexOf('private void UpdateMonsters('),game.indexOf('private void HurtMonster('));
+  assert.match(update,/if\(m\.hp<=0\)/);
+  assert.match(update,/monsterColliders\.Remove\(collider\)/);
+  assert.ok(update.indexOf('monsterColliders.Remove(collider)')<update.indexOf('monsters.RemoveAt(i)'));
+  const workflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
+  assert.match(workflow,/UNITY_WEB_REPAIR_PLANNER_HANDOFF=REUSABLE_WORKFLOW/);
+  assert.match(workflow,/UNITY_WEB_REPAIR_FAILURE_SIGNATURE=/);
+  assert.match(workflow,/repair-vibe2:/);
 });
 
 test('native asset registry preflight runs before Unity editor and fails closed on tampered source',()=>{
@@ -648,7 +734,6 @@ test('Unity Web actual browser failure signatures reach the existing Vibe repair
   assert.match(settlement,/vibe2-queue-control\.mjs fail/);
   assert.doesNotMatch(settlement,/vibe2-queue-control\.mjs pass/);
 });
-
 
 test('source-only Unity Web boot fails cheap F0 before Unity editor and preserves browser QA authority',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'unity-web-boot-f0-'));
