@@ -108,6 +108,61 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           updatedAt:stamp
         };
       });
+      // Failed deployment without an active Vibe reservation becomes a normal scoped GAME_PRIMARY
+      // implementation task. Never generate a game task from an unverified workflow-only path.
+      if(touched===0&&clean(rec.sourceQueue).toLowerCase()==='deployment'&&recoveryGameId){
+        const sourceFiles=uniq(rec.responsibleFiles);
+        const first=sourceFiles[0]||'';
+        const scope=first.match(/^(web|unity|roblox)-games\/([a-z0-9-]+)\//);
+        const valid=scope&&scope[2]===recoveryGameId&&sourceFiles.every(file=>
+          file.startsWith(scope[1]+'-games/'+recoveryGameId+'/')&&!file.includes('..'));
+        const productionClass=uniq(rec.evidence).map(value=>value.startsWith('deployment-production-class:')?value.slice('deployment-production-class:'.length):'')
+          .find(value=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(value));
+        if(valid&&productionClass){
+          const id='recovery-'+clean(rec.id);
+          const exists=gameQueue.tasks.find(task=>clean(task.id)===id);
+          if(!exists){
+            const platform=scope[1],unityWeb=platform==='unity'&&uniq(rec.evidence).includes('deployment-platform:UNITY_WEB');
+            gameQueue.tasks.push({
+              id,gameId:recoveryGameId,target:platform,sourceRoot:platform+'-games/'+recoveryGameId,
+              unityWebDevelopment:unityWeb,department:'development',type:'implementation',
+              executionLane:'GAME_PRIMARY',status:'queued',priority:'critical',
+              releaseState:productionClass.toLowerCase().replace('_','-'),productionClass,
+              goal:clean(rec.goal),responsibleFiles:sourceFiles,contextFiles:uniq(rec.contextFiles),
+              dependencies:[],sourceMutationRequired:true,sourceMutationBaseline:clean(rec.sourceMutationBaseline||rec.checkpoint)||null,
+              failureStage:clean(rec.failureStage),failureSignature:clean(rec.failureSignature),
+              retryPolicy:'UNLIMITED_CAUSAL_REPAIR',retries:0,maxRetries:null,
+              reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,
+              repairMode,recurrenceCount,gameRepairContract:{
+                version:1,mode:repairMode,prePatchReproductionRequired:true,causalResponsibleSystemRequired:true,
+                originalScenarioReplayRequired:true,invariantValidationRequired:true,
+                saveMigrationValidationRequired:true,multiplayerLifecycleValidationRequired:true,
+                multiplayerUserAssistanceRequired:false,multiplayerMinimumAutomatedClients:2,
+                impactRegressionRequired:true,fullRegressionFanInRequired:true,
+                repeatedSameApproachWithoutNewCausalEvidenceForbidden:repairMode==='ROOT_CAUSE_MODE'
+              },
+              acceptanceCriteria:[
+                'identify actual root cause from the original failed deployment run',
+                'directly modify only responsible source files with no wrapper or override',
+                'preserve existing gameplay saves balance and released contracts',
+                'prove changed source and rerun the exact failed stage',
+                'run relevant platform runtime QA and full regression fan-in',
+                'resume the existing release/publish workflow only after all gates pass'
+              ],
+              verificationCommands:uniq(rec.verificationPlan),
+              evidence:uniq([...(rec.evidence||[]),'recovery-queue:'+clean(rec.id),
+                'deployment-game-repair:CANONICAL_GAME_PRIMARY','recovery-exact-stage:'+clean(rec.failureStage),
+                'source-mutation-required:YES','game-repair-mode:'+repairMode]),
+              createdAt:stamp,updatedAt:stamp
+            });
+            touched++;
+            gameRequeuedTaskIds.add(id);
+          }else if(!['done','completed','cancelled','verified'].includes(clean(exists.status).toLowerCase())){
+            // Exact task already queued/running. The Work Lock owns deduplication.
+            touched++;
+          }
+        }
+      }
     }else if(owner==='SYSTEM_AI'){
       const sharedCanary=clean(rec.sourceQueue).toLowerCase()==='system-ai'&&clean(rec.blastRadius).startsWith('shared-worker-contract:');
       if(sharedCanary){
@@ -213,7 +268,7 @@ export function dispatchRecovery({recoveryInput={},gameQueueInput={},systemAiQue
           };
         });
       }
-      if(touched===0&&clean(rec.sourceQueue).toLowerCase()==='vibe2'&&uniq(rec.responsibleFiles).length){
+      if(touched===0&&['vibe2','deployment'].includes(clean(rec.sourceQueue).toLowerCase())&&uniq(rec.responsibleFiles).length){
         const taskId='recovery-'+clean(rec.id);
         const exists=systemAi.tasks.some(task=>clean(task.id)===taskId);
         if(!exists){
