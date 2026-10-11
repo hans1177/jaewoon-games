@@ -58,7 +58,23 @@ public static class UnityWebFloorBuild
         string[] modelPaths =
         {
             "Assets/Resources/CompanyAssets/MagicForestTrunk.obj",
-            "Assets/Resources/CompanyAssets/MagicForestCrown.obj"
+            "Assets/Resources/CompanyAssets/MagicForestCrown.obj",
+            "Assets/Resources/CompanyAssets/MagicForestRock.obj",
+            "Assets/Resources/CompanyAssets/MagicForestRoad.obj",
+            "Assets/Resources/CompanyAssets/MagicForestChest.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCrate.obj",
+            "Assets/Resources/CompanyAssets/MagicForestWall.obj",
+            "Assets/Resources/CompanyAssets/MagicForestDoor.obj",
+            "Assets/Resources/CompanyAssets/MagicForestFoundation.obj",
+            "Assets/Resources/CompanyAssets/MagicForestRoof.obj",
+            "Assets/Resources/CompanyAssets/MagicForestLamp.obj",
+            "Assets/Resources/CompanyAssets/MagicForestTorso.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCape.obj",
+            "Assets/Resources/CompanyAssets/MagicForestShoulder.obj",
+            "Assets/Resources/CompanyAssets/MagicForestCanine.obj",
+            "Assets/Resources/CompanyAssets/MagicForestClaw.obj",
+            "Assets/Resources/CompanyAssets/MagicForestSword.obj",
+            "Assets/Resources/CompanyAssets/MagicForestGrip.obj"
         };
         foreach (string modelPath in modelPaths)
         {
@@ -77,7 +93,9 @@ public static class UnityWebFloorBuild
                     if (mesh.GetTopology(submesh) == MeshTopology.Triangles)
                         triangles += (int)(mesh.GetIndexCount(submesh) / 3);
                 Vector3 bounds = mesh.bounds.size;
-                if (bounds.x > .1f && bounds.y > .1f && bounds.z > .1f) hasDepth = true;
+                // 얇은 길/장식은 입체 메시의 두께를 따로 검증한다.
+                float minimumHeight=modelPath.EndsWith("MagicForestRoad.obj")?.012f:.08f;
+                if (bounds.x > .1f && bounds.y > minimumHeight && bounds.z > .1f) hasDepth = true;
             }
             foreach (Renderer renderer in renderers)
             {
@@ -85,11 +103,21 @@ public static class UnityWebFloorBuild
                 foreach (Material material in renderer.sharedMaterials)
                     if (material != null && material.shader != null) hasMaterial = true;
             }
-            if (triangles < 150 || !hasDepth || !hasMaterial)
+            int minimumTriangles=modelPath.EndsWith("MagicForestTrunk.obj")
+                ||modelPath.EndsWith("MagicForestCrown.obj")?150:16;
+            if (triangles < minimumTriangles || !hasDepth || !hasMaterial)
                 throw new Exception("UNITY_WEB_NATIVE_ASSET_GEOMETRY_OR_MATERIAL_FAILED:" + modelPath
                     + ":triangles=" + triangles + ":depth=" + hasDepth + ":material=" + hasMaterial);
             Debug.Log("UNITY_WEB_NATIVE_ASSET_IMPORT=SOURCE_READY_RUNTIME_UNVERIFIED:"
                 + modelPath + ":triangles=" + triangles);
+        }
+        foreach(string sourceName in new[]{"MagicForestUI","MagicForestMotion"})
+        {
+            string sourcePath="Assets/Resources/CompanyAssets/"+sourceName+".json";
+            TextAsset nativeConfig=AssetDatabase.LoadAssetAtPath<TextAsset>(sourcePath);
+            if(nativeConfig==null || string.IsNullOrWhiteSpace(nativeConfig.text))
+                throw new Exception("UNITY_WEB_NATIVE_PRESENTATION_SOURCE_MISSING:"+sourcePath);
+            Debug.Log("UNITY_WEB_NATIVE_PRESENTATION_SOURCE=SOURCE_READY_RUNTIME_UNVERIFIED:"+sourcePath);
         }
         if(!AssetDatabase.IsValidFolder(SceneFolder))AssetDatabase.CreateFolder("Assets","Scenes");
         Scene scene=AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath)==null
