@@ -3,7 +3,7 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-11",
   "seedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "fingerprint": "e3f910009b0c80bb0ffa1095c681d960415e607dc59eb1acba2205fc250c9afa",
+  "fingerprint": "27d88b832f43a92f082d584080bc80539b8362637e18d59543821706f5da1474",
   "policyDigest": "e772e32ec689fada47e3ed41fb8f140697167205f3600a8e6ff337d7672c69ef",
   "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
   "status": "IN_PROGRESS",
@@ -277,21 +277,21 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-11T05:51:09.103Z",
-  "updatedAt": "2026-10-11T05:51:09.169Z",
+  "createdAt": "2026-10-11T06:23:32.591Z",
+  "updatedAt": "2026-10-11T06:23:32.650Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
-    "version": 131,
-    "sha256": "70ee1383696f25664a0420b768972ef3002ef206c04827769ade621e8b6623e5",
-    "inventoryCount": 748,
+    "version": 135,
+    "sha256": "1936d9cc1df99bd5895b40682e728954e37fae114d5ab6debcc1fc7b2f561932",
+    "inventoryCount": 767,
     "candidateSummaryOnly": true,
     "auditScoreIsNotRuntimeQuality": true,
     "productionVerificationGranted": false,
     "platforms": {
       "WEB": {
-        "evaluatedAssetCount": 748,
-        "eligibleAssetCount": 439,
+        "evaluatedAssetCount": 767,
+        "eligibleAssetCount": 458,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
@@ -304,7 +304,9 @@
           "AUDIO": [],
           "CREATURE": [
             "ARACHNID",
+            "CANINE_HEAD",
             "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW",
             "CREATURE_CLAW_MODULE",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
@@ -321,6 +323,7 @@
             "STARTER_HERO_WATER"
           ],
           "MOTION": [
+            "ACTION_TIMING_BINDING",
             "BED_LIE_DOWN",
             "BLEND_NEUTRAL",
             "BLOCK_HOLD",
@@ -474,6 +477,7 @@
             "INVENTORY_CONTAINER_PANEL",
             "INVENTORY_FULL_SCREEN",
             "INVENTORY_GRID",
+            "INVENTORY_MENU_TOUCH_UI",
             "INVENTORY_OVERWEIGHT_RESOLUTION",
             "INVENTORY_SLOT",
             "INVENTORY_SMART_SORT_PREVIEW",
@@ -632,7 +636,9 @@
             "CROSS_GUARD_MODULE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
+            "MODULAR_COMBAT_PARTS_PACK",
+            "SWORD_BLADE",
+            "SWORD_GRIP"
           ]
         },
         "candidates": [
@@ -713,8 +719,8 @@
         ]
       },
       "UNITY": {
-        "evaluatedAssetCount": 748,
-        "eligibleAssetCount": 439,
+        "evaluatedAssetCount": 767,
+        "eligibleAssetCount": 458,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
@@ -727,7 +733,9 @@
           "AUDIO": [],
           "CREATURE": [
             "ARACHNID",
+            "CANINE_HEAD",
             "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW",
             "CREATURE_CLAW_MODULE",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
@@ -744,6 +752,7 @@
             "STARTER_HERO_WATER"
           ],
           "MOTION": [
+            "ACTION_TIMING_BINDING",
             "BED_LIE_DOWN",
             "BLEND_NEUTRAL",
             "BLOCK_HOLD",
@@ -897,6 +906,7 @@
             "INVENTORY_CONTAINER_PANEL",
             "INVENTORY_FULL_SCREEN",
             "INVENTORY_GRID",
+            "INVENTORY_MENU_TOUCH_UI",
             "INVENTORY_OVERWEIGHT_RESOLUTION",
             "INVENTORY_SLOT",
             "INVENTORY_SMART_SORT_PREVIEW",
@@ -1055,7 +1065,9 @@
             "CROSS_GUARD_MODULE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
+            "MODULAR_COMBAT_PARTS_PACK",
+            "SWORD_BLADE",
+            "SWORD_GRIP"
           ]
         },
         "candidates": [
@@ -1136,8 +1148,8 @@
         ]
       },
       "ROBLOX": {
-        "evaluatedAssetCount": 748,
-        "eligibleAssetCount": 439,
+        "evaluatedAssetCount": 767,
+        "eligibleAssetCount": 458,
         "requiredFamilies": [
           "AUDIO",
           "CREATURE",
@@ -1150,7 +1162,9 @@
           "AUDIO": [],
           "CREATURE": [
             "ARACHNID",
+            "CANINE_HEAD",
             "CANINE_HEAD_MODULE",
+            "CREATURE_CLAW",
             "CREATURE_CLAW_MODULE",
             "FIELD_ELITE_GROUND",
             "FIELD_ELITE_WATER",
@@ -1167,6 +1181,7 @@
             "STARTER_HERO_WATER"
           ],
           "MOTION": [
+            "ACTION_TIMING_BINDING",
             "BED_LIE_DOWN",
             "BLEND_NEUTRAL",
             "BLOCK_HOLD",
@@ -1320,6 +1335,7 @@
             "INVENTORY_CONTAINER_PANEL",
             "INVENTORY_FULL_SCREEN",
             "INVENTORY_GRID",
+            "INVENTORY_MENU_TOUCH_UI",
             "INVENTORY_OVERWEIGHT_RESOLUTION",
             "INVENTORY_SLOT",
             "INVENTORY_SMART_SORT_PREVIEW",
@@ -1478,7 +1494,9 @@
             "CROSS_GUARD_MODULE",
             "LONG_BLADE_MODULE",
             "LONG_GRIP_MODULE",
-            "MODULAR_COMBAT_PARTS_PACK"
+            "MODULAR_COMBAT_PARTS_PACK",
+            "SWORD_BLADE",
+            "SWORD_GRIP"
           ]
         },
         "candidates": [
