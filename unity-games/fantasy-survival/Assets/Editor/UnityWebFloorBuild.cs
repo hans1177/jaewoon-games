@@ -94,7 +94,7 @@ public static class UnityWebFloorBuild
                         triangles += (int)(mesh.GetIndexCount(submesh) / 3);
                 Vector3 bounds = mesh.bounds.size;
                 // 얇은 길/장식은 입체 메시의 두께를 따로 검증한다.
-                float minimumHeight=modelPath.EndsWith("MagicForestRoad.obj")?.012f:.08f;
+                float minimumHeight=modelPath.EndsWith("MagicForestRoad.obj") ? 0.012f:.08f;
                 if (bounds.x > .1f && bounds.y > minimumHeight && bounds.z > .1f) hasDepth = true;
             }
             foreach (Renderer renderer in renderers)
