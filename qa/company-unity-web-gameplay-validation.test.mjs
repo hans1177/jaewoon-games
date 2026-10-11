@@ -640,3 +640,40 @@ test('Unity Web QA deadline writes causal failure evidence even after a stuck br
   assert.equal(received.failureSignature,'UNITY_WEB_QA_DEADLINE_EXCEEDED:actual-play:SAVE_RESTORE_AND_REENTRY:480000');
   assert.equal(received.markers.length,1);
 });
+
+
+test('hosted Unity Web replay accepts only the canonical HTTPS game surface',()=>{
+  const start=source.indexOf("let hostedUrl='';");
+  const end=source.indexOf("if(!fs.existsSync(source))",start);
+  assert.ok(start>0&&end>start,'hosted URL validation is in the existing browser validator');
+  const validate=input=>runInNewContext('const gameId="daechung-rpg";const hostedUrlInput='+JSON.stringify(input)+';\n'+source.slice(start,end)+'\nhostedUrl',{URL});
+  assert.equal(validate('https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/'),'https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/');
+  for(const value of [
+    'https://evil.example/web-games/daechung-rpg/unity/',
+    'http://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/',
+    'https://jaewoon-games.pages.dev/web-games/other/unity/',
+    'https://jaewoon-games.pages.dev/web-games/daechung-rpg/unity/?insecure=1'
+  ])assert.throws(()=>validate(value),/UNITY_WEB_HOSTED_CANONICAL_URL_REQUIRED/);
+});
+
+test('public mobile replay checks actual compressed assets then repeats gameplay before PASS',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-first-stage-build.yml',import.meta.url),'utf8');
+  const section=workflow.slice(workflow.indexOf('      - name: Create verified Unity Web readiness PR'),workflow.indexOf('      - name: Mark Unity Web floor repair requirement'));
+  assert.ok(section.includes('id: publish'));
+  assert.ok(section.indexOf('UNITY_WEB_CLOUDFLARE_MAIN=')<section.indexOf('UNITY_WEB_PUBLIC_MOBILE_PLAY=PASS:'));
+  assert.ok(section.indexOf('UNITY_WEB_PUBLIC_MOBILE_PLAY=PASS:')<section.indexOf('VIBE2_UNITY_WEB_TASK_FINAL_PASS='));
+  assert.ok(section.includes('--scenario=independent-qa'));
+  assert.ok(section.includes('--deployed-url="https://jaewoon-games.pages.dev/$runtime_dir/"'));
+  assert.ok(section.includes('--output="/tmp/unity-web/web-games/$GAME_ID/unity-web-hosted-mobile-qa.json"'));
+  assert.match(source,/qaStage='HOSTED_WEBGL_ASSET_HEADERS'/);
+  assert.match(source,/UNITY_WEB_HOSTED_ASSET_RESPONSE_INVALID/);
+  for(const group of ["['loader','javascript']","['framework','javascript']","['wasm','application/wasm']","['data','application/octet-stream']"])
+    assert.ok(source.includes(group));
+  assert.match(source,/hostedMobilePlay:hostedUrl/);
+  assert.match(source,/realDeviceVerified:false/);
+  const repair=workflow.slice(workflow.indexOf('      - name: Mark Unity Web floor repair requirement'));
+  assert.ok(repair.includes("steps.publish.outcome == 'failure'"));
+  assert.ok(repair.includes('unity-web-hosted-mobile-qa.json'));
+  assert.ok(repair.includes('POST_MERGE_HOSTED_MOBILE_PLAY_FAILED'));
+  assert.ok(repair.includes('repair-vibe2:'));
+});
