@@ -1170,6 +1170,8 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(!materials.ContainsKey(material))materials[material]=0;
         materials[material]++;
         info=(material=="wood"?"나무":material=="stone"?"돌":"섬유")+" 1개 채집";
+        // 저장 · 브라우저 재진입 전에 채집 결과를 기존 world_v1 키에 바로 확정한다.
+        if(!creative)SaveNormalCounters();
     }
 
     // 저장 · 크리에이티브 데이터는 기존 일반 저장 키에 쓰지 않는다
@@ -1322,8 +1324,20 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         nextId=maxId;
     }
 
-    private void OnApplicationPause(bool paused){if(paused){if(creative)SaveCreative();else if(screenMode==ScreenMode.Playing)SaveNormalCounters();}}
-    private void OnApplicationQuit(){if(creative)SaveCreative();else if(screenMode==ScreenMode.Playing)SaveNormalCounters();}
+    // 저장 · 타이틀/모드 선택 화면에서는 앱 중단·종료로 직전 세션을 다시 쓰지 않는다.
+    private void OnApplicationPause(bool paused)
+    {
+        if(!paused || screenMode!=ScreenMode.Playing)return;
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
+
+    private void OnApplicationQuit()
+    {
+        if(screenMode!=ScreenMode.Playing)return;
+        if(creative)SaveCreative();
+        else SaveNormalCounters();
+    }
 
     // 화면 · 모바일 터치 조작과 메뉴
     private void OnGUI()
