@@ -110,11 +110,19 @@ const methodPattern=new RegExp(`(?:class|static\\s+class)\\s+${methodOwner.repla
 const buildMethodPresent=editorFiles.some(file=>methodPattern.test(fs.readFileSync(file,'utf8')));
 if(!buildMethodPresent)throw new Error(`UNITY_WEB_BUILD_METHOD_NOT_FOUND:${buildMethod}`);
 
+// 메인 · 실제 플레이가 아닌 SOURCE_READY_3D 부팅 표식만 있으면 무거운 WebGL 빌드 전에 수리로 돌린다.
+// 정적 PASS 문자열도 검증 증거로 승격하지 않는다. 정상 소스는 기존 실제 브라우저 QA가 판정한다.
 const primitiveSignals=[];
+const authoredBootMarkers=[];
 for(const file of scriptFiles){
   const text=fs.readFileSync(file,'utf8');
   if(/GameObject\.CreatePrimitive\s*\(/.test(text))primitiveSignals.push(file);
+  for(const line of text.split(/\r?\n/)){
+    if(line.includes('JAEWOON_UNITY_WEB_QA BOOT'))authoredBootMarkers.push({file,line});
+  }
 }
+if(authoredBootMarkers.length>0&&authoredBootMarkers.every(row=>row.line.includes('status=SOURCE_READY_3D')))
+  throw new Error('UNITY_WEB_BOOT_SOURCE_ONLY_REPAIR_REQUIRED:'+authoredBootMarkers[0].file);
 const metadataPath=path.join(sourceRoot,'prototype-source.json');
 if(fs.existsSync(metadataPath)){
   try{
