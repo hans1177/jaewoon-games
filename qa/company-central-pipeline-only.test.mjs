@@ -6,6 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { runInNewContext } from 'node:vm';
 
 const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
@@ -540,6 +541,30 @@ test('director coalesces only exact same-head central game ingress and preserves
   assert.match(director,/CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD/);
   assert.match(director,/queued\.has\(String\(stale\.status\|\|''\)\.toLowerCase\(\)\)\)add\(stale,'CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD'\)/);
   assert.doesNotMatch(director,/CENTRAL_EXACT_GAME_DUPLICATE_SAME_HEAD[\s\S]{0,220}cancel.*in_progress/i);
+});
+
+// 메인: 이전 main 배치가 살아 있어도 최신 main 게임 개발을 취소하지 않는다.
+test('director never cancels a newer-main Unity Web batch because an older-main coordinator is running',()=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const start=director.indexOf('          const activeCentralBatch=runs');
+  const end=director.indexOf('          const centralBatchByHead=new Map();',start);
+  assert.ok(start>=0&&end>start);
+  const pipeline='.github/workflows/company-development-confirmed-runtime.yml';
+  const make=(id,head_sha,status,event)=>({
+    id,head_sha,status,event,path:pipeline,
+    display_title:'DEVELOPMENT cycle | batch | '+event
+  });
+  const runs=[
+    make(100,'previous-main','in_progress','push'),
+    make(101,'previous-main','queued','workflow_dispatch'),
+    make(102,'latest-main','queued','workflow_dispatch')
+  ];
+  const cancelled=[];
+  runInNewContext(director.slice(start,end),{
+    runs,queued:new Set(['queued','pending','requested']),
+    add:(run,reason)=>cancelled.push({id:run.id,reason})
+  });
+  assert.deepEqual(cancelled,[{id:101,reason:'CENTRAL_MANUAL_BATCH_SUPERSEDED_BY_ACTIVE_BATCH'}]);
 });
 
 test('director drain QA changes wake the existing runner drain',()=>{
