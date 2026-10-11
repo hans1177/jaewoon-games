@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 
 const clean=value=>String(value??'').trim();
 
@@ -219,7 +220,7 @@ export function evaluateUnityWebBuildUpGrowth({
 // definition/use chains, reachable event paths, negative/mutation canaries를 기존 게이트에서 이용한다.
 // 정규식 기반 C# 보수적 분석으로 Roslyn/Unity 컴파일러의 타입 검사나 실제 실행을 대신하지 않는다.
 export function auditUnityWebNativeSystems({
-  repoRoot='.',gameId='',designRecord={},play=null,independent=null,regression=null
+  repoRoot='.',gameId='',designRecord={},play=null,independent=null,regression=null,sourceRevision=''
 }={}){
   const id=clean(gameId);
   if(!/^[a-z0-9][a-z0-9-]{1,80}$/.test(id))throw new Error('UNITY_WEB_SYSTEM_AUDIT_GAME_ID_INVALID');
@@ -463,10 +464,52 @@ export function auditUnityWebNativeSystems({
     &&roleAudit.every(row=>row.staticComplete)
     &&edges.every(edge=>edge.sourceConnectivityCandidate);
   const pass=staticCoverageComplete&&roleAudit.every(row=>row.runtimeComplete);
+  // 멀티플레이 완료는 현재 소스의 정적 계약으로 판단한다. 실제 2인 실행 증거와 구분한다.
+  const nativeText=[...sanitized.values()].join('\n');
+  const bodies=methods.map(row=>row.body).join('\n');
+  const serverPath='multiplayer/worker.js';
+  const commonTransport=/\bDaechungWs(?:Open|Send)\s*\(/.test(nativeText);
+  const serverText=commonTransport&&fs.existsSync(path.join(repoRoot,serverPath))&&!fs.lstatSync(path.join(repoRoot,serverPath)).isSymbolicLink()
+    ?fs.readFileSync(path.join(repoRoot,serverPath),'utf8'):'';
+  const serverCode=mask(serverText);
+  const bridgePath='unity-games/'+id+'/Assets/Plugins/WebGL/DaechungSocket.jslib';
+  const bridgeText=commonTransport&&fs.existsSync(path.join(repoRoot,bridgePath))&&!fs.lstatSync(path.join(repoRoot,bridgePath)).isSymbolicLink()
+    ?fs.readFileSync(path.join(repoRoot,bridgePath),'utf8'):'';
+  const bridgeCode=mask(bridgeText);
+  const multiplayerSources=[...files,...(serverText?[{file:serverPath,text:serverText}]:[]),...(bridgeText?[{file:bridgePath,text:bridgeText}]:[])];
+  const sourceHashes=multiplayerSources.map(row=>({path:row.file,sha256:crypto.createHash('sha256').update(row.text).digest('hex')}));
+  let exactSourceBinding=!sourceRevision;
+  if(/^[a-f0-9]{40}$/i.test(sourceRevision)){
+    exactSourceBinding=multiplayerSources.length>0&&multiplayerSources.every(row=>{
+      try{return execFileSync('git',['show',sourceRevision+':'+row.file],{cwd:repoRoot,encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:4*1024*1024})===row.text;}catch{return false;}
+    });
+  }
+  const multiplayerChecks={
+    sourcePresent:files.length>0&&!problems.some(x=>/SOURCE|SYMLINK/.test(x)),
+    exactSourceBinding,
+    transport:/\b(?:ClientWebSocket|DaechungWsOpen|NetworkManager|NetworkClient|PhotonNetwork)\b/.test(nativeText),
+    transportBridge:!commonTransport||/new\s+WebSocket\s*\(/.test(bridgeCode)&&/\.onmessage\s*=/.test(bridgeCode)&&/SendMessage\s*\(/.test(bridgeCode)&&/socket\.send\s*\(/.test(bridgeCode),
+    connect:/\b(?:ConnectAsync|DaechungWsOpen|StartClient|StartHost|ConnectUsingSettings)\s*\(/.test(bodies),
+    send:/\b(?:SendAsync|DaechungWsSend|\w+ServerRpc|\w+ClientRpc|RPC|RaiseEvent)\s*\(/.test(bodies),
+    receive:methods.some(row=>/^(?:OnMultiplayerSocket|OnMessage|OnEvent|OnNetworkSpawn|\w+ClientRpc)$/.test(row.name)&&/\b(?:FromJson|Deserialize|Apply\w*|\w+)\s*(?:\(|=(?!=))/.test(row.body)),
+    participantRoster:/(?:players\s*\?\s*\.\s*(?:Length|Count)|players\s*\.\s*(?:Length|Count)|ConnectedClients\s*\.\s*Count|PlayerList\s*\.\s*Length)/i.test(bodies),
+    reconnect:methods.some(row=>/Update|Disconnect|Close|Reconnect/.test(row.name)&&/\b(?:Connect|ConnectAsync|StartClient|Reconnect\w*)\s*\(/.test(row.body)),
+    serverBoundary:commonTransport
+      ?/deserializeAttachment\s*\(/.test(serverCode)&&/userId\s*:\s*attachment\.userId/.test(serverCode)&&/!allowed\.has\s*\(data\.type\)/.test(serverCode)&&/this\.broadcast\s*\(payload/.test(serverCode)
+      :/\bif\s*\([^)]*\b(?:IsServer|isServer|IsHost|IsMasterClient)\b/.test(bodies)
+  };
+  const multiplayerPass=Object.values(multiplayerChecks).every(Boolean);
+  const multiplayer={version:1,gameId:id,pass:multiplayerPass,passed:multiplayerPass,
+    status:multiplayerPass?'PASS_STATIC_CODE_CONTRACT':'STATIC_CODE_REPAIR_REQUIRED',
+    verificationScope:'STATIC_CODE_CONTRACT',checks:multiplayerChecks,
+    sourceRevision:clean(sourceRevision)||null,sourceHashes,
+    sourceTreeSha256:unitySourceTreeSha256(path.resolve(repoRoot,'unity-games',id)),
+    runtimeTwoClientExecutionRequired:false,actualMultiplayerPlayVerified:false,
+    participantCount:null,authoritativeSyncObserved:false};
   return{
     version:1,gameId:id,platform:'UNITY_WEB',
     pass,status:pass?'SOURCE_SYSTEM_AND_RUNTIME_BEHAVIOR_VERIFIED':'NATIVE_SYSTEM_IMPLEMENTATION_REPAIR_REQUIRED',
-    staticCoverageComplete,runtimeValid,
+    staticCoverageComplete,runtimeValid,multiplayer,
     algorithms:['INTERPROCEDURAL_CALL_GRAPH_BFS','FIELD_DEF_USE_DATA_FLOW',
       'PLAYER_INPUT_REACHABILITY','DESIGN_PRODUCER_CONSUMER_DEPENDENCY_PROOF',
       'THREE_RUN_STATE_TRANSITION_INTERSECTION','MUTATION_SENSITIVE_NEGATIVE_CANARIES'],

@@ -525,6 +525,13 @@ test('fan in blocks unverified game repair and accepts autonomous multiplayer ev
   assert.equal(pass.pass,true);
   assert.equal(pass.releaseCandidates.length,1);
   assert.ok(pass.queue.tasks[0].evidence.includes('game-repair-source-evidence:PASS'));
+  const staticResult=structuredClone(passResult);
+  Object.assign(staticResult.gameRepairQa,{multiplayerLifecycle:'PASS_STATIC_CODE_CONTRACT',
+    multiplayerSourceContract:{pass:true,verificationScope:'STATIC_CODE_CONTRACT',actualMultiplayerPlayVerified:false,
+      checks:{clientReceive:true,serverBoundary:true},sourceHashes:[{path:'server',sha256:'a'.repeat(64)}]}});
+  assert.equal(finalizeVibe2FanInReview({queue:structuredClone(passQueue),results:[staticResult],taskIds:['repair-pass']}).pass,true);
+  staticResult.gameRepairQa.multiplayerSourceContract.checks.clientReceive=false;
+  assert.equal(finalizeVibe2FanInReview({queue:structuredClone(passQueue),results:[staticResult],taskIds:['repair-pass']}).pass,false);
   assert.ok(pass.queue.tasks[0].evidence.includes('game-repair-user-assistance-required:NO'));
 });
 

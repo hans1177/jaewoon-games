@@ -11,6 +11,8 @@ import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence
 import { buildResponsibilityGraph, summarizeResponsibilityArchitecture, compareResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 import { diagnoseGame } from './autonomous-diagnostics.mjs';
 import {validateSpatialBlueprint,validateInterfaceBlueprint} from './company-roblox-production-plan.mjs';
+import {validateRobloxMultiplayerSourceContract} from './company-development-roblox-runtime-foundation.mjs';
+import {auditUnityWebNativeSystems} from './company-upper-platform-admission.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\','/').replace(/^\.\//,'');
@@ -98,10 +100,25 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     ?runRepairNodeTargets({root,data,targets:contract.saveMigration.testTargets,category:'SAVE_MIGRATION'}):[];
   const saveMigration=saveRequired?(saveResults.length?'PASS':'PENDING_RUNTIME_EVIDENCE'):'NOT_APPLICABLE';
   const multiplayerRequired=contract?.multiplayerLifecycle?.required===true;
+  const multiplayerPolicy=readJson(path.join(root,'company-learning/platform-release-roadmap.json'),{})?.directNativeDualPlatformDevelopment?.multiplayerImplementation||{};
+  const staticMultiplayer=multiplayerRequired&&(multiplayerPolicy.verificationScope==='STATIC_CODE_CONTRACT'||contract?.multiplayerLifecycle?.verificationScope==='STATIC_CODE_CONTRACT');
+  let multiplayerSourceContract=null;
+  if(staticMultiplayer){
+    const target=clean(data.target||posix(data.sourceRoot).split('-games/')[0]).toLowerCase();
+    if(target==='roblox'){
+      const serverSource=robloxSourceTreeText(root,{sourceRoot:posix(data.sourceRoot)+'/server'});
+      const clientSource=robloxSourceTreeText(root,{sourceRoot:posix(data.sourceRoot)+'/client'});
+      const result=validateRobloxMultiplayerSourceContract({serverSource,clientSource});
+      multiplayerSourceContract={...result,pass:result.passed,verificationScope:'STATIC_CODE_CONTRACT',actualMultiplayerPlayVerified:false,
+        sourceHashes:[{path:posix(data.sourceRoot)+'/server',sha256:sha256([serverSource])},{path:posix(data.sourceRoot)+'/client',sha256:sha256([clientSource])}]};
+    }else if(target==='unity'){
+      multiplayerSourceContract=auditUnityWebNativeSystems({repoRoot:root,gameId:clean(data.gameId)||posix(data.sourceRoot).split('/')[1]}).multiplayer;
+    }
+  }
   const multiplayerAutomation=contract?.multiplayerLifecycle?.automation&&typeof contract.multiplayerLifecycle.automation==='object'
     ?contract.multiplayerLifecycle.automation:{};
   const multiplayerTargets=Array.isArray(contract?.multiplayerLifecycle?.testTargets)?contract.multiplayerLifecycle.testTargets:[];
-  const multiplayerResults=multiplayerRequired&&multiplayerTargets.length
+  const multiplayerResults=multiplayerRequired&&!staticMultiplayer&&multiplayerTargets.length
     ?runRepairNodeTargets({root,data,targets:multiplayerTargets,category:'MULTIPLAYER_LIFECYCLE'}):[];
   const autonomousMultiplayerContractValid=!multiplayerRequired||(
     contract?.multiplayerLifecycle?.userAssistanceRequired===false
@@ -110,6 +127,7 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     &&Number(multiplayerAutomation.minimumSyntheticOrRealClients||0)>=2
   );
   const multiplayerLifecycle=!multiplayerRequired?'NOT_APPLICABLE'
+    :staticMultiplayer?(multiplayerSourceContract?.pass===true?'PASS_STATIC_CODE_CONTRACT':'STATIC_CODE_REPAIR_REQUIRED')
     :!autonomousMultiplayerContractValid?'INVALID_AUTOMATION_CONTRACT'
     :multiplayerResults.length?'PASS_AUTOMATED_HARNESS'
     :'PENDING_AUTONOMOUS_HARNESS_EVIDENCE';
@@ -119,7 +137,7 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
   const readyForFanIn=originalScenarioReplay==='PASS'
     &&invariants==='PASS'
     &&['PASS','NOT_APPLICABLE'].includes(saveMigration)
-    &&['PASS_AUTOMATED_HARNESS','NOT_APPLICABLE'].includes(multiplayerLifecycle);
+    &&['PASS_STATIC_CODE_CONTRACT','PASS_AUTOMATED_HARNESS','NOT_APPLICABLE'].includes(multiplayerLifecycle);
   return{
     status:readyForFanIn?'EVIDENCE_READY_FOR_FULL_REGRESSION':'WAITING_EVIDENCE',
     required:true,
@@ -135,12 +153,13 @@ function runGameRepairQa({root,data={},causalReplay={}}={}){
     saveResults,
     multiplayerLifecycle,
     multiplayerResults,
+    multiplayerSourceContract,
     multiplayerAutomation:{
       userAssistanceRequired:false,
       minimumPlayers:Number(contract?.multiplayerLifecycle?.minimumPlayers||0)||null,
       minimumSyntheticOrRealClients:Number(multiplayerAutomation.minimumSyntheticOrRealClients||0)||null,
       machineDrivenScenarios:Array.isArray(multiplayerAutomation.machineDrivenScenarios)?multiplayerAutomation.machineDrivenScenarios.map(clean).filter(Boolean):[],
-      actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:multiplayerAutomation.actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass===true
+      actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass:!staticMultiplayer&&multiplayerAutomation.actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass===true
     },
     repeatCount:Math.max(0,Number(contract.repeatCount||0)||0),
     repairMode:clean(contract.repairMode)||'FOCUSED_REPAIR',
@@ -971,7 +990,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   // Diagnostic findings also depend on unchanged files and referenced assets.
   // Always rescan current inputs; changed-file hashes cannot certify this replay.
   const diagnosticReplay=replayPlan?.required===true&&replayPlan?.executable===true&&clean(replayPlan.mode)==='DIAGNOSTIC_RESCAN';
-  const cached = diagnosticReplay ? null : cache.entries?.[contentHash];
+  // 멀티 계약은 변경 목록 밖의 서버·수신 소스에도 의존한다. 현재 소스를 다시 검사한다.
+  const cached = diagnosticReplay||gameRepair?.multiplayerLifecycle?.required===true ? null : cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, spatialBlueprintQa,interfaceBlueprintQa, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, gameRepairQa:cached.gameRepairQa||{status:'NOT_REQUIRED',required:false,fullRegressionStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, graphicsReplacementQa:cached.graphicsReplacementQa||{status:'NOT_REQUIRED',required:false,actualCount:0,groundedCount:0,checks:[],authorityExpanded:false}, weatherPresentationQa:cached.weatherPresentationQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, robloxStudioAssetBindingQa:cached.robloxStudioAssetBindingQa||{status:'NOT_REQUIRED',checks:[],runtimeStillRequired:false,authorityExpanded:false}, specializedVerificationQa:cached.specializedVerificationQa||{status:'NOT_REQUIRED',requestedMarkers:[],results:{},finalMarkerAuthority:'FAN_IN_ONLY',runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }

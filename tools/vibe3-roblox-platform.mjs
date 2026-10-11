@@ -229,6 +229,12 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
   const runtimeMultiplayerPassed=
     runtime.f7MultiplayerFoundationPassed===true
     ||foundation.f7MultiplayerFoundationPassed===true;
+  const staticMultiplayerPassed=multiplayer.authority==='roblox-static-two-client-source-contract'
+    &&multiplayer.gameId===item.gameId&&multiplayer.passed===true&&multiplayer.codeContractPassed===true
+    &&multiplayer.runtimeTwoClientExecutionRequired===false
+    &&multiplayer.sourceRevision===sourceRevision&&multiplayer.artifactIdentity===artifactIdentity
+    &&['playerRoster','participantCount','authoritativeBroadcast','clientReceive','twoParticipantCapablePath']
+      .every(key=>multiplayer.checks?.[key]===true);
   const legacyMultiplayerPassed=
     item.robloxMultiplayerQaPassed===true
     &&multiplayer.multiplayerQaPassed===true
@@ -240,7 +246,7 @@ export function assembleRobloxDevelopmentReleaseEvidence(item={}){
   const multiplayerQaPassed=!multiplayerApplicable||(
     ['COOP','COMPETITIVE','HYBRID'].includes(mode)
     &&item.robloxMultiplayerQaPassed===true
-    &&(runtimeMultiplayerPassed||legacyMultiplayerPassed)
+    &&(staticMultiplayerPassed||runtimeMultiplayerPassed||legacyMultiplayerPassed)
   );
   const finalReviewPassed=item.robloxFinalReviewPassed===true;
   const exactRevision=item.robloxExactRevisionPassed===true&&sameRevision&&sameArtifact&&sameArtifactRun;

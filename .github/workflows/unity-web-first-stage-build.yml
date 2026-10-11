@@ -801,7 +801,8 @@ jobs:
           const precisionQa=evaluateUnityWebPrecisionQa({gameId,play,independent,regression});
           const nativeSystemAudit=auditUnityWebNativeSystems({
             repoRoot:process.cwd(),gameId,
-            designRecord:verifiedDesignRecord||{},play,independent,regression
+            designRecord:verifiedDesignRecord||{},play,independent,regression,
+            sourceRevision:process.env.SOURCE_COMMIT
           });
           console.log('UNITY_WEB_REAL_SYSTEM_IMPLEMENTATION='+(nativeSystemAudit.pass?'PASS':'REPAIR_REQUIRED'));
           console.log('UNITY_WEB_REAL_SYSTEM_STATIC_COVERAGE='+(nativeSystemAudit.staticCoverageComplete?'PASS':'REPAIR_REQUIRED'));
@@ -812,9 +813,13 @@ jobs:
               role:row.role,id:row.systemId,failures:row.failures
             })).slice(0,12)));
           console.log('UNITY_WEB_PRECISE_PLAYTEST='+(precisionQa.pass?'PASS':'REPAIR_REQUIRED'));
-          const multiplayerEvidence=item.unityWebMultiplayerQaEvidence||null;
+          const multiplayerEvidence=nativeSystemAudit.multiplayer;
+          item.unityWebMultiplayerQaEvidence=multiplayerEvidence;
+          console.log("MULTIPLAYER_VERIFICATION_SCOPE=STATIC_CODE_CONTRACT");
           const multiplayerPass=!multiplayerRequired
-            ||(multiplayerEvidence?.pass===true&&Number(multiplayerEvidence?.participantCount||0)>=2&&multiplayerEvidence?.authoritativeSync===true);
+            ||(multiplayerEvidence?.pass===true&&multiplayerEvidence.verificationScope==='STATIC_CODE_CONTRACT'
+              &&multiplayerEvidence.sourceRevision===process.env.SOURCE_COMMIT
+              &&multiplayerEvidence.sourceTreeSha256===process.env.UNITY_SOURCE_TREE_SHA);
           const qaPass=independent.pass===true&&regression.pass===true
             &&independent.saveRestore?.pass===true&&regression.saveRestore?.pass===true
             &&multiplayerPass;
@@ -838,7 +843,7 @@ jobs:
             graphics:{pass:graphicsPass,native3dVerified,requiredDimension:'3D',native3dChecks,assetCounts:graphicsCounts,bootstrapGraphicsBlocked},
             webglBuild:{pass:Boolean(webglPass)},
             actualPlay:{pass:actualPlayPass},
-            qa:{pass:qaPass,multiplayerRequired,multiplayerPass},
+            qa:{pass:qaPass,multiplayerRequired,multiplayerPass,multiplayerEvidence},
             portability:{pass:portabilityPass},
             precisionQa:{pass:precisionQa.pass,status:precisionQa.status,
               scenarioStages:precisionQa.checks.map(row=>row.stage)},

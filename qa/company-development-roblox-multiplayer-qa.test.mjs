@@ -3,6 +3,20 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validateRobloxMultiplayerSourceContract} from '../tools/company-development-roblox-runtime-foundation.mjs';
 
+test('all native multiplayer completion gates use static source evidence and never fabricate actual participants',()=>{
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.completionEvidence,'EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT');
+  assert.equal(policy.directNativeDualPlatformDevelopment.multiplayerImplementation.runtimeExecutionRequired,false);
+  assert.equal(policy.unityWebFirstStage.multiplayer.actualTwoOrMorePlayersRequiredWhenMultiplayerDesigned,false);
+  for(const file of ['unity-web-first-stage-build.yml','company-development-unity-runtime.yml']){
+    const source=fs.readFileSync('.github/workflows/'+file,'utf8');
+    assert.match(source,/auditUnityWebNativeSystems/);
+    assert.match(source,/MULTIPLAYER_VERIFICATION_SCOPE=STATIC_CODE_CONTRACT/);
+    assert.doesNotMatch(source,/const multiplayerPass[^;]*participantCount/s);
+    assert.match(source,/sourceRevision===process\.env\.SOURCE_(?:COMMIT|REVISION)/);
+  }
+});
+
 test('separate Roblox two-client Studio workflow remains disabled',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-roblox-multiplayer-qa.yml','utf8');
   assert.match(workflow,/Multiplayer Studio QA \(Disabled\)/);

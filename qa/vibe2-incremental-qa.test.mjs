@@ -141,6 +141,27 @@ test('causal replay executes supported node tests only after verified prepatch r
   assert.equal(result.causalReplay.canonicalQaStillRequired,true);
 });
 
+test('static multiplayer completion needs no client harness and rechecks unchanged-list dependencies',()=>{
+  const root=repo(),sourceRoot='roblox-games/demo';
+  const write=(relative,text)=>{const file=path.join(root,relative);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,text);};
+  write(sourceRoot+'/game.json','{"version":1}');
+  write(sourceRoot+'/server/Game.server.luau','local participants=Players:GetPlayers()\nremote:FireAllClients("MULTIPLAYER_SYNC",{ParticipantCount=#participants})');
+  write(sourceRoot+'/client/Game.client.luau','remote.OnClientEvent:Connect(function(kind,payload) if kind=="MULTIPLAYER_SYNC" then local n=payload.ParticipantCount end end)');
+  const manifest=path.join(root,'manifest.json'),cacheFile=path.join(root,'cache.json');
+  write('manifest.json',JSON.stringify({target:'roblox',gameId:'demo',sourceRoot,changedFiles:['game.json'],
+    exploration:{editContract:{gameRepair:{required:true,originalScenarioReplay:{required:false},invariants:{required:false},
+      multiplayerLifecycle:{required:true,verificationScope:'STATIC_CODE_CONTRACT',testTargets:['qa/missing-two-client-runtime.test.mjs']}}}}}));
+  const first=runIncrementalQa({root,manifest,cacheFile});
+  assert.equal(first.gameRepairQa.multiplayerLifecycle,'PASS_STATIC_CODE_CONTRACT');
+  assert.equal(first.gameRepairQa.multiplayerSourceContract.actualMultiplayerPlayVerified,false);
+  assert.equal(first.gameRepairQa.multiplayerResults.length,0);
+  write(sourceRoot+'/client/Game.client.luau','print("sync removed")');
+  const second=runIncrementalQa({root,manifest,cacheFile});
+  assert.equal(second.cached,false);
+  assert.equal(second.gameRepairQa.multiplayerLifecycle,'STATIC_CODE_REPAIR_REQUIRED');
+  assert.equal(second.gameRepairQa.multiplayerSourceContract.checks.clientReceive,false);
+});
+
 test('game repair QA accepts autonomous two-client harness evidence without owner participation',()=>{
   const root=repo();
   const sourceRoot=path.join(root,'web-games/demo');

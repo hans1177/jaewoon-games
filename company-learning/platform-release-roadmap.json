@@ -1,5 +1,5 @@
 {
-  "version": 561,
+  "version": 562,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -4695,21 +4695,20 @@
         "headlessOnlyEvidenceForbidden": true,
         "actualRuntimeFoundationF1ThroughF4Required": true,
         "multiplayerVerification": {
-          "mode": "SIMPLIFIED_INTERNAL_MULTIPLAYER_PASS_ALLOWED",
+          "mode": "STATIC_CODE_CONTRACT",
           "appliesWhenGameDesignRequiresMultiplayer": true,
           "minimumInternalEvidence": [
-            "F0_MULTIPLAYER_STATE_SYNC_CONTRACT_PASS",
-            "ACTUAL_RUNTIME_FOUNDATION_F1_THROUGH_F6_AND_F8_PASS",
+            "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT_PASS",
             "SERVER_CLIENT_BOUNDARY_PASS",
-            "SAVE_REJOIN_PASS_WHEN_SAVE_EXISTS",
             "NO_CURRENT_CRITICAL_OR_HIGH_MULTIPLAYER_FAILURE"
           ],
           "actualTwoPlusClientPlatformObservationRequiredForInternalRelease": false,
           "simplifiedPassMayClaimFullMultiplayerQa": false,
           "simplifiedPassMayClaimPublicReleaseReady": false,
-          "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": true,
-          "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": true,
-          "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true
+          "fullTwoPlusClientPlatformEvidenceStillRequiredBeforeExternalPublicRelease": false,
+          "recurringFullMultiplayerVerificationContinuesAfterInternalRelease": false,
+          "multiplayerVerificationMayNotDelayOtherDevelopmentOrInternalPlaytest": true,
+          "staticCompletionMayClaimActualRuntimePlay": false
         },
         "lobbyGate": {
           "version": 1,
@@ -24426,10 +24425,13 @@
       "browserCompatibleTransportRequired": true,
       "websocketHttpsOrCompatibleRealtimeAllowed": true,
       "nativeSocketDependencyForCoreWebFlowForbidden": true,
-      "actualTwoOrMorePlayersRequiredWhenMultiplayerDesigned": true,
+      "actualTwoOrMorePlayersRequiredWhenMultiplayerDesigned": false,
       "movementSyncRequired": true,
       "combatSyncRequired": true,
-      "joinLeaveRequired": true
+      "joinLeaveRequired": true,
+      "verificationScope": "STATIC_CODE_CONTRACT",
+      "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT",
+      "runtimeExecutionRequired": false
     },
     "performance": {
       "webBudgetIsStricterThanAndroid": true,
@@ -25209,9 +25211,11 @@
                 "DUPLICATE_EVENT_AND_RACE_CONDITION_CHECK"
               ],
               "deterministicHarnessPreferredWhenPlatformRuntimeIsUnavailable": true,
-              "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": true,
-              "unavailableAutomationAction": "KEEP_MULTIPLAYER_REPAIR_UNVERIFIED_AND_REQUEUE_OR_BLOCK_PROMOTION",
-              "userReportedSuccessCannotReplaceMachineEvidence": true
+              "actualPlatformRuntimeEvidenceRequiredBeforePlatformSpecificMultiplayerPass": false,
+              "unavailableAutomationAction": "KEEP_STATIC_MULTIPLAYER_REPAIR_UNVERIFIED_AND_RETRY",
+              "userReportedSuccessCannotReplaceMachineEvidence": true,
+              "runtimeExecutionRequired": false,
+              "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT"
             },
             "developmentScheduling": {
               "mode": "PARALLEL_NON_BLOCKING_DEVELOPMENT_RELEASE_BLOCKING_ONLY",
@@ -25224,10 +25228,13 @@
               "internalReleaseSimplifiedVerificationAllowed": false,
               "fullPlatformMultiplayerEvidenceRequiredBeforePublicRelease": false,
               "fullMultiplayerVerificationContinuesDuringInternalPlaytest": false,
-              "sameTwoClientOneSyncReleaseProofRequiredForInternalAndPublic": true,
+              "sameTwoClientOneSyncReleaseProofRequiredForInternalAndPublic": false,
               "sharedProofMayBeReusedWithoutDuplicatePlaytest": true,
-              "extendedLifecycleVerificationReservedForRepairOrSpecificFailure": true
-            }
+              "extendedLifecycleVerificationReservedForRepairOrSpecificFailure": true,
+              "staticCodeContractRequiredForInternalAndPublic": true
+            },
+            "verificationScope": "STATIC_CODE_CONTRACT",
+            "sourceContractRequired": true
           },
           "repairCompletion": {
             "requiredEvidence": [
@@ -25614,8 +25621,8 @@
       "noNewPipeline": true
     },
     "multiplayerImplementation": {
-      "version": 1,
-      "authority": "OWNER_DIRECTIVE_2026-10-08_ALL_GAMES_MULTIPLAYER",
+      "version": 2,
+      "authority": "OWNER_DIRECTIVE_2026-10-11_MULTIPLAYER_STATIC_COMPLETION",
       "required": true,
       "scope": "ALL_ACTIVE_AND_NEW_GAMES",
       "platforms": [
@@ -25640,8 +25647,14 @@
       "perpetualCycle": true,
       "newPipeline": false,
       "staticCodeEvidenceIsActualMultiplayerPlay": false,
-      "completionEvidence": "ACTUAL_TWO_OR_MORE_CLIENTS_SAME_SESSION_ACTION_STATE_RESULT_AND_RECONNECT",
-      "releaseValidationPolicyUnchanged": true
+      "completionEvidence": "EXACT_SOURCE_STATIC_MULTIPLAYER_CONTRACT",
+      "releaseValidationPolicyUnchanged": false,
+      "verificationScope": "STATIC_CODE_CONTRACT",
+      "runtimeExecutionRequired": false,
+      "sourceContractRequired": true,
+      "exactCandidateBindingStillRequired": true,
+      "actualMultiplayerPlayVerified": false,
+      "nonMultiplayerReleaseValidationUnchanged": true
     },
     "platformCountingPolicy": {
       "version": 1,

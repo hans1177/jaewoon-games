@@ -8,12 +8,30 @@ import {
   createRobloxPlatformContract,
   validateRobloxSourcePath,
   assembleRobloxTechnicalEvidence,
+  assembleRobloxDevelopmentReleaseEvidence,
   validateRobloxReleaseEvidence,
   createRobloxPlacePublishPlan,createRobloxRuntimeCandidatePublishPlan,
   publishRobloxPlace,
 } from '../tools/vibe3-roblox-platform.mjs';
 
 const contract=createRobloxPlatformContract();
+test('Roblox release fan-in accepts exact static multiplayer proof without two-client runtime and rejects stale or incomplete proof',()=>{
+  const sourceRevision='a'.repeat(40),artifactIdentity='sha256:'+'b'.repeat(64);
+  const item={gameId:'demo',robloxSourceCommit:sourceRevision,robloxBuildArtifactIdentity:artifactIdentity,
+    robloxMultiplayerApplicable:true,robloxMultiplayerMode:'COOP',robloxMultiplayerQaPassed:true,
+    robloxMultiplayerQaEvidence:{gameId:'demo',sourceRevision,artifactIdentity,
+      authority:'roblox-static-two-client-source-contract',passed:true,codeContractPassed:true,
+      runtimeTwoClientExecutionRequired:false,
+      checks:{playerRoster:true,participantCount:true,authoritativeBroadcast:true,clientReceive:true,twoParticipantCapablePath:true}}};
+  const result=assembleRobloxDevelopmentReleaseEvidence(item);
+  assert.equal(result.multiplayerQaPassed,true);
+  assert.equal(result.actualRuntimeEvidence,false);
+  assert.equal(result.pass,false,'static multiplayer completion alone does not fabricate other release gates');
+  for(const mutate of [x=>x.sourceRevision='c'.repeat(40),x=>x.checks.clientReceive=false,x=>x.gameId='other']){
+    const broken=structuredClone(item);mutate(broken.robloxMultiplayerQaEvidence);
+    assert.equal(assembleRobloxDevelopmentReleaseEvidence(broken).multiplayerQaPassed,false);
+  }
+});
 test('static candidate promotion requires exact compiled contracts without inventing runtime proof',()=>{
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
   const binding={pass:true,sourceRevision:revision,artifactIdentity:artifact};
