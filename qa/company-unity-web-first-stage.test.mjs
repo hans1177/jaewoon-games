@@ -310,8 +310,10 @@ test('all playable Unity Web builds publish separately without claiming full 3D 
   assert.match(homepage,/for\(const href of \[/);
   assert.ok(homepage.includes('/unity/'));
   assert.match(homepage,/complete=probes\.every\(response=>response\?\.ok===true\)/);
-  assert.match(headers,/\/web-games\/\*\/unity\/Build\/\*\.wasm\.gz/);
-  assert.match(headers,/Content-Encoding: gzip/);
+  assert.match(headers,/\/web-games\/\*\.wasm\.gz\n  Content-Type: application\/wasm\n  Content-Encoding: gzip/);
+  assert.doesNotMatch(headers,/^\/web-games\/[^\n]*\*[^\n]*\*/m);
+  const worker=fs.readFileSync(path.join(repo,'_worker.js'),'utf8');
+  assert.ok(worker.includes("headers.set('Content-Encoding',format==='gz'?'gzip':'br')"));
 });
 
 test('Unity monster adventure keeps real UV-less source meshes and uses triplanar physical material rendering',()=>{
