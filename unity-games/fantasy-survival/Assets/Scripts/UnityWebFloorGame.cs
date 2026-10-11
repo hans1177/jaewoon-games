@@ -399,7 +399,16 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         cameraDistance = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "camera_distance", 14f), 8f, 24f);
         moveSpeed = Mathf.Clamp(PlayerPrefs.GetFloat(SavePrefix + "move_speed", 5.8f), 3f, 9f);
         BuildWorld();
-        Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=SOURCE_READY_3D");
+        // 시작 · 실제 Unity 월드와 카메라/플레이어가 생성된 뒤에만 부팅 완료를 기록한다.
+        // 이 표식은 브라우저의 채집·전투·저장·모바일 QA 통과를 대체하지 않는다.
+        if (worldRoot == null || !worldRoot.activeInHierarchy || player == null ||
+            mainCamera == null || !mainCamera.isActiveAndEnabled || species.Count == 0 || recipes.Count == 0)
+        {
+            Debug.LogError("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId +
+                " status=REPAIR_REQUIRED reason=NATIVE_WORLD_BOOT_INCOMPLETE");
+            throw new InvalidOperationException("MAGIC_FOREST_NATIVE_WORLD_BOOT_INCOMPLETE");
+        }
+        Debug.Log("JAEWOON_UNITY_WEB_QA BOOT game=" + GameId + " status=PASS");
     }
 
     private static float ParseFloat(string value)
@@ -1157,7 +1166,7 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             float d=Vector3.Distance(position,col.transform.position);
             if(d<nearest){nearest=d;material=n=="Tree"?"wood":n=="Rock"?"stone":"fiber";}
         }
-        if(material==""){info="가까운 나무나 돌이 없어.";return;}
+        if(material==""){info="가까운 나무·돌·섬유가 없어.";return;}
         if(!materials.ContainsKey(material))materials[material]=0;
         materials[material]++;
         info=(material=="wood"?"나무":material=="stone"?"돌":"섬유")+" 1개 채집";
