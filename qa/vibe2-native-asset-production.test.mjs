@@ -118,6 +118,28 @@ test('2D references never count as ready spatial assets, while current real 3D r
   assert.ok(['USE','ADAPT'].includes(preferred.nextActions.find(row=>row.family==='BUILDING').action));
 });
 
+test('existing Vibe source worker passes on-demand library selection to native game build with no false completion',()=>{
+  const order={target:'unity',gameId:'fantasy-survival',goal:'기존 3D 자산으로 환경 재질 보강',assetProduction:{
+    assetSupplySummary:{nextActions:[{
+      action:'ACQUIRE_ADAPT',family:'ENVIRONMENT',reason:'CURRENT_GAME_GAP_LICENSE_VERIFIED_EXTERNAL_SOURCE',
+      externalAcquisition:{sourceId:'kenney-nature-kit',sourceUrl:'https://kenney.nl/assets/nature-kit',
+        downloadUrl:null,acquisitionState:'SOURCE_PAGE_RESOLUTION_REQUIRED',
+        license:'CC0',licenseEvidenceUrl:'https://kenney.nl/assets/nature-kit'},
+      assetization:{nativeDccScript:'assets/native-authoring/build-game-visual.py',
+        nativeSourceModelField:'task.assetAuthoring.sourceModel'}
+    }]},nativeAuthoringExecution:{enabled:false}
+  }};
+  const prompt=buildPrompt(order,{files:[{path:'Assets/Scripts/World.cs',
+    content:'using UnityEngine; public class World : MonoBehaviour {}',editable:true}]},['Assets/Scripts/World.cs']);
+  assert.match(prompt,/"onDemandLibrarySupply"/);
+  assert.match(prompt,/"selectedSourceId":"kenney-nature-kit"/);
+  assert.match(prompt,/"acquisitionState":"SOURCE_PAGE_RESOLUTION_REQUIRED"/);
+  assert.match(prompt,/"nativeBuildBlockedByUnacquiredSource":true/);
+  assert.match(prompt,/"nativeBuildRequiresRegisteredAssetAndRealSource":true/);
+  assert.match(prompt,/"runtimeVerified":false/);
+  assert.match(prompt,/"productionVerified":false/);
+});
+
 test('five common monster body plans bake reproducible skinned GLBs and actual attack skill joints',()=>{
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
   const script=path.join(root,'assets','native-authoring','build-shared-creature.mjs');
