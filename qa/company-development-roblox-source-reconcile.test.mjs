@@ -4,12 +4,43 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
 import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
 import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
+
+test('release handoff skips obsolete intent before historical fetch and preserves active evidence checks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-release-handoff.yml','utf8');
+  const step=workflow.split('      - name: Resolve exact owner release intent')[1].split('      - name: ')[0];
+  const code=step.match(/node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace("import fs from 'node:fs';",'');
+  const request={id:'request',gameId:'demo',status:'requested',authority:'owner-release-directive',target:'roblox',requestedReleaseState:'release-confirmed',candidateBranch:'vibe2/candidate/OWNER-ROBLOX-OBBY-test',sourceRevision:'a'.repeat(40),candidateSha:'b'.repeat(40),qaRunId:1};
+  const invoke=(catalog,patch={})=>{
+    let output='';const stopped=Symbol('stopped');
+    try{runInNewContext(code,{
+      fs:{readFileSync:file=>JSON.stringify(file==='intent.json'?{version:1,request:{...request,...patch}}:catalog),appendFileSync:(_,value)=>{output+=value;}},
+      process:{env:{INTENT_FILE:'intent.json',GITHUB_OUTPUT:'output'},exit:()=>{throw stopped;}},console:{log(){}}
+    });}catch(error){if(error!==stopped)throw error;}
+    return output;
+  };
+  const active={games:[{id:'demo',lifecycleState:'ACTIVE'}]};
+  assert.match(invoke(active),/eligible=true/);
+  assert.match(invoke({games:[{id:'demo',lifecycleState:'REBUILD'}]}),/eligible=true/);
+  assert.match(invoke({...active,permanentRemovalPolicy:{ids:['demo']}}),/eligible=false/);
+  assert.match(invoke({games:[{id:'demo',lifecycleState:'ARCHIVED'}]}),/eligible=false/);
+  assert.match(invoke({games:[]}),/eligible=false/);
+  assert.match(invoke(active,{status:'cancelled'}),/eligible=false/);
+  assert.throws(()=>invoke(active,{candidateSha:'invalid'}),/ROBLOX_RELEASE_INTENT_EVIDENCE_INVALID/);
+  for(const name of ['Verify exact R5 source and candidate identity','Download authoritative candidate context from Studio QA run','Verify authoritative Roblox Studio QA evidence','Persist verified Vibe2 source handoff to canonical company runtime','Dispatch existing canonical Roblox runtime and release chain']){
+    const body=workflow.split('      - name: '+name)[1].split('      - name: ')[0];
+    assert.match(body,/if: steps\.intent\.outputs\.eligible == 'true'/);
+  }
+  const source=workflow.split('      - name: Verify exact R5 source and candidate identity')[1].split('      - name: ')[0];
+  assert.match(source,/--unshallow/);
+  assert.match(source,/git merge-base --is-ancestor/);
+});
 const baseline={content:{identity:'Pocket Foundry',coreFun:'collect resources, upgrade production, earn income, unlock areas',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system',platformProfiles:{ROBLOX:{platform:'ROBLOX',inputModel:'Roblox touch input and gamepad fallback',sessionModel:'Roblox private server session lifecycle',multiplayerRuntime:'Roblox server authoritative RemoteEvent synchronization',performanceBudget:'Mobile Roblox performance budget for frame memory network instances',uiUx:'Roblox ScreenGui touch-first interaction layout',saveAndNetwork:'DataStore and validated remote network boundaries',platformContentAdaptation:'Roblox native avatar camera scene and UI adaptation',internalReleaseTarget:'Private restricted Roblox owner playtest experience',validationEvidence:'Exact Roblox runtime independent QA regression evidence'}}}};
 const companyAssetLibrary=JSON.parse(fs.readFileSync(new URL('../company-asset-library.json',import.meta.url),'utf8'));
 const verifiedExternalRow={

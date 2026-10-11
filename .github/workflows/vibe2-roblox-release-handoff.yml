@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
           fetch-tags: false
           filter: blob:none
 
@@ -57,14 +57,24 @@ jobs:
           const clean=v=>String(v??'').trim();
           const sha=v=>/^[0-9a-f]{40}$/i.test(clean(v));
           if(Number(doc.version)!==1)throw new Error('ROBLOX_RELEASE_INTENT_VERSION_INVALID');
+          const out=process.env.GITHUB_OUTPUT;
+          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v)}\n`);
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const game=(catalog.games||[]).find(row=>clean(row.id)===clean(r.gameId));
+          const removed=(catalog.permanentRemovalPolicy?.ids||[]).includes(clean(r.gameId));
+          const active=game&&['ACTIVE','REBUILD'].includes(clean(game.lifecycleState||game.canonical?.lifecycle?.state||'ACTIVE').toUpperCase());
+          if(clean(r.status)!=='requested'||removed||!active){
+            put('eligible','false');
+            console.log('ROBLOX_RELEASE_HANDOFF_SKIPPED='+ (removed?'PERMANENTLY_REMOVED_GAME':!active?'INACTIVE_OR_MISSING_GAME':'NO_ACTIVE_RELEASE_INTENT'));
+            process.exit(0);
+          }
           if(clean(r.status)!=='requested')throw new Error('ROBLOX_RELEASE_INTENT_NOT_REQUESTED');
           if(clean(r.authority)!=='owner-release-directive')throw new Error('ROBLOX_RELEASE_INTENT_AUTHORITY_INVALID');
           if(clean(r.target).toLowerCase()!=='roblox')throw new Error('ROBLOX_RELEASE_INTENT_TARGET_INVALID');
           if(clean(r.requestedReleaseState)!=='release-confirmed')throw new Error('ROBLOX_RELEASE_INTENT_STATE_INVALID');
           if(!clean(r.gameId)||!clean(r.candidateBranch).startsWith('vibe2/candidate/OWNER-ROBLOX-OBBY-'))throw new Error('ROBLOX_RELEASE_INTENT_IDENTITY_INVALID');
           if(!sha(r.sourceRevision)||!sha(r.candidateSha)||!Number.isInteger(Number(r.qaRunId))||Number(r.qaRunId)<=0)throw new Error('ROBLOX_RELEASE_INTENT_EVIDENCE_INVALID');
-          const out=process.env.GITHUB_OUTPUT;
-          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v)}\n`);
+          put('eligible','true');
           put('request_id',clean(r.id));
           put('game_id',clean(r.gameId));
           put('source_revision',clean(r.sourceRevision));
@@ -76,6 +86,7 @@ jobs:
           NODE
 
       - name: Verify exact R5 source and candidate identity
+        if: steps.intent.outputs.eligible == 'true'
         id: source
         env:
           GAME_ID: ${{ steps.intent.outputs.game_id }}
@@ -86,6 +97,9 @@ jobs:
         run: |
           set -euo pipefail
           source_root="roblox-games/$GAME_ID"
+          if [[ "$(git rev-parse --is-shallow-repository)" == 'true' ]]; then
+            git fetch --no-tags --filter=blob:none --unshallow origin main --quiet
+          fi
           git cat-file -e "${SOURCE_REVISION}^{commit}"
           git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
           git fetch --no-tags --filter=blob:none origin "$CANDIDATE_BRANCH" --quiet
@@ -121,6 +135,7 @@ jobs:
           echo 'VIBE2_R5_RELEASE_SOURCE_IDENTITY=PASS'
 
       - name: Download authoritative candidate context from Studio QA run
+        if: steps.intent.outputs.eligible == 'true'
         uses: actions/download-artifact@v4
         with:
           name: vibe2-roblox-candidate-context-${{ steps.intent.outputs.qa_run_id }}
@@ -129,6 +144,7 @@ jobs:
           run-id: ${{ steps.intent.outputs.qa_run_id }}
 
       - name: Verify authoritative Roblox Studio QA evidence
+        if: steps.intent.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           QA_RUN_ID: ${{ steps.intent.outputs.qa_run_id }}
@@ -163,6 +179,7 @@ jobs:
           NODE
 
       - name: Persist verified Vibe2 source handoff to canonical company runtime
+        if: steps.intent.outputs.eligible == 'true'
         env:
           GAME_ID: ${{ steps.intent.outputs.game_id }}
           SOURCE_REVISION: ${{ steps.intent.outputs.source_revision }}
@@ -245,6 +262,7 @@ jobs:
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
       - name: Dispatch existing canonical Roblox runtime and release chain
+        if: steps.intent.outputs.eligible == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ steps.intent.outputs.game_id }}
