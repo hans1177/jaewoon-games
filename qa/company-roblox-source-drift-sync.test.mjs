@@ -147,6 +147,21 @@ test('single changed Roblox game redispatches exact runtime game id',()=>{
 });
 
 
+test('source drift exact redispatch cancels only stale queued duplicates and preserves active current work',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
+  const start=workflow.indexOf('      - name: Dispatch canonical Roblox runtime for fresh build');
+  const block=workflow.slice(start);
+  assert.ok(start>=0);
+  assert.match(block,/const queuedStates=new Set\(\['queued','pending','requested'\]\)/);
+  assert.doesNotMatch(block,/const queuedStates=new Set\(\[[^\]]*in_progress/);
+  assert.match(block,/ROBLOX_CANONICAL_RUNTIME_STALE_QUEUED_CANCELLED=/);
+  assert.match(block,/ROBLOX_CANONICAL_RUNTIME_STALE_QUEUED_CANCEL_COUNT=/);
+  assert.match(block,/const activeStates=new Set\(\['queued','pending','requested','waiting','in_progress'\]\)/);
+  assert.match(block,/ROBLOX_CANONICAL_RUNTIME_REDISPATCH=DEDUPED_CURRENT:/);
+  assert.match(block,/String\(run\.head_sha\|\|''\)===currentMain/);
+});
+
+
 test('source drift sync has a dedicated non-starving concurrency lane',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-roblox-source-drift-sync.yml','utf8');
   assert.match(workflow,/concurrency:\s*\n\s*group: roblox-source-drift-runtime-writer-v2\s*\n\s*cancel-in-progress: false/);
