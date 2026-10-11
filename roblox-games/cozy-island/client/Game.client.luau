@@ -15,6 +15,7 @@ local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
+local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 local WildlifeAnimator=require(Shared:WaitForChild("WildlifeAnimator"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
@@ -216,15 +217,10 @@ local function outline(target,transparency)
 end
 
 local function makeButton(parent,text,color)
- local b=Instance.new("TextButton")
- b.AutoButtonColor=true
- b.BackgroundColor3=color
- b.TextColor3=Color3.fromRGB(255,255,255)
- b.Text=text
- b.TextScaled=true
- b.Font=Enum.Font.GothamBold
+ local b=CommonUI.CreatePrimaryButton({text=text,minWidth=44,minHeight=52,textSize=14,theme={Primary=color,PrimaryTop=color,PrimaryBottom=color,TouchHeight=52}})
+ b.ZIndex=parent:IsA("GuiObject")and parent.ZIndex+1 or 1
+ for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
  b.Parent=parent
- roundify(b,12);outline(b,.5)
  return b
 end
 
@@ -422,61 +418,13 @@ verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotio
 
 end
 
--- Roblox UI / touch / progression guidance.
-local verifiedLearningGuidance = Instance.new("TextLabel")
-verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
-verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-verifiedLearningGuidance.BackgroundTransparency = 1
-verifiedLearningGuidance.TextWrapped = true
-verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
-verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
-  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
-elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
-elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
-elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
-  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
-elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
-  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
-elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
-else
-  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
-end
-verifiedLearningGuidance.Parent = verifiedLearningRoot
-local verifiedLearningRiskCue = Instance.new("TextLabel")
-verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
-verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
-verifiedLearningRiskCue.BackgroundTransparency = 1
-verifiedLearningRiskCue.TextWrapped = true
-verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
-else
-  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
-end
-verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
-verifiedLearningRiskCue.Parent = verifiedLearningRoot
+-- 안내 UI는 게임의 기존 HUD/메뉴가 소유한다. 학습 바인딩은 화면 위에 문구를 추가하지 않는다.
+verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
 
 -- Roblox skill VFX / camera / motion feedback.
-local function playVerifiedLearningActionFeedback(control)
+local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-  verifiedLearningGuidance.Visible = false
 
   if control then
     local scale = control:FindFirstChild("VerifiedLearningMotionScale")
@@ -489,6 +437,11 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  -- 메뉴 클릭은 버튼 응답만. 전투/카메라 연출은 서버가 확인한 해당 행동만 사용한다.
+
+  if serverConfirmed~=true then return end
+  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
   if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
@@ -543,10 +496,6 @@ local function playVerifiedLearningActionFeedback(control)
   end
   end
 
-  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-    verifiedLearningRiskCue.Visible = true
-    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-  end
 end
 
 local verifiedLearningLastControl = nil
@@ -570,7 +519,7 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
@@ -638,7 +587,7 @@ resources.Size=UDim2.new(1,-16,0,28)
 resources.Position=UDim2.fromOffset(8,24)
 resources.BackgroundTransparency=1
 resources.TextColor3=Color3.fromRGB(235,245,238)
-resources.TextWrapped=false
+resources.TextWrapped=true
 resources.TextScaled=false
 resources.TextSize=touchEnabled and 11 or 13
 resources.Font=Enum.Font.Gotham
@@ -652,7 +601,9 @@ objective.BackgroundColor3=Color3.fromRGB(29,50,46)
 objective.BackgroundTransparency=.18
 objective.TextColor3=Color3.fromRGB(255,232,158)
 objective.TextWrapped=true
-objective.TextScaled=true
+objective.TextScaled=false
+objective.TextSize=13
+objective.TextTruncate=Enum.TextTruncate.AtEnd
 objective.Font=Enum.Font.GothamBold
 objective.Parent=gui
 roundify(objective,9)
@@ -666,7 +617,7 @@ gatherHint.BackgroundTransparency=.24
 gatherHint.TextColor3=Color3.fromRGB(211,239,213)
 gatherHint.TextSize=11
 gatherHint.Font=Enum.Font.GothamBold
-gatherHint.Text="나무/작물에 가까이 가서 직접 채집"
+gatherHint.Text="나무·작물을 터치해 채집"
 gatherHint.Parent=gui
 roundify(gatherHint,8)
 if touchEnabled then task.delay(9,function()if gatherHint.Parent then gatherHint.Visible=false end end)end
@@ -686,10 +637,11 @@ local actionPopup=Instance.new("Frame")
 actionPopup.Name="ActionPopup"
 actionPopup.AnchorPoint=Vector2.new(.5,1)
 actionPopup.Position=UDim2.new(.5,0,1,-74)
-actionPopup.Size=UDim2.fromOffset(252,112)
+actionPopup.Size=UDim2.fromOffset(260,128)
 actionPopup.BackgroundColor3=Color3.fromRGB(26,43,39)
 actionPopup.BackgroundTransparency=.08
 actionPopup.Visible=false
+actionPopup.Active=true
 actionPopup.Parent=gui
 roundify(actionPopup,14);outline(actionPopup,.5)
 
@@ -706,7 +658,6 @@ local groups={
 
 local actionButtons={}
 local openGroup=nil
-local popupToken=0
 local function showGroup(index)
  if openGroup==index and actionPopup.Visible then
   actionPopup.Visible=false
@@ -723,28 +674,21 @@ local function showGroup(index)
   b.Visible=true
  end
  actionPopup.Visible=true
- popupToken+=1
- local token=popupToken
- task.delay(4.5,function()
-  if popupToken==token and actionPopup.Visible then
-   actionPopup.Visible=false
-   openGroup=nil
-  end
- end)
+
 end
 
 for groupIndex,group in ipairs(groups)do
  local tab=makeButton(controls,group.title,group.color)
- tab.Size=UDim2.new(.46,0,0,44)
+ tab.Size=UDim2.new(.46,0,0,52)
  tab.Position=UDim2.new(.035+(groupIndex-1)*.49,0,0,6)
  tab.Activated:Connect(function()showGroup(groupIndex)end)
 
  for row,a in ipairs(group.actions)do
   local b=makeButton(actionPopup,a[2],group.color)
-  b.Size=UDim2.fromOffset(116,44)
+  b.Size=UDim2.fromOffset(116,52)
   local col=(row-1)%2
   local line=math.floor((row-1)/2)
-  b.Position=UDim2.fromOffset(7+col*122,8+line*50)
+  b.Position=UDim2.fromOffset(7+col*122,8+line*60)
   b.Visible=false
   b.Activated:Connect(function()
    if a[1]==C.Actions.ATTACK or a[1]==C.Actions.RECRUIT or a[1]==C.Actions.BARRACKS then actionSfx.TimePosition=0;actionSfx:Play()end
@@ -755,6 +699,31 @@ for groupIndex,group in ipairs(groups)do
   table.insert(actionButtons,b)
  end
 end
+
+-- 메인: 안전 영역 크기 변경/회전에 맞춰 조작 영역과 메뉴를 재배치한다.
+local function layoutControls()
+ local size=gui.AbsoluteSize;local landscape=size.X>size.Y and size.Y<500
+ hud.Size=UDim2.fromOffset(math.min(340,size.X-16),58)
+ resources.TextSize=12
+ objective.AnchorPoint=Vector2.zero;objective.Position=UDim2.fromOffset(8,72)
+ objective.Size=UDim2.new(1,-16,0,38)
+ gatherHint.Position=UDim2.fromOffset(8,116)
+ controls.Size=UDim2.fromOffset(244,64)
+ controls.AnchorPoint=landscape and Vector2.new(1,1)or Vector2.new(.5,1)
+ controls.Position=landscape and UDim2.new(1,-8,1,-110)or UDim2.new(.5,0,1,-110)
+ actionPopup.AnchorPoint=landscape and Vector2.new(.5,0)or Vector2.new(.5,.5)
+ actionPopup.Position=landscape and UDim2.new(.5,0,0,8)or UDim2.fromScale(.5,.5)
+ actionPopup.ZIndex=20
+ for _,b in ipairs(actionButtons)do b.ZIndex=21 end
+ local ready=startupOverlay.Parent==nil
+ hud.Visible=ready and not actionPopup.Visible;objective.Visible=ready and not actionPopup.Visible;controls.Visible=ready
+ gatherHint.Visible=ready and not actionPopup.Visible and not touchEnabled
+ if not ready then actionPopup.Visible=false end
+end
+actionPopup:GetPropertyChangedSignal("Visible"):Connect(layoutControls)
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutControls)
+startupOverlay.Destroying:Connect(function()task.defer(layoutControls)end)
+layoutControls()
 
 -- 상태 갱신
 local function render()
@@ -767,7 +736,7 @@ local function render()
 
  local inBattle=p:GetAttribute("InBattle")==true
  local activity=p:GetAttribute("LastActivity")or"나무/작물에 가까이 가서 직접 채집"
- objective.Text=inBattle and ("⚔ "..target.." · 전투 "..(p:GetAttribute("BattleProgress")or 0).."%") or (activity.."  |  다음: "..target)
+ objective.Text=inBattle and ("전투 "..(p:GetAttribute("BattleProgress")or 0).."% · "..target)or activity
 
  if inBattle then
   if bgm.IsPlaying then bgm:Stop()end

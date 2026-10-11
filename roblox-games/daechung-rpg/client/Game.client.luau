@@ -9,6 +9,7 @@ local ProximityPromptService=game:GetService("ProximityPromptService")
 local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
+local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -63,6 +64,7 @@ local STUDIO_ASSET_FAMILY_STATUS = {
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local QACamera=require(RS:WaitForChild("Shared"):WaitForChild("QACamera"))
 local RPGMenu=require(RS:WaitForChild("Shared"):WaitForChild("RPGMenu"))
+local RPGMenuModel=require(RS:WaitForChild("Shared"):WaitForChild("RPGMenuModel"))
 local remote=RS:WaitForChild(C.RemoteName)
 local foundationRemote=RS:WaitForChild("RuntimeFoundationReport")
 local foundationRoundtrip=false
@@ -206,7 +208,11 @@ end)
 local function corner(x,r)local c=Instance.new("UICorner");c.CornerRadius=UDim.new(0,r or 10);c.Parent=x end
 local function stroke(x,t)local s=Instance.new("UIStroke");s.Thickness=1.3;s.Transparency=t or .5;s.Parent=x end
 local function button(parent,text,color)
- local b=Instance.new("TextButton");b.Text=text;b.TextScaled=true;b.Font=Enum.Font.GothamBold;b.TextColor3=Color3.new(1,1,1);b.BackgroundColor3=color;b.Parent=parent;corner(b,11);stroke(b,.48);return b
+ local b=CommonUI.CreatePrimaryButton({text=text,minWidth=44,minHeight=52,textSize=14,theme={Primary=color,PrimaryTop=color,PrimaryBottom=color,TouchHeight=52}})
+ b.ZIndex=parent:IsA("GuiObject")and parent.ZIndex+1 or 1
+ for _,child in ipairs(b:GetChildren())do if child:IsA("GuiObject")then child.ZIndex=b.ZIndex+1 end end
+ b.Parent=parent
+ return b
 end
 
 -- 로딩/시작 메뉴: 마을 진입 전 목표와 기본 조작 안내
@@ -312,6 +318,17 @@ startupPlay.Activated:Connect(function()
  startupOverlay:Destroy()
 end)
 
+local refreshHud
+local rpgMenu
+local npcSpeechActive=false
+local bossSceneActive=false
+local objectContextActive=false
+local tipsVisible=false
+local notice=Instance.new("ScrollingFrame")
+notice.Name="RPGNotice";notice.BackgroundTransparency=1;notice.BorderSizePixel=0
+notice.ScrollBarThickness=3;notice.CanvasSize=UDim2.new();notice.AutomaticCanvasSize=Enum.AutomaticSize.Y
+notice.ScrollingDirection=Enum.ScrollingDirection.Y;notice.ClipsDescendants=true;notice.Parent=gui
+
 local stats=Instance.new("Frame");
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_BEGIN
 local verifiedLearningPlayers = game:GetService("Players")
@@ -403,61 +420,10 @@ verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotio
 
 end
 
--- Roblox UI / touch / progression guidance.
-local verifiedLearningGuidance = Instance.new("TextLabel")
-verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
-verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-verifiedLearningGuidance.BackgroundTransparency = 1
-verifiedLearningGuidance.TextWrapped = true
-verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
-verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
-  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
-elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
-elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
-elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
-  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
-elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
-  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
-elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
-else
-  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
-end
-verifiedLearningGuidance.Parent = verifiedLearningRoot
-local verifiedLearningRiskCue = Instance.new("TextLabel")
-verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
-verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
-verifiedLearningRiskCue.BackgroundTransparency = 1
-verifiedLearningRiskCue.TextWrapped = true
-verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
-else
-  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
-end
-verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
-verifiedLearningRiskCue.Parent = verifiedLearningRoot
-
 -- Roblox skill VFX / camera / motion feedback.
-local function playVerifiedLearningActionFeedback(control)
+local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-  verifiedLearningGuidance.Visible = false
 
   if control then
     local scale = control:FindFirstChild("VerifiedLearningMotionScale")
@@ -470,64 +436,6 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
-  if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  local camera = workspace.CurrentCamera
-  if camera then
-    local baseFov = camera.FieldOfView
-    verifiedLearningTweenService:Create(camera, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = math.clamp(baseFov + 3, 40, 100)}):Play()
-    task.delay(0.09, function()
-      if camera then verifiedLearningTweenService:Create(camera, TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FieldOfView = baseFov}):Play() end
-    end)
-  end
-  end
-
-  if verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  local character = verifiedLearningPlayer.Character
-  local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-  if character and rootPart then
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "VerifiedLearningSkillImpact"
-    highlight.FillTransparency = 0.35
-    highlight.OutlineTransparency = 0.12
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    highlight.Parent = character
-    verifiedLearningTweenService:Create(highlight, TweenInfo.new(0.20), {FillTransparency = 1, OutlineTransparency = 1}):Play()
-    local sparkles = Instance.new("Sparkles")
-    sparkles.Name = "VerifiedLearningSkillSparkles"
-    sparkles.SparkleColor = Color3.fromRGB(170, 220, 255)
-    sparkles.Parent = rootPart
-    local impactAttachment = Instance.new("Attachment")
-    impactAttachment.Name = "VerifiedLearningSkillAttachment"
-    impactAttachment.Parent = rootPart
-    local particles = Instance.new("ParticleEmitter")
-    particles.Name = "VerifiedLearningSkillParticles"
-    particles.Rate = 0
-    particles.Lifetime = NumberRange.new(0.18, 0.32)
-    particles.Speed = NumberRange.new(5, 9)
-    particles.SpreadAngle = Vector2.new(45, 45)
-    particles.LightEmission = 0.7
-    particles.Parent = impactAttachment
-    particles:Emit(18)
-    local impactLight = Instance.new("PointLight")
-    impactLight.Name = "VerifiedLearningSkillLight"
-    impactLight.Color = Color3.fromRGB(160, 215, 255)
-    impactLight.Brightness = 2.2
-    impactLight.Range = 10
-    impactLight.Parent = rootPart
-    verifiedLearningTweenService:Create(impactLight, TweenInfo.new(0.18), {Brightness = 0, Range = 4}):Play()
-    task.delay(0.24, function()
-      if impactAttachment then impactAttachment:Destroy() end
-      if impactLight then impactLight:Destroy() end
-      if sparkles then sparkles:Destroy() end
-      if highlight then highlight:Destroy() end
-    end)
-  end
-  end
-
-  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-    verifiedLearningRiskCue.Visible = true
-    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-  end
 end
 
 local verifiedLearningLastControl = nil
@@ -551,7 +459,7 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
@@ -615,33 +523,34 @@ local function playCombatAnimation(skillCast)
  end
 end
 local blockHeld=false
+local blockInput=nil
 local function setBlock(on)
  if blockHeld==on then return end;blockHeld=on
  remote:FireServer(on and C.Actions.BLOCK_START or C.Actions.BLOCK_END)
 end
 attack.Activated:Connect(function()setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)end)
 skill.Activated:Connect(function()
- setBlock(false);playCombatAnimation(true);skillSfx:Play()
- if studioSkillEmitter then studioSkillEmitter:Emit(18) end
+ setBlock(false)
  remote:FireServer(C.Actions.SKILL)
 end)
 dodge.Activated:Connect(function()setBlock(false);remote:FireServer(C.Actions.DODGE)end)
 block.InputBegan:Connect(function(input)
- if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(true)end
+ if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then blockInput=input;setBlock(true)end
 end)
 block.InputEnded:Connect(function(input)
- if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then setBlock(false)end
+ if input==blockInput then blockInput=nil;setBlock(false)end
 end)
 UserInputService.InputBegan:Connect(function(input,processed)
- if processed or gui:GetAttribute("RPGMenuOpen")==true then return end
+ if processed or gui:GetAttribute("RPGMenuOpen")==true or startupOverlay.Parent~=nil then return end
  if input.KeyCode==Enum.KeyCode.F then
   setBlock(true)
  elseif input.UserInputType==Enum.UserInputType.MouseButton1 then
   setBlock(false);playCombatAnimation(false);actionSfx:Play();remote:FireServer(C.Actions.ATTACK)
  end
 end)
+UserInputService.WindowFocusReleased:Connect(function()blockInput=nil;setBlock(false)end)
 UserInputService.InputEnded:Connect(function(input)
- if input.KeyCode==Enum.KeyCode.F then setBlock(false)end
+ if input.KeyCode==Enum.KeyCode.F or input==blockInput then blockInput=nil;setBlock(false)end
 end)
 
 local classPanel=Instance.new("Frame");classPanel.Name="ClassChoice";classPanel.AnchorPoint=Vector2.new(.5,.5);classPanel.Position=UDim2.fromScale(.5,.55);classPanel.Size=touchEnabled and UDim2.fromOffset(300,230)or UDim2.fromOffset(380,250);classPanel.BackgroundColor3=Color3.fromRGB(23,25,33);classPanel.BackgroundTransparency=.04;classPanel.Parent=gui;corner(classPanel,16);stroke(classPanel,.35)
@@ -663,7 +572,7 @@ multi.Activated:Connect(function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end
 multi.Visible=false -- The party menu owns the same server-authoritative code action.
 
 local hint=Instance.new("TextLabel");hint.Name="WorldHint";hint.AnchorPoint=Vector2.new(0,1);hint.Position=UDim2.new(0,8,1,-10);hint.Size=touchEnabled and UDim2.fromOffset(170,32)or UDim2.fromOffset(220,34);hint.BackgroundColor3=Color3.fromRGB(25,28,35);hint.BackgroundTransparency=.3;hint.TextColor3=Color3.fromRGB(226,230,235);hint.TextSize=11;hint.Font=Enum.Font.Gotham;hint.TextWrapped=true;hint.Text="마을 포탈로 이동 · AI는 두 번 터치해 파티 초대";hint.Parent=gui;corner(hint,9)
-if touchEnabled then task.delay(9,function()if hint.Parent then hint.Visible=false end end)end
+hint.Visible=false
 
 -- 메인: 서버가 검증한 NPC 발화를 화면에 짧게 표시하며 원래 조작은 중단하지 않는다.
 local npcSpeechToken=0
@@ -679,8 +588,8 @@ local function showNpcSpeech()
  local line=tostring(p:GetAttribute("NPCSpeech")or"")
  if line==""then return end
  npcSpeechToken+=1;local token=npcSpeechToken
- npcSpeech.Text=line;npcSpeech.Visible=true
- task.delay(3.6,function()if npcSpeech.Parent and token==npcSpeechToken then npcSpeech.Visible=false end end)
+ npcSpeech.Text=line;npcSpeechActive=true;if refreshHud then refreshHud()end
+ task.delay(3.6,function()if npcSpeech.Parent and token==npcSpeechToken then npcSpeechActive=false;if refreshHud then refreshHud()end end end)
 end
 
 -- 연출: 기존 보스 실제 조우 이벤트만 카메라 시야와 자막으로 보여준다.
@@ -707,7 +616,7 @@ bossSkip.AnchorPoint=Vector2.new(.5,1);bossSkip.Position=UDim2.new(.5,0,1,-8)
 bossSkip.ZIndex=32
 local function endBossCinematic()
  bossSceneToken+=1
- bossScene.Visible=false
+ bossSceneActive=false;bossScene.Visible=false;if refreshHud then refreshHud()end
  if bossCamera and bossCamera.Parent and bossCameraFov then
   TweenService:Create(bossCamera,TweenInfo.new(.3),{FieldOfView=bossCameraFov}):Play()
  end
@@ -719,9 +628,9 @@ local function showBossCinematic()
  local line=tostring(p:GetAttribute("BossIntroLine")or"")
  if id==""or line==""then return end
  -- 원본 메시지를 서버에서 수신한 뒤 3초간 강조. 기존 2인 동기화 증거와 무관하다.
- if bossScene.Visible then endBossCinematic()end
+ if bossSceneActive then endBossCinematic()end
  bossSceneToken+=1;local token=bossSceneToken
- bossText.Text=line:sub(1,260);bossScene.Visible=true
+ bossText.Text=line;bossSceneActive=true;if refreshHud then refreshHud()end
  bossCamera=workspace.CurrentCamera
  if bossCamera then
   bossCameraFov=bossCamera.FieldOfView
@@ -757,12 +666,12 @@ local objectStateConnection=nil
 local function refreshObjectInteraction()
  local pr=activeObjectPrompt
  if not pr or not pr.Parent or not pr.Enabled or gui:GetAttribute("RPGMenuOpen")==true or classPanel.Visible then
-  objectContext.Visible=false
+  objectContextActive=false;if refreshHud then refreshHud()end
   return
  end
  local kind=tostring(pr:GetAttribute("InteractionKind")or"")
  local id=tostring(pr:GetAttribute("InteractionId")or"")
- if kind==""or id==""then objectContext.Visible=false;return end
+ if kind==""or id==""then objectContextActive=false;if refreshHud then refreshHud()end;return end
  local note=pr.ActionText
  local state="AVAILABLE"
  if kind=="WEAPON_MERCHANT"or kind=="ARMOR_MERCHANT"then
@@ -773,7 +682,7 @@ local function refreshObjectInteraction()
   local price=prices[tier+1]
   if not price then note="최고 티어 보유";state="MAX_TIER"
   elseif (tonumber(p:GetAttribute("Gold"))or 0)<price then note="다음 단계 "..price.."G · 골드 부족";state="INSUFFICIENT_GOLD"
-  else note="다음 단계 "..price.."G · 서버 구매 조건 적용"end
+  else note="다음 단계 "..price.."G · 구매 가능"end
  elseif kind=="QUEST_NPC"then
   local questId=tonumber(p:GetAttribute("QuestPortal"))or 0
   if questId>0 then note="의뢰 "..tostring(p:GetAttribute("QuestKills")or 0).."/"..tostring(p:GetAttribute("QuestNeed")or 0)
@@ -791,7 +700,7 @@ local function refreshObjectInteraction()
   note=zone and (zone.Name.." · 입장") or pr.ActionText
  elseif kind=="RETURN_PORTAL"then
   if p:GetAttribute("InCombat")==true then note="전투 중 귀환 불가";state="COMBAT_LOCKED"
-  else note="귀환 가능 여부는 서버에서 확인"end
+  else note="마을로 돌아가기"end
  elseif kind=="TREASURE_CHEST"or kind=="EVENT_ALTAR"then
   local claimKey=pr:GetAttribute("ClaimAttribute")
   if typeof(claimKey)=="string"and p:GetAttribute(claimKey)==true then
@@ -802,13 +711,13 @@ local function refreshObjectInteraction()
   if pr.Parent:GetAttribute("Revealed")==true then note="이미 조사한 룬석";state="ALREADY_REVEALED"
   else note="숨겨진 정보 조사"end
  end
- objectTitle.Text=tostring(pr.ObjectText or"상호작용").." · "..tostring(pr.ActionText)
+ objectTitle.Text=tostring(pr.ObjectText or"상호작용")
  objectStatus.Text=note
  objectContext:SetAttribute("BoundInteractionId",id)
  objectContext:SetAttribute("BoundInteractionKind",kind)
  objectContext:SetAttribute("BoundInteractionState",state)
  objectContext:SetAttribute("OwnsGameplayAuthority",false)
- objectContext.Visible=true
+ objectContextActive=true;if refreshHud then refreshHud()end
 end
 local objectShown=ProximityPromptService.PromptShown:Connect(function(pr)
  if not pr:GetAttribute("InteractionKind")then return end
@@ -833,14 +742,59 @@ gui.Destroying:Connect(function()
  if objectStateConnection then objectStateConnection:Disconnect()end
 end)
 
-local rpgMenu=RPGMenu.install(C,gui,p,{
+-- 메인: 공용 메뉴 모델로 HUD를 배치하고 메뉴·대사·안내를 함께 조정한다.
+for _,item in ipairs({objective,hint,npcSpeech,objectContext,bossScene})do
+ item.Parent=notice;item.AnchorPoint=Vector2.zero;item.Position=UDim2.fromOffset(0,0)
+ item.Size=UDim2.new(1,-6,0,item==bossScene and 148 or item==objectContext and 88 or 72)
+end
+objective.AutomaticSize=Enum.AutomaticSize.Y;hint.AutomaticSize=Enum.AutomaticSize.Y
+npcSpeech.AutomaticSize=Enum.AutomaticSize.Y;npcSpeech.TextYAlignment=Enum.TextYAlignment.Top
+bossText.AutomaticSize=Enum.AutomaticSize.Y;bossText.Size=UDim2.new(1,-18,0,76)
+bossText:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+ bossScene.Size=UDim2.new(1,-6,0,math.max(148,bossText.AbsoluteSize.Y+72))
+end)
+objectSize.MaxSize=Vector2.new(10000,10000)
+objectTitle.TextTruncate=Enum.TextTruncate.AtEnd
+objectStatus.Size=UDim2.new(1,-18,0,48)
+refreshHud=function()
+ local size=gui.AbsoluteSize
+ local layout=RPGMenuModel.hudLayout(size.X,size.Y)
+ local function place(item,rect)
+  item.AnchorPoint=Vector2.zero;item.Position=UDim2.fromOffset(rect.x,rect.y)
+  item.Size=UDim2.fromOffset(rect.width,rect.height)
+ end
+ place(stats,layout.stats);place(party,layout.party);place(notice,layout.notice)
+ place(combat,layout.combat);place(returnButton,layout.village);place(classPanel,layout.class)
+ title.Position=UDim2.fromOffset(7,2);title.Size=UDim2.new(1,-14,0,18)
+ statLine.Position=UDim2.fromOffset(7,23);statLine.Size=UDim2.new(1,-14,0,32)
+ classBadge.Position=UDim2.fromOffset(7,56);classBadge.TextTruncate=Enum.TextTruncate.AtEnd
+ for index,control in ipairs({attack,skill,block,dodge})do
+  control.Size=UDim2.fromOffset(60,54)
+  control.Position=UDim2.fromOffset((index-1)%2*68,math.floor((index-1)/2)*62)
+ end
+ local startupOpen=startupOverlay.Parent~=nil
+ local menuOpen=gui:GetAttribute("RPGMenuOpen")==true
+ local blocked=startupOpen or menuOpen or classPanel.Visible
+ local message=RPGMenuModel.hudMessage(menuOpen,classPanel.Visible,startupOpen,bossSceneActive,npcSpeechActive,objectContextActive,tipsVisible)
+ objective.Visible=message=="OBJECTIVE";npcSpeech.Visible=message=="SPEECH"
+ objectContext.Visible=message=="OBJECT";bossScene.Visible=message=="BOSS";hint.Visible=message=="TIPS"
+ notice.Visible=message~="NONE";combat.Visible=not blocked
+ returnButton.Visible=not blocked and (tonumber(p:GetAttribute("CurrentZone"))or 0)>0
+ stats.Visible=not blocked;party.Visible=not blocked
+ if rpgMenu then rpgMenu.button.Visible=not blocked end
+ if notice:GetAttribute("ActiveMessage")~=message then notice.CanvasPosition=Vector2.zero;notice:SetAttribute("ActiveMessage",message)end
+end
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(refreshHud)
+startupOverlay.Destroying:Connect(function()task.defer(refreshHud)end)
+
+rpgMenu=RPGMenu.install(C,gui,p,{
  sounds={actionSfx,hitSfx,skillSfx,levelSfx},
  canOpen=function()return startupOverlay.Parent==nil and not classPanel.Visible end,
  onOpen=function(open)
-  if open then setBlock(false)end
-  combat.Visible=not open
+  if open then blockInput=nil;setBlock(false)end
+  if refreshHud then refreshHud()end
  end,
- trackQuest=function()objective.Visible=true end,
+ trackQuest=function()tipsVisible=false;refreshHud()end,
  changeRoom=function()remote:FireServer(C.Actions.NEXT_ROOM_CODE)end,
  -- 표시 권한만 현장 거리·생존·전투 상태와 동기화한다. 구매는 기존 서버가 다시 검증한다.
  merchantAccess=function()
@@ -860,7 +814,7 @@ local rpgMenu=RPGMenu.install(C,gui,p,{
  end,
  buyWeapon=function()remote:FireServer(C.Actions.BUY_WEAPON)end,
  buyArmor=function()remote:FireServer(C.Actions.BUY_ARMOR)end,
- toggleTips=function()hint.Visible=not hint.Visible end,
+ toggleTips=function()tipsVisible=not tipsVisible;refreshHud()end,
 })
 
 local function zoneName(id)
@@ -889,7 +843,7 @@ local function render()
  local hp=0;local maxHP=p:GetAttribute("MaxHP")or 100
  local h=p.Character and p.Character:FindFirstChildOfClass("Humanoid");if h then hp=math.floor(h.Health)end
  local mastery=p:GetAttribute("MasteryLevel")or 0;local levelLabel=level>=(C.LevelCap or 60)and("Lv."..level.." MAX")or("Lv."..level)
- statLine.Text=string.format("%s  HP %d/%d  공격 %d\n골드 %d · 무기 T%d · 방어구 T%d · 유물 %s%s",levelLabel,hp,maxHP,p:GetAttribute("AttackPower")or 10,p:GetAttribute("Gold")or 0,p:GetAttribute("WeaponTier")or 1,p:GetAttribute("ArmorTier")or 1,tostring(p:GetAttribute("RelicId")or"NONE"),mastery>0 and(" · 숙련 "..mastery)or"")
+ statLine.Text=string.format("%s · 체력 %d/%d\n골드 %d",levelLabel,hp,maxHP,p:GetAttribute("Gold")or 0)
  local classId=tostring(p:GetAttribute("ClassId")or"NONE");local cd=C.Classes[classId];local adv=tostring(p:GetAttribute("AdvancementId")or"");local second=tostring(p:GetAttribute("SecondAdvancementId")or"")
  local advName="";if cd and adv~=""then for _,a in pairs(cd.Advancements)do if a.Id==adv then advName=" → "..a.Name;if second~=""and a.SecondId==second then advName=advName.." → "..(a.SecondName or second)end;break end end end
  classBadge.Text=(cd and cd.Name or"직업 미선택")..advName
@@ -912,7 +866,7 @@ local function render()
  local guard=math.floor(p:GetAttribute("Guard")or C.GuardMax);local blocking=p:GetAttribute("Blocking")==true
  block.Text=(blocking and"막는중"or"막기").."\n"..guard
  block.BackgroundColor3=blocking and Color3.fromRGB(83,139,177)or Color3.fromRGB(74,102,151)
- if zone==1 then hint.Text="초원 RUN "..tostring(p:GetAttribute("CurrentRunSeed")or 0).." · 노랑=패링 / 빨강=회피"else hint.Text=zone==0 and"포탈 1~5 선택 · 보스 동료 두번 터치로 파티"or(zoneName(zone).." · 몹은 멀어지면 어그로 해제")end
+ if zone==1 then hint.Text="노랑: 막기 · 빨강: 회피"else hint.Text=zone==0 and"포탈로 이동 · 동료 두 번 터치"or(zoneName(zone).." · 멀어지면 추격 해제")end
  if classId=="BREAKER"then skill.Text="파쇄"elseif classId=="SHADOW"then skill.Text="그림자"elseif classId=="RUNE"then skill.Text="룬"elseif classId=="SOUL"then skill.Text="영혼"else skill.Text="스킬"end
  renderClassPanel()
  refreshObjectInteraction()
@@ -922,6 +876,23 @@ local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.H
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
 p:GetAttributeChangedSignal("FeedbackEvent"):Connect(function()
  local v=tostring(p:GetAttribute("FeedbackEvent")or"")
+ if v:match("^SKILL:")then
+  playCombatAnimation(true);skillSfx:Play()
+  if studioSkillEmitter and studioSkillEmitter.Parent then
+   local classId=tostring(p:GetAttribute("ClassId")or"")
+   local cd=C.Classes[classId]
+   local color=cd and cd.Color or Color3.fromRGB(180,210,255)
+   studioSkillEmitter.Texture="rbxasset://textures/particles/sparkles_main.dds"
+   studioSkillEmitter.Color=ColorSequence.new(color,Color3.new(1,1,1))
+   studioSkillEmitter.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,.15),NumberSequenceKeypoint.new(1,1)})
+   studioSkillEmitter.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,classId=="BREAKER"and .8 or .45),NumberSequenceKeypoint.new(1,0)})
+   studioSkillEmitter.EmissionDirection=Enum.NormalId.Front
+   studioSkillEmitter.SpreadAngle=classId=="RUNE"and Vector2.new(160,30)or classId=="SOUL"and Vector2.new(180,180)or Vector2.new(30,15)
+   studioSkillEmitter.Acceleration=classId=="SOUL"and Vector3.new(0,8,0)or Vector3.new(0,-5,0)
+   studioSkillEmitter.Speed=classId=="SHADOW"and NumberRange.new(12,18)or NumberRange.new(5,10)
+   studioSkillEmitter:Emit(touchEnabled and 12 or 20)
+  end
+ end
  if v:find("LEVEL_UP")then levelSfx:Play()elseif v:find("PARRY")then skillSfx:Play()elseif v:find("GUARD_BREAK")then hitSfx:Play()elseif v:find("ATTACK")or v:find("KILL")then hitSfx:Play()end
  if v:find("NPC_INITIATED_TALK",1,true)or v:find("NPC_DIALOGUE",1,true)then showNpcSpeech()end
 end)

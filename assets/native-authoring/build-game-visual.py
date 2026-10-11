@@ -31,6 +31,8 @@ PARSER.add_argument('--source-license', default='')
 PARSER.add_argument('--source-credit', default='')
 PARSER.add_argument('--module', choices=['auto','mesh-ai','human','clothing','object','design','medical','animation','video'], default='auto')
 PARSER.add_argument('--source-model', default='')
+# Explicit, reviewed source material names only; never guess opacity for transparent assets.
+PARSER.add_argument('--opaque-material', action='append', default=[])
 PARSER.add_argument('--library-parent-id', default='')
 PARSER.add_argument('--library-source-sha256', default='')
 PARSER.add_argument('--object-kind', choices=['generic','rock','crate','chair','table','door','tree','machine','weapon','lamp'], default='generic')
@@ -672,6 +674,15 @@ def import_source_surface():
                     if derivative.use_nodes:
                         shader=next((node for node in derivative.node_tree.nodes if node.type=='BSDF_PRINCIPLED'),None)
                         if shader:
+                            if source_mat.name in ARGS.opaque_material:
+                                alpha=shader.inputs.get('Alpha')
+                                if not alpha or alpha.is_linked:
+                                    raise RuntimeError('OPAQUE_OVERRIDE_LINKED_ALPHA_FORBIDDEN')
+                                original_alpha=float(alpha.default_value)
+                                alpha.default_value=1.0
+                                SOURCE_ENHANCEMENTS.append({'kind':'PBR_BASE_COLOR_STYLE_REAUTHOR',
+                                    'material':source_mat.name,'channel':'ALPHA',
+                                    'from':original_alpha,'to':1.0,'reason':'EXPLICIT_REVIEWED_OPAQUE_SOURCE'})
                             roughness=shader.inputs.get('Roughness')
                             if roughness and not roughness.is_linked and (SOFT or LOW_POLY or WORN or TECH):
                                 original=float(roughness.default_value)
@@ -987,8 +998,9 @@ pbr_mesh_qa={
     'sourceOriginalPreserved':True,
     'runtimeVerified':False
 }
+pbr_mesh_qa['visibleMaterialPresent']=any(m.get('alphaMode','OPAQUE')=='OPAQUE' or m.get('pbrMetallicRoughness',{}).get('baseColorFactor',[1,1,1,1])[3]>.01 for m in glb_document.get('materials',[]))
 pbr_mesh_qa['pass']=pbr_mesh_qa['meshCount']>0 and pbr_mesh_qa['primitiveCount']>0 and all(
-    pbr_mesh_qa[k] for k in ('normalAndUvPresent','materialIndexValid','materialFactorsFinite','textureIndicesValid','sourceUvPreserved'))
+    pbr_mesh_qa[k] for k in ('normalAndUvPresent','materialIndexValid','materialFactorsFinite','textureIndicesValid','sourceUvPreserved','visibleMaterialPresent'))
 if not pbr_mesh_qa['pass']:
     raise RuntimeError('NATIVE_GLB_PBR_GEOMETRY_CHANNELS_INVALID')
 materials=[]
@@ -1095,6 +1107,34 @@ for source,destination in [(master,preview_master),(glb,preview)]:
         bpy.data.images.remove(image)
     finally:
         for obj in imported: bpy.data.objects.remove(obj,do_unlink=True)
+# Reject an empty, fully transparent or out-of-camera asset even if both previews match.
+existing=set(bpy.data.objects)
+bpy.ops.import_scene.gltf(filepath=str(glb))
+coverage_objects=[obj for obj in bpy.data.objects if obj not in existing]
+old_transparent=SCENE.render.film_transparent
+old_floor_hidden=floor.hide_render
+try:
+    floor.hide_render=True
+    SCENE.render.film_transparent=True
+    coverage_path=ARGS.output/'preview-silhouette.png'
+    SCENE.render.filepath=str(coverage_path)
+    bpy.ops.render.render(write_still=True)
+    coverage_image=bpy.data.images.load(str(coverage_path),check_existing=False)
+    coverage_pixels=array('f',[0.])*len(coverage_image.pixels)
+    coverage_image.pixels.foreach_get(coverage_pixels)
+    foreground=sum(value>.05 for value in coverage_pixels[3::4])
+    foreground_ratio=foreground/(len(coverage_pixels)//4)
+    bpy.data.images.remove(coverage_image)
+    application['imageVisibilityQa']={'method':'REIMPORTED_GLB_TRANSPARENT_FOREGROUND_MASK',
+        'path':'preview-silhouette.png','sha256':hashlib.sha256(coverage_path.read_bytes()).hexdigest(),
+        'foregroundPixels':foreground,'foregroundRatio':foreground_ratio,
+        'pass':foreground_ratio>=.005,'runtimeVerified':False}
+    if foreground_ratio<.005:
+        raise RuntimeError('NATIVE_ASSET_PREVIEW_EMPTY_OR_INVISIBLE')
+finally:
+    floor.hide_render=old_floor_hidden
+    SCENE.render.film_transparent=old_transparent
+    for obj in coverage_objects: bpy.data.objects.remove(obj,do_unlink=True)
 before_pixels,after_pixels=rendered_pixels
 if not before_pixels or len(before_pixels)!=len(after_pixels): raise RuntimeError('OPTIMIZATION_RENDER_COMPARISON_MISSING')
 max_pixel_error=max(abs(a-b) for a,b in zip(before_pixels,after_pixels))
@@ -1249,7 +1289,7 @@ evidence={
     'meshObjectCount':len(ASSET_OBJECTS),
     'surfaceDistribution':physical_analysis,
     **({'optimization':application['optimization']} if 'optimization' in application else {}),
-    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS,*(['preview-motion.mp4'] if VIDEO_EXPORT else [])]
+    'outputs':['asset.glb','master.glb','preview.png','preview-master.png','preview-silhouette.png','application.json','evidence.json',*IMAGE_VIEW_OUTPUTS,*(['preview-motion.mp4'] if VIDEO_EXPORT else [])]
 }
 (ARGS.output/'evidence.json').write_text(json.dumps(evidence,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('VIBE_NATIVE_GAME_ASSET='+ARGS.asset_id)

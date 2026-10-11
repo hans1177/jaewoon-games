@@ -1489,6 +1489,21 @@ test('master GLB rejects broken accessor skin node and animation sampler lineage
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('master GLB rejects fully invisible materials before any runtime promotion',()=>{
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'invisible-master-glb-'));
+ try{
+  const original=fs.readFileSync('assets/roblox/world-ghosts/native/spider/spider.glb');
+  const length=original.readUInt32LE(12),document=JSON.parse(original.subarray(20,20+length));
+  for(const material of document.materials){material.alphaMode='MASK';material.pbrMetallicRoughness={...material.pbrMetallicRoughness,baseColorFactor:[.8,.7,.6,0]};}
+  const json=Buffer.from(JSON.stringify(document));const padded=Buffer.alloc(Math.ceil(json.length/4)*4,32);json.copy(padded);
+  const rest=original.subarray(20+length),out=Buffer.alloc(20+padded.length+rest.length);
+  original.subarray(0,20).copy(out);out.writeUInt32LE(out.length,8);out.writeUInt32LE(padded.length,12);padded.copy(out,20);rest.copy(out,20+padded.length);
+  fs.writeFileSync(path.join(root,'invisible.glb'),out);
+  const result=evaluateCrossPlatform3dMasterGlb({repoRoot:root,family:'CREATURE',source:{path:'invisible.glb'}});
+  assert.equal(result.pass,false);assert.ok(result.blockers.includes('MASTER_GLB_VISIBLE_MATERIAL_REQUIRED'));
+ }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('master GLB rejects zero skin-weight data even when JOINTS and WEIGHTS accessors exist',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'zero-weight-master-glb-'));
   try{
@@ -3974,7 +3989,7 @@ test('runtime visual defects flow from asset planning into the source worker pro
   const plan=buildVibeAssetProductionPlan({target:'roblox',task:{gameId:'runtime-visual-demo',goal:'로블록스 UI와 월드 디테일 보완',runtimeVisualEvidence}});
   assert.equal(plan.runtimeVisualAudit.pass,false);
   assert.equal(plan.runtimeVisualRepair.status,'RUNTIME_VISUAL_REPAIR_REQUIRED');
-  assert.deepEqual([...plan.runtimeVisualRepair.interfaceMissing],['MINIMAP']);
+  assert.deepEqual([...plan.runtimeVisualRepair.interfaceMissing],['HUD','MINIMAP']);
   assert.deepEqual([...plan.runtimeVisualRepair.sceneObjectsMissing],['quest-board']);
   assert.equal(plan.runtimeVisualRepair.declarationOnlyClosureForbidden,true);
   assert.match(assetProductionGuidance(plan),/RUNTIME VISUAL REPAIR LOOP/);

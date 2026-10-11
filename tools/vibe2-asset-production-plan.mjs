@@ -554,7 +554,7 @@ export function inspectVibeSourceGlb({repoRoot=process.cwd(),source={}}={}){
       if(!Number.isInteger(info?.index)||!texture||!Number.isInteger(texture.source)||!embedded||!uvValid)issues.push('GLB_MATERIAL_TEXTURE_BINDING_INVALID');
       return {slot,index:info?.index??null,image:texture?.source??null,texCoord,colorSpace,channels,embedded,uvValid};
     });
-    return {index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(pbr.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture),metallicFactor:metallic,roughnessFactor:roughness,baseColorFactor:baseColor,alphaMode:material.alphaMode??'OPAQUE',doubleSided:material.doubleSided===true,textureSlots:slots};
+    return {index,name:material.name||`material-${index}`,hasBaseColorTexture:Boolean(pbr.baseColorTexture),hasNormalTexture:Boolean(material.normalTexture),metallicFactor:metallic,roughnessFactor:roughness,baseColorFactor:baseColor,alphaMode:material.alphaMode??'OPAQUE',alphaCutoff:material.alphaCutoff??.5,doubleSided:material.doubleSided===true,textureSlots:slots};
   });
   const meshNodeBindings=nodes.map((node,nodeIndex)=>({
     nodeIndex,
@@ -813,6 +813,7 @@ export function evaluateCrossPlatform3dMasterGlb({repoRoot=process.cwd(),source=
   if(primitives.some(row=>row.hasNormals!==true))blockers.push('MASTER_GLB_NORMALS_REQUIRED');
   if(primitives.some(row=>row.hasUv!==true))blockers.push('MASTER_GLB_UV0_REQUIRED');
   if(!(inv.materials||[]).length||primitives.some(row=>row.hasMaterial!==true))blockers.push('MASTER_GLB_MATERIAL_REQUIRED');
+  if(primitives.length&&!primitives.some(row=>{const m=inv.materials?.[row.materialIndex];return m&&(m.alphaMode==='OPAQUE'||m.baseColorFactor?.[3]>=(m.alphaMode==='MASK'?m.alphaCutoff:.01));}))blockers.push('MASTER_GLB_VISIBLE_MATERIAL_REQUIRED');
   if(primitives.some(row=>row.hasPosition!==true||row.attributeAccessorReferencesValid!==true||row.attributeCountsConsistent!==true))blockers.push('MASTER_GLB_ACCESSOR_BINDING_REQUIRED');
   if(!(inv.skins||[]).length||Number(inv.jointNodeCount||0)<=0||(inv.skins||[]).some(row=>Number(row.jointCount||0)<=0||Number(row.invalidJointCount||0)>0||row.inverseBindMatricesValid!==true))blockers.push('MASTER_GLB_SKIN_SKELETON_REQUIRED');
   if(Number(inv.meshSkinBindingCount||0)<=0||!primitives.some(row=>row.skinBound===true&&row.hasJointWeights===true))blockers.push('MASTER_GLB_SKIN_BINDING_REQUIRED');

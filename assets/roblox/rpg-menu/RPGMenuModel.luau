@@ -1,10 +1,39 @@
--- Read-only presentation of the existing server-owned equipment and quest schema.
+-- 파일명: RPGMenuModel.luau
+-- 메인: 서버 소유 장비·퀘스트와 안전 영역 기준 화면 배치를 표시한다.
 local Model = {}
 
 function Model.layout(width, height)
- local w = math.min(960, math.max(240, width - 24))
- local h = math.min(680, math.max(240, height - 24))
+ local w = math.min(960, math.max(1, width - 24))
+ local h = math.min(680, math.max(1, height - 24))
  return {width=w, height=h, compact=w<660, columns=w<400 and 2 or w<660 and 3 or 4}
+end
+
+-- HUD: 한 안내 영역만 사용하고 기본 이동·점프 터치 영역을 비워 둔다.
+function Model.hudLayout(width, height)
+ local w=math.max(240,width);local h=math.max(240,height)
+ local landscape=w>h and h<500
+ local function box(x,y,bw,bh)return {x=x,y=y,width=bw,height=bh}end
+ local noticeWidth=landscape and math.max(120,w-296)or math.min(480,w-16)
+ local noticeX=landscape and 148 or (w-noticeWidth)/2
+ local noticeY=landscape and 84 or 140
+ return {
+  landscape=landscape,
+  stats=box(8,8,w-140,72),party=box(w-124,8,116,64),
+  menu=box(8,landscape and 88 or 84,128,52),
+  village=box(landscape and 8 or w-160,landscape and 148 or 84,landscape and 128 or 152,52),
+  notice=box(noticeX,noticeY,noticeWidth,math.max(52,math.min(148,h-noticeY-(landscape and 16 or 232)))),
+  combat=box(w-136,math.max(80,h-224),128,116),
+  class=box((w-math.min(380,w-16))/2,(h-math.min(230,h-16))/2,math.min(380,w-16),math.min(230,h-16))
+ }
+end
+
+function Model.hudMessage(menuOpen, classOpen, startupOpen, bossActive, speechActive, objectActive, tipsActive)
+ if menuOpen or classOpen or startupOpen then return "NONE" end
+ if bossActive then return "BOSS" end
+ if speechActive then return "SPEECH" end
+ if objectActive then return "OBJECT" end
+ if tipsActive then return "TIPS" end
+ return "OBJECTIVE"
 end
 
 function Model.equipment(attributes, config)

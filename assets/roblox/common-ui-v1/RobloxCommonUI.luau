@@ -4873,6 +4873,60 @@ function RobloxCommonUI.Create(atomId, options)
   error("UNKNOWN_COMMON_UI_ATOM: " .. tostring(atomId))
 end
 
+-- 승인된 행동 메뉴: 기존 버튼·서버 동작을 유지하고 모바일 표시만 소유한다.
+function RobloxCommonUI.ActionLabel(action,index)
+ local value=tostring(action.ShortLabel or action.Label or "")
+ local length=utf8.len(value)or #value
+ if length>0 and length<=18 and not value:find("core gameplay",1,true)then return value end
+ local names={COMBAT="공격",SURVIVAL="생존",DEFENSE="방어",MOVEMENT="이동",PROGRESSION="성장",PUZZLE="퍼즐",ECONOMY="운영",BUILD="건설",UPGRADE="강화",SERVICE="관리",OBJECTIVE="목표",MOBILE="조작"}
+ return (names[tostring(action.Kind)]or"행동").." "..tostring(index)
+end
+
+function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)
+ local opened=false
+ gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+ local hud=Instance.new("Frame");hud.Name="MobileGameStatus";hud.BackgroundTransparency=1;hud.Parent=gui
+ title.Parent=hud;status.Parent=hud;if healthTrack then healthTrack.Parent=hud end
+ if multiplayerStatus then multiplayerStatus.Parent=hud end
+ local menu=RobloxCommonUI.CreatePrimaryButton({name="GameActionsMenu",text="메뉴",minWidth=52,minHeight=52})
+ menu.Parent=gui
+ local close=RobloxCommonUI.CreatePrimaryButton({name="CloseActionsMenu",text="닫기",minWidth=52,minHeight=52})
+ close.Parent=root
+ local quick=nil
+ if primary then
+  quick=RobloxCommonUI.CreatePrimaryButton({name="PrimaryGameAction",text=primary.label,minWidth=52,minHeight=56})
+  quick.Parent=gui;quick.Activated:Connect(primary.activate)
+ end
+ local shade=Instance.new("Frame");shade.Name="ActionMenuShade";shade.Size=UDim2.fromScale(1,1)
+ shade.BackgroundColor3=Color3.new(0,0,0);shade.BackgroundTransparency=.35;shade.Active=true;shade.ZIndex=40;shade.Visible=false;shade.Parent=gui
+ root.ZIndex=41;list.ZIndex=42;close.ZIndex=43
+ for _,item in ipairs(list:GetDescendants())do if item:IsA("GuiObject")then item.ZIndex=43 end end
+ local function layout()
+  local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
+  hud.Position=UDim2.fromOffset(8,8);hud.Size=UDim2.fromOffset(math.min(380,v.X-16),multiplayerStatus and 100 or 78)
+  title.Position=UDim2.fromOffset(0,0);title.Size=UDim2.new(1,0,0,22);title.TextScaled=false;title.TextSize=14;title.TextTruncate=Enum.TextTruncate.AtEnd
+  status.Position=UDim2.fromOffset(0,26);status.Size=UDim2.new(1,0,0,36);status.TextScaled=false;status.TextSize=12;status.TextWrapped=true
+  if healthTrack then healthTrack.Position=UDim2.fromOffset(0,66);healthTrack.Size=UDim2.new(1,0,0,8)end
+  if multiplayerStatus then multiplayerStatus.Position=UDim2.fromOffset(0,78);multiplayerStatus.Size=UDim2.new(1,0,0,22);multiplayerStatus.TextScaled=false;multiplayerStatus.TextSize=12 end
+  menu.AnchorPoint=Vector2.new(1,1);menu.Position=UDim2.new(1,-8,1,-104);menu.Size=UDim2.fromOffset(128,52)
+  if quick then quick.AnchorPoint=Vector2.new(1,1);quick.Position=UDim2.new(1,-8,1,-164);quick.Size=UDim2.fromOffset(128,56)end
+  root.AnchorPoint=Vector2.new(.5,.5);root.Position=UDim2.fromScale(.5,.5);root.Size=UDim2.fromOffset(math.min(480,v.X-16),math.min(520,v.Y-16))
+  close.AnchorPoint=Vector2.new(1,0);close.Position=UDim2.new(1,-8,0,8);close.Size=UDim2.fromOffset(72,52)
+  list.Position=UDim2.fromOffset(8,68);list.Size=UDim2.new(1,-16,1,-76)
+ end
+ local function setOpen(value)
+  opened=value;root.Visible=value;shade.Visible=value;hud.Visible=not value;menu.Visible=not value
+  if quick then quick.Visible=not value end
+  gui:SetAttribute("GameMenuOpen",value)
+ end
+ menu.Activated:Connect(function()setOpen(true)end)
+ close.Activated:Connect(function()setOpen(false)end)
+ gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layout)
+ layout();setOpen(false)
+ return {isOpen=function()return opened end,close=function()setOpen(false)end}
+end
+
+
 function RobloxCommonUI.Audit()
   return table.freeze({
     version = 10,

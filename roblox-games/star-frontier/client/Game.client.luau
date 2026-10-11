@@ -14,6 +14,7 @@ local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Config = require(Shared:WaitForChild("GameConfig"))
+local CommonUI = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = Config.VerifiedExternalLearning or Config.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -120,7 +121,7 @@ local function makeLabel(parent, name, size, position, text, textSize, alignment
 end
 
 local function makeButton(parent, name, text, size, position, color)
-    local button = Instance.new("TextButton")
+    local button = CommonUI.CreatePrimaryButton({minWidth=44,minHeight=52})
     button.Name = name
     button.Size = size
     button.Position = position
@@ -245,60 +246,11 @@ verifiedLearningPlayer.CharacterAdded:Connect(syncVerifiedLearningCharacterMotio
 end
 
 -- Roblox UI / touch / progression guidance.
-local verifiedLearningGuidance = Instance.new("TextLabel")
-verifiedLearningGuidance.Name = "VerifiedLearningGuidance"
-verifiedLearningGuidance.Size = UDim2.new(1, -20, 0, 30)
-verifiedLearningGuidance.Position = UDim2.fromOffset(10, 8)
-verifiedLearningGuidance.BackgroundTransparency = 1
-verifiedLearningGuidance.TextWrapped = true
-verifiedLearningGuidance.TextScaled = true
-verifiedLearningGuidance.TextColor3 = verifiedLearningSemanticColor
-verifiedLearningGuidance:SetAttribute("VerifiedLearningSemanticMood", verifiedLearningSemanticMood)
-if verifiedLearningSemanticVariant == "PUZZLE_STATE" then
-  verifiedLearningGuidance.Text = "퍼즐 보드와 현재 이동을 함께 확인"
-elseif verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningGuidance.Text = "웨이브와 기지 상태를 보며 배치"
-elseif verifiedLearningSemanticVariant == "COMBAT_IMPACT" then
-  verifiedLearningGuidance.Text = "공격 방향과 타격 응답을 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningGuidance.Text = "레벨과 다음 성장 조건을 확인"
-elseif verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" then
-  verifiedLearningGuidance.Text = "자원과 업그레이드 상태를 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningGuidance.Text = "체력과 위협 상태를 확인"
-elseif verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" then
-  verifiedLearningGuidance.Text = "이동 방향과 공간 응답을 확인"
-elseif verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
-  verifiedLearningGuidance.Text = "공유 세션과 내 역할을 확인"
-else
-  verifiedLearningGuidance.Text = "현재 목표와 다음 행동을 확인"
-end
-verifiedLearningGuidance.Parent = verifiedLearningRoot
-local verifiedLearningRiskCue = Instance.new("TextLabel")
-verifiedLearningRiskCue.Name = "VerifiedLearningProgressionRiskCue"
-verifiedLearningRiskCue.Size = UDim2.new(1, -20, 0, 26)
-verifiedLearningRiskCue.Position = UDim2.fromOffset(10, 40)
-verifiedLearningRiskCue.BackgroundTransparency = 1
-verifiedLearningRiskCue.TextWrapped = true
-verifiedLearningRiskCue.TextScaled = true
-verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-if verifiedLearningSemanticVariant == "DEFENSE_WAVE" then
-  verifiedLearningRiskCue.Text = "배치 전 웨이브·기지 위험 확인"
-elseif verifiedLearningSemanticVariant == "SURVIVAL_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 체력·위협 위험 확인"
-elseif verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-  verifiedLearningRiskCue.Text = "행동 전 레벨·성장 조건 확인"
-else
-  verifiedLearningRiskCue.Text = "현재 상태와 다음 행동 확인"
-end
-verifiedLearningRiskCue.Visible = verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "SURVIVAL_RISK" or verifiedLearningSemanticVariant == "PROGRESSION_RISK"
-verifiedLearningRiskCue.Parent = verifiedLearningRoot
+verifiedLearningRoot:SetAttribute("VerifiedLearningProgressionRiskCue", verifiedLearningSemanticVariant)
 
--- Roblox skill VFX / camera / motion feedback.
-local function playVerifiedLearningActionFeedback(control)
+local function playVerifiedLearningActionFeedback(control, serverConfirmed)
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningLastControl", control and control.Name or "GAMEPLAY_STATE")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningInputRespondedAt", os.clock())
-  verifiedLearningGuidance.Visible = false
 
   if control then
     local scale = control:FindFirstChild("VerifiedLearningMotionScale")
@@ -311,6 +263,9 @@ local function playVerifiedLearningActionFeedback(control)
     verifiedLearningTweenService:Create(scale, TweenInfo.new(0.16, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
   end
 
+  if serverConfirmed~=true then return end
+  local approvedScope=tostring(verifiedLearningPlayer:GetAttribute("LastApprovedScope")or""):upper()
+  if not(approvedScope:find("ATTACK",1,true)or approvedScope:find("SKILL",1,true)or approvedScope:find("HIT",1,true))then return end
   if verifiedLearningSemanticVariant == "MOVEMENT_SPATIAL" or verifiedLearningSemanticVariant == "DEFENSE_WAVE" or verifiedLearningSemanticVariant == "OBJECTIVE_GOAL" or verifiedLearningSemanticVariant == "SOCIAL_CONTEXT" then
   local camera = workspace.CurrentCamera
   if camera then
@@ -365,10 +320,6 @@ local function playVerifiedLearningActionFeedback(control)
   end
   end
 
-  if verifiedLearningSemanticVariant == "ECONOMY_RESOURCE" or verifiedLearningSemanticVariant == "PUZZLE_STATE" or verifiedLearningSemanticVariant == "PROGRESSION_RISK" then
-    verifiedLearningRiskCue.Visible = true
-    verifiedLearningRiskCue.TextColor3 = verifiedLearningSemanticColor
-  end
 end
 
 local verifiedLearningLastControl = nil
@@ -392,7 +343,7 @@ verifiedLearningRoot.DescendantAdded:Connect(bindVerifiedLearningControl)
 verifiedLearningPlayer:GetAttributeChangedSignal("LastApprovedScope"):Connect(function()
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningGameplayState", verifiedLearningPlayer:GetAttribute("LastApprovedScope") or "")
   verifiedLearningRoot:SetAttribute("VerifiedExternalLearningServerConfirmedAt", os.clock())
-  playVerifiedLearningActionFeedback(verifiedLearningLastControl)
+  playVerifiedLearningActionFeedback(verifiedLearningLastControl, true)
   verifiedLearningLastControl = nil
 end)
 -- VERIFIED_EXTERNAL_LEARNING_ROBLOX_NATIVE_END
@@ -517,18 +468,29 @@ local keyMap = {
     [Enum.KeyCode.ButtonL2] = "Boost",
 }
 
-local function bindHold(button, stateName)
-    button.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-            held[stateName] = true
-        end
-    end)
-    button.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-            held[stateName] = false
-        end
-    end)
+local heldInputs={}
+local keyboardHeld={}
+local function refreshHeld()
+ for state in pairs(held)do held[state]=keyboardHeld[state]==true end
+ for _,state in pairs(heldInputs)do held[state]=true end
 end
+local function releaseControls()
+ table.clear(heldInputs);table.clear(keyboardHeld);refreshHeld()
+end
+local function releaseInput(input)
+ heldInputs[input]=nil
+ local state=keyMap[input.KeyCode];if state then keyboardHeld[state]=nil end
+ refreshHeld()
+end
+local function bindHold(button,stateName)
+ button.InputBegan:Connect(function(input)
+  if not upgradePanel.Visible and (input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1)then
+   heldInputs[input]=stateName;refreshHeld()
+  end
+ end)
+ button.InputEnded:Connect(releaseInput)
+end
+UserInputService.WindowFocusReleased:Connect(releaseControls)
 
 bindHold(forwardButton, "Forward")
 bindHold(backButton, "Back")
@@ -539,12 +501,12 @@ bindHold(downButton, "Down")
 bindHold(boostButton, "Boost")
 
 UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then
+    if processed or upgradePanel.Visible or UserInputService:GetFocusedTextBox() then
         return
     end
     local stateName = keyMap[input.KeyCode]
     if stateName then
-        held[stateName] = true
+        keyboardHeld[stateName] = true;refreshHeld()
     elseif input.KeyCode == Enum.KeyCode.F then
         remote:FireServer("FIRE")
     elseif input.KeyCode == Enum.KeyCode.R then
@@ -552,12 +514,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
     end
 end)
 
-UserInputService.InputEnded:Connect(function(input)
-    local stateName = keyMap[input.KeyCode]
-    if stateName then
-        held[stateName] = false
-    end
-end)
+UserInputService.InputEnded:Connect(releaseInput)
 
 mineButton.Activated:Connect(function()
     remote:FireServer("MINE")
@@ -594,6 +551,36 @@ end)
 laserUpgrade.Activated:Connect(function()
     remote:FireServer("UPGRADE_LASER")
 end)
+
+-- 두 엄지 조작 영역과 모달이 작은 화면에서도 서로 덮이지 않는다.
+local function layoutControls()
+ local v=gui.AbsoluteSize;if v.X<=0 or v.Y<=0 then return end
+ gui.ScreenInsets=Enum.ScreenInsets.CoreUISafeInsets
+ local compact=v.X<650 or v.Y<450
+ local shortLandscape=v.X>v.Y and v.Y<320
+ local columns=shortLandscape and 3 or 2
+ local panelWidth=shortLandscape and 168 or(compact and math.min(148,(v.X-24)/2)or 204)
+ local cell=(panelWidth-(columns+1)*6)/columns
+ for _,panel in ipairs({movePanel,actionPanel})do panel.Size=UDim2.fromOffset(panelWidth,shortLandscape and 122 or 180)end
+ movePanel.Position=UDim2.new(0,8,1,-8);actionPanel.Position=UDim2.new(1,-8,1,-8)
+ for _,buttons in ipairs({{leftButton,rightButton,forwardButton,backButton,upButton,downButton},{mineButton,fireButton,boostButton,repairButton,sellButton,upgradeButton}})do
+  for i,b in ipairs(buttons)do b.Size=UDim2.fromOffset(cell,52);b.Position=UDim2.fromOffset(6+((i-1)%columns)*(cell+6),6+math.floor((i-1)/columns)*58);b.TextSize=13;b.TextWrapped=true end
+ end
+ upgradeButton.Text="강화";sellButton.Text="판매"
+ topPanel.Position=UDim2.fromOffset(8,8);topPanel.Size=UDim2.fromOffset(math.min(360,v.X-16),100)
+ for i,label in ipairs({titleLabel,sectorLabel,moneyLabel,shipLabel,hullLabel})do
+  label.Position=UDim2.fromOffset(8,4+(i-1)*18);label.Size=UDim2.new(1,-16,0,18);label.TextSize=12;label.TextTruncate=Enum.TextTruncate.AtEnd
+ end
+ noticeLabel.Position=UDim2.fromOffset(8,112);noticeLabel.Size=UDim2.fromOffset(v.X-16,math.min(40,math.max(20,v.Y-304)));noticeLabel.TextSize=13
+ upgradePanel.Size=UDim2.fromOffset(math.min(360,v.X-16),230);upgradePanel.Position=UDim2.fromScale(.5,.5);upgradePanel.Active=true;upgradePanel.ZIndex=30
+ for _,item in ipairs(upgradePanel:GetDescendants())do if item:IsA("GuiObject")then item.ZIndex=31 end end
+ closeUpgrade.Size=UDim2.fromOffset(52,52);closeUpgrade.Position=UDim2.new(1,-60,0,8);upgradeTitle.TextSize=16;upgradeTitle.Size=UDim2.new(1,-86,0,40)
+end
+upgradePanel:GetPropertyChangedSignal("Visible"):Connect(function()
+ local open=upgradePanel.Visible;movePanel.Visible=not open;actionPanel.Visible=not open;topPanel.Visible=not open;noticeLabel.Visible=not open
+ if open then releaseControls()end
+end)
+gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutControls);layoutControls()
 
 -- =========================================================
 -- 상태 렌더링

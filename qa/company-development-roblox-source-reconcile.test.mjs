@@ -774,7 +774,9 @@ test('verified APK learning is unconditional across Roblox native gameplay axes'
   assert.match(source,/VerifiedLearningTouchTarget/);
   assert.match(source,/VerifiedLearningProgressionRiskCue/);
   assert.match(source,/VerifiedExternalLearningServerConfirmedAt/);
-  assert.match(source,/playVerifiedLearningActionFeedback\(verifiedLearningLastControl\)/);
+  assert.match(source,/playVerifiedLearningActionFeedback\(verifiedLearningLastControl, true\)/);
+  assert.doesNotMatch(source,/local verifiedLearningGuidance = Instance.new/);
+  assert.match(source,/if serverConfirmed\s*~=\s*true then return end/);
 });
 
 
