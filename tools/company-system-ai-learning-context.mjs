@@ -64,7 +64,12 @@ const BOTTLENECK_METHODS=Object.freeze([
   ['WORK_CONSERVING_DISJOINT_PARALLELISM','충돌 없는 고가치 작업은 빈 슬롯을 즉시 채우고 unrelated safe work를 계속 진행한다. 한 lane의 실패가 다른 독립 lane을 막지 않게 한다.'],
   ['SPARE_CAPACITY_HEDGING','추측 실행은 남는 물리 용량에서만, 서로 독립된 후보에 한정한다. primary coverage를 먼저 보존하고 중복 side effect가 생기기 전에 fan-in에서 하나로 수렴한다.'],
   ['CAUSE_SCOPED_BACKPRESSURE','압력 조절은 runner queue·checkout network·incremental QA·fan-in 등 실제 병목 원인과 lane에만 적용한다. 전체 시스템을 일괄 downshift하지 않는다.'],
-  ['OBSERVABILITY_TO_VERIFIED_LEARNING','failure stage·signature·class와 queue/start/fan-in 시간을 구조화해 수리 전후를 비교한다. 효과가 fresh deterministic QA로 확인된 결과만 재사용 지식으로 승격한다.']
+  ['OBSERVABILITY_TO_VERIFIED_LEARNING','failure stage·signature·class와 queue/start/fan-in 시간을 구조화해 수리 전후를 비교한다. 효과가 fresh deterministic QA로 확인된 결과만 재사용 지식으로 승격한다.'],
+  ['ASSET_CONSUMER_CAUSAL_TRIANGULATION','내부 라이브러리 미적용은 tools/vibe2-auto-planner.mjs와 tools/vibe2-asset-production-plan.mjs에서 선언·계획·실제 소비를 분리해 재현한다. STUDIO_ASSET_BINDING_VERSION이나 목록만으로 완료 처리하지 않는다. 소문자 원자 ID, 팩 경로와 Factory.Create까지 이어지는 ID 흐름, Unity 임베디드 렌더 소유 파일을 확인한다. 미사용 선언은 음성 대조군으로 남기고 소스 소비를 런타임 PASS로 승격하지 않는다.'],
+  ['EXPLICIT_NATIVE_AUTHORING_REPAIR','명시적인 task.assetAuthoring.sourceModel/sourceImage/module 또는 imageToAsset 요청이 applyFirst 재사용 때문에 누락되는지 검사한다. 기본 내부자산 재사용은 보존하면서 명시된 변환은 기존 native authoring으로 실행하고 원본 해시·상업 이용·파생 권리 검증을 유지한다. Cascadeur/DeepMotion FBX와 MeshAI GLB는 실제 내보낸 원본·파생 산출물·플랫폼 재생 증거를 별도로 확인한다.'],
+  ['RUNTIME_BOOT_CAUSE_BEFORE_WAIT','UNITY_WEB_QA_BOOT_MARKER_MISSING은 콘솔 예외·실패 요청·실제 빌드 산출물을 먼저 확인한다. MAGIC_FOREST_PLAYER_GUARDIAN_ACTION_OR_GRIP_MISSING은 WeaponGrip과 Resources.Load<AnimationClip> 및 Animation.AddClip의 실제 액션 바인딩을 분리 검증한다. 부팅 대기 증가나 QA 마커 위조로 통과시키지 않는다. 실제 브라우저 독립 QA·회귀·배포·다음 BUILD_UP까지 확인한다.'],
+  ['EXACT_FAILURE_AND_WAKE_IDENTITY','BLOCKED/CLOCK 문자열을 LOCK 경합으로 오분류하지 않도록 company-system-ai-failure-classifier.mjs의 토큰 경계를 회귀검증한다. 24H wake 중복은 동일 최신 main SHA·workflow·execution lane·미시작 상태만 coalesce한다. 실행 중 작업과 다른 리비전·lane은 보존한다. 빈 슬롯인데 reserve 결과가 0이면 책임 파일 충돌과 미회수 immutable 결과·fan-in을 추적하며 정책 슬롯 증설만으로 해결했다고 주장하지 않는다.'],
+  ['HOMEPAGE_DEPLOYMENT_VISIBILITY','홈페이지 Unity Web 링크 누락은 assets/homepage-enhancements.js에서 실행 번들 존재·링크 표시·QA 승인·게임 시작을 각각 검증한다. 실제 loader/data/framework/wasm을 확인한 게임은 다른 게임 조회가 끝날 때까지 기다리지 않고 표시한다. 빌드가 없는 게임에는 링크를 만들지 않으며 개발 테스트를 정식 QA PASS로 표시하지 않는다. 공개 홈페이지에서 링크를 클릭하고 실제 Unity 부팅을 확인한다. 검증 브라우저의 WebGL 미지원은 게임 정상 또는 고장 증거가 아니다.']
 ]);
 
 function bottleneckTask(task={}){

@@ -151,7 +151,7 @@ function playableWebHref(row){
   return '';
 }
 // 실제 Unity C# WebGL 빌드와 3회 브라우저 검증, 네이티브 3D 및 저장 검증을 모두 확인한다.
-async function bindAvailableUnityWebSurfaces(catalog){
+async function bindAvailableUnityWebSurfaces(catalog,onAvailable=()=>{}){
   if(!Array.isArray(catalog?.games))return catalog;
   const enabled=platformExposure?.unityWebEnabled===true;
   const probeFetch=async(url,options={})=>{
@@ -168,6 +168,9 @@ async function bindAvailableUnityWebSurfaces(catalog){
       &&(projectPath===`unity-games/${id}`||(activeLifecycle(game)&&canonicalWebHref(game)===`/web-games/${id}/`));
   }):[];
   const available=new Map();
+  const snapshot=()=>({...catalog,games:catalog.games.map(game=>available.has(gameIdOf(game))
+    ?{...game,unityWebTestUrl:available.get(gameIdOf(game)).href,unityWebAvailable:true,unityWebVerified:available.get(gameIdOf(game)).verified}
+    :{...game,unityWebTestUrl:null,unityWebAvailable:false,unityWebVerified:false})});
   await Promise.all(candidates.map(async game=>{
     const id=gameIdOf(game),stamp=Date.now();
     for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`]){
@@ -252,13 +255,13 @@ async function bindAvailableUnityWebSurfaces(catalog){
           }
         }
         available.set(id,{href,verified});
+        // 확인된 실행 링크는 다른 게임의 느린 조회를 기다리지 않고 표시한다.
+        onAvailable(snapshot());
         break;
       }catch{}
     }
   }));
-  return {...catalog,games:catalog.games.map(game=>available.has(gameIdOf(game))
-    ?{...game,unityWebTestUrl:available.get(gameIdOf(game)).href,unityWebAvailable:true,unityWebVerified:available.get(gameIdOf(game)).verified}
-    :{...game,unityWebTestUrl:null,unityWebAvailable:false,unityWebVerified:false})};
+  return snapshot();
 }
 function webPublishedRows(catalog){
   return (Array.isArray(catalog?.games)?catalog.games:[])
@@ -585,7 +588,7 @@ async function refresh(){
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
     // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
     if(!lastSignature)renderCatalog(catalog);
-    const boundCatalog=await bindAvailableUnityWebSurfaces(catalog);
+    const boundCatalog=await bindAvailableUnityWebSurfaces(catalog,renderCatalog);
     renderCatalog(boundCatalog);
   }finally{refreshInFlight=false;}
 }

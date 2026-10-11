@@ -343,7 +343,7 @@ test('homepage has one canonical runtime data renderer',()=>{
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
   assert.match(runtime,/const renderCatalog=currentCatalog=>/);
   assert.match(runtime,/renderCatalog\(catalog\);/);
-  assert.match(runtime,/const boundCatalog=await bindAvailableUnityWebSurfaces\(catalog\)/);
+  assert.match(runtime,/const boundCatalog=await bindAvailableUnityWebSurfaces\(catalog,renderCatalog\)/);
   assert.match(runtime,/renderCatalog\(boundCatalog\);/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
@@ -445,7 +445,7 @@ test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',
 
 test('Unity Web homepage links verify actual deployable assets and separate QA badges',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog){')[1]||'').split('function webPublishedRows')[0]||'';
+  const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog,onAvailable=()=>{}){')[1]||'').split('function webPublishedRows')[0]||'';
   assert.match(block,/index\.html\?ts=/);
   assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
   assert.match(block,/manifest\.bundleComplete!==true/);
