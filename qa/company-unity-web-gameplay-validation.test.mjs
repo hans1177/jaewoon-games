@@ -709,5 +709,5 @@ test('Daechung 3D scene work keeps the canonical combat, touch and save authorit
   assert.match(source,/public void ShowBattle\(\)/);
   assert.doesNotMatch(source,/PlayerPrefs\.DeleteAll|DeleteKey\(|SaveKey\s*=|experienceReward\s*=|goldReward\s*=/);
   assert.match(daechungUnitySource,/JAEWOON_UNITY_WEB_QA MOBILE_TARGET game=daechung-rpg role=action/);
-  assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(\)/);
+  assert.match(daechungUnitySource,/private void RewardEnemyDefeat\(EnemyDefinition defeated\)/);
 });
