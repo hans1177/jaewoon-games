@@ -1382,7 +1382,12 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
             AudioListener.volume=musicVolume;
             if(GUILayout.Button("타이틀로",GUILayout.Height(48)))
             {
-                if(creative)SaveCreative();
+                // 옵션은 타이틀에서도 열리므로 실제 게임 중일 때만 현재 모드를 저장한다.
+                if(screenMode==ScreenMode.Playing)
+                {
+                    if(creative)SaveCreative();
+                    else SaveNormalCounters();
+                }
                 panel=Panel.None;
                 screenMode=ScreenMode.Title;
                 GUILayout.EndArea();
