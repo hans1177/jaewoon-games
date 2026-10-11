@@ -880,6 +880,7 @@ jobs:
           retention-days: 7
 
       - name: Create verified Unity Web readiness PR
+        id: publish
         if: steps.readiness.outcome == 'success' && (github.event_name == 'push' || inputs.publish_to_main == true)
         shell: bash
         env:
@@ -1016,6 +1017,20 @@ jobs:
             sleep 10
           done
 
+          # 공개 메인 배포 뒤 기존 Pixel 5 모바일 브라우저 검증기로 다시 실제 게임을 조작한다.
+          # 압축 파일 전송, 첫 터치, 게임 진행, 보상, 저장·재진입이 모두 확인돼야 이후 성공 처리한다.
+          (
+            cd /tmp/unity-web
+            node "$GITHUB_WORKSPACE/tools/company-unity-web-gameplay-validation.mjs" \
+              --game-id="$GAME_ID" \
+              --source="web-games/$GAME_ID" \
+              --port=4190 \
+              --scenario=independent-qa \
+              --deployed-url="https://jaewoon-games.pages.dev/$runtime_dir/" \
+              --output="/tmp/unity-web/web-games/$GAME_ID/unity-web-hosted-mobile-qa.json" \
+              --screenshot="/tmp/unity-web/hosted-mobile-qa.png"
+          )
+          echo "UNITY_WEB_PUBLIC_MOBILE_PLAY=PASS:$GAME_ID:$promotion_sha"
           echo "UNITY_WEB_MAIN_PROMOTION_SHA=$promotion_sha"
           echo "UNITY_WEB_PUBLIC_BROWSER_TEST_PATH=/$runtime_dir/"
           echo "UNITY_WEB_UPPER_PLATFORM_READY=$READINESS_PASS"
@@ -1090,7 +1105,7 @@ jobs:
 
       - name: Mark Unity Web floor repair requirement
         id: repair
-        if: ${{ always() && !cancelled() && steps.readiness.outputs.pass != 'true' }}
+        if: ${{ always() && !cancelled() && (steps.readiness.outputs.pass != 'true' || steps.publish.outcome == 'failure') }}
         shell: bash
         env:
           GAME_ID: ${{ steps.request.outputs.game_id }}
@@ -1100,7 +1115,7 @@ jobs:
           failure_stage=UNITY_WEB_BUILD_OR_READINESS
           failure_signature=REPAIR_REQUIRED
           # 실제 실패한 실행의 브라우저 증거를 이후 동일 게임 수리 작업과 연결한다.
-          for filename in unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
+          for filename in unity-web-hosted-mobile-qa.json unity-web-gameplay-validation.json unity-web-independent-qa.json unity-web-regression.json; do
             evidence_file="/tmp/unity-web/web-games/$GAME_ID/$filename"
             if [ -f "$evidence_file" ]; then
               evidence_line="$(jq -r 'select(.observedRuntimeFailure == true) | [.failureStage, .failureSignature] | @tsv' "$evidence_file" 2>/dev/null || true)"
@@ -1110,6 +1125,10 @@ jobs:
               fi
             fi
           done
+          if [ "${{ steps.publish.outcome }}" = 'failure' ] && [ "$failure_signature" = REPAIR_REQUIRED ]; then
+            failure_stage=UNITY_WEB_HOSTED_MOBILE_REPLAY
+            failure_signature=POST_MERGE_HOSTED_MOBILE_PLAY_FAILED
+          fi
           failure_stage="$(printf '%s' "$failure_stage" | tr -cd 'a-zA-Z0-9_:' | cut -c1-96)"
           failure_signature="$(printf '%s' "$failure_signature" | tr -cd 'a-zA-Z0-9_.:-' | cut -c1-128)"
           echo "failure_stage=${failure_stage:-UNITY_WEB_UNKNOWN}" >> "$GITHUB_OUTPUT"
