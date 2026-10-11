@@ -1004,6 +1004,57 @@
       },
       "learningState": "TRACE_ONLY",
       "liveState": "SOURCE_VERIFIED_ADVISORY_CANDIDATE;REMOTE_INGESTION_PENDING;NO_NATIVE_RUNTIME_OR_WEIGHT_CREDIT"
+    },
+    {
+      "id": "assistant_vibe_core_qa_supersession_repair_20261012",
+      "date": "2026-10-12",
+      "gameId": "cross-game",
+      "engine": "cross-engine",
+      "domains": [
+        "ORCHESTRATION",
+        "DEBUGGING"
+      ],
+      "actionType": "PIPELINE_BOTTLENECK_REPAIR",
+      "problem": "Same-PR Core QA did not cancel obsolete heads. PR7663 old-head run38180450504 remained queued while the latest run38181335509 was pending behind it.",
+      "decision": "Coalesce only superseded QA of the same PR ref. Preserve other PRs, feature branches, manual runs, game workers and all acceptance gates.",
+      "change": "PR7668 extended the existing Core QA cancellation condition to pull_request events. Integrated latest main into PR7663 without dropping automatic-ingress or knowledge-retrieval tests.",
+      "evidence": [
+        "source:https://github.com/hans1177/jaewoon-games/commit/b2a8562ebf7be2d8d40198ab5e909c7014ea4c65",
+        "qa:qa/company-system-ai-learning.test.mjs#Core QA coalesces obsolete revisions of the same PR",
+        "actions-run:38180450504:completed-cancelled",
+        "actions-run:38181335509:completed-cancelled",
+        "actions-run:38182096877:latest-head-queued"
+      ],
+      "reusablePatterns": [
+        "When exact-head QA cannot qualify a newer PR revision, cancel only superseded runs in the same PR concurrency group so current verification can enter the runner queue.",
+        "Test the actual workflow cancellation expression for PR/main pushes versus manual/feature runs and verify that distinct PR refs resolve to distinct groups.",
+        "After rebasing a learning PR, preserve both source-verification and retrieval regressions; keep exact-head QA success mandatory for knowledge promotion."
+      ],
+      "avoidPatterns": [
+        "Do not cancel unrelated game production or manual runs to free a QA queue.",
+        "Do not call queued tests successful or treat stale-head QA success as latest-head evidence."
+      ],
+      "qa": [
+        "causal cancellation expression failed before the fix for pull_request",
+        "related source regressions38 PASS",
+        "combined latest main regressions39 PASS",
+        "actual superseded Core QA runs2 cancelled after latest PR update",
+        "latest Core QA queued; QA success NOT_YET_OBSERVED"
+      ],
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "source-backed-review",
+        "scope": "QA_SCHEDULING_ONLY_NOT_GAMEPLAY_OR_MODEL_WEIGHTS",
+        "evidence": [
+          "source:https://github.com/hans1177/jaewoon-games/commit/b2a8562ebf7be2d8d40198ab5e909c7014ea4c65",
+          "qa:qa/company-system-ai-learning.test.mjs#Core QA coalesces obsolete revisions of the same PR",
+          "actions-run:38180450504:completed-cancelled",
+          "actions-run:38181335509:completed-cancelled"
+        ]
+      },
+      "learningState": "TRACE_ONLY",
+      "liveState": "SOURCE_AND_SCHEDULING_VERIFIED_ADVISORY_CANDIDATE;LATEST_QA_AND_RUNTIME_PENDING"
     }
   ]
 }
