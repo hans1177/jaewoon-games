@@ -984,9 +984,9 @@ spider-silk-armor|거대거미 실갑옷|ironbench|armor|giantSpiderSilk:8,giant
         if(nativeId!="")
         {
             GameObject nativePart=BindCompanyVisual(nativeId,root.transform,
-                new Vector3(0,scale*.45f,(fourLeg?.32f:0f)*scale),
-                Vector3.one*scale*(nativeId=="MagicForestTorso"?.52f:
-                    nativeId=="MagicForestCanine"?.48f:nativeId=="MagicForestClaw"?.32f:.40f),
+                new Vector3(0,scale*.45f,(fourLeg ? 0.32f:0f)*scale),
+                Vector3.one*scale*(nativeId=="MagicForestTorso" ? 0.52f:
+                    nativeId=="MagicForestCanine" ? 0.48f:nativeId=="MagicForestClaw" ? 0.32f:.40f),
                 Quaternion.identity);
             if(nativePart!=null)
             {
