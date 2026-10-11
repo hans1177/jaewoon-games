@@ -396,6 +396,16 @@ test('approved Unity Web design generates playable-scene visual data in canonica
     assert.match(runtime,/APPROVED_ENVIRONMENT_AUTHORING_FAILED/);
     assert.match(runtime,/Resources.Load<TextAsset>\("vibe-world-layout"\)/);
     assert.match(runtime,/surface.SetTriangles\(groups\[k\],k\)/);
+    // 7종 지형의 실제 렌더링을 검증한다. 물(5)·산호초(6)가 누락되거나 유효성 검사에 막히면 실패.
+    assert.match(runtime,/for\(int k=0;k<7;k\+\+\)surface\.SetTriangles\(groups\[k\],k\)/);
+    assert.match(runtime,/data\.types\[i\]<0\|\|data\.types\[i\]>6/);
+    // 채집 대상은 3D 게임 좌표·드롭/저장 규칙을 유지하면서 동일한 종류의 메시를 공유한다.
+    assert.match(runtime,/var harvestVisualMeshes=new Mesh\[5\]/);
+    assert.match(runtime,/if\(harvestVisualMeshes\[plant\.kind\]==null\)/);
+    assert.match(runtime,/harvestVisualMeshes\[plant\.kind\]=shared/);
+    assert.match(runtime,/anchor\.transform\.localScale=Vector3\.one\*plant\.scale/);
+    assert.match(runtime,/WorldMesh\(anchor\.transform,"HarvestVisual",harvestVisualMeshes\[plant\.kind\]/);
+    assert.doesNotMatch(runtime,/var individual=new Mesh\(\);individual\.CombineMeshes/);
     assert.match(runtime,/roads.vertices=roadV.ToArray\(\)/);
     // 외부 공식 문서의 PBR/재질 공유 원리를 승인된 3D 월드 출력에 적용하고 스트리핑을 방지한다.
     const build=fs.readFileSync(path.join(project,'Assets/Editor/UnityWebFloorBuild.cs'),'utf8');
