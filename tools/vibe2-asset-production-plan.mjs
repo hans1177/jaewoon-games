@@ -4931,15 +4931,14 @@ export function buildVibeAssetProductionPlan({
     seed:task.mapReconstruction.seed||clean(task.gameId),
     gameId:clean(task.gameId),target:resolvedTarget
   }):null;
-  // 월드 제작 지시는 기존 BUILD_UP의 검증 설계에서 자동 발생한다. 별도 옵션이나 파이프라인이 필요 없다.
+  // [오토 바이옴 · 모든 게임] 기존 BUILD_UP은 매 회차 바이옴 제작 도구를 실행한다.
+  // 검증된 게임 설계에 공간 정보가 없는 경우에도 실행 결과를 누락하지 않고
+  // APPROVED_DESIGN_REQUIRED로 유지한다. 도구 사용은 맵 생성 승인이나 게임 상태 변경이 아니다.
   const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
     ?task.buildUpDirective?.designImplementationContext||null:null;
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
-  const spatialFamilies=new Set(['ENVIRONMENT','BUILDING','PROP','CREATURE','CHARACTER','MATERIAL']);
-  const spatialDemand=(task.assetRequirements||[]).some(item=>spatialFamilies.has(clean(item?.family).toUpperCase()))
-    ||/(?:WORLD|MAP|REGION|BIOME|TERRAIN|ENVIRONMENT|DUNGEON|VILLAGE|SETTLEMENT|CAVE|맵|지형|지역|배경|생태|마을|던전|건축|도시|호수|바다)/i.test(request);
-  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0&&spatialDemand
+  const automaticWorld=designSpatial&&Object.keys(designSpatial).length>0
     ?{
       approvedDesign:true,
       seed:clean(task.gameId)||'world',
@@ -4957,7 +4956,11 @@ export function buildVibeAssetProductionPlan({
       source:'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
     }:null;
   const approvedWorld=task.worldDesign?.approvedDesign===true?task.worldDesign:null;
-  const worldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
+  const existingWorldInput=task.proceduralWorld||task.mapReconstruction?.proceduralWorld||approvedWorld||automaticWorld||null;
+  const biomeToolRequired=Boolean(clean(task.gameId))&&['roblox','unity','web'].includes(resolvedTarget);
+  const worldInput=existingWorldInput||(biomeToolRequired?{
+    approvedDesign:false,seed:clean(task.gameId),source:'EXISTING_GAME_APPROVED_SPATIAL_DESIGN_REQUIRED'
+  }:null);
   const proceduralWorldLayout=worldInput&&typeof worldInput==='object'&&!Array.isArray(worldInput)
     ?createVibeProceduralWorldLayout({
       ...worldInput,dimension:'3D',gameId:clean(task.gameId),target:resolvedTarget,
@@ -4971,6 +4974,22 @@ export function buildVibeAssetProductionPlan({
       styleFamily:assetSynchronization?.document?.styleBible?.profileKey||studioUniversePlan?.styleBible?.profileKey||'STYLIZED_FANTASY',
       libraryAssets:selectionRegistry?.assets||[]})
     :null;
+  const autoBiomeEvaluation=freeze({
+    required:biomeToolRequired,
+    tool:'assets/vibe-environment-director.js#createVibeProceduralWorldLayout',
+    evaluated:proceduralWorldLayout!==null,
+    status:proceduralWorldLayout?.status||'NO_GAME_SCOPE',
+    source:worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
+      :worldInput===approvedWorld?'EXPLICIT_APPROVED_GAME_WORLD'
+      :worldInput===existingWorldInput?'EXISTING_WORLD_REQUEST'
+      :biomeToolRequired?'EXISTING_GAME_APPROVED_SPATIAL_DESIGN_REQUIRED':'NO_GAME_SCOPE',
+    approvedWorldRequired:true,
+    missingDesignMustRouteToExistingDesignPipeline:true,
+    gameSourceMutationPerformed:false,
+    nativeAssetBindingPerformed:false,
+    runtimeVerified:false,
+    noGameplaySaveOrMapAuthorityChange:true
+  });
   const qualityDNA=freeze({
     version:1,
     gameId:clean(task.gameId)||null,
@@ -5377,8 +5396,8 @@ export function buildVibeAssetProductionPlan({
     sourceGlbReconstruction:freezeList((Array.isArray(task.sourceGlbs)?task.sourceGlbs:[]).map(source=>inspectVibeSourceGlb({repoRoot,source}))),
     mapDetailReconstruction,
     proceduralWorldLayout,
-    autoBiomeSource:worldInput&&worldInput===automaticWorld?'LATEST_VERIFIED_GAME_SPATIAL_DESIGN'
-      :worldInput?'EXPLICIT_APPROVED_GAME_WORLD':'NO_VERIFIED_SPATIAL_WORLD',
+    autoBiomeSource:autoBiomeEvaluation.source,
+    autoBiomeEvaluation,
     imageAssetCreation:freeze({
       enabled:referenceImageStudies.some(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose)),
       studies:freezeList(referenceImageStudies.filter(row=>['ASSET_CREATION','MAP_RECONSTRUCTION'].includes(row.request.purpose))),
