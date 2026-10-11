@@ -2927,7 +2927,8 @@ function buildNativeAuthoringExecution({target='',task={},decisions=[],manifest=
   const engineNativeTarget=['roblox','unity'].includes(targetName);
   const webNativeTarget=targetName==='web';
   const supportedAuthoringTarget=engineNativeTarget||webNativeTarget;
-  const needsAuthoring=row=>row?.required!==false&&row?.applyFirst?.enabled!==true;
+  const explicitSourceAuthoring=task.imageToAsset===true||Boolean(clean(task?.assetAuthoring?.sourceModel)||clean(task?.assetAuthoring?.sourceImage)||clean(task?.assetAuthoring?.module));
+  const needsAuthoring=row=>row?.required!==false&&(explicitSourceAuthoring||row?.applyFirst?.enabled!==true);
   const declaredTaskRecipes=Array.isArray(task?.assetAuthoring?.recipes)?task.assetAuthoring.recipes:Array.isArray(task?.authoringRecipes)?task.authoringRecipes:[];
   const requestedCareerId=clean(task?.commonCareerId).toUpperCase();
   const requestedCareerClip=clean(task?.commonMotionClip);
