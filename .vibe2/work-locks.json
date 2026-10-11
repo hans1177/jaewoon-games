@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-1le7g4y",
-      "worker": "vibe2",
-      "taskId": "egg-heist-studio-evolution-roblox-usability-v1",
-      "gameId": "egg-heist",
-      "files": [
-        "roblox-games/egg-heist/client/Game.client.luau",
-        "roblox-games/egg-heist/shared/GameConfig.luau",
-        "roblox-games/egg-heist/server/Game.server.luau"
-      ],
-      "baseSha": "86ac9525ddfdc115f3eafb689e51ab8487983635",
-      "runId": "38102095634",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-11T02:36:47.428Z",
-      "expiresAt": "2026-10-11T03:21:47.428Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:egg-heist-studio-evolution-roblox-usability-v1"
-      ]
-    },
-    {
       "id": "wl-bfvw3p",
       "worker": "vibe2",
       "taskId": "horror-escape-room-post-release-focus-4048dd962de0ea8d",
@@ -567,6 +546,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-yurei-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-490nsn",
+      "worker": "vibe2",
+      "taskId": "internal-motion-bulgasari-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/bulgasari/init.luau"
+      ],
+      "baseSha": "01b9569c9fe892bf614fcf736f951d82ece72960",
+      "runId": "38104101272",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-11T03:22:04.064Z",
+      "expiresAt": "2026-10-11T04:07:04.064Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-bulgasari-walk-v1"
       ]
     }
   ]
