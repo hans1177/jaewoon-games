@@ -114,6 +114,13 @@ test('Vibe context binds coding architecture into the existing canonical patch a
   assert.match(prompt,/IMPLEMENT_FEATURE_UNITS_WITH_MICRO_TESTS/);
   assert.match(prompt,/STATE_OWNER_ONLY_WRITE/);
   assert.match(prompt,/FULL_CANONICAL_PROMOTION_VALIDATION/);
+  // 회귀: 작업 목록이 커져도 축약된 우선 문맥에 검증 경계와 저장 키가 남아야 한다.
+  context.patchPlan.tasks.push(...Array.from({length:300},(_,index)=>({id:'EXPANSION_TASK_'+index})));
+  const expandedPrompt=buildApprovedScopeGenerationPrompt({gameId:'g',baseline,inventory,existingHtml,developmentContext:context});
+  const priority=expandedPrompt.split('VIBE_DEVELOPMENT_PRIORITY_CONTEXT:\n')[1].split('\n\nVIBE_DEVELOPMENT_CONTEXT:')[0];
+  assert.match(priority,/FULL_CANONICAL_PROMOTION_VALIDATION/);
+  assert.match(priority,/STATE_OWNER_ONLY_WRITE/);
+  assert.match(priority,/save-v5/);
 });
 
 test('greenfield and recompose modes are visible to the existing patch planner without changing pipeline',()=>{
