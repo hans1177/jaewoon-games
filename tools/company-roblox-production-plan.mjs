@@ -524,6 +524,17 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     assets:'Reuse compatible registered internal 3D assets and native rigs; preserve style and validate part attachment, ground contact and motion. A missing asset remains an explicit gap, never verified by a placeholder.',
     verification:['SPECIES_SILHOUETTE_AND_ANATOMY','LOCOMOTION_AND_GROUND_CONTACT','EXISTING_ATTACK_TELEGRAPH_AND_IMPACT','EXACT_SOURCE_CREATURE_BINDING','MOBILE_DISTANCE_READABILITY','UNCHANGED_COMBAT_AND_SAVE'],runtimeVerified:false
   };
+  // 살아 있는 동료: 기존/승인된 참여자만 같은 게임의 권한 있는 행동 처리로 연결한다.
+  const actorText=JSON.stringify([design.signatureSystems,design.systemInterconnections,design.coreLoop,source.sourceAnchors]);
+  const aiParticipantDirection=sourceOnly||!/companion|party|ally|follower|npc|동료|파티|아군|주민|참가자/i.test(actorText)?null:{
+    scope:presentationOnly?'PRESENT_EXISTING_ACTOR_BEHAVIOR_ONLY':'IMPLEMENT_APPROVED_ACTOR_PARTICIPATION',
+    applicability:'Existing or approved AI participants only; preserve authored story NPC names, population and party caps. Use multiple distinct actors where approved, with mobile-bounded active population.',
+    playLoop:'Observe -> personal goal -> reachable task -> existing engine action -> observed result -> recover or next goal. Participate in approved genre activities with distinct initiative, risk and cooperation preferences even in solo play. Following, idle dialogue or random roaming alone is insufficient.',
+    actions:'Use only existing/approved gathering, crafting, exploration, combat, support, building and return handlers. Engine owns costs, prerequisites, rewards, inventory, collision and networking; AI chooses allowed intents. Recover from blocked paths, missing resources, low health, invalid targets and player departure.',
+    displayNames:'For generic AI participants derive stable meaningless lowercase-letter-and-digit names such as fhfgjjgdd75 from existing actor ID/world seed with deterministic local collision handling. Keep stable save IDs and authored NPC names. Display an AI indicator; never invent Roblox UserIds or count bots as connected humans.',
+    native:'Implement in existing native actor creation, decision, navigation and nameplate responsibilities; inspect compatible internal AI libraries and reauthor platform-native behavior, never add a shadow participant engine.',
+    verification:['SOLO_AI_GOAL_ACTION_RESULT','DISTINCT_SIMULTANEOUS_ACTIVITIES','COOPERATION_AND_BLOCKED_PATH_RECOVERY','STABLE_NICKNAME_RESTORE','NO_DUPLICATE_REWARDS','MOBILE_AI_UPDATE_BUDGET'],runtimeVerified:false
+  };
   const ownerFeatureChanges=latestOwnerChanges(design.ownerFeatureChanges);
   const ownerChangeFingerprint=hash(JSON.stringify(ownerFeatureChanges));
   const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint
@@ -568,7 +579,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:interfaceContract,libraryReuseContract,simpleMenuDirection,creatureIdentityDirection,
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,simpleMenuDirection,creatureIdentityDirection,aiParticipantDirection,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -620,6 +631,10 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.creatureIdentityDirection?[
       prefix+'CREATURE_IDENTITY='+JSON.stringify(plan.creatureIdentityDirection)
     ]:[]),
+    ...(packages.length&&plan.aiParticipantDirection?[
+      prefix+'AI_PARTICIPANT='+JSON.stringify({...plan.aiParticipantDirection,ownedRoles:packages.map(row=>row.role)}),
+      prefix+'AI_PARTICIPANT_SCOPE=Implement only the current owned responsibilities. Client presentation owns labels and feedback, never autonomous authoritative state or rewards. Server/state workers use existing approved actor action handlers. Missing sibling implementation remains an explicit gap, not permission to edit unowned files.'
+    ]:[]),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
     ...(libraryCandidates.length?[
       prefix+'LIBRARY_MATCH='+JSON.stringify({
@@ -635,6 +650,9 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ]:[]),
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
+      ...(blueprints.spatial?.macroSketch?.proceduralWorldStudy?[
+        prefix+'AUTO_BIOME_RULE=Translate the approved auto-biome study into actual native terrain, climate-matched vegetation/materials, water and coherent biome transitions inside owned world source. Low-poly detail is acceptable; biome labels, a flat recolored floor or a proposal alone are not implementation. Connect supported spawn, resource, settlement and objective routes before decoration. Validate slopes, shoreline, collisions, actor grounding, camera sightlines and mobile object/update budgets in the exact build. Preserve authored layout, resource quantities, spawn counts, save and combat semantics. If this worker cannot own the required terrain or bindings, report the exact missing responsibility; never claim full-world completion from bounded study samples.'
+      ]:[]),
       prefix+'SPATIAL_SCHEMA='+JSON.stringify(SPATIAL_BLUEPRINT_SCHEMA),
       prefix+'SPATIAL_RULE=When required=true, first author spatialBlueprint in the same candidate JSON, then implement it in existing source. Otherwise include a report only for relevant spatial changes. Scope the sketch to the owned task region and its existing entry/objective boundaries, not the entire game or sibling files. Use source dimensions, axis direction, units, player size and stable IDs. Draw regions before object bounds and typed connections. Preserve locations unless authorized. In 3D account for support, headroom, elevation, stairs, slopes, camera sightlines and swept clearance; in 2D distinguish top-down from side-view and layers. Bind each row to executable source. AABB checks are conservative and cannot prove curved terrain, ramps, jumps, engine physics or runtime PASS. For an explicitly approved new environment, derive seeded gradient-noise elevation and drainage by climate and biome; connect walkable road and optional routes before placing any building. Zone footprints by local function (housing, services and workshops), snap modular foundations/walls/openings/roofs to the existing grid, face door openings toward a traversable road, and preserve any reserved player/objective/interaction cells. Use local material and climate for architecture, keep a clear landmark sightline from a decision point, and budget cell/prop density, LOD and reusable mesh instances for mobile. These are authoring constraints, not proof of native instancing or runtime visibility; bind placements to real existing source and reject blocked routes instead of claiming PASS. An approved macroSketch.proceduralWorldStudy provides only bounded route and lot samples, not a full terrain mesh or a verified game implementation. If status is not STATIC_LAYOUT_PROPOSED, repair route or placement feasibility before using its layout; do not substitute the study for actual source implementation. Existing map repairs and presentation-only tasks must preserve established layout and gameplay state.'
     ]:[]),
