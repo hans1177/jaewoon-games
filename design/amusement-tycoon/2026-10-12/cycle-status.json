@@ -116,7 +116,7 @@
     "version": 2,
     "gameId": "amusement-tycoon",
     "date": "2026-10-12",
-    "state": "REDESIGN",
+    "state": "ACTIVE",
     "sameDesignerRevisionAttempted": false,
     "fiveDepartmentLeadReviewCompleted": false,
     "deterministicDepartmentEvidenceCompleted": true,
@@ -132,13 +132,9 @@
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 151,
+      "designer_draft": 133,
       "deterministic_pre_gate": 11,
-      "designer_pre_gate_repair_1": 127,
-      "deterministic_pre_gate_after_repair_1": 7,
-      "designer_pre_gate_repair_2": 127,
-      "deterministic_pre_gate_after_repair_2": 9,
-      "deterministic_department_evidence": 5
+      "deterministic_department_evidence": 3
     },
     "phaseBudgetMs": {
       "designer_draft": 180000,
@@ -161,21 +157,17 @@
     "modelKeepAlive": "NONE",
     "modelHealth": {},
     "preGate": {
-      "attempts": 2,
-      "totalScore": 78.4,
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "postRevisionScore": 78.4,
-      "postRevisionHardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ]
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
     },
     "checkpoint": {
       "contractVersion": 4,
-      "engineDigest": "14da354f8c29328d2a24e844581bf5c53ae4289cf3ac809db9f9c50dc1cb8142",
+      "engineDigest": "eed137a97274d93fb1fe2168e0176f4b18df9d50705184c132323d2d1470a0ff",
       "reused": false,
-      "completedPhases": 7,
+      "completedPhases": 3,
       "cachedTasks": 11
     },
     "simplifiedLeadOnlyReview": false,
@@ -207,12 +199,10 @@
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "deterministic-design-pre-gate-pass-required"
-    ],
-    "advisoryDisposition": "REDESIGN",
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "ACTIVE",
     "unanimousFatalDiscard": false,
     "meeting": {
       "conflictCount": 0,
@@ -245,17 +235,13 @@
       "deterministicDesignGate": {
         "required": true,
         "authority": "DETERMINISTIC_EVIDENCE",
-        "pass": false,
+        "pass": true,
         "path": "design/amusement-tycoon/2026-10-12/design-checkpoint.json",
-        "phase": "deterministic_pre_gate_after_repair_2",
-        "totalScore": 78.4,
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
         "passMinimum": 80,
-        "hardFailures": [
-          "CRITICAL_AXIS_MINIMUM_FAIL"
-        ],
-        "criticalAxisFailures": [
-          "PLATFORM_FIT_DESIGN"
-        ]
+        "hardFailures": [],
+        "criticalAxisFailures": []
       },
       "webSmoke": {
         "supportingOnly": true,
@@ -340,17 +326,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-10-12T02:48:36.968Z"
+    "checkedAt": "2026-10-12T03:00:26.736Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "WRITING",
+    "label": "작성중",
     "path": "artbook-submissions/amusement-tycoon/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
   }
 }
