@@ -138,7 +138,7 @@ test('homepage fallback stays neutral until current runtime data renders',()=>{
   assert.match(homepage,/document\.getElementById\(id\)\?\.remove\(\)/);
 });
 
-test('homepage lists native and verified Unity Web actions without legacy HTML play',()=>{
+test('homepage lists native actions without Unity Web development links',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=30000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -149,8 +149,7 @@ test('homepage lists native and verified Unity Web actions without legacy HTML p
   assert.match(homepage,/buildShelf\(hub,'homePlatformAvailableGameCenter','출시 게임'/);
   assert.match(homepage,/robloxAction/);
   assert.match(homepage,/unityAction/);
-  assert.match(homepage,/unityWebAction/);
-  assert.match(homepage,/Unity Web · 개발중/);
+  assert.doesNotMatch(homepage,/unityWebAction|Unity Web · 개발중/);
   assert.doesNotMatch(homepage,/아트북 보기|foldGameArtbookBtn|homepageArtbookPath/);
   assert.doesNotMatch(homepage,/button\(links\.web,'웹 플레이'/);
   assert.match(homepage,/function playableWebHref\(row\)/);
@@ -343,8 +342,7 @@ test('homepage has one canonical runtime data renderer',()=>{
   assert.match(runtime,/function updateLiveSummary\(catalog,status\)/);
   assert.match(runtime,/const renderCatalog=currentCatalog=>/);
   assert.match(runtime,/renderCatalog\(catalog\);/);
-  assert.match(runtime,/const boundCatalog=await bindAvailableUnityWebSurfaces\(catalog,renderCatalog\)/);
-  assert.match(runtime,/renderCatalog\(boundCatalog\);/);
+  assert.doesNotMatch(runtime,/bindAvailableUnityWebSurfaces|renderCatalog\(boundCatalog\)/);
   assert.match(runtime,/getJson\('\/game-catalog\.json'\)/);
   assert.match(runtime,/getJson\('\/company-status\.json'\)/);
 });
@@ -420,99 +418,55 @@ test('featured hero is explicit and ChatGPT launcher is app-first with safe fall
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/const FEATURED_GAME_ID='daechung-rpg'/);
   assert.match(runtime,/rows\.find\(item=>gameIdOf\(item\)===FEATURED_GAME_ID\)\|\|rows\[0\]/);
-  assert.match(runtime,/const direct=links\.unityWeb\|\|links\.roblox\|\|links\.unity\|\|''/);
-  assert.match(runtime,/const actionLabel=links\.unityWeb\?\(game\.unityWebVerified\?'Unity Web 플레이':'Unity Web 개발 테스트'\)/);
+  assert.match(runtime,/const direct=links\.roblox\|\|links\.unity\|\|''/);
+  assert.match(runtime,/const actionLabel=links\.roblox\?'Roblox 플레이':links\.unity\?'Unity 앱 플레이'/);
   assert.match(index,/package=com\.openai\.chatgpt/);
   assert.match(index,/\/command\.html\?from=chatgpt-shortcut/);
   assert.match(index,/function openChatGpt\(\)/);
 });
 
-test('game cards expose Roblox, Unity app, and in-development Unity Web tracks',()=>{
+test('game cards retain Roblox and Unity app access while Unity Web is stopped',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const index=fs.readFileSync('index.html','utf8');
   assert.match(runtime,/function platformLinks\(game\)/);
   assert.match(runtime,/robloxAction/);
   assert.match(runtime,/unityAction/);
-  assert.match(runtime,/unityWebAction/);
   assert.match(runtime,/links\.roblox/);
   assert.match(runtime,/links\.unity/);
-  assert.match(runtime,/Unity Web · 개발중/);
+  assert.doesNotMatch(runtime,/unityWebAction|Unity Web · 개발중|bindAvailableUnityWebSurfaces|probeFetch/);
   assert.doesNotMatch(runtime,/button\(links\.web,'웹 플레이'/);
-  assert.match(runtime,/button\(links\.unityWeb,game\.unityWebVerified\?'Unity Web · 개발중':'Unity Web · 개발 테스트'/);
   assert.doesNotMatch(runtime,/button\(links\.fortnite|Fortnite 개발중|fortniteAction/);
   assert.match(index,/\.foldGameActions\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
 });
 
-test('Unity Web homepage links verify actual deployable assets and separate QA badges',()=>{
+test('central and directive homepage policies disable Unity Web without changing release truth',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const block=(runtime.split('async function bindAvailableUnityWebSurfaces(catalog,onAvailable=()=>{}){')[1]||'').split('function webPublishedRows')[0]||'';
-  assert.match(block,/index\.html\?ts=/);
-  assert.match(block,/unity-web-deploy-manifest\.json\?ts=/);
-  assert.match(block,/manifest\.bundleComplete!==true/);
-  assert.match(block,/manifest\.requiredDimension!=='3D'/);
-  assert.match(block,/manifest\.canonicalSourceRoot!==`unity-games\/\$\{id\}`/);
-  assert.match(block,/setTimeout\(\(\)=>controller\.abort\(\),10000\)/);
-  assert.match(block,/Math\.min\(4,pending\.length\)/);
-  assert.match(block,/method:'HEAD'/);
-  assert.match(block,/\['loader','data','framework','wasm'\]/);
-  assert.match(block,/unityWebAvailable:true/);
-  assert.match(block,/unityWebAvailable:false/);
-  assert.match(block,/unity-web-build\.json/);
-  assert.match(block,/unity-web-gameplay-validation\.json/);
-  assert.match(block,/readiness\.criteria\?\.graphics\?\.native3dVerified!==true/);
-  assert.match(block,/qa\.every\(qaPassed\)/);
-  assert.match(block,/build\.upperPlatformGateCandidate!==true/);
   const display=roadmap.serverHomepageIntegration?.managerContract?.developmentProgressDisplay||{};
   const surface=roadmap.serverHomepageIntegration?.unityWebValidationSurface||{};
-  assert.equal(display.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
-  assert.equal(display.unityWebQaPassRequiredForHomepageLink,false);
-  assert.equal(display.unityWebEvidenceFilesRequiredForHomepageLink,false);
-  assert.equal(surface.homepageLinkGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
-  assert.equal(surface.homepageLinkRequiresDeployManifest,false);
-  assert.equal(surface.homepageLinkRequiresDeployableBundle,true);
-  assert.equal(surface.homepageLinkAllowsUnityIndexBundleProbe,true);
-  assert.equal(surface.homepageLinkLegacyUnityBuildCompatibility,true);
-  assert.deepEqual(surface.homepageLinkLegacyProbeRequiredBundleComponents,['loader','data','framework','wasm']);
-  assert.equal(surface.homepageLinkQaPassRequired,false);
-  assert.equal(surface.homepageLinkEvidenceFilesRequired,false);
-  assert.equal(surface.validationEvidenceStillRequiredForQaVerdict,true);
-  assert.equal(display.webTestButtonEnabled,true);
-  assert.equal(display.webTestButtonLabel,'Unity Web · 개발중');
-  assert.equal(display.webAndPlatformTestButtonsMustBeSeparate,true);
-  assert.equal(display.unityWebDevelopmentCardExposureRequiredWhenDeployable,true);
-  assert.equal(display.unityWebMayBeCardDirectLaunchFallback,true);
+  const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
+  assert.equal(roadmap.developmentAccess.UNITY_WEB,'OWNER_HOLD');
+  assert.equal(roadmap.unityWebFirstStage.enabled,false);
+  assert.equal(roadmap.serverHomepageIntegration.showUnityWeb,false);
+  assert.equal(surface.enabled,false);
+  assert.equal(surface.homepageOwnerTestLink,false);
+  assert.equal(surface.cardDirectLaunchFallbackAllowed,false);
+  assert.equal(display.webTestButtonEnabled,false);
+  assert.equal(display.unityWebDevelopmentCardExposureRequiredWhenDeployable,false);
+  assert.equal(display.unityWebMayBeCardDirectLaunchFallback,false);
+  assert.equal(directiveDisplay.webTestButtonEnabled,false);
+  assert.equal(directiveDisplay.unityWebDevelopmentCardExposureRequiredWhenDeployable,false);
+  assert.equal(directiveDisplay.unityWebMayBeCardDirectLaunchFallback,false);
+  assert.equal(display.platformTestButtonEnabled,true);
+  assert.equal(display.platformTestButtonLabelMode,'PLATFORM_NAME');
   assert.equal(display.staleSharedRobloxTargetHomepageLinkForbidden,true);
-  assert.equal(display.playableWebCompanionButtonEnabled,true);
-  assert.equal(display.playableWebCompanionButtonLabel,'웹 플레이');
-  assert.equal(display.playableWebCompanionSource,'ACTUAL_CANONICAL_WEB_ENTRY');
-  assert.equal(display.playableWebCompanionRequiresPlayableAndArchive,true);
-  assert.equal(display.playableWebCompanionRequiresExistingCanonicalIndex,true);
   assert.equal(display.cardVisibilityRequiresRunnableTarget,false);
   assert.equal(display.titleOnlyCardExposureForbidden,false);
   assert.equal(display.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
   assert.equal(display.mainCatalogMayNotOverrideFresherCompanyRuntime,true);
-  assert.equal(display.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
-  assert.equal(display.rawRuntimeCatalogDirectCopyForbidden,true);
-  assert.equal(display.actualGameFileSourceMetadataPreserved,true);
-  assert.equal(display.canonicalNormalizationRequiredBeforeHomepagePublication,true);
-  assert.equal(surface.developmentConfirmedHomepageExposureRequiredWhenDeployable,true);
-  assert.equal(surface.cardDirectLaunchFallbackAllowed,true);
-  const directiveDisplay=directive.homepageOperations?.developmentProgressDisplay||{};
-  assert.equal(directiveDisplay.webTestButtonEnabled,true);
-  assert.equal(directiveDisplay.webAndPlatformTestButtonsMustBeSeparate,true);
-  assert.equal(directiveDisplay.unityWebHomepageExposureGate,'DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE');
-  assert.equal(directiveDisplay.unityWebLegacyBuildCompatibility,true);
-  assert.equal(directiveDisplay.playableWebCompanionButtonEnabled,true);
-  assert.equal(directiveDisplay.playableWebCompanionButtonLabel,'웹 플레이');
-  assert.equal(directiveDisplay.playableWebCompanionSource,'ACTUAL_CANONICAL_WEB_ENTRY');
-  assert.equal(directiveDisplay.cardVisibilityRequiresRunnableTarget,false);
-  assert.equal(directiveDisplay.titleOnlyCardExposureForbidden,false);
-  assert.equal(directiveDisplay.runtimeCatalogMirrorsToHomepageOnEverySuccessfulNonPrSync,true);
-  assert.equal(directiveDisplay.runtimeCatalogMirrorMode,'RECONCILE_RUNTIME_STATE_ON_CANONICAL_MAIN_REGISTRY');
-  assert.equal(directiveDisplay.rawRuntimeCatalogDirectCopyForbidden,true);
-  assert.equal(directiveDisplay.actualGameFileSourceMetadataPreserved,true);
-  assert.equal(directiveDisplay.canonicalNormalizationRequiredBeforeHomepagePublication,true);
+  assert.doesNotMatch(runtime,/createUnityInstance|index\.html\?ts=|method:'HEAD'/);
+  assert.match(runtime,/renderCatalog\(catalog\);/);
 });
+
 test('platform availability uses current release evidence or verified historical Roblox internal deployment from company-runtime',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.match(runtime,/roblox\.internalReleaseReady===true&&roblox\.releaseReadiness\?\.homepageReady===true/);
