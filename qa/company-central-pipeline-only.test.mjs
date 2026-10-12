@@ -134,11 +134,11 @@ test('central production runtime keeps independent Roblox and Unity Web QA witho
   assert.match(development,/company-selected-platform-router\.mjs/);
   assert.match(development,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
   assert.match(development,/eligible_json:/);
-  assert.match(development,/unity_web_json:/);
+  assert.doesNotMatch(development,/unity_web_json:/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.doesNotMatch(development,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
@@ -497,8 +497,8 @@ test('central native planner suppresses already-active per-game child dispatches
   assert.match(development,/active-roblox-native-runs\.json/);
   assert.match(development,/active-unity-native-runs\.json/);
   assert.match(development,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
-  assert.match(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
   assert.match(development,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
   assert.match(development,/roblox_count=/);
   assert.match(development,/unity_count=/);
@@ -767,7 +767,7 @@ test('central policy architecture and log maps bind the development floor parall
 test('Unity Web floor serializes only the same game while independent games remain parallel',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
   const workflow=read('.github/workflows/unity-web-first-stage-build.yml');
-  assert.match(development,/dispatch-unity-web-floor:[\s\S]*?group: unity-web-floor-call-\$\{\{ matrix\.game_id \}\}[\s\S]*?cancel-in-progress: false/);
+  assert.doesNotMatch(development,/dispatch-unity-web-floor:[\s\S]*?group: unity-web-floor-call-\$\{\{ matrix\.game_id \}\}[\s\S]*?cancel-in-progress: false/);
   assert.match(workflow,/build:\n\s+needs: owner-policy\n\s+if: needs\.owner-policy\.outputs\.allowed == 'true'\n\s+concurrency:\n\s+group: unity-web-floor-exec-\$\{\{ inputs\.game_id \|\| inputs\.request_file \|\| github\.run_id \}\}[\s\S]*?cancel-in-progress: false[\s\S]*?runs-on: ubuntu-latest/);
   assert.doesNotMatch(workflow,/UNITY_WEB_FLOOR_EXACT_DEDUPED_ACTIVE=/);
   assert.doesNotMatch(development,/strategy:[\s\S]{0,160}?max-parallel:/);
@@ -880,17 +880,17 @@ test('Unity Web reuses the existing per-game Unity Library cache pattern without
 });
 
 
-test('central planner dedupes active Unity Web floor and bootstrap runs without limiting other games',()=>{
+test('central planner skips retired Unity Web workflow scans',()=>{
   const development=read('.github/workflows/company-development-confirmed-runtime.yml');
-  assert.match(development,/unity-web-first-stage-build\.yml\/runs\?per_page=100&page=\$page/);
-  assert.match(development,/unity-web-floor-source-bootstrap\.yml\/runs\?per_page=100&page=\$page/);
-  assert.match(development,/activeUnityWebFloor=activeIds\('\/tmp\/active-unity-web-floor-runs\.json','Unity Web Floor '\)/);
-  assert.match(development,/activeUnityWebBootstrap=activeIds\('\/tmp\/active-unity-web-bootstrap-runs\.json','Unity Web Floor Bootstrap '\)/);
-  assert.match(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
-  assert.match(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
-  assert.match(development,/UNITY_WEB_ACTIVE_RUN_SCAN_FLOOR_ROWS=/);
-  assert.match(development,/UNITY_WEB_ACTIVE_RUN_SCAN_BOOTSTRAP_ROWS=/);
-  assert.match(development,/UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3/);
+  assert.doesNotMatch(development,/unity-web-first-stage-build\.yml\/runs\?per_page=100&page=\$page/);
+  assert.doesNotMatch(development,/unity-web-floor-source-bootstrap\.yml\/runs\?per_page=100&page=\$page/);
+  assert.doesNotMatch(development,/activeUnityWebFloor=activeIds\('\/tmp\/active-unity-web-floor-runs\.json','Unity Web Floor '\)/);
+  assert.doesNotMatch(development,/activeUnityWebBootstrap=activeIds\('\/tmp\/active-unity-web-bootstrap-runs\.json','Unity Web Floor Bootstrap '\)/);
+  assert.doesNotMatch(development,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(development,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(development,/UNITY_WEB_ACTIVE_RUN_SCAN_FLOOR_ROWS=/);
+  assert.doesNotMatch(development,/UNITY_WEB_ACTIVE_RUN_SCAN_BOOTSTRAP_ROWS=/);
+  assert.doesNotMatch(development,/UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3/);
   assert.doesNotMatch(development,/dispatch-unity-web-floor:[\s\S]{0,260}?max-parallel:/);
   assert.doesNotMatch(development,/dispatch-unity-web-bootstrap:[\s\S]{0,260}?max-parallel:/);
 });
@@ -1007,8 +1007,8 @@ test('stage-scoped native dedupe closes duplicate races without whole-game seria
   assert.doesNotMatch(roblox.slice(0,roblox.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.doesNotMatch(unity.slice(0,unity.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   assert.match(central,/ROBLOX_NATIVE_DISPATCH_DEDUPED_CURRENT_MAIN=/);
-  assert.match(central,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
-  assert.match(central,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(central,/UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE=/);
+  assert.doesNotMatch(central,/UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE=/);
   assert.match(central,/UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09/);
 
   assert.equal(change?.status,'SUPERSEDED_BY_STAGE_SCOPED_DEDUPE_2026_10_04');
