@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 import {
   activeRobloxDevelopmentItem,
   reconcileChangedRobloxItems,
@@ -9,6 +10,44 @@ import {
   restoreMetadataOnlyRobloxInvalidation,
   restartRobloxFromF0
 } from '../tools/company-roblox-source-drift-sync.mjs';
+
+test('exact published F0 candidate resumes existing runtime QA without crossing game or security boundaries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const step=workflow.split('      - name: Dispatch Roblox HEADLESS FAST_MVP continuation')[1];
+  const code=step.match(/state="\$\(node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^\s*import .*;\n/gm,'');
+  const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const row={gameId:'daechung-rpg',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact},robloxRuntimeCandidateEvidence:{published:true,sourceRevision:revision,artifactIdentity:artifact,versionNumber:38,placeId:'1',universeId:'2'},robloxRuntimePassed:false};
+  const invoke=(patch={},requested='daechung-rpg')=>{
+    const written={};
+    runInNewContext(code,{fs:{readFileSync:file=>JSON.stringify(file.includes('dispatch-queue')?{items:[{...row,...patch},{...row,gameId:'other-game'}]}:{}),writeFileSync:(file,data)=>{written[file]=data;}},process:{env:{REQUESTED_GAME_ID:requested,ROBLOX_RUNTIME_HARNESS_VERSION:'8'},stdout:{write(){}}},ownerFocusedSecondaryPlatformEligible:()=>false,platformDevelopmentEligible:()=>true});
+    return written['/tmp/roblox-runtime-qa-ready-ids'];
+  };
+  assert.equal(invoke(),'daechung-rpg\n');
+  assert.equal(invoke({},''),'daechung-rpg\nother-game\n');
+  for(const patch of [{robloxFoundationF0Passed:false},{robloxFoundationF0Evidence:{...row.robloxFoundationF0Evidence,pass:false}},{robloxFoundationF0Evidence:{...row.robloxFoundationF0Evidence,sourceRevision:'c'.repeat(40)}},{robloxRuntimeCandidateEvidence:{...row.robloxRuntimeCandidateEvidence,published:false}},{robloxRuntimeCandidateEvidence:{...row.robloxRuntimeCandidateEvidence,artifactIdentity:'sha256:'+'c'.repeat(64)}},{robloxRuntimeSecurityHold:true},{robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision},{robloxRuntimePassed:true,robloxRuntimeHarnessVersion:'8'}])assert.equal(invoke(patch),'');
+  assert.match(step,/gh workflow run company-development-roblox-post-runtime-qa\.yml/);
+  assert.match(step,/ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=DEDUPED_ACTIVE/);
+});
+
+// 무효 실행: 소스 계획이 정상 종료됐어도 후속 작업은 생성하지 않는다.
+test('superseded and duplicate source plans cannot schedule downstream package work',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  assert.match(workflow,/accepted: \$\{\{ steps\.freshness\.outputs\.run \|\| 'false' \}\}/);
+  const condition=job=>workflow.split('  '+job+':')[1].split('    if: ')[1].split('\n')[0];
+  const evaluate=(job,{accepted='false',count='0',reconciliation_count='0',result='success'}={})=>{
+    const code=condition(job).replaceAll('needs.source-plan','needs.sourcePlan');
+    return runInNewContext(code,{always:()=>true,needs:{sourcePlan:{result,outputs:{accepted,count,reconciliation_count}}}});
+  };
+  for(const accepted of ['false','',undefined]){
+    assert.equal(evaluate('technical-plan',{accepted,count:'1'}),false);
+    assert.equal(evaluate('source-bootstrap',{accepted,count:'1',reconciliation_count:'1'}),false);
+  }
+  assert.equal(evaluate('technical-plan',{accepted:'true'}),true);
+  assert.equal(evaluate('technical-plan',{accepted:'true',result:'failure'}),false);
+  assert.equal(evaluate('source-bootstrap',{accepted:'true'}),false);
+  assert.equal(evaluate('source-bootstrap',{accepted:'true',count:'1'}),true);
+  assert.equal(evaluate('source-bootstrap',{accepted:'true',reconciliation_count:'1'}),true);
+});
 
 function item(){
   return {
