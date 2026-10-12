@@ -132,7 +132,7 @@ test('architecture preserves Unity Web adapters behind the owner hold',()=>{
   assert.ok(architecture.executionTopology.selectedPlatform.includes('UPPER_PLATFORM_DEVELOPMENT_READY'));
   assert.ok(architecture.executionTopology.selectedPlatform.includes('ROBLOX_UNITY_AUTO_PAIR'));
   assert.match(runtime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
-  assert.match(runtime,/upper-platform-development-readiness\.json/);
+  assert.doesNotMatch(runtime,/web-games\/\*\*\/upper-platform-development-readiness\.json/);
   assert.match(runtime,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
   assert.match(runtime,/eligible_json:/);
   assert.doesNotMatch(runtime,/unity_web_json:/);
