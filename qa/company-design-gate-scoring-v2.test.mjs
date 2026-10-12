@@ -485,7 +485,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
       INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
     };
-    if(category==='CASUAL'){seed.designTopicMode='VIBE_FREE_TOPIC';seed.ownerResetRevision=target.topicRevision;}
+    if(category==='CASUAL'){seed.designTopicMode='VIBE_FREE_TOPIC';seed.ownerResetRevision=target.topicRevision;seed.designDiscoveryCount=10;}
     let sourceText='';
     if(category==='INFECTION'){
       const humans=['A','B','C'],monsters=['X','Y','Z'];
@@ -526,6 +526,11 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
     const details=design.creativeGrammar.fiveWOneH;
     assert.equal(details.length,4+design.creativeGrammar.delveDiscoveries.length);
+    if(category==='CASUAL'){
+      assert.equal(design.creativeGrammar.delveDiscoveries.length,10,'@ expansion must not stop at the original four');
+      assert.equal(details.filter(row=>row.element==='DELVE').length,10,'every new @ needs its own six-question and result record');
+      assert.match(design.creativeGrammar.delveGrowthRule,/상한|제한|파고들기/);
+    }
     assert.equal(details.filter(row=>row.element==='C').length,1);
     for(const row of [...design.creativeGrammar.cThemes,...design.creativeGrammar.cGenres])assert.ok(details.find(row=>row.element==='C').what.includes(row.name));
     if(category==='KINGDOM'){
