@@ -1,0 +1,24 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "fix": [],
+    "add": [],
+    "risks": [],
+    "evidence": [],
+    "questions": []
+  }
+}

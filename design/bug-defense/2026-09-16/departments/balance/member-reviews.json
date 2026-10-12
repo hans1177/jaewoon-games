@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Read the incoming insect wave and its threat pattern."
+        ],
+        "fix": [
+          "Place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "add": [
+          "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        ],
+        "risks": [
+          "Ensure the highest-value counter is prioritized."
+        ],
+        "evidence": [
+          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        ],
+        "questions": [
+          "Are there any specific counter or leak scenarios to consider?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Game Development Strategy Review"
+        ],
+        "fix": [
+          "Bug Defense Game Design"
+        ],
+        "add": [
+          "Wave Defense Readability"
+        ],
+        "risks": [
+          "Enemy Type Counterplay"
+        ],
+        "evidence": [
+          "Player Fantasy - Bug-Defense"
+        ],
+        "questions": [
+          "Core Loop - Wave Defense"
+        ]
+      }
+    }
+  ]
+}

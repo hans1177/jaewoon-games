@@ -1,0 +1,32 @@
+{
+  "version": 5,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "gemini-3.8-flash",
+  "leadModel": "gemini-3.8-flash",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "곤충 병종과 서식 환경 상성을 핵심으로 하는 싱글 디펜스 루프"
+    ],
+    "fix": [
+      "특수 스킬 쿨타임 최적화 기준을 구체적 수치로 명시할 것"
+    ],
+    "add": [
+      "웨이브 가독성을 높이는 시각적 경고 UI 시스템 추가"
+    ],
+    "risks": [
+      "초반 4종 유닛만으로는 10웨이브의 반복 플레이 재미가 부족할 위험"
+    ],
+    "evidence": [
+      "Kingdom Rush 및 Bloons TD 6의 상성 중심 웨이브 디펜스 벤치마크"
+    ],
+    "questions": [
+      "환경 변동 시스템이 플레이어의 피로도를 높이지 않는 적정 주기는?"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "version": 5,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "gemini-3.5-flash-lite",
+  "reviewMode": "DIRECT_LEAD_ONLY",
+  "review": {
+    "keep": [
+      "생태 상성 배치 시스템과 자원 순환 구조 유지"
+    ],
+    "fix": [
+      "유닛 업그레이드 비용의 지수 함수적 증가율을 선형에 가깝게 완화하여 초반 빌드 경직성 수정"
+    ],
+    "add": [
+      "웨이브 실패 시 환급되는 자원의 구체적인 비율 산식 추가"
+    ],
+    "risks": [
+      "후반 웨이브에서 상성 유닛 미배치 시 극단적인 자원 고갈 및 복구 불능 상태 발생 위험"
+    ],
+    "evidence": [
+      "Kingdom Rush 및 Bloons TD 6의 자원 순환 및 상성 활용 벤치마크 데이터 활용"
+    ],
+    "questions": [
+      "환경 변동 시스템 발생 시 기존 유닛의 재배치 비용은 자원 회수 형태로 제공되는가?"
+    ]
+  }
+}

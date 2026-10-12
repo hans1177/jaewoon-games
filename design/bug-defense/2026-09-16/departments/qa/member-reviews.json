@@ -1,0 +1,81 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "GAME_SEED=BUG_DEFENSE_SEED"
+        ],
+        "add": [
+          "GAME_SEED=BUG_DEFENSE_SEED"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "GAME_SEED=BUG_DEFENSE_SEED"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "곤충 디펜스의 독립 검토 모델은 다른 부서 관점에서도 있어야 하는 것으로 간주되어 있습니다. 이는 다른 부서 관점에서 작성된 게임의 성격과 성능을 보여줘야 합니다. 그러나 이는 각 부서 관점에서 작성된 게임의 성격과 성능을 보여줘야 "
+        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 QA 부서만 검토하라. 다른 부서는 제시되지 않다."
+        ],
+        "fix": [
+          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+        ],
+        "add": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않아요."
+        ],
+        "risks": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않아요."
+        ],
+        "evidence": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않아요."
+        ],
+        "questions": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않아요."
+        ]
+      }
+    }
+  ]
+}

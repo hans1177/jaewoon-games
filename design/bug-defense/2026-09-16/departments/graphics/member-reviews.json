@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Bug-Defense 게임의 독자적인 곤충 디펜스 게임의 특징을 강조하고, 30웨이브 곤충 디펜스 게임의 핵심적인 특징을 명확하게 설명합니다. 곤충 디펜스 게임의 핵심적인 특징을 강조하고, 곤충 디펜스 게임의 핵심적인 특징을 명확하게"
+        ],
+        "fix": [
+          "게임의 곤충 디펜스 게임의 핵심적인 특징을 강조하고, 곤충 디펜스 게임의 핵심적인 특징을 명확하게"
+        ],
+        "add": [
+          "게임의 곤충 디펜스 게임의 핵심적인 특징을 강조하고, 곤충 디펜스 게임의 핵심적인 특징을 명확하게"
+        ],
+        "risks": [
+          "게임의 곤충 디펜스 게임의 핵심적인 특징을 강조하고, 곤충 디펜스 게임의 핵심적인 특징을 명확하게"
+        ],
+        "evidence": [
+          "게임의 곤충 디펜스 게임의 핵심적인 특징을 강조하고, 곤충 디펜스 게임의 핵심적인 특징을 명확하게"
+        ],
+        "questions": [
+          "게임의 곤충 디펜스 게임의 핵심적인 특징을 강조하고, 곤충 디펜스 게임의 핵심적인 특징을 명확하게"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "keep"
+        ],
+        "fix": [
+          "fix"
+        ],
+        "add": [
+          "add"
+        ],
+        "risks": [
+          "risks"
+        ],
+        "evidence": [
+          "evidence"
+        ],
+        "questions": [
+          "questions"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED=OWNER-FULL-REBUILD-BUG-DEFENSE-20260916"
+        ],
+        "add": [
+          "GAME_SEED=bug-defense"
+        ],
+        "risks": [
+          "GAME_SEED=bug-defense"
+        ],
+        "evidence": [
+          "GAME_SEED=bug-defense"
+        ],
+        "questions": [
+          "GAME_SEED=bug-defense"
+        ]
+      }
+    }
+  ]
+}

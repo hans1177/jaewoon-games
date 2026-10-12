@@ -1,0 +1,32 @@
+{
+  "version": 5,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "representativeModel": "gemini-3.6-flash",
+  "leadModel": "gemini-3.6-flash",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "Unity 2D 타일맵 기반 그리드 좌표 시스템을 활용한 고속 배치 판정 구조 유지"
+    ],
+    "fix": [
+      "오브젝트 풀링 패턴을 적용하여 수십 마리의 적 유닛 생성 및 소멸 시 가비지 컬렉션 부하를 최적화하라"
+    ],
+    "add": [
+      "모바일 터치 입력 지연을 최소화하기 위한 드래그 앤 드롭 반응 속도 개선 로직 추가"
+    ],
+    "risks": [
+      "다수의 적 유닛 동시 스폰 시 모바일 저사양 기기에서 60FPS 유지가 저하될 위험 존재"
+    ],
+    "evidence": [
+      "유니티 2D 타일맵과 오브젝트 풀링을 결합한 벤치마크 테스트 결과 기반"
+    ],
+    "questions": [
+      "웨이브 전환 시 메모리 프리로드 처리는 어떤 방식으로 최적화할 것인가?"
+    ]
+  }
+}

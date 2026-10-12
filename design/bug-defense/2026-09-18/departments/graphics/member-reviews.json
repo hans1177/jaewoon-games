@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "qwen3:0.6b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_design_quality"
+        ],
+        "fix": [
+          "game_design_quality"
+        ],
+        "add": [
+          "game_design_quality"
+        ],
+        "risks": [
+          "game_design_quality"
+        ],
+        "evidence": [
+          "game_design_quality"
+        ],
+        "questions": [
+          "game_design_quality"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "DISTINCT_IDENTITY"
+        ],
+        "risks": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "evidence": [
+          "Kingdom Rush"
+        ],
+        "questions": [
+          "Bloons TD 6"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game's core fun to learn"
+        ],
+        "fix": [
+          "game's core loop"
+        ],
+        "add": [
+          "distinct identity"
+        ],
+        "risks": [
+          "game's market evidence summary"
+        ],
+        "evidence": [
+          "game's market evidence summary"
+        ],
+        "questions": [
+          "game's market evidence summary"
+        ]
+      }
+    }
+  ]
+}
