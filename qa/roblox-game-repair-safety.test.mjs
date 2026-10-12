@@ -268,3 +268,41 @@ callbacks.remove(p)
 assert(writes==3 and recorded.ResourceStone==30)
 `);
 });
+
+test('daechung reconnects chest library without changing character physics or replacing an available authored mesh',{skip:!luau},()=>{
+ const server=read('roblox-games/daechung-rpg/server/Game.server.luau');
+ const start=server.indexOf('local function wearMedievalChest(');
+ const source=server.slice(start,server.indexOf('local function addWeaponTrail(',start));
+ runLuau(`
+local frame=setmetatable({},{__mul=function(a,b)return a end})
+local CFrame={new=function()return frame end,Angles=function()return frame end}
+local Color3={fromRGB=function()return {}end}
+local size=setmetatable({X=2,Y=3,Z=1},{__mul=function(a,b)return a end})
+local torso={CFrame=frame,Size={Y=2.45},CanCollide=true,Massless=false}
+local folder={}
+local model={FindFirstChild=function(_,name)if name=="UpperTorso"then return torso end end}
+local C={StudioAssets={Families={CHARACTER={"TORSO_PLATE"}}}}
+local ASSETS={MedievalArmor=1}
+local available=false
+local authored={Clone=function()return{Size=size}end}
+local function chooseMesh()return available and authored or nil end
+local parts={{CanCollide=true,CanQuery=true,CanTouch=true,Anchored=true,Massless=false}}
+for _,p in ipairs(parts)do function p:IsA(class)return class=="BasePart"end end
+local calls=0
+local visual={PrimaryPart=parts[1],GetDescendants=function()return parts end,PivotTo=function()end,SetAttribute=function(self,k,v)self[k]=v end}
+local CommonCharacterGear={Create=function(id,options)
+ calls+=1;assert(id=="IRON_CHESTPLATE"and options.quality=="near"and options.anchored==false)
+ return visual
+end}
+local Instance={new=function(class)assert(class=="WeldConstraint");return{}end}
+${source}
+assert(wearMedievalChest(model,folder,1)==true and calls==1)
+assert(visual.Parent==folder and visual.RigBindingState=="WELD_BOUND_RUNTIME_REVIEW_PENDING")
+assert(not parts[1].Anchored and parts[1].Massless and not parts[1].CanCollide and not parts[1].CanTouch and not parts[1].CanQuery)
+assert(torso.CanCollide==true and torso.Massless==false)
+available=true
+assert(wearMedievalChest(model,folder,1)==true and calls==1)
+available=false;C.StudioAssets.Families.CHARACTER={}
+assert(wearMedievalChest(model,folder,1)==false and calls==1)
+`);
+});

@@ -10,6 +10,8 @@ local TweenService=game:GetService("TweenService")
 local Shared=RS:WaitForChild("Shared")
 local C=require(Shared:WaitForChild("GameConfig"))
 local Style=require(Shared:WaitForChild("VisualStyle"))
+local CommonCharacterGear=require(Shared:WaitForChild("RobloxCommonCharacterGear"))
+local CommonCreatureParts=require(Shared:WaitForChild("RobloxCommonCreatureParts"))
 
 -- 네트워크 Remote는 로컬 exact Studio에서도 먼저 준비해서 클라이언트 부팅을 막지 않는다.
 local remote=RS:FindFirstChild(C.RemoteName)or Instance.new("RemoteEvent")
@@ -271,9 +273,21 @@ local function gearPart(folder,body,name,size,offset,color,material,shape,rotati
  local w=Instance.new("WeldConstraint");w.Part0=body;w.Part1=x;w.Parent=x
  return x
 end
-local function wearMedievalChest(model,folder,variant)
+local function wearMedievalChest(model,folder,variant,color)
  local torso=model:FindFirstChild("UpperTorso");if not torso then return false end
- local t=chooseMesh(ASSETS.MedievalArmor,{"armor","chest","torso","plate","knight"},variant or 1);if not t then return false end
+ local t=chooseMesh(ASSETS.MedievalArmor,{"armor","chest","torso","plate","knight"},variant or 1)
+ if not t then
+  local families=C.StudioAssets and C.StudioAssets.Families or{}
+  if not table.find(families.CHARACTER or{},"TORSO_PLATE") then return false end
+  local visual=CommonCharacterGear.Create("IRON_CHESTPLATE",{quality="near",anchored=false,scale=math.clamp(torso.Size.Y/2.45,.6,1.4),palette={accent=color or Color3.fromRGB(155,118,56)}})
+  visual.Name="CompanyChestArmor";visual:PivotTo(torso.CFrame*CFrame.new(0,0,-.08));visual.Parent=folder
+  for _,part in ipairs(visual:GetDescendants())do
+   if part:IsA("BasePart")then part.Anchored=false;part.Massless=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+  end
+  local joint=Instance.new("WeldConstraint");joint.Part0=torso;joint.Part1=visual.PrimaryPart;joint.Parent=visual.PrimaryPart
+  visual:SetAttribute("RigBindingState","WELD_BOUND_RUNTIME_REVIEW_PENDING")
+  return true
+ end
  local x=t:Clone();x.Name="MedievalAssetArmor";x.Anchored=false;x.CanCollide=false;x.CanTouch=false;x.CanQuery=false;x.Massless=true
  local maxAxis=math.max(x.Size.X,x.Size.Y,x.Size.Z);if maxAxis<=0 then x:Destroy();return false end
  x.Size=x.Size*(3.65/maxAxis);x.CFrame=torso.CFrame*CFrame.Angles(0,math.rad(180),0);x.Parent=folder
@@ -295,7 +309,7 @@ local function decorateCharacterModel(model,classId,variant,advancementId)
  local gear=Instance.new("Folder");gear.Name="DaechungClassGear";gear.Parent=model
  local torso=model:FindFirstChild("UpperTorso");local head=model:FindFirstChild("Head")
  local right=model:FindFirstChild("RightHand")or model:FindFirstChild("RightLowerArm");local left=model:FindFirstChild("LeftHand")or model:FindFirstChild("LeftLowerArm")
- local usedAsset=wearMedievalChest(model,gear,variant)
+ local usedAsset=wearMedievalChest(model,gear,variant,color)
  if not usedAsset and torso then gearPart(gear,torso,"ClassChest",Vector3.new(2.25,2.2,1.25),Vector3.new(0,0,-.08),color,Enum.Material.Metal)end
  if torso then
   gearPart(gear,torso,"ClassShoulderL",Vector3.new(.78,.48,1.05),Vector3.new(-1.25,.65,0),color,Enum.Material.Metal,Enum.PartType.Ball)
@@ -1002,13 +1016,24 @@ local function enemyModel(parent,z,pos,boss,enemyDef)
   add("SnowBeastTail",Vector3.new(3.4,.72,.72),Vector3.new(0,-1,3.55),fur,Enum.Material.Fabric,Enum.PartType.Cylinder,Vector3.new(0,25,35))
  elseif z.Theme=="RUINS"then
   local rock=Color3.fromRGB(79,76,88);local edge=Color3.fromRGB(99,95,108)
-  add("GolemBody",Vector3.new(4.3,4.7,3.6),Vector3.new(0,-1.4,0),rock,Enum.Material.Rock,Enum.PartType.Ball)
+  local families=C.StudioAssets and C.StudioAssets.Families or{}
+  if table.find(families.CREATURE or{},"CRYSTAL_CORE")then
+   local visual=CommonCreatureParts.Create("GOLEM_CORE",{quality="near",anchored=false,scale=1.5,palette={body=rock,light=edge,accent=z.Color}})
+   visual.Name="CompanyGolemBody";visual:PivotTo(rootPart.CFrame*CFrame.new(0,-1.4,0));visual.Parent=rootPart
+   for _,part in ipairs(visual:GetDescendants())do
+    if part:IsA("BasePart")then part.Anchored=false;part.Massless=true;part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+   end
+   local joint=Instance.new("WeldConstraint");joint.Part0=rootPart;joint.Part1=visual.PrimaryPart;joint.Parent=visual.PrimaryPart
+   visual:SetAttribute("RigBindingState","WELD_BOUND_RUNTIME_REVIEW_PENDING")
+  else
+   add("GolemBody",Vector3.new(4.3,4.7,3.6),Vector3.new(0,-1.4,0),rock,Enum.Material.Rock,Enum.PartType.Ball)
+   add("GolemShoulderL",Vector3.new(2.1,2.1,2.1),Vector3.new(-2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
+   add("GolemShoulderR",Vector3.new(2.1,2.1,2.1),Vector3.new(2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
+   add("GolemCore",Vector3.new(1.05,1.05,.36),Vector3.new(0,-.6,-1.85),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
+  end
   add("GolemHead",Vector3.new(2.7,2.4,2.5),Vector3.new(0,1.55,-.3),edge,Enum.Material.Rock,Enum.PartType.Ball)
-  add("GolemShoulderL",Vector3.new(2.1,2.1,2.1),Vector3.new(-2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
-  add("GolemShoulderR",Vector3.new(2.1,2.1,2.1),Vector3.new(2.65,-.4,0),edge,Enum.Material.Rock,Enum.PartType.Ball)
   add("GolemArmL",Vector3.new(3.2,1.05,1.05),Vector3.new(-3.15,-2,0),rock,Enum.Material.Rock,Enum.PartType.Cylinder,Vector3.new(0,0,85))
   add("GolemArmR",Vector3.new(3.2,1.05,1.05),Vector3.new(3.15,-2,0),rock,Enum.Material.Rock,Enum.PartType.Cylinder,Vector3.new(0,0,95))
-  add("GolemCore",Vector3.new(1.05,1.05,.36),Vector3.new(0,-.6,-1.85),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
    add("GolemRuneL",Vector3.new(.4,1.4,.4),Vector3.new(-2.7,1.6,.2),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
    add("GolemRuneR",Vector3.new(.4,1.4,.4),Vector3.new(2.7,1.6,.2),z.Color,Enum.Material.Neon,Enum.PartType.Ball)
  elseif z.Theme=="CANYON"then
