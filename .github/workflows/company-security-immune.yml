@@ -52,7 +52,7 @@ concurrency:
 
 jobs:
   scan:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
       contents: read
@@ -179,7 +179,7 @@ jobs:
   record_incident:
     needs: scan
     if: ${{ always() && (needs.scan.outputs.verdict == 'REVIEW' || needs.scan.outputs.verdict == 'QUARANTINE') && github.event_name != 'pull_request' }}
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
       contents: write
@@ -238,7 +238,7 @@ jobs:
   enforce:
     needs: [scan, record_incident]
     if: ${{ always() && (needs.scan.result != 'success' || needs.scan.outputs.verdict != 'PASS') }}
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 4
     permissions:
       contents: read
