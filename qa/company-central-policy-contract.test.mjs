@@ -1196,7 +1196,10 @@ test('administrative control-plane QA stays off game-primary ubuntu-latest capac
     '.github/workflows/main-write-guard.yml',
   ]){
     const source=readText(workflowFile);
-    assert.match(source,/runs-on:\s*ubuntu-slim/,workflowFile);
+    const isolation=roadmap.minimumNecessaryProcedurePolicy.implementation.controlPlaneRunnerIsolation;
+    const expected=isolation.runnerByWorkflow?.[workflowFile]||isolation.runner;
+    assert.ok(['ubuntu-slim','ubuntu-24.04'].includes(expected),workflowFile);
+    assert.match(source,new RegExp('runs-on:\\s*'+expected.replaceAll('.','\\.')),workflowFile);
     assert.doesNotMatch(source,/runs-on:\s*ubuntu-latest/,workflowFile);
   }
 });

@@ -1,3 +1,5 @@
+// 파일명: qa/design-only-central-policy.test.mjs
+// 임포트·메인: 현재 중앙 설계 흐름과 유효한 접수 입력을 검증한다.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,36 +14,25 @@ const roadmap = JSON.parse(fs.readFileSync('company-learning/platform-release-ro
 
 const expectedDesignOnlyFlow = [
   'GAME_SEED',
-  'GAME_DESIGNER_DRAFT',
-  'DETERMINISTIC_PRE_GATE',
-  'FAILED_AXIS_DESIGNER_REPAIR_MAX_2',
-  'DETERMINISTIC_DEPARTMENT_EVIDENCE',
-  'DETERMINISTIC_REVALIDATION',
-  'STRICT_DESIGN_REVIEW',
-  'DESIGN_BASELINE_GATE'
+  'COMMON_CORE_MINIMUM_DESIGN',
+  'ROBLOX_PLATFORM_PROFILE',
+  'UNITY_PLATFORM_PROFILE',
+  'MINIMUM_DUAL_PLATFORM_DESIGN_CONTRACT'
 ];
 
 const expectedBaselineRequirements = [
   'GAME_SEED_COMPLETE',
-  'DISTINCT_GAME_IDENTITY',
-  'CORE_FUN_CLEAR',
-  'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD',
-  'MARKET_TARGET_DIRECTION_RECORDED',
-  'TARGET_PLATFORM_UX_DIRECTION_DEFINED',
-  'PLATFORM_SELECTION_RECORDED',
-  'MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED',
-  'APPROVED_SCOPE_INVENTORY_RECORDED',
-  'DETERMINISTIC_DESIGN_PRE_GATE_PASS',
-  'DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED',
-  'STRICT_DESIGN_SCORE_AT_LEAST_80',
-  'STRICT_DESIGN_HARD_FAILURES_EMPTY'
+  'MINIMUM_COMMON_CORE_READY',
+  'ROBLOX_PLATFORM_PROFILE_READY',
+  'UNITY_PLATFORM_PROFILE_READY',
+  'PLATFORM_PROFILES_DISTINCT'
 ];
 
 test('DESIGN_ONLY machine flow follows the canonical machine policy at the stage level', () => {
   assert.equal(directive.policyDocument, 'company-learning/platform-release-roadmap.json');
   assert.deepEqual(directive.classes.DESIGN_ONLY.requiredFlow, expectedDesignOnlyFlow);
   assert.deepEqual(directive.classes.DESIGN_ONLY.baselineReadyRequires, expectedBaselineRequirements);
-  assert.equal(directive.classes.DESIGN_ONLY.readyState, 'DESIGN_BASELINE_READY');
+  assert.equal(directive.classes.DESIGN_ONLY.readyState, 'MINIMUM_DESIGN_READY');
   assert.equal(directive.classes.DESIGN_ONLY.sourceCodeAutoDevelopment, false);
   assert.equal(directive.classes.DESIGN_ONLY.directResultMode, true);
   assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
@@ -77,11 +68,12 @@ test('valid GAME_SEED passes without requiring unavailable numeric market data',
     MARKET_EVIDENCE_SUMMARY: 'UNKNOWN numeric market fields; qualitative benchmark only',
     TARGET_AUDIENCE: 'mobile action players',
     TARGET_SESSION_DIRECTION: 'short repeatable sessions',
-    INITIAL_TARGET_PLATFORM: 'ANDROID_MOBILE',
+    INITIAL_TARGET_PLATFORM: 'ROBLOX',
     INITIAL_PLAY_MODE: 'SINGLE_PLAYER',
     STEAM_EXPANSION_POSSIBLE: 'POSSIBLE',
     MULTIPLAYER_EXPANSION_POSSIBLE: 'NOT_RECOMMENDED',
-    MULTIPLAYER_EXPANSION_VALUE: 'LOW'
+    MULTIPLAYER_EXPANSION_VALUE: 'LOW',
+    CROSS_PLATFORM_EXPANSION_VALUE: '동일 핵심 플레이와 저장 의미를 보존해 다른 승인 플랫폼에 적용한다.'
   });
   assert.equal(result.pass, true, result.errors.join('\n'));
 });
