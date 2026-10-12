@@ -1151,8 +1151,9 @@ test('native grammar authoring uses same repository systems and does not mint fa
   assert.match(native,/원본 언어는 Roblox Luau/);
   assert.match(native,/revised\.platformProfiles\.ROBLOX/);
   assert.match(native,/기존 F0~F9 및 Roblox 클라우드 API/);
-  assert.match(native,/unityWebSpatialPresentation:\{/);
-  assert.match(native,/dimension:'3D'/);
+  assert.doesNotMatch(native,/unityWebSpatialPresentation:\{/);
+  assert.match(native,/delete revised\.platformProfiles\.UNITY\.unityWebSpatialPresentation/);
+  assert.match(native,/유니티 웹 빌드 대상은 제외한다/);
   assert.match(native,/실제 플레이 측정 전/);
   assert.match(design,/reusableCodeModules:/);
   assert.match(design,/CANDIDATE_ONLY_VALIDATE_LICENSE_AND_EXISTING_FUNCTION_OWNER/);
