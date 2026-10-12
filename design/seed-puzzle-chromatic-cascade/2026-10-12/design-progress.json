@@ -2,16 +2,20 @@
   "version": 2,
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-10-12",
-  "engineDigest": "91e304c5ab0fae8a58e773bf7e3a612d5c2c4d03f4eb31ad6f3dd319d225b731",
+  "engineDigest": "14da354f8c29328d2a24e844581bf5c53ae4289cf3ac809db9f9c50dc1cb8142",
   "status": "COMPLETE",
   "currentStage": "COMPLETE",
   "percent": 100,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2",
     "deterministic_department_evidence"
   ],
-  "completedPhaseCount": 3,
+  "completedPhaseCount": 7,
   "cachedTaskCount": 11,
   "lastSuccessfulModelCallAt": null,
   "failedPhase": null,
@@ -19,13 +23,13 @@
   "lastError": null,
   "designerSeed": {
     "file": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-seed.json",
-    "contentDigest": "f9940ebc1b929877a6f0e90f862fd3a2cb13f64311f2eb65f2bcdc7ffc1b7c80",
+    "contentDigest": "b1b9d95da13bf097663441ff3931ec93cdf9d38fb4d75c4bc8fdf1a126f1756a",
     "authorModel": "vibe-native:causal-design-v1",
     "status": "AUTHORED_CANDIDATE"
   },
   "modelHealth": {},
   "slowPhases": {},
-  "updatedAt": "2026-10-11T16:34:37.776Z",
-  "preGateScore": 80,
-  "postRevisionPreGateScore": 80
+  "updatedAt": "2026-10-12T02:20:07.816Z",
+  "preGateScore": 78.4,
+  "postRevisionPreGateScore": 78.4
 }
