@@ -778,7 +778,7 @@ test('Unity Web readiness failure enters reusable Vibe2 causal repair and still 
   }
 });
 
-test('paused Unity Web homepage never probes builds while static Unity compression remains compatible',()=>=>{
+test('paused Unity Web homepage never probes builds while static Unity compression remains compatible',()=>{
   const homepage=fs.readFileSync(path.join(repo,'assets','homepage-enhancements.js'),'utf8');
   const routes=JSON.parse(fs.readFileSync(path.join(repo,'_routes.json'),'utf8'));
   const headers=fs.readFileSync(path.join(repo,'_headers'),'utf8');
