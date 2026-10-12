@@ -695,7 +695,7 @@ test('F9 canonical publish uses exact F9 released-game identity and immediately 
  assert.match(workflow,/robloxF9VerifiedPrepublishEvidence/);
  assert.match(workflow,/robloxCanonicalPublishQueue/);
  assert.match(workflow,/status:'PENDING'/);
- assert.match(workflow,/const releaseReadiness=evaluateInternalRelease\(item,'ROBLOX',roadmap\)/);
+ assert.match(workflow,/const releaseReadiness=evaluateInternalRelease\(\{\.\.\.item,robloxRuntimeCandidateEvidence:candidate\},'ROBLOX',roadmap,'SERVER_DEPLOYMENT'\)/);
  assert.match(workflow,/const serverPublishEligible=[\s\S]*?releaseReadiness\.ready===true[\s\S]*?item\.robloxFinalReviewPassed===true[\s\S]*?item\.robloxF9ReleaseRegressionPassed===true[\s\S]*?candidate\.sourceRevision===sourceRevision[\s\S]*?candidate\.artifactIdentity===artifactIdentity/);
  assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
  assert.match(workflow,/if\(serverPublishEligible&&!publishQueue/);
@@ -1605,3 +1605,4 @@ test('legacy Open Cloud Plugin capability denial remains diagnostic rather than 
  const script=JSON.parse(calls[0].init.body).script;
  assert.doesNotMatch(script,/RunService:Run\(\)/);
 });
+

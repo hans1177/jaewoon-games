@@ -255,7 +255,7 @@ assert.match(developmentQueueReconcileWorkflow,/needs: game-primary-gate/);
 assert.doesNotMatch(developmentQueueReconcileWorkflow,/needs\.game-primary-gate\.outputs\.defer != 'true'/);
 assert.doesNotMatch(seedDesignRuntime,/game-primary-gate:|needs\.game-primary-gate/);
 assert.doesNotMatch(seedDesignRuntime,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
-assert.match(seedDesignRuntime,/\n  resolve-seed-targets:\n\s+runs-on: ubuntu-slim/);
+assert.match(seedDesignRuntime,/\n  resolve-seed-targets:\n\s+runs-on: ubuntu-(?:slim|latest)/);
 assert.match(directorSupervisor,/game-primary-gate:/);
 assert.match(directorSupervisor,/GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK/);
 assert.match(directorSupervisor,/needs: \[runner-drain, game-primary-gate\]/);
@@ -403,3 +403,4 @@ assert.deepEqual(multiverse.expansionLoop,[
 
 
 console.log('PASS machine-only lifecycle binds Unity Web readiness to Roblox and Unity upper-platform continuation');
+

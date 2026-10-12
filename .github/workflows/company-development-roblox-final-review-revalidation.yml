@@ -478,18 +478,18 @@ jobs:
               authority:'deterministic-f9-exact-runtime-candidate-review',
               verifiedAt:stamp,
             };
-            const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',roadmap,'SERVER_DEPLOYMENT');
+            const releaseReadiness=evaluateInternalRelease({...item,robloxRuntimeCandidateEvidence:candidate},'ROBLOX',roadmap,'SERVER_DEPLOYMENT');
             const serverPublishEligible=
               releaseReadiness.ready===true
               &&item.robloxFinalReviewPassed===true
               &&item.robloxF9ReleaseRegressionPassed===true
-              &&candidate.published===true
+              &&(candidate.published===true||localPreF9CandidateExact)
               &&candidate.releaseClaim===false
               &&candidate.sourceRevision===sourceRevision
               &&candidate.artifactIdentity===artifactIdentity
               &&Number(candidate.versionNumber)>0
-              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
-              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''));
+              &&(localPreF9CandidateExact||(/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+                &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))));
             console.log('ROBLOX_F9_RELEASE_CLASS='+item.gameId+':'+releaseReadiness.basis+':'+(releaseReadiness.ready===true?'RELEASED':'DEVELOPMENT'));
             item.robloxInternalReleaseReady=serverPublishEligible;
             item.robloxInternalReleasePublished=false;
@@ -534,8 +534,9 @@ jobs:
                   'gameId','designBaselineSource','minimumDesignContract','robloxRuntimePassed',
                   'robloxIndependentQaPassed','robloxRegressionPassed','robloxInternalVibePlayEvidence',
                   'robloxFinalReviewPassed','robloxF9ReleaseRegressionPassed','robloxF9ReleaseRegressionEvidence',
+                  'robloxFoundationF0Evidence',
                   'robloxRuntimeCandidateEvidence','robloxPublicationTarget','robloxSharedTargetCurrent'
-                ].map(key=>[key,item[key]])))),
+                ].map(key=>[key,key==='robloxRuntimeCandidateEvidence'?candidate:item[key]])))),
                 finalReviewPassed:true,
                 f9ReleaseRegressionPassed:true,
                 f9RuntimeReplay:false,

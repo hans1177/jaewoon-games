@@ -6896,14 +6896,7 @@
     "publicationVisibilityBlocksEvolution": false,
     "publicationOutcomeBlocksNextCycle": false,
     "exposureStateBlocksNextCycle": false,
-    "serverDeployment": {
-      "eligibilityOwner": "tools/company-platform-exposure-control.mjs#evaluateInternalRelease",
-      "purpose": "SERVER_DEPLOYMENT",
-      "everyExactF9Cycle": true,
-      "publicDecisionOwner": "OWNER_ONLY",
-      "lobbyClassificationBlocksServerDeployment": false,
-      "existingSequenceUnchanged": true
-    }
+    "serverDeployment": "fixedAutonomousDevelopmentOperatingContract.serverDeployment"
   },
   "platformVerifiedF0F9PublicationLoop": {
     "version": 1,
@@ -7379,16 +7372,7 @@
       "WEB"
     ],
     "webCandidatePlanner": "tools/vibe2-auto-planner.mjs",
-    "detailedDesign": {
-      "owner": "tools/company-roblox-production-plan.mjs#buildRobloxProductionPlan",
-      "handoff": "tools/company-build-up-directive.mjs#extractDesignContext",
-      "interfaceValidator": "tools/company-roblox-production-plan.mjs#validateInterfaceBlueprint",
-      "existingIncrementalQa": "tools/vibe2-incremental-qa.mjs",
-      "gameSpecific": true,
-      "staticPlanIsNotRuntimePass": true,
-      "newPipeline": false,
-      "gameConceptStyle": "tools/vibe2-asset-production-plan.mjs#buildVibeAssetProductionPlan"
-    }
+    "detailedDesign": "robloxStudioProductionFlowContract.detailedDesign"
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",

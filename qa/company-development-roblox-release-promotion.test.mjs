@@ -521,6 +521,13 @@ test('final publication retains exact F9 cycle while next BUILD_UP advances and 
     robloxQualityBuildUpRequired:true,robloxFinalReviewPassed:false,robloxFoundationF0Passed:false,robloxCanonicalPublishQueue:[entry]};
   const candidate={item,sourceRevision,artifactIdentity,sourceTree:'verified-old-tree',latestSourceTree:'next-tree',publishCycleId,publishStage:'final'};
   assert.equal(assertRobloxLatestPublishCandidate(candidate),true);
+  const local=structuredClone(entry);
+  local.validationUniverseId='';local.validationPlaceId='';local.validationVersionNumber=21;
+  local.f9Evidence.candidateVersionNumber=21;
+  local.releaseSnapshot.robloxRuntimeCandidateEvidence={sourceRevision,artifactIdentity,published:false,releaseClaim:false,authority:'roblox-local-f0-pre-f9-artifact',artifactRunId:21,universeId:'',placeId:'',versionNumber:21};
+  assert.equal(assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxCanonicalPublishQueue:[local]}}),true);
+  const staleLocal=structuredClone(local);staleLocal.releaseSnapshot.robloxRuntimeCandidateEvidence.artifactRunId=99;
+  assert.throws(()=>assertRobloxLatestPublishCandidate({...candidate,item:{...item,robloxCanonicalPublishQueue:[staleLocal]}}),/EXACT_CYCLE_EVIDENCE_REQUIRED/);
   for(const change of [
     {sourceRevision:'e'.repeat(40)}, {artifactIdentity:'sha256:'+ 'f'.repeat(64)},
     {finalReviewPassed:false}, {f9ReleaseRegressionPassed:false}, {status:'REVOKED'},

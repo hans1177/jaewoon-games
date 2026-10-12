@@ -21,6 +21,14 @@ test('every exact F9 cycle is server-deployable without lobby or public approval
     const broken=structuredClone(item);mutation(broken);assert.equal(evaluateInternalRelease(broken,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,false);
   }
   assert.equal(evaluateInternalRelease(item,'ROBLOX',{},'SERVER_DEPLOYMENT').ready,false);
+  const local=structuredClone(item);
+  local.robloxRuntimeCandidateEvidence={published:false,releaseClaim:false,authority:'roblox-local-f0-pre-f9-artifact',sourceRevision:source,artifactIdentity:artifact,artifactRunId:21,versionNumber:21};
+  local.robloxFoundationF0Evidence={sourcePreflightPassed:true,f0SourceIntegrityPassed:true,sourceRevision:source,artifactIdentity:artifact,artifactRunId:21};
+  local.robloxF9ReleaseRegressionEvidence.candidateVersionNumber=21;
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,true);
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy).ready,false);
+  local.robloxFoundationF0Evidence.artifactRunId=22;
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,false);
 });
 const candidate={published:true,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7};
 const exact=(extra={})=>({pass:true,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7,...extra});
