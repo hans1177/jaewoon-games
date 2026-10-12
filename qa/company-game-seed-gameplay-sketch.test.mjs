@@ -647,8 +647,19 @@ test('cozy fresh design reuses only the verified old seed A gameplay system, not
     'C primary and secondary genre identities must be selected independently of the old gameplay system');
   assert.notEqual(fusion.themeFusion.abGameplayEffect,control.themeFusion.abGameplayEffect,
     'C must rebind its actual effects to the A/B causal chain after the A gameplay system is resolved');
-  assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.causalDNAs,
-    without.gameplaySketch.novelGameGrammar.causalDNAs);
+  // 검증: 인과 소재의 정체성은 보존하되, A를 참조하는 실제 효과는 새 A 시스템에 연결한다.
+  const freshDnas=fresh.gameplaySketch.novelGameGrammar.causalDNAs;
+  const controlDnas=without.gameplaySketch.novelGameGrammar.causalDNAs;
+  assert.deepEqual(freshDnas.map(({fusionRole,...identity})=>identity),
+    controlDnas.map(({fusionRole,...identity})=>identity));
+  let reboundA=0;
+  for(let index=0;index<freshDnas.length;index++){
+    const previous=controlDnas[index].fusionRole;
+    const expected=previous.replaceAll(control.majorAxes[0].systemFamily,aOnly.systemFamily);
+    assert.equal(freshDnas[index].fusionRole,expected,'only the resolved A system may change a causal role');
+    if(expected!==previous)reboundA++;
+  }
+  assert.ok(reboundA>0,'the inherited A system must have an actual causal effect');
   assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3),
     without.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3));
   assert.notEqual(fresh.distinctIdentity,without.distinctIdentity);

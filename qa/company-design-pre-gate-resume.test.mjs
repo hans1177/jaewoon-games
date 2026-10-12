@@ -247,6 +247,51 @@ test('design admission accepts a missing seed while skipping superseded work and
   assert.match(workflow,/strict.verdict==='PASS'/);
 });
 
+// 메인: 대기 중 생긴 이전 개정의 PASS가 새 오너 설계 요청을 소거하지 않는다.
+test('queued design supersession requires the same owner revision even when an older revision passes later',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const step=workflow.split('- name: Skip only superseded design work')[1]
+    .split('- name: Recover verified deterministic design checkpoint')[0];
+  const script=step.split("<<'NODE' >> \"$GITHUB_OUTPUT\"")[1].split('\n          NODE')[0]
+    .replace(/^\s*import .*$/gm,'');
+  const gameId='cozy-island',seedId='OWNER-DESIGN-COZY-ISLAND';
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-owner-supersession-'));
+  try{
+    const base=path.join(root,'design',gameId,'2026-10-12');
+    fs.mkdirSync(base,{recursive:true});
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify({seeds:[{
+      gameId,seedId,status:'ACTIVE',ownerResetRevision:'OWNER-COZY-A-SEED-AUTO-20261012-5'
+    }]}));
+    fs.writeFileSync(path.join(base,'cycle-status.json'),JSON.stringify({baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}}));
+    const review={verdict:'PASS',totalScore:80,hardFailures:[],reviewedAt:'2026-10-12T05:13:50Z'};
+    fs.writeFileSync(path.join(base,'strict-design-review.json'),JSON.stringify(review));
+    const evaluate=record=>{
+      const revisedPath=path.join(base,'design-revised.json');
+      if(record===null)fs.rmSync(revisedPath,{force:true});
+      else fs.writeFileSync(revisedPath,JSON.stringify(record));
+      const output=[];
+      const resolve=file=>path.resolve(root,file);
+      runInNewContext(script,{
+        fs:{readFileSync:(file,...args)=>fs.readFileSync(resolve(file),...args),
+          existsSync:file=>fs.existsSync(resolve(file)),readdirSync:(file,...args)=>fs.readdirSync(resolve(file),...args)},
+        path,console:{log:value=>output.push(value)},process:{env:{
+          TARGET_GAME_ID:gameId,TARGET_SEED_ID:seedId,TARGET_DESIGN_EVOLUTION_DUE:'true',
+          TARGET_DESIGN_EVOLUTION_REASON:'NEW_OWNER_EVENT',
+          TARGET_BASELINE_REVIEW_AT:String(Date.parse('2026-10-12T05:00:00Z'))
+        }}
+      });
+      return output;
+    };
+    for(const record of [null,{}, {ownerDesignEventId:'OWNER-COZY-FRESH-GRAMMAR-20261012-3'}]){
+      assert.ok(evaluate(record).includes('should_run=true'),'missing or older owner evidence cannot satisfy the newest request');
+    }
+    const exact={ownerDesignEventId:'OWNER-COZY-A-SEED-AUTO-20261012-5'};
+    assert.ok(evaluate(exact).includes('should_run=false'),'a newer verified PASS of the exact request suppresses duplicate work');
+    fs.writeFileSync(path.join(base,'strict-design-review.json'),JSON.stringify({...review,verdict:'REVISE',hardFailures:['CORE_FUN_WEAK']}));
+    assert.ok(evaluate(exact).includes('should_run=true'),'an exact revision still needs a strict PASS');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('incomplete intake remains input for the designer instead of failing a seed quality pre-gate',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'designer-incomplete-intake-'));
   try{

@@ -560,6 +560,7 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const designReviewEligible=x=>{const status=String(x?.status||'').trim().toUpperCase();return !['DISCARDED','REMOVED'].includes(status)&&(status==='ACTIVE'||x?.promotion?.strictDesignReviewContinuesInParallel===true);};const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&designReviewEligible(x));
+          const ownerEventId=String(seed?.ownerRequestInstanceId||seed?.ownerDirectiveRevision||seed?.ownerResetRevision||'').trim();
           const resetTimestamp=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetGameIds=new Set((Array.isArray(state?.ownerAllGamesDesignReset?.gameIds)?state.ownerAllGamesDesignReset.gameIds:[])
             .map(value=>String(value||'').trim()).filter(Boolean));
@@ -579,7 +580,16 @@ jobs:
                   if(evidenceAt&&evidenceAt<resetAt)continue;
                   if(!evidenceAt&&date<=resetDate)continue;
                 }
-                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;latestPassAt=evidenceAt;break;}
+                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
+                  // 새 요청은 같은 개정의 검증 결과만 대체할 수 있다. 이전 개정의 늦은 PASS는 무시한다.
+                  if(ownerEventId){
+                    const revisedPath=path.join(base,'design-revised.json');
+                    if(!fs.existsSync(revisedPath))continue;
+                    const revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));
+                    if(String(revised?.ownerDesignEventId||'').trim()!==ownerEventId)continue;
+                  }
+                  strictPass=true;latestPassAt=evidenceAt;break;
+                }
               }
             }catch{}
           }
