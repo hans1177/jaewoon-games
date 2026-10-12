@@ -808,8 +808,8 @@ export function computeVibeSeedProposal(target){
   if(!distinct)throw new Error('VIBE_NATIVE_DESIGN_DISTINCT_CAUSAL_SOURCES_REQUIRED');
   const creativeIds=chosen.map(row=>row.id).join('|');
   const secondary=/COMEDIC|CARNIVAL|ABSURD/.test(creativeIds)?'코믹':/TABOO/.test(creativeIds)?'호러':/TESTIMONY/.test(creativeIds)?'미스터리':'추리';
-  const secondaryGenre=secondary===profile.genre?'사회극':secondary;
-  const gameName=requestedName||(freeTopicMode?`${aMaterial}와 ${bMaterial}의 ${profile.genre} 세계`:`${aMaterial}의 ${profile.genre} 세계`);
+  const secondaryGenre=freeTopicMode?partner.genre:(secondary===profile.genre?'사회극':secondary);
+  const gameName=requestedName||(freeTopicMode?`${aMaterial}·${bMaterial}: ${profile.genre}·${secondaryGenre} 경계`:`${aMaterial}의 ${profile.genre} 세계`);
   const identity=`${gameName}에서 ${profile.playerRole}가 ${profile.a}와 ${profile.b}의 선택을 통해 ${aMaterial}·${bMaterial}의 인과법칙을 바꾸는 ${profile.genre} 복합 게임`;
   const chooseA=freeTopicMode
     ?`행동: ${profile.choiceA}. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.`
@@ -843,8 +843,8 @@ export function computeVibeSeedProposal(target){
   const delveConditions=freeTopicMode?[
     {name:`${aMaterial}의 경로 해독`,condition:`A의 RouteState로 진입해 RiskState·ResourceState가 바뀐 이유를 확인하고 B의 대응을 시험한다.`,insight:`${first.principle} 원리를 A의 선택과 B의 결과를 비교해 발견한다.`,effect:`B에서 비용이 다른 대응을 선택한 뒤 WorldAccessState에 새 접근 조건을 반영한다. 실패하면 원래 RouteState를 유지한다.`,links:['A','B','C']},
     {name:`${bMaterial}의 귀환 흔적`,condition:`B가 RouteState·RiskState를 갱신한 뒤 A의 이전 진입 장소를 다시 방문해 차이를 확인한다.`,insight:`${second.principle} 원리 때문에 같은 A 행동도 재방문에서는 다른 조건으로 판정됨을 발견한다.`,effect:`다음 A에서 위험을 낮추는 우회 RouteState 또는 정보 회복을 선택한다. 재방문 전에는 해금하지 않는다.`,links:['MAIN','A','B']},
-    {name:`${cMaterial1}·${cMaterial2}의 이중 단서`,condition:`C의 두 소재가 각각 A의 RiskState와 B의 ResourceState를 바꾸는 사례를 관찰한 뒤 순서를 비교한다.`,insight:`${third.principle}와 ${fourth.principle}가 결합될 때 ${secondaryGenre}의 해석이 다음 행동 허용 여부를 바꾼다.`,effect:`단서 해석을 선택해 IntentState를 갱신하고 B의 다른 대응을 연다. 조건 미달이면 기존 행동을 유지한다.`,links:['B','C','MAIN']},
-    {name:`${profile.a}와 ${profile.b}의 역전`,condition:`A의 위험 선택을 바꾼 두 결과에 동일한 B 대응을 적용해 RouteState·RiskState를 비교한다.`,insight:`${aMaterial}의 불리한 결과가 ${bMaterial}의 다른 조건에서는 유리해지는 실제 인과를 발견한다.`,effect:`A로 재진입할 때 WorldAccessState에 반대 경로를 기록해 다른 해결을 선택한다. 실패한 시도는 기존 상태를 보존한다.`,links:['A','B','MAIN']}
+    {name:`${cMaterial1}·${cMaterial2}의 이중 단서`,condition:`C의 두 소재가 각각 A의 RiskState와 B의 ResourceState를 바꾸는 사례를 관찰한 뒤 순서를 비교한다.`,insight:`${third.principle} / ${fourth.principle} 두 원리가 결합될 때 ${secondaryGenre}의 해석이 다음 행동 허용 여부를 바꾼다.`,effect:`단서 해석을 선택해 IntentState를 갱신하고 B의 다른 대응을 연다. 조건 미달이면 기존 행동을 유지한다.`,links:['B','C','MAIN']},
+    {name:`${profile.a}·${profile.b}의 역전`,condition:`A의 위험 선택을 바꾼 두 결과에 동일한 B 대응을 적용해 RouteState·RiskState를 비교한다.`,insight:`${aMaterial}의 불리한 결과가 ${bMaterial}의 다른 조건에서는 유리해지는 실제 인과를 발견한다.`,effect:`A로 재진입할 때 WorldAccessState에 반대 경로를 기록해 다른 해결을 선택한다. 실패한 시도는 기존 상태를 보존한다.`,links:['A','B','MAIN']}
   ]:[
     {name:'금기와 기회의 교차',condition:`${aMaterial}의 제약과 ${bMaterial}의 대응을 같은 지역에서 순서대로 시험한다.`,insight:`${first.principle} 상황을 ${second.gameGrammar} 방식으로 해석한다.`,effect:`${profile.a}에서 평소에는 불가능했던 대안 경로와 선택을 연다.`,links:['A','B','C']},
     {name:'되돌아온 선택',condition:`${profile.b}를 완료한 뒤 처음 ${profile.a} 지역을 다시 방문해 달라진 증거를 찾는다.`,insight:`${second.principle} 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.`,effect:'보상이 아닌 관계·정보의 복원과 다른 해결 경로를 선택한다.',links:['MAIN','A','B']},
@@ -883,7 +883,7 @@ export function computeVibeSeedProposal(target){
       crossSystemRules:freeTopicMode?[`MAIN이 WorldAccessState·IntentState를 확인해 A의 RouteState 진입을 결정한다.`,`A가 RouteState·RiskState를 읽고 실행하면 RiskState·ResourceState가 변해 B의 행동 비용과 허용 조건이 바뀐다.`,`B가 RiskState·ResourceState를 판정해 RouteState·RiskState를 출력한 뒤 A로 반환한다. 실패·취소 시 원래 상태를 보존한다.`,`C의 ${cMaterial1}·${cMaterial2} 단서 해석이 A의 RiskState 및 B의 ResourceState·RouteState 조건을 변경하며 ${secondaryGenre} 판단이 실제 대안 선택을 만든다.`]:[`MAIN의 목표가 ${profile.a}에서 추적할 경로와 정보를 결정한다.`,`A의 결과로 ${profile.b}의 비용·위험·가능 행동이 달라진다.`,`B의 대응 결과가 다음 ${profile.a}의 조건을 되돌려 바꾼다.`,`C의 두 소재와 ${secondaryGenre} 판단이 위 두 시스템의 정보·경로를 변경한다.`]
     },
     delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveConditions.map(row=>({name:row.name,discoveryCondition:row.condition,masteryOrInsight:row.insight,gameplayEffect:row.effect,connectsTo:row.links}))},
-    emergentGenre:{name:`${aMaterial}·${bMaterial} ${profile.genre}`,definition:`${profile.a}과 ${profile.b}의 왕복 결과에 ${cMaterial1}·${cMaterial2}와 ${secondaryGenre} 판단이 개입해 다음 월드 상태가 변하는 복합 장르다.`,whyNotSingleConventionalGenre:'한쪽 시스템이나 소재, 보조 장르를 제거하면 가능 경로와 사건 원인이 바뀌므로 단일 장르 규칙으로 환원할 수 없다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
+    emergentGenre:{name:freeTopicMode?`${aMaterial}·${bMaterial} ${profile.genre}·${secondaryGenre}`:`${aMaterial}·${bMaterial} ${profile.genre}`,definition:`${profile.a}과 ${profile.b}의 왕복 결과에 ${cMaterial1}·${cMaterial2}와 ${secondaryGenre} 판단이 개입해 다음 월드 상태가 변하는 복합 장르다.`,whyNotSingleConventionalGenre:'한쪽 시스템이나 소재, 보조 장르를 제거하면 가능 경로와 사건 원인이 바뀌므로 단일 장르 규칙으로 환원할 수 없다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
     expansionVectors:[`${profile.a}의 새로운 지역에서 이전 인과 선택을 다시 해석한다.`,`${profile.b}의 새 상대는 기존 상태를 증폭하거나 반전한다.`,`${cMaterial1}과 ${cMaterial2}의 조합에 다른 인간 갈등을 연결한다.`,'발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다.']
   };
   return {
