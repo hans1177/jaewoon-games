@@ -43,7 +43,7 @@ env:
 jobs:
   # 메인: 대상 선정부터 바로 시작한다. 다른 개발 작업의 관측 결과는 설계 착수 조건이 아니다.
   resolve-seed-targets:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     outputs:
       run: ${{ steps.targets.outputs.run }}
@@ -1055,7 +1055,7 @@ jobs:
   sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
     if: always() && !cancelled() && needs.resolve-seed-targets.outputs.run == 'true'
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
