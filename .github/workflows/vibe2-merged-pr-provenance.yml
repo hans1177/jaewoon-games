@@ -9,7 +9,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: vibe2-control-state-vibe2-unreal-core
+  # Keep each merged PR pending independently; reconcile races against the latest control ledger.
+  group: vibe2-merged-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
@@ -69,18 +70,32 @@ jobs:
 
           git config user.name 'jaewoon-vibe2-provenance'
           git config user.email 'vibe2-provenance@users.noreply.github.com'
-          git add .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json
-          git commit -m "vibe2: record merged PR provenance [skip ci]"
 
+          # Per-PR pending slots avoid dropped merger events. Re-run the trusted reducer
+          # on the latest control branch after a competing ledger write, never rebase
+          # a stale whole-file JSON update over another merged PR's provenance.
           pushed=0
-          for attempt in 1 2 3; do
-            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if [ -z "$(git status --porcelain -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json)" ]; then
+              echo 'VIBE2_MERGED_PR_LEDGER_WRITE=ALREADY_CURRENT'
               pushed=1
               break
             fi
-            git rebase --abort 2>/dev/null || true
+            git add -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json
+            git commit -m "vibe2: record merged PR provenance [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            echo "VIBE2_MERGED_PR_PUSH_RACE_REPLAY=$attempt"
             git fetch origin vibe2-unreal-core --quiet
-            sleep $((attempt * 2))
+            git reset --hard origin/vibe2-unreal-core
+            node "$GITHUB_WORKSPACE/source/tools/vibe2-merged-pr-provenance.mjs" \
+              --event="$GITHUB_EVENT_PATH" \
+              --repo-root="$GITHUB_WORKSPACE/source" \
+              --ledger="$GITHUB_WORKSPACE/control/.vibe2/merged-pr-provenance-ledger.json" \
+              --legacy-ledger="$GITHUB_WORKSPACE/control/.vibe2/coding-trace-ledger.json" | tee /tmp/vibe2-merged-pr-replay.log
+            sleep "$((attempt * 2))"
           done
           test "$pushed" = 1
           echo 'VIBE2_MERGED_PR_LEDGER_WRITE=PASS'
