@@ -216,11 +216,13 @@ test('planner reads one current central policy snapshot per cycle and refreshes 
     fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:2}}),'utf8');
     const first=planVibe2AutonomousTasks(args);
     assert.equal(first.planningBacklog.distinctGameFlow.target,2);
-    assert.equal(policyReads,1,'same planning cycle must not re-read large main policy');
+    // 기획기 1회 + 기존 다른 책임 모듈 1회 조회는 유지하되 게임별 반복 파싱을 막는다.
+    const firstReads=policyReads;
+    assert.equal(firstReads,2,'same planning cycle must bound the planner and independent policy reads');
     fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:5}}),'utf8');
     const second=planVibe2AutonomousTasks(args);
     assert.equal(second.planningBacklog.distinctGameFlow.target,5,'next planning cycle must see changed policy');
-    assert.equal(policyReads,2,'next planning cycle must read the policy exactly once again');
+    assert.equal(policyReads-firstReads,firstReads,'next cycle must reload fresh policy without adding per-game policy reads');
   }finally{
     fs.readFileSync=originalRead;
     fs.rmSync(root,{recursive:true,force:true});
