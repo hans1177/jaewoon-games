@@ -15281,8 +15281,8 @@
       },
       "robloxProjectPath": "roblox-games/simple-rpg",
       "unityProjectPath": "unity-games/simple-rpg",
-      "targetSourcePath": "unity-games/simple-rpg",
-      "sourcePath": "unity-games/simple-rpg",
+      "targetSourcePath": "roblox-games/simple-rpg",
+      "sourcePath": "roblox-games/simple-rpg",
       "designBaselineSource": "design/simple-rpg/2026-10-12/design-revised.json",
       "designDate": "2026-10-12",
       "minimumDesignContract": {
@@ -15325,7 +15325,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T11:17:57.187Z",
+      "updatedAt": "2026-10-12T17:15:14.404Z",
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
         "webSourcePath": null,
@@ -15379,13 +15379,13 @@
       "robloxPublicReleaseReady": false,
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
-      "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-package-revalidation-pending"
       ],
-      "robloxSourceCommit": "c290bb20b495f960873dc1e40dec2ccabefbf580",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T03:48:17.886Z",
+      "robloxSourceCommit": "eb31cdeab0c8163ff5b9508364bbe87c59f711dc",
+      "robloxSourceBootstrapPassedAt": "2026-10-12T17:15:14.404Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -15888,7 +15888,20 @@
         "gameplayAuthority": false
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null
+      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxBuildFailedAt": null,
+      "robloxExactRevisionPassed": false,
+      "robloxHeadlessPassedAt": null,
+      "robloxInternalReleasePublished": false,
+      "robloxPublicRelease": false,
+      "robloxFastMvpPublished": false,
+      "robloxFastMvpPublishedAt": null,
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "robloxEvidenceInvalidatedBySourceChange": {
+        "previousSourceRevision": "c290bb20b495f960873dc1e40dec2ccabefbf580",
+        "newSourceRevision": "eb31cdeab0c8163ff5b9508364bbe87c59f711dc",
+        "invalidatedAt": "2026-10-12T17:15:14.404Z"
+      }
     },
     {
       "gameId": "tower-choice-rpg",
@@ -30187,7 +30200,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-12T17:15:04.440Z",
+  "updatedAt": "2026-10-12T17:15:14.404Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
