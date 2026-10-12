@@ -510,6 +510,7 @@ test('homepage manager control and publication jobs stay off the game-primary ru
 test('homepage sparse fast QA includes real Roblox and Unity source files used by catalog normalization',()=>{
   const fast=section('  pr-fast-qa:','  manage-and-self-qa:');
   for(const source of [
+    '/_routes.json',
     '/roblox-games/*/default.project.json',
     '/roblox-games/*/server/Game.server.luau',
     '/roblox-games/*/client/Game.client.luau',
