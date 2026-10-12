@@ -4419,8 +4419,36 @@ export function buildVibeAssetProductionPlan({
     newShadowSystem:false
   });
   const currentCustomizationDocument=(selectionRegistry?.baseMaterialLibrary?.customization?.documents||[]).find(row=>row.gameId===clean(task.gameId))||null;
-  const sharedCustomizationDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
+  // 게임별 컨셉: 공용 원형과 표면 변형 수는 스타일 종류 수가 아니다. 검증된 설계가 제작 입력이다.
+  const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
+    ?task.buildUpDirective?.designImplementationContext||null:null;
+  const authoredPresentation=Object.keys(verifiedDesign?.presentationPlan||{}).length?verifiedDesign.presentationPlan:verifiedDesign?.detailedDesign?.presentation||{};
+  const approvedStyleBible=authoredPresentation.styleBible||verifiedDesign?.artAudioDirection?.styleBible||{};
+  const approvedStyleFamily=clean(approvedStyleBible.profileKey||authoredPresentation.styleFamily||verifiedDesign?.artAudioDirection?.styleFamily);
+  const approvedStyleDescription=clean(verifiedDesign?.visualDirection);
+  const gameConceptStyle=verifiedDesign?freeze({
+    version:1,gameId:currentGameId,source:'LATEST_VERIFIED_GAME_DESIGN',
+    designFingerprint:clean(task.buildUpDirective?.designFingerprint)||'sha256:'+crypto.createHash('sha256').update(JSON.stringify(verifiedDesign)).digest('hex'),
+    conceptIdentity:clean(task.buildUpDirective?.gameIdentityAndNonNegotiables?.identity),basicGrammar:verifiedDesign.creativeGrammar||{},
+    visualDirection:approvedStyleDescription,artAudioDirection:verifiedDesign.artAudioDirection||{},presentation:authoredPresentation,
+    styleFamily:approvedStyleFamily||null,styleBible:approvedStyleBible,
+    variationAxes:freezeList(['SILHOUETTE','PROPORTION','MATERIAL_RESPONSE','SURFACE_DETAIL','PALETTE','LIGHTING','MOTION_LANGUAGE','UI_LANGUAGE']),
+    sourceMasterImmutable:true,gameSpecificNativeDerivativeRequired:true,colorOnlyDoesNotProveStyleFit:true,
+    genericPresetMayNotOverrideGameConcept:true,materialVariantCountIsNotStyleCount:true,
+    status:approvedStyleFamily?'APPROVED_STYLE_NATIVE_APPLICATION_REQUIRED':approvedStyleDescription?'AUTHORED_STYLE_TRANSLATION_REQUIRED':'STYLE_DETAIL_REQUIRED',
+    sameGameSameBuildComparisonRequired:true,runtimeVerified:false
+  }):null;
+  const requestedSharedDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
+  const sharedCustomizationDocument=requestedSharedDocument&&(!currentGameId||requestedSharedDocument.gameId===currentGameId)
+    &&(!approvedStyleFamily||requestedSharedDocument.styleBible?.profileKey===approvedStyleFamily)?requestedSharedDocument:null;
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
+  if(verifiedDesign&&(approvedStyleFamily||approvedStyleDescription)){
+    const approvedConcept=inferRequestedConcept(approvedStyleFamily?{styleFamily:approvedStyleFamily}: {},approvedStyleDescription);
+    task={...task,concept:{...task.concept,...approvedConcept},styleFamily:approvedStyleFamily||approvedConcept.styles?.[0]?.family,
+      styleBible:{...approvedStyleBible,profileKey:approvedStyleFamily||approvedConcept.styles?.[0]?.family},gameConceptStyle};
+    // 오래된 다른 스타일 공유 문서는 현재 게임의 네이티브 제작 결과를 덮지 못한다.
+    if(requestedSharedDocument&&!sharedCustomizationDocument)task={...task,assetCustomization:{...task.assetCustomization,sharedDocument:undefined}};
+  }
   const sameGameRobloxAssets=resolvedTarget==='roblox'?discoverExistingRobloxGameAssets({repoRoot,gameId:task.gameId}):[];
   const manifestWithSameGameAssets={...manifestBase,assets:[...(Array.isArray(manifestBase?.assets)?manifestBase.assets:[]),...sameGameRobloxAssets]};
   const manifestInput=mergeManifestWithCompanyLibrary(manifestWithSameGameAssets,selectionRegistry);
@@ -5104,8 +5132,6 @@ export function buildVibeAssetProductionPlan({
   // [오토 바이옴 · 모든 게임] 기존 BUILD_UP은 매 회차 바이옴 제작 도구를 실행한다.
   // 검증된 게임 설계에 공간 정보가 없는 경우에도 실행 결과를 누락하지 않고
   // APPROVED_DESIGN_REQUIRED로 유지한다. 도구 사용은 맵 생성 승인이나 게임 상태 변경이 아니다.
-  const verifiedDesign=task.buildUpDirective?.designContextMode==='APPROVED_OR_MINIMUM_DESIGN'
-    ?task.buildUpDirective?.designImplementationContext||null:null;
   const designSpatial=verifiedDesign?.spatialLayout&&typeof verifiedDesign.spatialLayout==='object'
     &&!Array.isArray(verifiedDesign.spatialLayout)?verifiedDesign.spatialLayout:null;
   const authoredProceduralWorld=designSpatial?.proceduralWorld&&typeof designSpatial.proceduralWorld==='object'&&!Array.isArray(designSpatial.proceduralWorld)?designSpatial.proceduralWorld:null;
@@ -5485,6 +5511,7 @@ export function buildVibeAssetProductionPlan({
   return freeze({
     version:1,
     kind:'vibe2-asset-production-plan',
+    gameConceptStyle,
     graphicsProductionRoot:'GRAPHICS_PRODUCTION',
     externalTopLevelGraphicsWorkUnit:false,
     plannerRole:'GRAPHICS_PRODUCTION_INPUT_ONLY',
@@ -6063,6 +6090,7 @@ export function assetProductionGuidance(plan={}){
   if(plan?.kind!=='vibe2-asset-production-plan') return '';
   const lines=[
     '[GRAPHICS_PRODUCTION / ASSET INPUT]',
+    plan.gameConceptStyle?'[GAME CONCEPT STYLE] '+JSON.stringify(plan.gameConceptStyle)+'. 공용 나무·몬스터·건물·재질은 원본을 보존하고 이 게임의 컨셉·세계·스타일에 맞는 네이티브 파생으로 선택·변형·조합한다. 재질 분류 수와 색·표면 변형 수는 유행 스타일 종류 수가 아니다. 색만 바꾸지 말고 승인된 실루엣·비율·재질 반응·표면 디테일·조명·모션·UI 표현을 적용한다. 다른 게임이나 오래된 공유 스타일로 덮지 않는다. 스타일 명세가 없으면 누락으로 남기고 일반 프리셋으로 최종 스타일 일치를 주장하지 않는다. 원본 해시·게임별 파생·설계 식별·같은 빌드의 중립 비교와 실게임 카메라 증거를 연결하며 판정·충돌·저장·서버 권한은 보존한다.': '',
     plan.automaticAssetBindingWork?.enabled
       ?'[VIBE AUTOMATIC GAME ASSET BINDING] '+JSON.stringify(plan.automaticAssetBindingWork)+
        '. 기존 BUILD_UP에서 매 회차 실제 게임 소스 소비와 현재 내부 라이브러리 선택을 자동 대조한다. NATIVE_SOURCE_BINDING_REQUIRED는 현재 게임 책임 함수에만 역할·권리·플랫폼 호환 내부 자산을 직접 연결하고, SOURCE_BOUND_RUNTIME_QA_REQUIRED는 중복 재제작하지 않고 실제 엔진·모바일 표시 증거를 확인한다. SOURCE_ASSET_REQUIRED와 AUTHORING_REQUIRED는 기존 ASSET_DEVELOPMENT에서 원본·파생 제작으로 해결한다. 현재 적용된 게임 규칙, 저장, 멀티 권한은 유지한다. 변경 성공은 소스 해시/QA/런타임 검증까지 확인한 뒤 기존 학습 모터에만 전달하며 미확인 결과는 긍정 학습이나 완료 판정에 넣지 않는다. 기존 GRAPHICS_PRODUCTION·BUILD_UP 단계, 기존 권한 범위만 사용하고 별도 큐나 파이프라인을 만들지 않는다.'
@@ -6259,3 +6287,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=buildVibeAssetProductionPlan({task,target:task.target,repoRoot});
   console.log(JSON.stringify({registrySync:result.registrySync,plan:result},null,2));
 }
+

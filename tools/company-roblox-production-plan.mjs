@@ -342,7 +342,22 @@ export function validateInterfaceBlueprint({contract=null,blueprint=null,sourceF
     if(!Number.isInteger(task.maxNavigationSteps)||task.maxNavigationSteps<0||steps===undefined||steps>task.maxNavigationSteps)add('PLAYER_TASK_ROUTE_BUDGET_EXCEEDED',task.id);
     taskRoutes.push({id:task.id,patternId:task.patternId,navigationSteps:steps??null,measuredRuntimeInputs:null});
   }
-  return{required:true,pass:!issues.length,status:issues.length?'REPAIR_REQUIRED':'STATIC_INTERFACE_PLAN_VALIDATED',issues:unique(issues),taskRoutes,blueprintHash:hash(JSON.stringify(b)),runtimeVerified:false};
+  // 검증: 튜토리얼·연출·화면 시나리오의 원본 연결 검사. 기대 결과는 실행 증거가 아니다.
+  const experienceRequests=[],experienceIds=new Set(),experienceContract=contract.experienceScenarioContract;
+  if(experienceContract?.required===true&&!list(b.experienceScenarios).length)add('EXPERIENCE_SCENARIOS_MISSING');
+  for(const scenario of list(b.experienceScenarios)){
+    if(!scenario||!clean(scenario.id)||experienceIds.has(scenario.id)){add('EXPERIENCE_SCENARIO_ID_INVALID');continue;}
+    experienceIds.add(scenario.id);
+    if(!['TUTORIAL','PRESENTATION','INTERFACE'].includes(scenario.kind)||!list(experienceContract?.designRefs).includes(scenario.designRef))add('EXPERIENCE_DESIGN_REFERENCE_INVALID',scenario.id);
+    const screen=map.get(scenario.screenId);
+    if(!screen||!list(screen.controls).some(control=>control?.id===scenario.controlId))add('EXPERIENCE_CONTROL_UNREACHABLE',scenario.id);
+    if(!['entryCondition','expectedState','expectedFeedback','failureRecovery','skipPolicy','interruptionRecovery'].every(key=>clean(scenario[key]))||!list(scenario.inputs).length||!list(scenario.inputs).every(value=>typeof value==='string'&&clean(value)))add('EXPERIENCE_BEHAVIOR_INCOMPLETE',scenario.id);
+    const binding=scenario.binding||{},file=spatialPath(binding.path),code=spatialSourceText(binding.sourceEvidence).trim();
+    if(!file||file.split('/').includes('..')||!list(contract.sourceFiles).some(own=>own===file||own.endsWith('/'+file))||!files.has(file)||code.length<8||!clean(binding.symbol)||!code.includes(binding.symbol)||!/[(=]/.test(code)||/^["'`]/.test(code)||!spatialSourceText(files.get(file)).includes(code))add('EXPERIENCE_SOURCE_UNPROVEN',scenario.id);
+    if(scenario.runtimeVerified!==false||scenario.pass===true||scenario.actualEvidence)add('EXPERIENCE_PLAN_CANNOT_CLAIM_RUNTIME_PASS',scenario.id);
+    experienceRequests.push({...scenario,runtimeVerified:false,verificationStatus:'EXACT_BUILD_RUNTIME_EVIDENCE_REQUIRED'});
+  }
+  return{required:true,experienceRequests,pass:!issues.length,status:issues.length?'REPAIR_REQUIRED':'STATIC_INTERFACE_PLAN_VALIDATED' ,issues:unique(issues),taskRoutes,blueprintHash:hash(JSON.stringify(b)),runtimeVerified:false};
 }
 
 // 유틸: 공간 계산은 축을 명시하고 평면/입체를 섞지 않는다. 점 샘플 대신 선분 전체를 검사한다.
@@ -502,8 +517,10 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const ownerChangeFingerprint=hash(JSON.stringify(ownerFeatureChanges));
   const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint
     &&(previousPlan.platform||'ROBLOX')===target&&previousPlan.gameId===id?previousPlan:null;
+  const authoredGrammar=Boolean(design.creativeGrammar?.a&&design.creativeGrammar?.b);
   const ideaRows=sourceOnly?[['SOURCE_REPAIR','현재 책임 소스에서 관찰된 실패 원인을 직접 수정한다.','새 규칙이나 콘텐츠를 추가하지 않는다.']]
     :presentationOnly?[['PLAY_READABILITY','현재 핵심 행동과 결과가 월드·모션·터치 UI에서 명확하게 읽히도록 연결한다.','판정·보상·저장 규칙은 유지하고 표현만 개선한다.']]
+    :authoredGrammar?[['AUTHORED_SYSTEM_CONNECTION','승인된 '+systems.join(' · ')+'의 행동·조건·공유 상태·결과·다음 선택을 기존 책임 소스에 연결한다.','기존 게임은 B 보조 참고이며 장르 기본 기능 묶음으로 승인 시스템을 대체하지 않는다.']]
     :selected?.ideas||[['APPROVED_CORE_LOOP','승인된 핵심 루프에서 끊긴 행동·결과·다음 목표를 연결한다.','장르를 추측해 전투·수집·경제를 추가하지 않는다.']];
   const ideas=ideaRows.map(([key,implementation,distinction])=>({id:genreProfile+':'+key,implementation,distinction}));
   const prior=ideas.find(row=>row.id===currentPrevious?.selectedIdea?.id);
@@ -519,7 +536,40 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const packages=allowedRoles.map(role=>({role,files:roles.filter(row=>row.role===role).map(row=>row.file),
     implementation:presentationOnly?'이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다.':role==='SERVER_AUTHORITY'||role==='GAMEPLAY_STATE'||role==='GAMEPLAY_AND_PRESENTATION'?chosen.implementation+' 기존 행동·상태·보상·후속 목표 처리에 연결한다.':role==='CLIENT_PRESENTATION'?'기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다.':'기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다.'}))
     .filter(row=>row.files.length);
+  // 상세설계는 원본 요구의 인계이며, 장르 기본 기능이나 실행 통과를 생성하지 않는다.
+  const detailPolicy=policy.detailedDesign||{};
+  const detailEnabled=detailPolicy.enabled===true&&!sourceOnly;
+  const authoredDetail=design.detailedDesign&&typeof design.detailedDesign==='object'?design.detailedDesign:{};
+  const detailSections=detailEnabled?[
+    ['FIRST_PLAY_AND_TUTORIAL',Object.keys(design.tutorialPlan||{}).length?design.tutorialPlan:authoredDetail.tutorial||{},list(design.selectedDesignPlan?.playthrough),['entryCondition','playerInput','successCondition','failureFeedback','hintCondition','skipPolicy','retryAndReconnect'],['tools/vibe2-design-intelligence.mjs'],['F5','F6','F8']],
+    ['SYSTEM_CONNECTIONS',authoredDetail.systems||{},list(design.systemInterconnections),['trigger','inputState','authoritativeOwner','outputState','feedback','nextChoice','cancelAndRetry'],['tools/company-vibe2-game-flow-architect.mjs'],['F6','F8']],
+    ['WORLD_AND_BIOME',authoredDetail.world||{},design.spatialLayout||{},['regionRole','dimensions','spawnSupport','route','landmark','population','mobileBudget'],['assets/vibe-environment-director.js'],['F2','F4','F5','F8']],
+    ['CHARACTER_AND_BEHAVIOR',authoredDetail.actors||{},list(design.signatureSystems),['role','worldAnchor','behaviorTrigger','counterplay','relationshipState','recovery'],['assets/vibe-character-identity-director.js','assets/vibe-ai-role-director.js'],['F3','F8']],
+    ['NARRATIVE_AND_DISCOVERY',authoredDetail.narrative||{},design.narrativeDialoguePlan||{},['cause','clue','choice','consequence','worldState','nextQuestion'],['tools/vibe2-artbook-story-engine.mjs'],['F6','F8']],
+    ['MOTION_AND_PRESENTATION',Object.keys(design.presentationPlan||{}).length?design.presentationPlan:authoredDetail.presentation||{},design.artAudioDirection||{},['entryTrigger','anticipation','contact','recovery','camera','audioAndVfxTiming','interruptAndSkip','inputRestoration','accessibility'],['assets/vibe-art-pipeline.js','assets/vibe-motion-director.js'],['F5','F8']],
+    ['INTERFACE',Object.keys(design.interfacePlan||{}).length?design.interfacePlan:authoredDetail.interface||{},design.uxAccessibilityPlan||{},['screen','displayedState','control','enabledCondition','loadingEmptyErrorStates','navigation','transactionResult','touchAndSafeArea'],['tools/company-roblox-production-plan.mjs#buildInterfaceBlueprintContract'],['F5','F6','F8']],
+    ['ASSET_AND_SOURCE_BINDING',authoredDetail.assets||{},list(design.implementationTraceability),['assetId','libraryVersion','selectionFingerprint','sourceHash','responsibleFile','nativeBinding'],['tools/vibe2-asset-production-plan.mjs'],['F0','F8','F9']],
+    ['VERIFICATION',Object.keys(design.verificationPlan||{}).length?design.verificationPlan:authoredDetail.verification||{},design.failureRetryRisk||{},['precondition','inputSequence','expectedState','expectedScreen','failureAndRetry','saveAndRejoin','exactBuildEvidence'],['tools/vibe2-incremental-qa.mjs','tools/vibe2-fan-in-review.mjs'],['F5','F6','F7','F8','F9']]
+  ].map(([id,authored,baseline,fieldsToSpecify,tools,floors])=>({
+    id,authored,baseline,fieldsToSpecify,tools,floors,
+    status:Object.keys(authored).length?'AUTHORED_DETAIL_REQUIRES_SOURCE_AND_RUNTIME_REVIEW':'DETAIL_TO_AUTHOR_FROM_APPROVED_DESIGN',
+    applicability:'GAME_DESIGN_AND_OWNED_SOURCE_REQUIRED_NOT_GENRE_DEFAULT',runtimeVerified:false
+  })):[];
+  const detailedDesignContract=detailEnabled?{
+    version:1,gameId:id,designFingerprint:hash(JSON.stringify(design)),
+    basicGrammar:design.creativeGrammar||{},authoredDetail,gameGenreAxes:{a:design.creativeGrammar?.a||null,b:design.creativeGrammar?.b||null,genre:design.genre,subgenre:design.subgenre},
+    genreReviewContexts:ROBLOX_PRODUCTION_PROFILES.filter(row=>row.pattern.test(explicit)).map(row=>row.id),
+    genreReviewOnly:true,genreMayNotReplaceAuthoredSystems:true,existingGameReferenceRole:'B_SUPPORTING_REFERENCE',
+    sections:detailSections,sourceFiles:files,
+    authoringRule:'For each applicable authored requirement specify entry, input, conditions, authoritative state change, feedback, next choice, failure/cancel/retry and source owner. Missing detail stays a gap; absent systems require a design/source reason, not invented genre features.',
+    verificationRule:'Expected values are plans. Bind actual state/log and screen/timing evidence to the same source/artifact. Static checks and source names cannot prove play, rendering or deployment.',
+    floorMapping:'EXISTING_F0_F9_ONLY',newStage:false,runtimeVerified:false
+  }:null;
   const interfaceContract=buildInterfaceBlueprintContract({design,source,files,mode,focus,platform:requested,enabled:policy.spatialBlueprint?.enabled===true,availableLibraryPaths});
+  if(interfaceContract&&detailedDesignContract){
+    interfaceContract.experienceScenarioContract={version:1,required:interfaceContract.required===true,designRefs:detailSections.map(row=>row.id),runtimeVerified:false};
+    interfaceContract.schema.experienceScenarios=[{id:'task-local scene',designRef:'FIRST_PLAY_AND_TUTORIAL or MOTION_AND_PRESENTATION or INTERFACE',kind:'TUTORIAL or PRESENTATION or INTERFACE',screenId:'existing screen',controlId:'existing control',entryCondition:'real precondition',inputs:['actual input sequence'],expectedState:'observable authoritative result',expectedFeedback:'screen/audio/motion result',failureRecovery:'failure and retry',skipPolicy:'designed skip behavior or reason not applicable',interruptionRecovery:'cancel/reconnect restores input and existing state',binding:{path:'owned source',symbol:'existing handler',sourceEvidence:'exact executable source'},runtimeVerified:false}];
+  }
   const libraryReuseContract=interfaceContract?{
     status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
     candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
@@ -527,9 +577,9 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   }:null;
   return {
     version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
-    conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
+    conceptIdentity:identity,coreAction:(authoredGrammar?coreLoop[0]:selected?.action)||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
-    systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
+    systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':(authoredGrammar?coreLoop.join(' → '):selected?.connection)||coreLoop.join(' → '),
     approvedCoreLoop:coreLoop,signatureSystems:systems,progressionDirection:clean(design.progressionDirection),
     depthAndReward:sourceOnly||presentationOnly?null:{progression:design.progressionEconomyBalance||{},expansion:list(design.contentExpansionPlan),riskAndRecovery:design.failureRetryRisk||{},
       rewardLayers:{core:'Preserve the approved MAIN and A/B/C combination and its meaningful choices.',smallJoys:'Short discoveries, collection, decoration or small goals should leave visible progress where genre-appropriate.',deepPlay:'Optional combination research, mastery, secrets and long-term challenges lead to meaningful unlocks or completion.'},
@@ -542,7 +592,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:interfaceContract,libraryReuseContract,
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,detailedDesignContract,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -566,8 +616,8 @@ export function productionBlueprintContractsForFiles(plan,{responsibleFiles=[]}=
   const spatialOwner=files.some(file=>/(?:world|environment|terrain|level|map|spawn|scene|game|index|bootstrap|init)[^/]*\.(?:[cm]?js|tsx?|jsx|html?|luau?|cs|unity|prefab)$/i.test(file.split('/').at(-1)))||anchors.some(row=>/world|region|terrain|spawn|layout|route|map|scene|환경|배치|지형/i.test(row.symbol||''));
   const interfaceOwner=packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))||files.some(file=>/ui|hud|menu|interface/i.test(file.split('/').at(-1)));
   const scoped=(contract,owner)=>contract?{
-    ...contract,sourceFiles:files,required:contract.required===true&&owner&&files.length>0,
-    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],screenHints:[],referencePatterns:[]}:{}),
+    ...contract,sourceFiles:files,authoringScopeOwned:owner,required:contract.required===true&&owner&&files.length>0,
+    ...(!owner&&contract.externalAlgorithms?{externalAlgorithms:[],internalToolMatches:[],internalLibraryMatches:[],screenHints:[],referencePatterns:[],experienceScenarioContract:contract.experienceScenarioContract?{...contract.experienceScenarioContract,required:false}:undefined}:{}),
     ...(!owner&&contract.macroSketch?.proceduralWorldStudy?{macroSketch:{...contract.macroSketch,proceduralWorldStudy:undefined,authoredLayout:{...contract.macroSketch.authoredLayout,proceduralWorld:undefined}}}:{})
   }:null;
   return{spatial:scoped(plan?.spatialBlueprintContract,spatialOwner),interface:scoped(plan?.interfaceBlueprintContract,interfaceOwner)};
@@ -589,6 +639,10 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
+    ...(plan.detailedDesignContract?[prefix+'DETAIL='+JSON.stringify({...plan.detailedDesignContract,
+      authoredDetail:{...plan.detailedDesignContract.authoredDetail,...(!blueprints.spatial?.authoringScopeOwned?{world:undefined}:{})},
+      sections:plan.detailedDesignContract.sections.filter(row=>row.id!=='WORLD_AND_BIOME'||blueprints.spatial?.authoringScopeOwned),sourceFiles:scopedFiles}),
+      prefix+'DETAIL_RULE=Use the game-authored MAIN/A/B/C/D/@, never a genre prefab. Elaborate only applicable requirements within owned files; list missing context as a gap. Use existing Vibe tools and library plans. For interface work include executable-bound experienceScenarios for tutorial, presentation and actual UI actions when applicable, with failure/cancel/skip/reconnect recovery. No plan may claim runtime PASS.']:[]),
     ...(libraryCandidates.length?[
       prefix+'LIBRARY_MATCH='+JSON.stringify({
         firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
@@ -611,4 +665,5 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];
 }
+
 
