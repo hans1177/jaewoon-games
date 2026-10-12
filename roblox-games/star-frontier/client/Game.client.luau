@@ -64,7 +64,7 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   VFX = "APPLIED",
   UI = "APPLIED",
   MOTION = "APPLIED",
-  PROP = "APPLIED",
+  PROP = "NOT_APPLICABLE",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
