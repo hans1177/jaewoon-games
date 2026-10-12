@@ -683,7 +683,7 @@ export function computeVibeSeedProposal(target){
   const freeTopicMode=target.designTopicMode==='VIBE_FREE_TOPIC';
   const requestedName=freeTopicMode?'':clean(target.gameName||target.ownerGameName);
   const ownerBrief=freeTopicMode?'':clean(target.ownerBrief||target.brief);
-  const requestContext=freeTopicMode?'':[requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
+  const requestContext=freeTopicMode?'':[target.basicDesignMethod?'':requestedName,ownerBrief,clean(target.gameDescription),...(Array.isArray(target.coreLoop)?target.coreLoop.map(clean):[])].join(' ');
   const context=(category+' '+requestContext).toLowerCase();
   const obbyProfile={
     genre:'오비',
@@ -923,14 +923,16 @@ export function computeVibeSeedProposal(target){
   const variance=Math.max(0,Math.floor(Number(target.variant)||0));
   const hash=value=>{let n=2166136261;for(const ch of value)n=Math.imul(n^ch.codePointAt(0),16777619)>>>0;return n;};
   // 자유주제의 소재 선택은 게임 ID/요청 개정만 사용한다. 옛 장르·주제·고정 장르별 소재 우선순위를 배제한다.
-  const compositionKey=freeTopicMode?[target.requestId,target.topicRevision||'',variance]:[target.requestId,category,requestedName,ownerBrief,variance];
+  const compositionKey=freeTopicMode?[target.requestId,target.topicRevision||'',variance]:target.basicDesignMethod?[target.requestId,category,ownerBrief,variance]:[target.requestId,category,requestedName,ownerBrief,variance];
   // 메인: 새 기본설계는 중앙 분류표를 직접 읽는다. 고정 DNA 후보는 이전 접수 호환에만 사용한다.
   const standard=target.basicDesignMethod;
-  const standardSources=standard?.materialClassification.flatMap(row=>row.middle.map(middle=>({
-    id:`STANDARD:${row.broad}:${middle}`,label:middle,source:row.broad,middle,
-    principle:`${middle}의 대상과 관계를 관찰해 조건을 확인하고 결과에 책임을 진다.`,
-    gameGrammar:`${middle}의 흔적을 관찰한 뒤 안전한 시험과 위험한 적용 중 하나를 골라 확인한 결과를 다음 경로 조건에 반영한다`
+  const standardSources=standard?.materialClassification.flatMap(row=>(row.specificMaterials||[]).map(material=>({
+    id:`STANDARD:${row.broad}:${material.middle}:${material.name}`,label:material.name,
+    source:row.broad,middle:material.middle,material,
+    principle:material.feature,
+    gameGrammar:`${material.name}: ${material.action}. ${material.condition}일 때 ${material.consequence}`
   })))||[];
+  if(standard&&standardSources.some(row=>!standard.materialClassification.find(item=>item.broad===row.source)?.middle.includes(row.middle)))throw new Error('VIBE_MATERIAL_SOURCE_PATH_INVALID');
   const creativeSourcePool=standard?standardSources:freeTopicMode?[...CAUSAL_DNA_LIBRARY,...freeCreativeSources]:CAUSAL_DNA_LIBRARY;
   const orderedPool=[...creativeSourcePool].sort((a,b)=>
     hash([...compositionKey,a.id].join('|'))-hash([...compositionKey,b.id].join('|')));
@@ -945,14 +947,18 @@ export function computeVibeSeedProposal(target){
   // B를 A 소재의 하위 목록에서 찾거나 A 선택 결과로 계산하지 않는다.
   const independentlyRanked=(axis)=>[...creativeSourcePool].sort((a,b)=>
     hash([...compositionKey,axis,a.id].join('|'))-hash([...compositionKey,axis,b.id].join('|')));
-  const bIndependent=freeTopicMode?independentlyRanked('B_INDEPENDENT_DETAIL')[0]:null;
-  const aIndependent=freeTopicMode?independentlyRanked('A_BROAD_WORLD').find(row=>row.source!==bIndependent?.source):null;
-  const cSupporting=freeTopicMode?distinctSources.filter(row=>row.source!==aIndependent?.source&&row.source!==bIndependent?.source):[];
-  const chosen=(freeTopicMode?[aIndependent,bIndependent,...cSupporting]:orderedMaterials).filter(Boolean).slice(0,4);
+  // 대분류를 먼저 독립 선택해 소분류 항목이 많은 분야가 더 자주 뽑히는 구조를 피한다.
+  const familyOrder=axis=>standard?[...standard.materialClassification].sort((a,b)=>hash([...compositionKey,axis,a.broad].join('|'))-hash([...compositionKey,axis,b.broad].join('|'))):[];
+  const bFamily=familyOrder('B_MATERIAL_BROAD')[0]?.broad;
+  const aFamily=familyOrder('A_MATERIAL_BROAD')[0]?.broad;
+  const bIndependent=standard?independentlyRanked('B_INDEPENDENT_DETAIL').find(row=>row.source===bFamily):freeTopicMode?independentlyRanked('B_INDEPENDENT_DETAIL')[0]:null;
+  const aIndependent=standard?independentlyRanked('A_BROAD_WORLD').find(row=>row.source===aFamily&&row.id!==bIndependent?.id):freeTopicMode?independentlyRanked('A_BROAD_WORLD').find(row=>row.source!==bIndependent?.source):null;
+  const cSupporting=standard?independentlyRanked('D_SPECIFIC_SOURCE').filter(row=>row.id!==aIndependent?.id&&row.id!==bIndependent?.id):freeTopicMode?distinctSources.filter(row=>row.source!==aIndependent?.source&&row.source!==bIndependent?.source):[];
+  const chosen=(standard||freeTopicMode?[aIndependent,bIndependent,...cSupporting]:orderedMaterials).filter(Boolean).slice(0,4);
   if(chosen.length<4)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
   const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
   const named=row=>materialNames[row.id]||row.label||row.id.replaceAll('_',' ');
-  const aMaterial=standard?first.source:named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
+  const aMaterial=standard?first.source:named(first),bMaterial=standard?second.middle:named(second),cMaterial1=named(third),cMaterial2=named(fourth);
   const distinct=chosen[0].id!==chosen[1].id&&cMaterial1!==cMaterial2;
   // 정식 소재는 모두 보존하고 표시용 세계·발견 명칭만 소재의 핵심 명사로 압축한다.
   const materialKeyword=material=>material.includes('의 ')?material.slice(material.lastIndexOf('의 ')+2):material;
@@ -963,14 +969,14 @@ export function computeVibeSeedProposal(target){
   const fiction=standard?.creativeGenreExamplesKo||[];
   const primaryGenre=standard?fiction[hash([...compositionKey,'C_PRIMARY'].join('|'))%fiction.length]:profile.genre;
   const secondaryGenre=standard?fiction.filter(name=>name!==primaryGenre)[hash([...compositionKey,'C_SECONDARY'].join('|'))%(fiction.length-1)]:freeTopicMode?partner.genre:(secondary===profile.genre?'사회극':secondary);
-  const representativeMap={'오비':'액션','경영':'시뮬레이션','롤플레잉':'역할수행','호러':'어드벤처','카드 전략':'카드·보드'};
-  const aGameGenre=representativeMap[profile.genre]||(/슈팅/.test(profile.genre)?'슈팅':/레이싱/.test(profile.genre)?'레이싱':/리듬/.test(profile.genre)?'리듬':/성장|방치|증분/.test(profile.genre)?'방치·증분':/생활|아바타|경영|농장|시뮬/.test(profile.genre)?'시뮬레이션':/감염|파티|미니게임/.test(profile.genre)?'파티':/RPG|역할/.test(profile.genre)?'역할수행':/생존/.test(profile.genre)?'생존':/추리|공포|탈출|모험|탐험/.test(profile.genre)?'어드벤처':/전략|방어/.test(profile.genre)?'전략':/액션|격투|오비/.test(profile.genre)?'액션':profile.genre);
+  const representativeMap={'오비':'액션','경영':'시뮬레이션','롤플레잉':'역할수행','호러':'어드벤처','카드 전략':'카드·보드','비주얼 노벨':'어드벤처','축구':'스포츠','농구':'스포츠','타워 디펜스':'전략','로그라이크':'역할수행','수집':'방치·증분','잠입':'액션','오픈월드':'어드벤처','요리':'시뮬레이션','아케이드':'액션','샌드박스':'시뮬레이션','도시 건설':'시뮬레이션','자동 전투':'전략','제작':'생존','보드 게임':'카드·보드','캐주얼':'파티','배틀로얄':'슈팅','교육':'퍼즐','음악':'리듬'};
+  const aGameGenre=standard?.gameGenreClassification.find(row=>row.detailed.includes(profile.genre))?.representative||representativeMap[profile.genre]||(/슈팅/.test(profile.genre)?'슈팅':/레이싱/.test(profile.genre)?'레이싱':/리듬/.test(profile.genre)?'리듬':/성장|방치|증분/.test(profile.genre)?'방치·증분':/생활|아바타|경영|농장|시뮬/.test(profile.genre)?'시뮬레이션':/감염|파티|미니게임/.test(profile.genre)?'파티':/RPG|역할/.test(profile.genre)?'역할수행':/생존/.test(profile.genre)?'생존':/추리|공포|탈출|모험|탐험/.test(profile.genre)?'어드벤처':/전략|방어/.test(profile.genre)?'전략':/액션|격투|오비/.test(profile.genre)?'액션':profile.genre);
   const aClassification=standard?.gameGenreClassification.find(row=>row.representative===aGameGenre);
-  const bRepresentative=/운영|경영|관리|제조/.test(profile.b)?'시뮬레이션':/단서|공간|조합|퍼즐/.test(profile.b)?'퍼즐':/제작|거점|생존/.test(profile.b)?'생존':/성장|임무/.test(profile.b)?'역할수행':/추리|탐험|탈출/.test(profile.b)?'어드벤처':/전술|전략|방어/.test(profile.b)?'전략':'액션';
+  const bRepresentative=/운영|경영|관리|제조/.test(profile.b)?'시뮬레이션':/단서|공간|조합|퍼즐/.test(profile.b)?'퍼즐':/제작|거점|생존/.test(profile.b)?'생존':/성장|임무/.test(profile.b)?'역할수행':/추리|탐험|탈출/.test(profile.b)?'어드벤처':/전술|전략|방어|적 패턴|자원 대응/.test(profile.b)?'전략':'액션';
   const bClassification=standard?.gameGenreClassification.find(row=>row.representative===bRepresentative);
   if(standard&&(!aClassification||!bClassification||fiction.length<2))throw new Error(`VIBE_BASIC_DESIGN_STANDARD_CLASSIFICATION_MISSING:${profile.genre}`);
   const genreEffects={
-    '미스터리':'같은 기록의 모순을 비교해 숨은 조건을 검증해야 B 대응이 열리고, 잘못 해석하면 A의 안전 경로를 다시 조사한다.',
+    '미스터리':'같은 대상의 모순된 흔적을 비교해 숨은 조건을 검증해야 B 대응이 열리고, 잘못 해석하면 A의 안전 경로를 다시 조사한다.',
     '코미디':'인물의 오해로 요청과 실제 대상이 엇갈려 B에서 상대의 의도를 확인해야 A의 불필요한 비용을 피한다.',
     '공포':'위협의 위치는 흔적으로만 알 수 있어 B에서 노출 위험을 비교하고 A에서 진행 또는 귀환을 선택한다.',
     '스릴러':'상대가 다음 경로를 차단하기 전에 B의 정보 공개 여부를 판단하고 A의 안전한 이동 순서를 결정한다.',
@@ -999,7 +1005,7 @@ export function computeVibeSeedProposal(target){
   const bridge=freeTopicMode
     ?`A에서 ${profile.a}를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 ${profile.b} 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.`
     :`${chooseA} 그 결과 ${profile.b}의 가능 행동과 위험이 바뀌며, ${chooseB} 다시 ${profile.a}의 조건을 바꾼다.`;
-  const genreInterlock=standard?`${primaryGenre}: ${genreEffects[primaryGenre]} ${secondaryGenre}: ${genreEffects[secondaryGenre]} 보조 장르가 없으면 같은 기록을 확인할 책임·정보·접근 판단이 사라져 A의 다음 선택이 달라진다.`:freeTopicMode
+  const genreInterlock=standard?`${primaryGenre}: ${genreEffects[primaryGenre]} ${secondaryGenre}: ${genreEffects[secondaryGenre]} 보조 장르가 없으면 같은 대상의 관찰·책임·행동 판단이 사라져 A의 다음 선택이 달라진다.`:freeTopicMode
     ?`${primaryGenre}의 인물 갈등을 해결하려면 A의 ResourceState 확보와 B의 RouteState 변경을 반복한다. ${secondaryGenre} 판단에서는 ${cMaterial1}의 단서를 먼저 해석하거나 ${cMaterial2}의 반작용을 감수해야 B의 대응·A의 재진입 중 하나가 가능하다. 보조 장르를 제거하면 실제 접근 조건이 달라진다.`
     :`${primaryGenre} 작품 장르의 주 갈등을 진행하는 동안 ${secondaryGenre} 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. ${secondaryGenre}를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.`;
   const coreLoop=freeTopicMode?[
@@ -1098,7 +1104,13 @@ export function computeVibeSeedProposal(target){
       standardVersion:standard.version,
       a:{gameGenre:aClassification.representative,gameRole:'PRIMARY',material:first.source},
       b:{gameGenreRepresentative:bClassification.representative,gameGenre:bClassification.detailed.find(name=>name.split(' ').some(word=>word.length>1&&profile.b.includes(word)))||bClassification.detailed[0],gameRole:'SUPPORTING',material:second.middle,materialPath:[second.source,second.middle],supportingReason:`${profile.b}는 ${profile.a}의 결과를 읽는 보조 판단이다. 결과가 중심 ${profile.a}의 다음 경로와 위험으로 돌아온다.`},
-      dSources:[third,fourth].map(row=>({materialPath:[row.source,row.middle,`${row.middle}의 기록 장치`],pathReason:`${row.source}→${row.middle} 범위에서 새 세계의 기록 장치를 창작한다. 실제 역사·생물·문화 사실이라고 주장하지 않는다.`}))
+      materialHierarchyVersion:standard.materialHierarchyVersion,
+      dSources:[third,fourth,...orderedMaterials.filter(row=>row.id!==third.id&&row.id!==fourth.id)].slice(0,Math.max(2,Math.ceil(Number(target.discoveryCount||4)/2))).map(row=>({
+        materialPath:[row.source,row.middle,row.material.name],
+        pathReason:`${row.source}→${row.middle}→${row.material.name}의 실제 분류 연결을 사용한다. 소재 특징은 ${row.material.feature}이며 행동·조건·결과는 게임용 창작 해석이다.`,
+        sourceFeature:row.material.feature,action:row.material.action,condition:row.material.condition,
+        consequence:row.material.consequence,risk:row.material.risk
+      }))
     }:null,
     requestId:target.requestId,category,gameName,referenceGames:[],coreFunToLearn:[bridge,genreInterlock],
     coreLoop,distinctIdentity:identity,targetAudience:`${profile.genre} 장르에서 실제 선택과 세계 반응을 탐색하는 모바일 플레이어`,

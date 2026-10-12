@@ -163,7 +163,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       const bGenre=gameRows.find(row=>row.representative===b.gameGenreRepresentative);
       const aMaterial=materialRows.find(row=>row.broad===a.material);
       const bPath=list(b.materialPath),bMaterial=materialRows.find(row=>row.broad===bPath[0]);
-      if(grammar?.standardVersion!==basicDesignMethod.version||!aGenre||a.gameRole!=='PRIMARY'||!aMaterial
+      if(grammar?.standardVersion!==basicDesignMethod.version||grammar?.materialHierarchyVersion!==basicDesignMethod.materialHierarchyVersion||!aGenre||a.gameRole!=='PRIMARY'||!aMaterial
         ||!bGenre?.detailed.includes(b.gameGenre)||b.gameRole!=='SUPPORTING'
         ||bPath.length!==2||!bMaterial?.middle.includes(bPath[1])||b.material!==bPath[1]
         ||!textReady(b.supportingReason,20)){
@@ -178,12 +178,21 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       const creationIds=creations.map(row=>clean(row?.id));
       if(!creations.length||new Set(creationIds).size!==creations.length||creations.some(row=>{
         const path=list(row?.materialPath),material=materialRows.find(item=>item.broad===path[0]);
-        return !clean(row?.id)||path.length!==3||!material?.middle.includes(path[1])||!textReady(path[2],2)
+        return !clean(row?.id)||path.length!==3||!material?.middle.includes(path[1])||!textReady(path[2],1)
           ||!textReady(row.pathReason,15)||!textReady(row.creation,30)||!textReady(row.gameplayEffect,25)
           ||!['A','B'].every(role=>list(row.linkedElements).includes(role))
           ||!['PRIMARY','SECONDARY'].every(role=>list(row.genreRoles).includes(role));
       }))reject('DESIGN_D_CREATION_REQUIRED','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
         '각 D에 고유 ID·정확한 대/중/소 소재 경로·출처 이유·C 두 장르로 만든 구체 창작과 A/B 플레이 연결을 작성한다.');
+      // 소분류의 출처와 특징을 실제 중앙 명세에 연결한다. 이름만 바꾼 공통 장치는 반려한다.
+      if(creations.some(row=>{
+        const path=list(row.materialPath);
+        const source=materialRows.find(item=>item.broad===path[0])?.specificMaterials?.find(item=>item.middle===path[1]&&item.name===path[2]);
+        return !source||clean(row.sourceFeature)!==clean(source.feature)
+          ||!['action','condition','consequence','risk'].every(field=>textReady(row[field],4))
+          ||!['action','condition','consequence'].every(field=>clean(row.gameplayEffect).includes(clean(row[field])));
+      }))reject('DESIGN_D_SOURCE_FEATURE_UNGROUNDED','IDEA_AND_DISTINCTNESS',['creativeGrammar'],{},
+        '중앙 대→중→소 경로의 실제 소재와 특징을 사용하고 행동·조건·결과·위험을 구체 창작과 플레이 효과에 연결한다. 분류 이름 뒤에 공통 장치를 붙인 문장은 인정하지 않는다.');
       if(list(grammar?.delveDiscoveries).some(row=>!creationIds.includes(clean(row?.sourceDId))
         ||!textReady(row?.experiment,15)||!textReady(row?.nextQuestion,10))){
         reject('DESIGN_DELVE_D_BASIS_MISSING','CONTENT_EXPANSION_PLAN',['creativeGrammar'],{},

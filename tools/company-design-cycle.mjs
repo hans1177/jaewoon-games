@@ -557,7 +557,7 @@ const GRAMMAR_FIVE_W_ONE_H={type:'object',required:['element','who','when','wher
   linkedElements:{type:'array',minItems:1,maxItems:4,items:{type:'string',enum:['MAIN','A','B','C']}},
   ruleIds:RULE_IDS,regionIds:RULE_IDS
 },additionalProperties:false};
-const CREATIVE_GRAMMAR={type:'object',required:['standardVersion','dCreations','mainIdentity','a','b','abCausality','abEvolution','materialFusion','storyCausalChain','cGenres','cGenreInterlock','cWorldAndGameplayEffect','delveDiscoveries','delveGrowthRule','finalGameIdentity','fiveWOneH'],properties:{
+const CREATIVE_GRAMMAR={type:'object',required:['standardVersion','materialHierarchyVersion','dCreations','mainIdentity','a','b','abCausality','abEvolution','materialFusion','storyCausalChain','cGenres','cGenreInterlock','cWorldAndGameplayEffect','delveDiscoveries','delveGrowthRule','finalGameIdentity','fiveWOneH'],properties:{
   fiveWOneH:{type:'array',minItems:8,items:GRAMMAR_FIVE_W_ONE_H},
   mainIdentity:{type:'string',minLength:15,maxLength:700},a:CREATIVE_AXIS,b:CREATIVE_AXIS,
   abCausality:{type:'string',minLength:35,maxLength:900},
@@ -578,8 +578,8 @@ const CREATIVE_GRAMMAR={type:'object',required:['standardVersion','dCreations','
     worldChange:{type:'string',minLength:20,maxLength:700},
     nextEvent:{type:'string',minLength:20,maxLength:700}
   },additionalProperties:false},
-  standardVersion:{type:'integer',const:1},
-  dCreations:{type:'array',minItems:1,items:{type:'object',required:['id','materialPath','pathReason','creation','gameplayEffect','genreRoles','linkedElements'],properties:{id:{type:'string',minLength:1},materialPath:{type:'array',minItems:3,maxItems:3,items:{type:'string',minLength:2}},pathReason:{type:'string',minLength:15},creation:{type:'string',minLength:30},gameplayEffect:{type:'string',minLength:25},genreRoles:{type:'array',minItems:2,maxItems:2,items:{type:'string',enum:['PRIMARY','SECONDARY']}},linkedElements:{type:'array',minItems:2,items:{type:'string',enum:['A','B']}}},additionalProperties:false}},
+  standardVersion:{type:'integer',const:1},materialHierarchyVersion:{type:'integer',const:2},
+  dCreations:{type:'array',minItems:1,items:{type:'object',required:['id','materialPath','pathReason','sourceFeature','action','condition','consequence','risk','creation','gameplayEffect','genreRoles','linkedElements'],properties:{...Object.fromEntries(['sourceFeature','action','condition','consequence','risk'].map(key=>[key,{type:'string',minLength:4}])),id:{type:'string',minLength:1},materialPath:{type:'array',minItems:3,maxItems:3,items:{type:'string',minLength:1}},pathReason:{type:'string',minLength:15},creation:{type:'string',minLength:30},gameplayEffect:{type:'string',minLength:25},genreRoles:{type:'array',minItems:2,maxItems:2,items:{type:'string',enum:['PRIMARY','SECONDARY']}},linkedElements:{type:'array',minItems:2,items:{type:'string',enum:['A','B']}}},additionalProperties:false}},
   cGenres:{type:'array',minItems:2,maxItems:2,items:CREATIVE_GENRE},
   cGenreInterlock:{type:'string',minLength:30,maxLength:900},
   cWorldAndGameplayEffect:{type:'string',minLength:30,maxLength:900},
@@ -764,7 +764,7 @@ async function authorDesignInCheckpointedSlices({phase,system,sharedContext,curr
     const compactRule=value=>typeof value==='string'?clip(value,180):Array.isArray(value)?value.map(compactRule):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,compactRule(item)])):value;
     const anchors=compactRule(Object.fromEntries(Object.entries(priorRules).map(([field,value])=>[field,field==='contentVarietyPlan'?{regions:value.regions?.map(({id,name,ruleIds})=>({id,name,ruleIds})),abilities:value.abilities,roleTransitions:value.roleTransitions}:field==='designAlternatives'?value.map(plan=>({label:plan.label,strategy:plan.strategy})):field==='selectedDesignPlan'?value:field==='creativeGrammar'?{
       mainIdentity:value.mainIdentity,a:value.a,b:value.b,abCausality:value.abCausality,
-      abEvolution:value.abEvolution,standardVersion:value.standardVersion,dCreations:value.dCreations,cGenres:value.cGenres,
+      abEvolution:value.abEvolution,standardVersion:value.standardVersion,materialHierarchyVersion:value.materialHierarchyVersion,dCreations:value.dCreations,cGenres:value.cGenres,
       cGenreInterlock:value.cGenreInterlock,cWorldAndGameplayEffect:value.cWorldAndGameplayEffect,
       storyCausalChain:value.storyCausalChain,
       delveDiscoveries:Array.isArray(value.delveDiscoveries)&&value.delveDiscoveries.length>8
@@ -1443,19 +1443,27 @@ function computeVibeNativeDesign(){
   if(computed.basicDesignSelection){
     const selection=computed.basicDesignSelection;
     creativeGrammar.standardVersion=selection.standardVersion;
-    Object.assign(creativeGrammar.a,selection.a);
-    Object.assign(creativeGrammar.b,selection.b);
+    creativeGrammar.materialHierarchyVersion=selection.materialHierarchyVersion;
+    Object.assign(creativeGrammar.a,selection.a,{materialDomain:selection.a.material});
+    Object.assign(creativeGrammar.b,selection.b,{materialDomain:selection.b.materialPath.join('→')});
     creativeGrammar.dCreations=selection.dSources.map((source,index)=>({
       id:`D_${index+1}`,...source,genreRoles:['PRIMARY','SECONDARY'],linkedElements:['A','B'],
-      creation:`${source.materialPath[2]}는 ${regions[index%regions.length].name}에 남은 선택을 기록하는 세계의 장치다. ${creativeGrammar.cGenres[0].name}의 인물 갈등과 ${creativeGrammar.cGenres[1].name}의 정보 해석이 장치의 공개·은폐 조건을 만든다.`,
-      gameplayEffect:`${a.playerChoice} 결과를 기록하고 ${b.playerChoice}로 그 기록의 신뢰를 판정한다. 신뢰가 확인된 기록만 A의 다음 접근 조건에 반영하고 실패·취소 때 원래 경로를 보존한다.`
+      creation:`${regions[index%regions.length].name}의 ${source.materialPath[2]}는 ${source.sourceFeature}를 세계의 지속 규칙으로 만든 창작이다. 플레이어가 ${source.action} 행동을 고른다. ${creativeGrammar.cGenres[0].name}: ${creativeGrammar.cGenres[0].gameplayEffect} ${creativeGrammar.cGenres[1].name}: ${creativeGrammar.cGenres[1].gameplayEffect}`,
+      gameplayEffect:`A의 ${a.systemFamily}에서 ${source.condition} 조건을 확인한 뒤 B의 ${b.systemFamily}에서 ${source.action} 행동을 판정한다. 성공하면 ${source.consequence} 결과가 A의 다음 선택에 돌아온다. 위험: ${source.risk}. 실패·취소 때 기존 상태와 다른 선택을 보존한다.`
     }));
     creativeGrammar.delveDiscoveries.forEach((row,index)=>{
-      row.sourceDId=creativeGrammar.dCreations[index%creativeGrammar.dCreations.length].id;
-      row.experiment=`${row.sourceDId}의 기록을 먼저 공개한 경로와 B 판정 후 공개한 경로를 비교한다. ${row.newChoice}`;
-      row.nextQuestion=`${row.discovery} 이후 다른 지역에서도 이 기록의 조건이 유지되는지 다시 확인한다.`;
+      const source=creativeGrammar.dCreations[index%creativeGrammar.dCreations.length];
+      const phase=Math.floor(index/creativeGrammar.dCreations.length);
+      const prior=index>=creativeGrammar.dCreations.length?creativeGrammar.delveDiscoveries[index-creativeGrammar.dCreations.length]:null;
+      const scenario=phase===0?'성립 조건을 바꿔 비교':phase===1?'위험을 감수한 대안과 비교':`${prior.newChoice} 이후 달라진 조건을 재검증`;
+      row.sourceDId=source.id;
+      row.clue=shorten(`${source.materialPath[2]}의 ${source.sourceFeature}: ${scenario}할 흔적은 ${source.condition} 조건에서 나타난다.`,490);
+      row.experiment=shorten(`${source.materialPath[2]}에서 ${scenario}한다. ${source.action} 행동 전후의 ${source.consequence} 결과와 ${source.risk} 위험을 다른 지역에서 비교한다.`,490);
+      row.discovery=shorten(`${source.materialPath[2]}의 ${scenario} 실험으로 ${source.condition} 조건과 ${source.consequence} 결과의 연결을 발견한다.`,490);
+      row.newChoice=shorten(`${source.materialPath[2]}: ${source.action} 행동을 ${phase%2===0?'다음 A 진입 전에 선택하거나 다른 접근을 유지한다':'B 대응 이후 적용하거나 위험을 피해 다른 조건을 준비한다'}. ${source.consequence} 결과를 다음 선택에 활용한다.`,490);
+      row.nextQuestion=shorten(`${source.materialPath[2]}에서 ${source.risk} 위험이 실제로 발생하면 ${source.condition} 조건이 어떻게 달라지는지 다음 방문에서 시험한다.`,490);
     });
-    creativeGrammar.finalGameIdentity=shorten(`${creativeGrammar.finalGameIdentity} D의 기록 장치와 그 기록에서 발견한 새 선택이 다음 반복 목표를 만든다.`,700);
+    creativeGrammar.finalGameIdentity=shorten(`${creativeGrammar.finalGameIdentity} D의 ${creativeGrammar.dCreations.map(row=>row.materialPath[2]).join('·')} 특징과 발견한 행동·결과가 다음 반복 목표를 만든다.`,700);
   }
   // 기본설계 1차: 문법 항목마다 육하원칙과 결과를 실제 후보의 규칙·장소에 연결한다.
   // C는 A/B에 작용하는 소재·장르 융합이다. 별도 C 시스템을 만들어 채우지 않는다.
@@ -1503,7 +1511,7 @@ function computeVibeNativeDesign(){
         discoveryIndex:index,when:`발견 조건: ${discovery.clue}`,
         where:`${regions[index%regions.length].name}에서 단서를 관찰하고 ${regions[(index+1)%regions.length].name}의 반응과 비교한다.`,
         what:discovery.discovery,
-        how:`단서 관찰: ${discovery.clue} 비교 실험: ${discovery.newChoice}`,
+        how:`단서 관찰: ${discovery.clue} 비교 실험: ${discovery.experiment||discovery.newChoice}`,
         why:`학습할 인과: ${discovery.discovery} ${linkedElements.join('·')}를 함께 바꾸어야 이 해결법을 확인할 수 있다.`,
         result:`열리는 선택: ${discovery.newChoice} 발견 조건을 만족하지 못하면 원래 경로를 유지하고 단서를 다시 비교한다.`,
         linkedElements,ruleIds:linkedRules,regionIds
