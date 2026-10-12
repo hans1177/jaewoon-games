@@ -3,68 +3,12 @@
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-10-12",
   "productionClass": "DESIGN_ONLY",
-  "tierAlias": 3,
-  "tier": 3,
   "gameSeedId": "OWNER-DESIGN-SEED-PUZZLE-CHROMATIC-CASCADE",
-  "gameSeedSource": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-seed.json",
-  "gameSeedInputSource": "game-seed-state.json",
-  "gameplaySketchVersion": 5,
-  "inputGameplaySketchVersion": 1,
-  "gameplaySketch": {
-    "version": 1,
-    "source": "OWNER_BRIEF_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN",
-    "worldModel": "CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
-    "actors": [
-      "플레이어: 보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
-      "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
-    ],
-    "interactionChains": [
-      "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
-    ],
-    "stateMachine": [
-      "START_OR_WORLD_ENTRY",
-      "REAL_PLAYER_INPUT",
-      "CORE_GAMEPLAY_ACTION",
-      "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
-      "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
-      "RISK_FAILURE_OR_RESOURCE_PRESSURE",
-      "GOAL_OR_RETRY"
-    ],
-    "firstPlayableCycle": [
-      "월드/세션 진입",
-      "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
-      "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
-      "보상 또는 의미 있는 선택 적용",
-      "위험·실패·자원 압박 경험",
-      "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다."
-    ],
-    "expansionPlan": [
-      "새 적·위협 또는 행동 패턴",
-      "새 공간·경로 또는 목표",
-      "새 상호작용 또는 전략 결과"
-    ],
-    "longGoalScenario": [
-      "초기 핵심 루프 완료",
-      "성장·보상으로 새 선택 개방",
-      "새 위협·공간·목표를 거쳐 중간 목표 달성"
-    ],
-    "validationRisks": [
-      "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
-      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
-    ]
-  },
   "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-puzzle-chromatic-cascade",
-  "designEvolutionLoopVersion": 1,
-  "authorRole": "GAME_DESIGNER_AI",
+  "designTopicMode": null,
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
   "authorModel": "vibe-native:causal-design-v1",
-  "singleAuthor": true,
-  "preGate": {
-    "pass": true,
-    "totalScore": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "attempts": 0
-  },
+  "status": "DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT",
   "content": {
     "identity": "색채의 연쇄. 증언과 합의된 현실·테세우스의 배와 정체성 퍼즐. 색채의 연쇄에서 단서 조합 × 증언과 합의된 현실과 공간 상태 변환 × 테세우스의 배와 정체성이 서로 결과를 되돌려 바꾸며 퍼즐·미스터리의 판단이 실제 세계 상태를 변화시킨다.",
     "creativeGrammar": {
@@ -1375,5 +1319,11 @@
       "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     }
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "85fa41b1f4b50b7a795be093ad7714684976d05e75f7810c202e1bd1263c4558",
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-10-12T03:14:19.818Z"
   }
 }
