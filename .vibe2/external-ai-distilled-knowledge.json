@@ -683,6 +683,52 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:shared-native-import-38289558589",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OpenAI",
+      "model": "Codex-session",
+      "engine": "roblox",
+      "gameId": "daechung-rpg",
+      "domains": [
+        "ASSET_ADAPTATION",
+        "GRAPHICS",
+        "NATIVE_ASSET_IMPORT"
+      ],
+      "patterns": [
+        "공용 원본을 플랫폼 모델로 변환할 때 원본 경로와 SHA256을 대조하고 원본 파일을 보존한 채 파생 자산 번호·변환 계보를 기존 원장에 기록한다.",
+        "같은 원본 해시의 유효한 자산 번호를 재사용하고, 잘못된 원본은 자산별로 격리하며 성공 영수증은 실패 여부와 별개로 보존한다.",
+        "플랫폼 자산 등록 후 승인된 게임 서버의 사용 권한을 확인하고, 정확한 자산 번호로 네이티브 프로젝트를 다시 빌드한다."
+      ],
+      "cautions": [
+        "자산 등록과 소스 검사 성공은 실제 화면·모바일 조작·골격 애니메이션·F9·최종 서버 배포 성공을 증명하지 않는다.",
+        "기존 게임 규칙·밸런스·저장·권한과 공개 여부를 변경하지 않고, 바인딩 변경 후 기존 F0~F9 검수를 다시 수행한다."
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "11484a350fb947e1eb3896edaa156d904fa2990a6a3214dca7c5aa270948dd60",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "multi-source-consistency",
+        "evidence": [
+          "actions-run:https://github.com/hans1177/jaewoon-games/actions/runs/38289558589:23-models-66-material-channels-import-pass",
+          "source:b52fdffd9f3f18480d10701e3bd28992e59087d9:23-preserved-source-hashes-and-three-project-bindings",
+          "qa:qa/vibe-studio-asset-universe.test.mjs+qa/asset-library-sync.test.mjs+qa/horror-escape-room-release.test.mjs:12fe245276c6e9200145ca443e2bf38d9e149db9:281-pass",
+          "artifact:11766696498:sha256:15cac6583cc7b715f1886dc6676f5e3d7a440901126c8a1e052c8df008b58eb8"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
