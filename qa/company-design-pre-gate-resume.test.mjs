@@ -1397,3 +1397,37 @@ test('design persistence uses index-only runtime worktrees without deleting unre
     assert.equal(git(worktree,'show','HEAD:game-seed-state.json').stdout,'saved');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('strict-score fan-in uses sparse review checkout without suppressing other game evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('      - name: Bind latest post-reset strict design scores once'),workflow.indexOf('      - name: Continue seed supply and immediately repeat failed design gates'));
+  assert.match(block,/git fetch --no-tags --depth=1 --filter=blob:none/);
+  assert.match(block,/git sparse-checkout init --no-cone/);
+  assert.match(block,/git sparse-checkout set --no-cone '\/game-seed-state\.json' '\/game-catalog\.json' '\/design\/\*\/\*\/strict-design-review\.json'/);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-score-sparse-'));
+  const git=(...args)=>spawnSync('git',args,{cwd:dir,encoding:'utf8'});
+  try{
+    assert.equal(git('init','-qb','main').status,0);
+    assert.equal(git('config','user.name','qa').status,0);
+    assert.equal(git('config','user.email','qa@example.com').status,0);
+    fs.writeFileSync(path.join(dir,'readme.md'),'source');
+    assert.equal(git('add','.').status,0);
+    assert.equal(git('commit','-qm','main').status,0);
+    assert.equal(git('checkout','-qb','runtime').status,0);
+    fs.mkdirSync(path.join(dir,'design','first','2026-10-12'),{recursive:true});
+    fs.writeFileSync(path.join(dir,'game-seed-state.json'),'{}');
+    fs.writeFileSync(path.join(dir,'game-catalog.json'),'{}');
+    fs.writeFileSync(path.join(dir,'design','first','2026-10-12','strict-design-review.json'),'{}');
+    fs.writeFileSync(path.join(dir,'design','first','2026-10-12','design-checkpoint.json'),'large-content');
+    assert.equal(git('add','.').status,0);
+    assert.equal(git('commit','-qm','runtime').status,0);
+    assert.equal(git('checkout','-q','main').status,0);
+    assert.equal(git('sparse-checkout','init','--no-cone').status,0);
+    assert.equal(git('sparse-checkout','set','--no-cone','/game-seed-state.json','/game-catalog.json','/design/*/*/strict-design-review.json').status,0);
+    assert.equal(git('checkout','-q','-B','score','runtime').status,0);
+    assert.equal(fs.existsSync(path.join(dir,'game-seed-state.json')),true);
+    assert.equal(fs.existsSync(path.join(dir,'design','first','2026-10-12','strict-design-review.json')),true);
+    assert.equal(fs.existsSync(path.join(dir,'design','first','2026-10-12','design-checkpoint.json')),false);
+    assert.equal(git('show','HEAD:design/first/2026-10-12/design-checkpoint.json').stdout,'large-content');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
