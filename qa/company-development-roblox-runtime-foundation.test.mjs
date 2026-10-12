@@ -972,7 +972,7 @@ test('post-runtime QA keeps exact Studio MCP-passed candidates eligible after St
  assert.match(workflow,/Number\(studioPlay\.versionNumber\)===Number\(candidate\.versionNumber\)/);
  assert.match(workflow,/item\.robloxRuntimeFoundationPassed!==true/);
  assert.match(workflow,/item\.robloxRuntimePassed!==true/);
- assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\)/);
+  assert.match(workflow,/&&\(explicitRuntimeStage\|\|exactStudioPlayPendingRuntime\|\|externalRuntimeObservationPending\|\|exactPublishedQaPending\)/);
 });
 
 test('post-runtime QA never waits for live multiplayer measurement',()=>{
