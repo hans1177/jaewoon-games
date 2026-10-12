@@ -35195,9 +35195,9 @@
         "mobile touch readability and stable frame timing",
         "zero blocking runtime console or save regression errors"
       ],
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "UNITY_WEB_VALIDATION_SURFACE": {
         "role": "VALIDATION_SURFACE_ONLY",
         "canonicalSourceRoot": "unity-games/fantasy-survival",
@@ -35226,7 +35226,7 @@
           "source": "CANONICAL_GAME_SEED"
         }
       ],
-      "updatedAt": "2026-10-11T23:42:12.022Z",
+      "updatedAt": "2026-10-12T02:10:39.607Z",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -35235,7 +35235,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 3,
+      "productionTier": 2,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -35244,16 +35244,28 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": false,
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
+        "pass": true,
+        "source": "design/fantasy-survival/2026-10-12/design-revised.json",
+        "date": "2026-10-12"
       },
       "promotion": {
-        "from": "DEVELOPMENT_CONFIRMED",
-        "to": "DESIGN_ONLY",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+        "requestedPlatform": "UNITY",
+        "concurrentTargetPlatforms": [
+          "ROBLOX",
+          "UNITY"
+        ],
+        "targetSourcePaths": {
+          "ROBLOX": "roblox-games/fantasy-survival",
+          "UNITY": "unity-games/fantasy-survival"
+        },
+        "designBaselineSource": "design/fantasy-survival/2026-10-12/design-revised.json",
+        "designDate": "2026-10-12",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "updatedAt": "2026-10-12T00:05:09.553Z"
+        "promotedAt": "2026-10-12T02:10:39.607Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "strictDesignReview": {
@@ -35263,7 +35275,17 @@
         "evidencePath": "design/fantasy-survival/2026-09-20/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-10T12:21:02.829Z"
+      "strictDesignReviewUpdatedAt": "2026-10-10T12:21:02.829Z",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fantasy-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/fantasy-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      }
     },
     {
       "version": 2,
@@ -91719,7 +91741,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-12T02:08:43.338Z",
+  "updatedAt": "2026-10-12T02:10:39.607Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
