@@ -498,6 +498,32 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const coreLoop=unique(list(design.coreLoop));
   const systems=list(design.signatureSystems).map(row=>clean(row.name)).filter(Boolean);
   const genreProfile=selected?.id||'DESIGN_DEFINED';
+  // 메뉴 구성: 장르 후보는 기존 기능을 찾는 기준이며 새 기능이나 고정 HUD를 강제하지 않는다.
+  const genreMenus={
+    RPG:['장비','의뢰','가방'],ADVENTURE:['목표','지도','가방'],SURVIVAL:['가방','제작','지도'],
+    TYCOON:['건설','시설','운영'],DEFENSE:['배치','강화','웨이브'],STRATEGY:['유닛','명령','전황'],
+    PUZZLE:['되돌리기','재시작','목표'],OBBY:['체크포인트','재시도'],RACING:['주행','기록'],
+    HORROR:['단서','목표','가방'],ROLEPLAY:['활동','가방'],SANDBOX:['건설','도구','가방'],SHOOTER:['장비','목표']
+  };
+  const simpleMenuDirection=sourceOnly?null:{
+    genreProfile,candidates:genreMenus[genreProfile]||[],candidateAuthority:'EXISTING_HANDLER_MATCH_ONLY',
+    persistentActions:'Keep only the most frequent existing actions visible; prefer two or three menu entries when the current game permits. Put secondary actions behind the existing menu without removing access.',
+    stateVisibility:'Use existing exploration, combat, build and interaction states to show relevant actions. Keep required combat controls, accessibility and system indicators available.',
+    composition:'Short labels with readable icons; stable positions, grouped status, clear equipped/selected state and visible cost or missing requirements. Keep the actor, target and danger telegraphs unobstructed.',
+    guidance:'Show one immediate objective and a brief contextual hint; stop first-use guidance after the existing completion condition. Route guidance must follow actual reachable objectives.',
+    touch:'Use at least 44-unit touch targets, native safe insets and portrait/landscape adaptation. Keep menus separate from movement, attack and jump touch regions.',
+    navigation:'Reuse existing open/back/close handlers, preserve selection and scroll, and retain disabled-action reasons and transaction guards.',
+    verification:['MOBILE_MENU_OPEN_BACK_CLOSE','CONTEXT_ACTION_VISIBILITY','EQUIPPED_AND_COST_FEEDBACK','TOUCH_CONTROL_OVERLAP','TARGET_AND_TELEGRAPH_OCCLUSION'],runtimeVerified:false
+  };
+  // 몬스터 표현: 현재 종·행동·판정에 맞는 몸 구조와 모션을 구현하며 새 전투 규칙을 만들지 않는다.
+  const creatureIdentityDirection=sourceOnly?null:{
+    applicability:'Only existing or explicitly approved creatures in the owned source. Games without creatures must not gain monsters from this direction.',
+    authoring:'For each changed creature bind its stable ID to approved species/role, silhouette, body proportions, defining anatomy, locomotion, attack anticipation, impact and recovery. Read current creature definitions and behavior before authoring.',
+    readability:'Use recognizable species anatomy and characteristic motion at normal mobile camera distance. Do not accept recolors, labels or identical primitive bodies as distinct creatures. Favor coherent simple low-poly models over expensive detail.',
+    behavior:'Express existing ground, flying, crawling, charging or ranged behavior through matching movement and visible existing attack timing. Presentation-only edits cannot add behavior or alter hitboxes, speed, range, cooldown, damage, drops, spawn counts or authority.',
+    assets:'Reuse compatible registered internal 3D assets and native rigs; preserve style and validate part attachment, ground contact and motion. A missing asset remains an explicit gap, never verified by a placeholder.',
+    verification:['SPECIES_SILHOUETTE_AND_ANATOMY','LOCOMOTION_AND_GROUND_CONTACT','EXISTING_ATTACK_TELEGRAPH_AND_IMPACT','EXACT_SOURCE_CREATURE_BINDING','MOBILE_DISTANCE_READABILITY','UNCHANGED_COMBAT_AND_SAVE'],runtimeVerified:false
+  };
   const ownerFeatureChanges=latestOwnerChanges(design.ownerFeatureChanges);
   const ownerChangeFingerprint=hash(JSON.stringify(ownerFeatureChanges));
   const currentPrevious=previousPlan?.ownerChangeFingerprint===ownerChangeFingerprint
@@ -542,7 +568,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
-    interfaceBlueprintContract:interfaceContract,libraryReuseContract,
+    interfaceBlueprintContract:interfaceContract,libraryReuseContract,simpleMenuDirection,creatureIdentityDirection,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
       implementation:target==='UNITY'?'EXISTING_CSHARP_SCENE_PREFAB_AND_ASSET_BINDINGS':target==='WEB'?'EXISTING_BROWSER_GAME_SOURCE_AND_RESOURCE_BINDINGS':'EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS',
@@ -588,6 +614,12 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'IDEA='+JSON.stringify(plan.selectedIdea),
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
+    ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.simpleMenuDirection?[
+      prefix+'SIMPLE_MENU='+JSON.stringify(plan.simpleMenuDirection)
+    ]:[]),
+    ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.creatureIdentityDirection?[
+      prefix+'CREATURE_IDENTITY='+JSON.stringify(plan.creatureIdentityDirection)
+    ]:[]),
     ...(plan.depthAndReward?[prefix+'DEPTH='+JSON.stringify(plan.depthAndReward)]:[]),
     ...(libraryCandidates.length?[
       prefix+'LIBRARY_MATCH='+JSON.stringify({
