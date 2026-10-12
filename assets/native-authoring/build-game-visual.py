@@ -268,7 +268,7 @@ def image_mesh_asset():
         raise RuntimeError('IMAGE_TO_MESH_LOCAL_IMAGE_REQUIRED')
     if source.stat().st_size <= 0 or source.stat().st_size > 25 * 1024 * 1024:
         raise RuntimeError('IMAGE_TO_MESH_IMAGE_SIZE_INVALID')
-    if source_license.lower() not in ('project-original', 'cc0', 'cc-by'):
+    if source_license.lower() not in ('project-original', 'cc0', 'cc0-1.0', 'cc-by'):
         raise RuntimeError('IMAGE_TO_MESH_SOURCE_RIGHTS_REQUIRED')
     if source_license.lower() == 'cc-by' and not ARGS.source_credit.strip():
         raise RuntimeError('IMAGE_TO_MESH_ATTRIBUTION_REQUIRED')
@@ -611,7 +611,7 @@ def import_source_surface():
         raise RuntimeError('NATIVE_MOCAP_FBX_REQUIRES_ANIMATION_MODULE')
     if src.stat().st_size<=0 or src.stat().st_size>64*1024*1024:
         raise RuntimeError('OPEN_SOURCE_SURFACE_MODEL_SIZE_INVALID')
-    if rights not in ('project-original','cc0','cc-by'):
+    if rights not in ('project-original','cc0','cc0-1.0','cc-by'):
         raise RuntimeError('OPEN_SOURCE_SURFACE_RIGHTS_REQUIRED')
     if rights=='cc-by' and not ARGS.source_credit.strip():
         raise RuntimeError('OPEN_SOURCE_SURFACE_ATTRIBUTION_REQUIRED')
