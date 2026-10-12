@@ -31,6 +31,17 @@ test('internal motion planning binds 100 registered parents to one current walk 
     const project={gameId:'horror-escape-room',engine:'roblox',releaseState:'development-confirmed'};
     const tasks=findSafeTasks(project,root,{tasks:[]});
     assert.equal(tasks.length,100);
+    // 같은 바이브 planning cycle에서 3D/모션 자산 원장과 소스 바인딩은 게임별 1회만 생성한다.
+    const cycleCache=new Map();
+    const firstCycle=findSafeTasks(project,root,{tasks:[]},cycleCache);
+    const boundKey=[...cycleCache.keys()].find(key=>key.startsWith('BOUND|'));
+    const boundSnapshot=cycleCache.get(boundKey);
+    assert.equal(firstCycle.length,100);
+    assert.ok(boundSnapshot);
+    assert.equal(cycleCache.size,2,'raw registry and game-bound snapshot are the only cache entries');
+    const nextCycleSameSource=findSafeTasks(project,root,{tasks:[]},cycleCache);
+    assert.deepEqual(nextCycleSameSource.map(row=>row.id),firstCycle.map(row=>row.id));
+    assert.strictEqual(cycleCache.get(boundKey),boundSnapshot,'same cycle must reuse the exact source-bound snapshot');
     assert.equal(new Set(tasks.flatMap(task=>task.responsibleFiles)).size,100);
     for(const task of tasks){
       const unit=task.motionRepairWorkUnit;
@@ -261,6 +272,14 @@ test('declared DCC planner emits one existing-lane Blender task for the actual s
     };
     const planned=findDeclaredDccAuthoringTask(project,root,{tasks:[]});
     assert.ok(planned);
+    // 정상 바이브 후보 탐색에서도 같은 등록 레시피가 보존되고 자산 원장 재사용이 가능해야 한다.
+    const cycleCache=new Map();
+    const candidates=findSafeTasks(project,root,{tasks:[]},cycleCache);
+    assert.ok(candidates.some(candidate=>candidate.id===planned.id));
+    assert.equal(cycleCache.size,2);
+    const boundRegistry=cycleCache.get([...cycleCache.keys()].find(key=>key.startsWith('BOUND|')));
+    assert.ok(boundRegistry);
+    assert.equal(findDeclaredDccAuthoringTask(project,root,{tasks:[]},boundRegistry)?.id,planned.id);
     assert.equal(planned.id,'horror-demo-roblox-declared-dcc-ghost-motion-v3-v1');
     assert.equal(planned.assetProductionLane,true);
     assert.equal(planned.declaredDccAuthoring,true);
