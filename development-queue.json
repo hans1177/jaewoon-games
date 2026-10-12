@@ -3609,7 +3609,7 @@
       "currentStep": "PRIVATE_RUNTIME_CANDIDATE_DEPLOY",
       "canonicalState": "F0_SOURCE_PREFLIGHT_PASSED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T03:15:14.344Z",
+      "updatedAt": "2026-10-12T03:24:17.062Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -4309,7 +4309,25 @@
       "routingBlockers": [
         "roblox-runtime-candidate-deploy-pending"
       ],
-      "robloxExactRevisionPassed": true
+      "robloxExactRevisionPassed": true,
+      "robloxValidationTarget": {
+        "version": 1,
+        "gameId": "daechung-rpg",
+        "universeId": "10770475187",
+        "placeId": "112643742919826",
+        "verified": false,
+        "verifiedAt": null,
+        "lastVerifiedAt": null,
+        "source": "canonical-dedicated-open-cloud-bootstrap",
+        "authority": "roblox-pre-f9-validation-target",
+        "dedicated": true,
+        "shared": false,
+        "visibilityIntent": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+        "internalOnly": true,
+        "publicDiscoveryAllowed": false,
+        "bootstrapState": "CREATED_PRIVATE_UNPUBLISHED",
+        "reservedAt": "2026-10-12T03:24:17.062Z"
+      }
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -16146,7 +16164,7 @@
       "updatedAt": "2026-10-12T03:05:15.145Z"
     }
   ],
-  "updatedAt": "2026-10-12T03:23:47.155Z",
+  "updatedAt": "2026-10-12T03:24:17.062Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
