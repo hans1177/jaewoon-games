@@ -67,8 +67,10 @@ test('design stages preserve V5 MAIN/A/B/C/@ and legacy c roles with multiplayer
   assert.deepEqual(modes,['COOP','COMPETITIVE','HYBRID']);
 });
 
-test('final gameplay requires native 3D while legacy spatial authoring profiles remain readable',()=>{
+test('final gameplay keeps native 3D evidence without requiring Unity Web production profiles',()=>{
   const scorer=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  const minimum=fs.readFileSync('tools/company-minimum-design-contract.mjs','utf8');
+  const repair=fs.readFileSync('tools/company-design-prepromotion-repair.mjs','utf8');
   const central=policy.livingMotionVisualQualityContract.minimumSpatialPresentation;
   assert.equal(central.minimumFinalGameplayDimension,'3D');
   assert.equal(central.accepted2_5DTechniquesAreNotFinalPass,true);
@@ -76,9 +78,10 @@ test('final gameplay requires native 3D while legacy spatial authoring profiles 
   assert.equal(central.beforeAfterVisualComparisonRequired,true);
   assert.equal(central.flat2DFinalGameplayForbidden,true);
   assert.equal(central.uiOverlayMayRemain2D,true);
-  assert.match(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);
-  assert.match(design,/dimension:\{type:'string',enum:\['2.5D','3D'\]\}/);
-  assert.match(design,/unityWebSpatialPresentation:UNITY_WEB_SPATIAL_PRESENTATION/);
-  assert.match(scorer,/DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED/);
-  assert.match(scorer,/\['worldDepth','cameraAndOcclusion','lightingAndMaterials','mobileWebglEvidence'\]/);
+  assert.doesNotMatch(design,/const UNITY_WEB_SPATIAL_PRESENTATION=/);
+  assert.doesNotMatch(design,/required:\[\.\.\.PLATFORM_PROFILE\.required,'unityWebSpatialPresentation'\]/);
+  assert.doesNotMatch(scorer,/DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED/);
+  assert.match(design,/delete revised\.platformProfiles\.UNITY\.unityWebSpatialPresentation/);
+  assert.match(repair,/웹은 현재 플랫폼 제작 대상이 아니다/);
+  assert.doesNotMatch(minimum,/같은 프로젝트에서 WebGL 빌드를 생성한다/);
 });
