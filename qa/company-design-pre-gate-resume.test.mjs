@@ -1439,3 +1439,21 @@ test('strict-score fan-in uses sparse review checkout without suppressing other 
     assert.equal(git('show','HEAD:design/first/2026-10-12/design-checkpoint.json').stdout,'large-content');
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('forty-five independently authored games do not fail runtime persistence after four shared-ref races',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const blocks=[
+    workflow.slice(workflow.indexOf('persist_design_checkpoint() {'),workflow.indexOf('          pipeline_pid=0')),
+    workflow.slice(workflow.indexOf('      - name: Persist minimum dual-platform design before strict review'),workflow.indexOf('      - name: Apply strict 30-minute design review')),
+    workflow.slice(workflow.indexOf('      - name: Persist validated design evidence to company runtime branch'),workflow.indexOf('      - name: Dispatch per-game promotion reconciliation')),
+    workflow.slice(workflow.indexOf('      - name: Bind latest post-reset strict design scores once'),workflow.indexOf('      - name: Continue seed supply and immediately repeat failed design gates')),
+  ];
+  for(const block of blocks){
+    assert.match(block,/for attempt in \$\(seq 1 24\); do/);
+    assert.match(block,/sleep "\$\(\(1 \+ RANDOM % 5\)\)"/);
+    assert.doesNotMatch(block,/push --force|push -f|update-ref -f/);
+  }
+  assert.match(workflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
+  assert.match(workflow,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
+  assert.match(workflow,/fail-fast: false/);
+});
