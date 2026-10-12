@@ -115,6 +115,22 @@ assert.equal(strong.thirtyMinuteHardGateApplied,false);
 assert.ok(strong.totalScore>=80);
 for(const value of Object.values(strong.evidenceLevels))assert.ok(DESIGN_DIRECT_SCORE_LEVELS.includes(value));
 
+// 웹 제작이 없어도 이전 Unity 시드는 앱 네이티브 플랫폼 프로필로 설계 검수를 받는다.
+const heldUnitySeed={...seed,INITIAL_TARGET_PLATFORM:'UNITY'};
+const heldUnityRecord=structuredClone(designRecord);
+heldUnityRecord.content.platformFitPlan.targetPlatform='UNITY';
+heldUnityRecord.content.platformProfiles.UNITY={
+  ...heldUnityRecord.content.platformProfiles.UNITY,
+  sessionModel:'Unity Android native session and resume remain on owner hold.',
+  performanceBudget:'Unity Android GPU CPU thermals memory and mobile input budgets are deferred until owner release.',
+  internalReleaseTarget:'Unity Android native build is owner held; no Unity WebGL production is requested.',
+  validationEvidence:'No app or browser runtime PASS is claimed before explicit owner authorization.'
+};
+delete heldUnityRecord.content.platformProfiles.UNITY.unityWebSpatialPresentation;
+const heldUnityScore=scoreDesignGateV2({seed:heldUnitySeed,designRecord:heldUnityRecord,cycleStatus,robloxGenreProfile:profile});
+assert.ok(heldUnityScore.evidenceLevels.PLATFORM_FIT_DESIGN>=80,'native platform match must not create the old 60-point mismatch');
+assert.equal(heldUnityScore.hardFailures.includes('CRITICAL_AXIS_MINIMUM_FAIL'),false,'held Unity WebGL cannot be a basic-design admission gate');
+
 const grammarSeed=structuredClone(seed);
 grammarSeed.GAMEPLAY_SKETCH={version:4,novelGameGrammar:{
   newPrimaryVerb:'오해를 설득해 현실로 만든다',
@@ -403,15 +419,17 @@ assert.ok(authoredRejections(noDelve).some(row=>row.code==='DESIGN_MAIN_A_B_DELV
 const duplicateAxis=authoredSpatialDesign();
 duplicateAxis.signatureSystems[2].grammarRole='A';
 assert.ok(authoredRejections(duplicateAxis).some(row=>row.code==='DESIGN_MAIN_A_B_DELVE_REQUIRED'));
+// 유니티 웹은 제작 대상이 아니며 과거 공간 필드는 선택적 호환 입력이다.
 const flatWorld=authoredSpatialDesign();
 flatWorld.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2D';
-assert.ok(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
-const markerOnly=authoredSpatialDesign();
-markerOnly.platformProfiles.UNITY.unityWebSpatialPresentation.worldDepth='2.5D';
-assert.ok(authoredRejections(markerOnly).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
-const true3d=authoredSpatialDesign();
-true3d.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='3D';
-assert.equal(authoredRejections(true3d).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+assert.equal(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+const legacyWithoutWeb=authoredSpatialDesign();
+delete legacyWithoutWeb.platformProfiles.UNITY.unityWebSpatialPresentation;
+assert.equal(authoredRejections(legacyWithoutWeb).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+const foreignNative=authoredSpatialDesign();
+foreignNative.platformProfiles.ROBLOX={inputModel:'Unity Input System only for this Roblox project.'};
+assert.ok(authoredRejections(foreignNative).some(row=>row.code==='DESIGN_PLATFORM_NATIVE_CONTRADICTION'),
+  '웹 제작 의무를 없애도 실제 네이티브 플랫폼 혼동은 계속 반려한다.');
 // 기존 게임의 표현 보존 설계에서도 MAIN/A/B/c/@는 실제 상태 입력과 출력으로 이어야 한다.
 const preserved=authoredSpatialDesign();
 const preservedRoles=preserved.signatureSystems;
@@ -557,7 +575,8 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     });
     assert.equal(scored.hardFailures.length,0,category+': '+scored.hardFailures.join(', '));
     assert.ok(scored.totalScore>=80,category+': '+scored.totalScore);
-    assert.equal(design.platformProfiles.UNITY.unityWebSpatialPresentation.dimension,'3D');
+    assert.equal(Object.hasOwn(design.platformProfiles.UNITY,'unityWebSpatialPresentation'),false,
+      '새 기본설계에는 유니티 웹 공간 제작 명세가 없어야 한다.');
     assert.equal(design.multiplayerMode,'COOP');
   }
 }
