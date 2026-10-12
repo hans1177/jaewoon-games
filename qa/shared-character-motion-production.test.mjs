@@ -59,6 +59,35 @@ test('loop closure is baked into actual skinned action keys and checked without 
   assert.match(native,/qa_failures\.append\('LOOP_CONTINUITY:'\+clip_name\)/);
 });
 
+test('saved gait foot lift is corrected and measured rather than inferred from knee pitch',()=>{
+  assert.match(native,/delta_world\.z = max\(delta_world\.z, desired\.z \+ lift - current\.z\)/);
+  assert.match(native,/GAIT_SWING_CLEARANCE_BY_PACE/);
+  assert.match(native,/'footSwingHeight':foot_swing_metrics/);
+  assert.match(native,/qa_failures\.append\(f'FOOT_SWING_LIFT:/);
+  assert.match(native,/qa_failures\.append\(f'FOOT_SWING_PENETRATION:/);
+  assert.match(native,/'measurementSource':'BAKED_ACTION_PLAYBACK'/);
+});
+
+test('start and stop handoffs preserve stabilized foot translation as well as rotation',()=>{
+  assert.match(native,/stabilize_planted_feet\(0\.0, 'walk'\); handoff = pose_snapshot\(\)/);
+  assert.match(native,/stabilize_planted_feet\(0\.0, 'walk'\); incoming = pose_snapshot\(\)/);
+  assert.match(native,/'transitionLocationMax': 0\.004/);
+  assert.match(native,/row\['locationMax'\]>QA_THRESHOLDS\['transitionLocationMax'\]/);
+});
+
+test('native authoring is isolated from playback and QA measures the saved action',()=>{
+  const bake=native.slice(native.indexOf('for clip_name, duration in CLIPS.items():'),native.indexOf('def procedural_snapshot'));
+  assert.match(bake,/RIG\.animation_data\.action = None\s+bpy\.context\.view_layer\.update\(\)/);
+  assert.ok(bake.indexOf('authored_frames.append(pose_snapshot())')<bake.indexOf('RIG.animation_data.action = action'));
+  assert.match(bake,/for frame, snapshot in enumerate\(authored_frames\):\s+apply_snapshot\(snapshot\)/);
+  const sampler=native.slice(native.indexOf('def sampled_snapshot'),native.indexOf('def rotation_activity'));
+  assert.match(sampler,/RIG\.animation_data\.action = bpy\.data\.actions\[clip_name\]/);
+  assert.match(sampler,/SCENE\.frame_set\(math\.floor\(frame\), subframe=frame % 1\.0\)/);
+  assert.doesNotMatch(sampler,/animate\(clip_name/);
+  const workflow=fs.readFileSync(new URL('../.github/workflows/roblox-world-ghost-assets.yml',import.meta.url),'utf8');
+  assert.match(workflow,/blender --background --python-exit-code 1 --python assets\/roblox\/world-ghosts\/refine-humanoid-motion\.py/);
+});
+
 test('missing combos and weapon styles remain real production demand, not invented clips',()=>{
   const missing=[
     'LIGHT_COMBO_2_3_4_CHAIN_FAMILY','HEAVY_COUNTER_FOLLOWUP_FAMILY',

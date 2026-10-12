@@ -78,6 +78,7 @@ QA_THRESHOLDS = {
     'loopRotationMaxRad': 0.015,
     'loopLocationMax': 0.004,
     'transitionRotationMaxRad': 0.025,
+    'transitionLocationMax': 0.004,
     'speedBlendRotationMaxRad': 0.42,
     'rootRotationMaxRad': 1e-7,
     'rootLocationMax': 1e-7,
@@ -92,6 +93,8 @@ QA_THRESHOLDS = {
         'hero_strafe_left_hq': 0.075,
         'hero_strafe_right_hq': 0.075,
     },
+    'footSwingLiftMin': 0.015,
+    'footSwingPenetrationMax': 0.004,
     'secondaryRotationRangeMinRad': 0.010,
     'primaryJointRotationRangeMinRad': {
         'Hips': 0.040,
@@ -543,6 +546,10 @@ def crouch_pose(t):
 GAIT_STANCE_BY_PACE = {
     'walk': 0.30, 'jog': 0.27, 'run': 0.22, 'sprint': 0.18, 'backward': 0.28,
 }
+# Minimum world-space swing clearance over the same planted-foot anchor.
+GAIT_SWING_CLEARANCE_BY_PACE = {
+    'walk': 0.04, 'jog': 0.06, 'run': 0.08, 'sprint': 0.10, 'backward': 0.04,
+}
 GAIT_NAME_TO_PACE = {
     'hero_walk_hq': 'walk',
     'hero_jog_hq': 'jog',
@@ -576,9 +583,7 @@ def stabilize_planted_feet(t, pace):
         elif phase > 0.85:
             pin_weight = smoothstep((phase - 0.85) / 0.15)
         else:
-            continue
-        if pin_weight <= 1e-7:
-            continue
+            pin_weight = 0.0
 
         bone_name = 'Foot' + side
         bone = RIG.pose.bones[bone_name]
@@ -588,6 +593,12 @@ def stabilize_planted_feet(t, pace):
         desired = GAIT_CONTACT_ANCHORS[(pace, bone_name)]
         # Allow forward motion (Y), but preserve planted lateral (X) and height (Z).
         delta_world = Vector((desired.x - current.x, 0.0, desired.z - current.z)) * pin_weight
+        # Knee pitch alone can drive this rig's ankle below its planted height.
+        # Preserve the authored joint rotations and forward axis, but give the
+        # swing foot a smooth clearance arc instead of dragging through ground.
+        swing = clamp01((phase - stance) / (1.0 - stance))
+        lift = GAIT_SWING_CLEARANCE_BY_PACE[pace] * (4.0 * swing * (1.0 - swing)) ** 2
+        delta_world.z = max(delta_world.z, desired.z + lift - current.z)
         if delta_world.length <= 1e-8:
             continue
 
@@ -637,13 +648,13 @@ def animate(name, normalized_time):
         start_pose(t)
         if t >= 0.70:
             authored = pose_snapshot()
-            reset_pose(); gait_pose(0.0, 'walk'); handoff = pose_snapshot()
+            reset_pose(); gait_pose(0.0, 'walk'); stabilize_planted_feet(0.0, 'walk'); handoff = pose_snapshot()
             apply_snapshot(blend_snapshots(authored, handoff, (t - 0.70) / 0.30))
     elif name == 'hero_stop_hq':
         stop_pose(t)
         authored = pose_snapshot()
         if t <= 0.24:
-            reset_pose(); gait_pose(0.0, 'walk'); incoming = pose_snapshot()
+            reset_pose(); gait_pose(0.0, 'walk'); stabilize_planted_feet(0.0, 'walk'); incoming = pose_snapshot()
             apply_snapshot(blend_snapshots(incoming, authored, t / 0.24))
         elif t >= 0.76:
             reset_pose(); idle_pose(0.0); idle = pose_snapshot()
@@ -697,12 +708,20 @@ def animate(name, normalized_time):
 
 
 for clip_name, duration in CLIPS.items():
-    action = bpy.data.actions.new(clip_name)
+    # Dependency-graph updates in the foot solver must not replay an active
+    # action over the pose being authored. Sample first, then write action keys.
     RIG.animation_data_create()
-    RIG.animation_data.action = action
+    RIG.animation_data.action = None
+    bpy.context.view_layer.update()
     frame_count = round(duration * FPS)
+    authored_frames = []
     for frame in range(frame_count + 1):
         animate(clip_name, frame / max(1, frame_count))
+        authored_frames.append(pose_snapshot())
+    action = bpy.data.actions.new(clip_name)
+    RIG.animation_data.action = action
+    for frame, snapshot in enumerate(authored_frames):
+        apply_snapshot(snapshot)
         for pose_bone in RIG.pose.bones:
             if pose_bone.name == 'Root':
                 continue
@@ -714,9 +733,25 @@ for clip_name, duration in CLIPS.items():
         for point in curve_data.keyframe_points:
             point.interpolation = 'BEZIER'
 
+# Procedural QA uses the same isolated authoring state as the bake, never the
+# last baked clip. Flush action detachment before the first measured sample.
+RIG.animation_data.action = None
+bpy.context.view_layer.update()
+
 # 실제 관절 샘플 기반 QA. 이름만 있는 모션은 통과시키지 않는다.
-def sampled_snapshot(clip_name, t):
+def procedural_snapshot(clip_name, t):
+    RIG.animation_data.action = None
+    bpy.context.view_layer.update()
     animate(clip_name, t)
+    return pose_snapshot()
+
+
+def sampled_snapshot(clip_name, t):
+    # Measure the saved action and its interpolation on the real rig.
+    RIG.animation_data.action = bpy.data.actions[clip_name]
+    frame = clamp01(t) * round(CLIPS[clip_name] * FPS)
+    SCENE.frame_set(math.floor(frame), subframe=frame % 1.0)
+    bpy.context.view_layer.update()
     return pose_snapshot()
 
 
@@ -736,8 +771,7 @@ def rotation_activity(clip_name, bone_name, samples=33):
 
 
 def bone_world_position(clip_name, t, bone_name):
-    animate(clip_name,t)
-    bpy.context.view_layer.update()
+    sampled_snapshot(clip_name,t)
     bone=RIG.pose.bones[bone_name]
     point=RIG.matrix_world @ bone.matrix.translation
     return (float(point.x),float(point.y),float(point.z))
@@ -770,7 +804,7 @@ def finite_snapshot(snapshot):
 loop_metrics={}
 baked_loop_metrics={}
 for clip_name in LOOP_CLIPS:
-    procedural = snapshot_distance(sampled_snapshot(clip_name,0.0),sampled_snapshot(clip_name,1.0))
+    procedural = snapshot_distance(procedural_snapshot(clip_name,0.0),procedural_snapshot(clip_name,1.0))
     action = bpy.data.actions[clip_name]
     end_frame = round(CLIPS[clip_name] * FPS)
     tracked_paths = tuple(f'pose.bones["{bone}"]' for bone in PRIMARY_QA_BONES)
@@ -836,6 +870,19 @@ for clip_name,(left_window,right_window) in contact_windows.items():
         'left':contact_drift(clip_name,'FootL',*left_window)/height,
         'right':contact_drift(clip_name,'FootR',*right_window)/height,
     }
+foot_swing_metrics={}
+for clip_name,pace in GAIT_NAME_TO_PACE.items():
+    stance=GAIT_STANCE_BY_PACE[pace]
+    feet={}
+    for side,phase_offset in [('L',0.0),('R',0.5)]:
+        bone_name='Foot'+side
+        planted=bone_world_position(clip_name,phase_offset,bone_name)[2]
+        heights=[
+            bone_world_position(clip_name,(phase_offset+stance+(1.0-stance)*i/32)%1.0,bone_name)[2]-planted
+            for i in range(33)
+        ]
+        feet[side]={'liftMax':max(heights),'heightMin':min(heights)}
+    foot_swing_metrics[clip_name]=feet
 primary_activity={
     clip_name:{bone:rotation_activity(clip_name,bone) for bone in QA_THRESHOLDS['primaryJointRotationRangeMinRad']}
     for clip_name in LOCOMOTION_QA_CLIPS
@@ -864,7 +911,7 @@ for clip_name,row in loop_metrics.items():
     if row['rotationMaxRad']>QA_THRESHOLDS['loopRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['loopLocationMax']:
         qa_failures.append('LOOP_CONTINUITY:'+clip_name)
 for name,row in transition_metrics.items():
-    if row['rotationMaxRad']>QA_THRESHOLDS['transitionRotationMaxRad']:
+    if row['rotationMaxRad']>QA_THRESHOLDS['transitionRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['transitionLocationMax']:
         qa_failures.append('TRANSITION_POP:'+name)
 for name,value in speed_blend_metrics.items():
     if value>QA_THRESHOLDS['speedBlendRotationMaxRad']:
@@ -881,6 +928,12 @@ for clip_name,feet in foot_contact_metrics.items():
     for side,value in feet.items():
         if value>maximum:
             qa_failures.append(f'FOOT_CONTACT_DRIFT:{clip_name}:{side}')
+for clip_name,feet in foot_swing_metrics.items():
+    for side,row in feet.items():
+        if row['liftMax']<QA_THRESHOLDS['footSwingLiftMin']:
+            qa_failures.append(f'FOOT_SWING_LIFT:{clip_name}:{side}')
+        if row['heightMin'] < -QA_THRESHOLDS['footSwingPenetrationMax']:
+            qa_failures.append(f'FOOT_SWING_PENETRATION:{clip_name}:{side}')
 for clip_name,rows in primary_activity.items():
     for bone,minimum in QA_THRESHOLDS['primaryJointRotationRangeMinRad'].items():
         if rows[bone]<minimum:
@@ -889,6 +942,7 @@ for clip_name,value in secondary_activity.items():
     if value<QA_THRESHOLDS['secondaryRotationRangeMinRad']:
         qa_failures.append('SECONDARY_MOTION_ACTIVITY:'+clip_name)
 qa_metrics={
+    'measurementSource':'BAKED_ACTION_PLAYBACK',
     'thresholds':QA_THRESHOLDS,
     'loop':loop_metrics,
     'bakedLoopEndpoints':baked_loop_metrics,
@@ -896,6 +950,7 @@ qa_metrics={
     'speedBlendRotationMaxRad':speed_blend_metrics,
     'leftRightPhaseErrorRad':phase_metrics,
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
+    'footSwingHeight':foot_swing_metrics,
     'primaryJointRotationRangeRad':primary_activity,
     'secondaryRotationRangeMaxRadByClip':secondary_activity,
     'root':root_metrics,
@@ -1064,7 +1119,7 @@ if ARGS.render_dir:
     target=RIG.location + Vector((0,0,1.8))
     camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler()
     cam_data.type='ORTHO';cam_data.ortho_scale=4.2
-    SCENE.render.engine='BLENDER_EEVEE'
+    SCENE.render.engine='BLENDER_EEVEE_NEXT' if bpy.app.version >= (4, 2, 0) else 'BLENDER_EEVEE'
     SCENE.render.resolution_x=512;SCENE.render.resolution_y=512;SCENE.render.resolution_percentage=100
     SCENE.render.image_settings.file_format='PNG'
     preview_times={
@@ -1073,12 +1128,14 @@ if ARGS.render_dir:
         'hero_backward_hq':0.12,'hero_turn_45_hq':0.58,'hero_turn_90_hq':0.58,'hero_turn_180_hq':0.58,
         'hero_jump_start_hq':0.58,'hero_jump_air_hq':0.48,'hero_land_hq':0.22,'hero_crouch_hq':0.46,
     }
+    RIG.animation_data.action = None
+    bpy.context.view_layer.update()
     reset_pose();bpy.context.view_layer.update()
     baseline=ARGS.render_dir/'source-bind-reference.png'
     SCENE.render.filepath=str(baseline);bpy.ops.render.render(write_still=True)
     preview_files=[]
     for clip_name,t in preview_times.items():
-        animate(clip_name,t);bpy.context.view_layer.update()
+        sampled_snapshot(clip_name,t)
         output=ARGS.render_dir/(clip_name+'.png')
         SCENE.render.filepath=str(output);bpy.ops.render.render(write_still=True)
         preview_files.append(str(output.name))
