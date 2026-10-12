@@ -162,7 +162,7 @@ export function createViewer(host){
  // 메인: 등록부의 내부 GLB만 허용하며 실제 삼각형·스킨·클립 개수를 읽는다.
  async function setGLB(source){
   const uri=String(source?.path||'');
-  if(!/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(uri))throw Error('내부 등록된 GLB 경로만 열 수 있어.');
+  if(!/^\/assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(uri))throw Error('내부 등록된 GLB 경로만 열 수 있어.');
   if(software)throw Error('원본 GLB 렌더링에 WebGL이 필요해.');
   const requestId=++loadRevision,gltf=await new GLTFLoader().loadAsync(uri);
   if(requestId!==loadRevision){disposeNative(gltf.scene);return null;}
