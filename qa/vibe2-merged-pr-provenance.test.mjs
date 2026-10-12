@@ -262,3 +262,40 @@ test('workflow persists only the two provenance retention files and never mutate
   assert.match(workflow,/VIBE2_WAVE_REORDER=NO/);
   assert.match(workflow,/VIBE2_AUTHORITY_EXPANSION=NO/);
 });
+
+test('merged PR collector sparsifies both repos before blobless fetch without mutating queues',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-merged-pr-provenance.yml','utf8');
+  const collector=fs.readFileSync('tools/vibe2-merged-pr-provenance.mjs','utf8');
+  const setup=workflow.split('      - name: Fetch trusted source and exact control ledgers without full blobs\n')[1]?.split('      - name: Fetch event base and merged commit for exact provenance diff\n')[0]||'';
+  assert.ok(setup,'exact protected checkout setup must exist');
+  assert.match(setup,/gh auth setup-git/);
+  assert.match(setup,/GH_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.match(setup,/git init -q source/);
+  assert.match(setup,/git init -q control/);
+  const sourceSparse='git -C source sparse-checkout set --no-cone';
+  const sourceFetch='git -C source fetch --no-tags --depth=1 --filter=blob:none origin';
+  const controlSparse='git -C control sparse-checkout set --no-cone';
+  const controlFetch='git -C control fetch --no-tags --depth=1 --filter=blob:none origin';
+  for(const marker of [sourceSparse,sourceFetch,controlSparse,controlFetch])assert.ok(setup.includes(marker),marker);
+  assert.ok(setup.indexOf(sourceSparse)<setup.indexOf(sourceFetch),'source sparsity must precede hydration');
+  assert.ok(setup.indexOf(controlSparse)<setup.indexOf(controlFetch),'control sparsity must precede hydration');
+  for(const file of [
+    '.github/workflows/vibe2-merged-pr-provenance.yml',
+    'assets/vibe-experience-memory.js',
+    'qa/vibe2-merged-pr-provenance.test.mjs',
+    'tools/vibe2-capability-distillation.mjs',
+    'tools/vibe2-merged-pr-provenance.mjs',
+    '.vibe2/merged-pr-provenance-ledger.json',
+    '.vibe2/coding-trace-ledger.json'
+  ])assert.ok(setup.includes(file),'exact existing source or ledger must be fetched: '+file);
+  assert.match(setup,/test ! -e control\/\.vibe2\/queue\.json/);
+  assert.doesNotMatch(workflow,/fetch-depth: 0|git push --force|git pull --rebase/);
+  assert.doesNotMatch(workflow,/uses: actions\/checkout@v4/);
+  assert.match(workflow,/PR_BASE_SHA: \$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
+  assert.match(workflow,/PR_MERGE_SHA: \$\{\{ github\.event\.pull_request\.merge_commit_sha \}\}/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 --filter=blob:none origin "\$PR_BASE_SHA" "\$PR_MERGE_SHA" --quiet/);
+  assert.match(workflow,/git cat-file -e "\$PR_BASE_SHA\^\{commit\}"/);
+  assert.match(workflow,/git cat-file -e "\$PR_MERGE_SHA\^\{commit\}"/);
+  assert.match(workflow,/git fetch origin vibe2-unreal-core --quiet --filter=blob:none/);
+  assert.match(collector,/execFileSync\('git',\['diff','--numstat','--no-renames',base,merge\]/);
+});
