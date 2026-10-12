@@ -1,4 +1,4 @@
-# Unity reusable workflow syntax verified for automatic canonical dispatch.
+# 기존 네이티브 개발 흐름: Unity Web 제작 경로 미사용.
 name: Company DEVELOPMENT_CONFIRMED Runtime
 run-name: DEVELOPMENT cycle | ${{ inputs.game_id || 'batch' }} | ${{ inputs.trigger_source || github.event_name }}
 
@@ -12,11 +12,6 @@ on:
       - 'tools/company-upper-platform-admission.mjs'
       - 'tools/design-only-promotion-sync.mjs'
       - 'company-learning/platform-release-roadmap.json'
-      - '.github/workflows/unity-web-first-stage-build.yml'
-      - '.github/workflows/unity-web-floor-source-bootstrap.yml'
-      - 'tools/company-unity-web-floor-bootstrap.mjs'
-      - 'tools/company-unity-web-gameplay-validation.mjs'
-      - 'web-games/**/upper-platform-development-readiness.json'
       - 'company-asset-library.json'
       - 'unity-games/**'
       - 'roblox-games/**'
@@ -41,7 +36,7 @@ on:
         type: string
 
 concurrency:
-  # 메인: workflow 전체를 잠그면 긴 Unity WebGL 빌드가 서로 다른 게임의 개발까지 직렬화한다.
+  # 메인: 서로 다른 게임의 네이티브 개발은 병렬 실행한다.
   # 모든 실행을 독립시키고 아래 coordinator-gate의 짧은 exact-revision 중복 판정만 유지한다.
   group: company-development-confirmed-${{ github.run_id }}
   cancel-in-progress: false
@@ -134,10 +129,6 @@ jobs:
       roblox_json: ${{ steps.plan.outputs.roblox_json }}
       unity_count: ${{ steps.plan.outputs.unity_count }}
       unity_json: ${{ steps.plan.outputs.unity_json }}
-      unity_web_ids: ${{ steps.plan.outputs.unity_web_ids }}
-      unity_web_json: ${{ steps.plan.outputs.unity_web_json }}
-      unity_web_bootstrap_ids: ${{ steps.plan.outputs.unity_web_bootstrap_ids }}
-      unity_web_bootstrap_json: ${{ steps.plan.outputs.unity_web_bootstrap_json }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -193,12 +184,6 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-unity-runtime.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-native-runs-$page.json" &
             pids+=("$!")
             labels+=("UNITY:$page")
-            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/unity-web-first-stage-build.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-web-floor-runs-$page.json" &
-            pids+=("$!")
-            labels+=("UNITY_WEB_FLOOR:$page")
-            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/unity-web-floor-source-bootstrap.yml/runs?per_page=100&page=$page" > "/tmp/active-unity-web-bootstrap-runs-$page.json" &
-            pids+=("$!")
-            labels+=("UNITY_WEB_BOOTSTRAP:$page")
           done
           queue_fetch_status=0
           wait "$queue_fetch_pid" || queue_fetch_status=$?
@@ -221,17 +206,13 @@ jobs:
           fi
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-roblox-native-runs-{1,2,3}.json > /tmp/active-roblox-native-runs.json
           jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-native-runs-{1,2,3}.json > /tmp/active-unity-native-runs.json
-          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-web-floor-runs-{1,2,3}.json > /tmp/active-unity-web-floor-runs.json
-          jq -s '{workflow_runs:(map(.workflow_runs // [])|add)}' /tmp/active-unity-web-bootstrap-runs-{1,2,3}.json > /tmp/active-unity-web-bootstrap-runs.json
           echo "NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=$(jq '.workflow_runs|length' /tmp/active-roblox-native-runs.json)"
           echo "NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-native-runs.json)"
-          echo "UNITY_WEB_ACTIVE_RUN_SCAN_FLOOR_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-web-floor-runs.json)"
-          echo "UNITY_WEB_ACTIVE_RUN_SCAN_BOOTSTRAP_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-web-bootstrap-runs.json)"
           echo 'NATIVE_ACTIVE_RUN_SCAN_PAGES=3'
           echo 'UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3'
           echo 'NATIVE_ACTIVE_RUN_SCAN=PASS'
 
-      - name: Resolve Unity Web floor and upper-platform eligibility
+      - name: Resolve native upper-platform eligibility
         id: plan
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
@@ -254,13 +235,7 @@ jobs:
             (!requested||item.gameId===requested)&&
             String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&
             String(item.status||'').toUpperCase()!=='DISABLED'&&
-            (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY')||(
-              item.minimumDesignContract?.pass===true&&
-              ['ACTIVE','PENDING'].includes(String(item.status||'').toUpperCase())&&
-              Boolean(item.platformDesignProfiles?.ROBLOX?.source&&item.platformDesignProfiles?.UNITY?.source)&&
-              Array.isArray(item.concurrentTargetPlatforms)&&
-              item.concurrentTargetPlatforms.includes('ROBLOX')&&item.concurrentTargetPlatforms.includes('UNITY')
-            ))
+            (platformDevelopmentEligible(item,'ROBLOX')||platformDevelopmentEligible(item,'UNITY'))
           );
           const activeStates=new Set(['queued','pending','in_progress','requested']);
           const eligibleGameIds=rows.map(item=>String(item.gameId||'')).filter(id=>/^[a-z0-9][a-z0-9-]{1,80}$/.test(id));
@@ -278,17 +253,7 @@ jobs:
                 ids.add(id);
                 continue;
               }
-              // A push-triggered Unity Web build names the game inside the commit title,
-              // not immediately after the workflow prefix. Recover only one exact slug.
-              // Never match "survival" inside "fantasy-survival" or "survival2".
-              if(prefix==='Unity Web Floor '&&run.event==='push'){
-                const matching=eligibleGameIds.filter(gameId=>
-                  new RegExp('(^|[^a-z0-9-])'+gameId+'($|[^a-z0-9-])','i').test(title));
-                if(matching.length===1){
-                  ids.add(matching[0]);
-                  console.log('UNITY_WEB_FLOOR_ACTIVE_PUSH_DETECTED='+matching[0]+':'+run.id);
-                }
-              }
+
             }
             return ids;
           };
@@ -296,9 +261,7 @@ jobs:
           if(!/^[a-f0-9]{40}$/i.test(currentControlSha))throw new Error('ROBLOX_CURRENT_CONTROL_SHA_REQUIRED');
           const activeRoblox=activeIds('/tmp/active-roblox-native-runs.json','Roblox runtime · ',currentControlSha);
           const activeUnity=activeIds('/tmp/active-unity-native-runs.json','Unity runtime · ');
-          const activeUnityWebFloor=activeIds('/tmp/active-unity-web-floor-runs.json','Unity Web Floor ');
-          const activeUnityWebBootstrap=activeIds('/tmp/active-unity-web-bootstrap-runs.json','Unity Web Floor Bootstrap ');
-          const nativeIds=[],robloxIds=[],unityIds=[],webIds=[],bootstrapIds=[],blockedIds=[],grandfatheredIds=[];
+          const nativeIds=[],robloxIds=[],unityIds=[],blockedIds=[],grandfatheredIds=[];
           for(const item of rows){
             const decision=classifyUpperPlatformAdmission(item,{repoRoot:process.cwd(),grandfatherGameIds});
             if(decision.state!=='UPPER_PLATFORM'){
@@ -314,30 +277,8 @@ jobs:
                 robloxIds.push(item.gameId);
                 console.log('ROBLOX_NATIVE_DISPATCH_CURRENT_MAIN_REQUIRED='+item.gameId+':'+currentControlSha);
               }
-            }else{
-              console.log('UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP='+item.gameId+':'+String(item.currentStep||'UNKNOWN'));
             }
             if(decision.grandfathered===true)grandfatheredIds.push(item.gameId);
-            const web=decision.web||{};
-            if(web.state==='OWNER_HOLD'){
-              console.log('UNITY_WEB_OWNER_HOLD='+item.gameId);
-            }else if(web.state==='UNITY_WEB_FLOOR'){
-              if(activeUnityWebFloor.has(item.gameId))console.log('UNITY_WEB_FLOOR_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
-              else{
-                webIds.push(item.gameId);
-                console.log('UNITY_WEB_FLOOR_REQUIRED='+item.gameId+':'+web.reason+':'+web.buildMethod);
-              }
-            }else if(web.state==='UNITY_WEB_BOOTSTRAP'){
-              if(activeUnityWebBootstrap.has(item.gameId))console.log('UNITY_WEB_BOOTSTRAP_DISPATCH_DEDUPED_ACTIVE='+item.gameId);
-              else{
-                bootstrapIds.push(item.gameId);
-                console.log('UNITY_WEB_FLOOR_BOOTSTRAP_REQUIRED='+item.gameId+':'+web.reason);
-              }
-            }else if(web.state==='UNITY_WEB_SOURCE_REPAIR'){
-              console.log('UNITY_WEB_FLOOR_REPAIR_REQUIRED='+item.gameId+':'+web.reason);
-            }else if(web.state==='UNITY_WEB_VERIFIED'){
-              console.log('UNITY_WEB_VERIFIED_INDEPENDENT='+item.gameId);
-            }
           }
           console.log('DEVELOPMENT_OWNER_EXCLUDED_GAME_IDS='+(Array.from(ownerExcludedGameIds).join(',')||'NONE'));
           console.log('UNITY_ANDROID_DEVELOPMENT_HOLD=OWNER_DIRECTIVE_2026_10_09');
@@ -348,18 +289,11 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'roblox_json='+JSON.stringify(robloxIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_count='+unityIds.length+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_json='+JSON.stringify(unityIds)+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_ids='+webIds.join(',')+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_json='+JSON.stringify(webIds)+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_ids='+bootstrapIds.join(',')+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'unity_web_bootstrap_json='+JSON.stringify(bootstrapIds)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'blocked_ids='+blockedIds.join(',')+'\n');
           console.log('UPPER_PLATFORM_ELIGIBLE_COUNT='+nativeIds.length);
-          console.log('UNITY_WEB_DESIGN_ELIGIBLE_COUNT='+rows.length);
           console.log('UPPER_PLATFORM_ELIGIBLE_IDS='+(nativeIds.join(',')||'NONE'));
           console.log('ROBLOX_NATIVE_DISPATCH_IDS='+(robloxIds.join(',')||'NONE'));
           console.log('UNITY_NATIVE_DISPATCH_IDS='+(unityIds.join(',')||'NONE'));
-          console.log('UNITY_WEB_FLOOR_IDS='+(webIds.join(',')||'NONE'));
-          console.log('UNITY_WEB_FLOOR_BOOTSTRAP_IDS='+(bootstrapIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_GRANDFATHERED_IDS='+(grandfatheredIds.join(',')||'NONE'));
           console.log('UPPER_PLATFORM_BLOCKED_IDS='+(blockedIds.join(',')||'NONE'));
           console.log('DEVELOPMENT_GAME_ELIGIBILITY_CAP=NONE');
@@ -400,50 +334,10 @@ jobs:
       game_id: ${{ matrix.game_id }}
     secrets: inherit
 
-  dispatch-unity-web-floor:
-    name: Run Unity Web development floor
-    needs: native-plan
-    if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_web_ids != ''
-    strategy:
-      fail-fast: false
-      matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_json) }}
-    concurrency:
-      group: unity-web-floor-call-${{ matrix.game_id }}
-      cancel-in-progress: false
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: write
-    uses: ./.github/workflows/unity-web-first-stage-build.yml
-    with:
-      game_id: ${{ matrix.game_id }}
-      project_path: unity-games/${{ matrix.game_id }}
-      source_commit: ${{ github.sha }}
-      publish_to_main: true
-    secrets: inherit
-
-  dispatch-unity-web-bootstrap:
-    name: Bootstrap Unity Web source ${{ matrix.game_id }}
-    needs: native-plan
-    if: needs.native-plan.result == 'success' && needs.native-plan.outputs.unity_web_bootstrap_ids != ''
-    strategy:
-      fail-fast: false
-      matrix:
-        game_id: ${{ fromJSON(needs.native-plan.outputs.unity_web_bootstrap_json) }}
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: write
-    uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml
-    with:
-      game_id: ${{ matrix.game_id }}
-    secrets: inherit
-
   continue-cycle:
     name: Continue DEVELOPMENT_CONFIRMED cycle after isolated game outcomes
-    needs: [native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap]
-    if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0' || needs.native-plan.outputs.unity_web_ids != '' || needs.native-plan.outputs.unity_web_bootstrap_ids != '') }}
+    needs: [native-plan, dispatch-roblox, dispatch-unity]
+    if: ${{ always() && needs.native-plan.result == 'success' && (needs.native-plan.outputs.roblox_count != '0' || needs.native-plan.outputs.unity_count != '0') }}
     runs-on: ubuntu-slim
     timeout-minutes: 5
     permissions:
