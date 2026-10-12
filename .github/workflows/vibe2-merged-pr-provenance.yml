@@ -19,42 +19,41 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Checkout trusted merged main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 1
-          fetch-tags: false
-          filter: blob:none
-          sparse-checkout: |
-            .github/workflows/vibe2-merged-pr-provenance.yml
-            assets/vibe-experience-memory.js
-            qa/vibe2-merged-pr-provenance.test.mjs
-            tools/vibe2-capability-distillation.mjs
+      - name: Fetch trusted source and exact control ledgers without full blobs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git init -q source
+          git -C source remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git -C source sparse-checkout set --no-cone \
+            .github/workflows/vibe2-merged-pr-provenance.yml \
+            assets/vibe-experience-memory.js \
+            qa/vibe2-merged-pr-provenance.test.mjs \
+            tools/vibe2-capability-distillation.mjs \
             tools/vibe2-merged-pr-provenance.mjs
-          sparse-checkout-cone-mode: false
-          path: source
+          git -C source fetch --no-tags --depth=1 --filter=blob:none origin \
+            +refs/heads/main:refs/remotes/origin/main
+          git -C source checkout --detach origin/main
 
-      - name: Checkout Vibe2 control branch
-        uses: actions/checkout@v4
-        with:
-          ref: vibe2-unreal-core
-          fetch-depth: 1
-          fetch-tags: false
-          filter: blob:none
-          sparse-checkout: |
-            .vibe2/merged-pr-provenance-ledger.json
+          git init -q control
+          git -C control remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          git -C control sparse-checkout set --no-cone \
+            .vibe2/merged-pr-provenance-ledger.json \
             .vibe2/coding-trace-ledger.json
-          sparse-checkout-cone-mode: false
-          path: control
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
+          git -C control fetch --no-tags --depth=1 --filter=blob:none origin \
+            +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core
+          git -C control checkout --detach origin/vibe2-unreal-core
+          test -f source/tools/vibe2-merged-pr-provenance.mjs
+          test -f control/.vibe2/merged-pr-provenance-ledger.json
+          test -f control/.vibe2/coding-trace-ledger.json
+          test ! -e control/.vibe2/queue.json
       - name: Fetch event base and merged commit for exact provenance diff
         working-directory: source
         env:
+          GH_TOKEN: ${{ github.token }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         shell: bash
@@ -77,6 +76,8 @@ jobs:
       - name: Record and migrate merged PR provenance
         id: ingest
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           node source/tools/vibe2-merged-pr-provenance.mjs \
@@ -90,6 +91,8 @@ jobs:
       - name: Persist provenance retention files only
         shell: bash
         working-directory: control
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain -- .vibe2/merged-pr-provenance-ledger.json .vibe2/coding-trace-ledger.json)" ]; then
