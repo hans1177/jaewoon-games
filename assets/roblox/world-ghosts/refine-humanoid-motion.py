@@ -690,7 +690,8 @@ def animate(name, normalized_time):
         raise AssertionError('UNKNOWN_CLIP:' + name)
     if name in GAIT_NAME_TO_PACE:
         stabilize_planted_feet(t, GAIT_NAME_TO_PACE[name])
-    if name in LOOP_CLIPS and t <= 1e-9:
+    # [키프레임 재현성] QA 재평가가 굽힌 첫 프레임을 덮어쓰지 않도록 최초 1회만 캡처한다.
+    if name in LOOP_CLIPS and t <= 1e-9 and name not in LOOP_FIRST_AUTHORED_POSES:
         LOOP_FIRST_AUTHORED_POSES[name] = pose_snapshot()
 
 
