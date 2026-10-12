@@ -1032,7 +1032,10 @@ jobs:
           git config user.email 'design-score-sync@users.noreply.github.com'
           pushed=0
           for attempt in 1 2 3 4; do
-            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git fetch --no-tags --depth=1 --filter=blob:none origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
+            # 전체 design 브랜치 대신 동기화에 필요한 점수 증거와 상태만 checkout.
+            git sparse-checkout init --no-cone
+            git sparse-checkout set --no-cone '/game-seed-state.json' '/game-catalog.json' '/design/*/*/strict-design-review.json'
             git checkout -B design-score-sync "origin/$COMPANY_RUNTIME_BRANCH"
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
