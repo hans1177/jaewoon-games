@@ -3,9 +3,9 @@
   "gameId": "fantasy-survival",
   "date": "2026-10-12",
   "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "fingerprint": "0cc99d4d461f968409c797d268716d795efec2b0029b37388f14a2b63aa4844d",
+  "fingerprint": "8c43d1a69aae51ecb7e0800caf472f3bf01a74d24a5df149c089e0ee7b178b5b",
   "policyDigest": "18928150ea90665761586c5f946f910b7f469cca8389e51f542eab5f814385c5",
-  "engineDigest": "14da354f8c29328d2a24e844581bf5c53ae4289cf3ac809db9f9c50dc1cb8142",
+  "engineDigest": "eed137a97274d93fb1fe2168e0176f4b18df9d50705184c132323d2d1470a0ff",
   "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:fantasy-survival",
   "designTopicMode": null,
   "status": "IN_PROGRESS",
@@ -802,10 +802,10 @@
     },
     "designer_draft_slices::platform-profiles": {
       "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.",
-        "performanceBudget": "원본 Roblox Luau 서버·클라이언트의 복제·물리·렌더·메모리·화면 내 오브젝트 예산을 모바일 런타임 측정으로 확정한다.",
-        "sessionConstraints": "1분 첫 행동, 5분 첫 인과 피드백, 15분 교차 선택, 30분 이상 발견의 실제 지속성은 런타임에서 측정한다."
+        "targetPlatform": "UNITY",
+        "inputModel": "유니티 네이티브 앱 호환 기록: Input System 모바일 터치·화면 안전영역·카메라와 중단 복귀 입력을 명시한다. 유니티 웹 제작은 금지한다.",
+        "performanceBudget": "유니티 앱 모바일 메모리·GPU·발열·배터리·장면 전환 예산은 오너 보류 해제 후 네이티브 기기에서 검증한다. WebGL 빌드는 만들지 않는다.",
+        "sessionConstraints": "첫 행동·시스템 왕복·숙련 발견과 중단 복귀의 실제 소요 시간은 해당 플랫폼 네이티브 런타임에서 측정한다."
       },
       "platformProfiles": {
         "ROBLOX": {
@@ -823,21 +823,14 @@
         "UNITY": {
           "platform": "UNITY",
           "inputModel": "Unity Input System with touch-first controls, safe-area UI, gamepad/keyboard fallback and app lifecycle-safe input recovery.",
-          "sessionModel": "유니티 3차원 웹 세션에서 현재 목표와 지역·진행 상태를 유지하며 일시중단과 재진입을 검증한다.",
+          "sessionModel": "유니티 네이티브 앱은 현재 오너 보류다. 향후 승인된 앱 개발 시 기존 세션과 중단·복귀 의미를 유지한다.",
           "multiplayerRuntime": "Unity app HYBRID networking using validated transport/session ownership, reconnect and join/leave synchronization.",
           "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, loading, texture/compression, pooling and GC pressure.",
           "uiUx": "Responsive Unity UI with device safe areas, touch targets, orientation/readability rules and native-app pause/resume behavior.",
           "saveAndNetwork": "Versioned local save plus validated backend/cloud synchronization only when required by the approved multiplayer/persistence design.",
-          "platformContentAdaptation": "같은 유니티 원본 프로젝트의 3차원 장면·카메라·메시·조명·동작을 웹 브라우저에 맞게 적응한다.",
-          "internalReleaseTarget": "실제 유니티 웹 빌드를 독립 브라우저와 모바일에서 검증한 뒤 상위 단계로 전달한다.",
-          "validationEvidence": "정확한 유니티 웹 빌드로 3차원 장면·모바일 터치·저장 및 실제 플레이를 독립 검사한다.",
-          "unityWebSpatialPresentation": {
-            "dimension": "3D",
-            "worldDepth": "실제 메시와 삼각형·입체 건물·캐릭터가 월드 좌표의 전후 깊이에서 이동하고 상호작용한다.",
-            "cameraAndOcclusion": "3차원 카메라가 실제 원근·높낮이·앞뒤 가림을 표현하며 2차원 스프라이트를 공간 객체로 위장하지 않는다.",
-            "lightingAndMaterials": "3차원 기하에 표면 재질과 광원·그림자 반응을 적용하고 모바일 그래픽 한계를 실기기에서 확인한다.",
-            "mobileWebglEvidence": "같은 유니티 원본에서 생성한 웹 빌드를 실제 모바일 브라우저로 플레이하고 깊이·터치·화면 잘림을 캡처 검증한다."
-          }
+          "platformContentAdaptation": "로블록스 원본과 분리된 새로운 게임 규칙은 생성하지 않는다. 유니티 네이티브 앱 적응은 오너 보류 해제 후에만 진행한다.",
+          "internalReleaseTarget": "유니티 네이티브 앱 제작·내부 배포는 오너 보류다. 유니티 웹 빌드 대상은 제외한다.",
+          "validationEvidence": "현재 유니티 제작 PASS를 주장하지 않는다. 보류 해제 후 정확한 네이티브 앱 실행·저장·QA 증거를 별도로 검증한다."
         }
       }
     },
@@ -871,7 +864,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -888,7 +881,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -905,7 +898,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -922,7 +915,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -939,7 +932,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -956,7 +949,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -973,7 +966,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -990,7 +983,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -1007,7 +1000,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -1024,7 +1017,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           },
           {
@@ -1041,7 +1034,7 @@
             "decision": "AUTHOR",
             "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
             "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-            "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+            "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
             "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
           }
         ]
@@ -1236,8 +1229,8 @@
   "modelHealth": {},
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
-  "createdAt": "2026-10-12T02:47:09.966Z",
-  "updatedAt": "2026-10-12T02:47:10.129Z",
+  "createdAt": "2026-10-12T02:57:31.443Z",
+  "updatedAt": "2026-10-12T02:57:31.558Z",
   "assetLibraryContext": {
     "source": "company-asset-library.json",
     "status": "AVAILABLE",
