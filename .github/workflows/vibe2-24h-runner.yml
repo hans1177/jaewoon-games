@@ -549,6 +549,45 @@ jobs:
               echo 'VIBE2_VERIFIED_ADVISORY_CHECKPOINT=NO_NEW_VERIFIED_CANDIDATES'
             fi
 
+            # 검증된 학습 선체크포인트 직후 기존 큐의 원문·순서·이력을 분할 저장한다.
+            # 뒤쪽 부가 학습/마케팅 실패가 첫 무손실 저장을 막지 않게 한다.
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-migrate
+            # Keep the #7702 diagnostic on the persisted index; all task parts are
+            # independently bounded and hash-verified by the queue storage owner.
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='.vibe2/queue.json';
+          const bytes=fs.statSync(file).size;
+          const githubBlobMaxBytes=100*1024*1024;
+          console.log('VIBE2_QUEUE_SERIALIZED_BYTES='+bytes);
+          console.log('VIBE2_QUEUE_GITHUB_BLOB_MAX_BYTES='+githubBlobMaxBytes);
+          if(bytes>githubBlobMaxBytes){
+            console.error('VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED='+bytes);
+            console.error('VIBE2_QUEUE_COMPACTION_REQUIRES_LOSSLESS_DURABLE_HISTORY_MIGRATION');
+            console.error('VIBE2_QUEUE_TASKS_REMOVED=0');
+            process.exit(1);
+          }
+          NODE
+
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            git add -A -- .vibe2/queue
+            git add .vibe2/queue.json
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
+            if ! git diff --cached --quiet -- .vibe2/queue.json .vibe2/queue; then
+              git commit -m 'vibe2: checkpoint lossless asset queue storage [skip ci]'
+              if git push origin HEAD:vibe2-unreal-core; then
+                echo 'VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=PUSHED'
+                git fetch origin '+refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core' --depth=2 --no-tags --quiet
+              else
+                echo 'VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=STALE_CONTROL_REF_RETRY'
+                sleep 2
+                continue
+              fi
+            else
+              echo 'VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=UNCHANGED'
+            fi
+
             node --check /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs
             node /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs \
               --queue=/tmp/vibe2-company-runtime-queue.json \
@@ -762,24 +801,6 @@ jobs:
             console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=YES');
           } else {
             console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=NO');
-          }
-          NODE
-
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-migrate
-            # Keep the #7702 diagnostic on the persisted index; all task parts are
-            # independently bounded and hash-verified by the queue storage owner.
-            node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const file='.vibe2/queue.json';
-          const bytes=fs.statSync(file).size;
-          const githubBlobMaxBytes=100*1024*1024;
-          console.log('VIBE2_QUEUE_SERIALIZED_BYTES='+bytes);
-          console.log('VIBE2_QUEUE_GITHUB_BLOB_MAX_BYTES='+githubBlobMaxBytes);
-          if(bytes>githubBlobMaxBytes){
-            console.error('VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED='+bytes);
-            console.error('VIBE2_QUEUE_COMPACTION_REQUIRES_LOSSLESS_DURABLE_HISTORY_MIGRATION');
-            console.error('VIBE2_QUEUE_TASKS_REMOVED=0');
-            process.exit(1);
           }
           NODE
 
