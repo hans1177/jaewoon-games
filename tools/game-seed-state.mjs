@@ -56,7 +56,14 @@ export const CAUSAL_DNA_LIBRARY=Object.freeze([
   {"id":"EAST_ASIAN_BUDDHIST_CAUSALITY","source":"EAST_ASIAN_BUDDHIST_TRADITION","principle":"행동과 의도의 결과를 돌이켜 보며 연관된 존재의 고통과 관계를 성찰한다.","gameGrammar":"즉각적인 이득을 얻는 선택과 타인을 돕는 선택이 다른 다음 사건을 만든다."},
   {"id":"SOUTH_ASIAN_DHARMA_DUTY","source":"SOUTH_ASIAN_PHILOSOPHY_RELIGIOUS_TRADITION","principle":"상황과 역할에서 생겨나는 책무는 서로 충돌하는 가치 사이에 갈등을 만든다.","gameGrammar":"서로 다른 역할의 의무를 고르면 동료의 지원과 목표의 선행 조건이 달라진다."},
   {"id":"WESTERN_MONASTIC_COMMUNITY","source":"WESTERN_CHRISTIAN_MONASTIC_HISTORY","principle":"공동 규율과 돌봄의 실천은 개인의 자원과 공동체의 시간을 나누도록 요구한다.","gameGrammar":"공동체를 도울 때 자원의 즉시 사용은 줄지만 협력과 피난의 선택지가 달라진다."},
-  {"id":"WEST_ASIAN_COMMUNITY_STEWARDSHIP","source":"WEST_ASIAN_ISLAMIC_CIVILIZATION_HISTORY","principle":"공동체를 위한 신뢰와 나눔의 실천은 관계망과 물자 흐름에 영향을 준다.","gameGrammar":"자원을 혼자 쓰거나 공동으로 기여하는 선택이 지역의 거래·지원 조건을 변화시킨다."}
+  {"id":"WEST_ASIAN_COMMUNITY_STEWARDSHIP","source":"WEST_ASIAN_ISLAMIC_CIVILIZATION_HISTORY","principle":"공동체를 위한 신뢰와 나눔의 실천은 관계망과 물자 흐름에 영향을 준다.","gameGrammar":"자원을 혼자 쓰거나 공동으로 기여하는 선택이 지역의 거래·지원 조건을 변화시킨다."},
+  {"id":"EAST_ASIAN_HISTORICAL_ASTRONOMER","source":"EAST_ASIAN_HISTORICAL_SCIENCE","principle":"하늘의 주기와 계절을 관찰한 기록은 시간과 여행 계획을 새롭게 조직한다.","gameGrammar":"별과 계절의 관찰 결과를 이용해 다른 이동 시간과 위험 구간을 선택한다."},
+  {"id":"WESTERN_RENAISSANCE_INVENTOR","source":"WESTERN_RENAISSANCE_INVENTION_HISTORY","principle":"형태를 관찰하고 장치를 실험하면 익숙한 도구에서 예상 못한 기능을 찾아낼 수 있다.","gameGrammar":"다르게 연결한 장치가 이동·운반·공간 탐색의 새로운 선택을 만든다."},
+  {"id":"MEDIEVAL_SCHOLAR_OPTICS","source":"WEST_ASIAN_HISTORICAL_OPTICS","principle":"빛과 관찰의 관계를 실험하면 기존의 시각적 판단을 다시 검증할 수 있다.","gameGrammar":"빛의 반사와 관찰 위치를 바꿔 숨겨진 단서와 경로를 확인한다."},
+  {"id":"HISTORICAL_NAVIGATOR","source":"GLOBAL_HISTORICAL_EXPLORATION","principle":"새 지도는 미지의 땅보다도 기록과 실제 지형의 차이를 발견하도록 돕는다.","gameGrammar":"새 관측과 기록을 대조해 과거 통로의 의미와 다음 목적지를 바꾼다."},
+  {"id":"SCIENCE_THERMAL_COST","source":"SCIENCE_THERMODYNAMICS","principle":"열과 에너지의 분산은 어떤 변화를 되돌리기 어렵게 만든다.","gameGrammar":"강력한 장치 사용 뒤 남는 열과 자원 압박이 다음 제작·이동을 제약한다."},
+  {"id":"SCIENCE_CHEMICAL_REACTIONS","source":"SCIENCE_CHEMISTRY","principle":"재료의 조합과 환경 조건은 변화가 일어나는 순서와 결과를 바꿀 수 있다.","gameGrammar":"도구의 비위험한 가상 반응 조건을 비교해 다른 제작 방식과 길을 연다."},
+  {"id":"SCIENCE_GENETIC_ADAPTATION","source":"SCIENCE_BIOLOGY_EVOLUTION","principle":"환경의 압력과 변이는 생물 집단의 특성을 장기적으로 변화시킨다.","gameGrammar":"동일 대응을 반복할수록 상대 집단의 반응과 환경 선택지가 진화한다."}
 ]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
 export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([
