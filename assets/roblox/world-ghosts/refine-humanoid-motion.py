@@ -78,6 +78,7 @@ QA_THRESHOLDS = {
     'loopRotationMaxRad': 0.015,
     'loopLocationMax': 0.004,
     'transitionRotationMaxRad': 0.025,
+    'transitionLocationMax': 0.004,
     'speedBlendRotationMaxRad': 0.42,
     'rootRotationMaxRad': 1e-7,
     'rootLocationMax': 1e-7,
@@ -92,6 +93,8 @@ QA_THRESHOLDS = {
         'hero_strafe_left_hq': 0.075,
         'hero_strafe_right_hq': 0.075,
     },
+    'footSwingLiftMin': 0.015,
+    'footSwingPenetrationMax': 0.004,
     'secondaryRotationRangeMinRad': 0.010,
     'primaryJointRotationRangeMinRad': {
         'Hips': 0.040,
@@ -543,6 +546,10 @@ def crouch_pose(t):
 GAIT_STANCE_BY_PACE = {
     'walk': 0.30, 'jog': 0.27, 'run': 0.22, 'sprint': 0.18, 'backward': 0.28,
 }
+# Minimum world-space swing clearance over the same planted-foot anchor.
+GAIT_SWING_CLEARANCE_BY_PACE = {
+    'walk': 0.04, 'jog': 0.06, 'run': 0.08, 'sprint': 0.10, 'backward': 0.04,
+}
 GAIT_NAME_TO_PACE = {
     'hero_walk_hq': 'walk',
     'hero_jog_hq': 'jog',
@@ -550,6 +557,9 @@ GAIT_NAME_TO_PACE = {
     'hero_sprint_hq': 'sprint',
     'hero_backward_hq': 'backward',
 }
+# [루프 실제 제작] 시점 0에서 접지 보정까지 완료한 스킨드 포즈를 마지막 키프레임에 재사용한다.
+# 이는 QA 통과 표시가 아니라 실제 저장될 액션의 시작/끝 관절 키를 동일하게 보존한다.
+LOOP_FIRST_AUTHORED_POSES = {}
 GAIT_CONTACT_ANCHORS = {}
 for _pace in GAIT_STANCE_BY_PACE:
     for _foot, _phase in [('FootL', 0.0), ('FootR', 0.5)]:
@@ -573,9 +583,7 @@ def stabilize_planted_feet(t, pace):
         elif phase > 0.85:
             pin_weight = smoothstep((phase - 0.85) / 0.15)
         else:
-            continue
-        if pin_weight <= 1e-7:
-            continue
+            pin_weight = 0.0
 
         bone_name = 'Foot' + side
         bone = RIG.pose.bones[bone_name]
@@ -585,6 +593,12 @@ def stabilize_planted_feet(t, pace):
         desired = GAIT_CONTACT_ANCHORS[(pace, bone_name)]
         # Allow forward motion (Y), but preserve planted lateral (X) and height (Z).
         delta_world = Vector((desired.x - current.x, 0.0, desired.z - current.z)) * pin_weight
+        # Knee pitch alone can drive this rig's ankle below its planted height.
+        # Preserve the authored joint rotations and forward axis, but give the
+        # swing foot a smooth clearance arc instead of dragging through ground.
+        swing = clamp01((phase - stance) / (1.0 - stance))
+        lift = GAIT_SWING_CLEARANCE_BY_PACE[pace] * (4.0 * swing * (1.0 - swing)) ** 2
+        delta_world.z = max(delta_world.z, desired.z + lift - current.z)
         if delta_world.length <= 1e-8:
             continue
 
@@ -614,7 +628,12 @@ def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
     if name in LOOP_CLIPS and t >= 1.0 - 1e-9:
-        t = 0.0
+        # [실제 루프 키] 첫 키가 없으면 시작 포즈를 추정하지 않고 제작을 차단한다.
+        authored_first = LOOP_FIRST_AUTHORED_POSES.get(name)
+        assert authored_first is not None, 'LOOP_FIRST_AUTHORED_POSE_MISSING:' + name
+        assert len(authored_first) == len(RIG.pose.bones), 'LOOP_FIRST_AUTHORED_POSE_INCOMPLETE:' + name
+        apply_snapshot(authored_first)
+        return
     if name == 'hero_idle_hq':
         idle_pose(t)
     elif name == 'hero_walk_hq':
@@ -629,13 +648,13 @@ def animate(name, normalized_time):
         start_pose(t)
         if t >= 0.70:
             authored = pose_snapshot()
-            reset_pose(); gait_pose(0.0, 'walk'); handoff = pose_snapshot()
+            reset_pose(); gait_pose(0.0, 'walk'); stabilize_planted_feet(0.0, 'walk'); handoff = pose_snapshot()
             apply_snapshot(blend_snapshots(authored, handoff, (t - 0.70) / 0.30))
     elif name == 'hero_stop_hq':
         stop_pose(t)
         authored = pose_snapshot()
         if t <= 0.24:
-            reset_pose(); gait_pose(0.0, 'walk'); incoming = pose_snapshot()
+            reset_pose(); gait_pose(0.0, 'walk'); stabilize_planted_feet(0.0, 'walk'); incoming = pose_snapshot()
             apply_snapshot(blend_snapshots(incoming, authored, t / 0.24))
         elif t >= 0.76:
             reset_pose(); idle_pose(0.0); idle = pose_snapshot()
@@ -683,15 +702,26 @@ def animate(name, normalized_time):
         raise AssertionError('UNKNOWN_CLIP:' + name)
     if name in GAIT_NAME_TO_PACE:
         stabilize_planted_feet(t, GAIT_NAME_TO_PACE[name])
+    # [키프레임 재현성] QA 재평가가 굽힌 첫 프레임을 덮어쓰지 않도록 최초 1회만 캡처한다.
+    if name in LOOP_CLIPS and t <= 1e-9 and name not in LOOP_FIRST_AUTHORED_POSES:
+        LOOP_FIRST_AUTHORED_POSES[name] = pose_snapshot()
 
 
 for clip_name, duration in CLIPS.items():
-    action = bpy.data.actions.new(clip_name)
+    # Dependency-graph updates in the foot solver must not replay an active
+    # action over the pose being authored. Sample first, then write action keys.
     RIG.animation_data_create()
-    RIG.animation_data.action = action
+    RIG.animation_data.action = None
+    bpy.context.view_layer.update()
     frame_count = round(duration * FPS)
+    authored_frames = []
     for frame in range(frame_count + 1):
         animate(clip_name, frame / max(1, frame_count))
+        authored_frames.append(pose_snapshot())
+    action = bpy.data.actions.new(clip_name)
+    RIG.animation_data.action = action
+    for frame, snapshot in enumerate(authored_frames):
+        apply_snapshot(snapshot)
         for pose_bone in RIG.pose.bones:
             if pose_bone.name == 'Root':
                 continue
@@ -703,9 +733,25 @@ for clip_name, duration in CLIPS.items():
         for point in curve_data.keyframe_points:
             point.interpolation = 'BEZIER'
 
+# Procedural QA uses the same isolated authoring state as the bake, never the
+# last baked clip. Flush action detachment before the first measured sample.
+RIG.animation_data.action = None
+bpy.context.view_layer.update()
+
 # 실제 관절 샘플 기반 QA. 이름만 있는 모션은 통과시키지 않는다.
-def sampled_snapshot(clip_name, t):
+def procedural_snapshot(clip_name, t):
+    RIG.animation_data.action = None
+    bpy.context.view_layer.update()
     animate(clip_name, t)
+    return pose_snapshot()
+
+
+def sampled_snapshot(clip_name, t):
+    # Measure the saved action and its interpolation on the real rig.
+    RIG.animation_data.action = bpy.data.actions[clip_name]
+    frame = clamp01(t) * round(CLIPS[clip_name] * FPS)
+    SCENE.frame_set(math.floor(frame), subframe=frame % 1.0)
+    bpy.context.view_layer.update()
     return pose_snapshot()
 
 
@@ -725,8 +771,7 @@ def rotation_activity(clip_name, bone_name, samples=33):
 
 
 def bone_world_position(clip_name, t, bone_name):
-    animate(clip_name,t)
-    bpy.context.view_layer.update()
+    sampled_snapshot(clip_name,t)
     bone=RIG.pose.bones[bone_name]
     point=RIG.matrix_world @ bone.matrix.translation
     return (float(point.x),float(point.y),float(point.z))
@@ -755,9 +800,37 @@ def finite_snapshot(snapshot):
     )
 
 
+# 실제 액션 FCurve 끝점도 독립 검증한다. 단순 함수의 루프 표식만으로는 QA PASS가 아니다.
 loop_metrics={}
+baked_loop_metrics={}
 for clip_name in LOOP_CLIPS:
-    loop_metrics[clip_name]=snapshot_distance(sampled_snapshot(clip_name,0.0),sampled_snapshot(clip_name,1.0))
+    procedural = snapshot_distance(procedural_snapshot(clip_name,0.0),procedural_snapshot(clip_name,1.0))
+    action = bpy.data.actions[clip_name]
+    end_frame = round(CLIPS[clip_name] * FPS)
+    tracked_paths = tuple(f'pose.bones["{bone}"]' for bone in PRIMARY_QA_BONES)
+    rotation_delta = 0.0
+    location_delta = 0.0
+    tracked_channels = 0
+    for fcurve in action.fcurves:
+        path = fcurve.data_path
+        if not path.startswith(tracked_paths):
+            continue
+        delta = abs(float(fcurve.evaluate(0)) - float(fcurve.evaluate(end_frame)))
+        if path.endswith('.rotation_euler'):
+            rotation_delta = max(rotation_delta, delta)
+            tracked_channels += 1
+        elif path.endswith('.location'):
+            location_delta = max(location_delta, delta)
+            tracked_channels += 1
+    baked_loop_metrics[clip_name] = {
+        'rotationMaxRad': rotation_delta,
+        'locationMax': location_delta,
+        'verifiedChannelCount': tracked_channels,
+    }
+    loop_metrics[clip_name] = {
+        'rotationMaxRad': max(procedural['rotationMaxRad'], rotation_delta),
+        'locationMax': max(procedural['locationMax'], location_delta),
+    }
 
 transition_metrics={
     'startToWalk':snapshot_distance(sampled_snapshot('hero_start_hq',1.0),sampled_snapshot('hero_walk_hq',0.0)),
@@ -797,6 +870,19 @@ for clip_name,(left_window,right_window) in contact_windows.items():
         'left':contact_drift(clip_name,'FootL',*left_window)/height,
         'right':contact_drift(clip_name,'FootR',*right_window)/height,
     }
+foot_swing_metrics={}
+for clip_name,pace in GAIT_NAME_TO_PACE.items():
+    stance=GAIT_STANCE_BY_PACE[pace]
+    feet={}
+    for side,phase_offset in [('L',0.0),('R',0.5)]:
+        bone_name='Foot'+side
+        planted=bone_world_position(clip_name,phase_offset,bone_name)[2]
+        heights=[
+            bone_world_position(clip_name,(phase_offset+stance+(1.0-stance)*i/32)%1.0,bone_name)[2]-planted
+            for i in range(33)
+        ]
+        feet[side]={'liftMax':max(heights),'heightMin':min(heights)}
+    foot_swing_metrics[clip_name]=feet
 primary_activity={
     clip_name:{bone:rotation_activity(clip_name,bone) for bone in QA_THRESHOLDS['primaryJointRotationRangeMinRad']}
     for clip_name in LOCOMOTION_QA_CLIPS
@@ -820,10 +906,12 @@ for clip_name in CLIPS:
 
 qa_failures=[]
 for clip_name,row in loop_metrics.items():
+    if baked_loop_metrics[clip_name]['verifiedChannelCount'] == 0:
+        qa_failures.append('LOOP_AUTHORED_CHANNELS_MISSING:'+clip_name)
     if row['rotationMaxRad']>QA_THRESHOLDS['loopRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['loopLocationMax']:
         qa_failures.append('LOOP_CONTINUITY:'+clip_name)
 for name,row in transition_metrics.items():
-    if row['rotationMaxRad']>QA_THRESHOLDS['transitionRotationMaxRad']:
+    if row['rotationMaxRad']>QA_THRESHOLDS['transitionRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['transitionLocationMax']:
         qa_failures.append('TRANSITION_POP:'+name)
 for name,value in speed_blend_metrics.items():
     if value>QA_THRESHOLDS['speedBlendRotationMaxRad']:
@@ -840,6 +928,12 @@ for clip_name,feet in foot_contact_metrics.items():
     for side,value in feet.items():
         if value>maximum:
             qa_failures.append(f'FOOT_CONTACT_DRIFT:{clip_name}:{side}')
+for clip_name,feet in foot_swing_metrics.items():
+    for side,row in feet.items():
+        if row['liftMax']<QA_THRESHOLDS['footSwingLiftMin']:
+            qa_failures.append(f'FOOT_SWING_LIFT:{clip_name}:{side}')
+        if row['heightMin'] < -QA_THRESHOLDS['footSwingPenetrationMax']:
+            qa_failures.append(f'FOOT_SWING_PENETRATION:{clip_name}:{side}')
 for clip_name,rows in primary_activity.items():
     for bone,minimum in QA_THRESHOLDS['primaryJointRotationRangeMinRad'].items():
         if rows[bone]<minimum:
@@ -848,12 +942,15 @@ for clip_name,value in secondary_activity.items():
     if value<QA_THRESHOLDS['secondaryRotationRangeMinRad']:
         qa_failures.append('SECONDARY_MOTION_ACTIVITY:'+clip_name)
 qa_metrics={
+    'measurementSource':'BAKED_ACTION_PLAYBACK',
     'thresholds':QA_THRESHOLDS,
     'loop':loop_metrics,
+    'bakedLoopEndpoints':baked_loop_metrics,
     'transitions':transition_metrics,
     'speedBlendRotationMaxRad':speed_blend_metrics,
     'leftRightPhaseErrorRad':phase_metrics,
     'footContactLateralVerticalDriftNormalized':foot_contact_metrics,
+    'footSwingHeight':foot_swing_metrics,
     'primaryJointRotationRangeRad':primary_activity,
     'secondaryRotationRangeMaxRadByClip':secondary_activity,
     'root':root_metrics,
@@ -863,6 +960,17 @@ qa_metrics={
     'failures':qa_failures,
     'staticMotionQaPass':not qa_failures,
 }
+if qa_failures:
+    # [실제 블렌더 고장 진단] 루프 원본 키와 평가 시점의 차이를 로그에서 분리한다.
+    # 검사 임계값/차단과 자산 상태는 변경하지 않는다.
+    print('MOTION_STATIC_QA_DIAGNOSTIC='+json.dumps({
+        'loopMetrics':loop_metrics,
+        'bakedLoopEndpoints':baked_loop_metrics,
+        'walkFirstVsAuthored':snapshot_distance(
+            sampled_snapshot('hero_walk_hq',0.0),LOOP_FIRST_AUTHORED_POSES['hero_walk_hq']),
+        'walkLastVsAuthored':snapshot_distance(
+            sampled_snapshot('hero_walk_hq',1.0),LOOP_FIRST_AUTHORED_POSES['hero_walk_hq']),
+    },sort_keys=True),flush=True)
 assert not qa_failures, 'MOTION_STATIC_QA_FAILED:'+'|'.join(qa_failures)
 
 # 새 파생 GLB에는 공용 기초 이동·회전·점프·웅크리기 17모션만 포함한다.
@@ -1011,7 +1119,7 @@ if ARGS.render_dir:
     target=RIG.location + Vector((0,0,1.8))
     camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler()
     cam_data.type='ORTHO';cam_data.ortho_scale=4.2
-    SCENE.render.engine='BLENDER_EEVEE'
+    SCENE.render.engine='BLENDER_EEVEE_NEXT' if bpy.app.version >= (4, 2, 0) else 'BLENDER_EEVEE'
     SCENE.render.resolution_x=512;SCENE.render.resolution_y=512;SCENE.render.resolution_percentage=100
     SCENE.render.image_settings.file_format='PNG'
     preview_times={
@@ -1020,12 +1128,14 @@ if ARGS.render_dir:
         'hero_backward_hq':0.12,'hero_turn_45_hq':0.58,'hero_turn_90_hq':0.58,'hero_turn_180_hq':0.58,
         'hero_jump_start_hq':0.58,'hero_jump_air_hq':0.48,'hero_land_hq':0.22,'hero_crouch_hq':0.46,
     }
+    RIG.animation_data.action = None
+    bpy.context.view_layer.update()
     reset_pose();bpy.context.view_layer.update()
     baseline=ARGS.render_dir/'source-bind-reference.png'
     SCENE.render.filepath=str(baseline);bpy.ops.render.render(write_still=True)
     preview_files=[]
     for clip_name,t in preview_times.items():
-        animate(clip_name,t);bpy.context.view_layer.update()
+        sampled_snapshot(clip_name,t)
         output=ARGS.render_dir/(clip_name+'.png')
         SCENE.render.filepath=str(output);bpy.ops.render.render(write_still=True)
         preview_files.append(str(output.name))

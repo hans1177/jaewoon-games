@@ -122,7 +122,7 @@ jobs:
       - name: Build high-quality humanoid foundation motion derivative
         if: steps.asset_scope.outputs.motion == 'true'
         run: |
-          blender --background --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
+          blender --background --python-exit-code 1 --python assets/roblox/world-ghosts/refine-humanoid-motion.py -- \
             --source assets/roblox/world-ghosts/native/mesh/bride.glb \
             --output assets/roblox/world-ghosts/native/mesh/bride-motion-v3 \
             --render-dir assets/roblox/world-ghosts/native/mesh/bride-motion-v3/previews

@@ -38,6 +38,8 @@ test('pull requests use shallow impact-scoped homepage QA instead of the full pu
   assert.match(fast,/fetch-depth: 1/);
   assert.match(fast,/filter: blob:none/);
   assert.match(fast,/sparse-checkout-cone-mode: false/);
+  // Pages API 경로 게이트를 검증하는 기존 테스트에 필요한 실제 파일을 함께 체크아웃한다.
+  assert.match(fast,/^\s+\/_routes\.json$/m);
   assert.match(fast,/Run impact-scoped homepage QA/);
   assert.match(fast,/HOMEPAGE_PR_FAST_QA=PASS/);
   assert.match(manage,/if: github\.event_name != 'pull_request'/);
