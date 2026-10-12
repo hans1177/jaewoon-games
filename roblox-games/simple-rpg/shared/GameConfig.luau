@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/simple-rpg/shared/GameConfig.luau
 local Config = {
   PolicySource = "company-learning/platform-release-roadmap.json",
   Platform = "ROBLOX",
@@ -5,8 +6,8 @@ local Config = {
   SaveEnabled = true,
   GameId = "simple-rpg",
   GameName = "작은 모험 RPG",
-  Genre = "Strategy",
-  Subgenre = "Board & Card Games",
+  Genre = "RPG",
+  Subgenre = "Action RPG",
   PlayMode = "COOP",
   MultiplayerRequired = true,
   CoopRequired = true,

@@ -105,7 +105,8 @@ export function detectRobloxStudioAssetSystems({sourceText='',clientSource='',se
     AUDIO:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.AUDIO),
     VFX:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.VFX),
     UI:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.UI),
-    MOTION:has(ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.MOTION),
+    // 재질의 BONE 이름은 모션 객체가 아니다. 실제 생성·조회·호출·이벤트를 관측한다.
+    MOTION:has(/(?:Instance\.new\s*\(\s*["'](?:Animator|Animation|Motor6D|Bone)["']\s*\)|:\s*(?:IsA|FindFirstChildOfClass|FindFirstChildWhichIsA)\s*\(\s*["'](?:Animator|Animation|Motor6D|Bone)["']\s*\)|:\s*(?:LoadAnimation|GetPlayingAnimationTracks|AdjustSpeed)\s*\(|\b(?:TweenService|[A-Za-z_]\w*TweenService)\s*:\s*Create\s*\(|\bgame\s*:\s*GetService\s*\(\s*["']TweenService["']\s*\)|\.(?:RenderStepped|Heartbeat)\s*:\s*(?:Connect|Wait)\s*\()/i),
     PROP:near(/\b(?:prop|chest|crate|barrel|lamp|workbench|furniture|sign|pickup|resource|tree|rock)\b/i,ROBLOX_STUDIO_ASSET_NATIVE_PATTERNS.PROP),
   };
   return Object.freeze(Object.fromEntries(ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES.map(family=>[family,systems[family]===true])));

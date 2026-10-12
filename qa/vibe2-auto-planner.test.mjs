@@ -5128,7 +5128,8 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   const fallback={mode:'GAME_SOURCE_BINDINGS_ONLY',preserveInternalAssetLibrary:true,preserveAssetFiles:true,allowAssetLibraryWrites:false,requireActualNativeConsumption:true};
   const evidence={
     gameId,sourceRevision:source,artifactIdentity:null,authority:'roblox-package-asset-binding-failure',
-    assetThreshold:{pass:false,blockers:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],runtimeVerified:false,productionVerified:false},
+    assetThreshold:{pass:false,blockers:['ROBLOX_PACKAGE_ASSET_FAMILY_NOT_ACTUALLY_BOUND:MATERIAL'],runtimeVerified:false,productionVerified:false,
+      familyResults:[{family:'MATERIAL',responsibleFiles:['server/Game.server.luau','client/Game.client.luau','../other-game/server/Game.server.luau','shared/../../assets/library.luau','assets/library.luau']}]},
     sourceTreeSha,assetRepairContext,
     assetRepairPolicy:fallback,repairSurfaces:['INTERNAL_ASSET_SOURCE_BINDING'],
     qualityFailureKinds:['ROBLOX_INTERNAL_ASSET_SOURCE_BINDING_TRACE_REQUIRED'],
@@ -5178,6 +5179,9 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.equal(task.buildUpNextAction,'CAUSAL_REPAIR');
   assert.ok(task.goal.includes(hint));
   assert.ok(task.goal.includes(fallback.mode));
+  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/server/Game.server.luau`));
+  assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
+  assert.ok(task.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
 
   fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
   execFileSync('git',['add',`roblox-games/${gameId}/server/Game.server.luau`],{cwd:root});

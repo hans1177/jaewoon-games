@@ -2660,6 +2660,18 @@ function attachGameSpecificBuildUpDirective(taskInput,project,repoRoot,queue,des
   const roblox=platform==='ROBLOX';
   const qualityFailure=roblox&&project?.queueRobloxQualityBuildUpRequired===true;
   const packageAssetFailure=qualityFailure&&project.queueRobloxQualityBuildUpEvidence?.authority==='roblox-package-asset-binding-failure';
+  // 패키지 실패의 실제 책임 소스를 기존 바이브 작업 범위에 연결한다.
+  // 내부 자산 원본이나 다른 게임 파일은 수리 범위로 확장하지 않는다.
+  if(packageAssetFailure){
+    const threshold=project.queueRobloxQualityBuildUpEvidence.assetThreshold||{};
+    const failedFamilies=new Set((threshold.blockers||[]).map(value=>clean(value).split(':').at(-1)));
+    const repairFiles=(threshold.familyResults||[]).filter(row=>failedFamilies.has(row.family))
+      .flatMap(row=>row.responsibleFiles||[]).map(posix)
+      .filter(file=>/^(?:client|server|shared)\/(?!.*(?:^|\/)\.\.(?:\/|$)).+\.(?:lua|luau)$/.test(file))
+      .map(file=>`roblox-games/${project.gameId}/${file}`)
+      .filter(file=>fs.existsSync(sourceFile(repoRoot,file)));
+    taskInput={...taskInput,responsibleFiles:[...new Set([...(taskInput.responsibleFiles||[]),...repairFiles])]};
+  }
   const sourceOnlyQualityFailure=qualityFailure&&['roblox-package-asset-binding-failure','roblox-f0-gameplay-product-readiness-failure'].includes(project.queueRobloxQualityBuildUpEvidence?.authority);
   const runtimeEvidence={
     platform,
