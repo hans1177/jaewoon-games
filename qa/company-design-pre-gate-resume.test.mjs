@@ -1358,3 +1358,42 @@ test('design resolver reads only indexed strict evidence, never the entire runti
   assert.deepEqual(new Set(reads),new Set([root+'cycle-status.json',root+'strict-design-review.json',root+'design-revised.json']));
   assert.equal(reads.length,3,'each needed blob is read once, checkpoint and artbook are not fetched');
 });
+
+test('design persistence uses index-only runtime worktrees without deleting unrelated files',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const checkpoint=workflow.slice(workflow.indexOf('persist_design_checkpoint() {'),workflow.indexOf('      - name: Resolve deterministic-or-model design candidate'));
+  assert.match(checkpoint,/git worktree add --detach --no-checkout "\$worktree"/);
+  assert.match(checkpoint,/git -C "\$worktree" read-tree HEAD/);
+  assert.match(checkpoint,/if \[ -f \/tmp\/design-progress\.json \]; then git -C "\$worktree" add -- "\$progress_path"; fi/);
+  const final=workflow.slice(workflow.indexOf('      - name: Persist validated design evidence to company runtime branch'),workflow.indexOf('      - name: Dispatch per-game promotion reconciliation'));
+  assert.match(final,/git worktree add --detach --no-checkout "\$runtime_worktree"/);
+  assert.match(final,/git -C "\$runtime_worktree" read-tree HEAD/);
+  assert.match(final,/git -C "\$runtime_worktree" show HEAD:game-seed-state\.json/);
+  const minimum=workflow.slice(workflow.indexOf('      - name: Persist minimum dual-platform design before strict review'),workflow.indexOf('      - name: Apply strict 30-minute design review'));
+  assert.match(minimum,/git worktree add --detach --no-checkout "\$worktree"/);
+  assert.match(minimum,/git -C "\$worktree" read-tree HEAD/);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-sparse-index-'));
+  const git=(cwd,...args)=>spawnSync('git',args,{cwd,encoding:'utf8'});
+  try{
+    assert.equal(git(dir,'init','-q').status,0);
+    assert.equal(git(dir,'config','user.name','qa').status,0);
+    assert.equal(git(dir,'config','user.email','qa@example.com').status,0);
+    fs.mkdirSync(path.join(dir,'design','one'),{recursive:true});
+    fs.writeFileSync(path.join(dir,'design','one','status.json'),'original');
+    fs.writeFileSync(path.join(dir,'game-seed-state.json'),'saved');
+    fs.writeFileSync(path.join(dir,'unrelated-file.json'),'keep');
+    assert.equal(git(dir,'add','.').status,0);
+    assert.equal(git(dir,'commit','-qm','base').status,0);
+    const worktree=path.join(dir,'checkout');
+    assert.equal(git(dir,'worktree','add','--detach','--no-checkout',worktree,'HEAD').status,0);
+    assert.equal(git(worktree,'read-tree','HEAD').status,0);
+    fs.mkdirSync(path.join(worktree,'design','one'),{recursive:true});
+    fs.writeFileSync(path.join(worktree,'design','one','status.json'),'changed');
+    assert.equal(git(worktree,'add','--','design/one/status.json').status,0);
+    assert.equal(git(worktree,'commit','-qm','only game design').status,0);
+    const other=git(worktree,'show','HEAD:unrelated-file.json');
+    assert.equal(other.status,0,other.stderr);
+    assert.equal(other.stdout,'keep');
+    assert.equal(git(worktree,'show','HEAD:game-seed-state.json').stdout,'saved');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
