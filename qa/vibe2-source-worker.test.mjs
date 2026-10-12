@@ -9,6 +9,7 @@ import path from 'node:path';
 import http from 'node:http';
 import {buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
 import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {playerFacingInspectionPromptLines} from '../tools/company-build-up-directive.mjs';
 
 test('asset synchronization detects same-size byte changes even when file metadata is unchanged',()=>{
   const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-sync-metadata-'));
@@ -8583,7 +8584,7 @@ test('package asset repair evidence survives focused and oversized worker prompt
     'const COMPACT_DIRECTIVE_LINE_BYTES=1800;\n'+workerSource.slice(boundedStart,boundedEnd)+'\n'
       +workerSource.slice(guidanceStart,guidanceEnd)
       +'\n({guidance:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',
-    {Buffer,console,robloxProductionPromptLines,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
+    {Buffer,console,robloxProductionPromptLines,playerFacingInspectionPromptLines,clean:value=>String(value??'').trim(),posix:value=>String(value??'').replaceAll('\\','/'),
       unique:values=>[...new Set((values||[]).map(value=>String(value??'').trim()).filter(Boolean))]}
   );
   const source='a'.repeat(40),relative='client/Game.client.luau';

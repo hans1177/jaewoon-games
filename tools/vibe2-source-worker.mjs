@@ -9,6 +9,7 @@ import { ownerDevelopmentHeld } from './vibe2-queue-control.mjs';
 import { buildInternalMotionCoaching, singleMotionResponseSchema } from './vibe2-motion-coaching.mjs';
 import { buildRobloxSourceCoaching } from './vibe3-roblox-distillation.mjs';
 import { robloxProductionPromptLines, productionBlueprintContractsForFiles, validateSpatialBlueprint, validateInterfaceBlueprint } from './company-roblox-production-plan.mjs';
+import { playerFacingInspectionPromptLines } from './company-build-up-directive.mjs';
 import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
@@ -2678,6 +2679,7 @@ function gameSpecificBuildUpDirectiveGuidance(order = {}, responsibleFiles = [])
     `priorityDomains=${priorityDomains.join(' | ')}`,
     `progressionWorld=${(d.progressionContentWorldDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     `visual=${visual.join(' | ')}`,
+    ...playerFacingInspectionPromptLines(d.playerFacingInspectionContract,{focus:d.primaryFocus,generation:d.generation}),
     `uxInput=${(d.uxInputDirectives||[]).map(clean).filter(Boolean).join(' | ')}`,
     platformKey&&d?.platformAdaptationDirectives?.[platformKey]?`platform=${clean(d.platformAdaptationDirectives[platformKey])}`:'',
     `preserve=${(d.preserveConstraints||[]).map(clean).filter(Boolean).join(' | ')}`,
@@ -2699,11 +2701,14 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(finish<0)return'';
   const block=raw.slice(start,finish+end.length);
   if(!compact&&!responsiblePaths.length)return block;
+  const inspectionPrefixes=['inspectionContract=','inspectionIndex=','inspectionEvidence=','inspectionRule=','inspectionScene=','inspectionFailure=','inspectionOwner=','inspectionRetest='];
   const keepPrefixes=focusedRobloxVisual?[
+    ...inspectionPrefixes,
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'visual=','platform=','preserve=','acceptance=','nextVibeAction=',...SOURCE_REPAIR_DIRECTIVE_PREFIXES
   ]:[
+    ...inspectionPrefixes,
     'robloxProduction','gameProduction',
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'nextVibeAction=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentExpansionVersion=','contentTheme=','contentBreadth=','existingCompletenessReview=','contentBundle=',
@@ -2751,7 +2756,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
         })];
       }catch{return[];}
     }
-    if(SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return[line];
+    if(inspectionPrefixes.some(prefix=>line.startsWith(prefix))||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return[line];
     if(Buffer.byteLength(line,'utf8')<=COMPACT_DIRECTIVE_LINE_BYTES)return[line];
     const at=line.indexOf('=');
     if(at<0)return[boundedPromptText(line,COMPACT_DIRECTIVE_LINE_BYTES)];
@@ -2762,6 +2767,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   if(!compact||Buffer.byteLength(compacted,'utf8')<=6000)return compacted;
 
   const essentialPrefixes=[
+    ...inspectionPrefixes,
     ...['robloxProduction','gameProduction'].flatMap(prefix=>['CONCEPT','IDEA','CONNECTION','FILES','QUALITY','SCOPE','OWNER','DEPTH','SPATIAL','SPATIAL_SCHEMA','SPATIAL_RULE','INTERFACE','INTERFACE_RULE'].map(field=>prefix+field+'=')),
     'directiveId=','gameIdentity=','gameplayContract=','graphicsContract=','designContext=','designCodePlatform=','designCodeBinding=','unityWebSyncRule=','unityWebSourceReference=','designCodeRole=','designCodeGap=','designCodeCreativeC=','designCodeVerification=','unityWebAlgorithm=','unityWebDependencies=','unityWebPackage=','unityWebDevelopmentSteps=','unityWebGrowthProof=','primaryGoal=','implementationUnit=','sourceAnchors=','expectedPlayerEffect=',
     'contentTheme=','contentVolume=','volumeImplementation=','volumeSpec=','volumeRequiredBehavior=','contentCompletionAcceptance=',
@@ -2776,7 +2782,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
     const prefix=essentialPrefixes.find(value=>line.startsWith(value));
     if(!prefix)continue;
     // 모든 작성된 역할은 고유하다. 하나만 남기면 A/B/C/@의 인과·구현 연결이 사라진다.
-    if(prefix==='designCodeRole='||prefix==='volumeSpec='){
+    if(inspectionPrefixes.includes(prefix)||prefix==='designCodeRole='||prefix==='volumeSpec='){
       // KEEP EVERY AUTHORED MAIN/A/B/C/@ ROLE and optional legacy c in the concise contract.
     }else if(prefix==='unityWebSourceReference='){
       if(unityRefsWritten>=2)continue;
@@ -2793,7 +2799,7 @@ function buildUpDirectiveBlockFromPrompt(prompt='',{compact=false,focusedRobloxV
   const payloadCount=Math.max(1,essential.filter(line=>line!==begin&&line!==end).length);
   const lineBudget=Math.max(256,Math.min(640,Math.floor(5400/payloadCount)));
   const bounded=essential.map(line=>{
-    if(line===begin||line===end||line.startsWith('unityWebSourceReference=')||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
+    if(line===begin||line===end||inspectionPrefixes.some(prefix=>line.startsWith(prefix))||line.startsWith('unityWebSourceReference=')||SOURCE_REPAIR_DIRECTIVE_PREFIXES.some(prefix=>line.startsWith(prefix))||/^(?:roblox|game)Production(?:OWNER|DEPTH|SPATIAL|SPATIAL_SCHEMA|SPATIAL_RULE|INTERFACE|INTERFACE_RULE)=/.test(line))return line;
     const at=line.indexOf('=');
     if(at<0)return boundedPromptText(line,lineBudget);
     const prefix=line.slice(0,at+1);

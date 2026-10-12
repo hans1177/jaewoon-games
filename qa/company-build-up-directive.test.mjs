@@ -14,8 +14,47 @@ import {
   buildDesignToPlatformCodingTrace,
   classifyDevelopmentImpact,
   directivePrompt,
+  playerFacingInspectionPromptLines,
   inspectGameSources
 } from '../tools/company-build-up-directive.mjs';
+
+test('every game worker receives concrete player-facing inspections without fabricated quality credit',()=>{
+  for(const gameId of ['daechung-rpg','puzzle','bug-defense']){
+    const d=buildGameSpecificBuildUpDirective({gameId,platform:'ROBLOX',designRecord:design(),responsibleFiles:[`roblox-games/${gameId}/client/Game.client.luau`]});
+    const contract=d.playerFacingInspectionContract;
+    assert.equal(contract.gameId,gameId);
+    assert.equal(contract.requiredEveryBuildUpCycle,true);
+    assert.equal(contract.executionBoundary,'EXISTING_BUILD_UP_AND_F0_F9_ONLY');
+    assert.equal(contract.evidenceState,'UNVERIFIED');
+    assert.equal(contract.technicalPassIsNotVisualQualityPass,true);
+    assert.equal(contract.thumbnailTransportIsNotRenderedQuality,true);
+    assert.equal(contract.checklistIsNotExecutedEvidence,true);
+    assert.equal(new Set(contract.cases.map(row=>row.id)).size,15);
+    assert.ok(contract.cases.every(row=>row.scene&&row.failureCriteria&&row.responsibility&&row.retest&&row.evidenceState==='UNVERIFIED'));
+    for(const id of ['UI_LAYOUT','UI_INTERACTION','CHARACTER_RENDER','MONSTER_READABILITY','MOTION_TRANSITIONS','ACTION_IMPACT','CAMERA_COMPOSITION','WORLD_BACKGROUND','GRAPHICS_INTEGRITY','NAVIGATION_BLOCKERS','PROGRESSION_BLOCKERS','RECOVERY_SAVE','MULTIPLAYER_CONSISTENCY','MOBILE_PERFORMANCE','LOBBY_SPACES']){
+      assert.ok(contract.cases.some(row=>row.id===id));
+    }
+    const prompt=directivePrompt(d);
+    assert.ok(prompt.includes('PLAYER_FACING_INSPECTION_CONTRACT:'));
+    for(const row of contract.cases)assert.ok(prompt.includes(row.id));
+    for(const line of playerFacingInspectionPromptLines(contract,{focus:d.primaryFocus,generation:d.generation}))assert.ok(prompt.includes(line));
+    assert.ok(d.acceptanceEvidence.includes('MISSING_EXACT_RENDER_EVIDENCE_REMAINS_UNVERIFIED'));
+  }
+});
+
+test('technical or thumbnail PASS cannot make generated inspection evidence verified',()=>{
+  const d=buildGameSpecificBuildUpDirective({gameId:'daechung-rpg',platform:'ROBLOX',designRecord:design(),runtimeEvidence:{runtimeObserved:true,runtimePassed:true,imageContentPassed:true,repeatCount:100}});
+  assert.equal(d.playerFacingInspectionContract.evidenceState,'UNVERIFIED');
+  assert.ok(d.playerFacingInspectionContract.cases.every(row=>row.evidenceState==='UNVERIFIED'));
+  assert.match(d.playerFacingInspectionContract.applicabilityRule,/NOT_APPLICABLE_REQUIRES_DESIGN_AND_SOURCE_REASON/);
+  const rules=d.playerFacingInspectionContract.evidenceRules.join('\n');
+  assert.match(rules,/반복 횟수.*합격을 증명하지 않는다/);
+  assert.match(rules,/증거 부재를 관찰된 그래픽 오류로 꾸미지 않는다/);
+  assert.match(rules,/연속 프레임/);
+  assert.match(rules,/영향.*검증 범위/);
+  assert.match(d.playerFacingInspectionContract.cases.find(row=>row.id==='LOBBY_SPACES').retest,/로비 없는 게임에 강제 추가 금지/);
+  assert.match(d.playerFacingInspectionContract.cases.find(row=>row.id==='ACTION_IMPACT').retest,/데미지·쿨다운·히트 의미 보존/);
+});
 
 
 test('web detailed original backfill preserves existing Roblox detailed platform design',()=>{
@@ -1121,7 +1160,7 @@ test('Unity Web graph and source packages survive focused Vibe worker compressio
   const {guide,compact}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1290,7 +1329,7 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
   const {guide,compact}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1298,6 +1337,7 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
   const owner='roblox-games/demo/server/Game.server.luau';
   const roles=['MAIN','A','B','c','@'];
   const row={directiveId:'demo',gameId:'demo',generation:1,
+    playerFacingInspectionContract:buildGameSpecificBuildUpDirective({gameId:'demo',platform:'ROBLOX',designRecord:design()}).playerFacingInspectionContract,
     gameIdentityAndNonNegotiables:{identity:'공통 원본'},
     thisLoopPrimaryGoal:'CODE_OWNER_REPAIR '.repeat(2400),
     designToPlatformCodingTrace:{
@@ -1321,6 +1361,9 @@ test('focused and oversized Vibe source prompt retains all five designer-to-code
     assert.match(variant,/designCodePlatform=ROBLOX/);
     assert.match(variant,/designCodeBinding=design:/);
     assert.match(variant,/designCodeVerification=/);
+    assert.match(variant,/inspectionContract=.*QUALITY_UNVERIFIED/);
+    for(const item of row.playerFacingInspectionContract.cases)assert.ok(variant.includes(item.id));
+    for(const line of playerFacingInspectionPromptLines(row.playerFacingInspectionContract,{generation:1}))assert.ok(variant.includes(line),'inspection replay must survive focused/oversized recovery');
   }
 });
 
@@ -1461,7 +1504,7 @@ test('focused game worker keeps one exact approved content item in compact sourc
   const {guide,compact}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance,compact:buildUpDirectiveBlockFromPrompt})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
@@ -1607,7 +1650,7 @@ test('preservation-only approved design keeps all volume entries but forbids new
   const {guide}=runInNewContext(worker.slice(start,finish)
     +'\n({guide:gameSpecificBuildUpDirectiveGuidance})',{
       clean:v=>String(v??'').trim(),posix:v=>String(v??'').replaceAll('\\','/'),
-      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],
+      unique:v=>[...new Set(v)],robloxProductionPromptLines:()=>[],playerFacingInspectionPromptLines,
       boundedPromptText:(v,max)=>String(v).slice(0,Math.max(256,Number(max)||768)),
       COMPACT_DIRECTIVE_LINE_BYTES:768,SOURCE_REPAIR_DIRECTIVE_PREFIXES:[],
       Buffer,console:{log(){}}
