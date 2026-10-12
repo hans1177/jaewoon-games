@@ -44,6 +44,20 @@ test('Blender motion actually corrects planted foot positions without weakening 
   assert.match(native,/'productionVerified': False/);
 });
 
+test('loop closure is baked into actual skinned action keys and checked without loosening thresholds',()=>{
+  assert.match(native,/LOOP_FIRST_AUTHORED_POSES = \{\}/);
+  assert.match(native,/if authored_first is not None:\s*apply_snapshot\(authored_first\)\s*return/);
+  assert.match(native,/LOOP_FIRST_AUTHORED_POSES\[name\] = pose_snapshot\(\)/);
+  assert.match(native,/baked_loop_metrics=\{\}/);
+  assert.match(native,/fcurve\.evaluate\(0\)/);
+  assert.match(native,/fcurve\.evaluate\(end_frame\)/);
+  assert.match(native,/LOOP_AUTHORED_CHANNELS_MISSING:/);
+  assert.match(native,/'bakedLoopEndpoints':baked_loop_metrics/);
+  assert.match(native,/'loopRotationMaxRad': 0\.015/);
+  assert.match(native,/'loopLocationMax': 0\.004/);
+  assert.match(native,/qa_failures\.append\('LOOP_CONTINUITY:'\+clip_name\)/);
+});
+
 test('missing combos and weapon styles remain real production demand, not invented clips',()=>{
   const missing=[
     'LIGHT_COMBO_2_3_4_CHAIN_FAMILY','HEAVY_COUNTER_FOLLOWUP_FAMILY',
