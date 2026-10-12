@@ -772,6 +772,57 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    },
+    {
+      "id": "external-ai-distilled:assistant-assistant_roblox_gameplay_sourcebind_reconciliation_20261012-894c614ecdee",
+      "sourceKind": "external-ai-distilled",
+      "provider": "OPENAI_ASSISTANT_TRACE",
+      "model": "GPT_ASSISTANT_EXACT_MODEL_UNRECORDED",
+      "engine": "roblox",
+      "gameId": "MULTI_GAME_ROBLOX",
+      "domains": [
+        "GAMEPLAY_PRODUCT_READINESS",
+        "SOURCE_BIND",
+        "F0",
+        "PACKAGE",
+        "QA"
+      ],
+      "patterns": [
+        "STRIP_ONLY_STRUCTURALLY_BOUND_MANAGED_CODE_BEFORE_SCORING_GAMEPLAY",
+        "TEST_REAL_GAMEPLAY_BEFORE_AND_AFTER_FOUNDATION_WITH_GENERIC_SKELETON_REJECTION",
+        "FENCE_LATE_SAME_SOURCE_F0_AND_PACKAGE_STATE_PERSISTENCE_BY_ACTIVE_SOURCE_REPAIR_STAGE",
+        "CONNECT_VERIFIED_REPAIR_TO_EXISTING_CANONICAL_VIBE_RETRIEVAL_AND_LEARNING_ONLY"
+      ],
+      "cautions": [
+        "TRUNCATE_EVERYTHING_AFTER_SENTINEL",
+        "CREDIT_FOUNDATION_SCAFFOLD_AS_GAMEPLAY",
+        "ALLOW_STALE_SAME_REVISION_RESULTS_TO_ERASE_NEW_SOURCE_BIND_FAILURE",
+        "PROMOTE_STATIC_QA_TO_NATIVE_RUNTIME_OR_TRAINED_MODEL_PASS"
+      ],
+      "verified": true,
+      "independentlyVerified": true,
+      "distilled": true,
+      "advisoryOnly": true,
+      "reusable": true,
+      "rawOutputStored": false,
+      "rawOutputSha256": "894c614ecdeeb87c418bcfa9ee1d4c6e0f80d8b89946411ae93e24f2b799607a",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "independent-qa",
+        "evidence": [
+          "actions-run:38185935927:Vibe-QA-success:3fc65fb8b6a096c10803d5e3eaceba57ba6c985c",
+          "qa:managed-foundation-midblock-and-generic-skeleton-regression:PASS:38185935927",
+          "qa:late-package-and-F0-source-repair-preservation-regression:PASS:38185935927",
+          "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
+        ]
+      },
+      "directDevelopmentUse": false,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   ],
   "policy": {
