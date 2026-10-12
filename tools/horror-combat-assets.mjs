@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import {introspectRobloxApiKey} from './company-roblox-dedicated-experience.mjs';
+import {evaluateCrossPlatform3dMasterGlb} from './vibe2-asset-production-plan.mjs';
 
 const source='assets/roblox/world-ghosts/native/mesh/bride.glb';
 const evidencePath='assets/roblox/world-ghosts/native/combat-roblox-assets.json';
@@ -55,14 +56,24 @@ if(!creator){
 const registryPath='company-asset-library.json';
 const registry=process.argv.includes('--include-shared-models')?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
 const candidates=[{id:'midnight-combat-ghost',path:source,sha256:hash,combat:true}];
+const failures=[];
 for(const asset of registry?.assets||[]){
  if(asset.companyCommonBase!==true||!['CC0-1.0','project-original'].includes(asset.license))continue;
  const modelPath=String(asset.masterGlb||asset.path||'').replace(/^\//,'');
  const expected=String(asset.masterGlbHash||asset.sourceHash||'');
- if(!/^assets\/[a-zA-Z0-9_./-]+\.glb$/.test(modelPath)||modelPath.split('/').includes('..')||!/^([a-f0-9]{64})$/.test(expected))continue;
- candidates.push({id:asset.id,path:modelPath,sha256:expected,asset});
+ if(!/^assets\/[a-zA-Z0-9_./-]+\.glb$/.test(modelPath)||modelPath.split('/').includes('..'))continue;
+ try{
+  // Missing registry metadata must not silently discard an existing good common master.
+  // Inspect preserved bytes/rig/motion; an existing declared hash still has to match.
+  const inspected=evaluateCrossPlatform3dMasterGlb({repoRoot:process.cwd(),source:{...asset,path:modelPath},family:asset.family||asset.category});
+  if(inspected.pass!==true||!/^([a-f0-9]{64})$/.test(String(inspected.sourceHash||'')))throw Error('SHARED_MASTER_STATIC_QA_FAILED');
+  if(expected&&expected!==inspected.sourceHash)throw Error('NATIVE_SOURCE_HASH_MISMATCH');
+  candidates.push({id:asset.id,path:modelPath,sha256:inspected.sourceHash,asset});
+ }catch(error){
+  failures.push(asset.id);
+  console.error('NATIVE_SOURCE_IMPORT_FAILED='+asset.id+':'+String(error.message));
+ }
 }
-const failures=[];
 const importedByHash=new Map();
 for(const candidate of candidates){
  try{
@@ -107,6 +118,9 @@ for(const candidate of candidates){
    fs.writeFileSync(evidencePath,JSON.stringify({...binding,version:1,humanoidModelId:String(assetId)},null,2)+'\n');
    fs.writeFileSync(output,`-- 파일명: shared/CombatAssets.luau\n-- 저장소 원본 스킨드 GLB ${hash}\nreturn {\n HumanoidModelId=${Number(assetId)},\n HumanoidSourceSha256=${JSON.stringify(hash)},\n AssetSource=${JSON.stringify(source)},\n}\n`);
   }else{
+   // Persist only observed source metadata after a successful native registration.
+   candidate.asset.masterGlbHash=candidate.sha256;
+   candidate.asset.sourceHash=candidate.sha256;
    candidate.asset.platformVariants={...(candidate.asset.platformVariants||{}),ROBLOX:binding};
    candidate.asset.robloxAssetId=String(assetId);
    candidate.asset.nativeBindingRequired=true;
