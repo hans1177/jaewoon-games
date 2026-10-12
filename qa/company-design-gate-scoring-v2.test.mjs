@@ -463,9 +463,10 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
   assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
   assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
   assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
+  const basicDesignMethod=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
   for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION','KINGDOM','CASUAL']){
     const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
-    const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
+    const target={basicDesignMethod,requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
       {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
       {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
     ]};
@@ -477,7 +478,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       {name:'비워 둔 귀환로',discoveryCondition:'병력을 거점에 남기지 않고 철수한 다음 주민이 만든 귀환 통로를 조사한다.',masteryOrInsight:'방어 자원을 비축하지 않은 결과가 이동 경로의 우회 조건으로 전환된다.',gameplayEffect:'병력 증원 대신 자원 수송 동선을 옮겨 안전한 귀환을 선택한다.',connectsTo:['A','B']}
     );
     const seed={
-      seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
+      designGrammarStandardVersion:1,seedId:'SEED-VIBE-NATIVE-TEST',gameId:'native-qa',gameName:proposal.gameName,
       status:'ACTIVE',generation:'MATERIAL_COMPOSED',GAME_CATEGORY:category,
       DISTINCT_IDENTITY:proposal.distinctIdentity,CORE_LOOP:proposal.coreLoop,
       CORE_FUN_TO_LEARN:proposal.coreFunToLearn,GAMEPLAY_SKETCH:proposal.gameplaySketch,
@@ -485,6 +486,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
       INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
     };
+    if(category==='KINGDOM')seed.designDiscoveryCount=6;
     if(category==='CASUAL'){seed.designTopicMode='VIBE_FREE_TOPIC';seed.ownerResetRevision=target.topicRevision;seed.designDiscoveryCount=10;}
     let sourceText='';
     if(category==='INFECTION'){
@@ -505,7 +507,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     const design=runInNewContext(
       nativeSource.slice(start,end)+String.fromCharCode(10)+'computeVibeNativeDesign()',
       {
-        nativeDesignVariation:0,validateDesignAuthoringContent,
+        basicDesignMethod,nativeDesignVariation:0,validateDesignAuthoringContent,
         seed,gameId:'native-qa',game:{name:proposal.gameName},
         seedState:{seedMaterials:target.materials},
         seedGameplaySketch:proposal.gameplaySketch,
@@ -525,14 +527,17 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     });
     assert.deepEqual(feedback.map(item=>item.code),[],category+': native design field failure');
     const details=design.creativeGrammar.fiveWOneH;
-    assert.equal(details.length,4+design.creativeGrammar.delveDiscoveries.length);
+    assert.equal(details.length,4+design.creativeGrammar.dCreations.length+design.creativeGrammar.delveDiscoveries.length);
+    assert.equal(design.creativeGrammar.standardVersion,1);
+    assert.equal(Object.hasOwn(design.creativeGrammar,'cThemes'),false);
+    assert.ok(design.creativeGrammar.delveDiscoveries.every(row=>design.creativeGrammar.dCreations.some(d=>d.id===row.sourceDId)));
     if(category==='CASUAL'){
       assert.equal(design.creativeGrammar.delveDiscoveries.length,10,'@ expansion must not stop at the original four');
       assert.equal(details.filter(row=>row.element==='DELVE').length,10,'every new @ needs its own six-question and result record');
       assert.match(design.creativeGrammar.delveGrowthRule,/상한|제한|파고들기/);
     }
     assert.equal(details.filter(row=>row.element==='C').length,1);
-    for(const row of [...design.creativeGrammar.cThemes,...design.creativeGrammar.cGenres])assert.ok(details.find(row=>row.element==='C').what.includes(row.name));
+    for(const row of design.creativeGrammar.cGenres)assert.ok(details.find(row=>row.element==='C').what.includes(row.name));
     if(category==='KINGDOM'){
       assert.equal(details.filter(row=>row.element==='DELVE').length,6,'@ remains open beyond four discoveries');
       const check=changed=>validateDesignAuthoringContent({design:changed,seed,fields:['creativeGrammar']});
@@ -541,7 +546,11 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         assert.ok(check(changed).some(row=>row.code===code),code);
         assert.ok(scoreDesignGateV2({seed,designRecord:{content:changed},cycleStatus:{status:'IN_PROGRESS'}}).hardFailures.includes(code),'strict gate carries '+code);
       };
-      for(const field of ['who','when','where','what','how','why','result'])expectRejected(
+      expectRejected(changed=>{changed.creativeGrammar.dCreations=[];},'DESIGN_D_CREATION_REQUIRED');
+      expectRejected(changed=>{changed.creativeGrammar.cGenres[0].name='액션';},'DESIGN_C_GAME_GENRE_FORBIDDEN');
+      expectRejected(changed=>{changed.creativeGrammar.b.materialPath=['신화','로봇공학'];},'DESIGN_STANDARD_CLASSIFICATION_INVALID');
+      expectRejected(changed=>{changed.creativeGrammar.delveDiscoveries[0].sourceDId='missing';},'DESIGN_DELVE_D_BASIS_MISSING');
+      for(const field of ['who','when','where','what','how','why','result','failure','cancel','recovery'])expectRejected(
         changed=>{delete changed.creativeGrammar.fiveWOneH[1][field];},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
       expectRejected(changed=>changed.creativeGrammar.fiveWOneH.pop(),'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');
       expectRejected(changed=>{changed.creativeGrammar.fiveWOneH[5].discoveryIndex=0;},'DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE');

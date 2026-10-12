@@ -924,7 +924,14 @@ export function computeVibeSeedProposal(target){
   const hash=value=>{let n=2166136261;for(const ch of value)n=Math.imul(n^ch.codePointAt(0),16777619)>>>0;return n;};
   // 자유주제의 소재 선택은 게임 ID/요청 개정만 사용한다. 옛 장르·주제·고정 장르별 소재 우선순위를 배제한다.
   const compositionKey=freeTopicMode?[target.requestId,target.topicRevision||'',variance]:[target.requestId,category,requestedName,ownerBrief,variance];
-  const creativeSourcePool=freeTopicMode?[...CAUSAL_DNA_LIBRARY,...freeCreativeSources]:CAUSAL_DNA_LIBRARY;
+  // 메인: 새 기본설계는 중앙 분류표를 직접 읽는다. 고정 DNA 후보는 이전 접수 호환에만 사용한다.
+  const standard=target.basicDesignMethod;
+  const standardSources=standard?.materialClassification.flatMap(row=>row.middle.map(middle=>({
+    id:`STANDARD:${row.broad}:${middle}`,label:middle,source:row.broad,middle,
+    principle:`${middle}의 대상과 관계를 관찰해 조건을 확인하고 결과에 책임을 진다.`,
+    gameGrammar:`${middle}의 흔적을 관찰한 뒤 안전한 시험과 위험한 적용 중 하나를 골라 확인한 결과를 다음 경로 조건에 반영한다`
+  })))||[];
+  const creativeSourcePool=standard?standardSources:freeTopicMode?[...CAUSAL_DNA_LIBRARY,...freeCreativeSources]:CAUSAL_DNA_LIBRARY;
   const orderedPool=[...creativeSourcePool].sort((a,b)=>
     hash([...compositionKey,a.id].join('|'))-hash([...compositionKey,b.id].join('|')));
   const genreChoices=genreMaterialIds[profile.genre]||[];
@@ -945,7 +952,7 @@ export function computeVibeSeedProposal(target){
   if(chosen.length<4)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
   const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
   const named=row=>materialNames[row.id]||row.label||row.id.replaceAll('_',' ');
-  const aMaterial=named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
+  const aMaterial=standard?first.source:named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
   const distinct=chosen[0].id!==chosen[1].id&&cMaterial1!==cMaterial2;
   // 정식 소재는 모두 보존하고 표시용 세계·발견 명칭만 소재의 핵심 명사로 압축한다.
   const materialKeyword=material=>material.includes('의 ')?material.slice(material.lastIndexOf('의 ')+2):material;
@@ -953,7 +960,29 @@ export function computeVibeSeedProposal(target){
   if(!distinct)throw new Error('VIBE_NATIVE_DESIGN_DISTINCT_CAUSAL_SOURCES_REQUIRED');
   const creativeIds=chosen.map(row=>row.id).join('|');
   const secondary=/COMEDIC|CARNIVAL|ABSURD/.test(creativeIds)?'코믹':/TABOO/.test(creativeIds)?'호러':/TESTIMONY/.test(creativeIds)?'미스터리':'추리';
-  const secondaryGenre=freeTopicMode?partner.genre:(secondary===profile.genre?'사회극':secondary);
+  const fiction=standard?.creativeGenreExamplesKo||[];
+  const primaryGenre=standard?fiction[hash([...compositionKey,'C_PRIMARY'].join('|'))%fiction.length]:profile.genre;
+  const secondaryGenre=standard?fiction.filter(name=>name!==primaryGenre)[hash([...compositionKey,'C_SECONDARY'].join('|'))%(fiction.length-1)]:freeTopicMode?partner.genre:(secondary===profile.genre?'사회극':secondary);
+  const representativeMap={'오비':'액션','경영':'시뮬레이션','롤플레잉':'역할수행','호러':'어드벤처','카드 전략':'카드·보드'};
+  const aGameGenre=representativeMap[profile.genre]||(/슈팅/.test(profile.genre)?'슈팅':/레이싱/.test(profile.genre)?'레이싱':/리듬/.test(profile.genre)?'리듬':/성장|방치|증분/.test(profile.genre)?'방치·증분':/생활|아바타|경영|농장|시뮬/.test(profile.genre)?'시뮬레이션':/감염|파티|미니게임/.test(profile.genre)?'파티':/RPG|역할/.test(profile.genre)?'역할수행':/생존/.test(profile.genre)?'생존':/추리|공포|탈출|모험|탐험/.test(profile.genre)?'어드벤처':/전략|방어/.test(profile.genre)?'전략':/액션|격투|오비/.test(profile.genre)?'액션':profile.genre);
+  const aClassification=standard?.gameGenreClassification.find(row=>row.representative===aGameGenre);
+  const bRepresentative=/운영|경영|관리|제조/.test(profile.b)?'시뮬레이션':/단서|공간|조합|퍼즐/.test(profile.b)?'퍼즐':/제작|거점|생존/.test(profile.b)?'생존':/성장|임무/.test(profile.b)?'역할수행':/추리|탐험|탈출/.test(profile.b)?'어드벤처':/전술|전략|방어/.test(profile.b)?'전략':'액션';
+  const bClassification=standard?.gameGenreClassification.find(row=>row.representative===bRepresentative);
+  if(standard&&(!aClassification||!bClassification||fiction.length<2))throw new Error(`VIBE_BASIC_DESIGN_STANDARD_CLASSIFICATION_MISSING:${profile.genre}`);
+  const genreEffects={
+    '미스터리':'같은 기록의 모순을 비교해 숨은 조건을 검증해야 B 대응이 열리고, 잘못 해석하면 A의 안전 경로를 다시 조사한다.',
+    '코미디':'인물의 오해로 요청과 실제 대상이 엇갈려 B에서 상대의 의도를 확인해야 A의 불필요한 비용을 피한다.',
+    '공포':'위협의 위치는 흔적으로만 알 수 있어 B에서 노출 위험을 비교하고 A에서 진행 또는 귀환을 선택한다.',
+    '스릴러':'상대가 다음 경로를 차단하기 전에 B의 정보 공개 여부를 판단하고 A의 안전한 이동 순서를 결정한다.',
+    '판타지':'세계의 장치는 약속한 조건을 지킨 선택만 인정해 B의 약속 이행 결과가 A의 출입 권한을 바꾼다.',
+    '공상과학':'장치의 관측 결과와 가설을 B에서 시험하고 확인된 원리만 A의 새 경로에 적용한다.',
+    '모험':'먼 장소의 흔적을 B에서 해석해 A의 다음 탐험 목적지를 열고 귀환 중 이전 선택의 결과를 확인한다.',
+    '드라마':'서로 다른 인물의 부탁을 B에서 중재하며 A의 이전 선택이 관계와 다음 협력 조건에 남는다.',
+    '로맨스':'인물과의 약속과 신뢰를 B에서 확인하며 A에서 공통 목표를 택하거나 개인 경로를 유지한다.',
+    '비극':'양립하지 않는 부탁 중 하나를 B에서 선택하고 남은 책임을 A의 재방문과 후속 사건에서 감당한다.',
+    '풍자':'공식 기록과 실제 생활의 모순을 B에서 드러낼지 감출지 골라 A의 거래와 출입 조건을 바꾼다.',
+    '무협':'문파의 약속과 의리를 B에서 판정하고 A의 무력 사용 여부가 다음 협력과 대립 경로를 결정한다.'
+  };
   const chooseA=freeTopicMode
     ?`행동: ${profile.choiceA}한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.`
     :`${profile.choiceA}하면서 ${first.gameGrammar}`;
@@ -970,9 +999,9 @@ export function computeVibeSeedProposal(target){
   const bridge=freeTopicMode
     ?`A에서 ${profile.a}를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 ${profile.b} 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.`
     :`${chooseA} 그 결과 ${profile.b}의 가능 행동과 위험이 바뀌며, ${chooseB} 다시 ${profile.a}의 조건을 바꾼다.`;
-  const genreInterlock=freeTopicMode
-    ?`${profile.genre} 목표를 해결하려면 A의 ResourceState 확보와 B의 RouteState 변경을 반복한다. ${secondaryGenre} 판단에서는 ${cMaterial1}의 단서를 먼저 해석하거나 ${cMaterial2}의 반작용을 감수해야 B의 대응·A의 재진입 중 하나가 가능하다. 보조 장르를 제거하면 실제 접근 조건이 달라진다.`
-    :`${profile.genre} 장르의 주 목표를 진행하는 동안 ${secondaryGenre} 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. ${secondaryGenre}를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.`;
+  const genreInterlock=standard?`${primaryGenre}: ${genreEffects[primaryGenre]} ${secondaryGenre}: ${genreEffects[secondaryGenre]} 보조 장르가 없으면 같은 기록을 확인할 책임·정보·접근 판단이 사라져 A의 다음 선택이 달라진다.`:freeTopicMode
+    ?`${primaryGenre}의 인물 갈등을 해결하려면 A의 ResourceState 확보와 B의 RouteState 변경을 반복한다. ${secondaryGenre} 판단에서는 ${cMaterial1}의 단서를 먼저 해석하거나 ${cMaterial2}의 반작용을 감수해야 B의 대응·A의 재진입 중 하나가 가능하다. 보조 장르를 제거하면 실제 접근 조건이 달라진다.`
+    :`${primaryGenre} 작품 장르의 주 갈등을 진행하는 동안 ${secondaryGenre} 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. ${secondaryGenre}를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.`;
   const coreLoop=freeTopicMode?[
     `A 시작: RouteState·RiskState를 확인한 뒤 ${profile.choiceA}한다. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.`,
     `B 대응: A의 ResourceState·RiskState를 확인한 뒤 ${profile.choiceB}한다. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.`,
@@ -1055,7 +1084,7 @@ export function computeVibeSeedProposal(target){
       ],
       themeFusion:{
         themes:[{name:cMaterial1,kind:'MATERIAL',causalEffect:freeTopicMode?`${third.gameGrammar} 이 단서의 확인 여부가 A의 RiskState와 B의 ResourceState 사용 조건을 바꾼다.`:`${third.gameGrammar} 그 결과 A와 B가 공유하는 조건이 바뀐다.`},{name:cMaterial2,kind:'MATERIAL',causalEffect:freeTopicMode?`${fourth.gameGrammar} B의 RouteState 해금과 A의 재진입 조건을 바꾸며 대가를 선택하게 한다.`:`${fourth.gameGrammar} 그 결과 사건의 비용과 다음 선택이 달라진다.`}],
-        genres:[{role:'PRIMARY',name:profile.genre,gameplayEffect:freeTopicMode?`A(${profile.a})와 B(${profile.b})의 왕복 선택으로 중심 목표와 위험·보상을 판정한다.`:`${profile.a}와 ${profile.b}를 통한 중심 목표와 위험·보상을 판단한다.`},{role:'SECONDARY',name:secondaryGenre,gameplayEffect:`${cMaterial1}의 단서와 ${cMaterial2}의 반응 때문에 같은 목표의 정보·행동·결과가 달라진다.`}],
+        genres:standard?[{role:'PRIMARY',name:primaryGenre,gameplayEffect:genreEffects[primaryGenre]},{role:'SECONDARY',name:secondaryGenre,gameplayEffect:genreEffects[secondaryGenre]}]:[{role:'PRIMARY',name:primaryGenre,gameplayEffect:freeTopicMode?`A(${profile.a})와 B(${profile.b})의 왕복 선택으로 중심 목표와 위험·보상을 판정한다.`:`${profile.a}와 ${profile.b}를 통한 중심 목표와 위험·보상을 판단한다.`},{role:'SECONDARY',name:secondaryGenre,gameplayEffect:`${cMaterial1}의 단서와 ${cMaterial2}의 반응 때문에 같은 목표의 정보·행동·결과가 달라진다.`}],
         genreInterlock,jointWorldRule:`${cMaterial1}와 ${cMaterial2}가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다.`,abGameplayEffect:bridge
       },
       crossSystemRules:freeTopicMode?[`MAIN이 WorldAccessState·IntentState를 확인해 A의 RouteState 진입을 결정한다.`,`A가 RouteState·RiskState를 읽고 실행하면 RiskState·ResourceState가 변해 B의 행동 비용과 허용 조건이 바뀐다.`,`B가 RiskState·ResourceState를 판정해 RouteState·RiskState를 출력한 뒤 A로 반환한다. 실패·취소 시 원래 상태를 보존한다.`,`C의 ${cMaterial1}·${cMaterial2} 단서 해석이 A의 RiskState 및 B의 ResourceState·RouteState 조건을 변경하며 ${secondaryGenre} 판단이 실제 대안 선택을 만든다.`]:[`MAIN의 목표가 ${profile.a}에서 추적할 경로와 정보를 결정한다.`,`A의 결과로 ${profile.b}의 비용·위험·가능 행동이 달라진다.`,`B의 대응 결과가 다음 ${profile.a}의 조건을 되돌려 바꾼다.`,`C의 두 소재와 ${secondaryGenre} 판단이 위 두 시스템의 정보·경로를 변경한다.`]
@@ -1065,6 +1094,12 @@ export function computeVibeSeedProposal(target){
     expansionVectors:[`${profile.a}의 새로운 지역에서 이전 인과 선택을 다시 해석한다.`,`${profile.b}의 새 상대는 기존 상태를 증폭하거나 반전한다.`,`${cMaterial1}과 ${cMaterial2}의 조합에 다른 인간 갈등을 연결한다.`,`@의 각 발견 결과에서 다음 A→B→A 조건과 C의 새 해석을 파생한다. 동일 상태값이나 번호만 바꾼 발견은 제외하고 기존 숙련과 다음 숙련의 새 행동·판정·결과를 확인해 상한 없이 이어 간다.`]
   };
   return {
+    basicDesignSelection:standard?{
+      standardVersion:standard.version,
+      a:{gameGenre:aClassification.representative,gameRole:'PRIMARY',material:first.source},
+      b:{gameGenreRepresentative:bClassification.representative,gameGenre:bClassification.detailed.find(name=>name.split(' ').some(word=>word.length>1&&profile.b.includes(word)))||bClassification.detailed[0],gameRole:'SUPPORTING',material:second.middle,materialPath:[second.source,second.middle],supportingReason:`${profile.b}는 ${profile.a}의 결과를 읽는 보조 판단이다. 결과가 중심 ${profile.a}의 다음 경로와 위험으로 돌아온다.`},
+      dSources:[third,fourth].map(row=>({materialPath:[row.source,row.middle,`${row.middle}의 기록 장치`],pathReason:`${row.source}→${row.middle} 범위에서 새 세계의 기록 장치를 창작한다. 실제 역사·생물·문화 사실이라고 주장하지 않는다.`}))
+    }:null,
     requestId:target.requestId,category,gameName,referenceGames:[],coreFunToLearn:[bridge,genreInterlock],
     coreLoop,distinctIdentity:identity,targetAudience:`${profile.genre} 장르에서 실제 선택과 세계 반응을 탐색하는 모바일 플레이어`,
     initialTargetPlatform:target.platform,initialPlayMode:'PROJECT_DEFINED',multiplayerDesignMode:['COOP','COMPETITIVE','HYBRID'].includes(clean(target?.portfolioRequest?.multiplayerDesignMode).toUpperCase())?clean(target.portfolioRequest.multiplayerDesignMode).toUpperCase():(/BATTLEGROUND|PVP|RACING|PARTY/.test(category)?'COMPETITIVE':'COOP'),
