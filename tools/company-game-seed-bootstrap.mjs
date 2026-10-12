@@ -1024,7 +1024,7 @@ export function computeVibeSeedProposal(target){
   // 오너가 명칭을 확정한 기존 설계는 보존하고, 자유주제만 모든 축을 완성한 뒤 게임 정체성을 확정한다.
   const discoveredCore=delveConditions[0];
   const gameName=requestedName||(freeTopicMode
-    ?`${aKeyword}·${bKeyword} ${profile.genre}×${secondaryGenre}: ${discoveredCore.name}`.slice(0,178)
+    ?`${aOnly?`${aSystem}·`:''}${aKeyword}·${bKeyword} ${profile.genre}×${secondaryGenre}: ${discoveredCore.name}`.slice(0,178)
     :`${aMaterial}의 ${profile.genre} 세계`);
   const identity=freeTopicMode
     ?`${gameName}. MAIN은 A(${profile.a} × ${aMaterial})의 대규모 창작 규칙과 독립적인 B(${profile.b} × ${bMaterial})의 세부 사건 규칙, C(메인 ${profile.genre} × 보조 ${secondaryGenre}; ${cMaterial1}·${cMaterial2} 반작용), @(${discoveredCore.name}: ${discoveredCore.effect})를 연결한 결과로 결정된다. A→B→A의 입력·행동·상태 변화가 실제 목표를 만든다.`.slice(0,680)
