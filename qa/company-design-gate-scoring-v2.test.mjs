@@ -575,7 +575,8 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
     });
     assert.equal(scored.hardFailures.length,0,category+': '+scored.hardFailures.join(', '));
     assert.ok(scored.totalScore>=80,category+': '+scored.totalScore);
-    assert.equal(design.platformProfiles.UNITY.unityWebSpatialPresentation.dimension,'3D');
+    assert.equal(Object.hasOwn(design.platformProfiles.UNITY,'unityWebSpatialPresentation'),false,
+      '새 기본설계에는 유니티 웹 공간 제작 명세가 없어야 한다.');
     assert.equal(design.multiplayerMode,'COOP');
   }
 }
