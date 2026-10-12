@@ -33112,11 +33112,166 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0b01573f619f70b535e598d8",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7839",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e4441c44fe8ac7581fe0f6baae0232893c81647e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7839,
+        "baseBranch": "main",
+        "headBranch": "fix/detail-design-flow",
+        "baseSha": "e4441c44fe8ac7581fe0f6baae0232893c81647e",
+        "headSha": "07cc445448e4adffc53f4c5638ff3e800fa1d4ae",
+        "mergeCommitSha": "cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
+        "mergedAt": "2026-10-12T16:33:07Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fe4756a96ef1f27f20d9695b794ca3bcaccdd72566e775c8396dbc20da755dd3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/detail-design-flow",
+        "candidateSha": "07cc445448e4adffc53f4c5638ff3e800fa1d4ae"
+      },
+      "changeStats": {
+        "changedFileCount": 21,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 459,
+        "deletedLineCount": 65,
+        "changedFiles": [
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/game-design-grammar.md",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-final-review-revalidation.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-machine-development-lifecycle.test.mjs",
+          "qa/company-platform-exposure-control.test.mjs",
+          "qa/company-roblox-production-plan.test.mjs",
+          "qa/vibe2-incremental-qa.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/cozy-island/roblox-source-bootstrap.json",
+          "tools/company-build-up-directive.mjs",
+          "tools/company-platform-exposure-control.mjs",
+          "tools/company-roblox-production-plan.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-incremental-qa.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "tools/vibe3-roblox-platform.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-development-roblox-final-review-revalidation.yml",
+          ".github/workflows/company-development-roblox-release-promotion.yml",
+          "company-learning/company-architecture-map.json",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-development-roblox-final-review-revalidation.test.mjs",
+          "qa/company-development-roblox-release-promotion.test.mjs",
+          "qa/company-development-roblox-runtime-foundation.test.mjs",
+          "qa/company-machine-development-lifecycle.test.mjs",
+          "qa/company-platform-exposure-control.test.mjs",
+          "qa/company-roblox-production-plan.test.mjs",
+          "qa/vibe2-incremental-qa.test.mjs",
+          "qa/vibe2-source-worker.test.mjs",
+          "roblox-games/cozy-island/roblox-source-bootstrap.json",
+          "tools/company-build-up-directive.mjs",
+          "tools/company-platform-exposure-control.mjs",
+          "tools/company-roblox-production-plan.mjs",
+          "tools/vibe2-asset-production-plan.mjs",
+          "tools/vibe2-incremental-qa.mjs",
+          "tools/vibe2-source-worker.mjs",
+          "tools/vibe3-roblox-platform.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7839",
+        "merge-commit:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
+        "base-main:e4441c44fe8ac7581fe0f6baae0232893c81647e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 266
+    "total": 267
   }
 }
