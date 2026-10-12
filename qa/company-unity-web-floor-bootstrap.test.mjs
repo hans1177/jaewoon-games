@@ -260,9 +260,9 @@ test('Unity Web floor bootstrap runs per game without a global workflow serializ
   const parent=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   const workflow=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
   const header=workflow.slice(0,workflow.indexOf('\njobs:\n'));
-  assert.match(parent,/unity_web_bootstrap_json:/);
-  assert.match(parent,/matrix:[\s\S]*game_id: \$\{\{ fromJSON\(needs\.native-plan\.outputs\.unity_web_bootstrap_json\) \}\}/);
-  assert.match(parent,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml[\s\S]*game_id: \$\{\{ matrix\.game_id \}\}/);
+  assert.doesNotMatch(parent,/unity_web_bootstrap_json:/);
+  assert.doesNotMatch(parent,/matrix:[\s\S]*game_id: \$\{\{ fromJSON\(needs\.native-plan\.outputs\.unity_web_bootstrap_json\) \}\}/);
+  assert.doesNotMatch(parent,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml[\s\S]*game_id: \$\{\{ matrix\.game_id \}\}/);
   assert.match(workflow,/run-name: Unity Web Floor Bootstrap \$\{\{ inputs\.game_id \}\}/);
   assert.match(workflow,/workflow_call:[\s\S]*game_id:/);
   assert.doesNotMatch(header,/^concurrency:\s*$/m);
@@ -292,7 +292,7 @@ test('Unity Web bootstrap promotes only verified same-scope PR and wakes the exa
   assert.equal((workflow.match(/gh workflow run company-development-confirmed-runtime\.yml/g)||[]).length,2);
   assert.equal((workflow.match(/-f game_id="\$GAME_ID" -f trigger_source=UNITY_WEB_BOOTSTRAP_SOURCE_PROMOTED/g)||[]).length,2);
   assert.match(workflow,/permissions:\n  contents: write\n  pull-requests: write\n  actions: write/);
-  assert.match(caller,/permissions:\n      contents: write\n      pull-requests: write\n      actions: write/);
+  assert.doesNotMatch(parent,/dispatch-unity-web-bootstrap:/);
   assert.doesNotMatch(workflow,/git push origin HEAD:main/);
 });
 
@@ -599,10 +599,10 @@ test('approved procedural Unity bootstrap never overwrites an existing gameplay 
 test('Unity Web design admission is independent of native F0 and duplicate source reuse is evidence-safe',()=>{
   const planner=fs.readFileSync(new URL('../.github/workflows/company-development-confirmed-runtime.yml',import.meta.url),'utf8');
   const bootstrap=fs.readFileSync(new URL('../.github/workflows/unity-web-floor-source-bootstrap.yml',import.meta.url),'utf8');
-  assert.match(planner,/item\.minimumDesignContract\?\.pass===true&&[\s\S]*?item\.concurrentTargetPlatforms\.includes\('UNITY'\)/);
+  assert.doesNotMatch(planner,/item\.minimumDesignContract\?\.pass===true&&[\s\S]*?item\.concurrentTargetPlatforms\.includes\('UNITY'\)/);
   assert.match(planner,/const nativeAdmitted=platformDevelopmentEligible\(item,'ROBLOX'\)\|\|platformDevelopmentEligible\(item,'UNITY'\)/);
-  assert.match(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
-  assert.match(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
+  assert.doesNotMatch(planner,/UNITY_WEB_INDEPENDENT_OF_NATIVE_STEP/);
+  assert.doesNotMatch(planner,/UNITY_WEB_DESIGN_ELIGIBLE_COUNT/);
   assert.match(bootstrap,/node tools\/company-shared-context\.mjs --output=\/tmp\/unity-web-bootstrap-context\.json/);
   assert.match(bootstrap,/group: unity-web-bootstrap-source-/);
   assert.match(bootstrap,/git diff --name-only "\$staged_game_tree" "\$pr_game_tree"/);
