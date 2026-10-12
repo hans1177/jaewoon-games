@@ -810,9 +810,16 @@ export function computeVibeSeedProposal(target){
     (explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
     topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
     {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};
-  const freePartners=freeTopicMode?freeProfiles.filter(row=>row.genre!==baseProfile.genre&&row.b!==baseProfile.b&&row.b!==baseProfile.a):[];
+  // A 시스템만 허용된 기존 시드 참고다. 이전 제목·세계관·소재·장르·B/@는 절대로 참조하지 않는다.
+  const aOnly=freeTopicMode&&target?.aSystemReference?.scope==='A_SYSTEM_ONLY'?target.aSystemReference:null;
+  const aSystem=clean(aOnly?.systemFamily);
+  const aChoice=clean(aOnly?.playerChoice);
+  const freePartners=freeTopicMode?freeProfiles.filter(row=>row.genre!==baseProfile.genre
+    &&row.b!==baseProfile.b&&row.b!==baseProfile.a&&row.b!==aSystem):[];
   const partner=freePartners.length?freePartners[(freeFingerprint>>>9)%freePartners.length]:baseProfile;
-  const profile=freeTopicMode?{...baseProfile,b:partner.b,choiceB:partner.choiceB}:baseProfile;
+  const profile=freeTopicMode?{...baseProfile,
+    a:aSystem||baseProfile.a,choiceA:aChoice||baseProfile.choiceA,
+    b:partner.b,choiceB:partner.choiceB}:baseProfile;
   const materialNames={
     KARMA_RETURN:'업보와 인과응보',MANDATE_LEGITIMACY:'왕조의 정통성과 민심',RITUAL_RECIPROCITY:'의례와 호혜 관계',ANCESTOR_MEMORY:'조상 기억과 계승',
     PROPHECY_SELF_FULFILLMENT:'그리스 비극의 자기실현 예언',HUBRIS_NEMESIS:'오만과 응보',OATH_CONTRACT:'서사시의 맹세와 계약',
