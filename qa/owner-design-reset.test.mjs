@@ -450,3 +450,30 @@ test('a zero-exit designer without current authored output cannot be marked comp
     assert.match(good.stdout,/DESIGN_MODEL_OUTPUT_FILES=VERIFIED/);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+
+test('explicit free-topic owner reset discards prior design input while keeping Roblox cooperation',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-free-topic-'));
+  try{
+    const queueFile=path.join(dir,'queue.json');
+    const request={revision:'FREE-1',gameId:'cozy-island',gameName:'포근섬',status:'ACTIVE',designRequest:{
+      originalPlatform:'ROBLOX',baselineSource:'',topicMode:'VIBE_FREE_TOPIC',multiplayerMode:'COOP',
+      instruction:'디자이너가 기존 주제를 가져오지 않고 창작 문법으로 새 주제를 작성한다.'
+    }};
+    fs.writeFileSync(queueFile,JSON.stringify({requests:[request]}));
+    const state={seeds:[]};
+    const first=ensureOwnerDesignResetSeed(state,'cozy-island',{file:queueFile});
+    assert.equal(first.changed,true);
+    assert.equal(first.seed.designTopicMode,'VIBE_FREE_TOPIC');
+    assert.equal(first.seed.DESIGN_BASELINE_SOURCE,null);
+    assert.deepEqual(first.seed.originalDesignContext.content,{});
+    assert.equal(first.seed.MULTIPLAYER_DESIGN_MODE,'COOP');
+    const second=ensureOwnerDesignResetSeed(state,'cozy-island',{file:queueFile});
+    assert.equal(second.changed,false);
+    request.revision='FREE-2';fs.writeFileSync(queueFile,JSON.stringify({requests:[request]}));
+    assert.equal(ensureOwnerDesignResetSeed(state,'cozy-island',{file:queueFile}).changed,true);
+    request.designRequest.baselineSource='design/cozy-island/2026-09-22/design-revised.json';
+    fs.writeFileSync(queueFile,JSON.stringify({requests:[request]}));
+    assert.throws(()=>ensureOwnerDesignResetSeed(state,'cozy-island',{file:queueFile}),/OWNER_FREE_TOPIC_BASELINE_FORBIDDEN/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
