@@ -4998,10 +4998,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
-      "canonicalState": "INTERNAL_PLATFORM_PLAYTEST_AND_DEBUG",
+      "currentStep": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T19:22:04.041Z",
+      "updatedAt": "2026-10-12T20:30:14.556Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -5699,7 +5699,7 @@
       "robloxServerClientBoundaryPassed": false,
       "robloxDatastoreRejoinPassed": false,
       "robloxMobileControlUiPassed": false,
-      "robloxMultiplayerQaPassed": false,
+      "robloxMultiplayerQaPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxIndependentQaPassedAt": null,
       "robloxRegressionPassed": false,
@@ -5739,10 +5739,10 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxLastSuccessfulStage": "DEDICATED_PRIVATE_EXPERIENCE_PUBLISHED",
-      "robloxFailureStage": "VIBE_INTERNAL_PLAY",
-      "robloxFailureSignature": "ROBLOX_INTERNAL_VIBE_PLAY_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME_FOUNDATION",
+      "robloxFailureSignature": "ROBLOX_CLOUD_IMAGE_EVIDENCE_REQUIRED",
       "routingBlockers": [
-        "roblox-internal-vibe-play-pending"
+        "roblox-cloud-image-content-unverified"
       ],
       "robloxExactRevisionPassed": true,
       "robloxValidationTarget": {
@@ -5775,7 +5775,7 @@
       "robloxFirstFrameGroundingEvidence": {
         "observed": true,
         "runtimeWorldReady": false,
-        "startupWaitSeconds": 8.16,
+        "startupWaitSeconds": 8.2,
         "basePartCount": 1,
         "spawnCount": 0,
         "spawnsInBounds": false,
@@ -5809,24 +5809,24 @@
           "authority": "OPEN_CLOUD_WORLD_STRUCTURE_ONLY"
         },
         "sameLuauExecutionSession": true,
-        "sourceRevision": "f2dbbb9d06a30f70e0dacb9e5529b23502e6f819",
-        "artifactIdentity": "sha256:0e7016a060b9772aa5ab19389e4bf9a1b6663658ddf88403b2a4ca39f52988e1",
-        "placeId": "112643742919826",
-        "candidateVersionNumber": 2,
+        "sourceRevision": "b52fdffd9f3f18480d10701e3bd28992e59087d9",
+        "artifactIdentity": "sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec",
+        "placeId": "126302702438348",
+        "candidateVersionNumber": 38,
         "serverBootObserved": false,
         "serverContextExecuted": true,
         "simulationRunningAfter": false,
         "simulationStartSucceeded": false,
         "simulationStartCapabilityDenied": false,
-        "observedAt": "2026-10-12T16:46:18.489Z",
+        "observedAt": "2026-10-12T20:30:14.556Z",
         "authority": "roblox-open-cloud-exact-first-frame-observation"
       },
       "robloxMultiplayerQaEvidence": {
         "version": 2,
         "gameId": "daechung-rpg",
-        "sourceRevision": "f2dbbb9d06a30f70e0dacb9e5529b23502e6f819",
-        "artifactIdentity": "sha256:0e7016a060b9772aa5ab19389e4bf9a1b6663658ddf88403b2a4ca39f52988e1",
-        "candidateVersionNumber": 2,
+        "sourceRevision": "b52fdffd9f3f18480d10701e3bd28992e59087d9",
+        "artifactIdentity": "sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec",
+        "candidateVersionNumber": 38,
         "passed": true,
         "codeContractPassed": true,
         "checks": {
@@ -5838,9 +5838,9 @@
         },
         "runtimeTwoClientExecutionRequired": false,
         "authority": "roblox-static-two-client-source-contract",
-        "verifiedAt": "2026-10-12T16:46:18.489Z"
+        "verifiedAt": "2026-10-12T20:30:14.556Z"
       },
-      "robloxMultiplayerQaPassedAt": "2026-10-12T03:29:32.231Z",
+      "robloxMultiplayerQaPassedAt": "2026-10-12T20:30:14.556Z",
       "robloxRuntimeLastObservationAttemptAt": "2026-10-12T16:46:18.489Z",
       "robloxHeadlessPassedAt": null,
       "robloxInternalReleasePublished": true,
@@ -5878,7 +5878,37 @@
       "robloxInternalPlaytestPassed": false,
       "robloxInternalPlaytestPassedAt": null,
       "robloxStudioLocalPlayRepairRequired": false,
-      "robloxStudioLocalPlayInfrastructurePending": false
+      "robloxStudioLocalPlayInfrastructurePending": false,
+      "robloxCloudImageEvidence": {
+        "available": true,
+        "permissionDenied": false,
+        "status": 200,
+        "provider": "ROBLOX_OFFICIAL_CLOUD_API_ONLY",
+        "universeId": "10767445769",
+        "observedAt": "2026-10-12T20:30:03.528Z",
+        "endpoint": "https://apis.roblox.com/thumbnail-personalization-api/v1/universes/10767445769/thumbnails?maxPageSize=50",
+        "imageMetadataAvailable": true,
+        "thumbnailCount": 6,
+        "imageUrls": [],
+        "imageContent": [],
+        "imageContentChecked": false,
+        "imageContentPassed": false,
+        "imageVisualQualityVerified": false,
+        "metadataCoverage": "RETURNED_API_PAGE_ONLY",
+        "runtimeScreenshot": false,
+        "exactRuntimeVersionImage": false,
+        "state": "IMAGE_CONTENT_UNVERIFIED",
+        "authority": "roblox-open-cloud-thumbnail-image-sanity",
+        "limitation": "THUMBNAIL_METADATA_IS_VISUAL_SANITY_ONLY_NOT_EXACT_RUNTIME_RENDER_PROOF",
+        "requestContext": {
+          "sourceRevision": "b52fdffd9f3f18480d10701e3bd28992e59087d9",
+          "artifactIdentity": "sha256:8e67cd2be034cab51075a2b2428b244c584d8cd88c1fd9e534900adae419e3ec",
+          "universeId": "10767445769",
+          "placeId": "126302702438348",
+          "versionNumber": 38,
+          "observedImageRevision": false
+        }
+      }
     },
     {
       "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -36481,7 +36511,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-12T20:29:57.511Z",
+  "updatedAt": "2026-10-12T20:30:14.556Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
