@@ -1209,7 +1209,7 @@
       "license": "project-original",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_NATIVE_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "artReviewState": "PROTOTYPE_REVIEW_REQUIRED",
       "targetPlatforms": [
         "UNITY",
@@ -1341,7 +1341,23 @@
           "assets/roblox/world-ghosts/native/spider/evidence.json",
           "assets/roblox/world-ghosts/native/spider/view.html"
         ]
-      }
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "119597966557385",
+          "sha256": "c37af6808a539f646eb77dac65bc339717700e932c25f2928fa5c54135a15525",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/world-ghosts/native/spider/spider.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:28:39.700Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
+      },
+      "robloxAssetId": "119597966557385",
+      "nativeBindingRequired": true
     },
     {
       "id": "ladybug-sprite",
@@ -80396,9 +80412,9 @@
       "originalSourceHash": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "71830244663306",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80410,6 +80426,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "71830244663306",
+          "sha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/barbarian.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:28:53.637Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80436,9 +80466,9 @@
       "originalSourceHash": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "95529290247720",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80450,6 +80480,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "95529290247720",
+          "sha256": "d945e019f0e07e34297296c3d982e379051696ecffeba9e9799b64077f7e1155",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/knight.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:29:07.580Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80476,9 +80520,9 @@
       "originalSourceHash": "cf898585da33fab50c724d31605fb931eb2912e6d2280092141e98ca81ad507d",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "106583720750028",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80490,6 +80534,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "106583720750028",
+          "sha256": "0deafa1e3156705fa617f2a125381792ed58ab4efeeefa8a0f255c37a20cc75c",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mage.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:29:17.272Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80516,9 +80574,9 @@
       "originalSourceHash": "e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "71960136671229",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80530,6 +80588,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "71960136671229",
+          "sha256": "9b41cc7c6300299d46477fea5175d222bdec0aed5f215d16c1de4d8711761683",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/rogue.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:29:31.082Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80556,9 +80628,9 @@
       "originalSourceHash": "93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "125105321260088",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80570,6 +80642,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "125105321260088",
+          "sha256": "9aed88eede1480f44090494baeab930cc6353db99891decf2dd2c03af3467735",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/rogue-hooded.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:29:44.647Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80596,9 +80682,9 @@
       "originalSourceHash": "e05b0f5cfa395271c9f75fd07c0a0613c56f401ece4ab644e080001a79971075",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "79270829530403",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80610,6 +80696,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "79270829530403",
+          "sha256": "0bc67a2346251675710c65a62e382614eaa4684f22b795a392a7dc846c4850b0",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/skeleton-mage.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:29:58.101Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80636,9 +80736,9 @@
       "originalSourceHash": "6ffc003f895bed0b074791e0e490846210a2e2f8fc7da300aba53cc185f95968",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "135382255157972",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80650,6 +80750,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "135382255157972",
+          "sha256": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/skeleton-minion.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:30:07.499Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80676,9 +80790,9 @@
       "originalSourceHash": "4003f2b77891bb56f7e0de7d555abcb497aebbcaee35b614211f16275f9ccae3",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "99895015440866",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80690,6 +80804,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "99895015440866",
+          "sha256": "311e1736e90a666265cf910e9ab6433ec8da960d1dc36501be9fbea4efbe808d",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/skeleton-rogue.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:30:21.122Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80716,9 +80844,9 @@
       "originalSourceHash": "178b6fda810b814c250d8a2010c24dfd9b458b9006dd323353e620b7ff118bbe",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "104892549506438",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80730,6 +80858,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "104892549506438",
+          "sha256": "c2282ee11d91c645ed597987b5bcebffa1c5f59fe3ffc947a5ba586789c7b318",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/skeleton-warrior.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:30:34.611Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80756,9 +80898,9 @@
       "originalSourceHash": "8cfcff43460da8b421f2a7fdfb43ec177321cad2746db9497cbf128d5806e2a8",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "116599489319716",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80770,6 +80912,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "116599489319716",
+          "sha256": "78313254b52ad7fc61959218e494e484649eae5fda2cbef2b632ab8b1e371861",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-female-a.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:30:43.816Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80796,9 +80952,9 @@
       "originalSourceHash": "2288438e7baf9acc91a870c82dc00d66710bb486592cfc3474ef8ed93a03863a",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "94002783932866",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80810,6 +80966,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "94002783932866",
+          "sha256": "9a363dd0ea450bf9d634dee6b4dae00b3f9f0ee50a4436c73ec000177786e963",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-female-b.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:30:49.106Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80836,9 +81006,9 @@
       "originalSourceHash": "3cd9e1b5d6409fce0ba1af617d9e008c3069493185a4c100f49fb99a2626a055",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "89066815382766",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80850,6 +81020,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "89066815382766",
+          "sha256": "0c3ec9ef1c3e8122ba9e43f9fa9f9fa708369a494f2ca0a1834ccce9ff7a0324",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-female-c.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:30:58.241Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80876,9 +81060,9 @@
       "originalSourceHash": "67f61708743bd34f91a4c2ba8160b61bf2e7d4ec2ca6647dfe99873422561410",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "99460956115825",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80890,6 +81074,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "99460956115825",
+          "sha256": "f4a12b5ebca33dde198f6770b36f6078a4b0d6828841b523406dd275990ca619",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-female-d.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:31:07.476Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80916,9 +81114,9 @@
       "originalSourceHash": "3ee3939f80d718945fcb9199f909a92c39669e38aeec7f544536b5dce6e79f98",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "76330669255794",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80930,6 +81128,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "76330669255794",
+          "sha256": "8b6b73e09e6b7a8751818bb096008b071d4d36fd3b77c7dd17f6ef17cebd87b2",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-female-e.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:31:16.710Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80956,9 +81168,9 @@
       "originalSourceHash": "2ff4311897bfaf99be80d2fa13918db30f506607da0291640b2609d82b70e0ca",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "75647006725247",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -80970,6 +81182,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "75647006725247",
+          "sha256": "1f77c1b5a024bae81b97833c7ab05c8164390ab066524a8fba884b29f11f8332",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-female-f.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:31:26.066Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -80996,9 +81222,9 @@
       "originalSourceHash": "77572792bfe2773b715b8cd8e18644b52b3e1f155fe10450254b50f9c364382a",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "89472411044669",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -81010,6 +81236,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "89472411044669",
+          "sha256": "1916c91ef10a37cc3b1d9607acc04df908c9ee72473ae6f204697536287c12e8",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-male-a.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:31:35.361Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -81036,9 +81276,9 @@
       "originalSourceHash": "791fc0c203924c175c0a3d5b60d030daf36797b039506689cf7cd01ef5253b3c",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "133560049433012",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -81050,6 +81290,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "133560049433012",
+          "sha256": "2b71dda7d4aebfbe14adcf7cb2e4b54510fbf0e391537bafcd78cad7b53f780e",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-male-b.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:31:44.611Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -81076,9 +81330,9 @@
       "originalSourceHash": "672a6506f7475bbd655da1d7ff712c1729a430f134c62385a4e5d3c1378acb40",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "92558150738144",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -81090,6 +81344,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "92558150738144",
+          "sha256": "e5412d0275ae4076f0f0805bd68645d1295f5a1c5d750460a9ddfb228da6d408",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-male-c.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:31:57.969Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -81116,9 +81384,9 @@
       "originalSourceHash": "dd12b2e75ffb1cdb45aaec3916c3d6e732929ccb4a8b89b946f69baaabfa64da",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "76186984042070",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -81130,6 +81398,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "76186984042070",
+          "sha256": "4f0217eac0ee40be36a211bc0d66dd9abe9078282c26eedf394430f988bd9e40",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-male-d.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:32:03.129Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -81156,9 +81438,9 @@
       "originalSourceHash": "cd76681090ce29861b055b0f8b2bdcf84bfccc4ca816f428df42a9bb76d6e1b6",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "95136568519883",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -81170,6 +81452,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "95136568519883",
+          "sha256": "ff0df0b52fe9b654f35d7c755ca5534eea90edadbf0006c825a8b257fab18bca",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-male-e.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:32:12.376Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -81196,9 +81492,9 @@
       "originalSourceHash": "ed151fc47c5cd6be9693c524e92f045170c965819f4f81b28ed66dcc3c1085bf",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "103740257445372",
       "companyCommonBase": true,
       "reuseScope": "COMPANY_COMMON_BASE",
       "gameExclusive": false,
@@ -81210,6 +81506,20 @@
         "support": [
           "assets/roblox/actors/manifest.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "103740257445372",
+          "sha256": "20f8d462e8c04cf4ad8a34415c0dc718de3e86f4cafb77de732b946f122cbc22",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/mini-character-male-f.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:32:26.047Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     },
     {
@@ -82939,9 +83249,9 @@
       "status": "REPO_ASSET",
       "productionVerified": false,
       "verifiedCompanyReusable": false,
-      "runtimeVerificationState": "PENDING_ROBLOX_IMPORT",
+      "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING",
       "nativeBindingRequired": true,
-      "robloxAssetId": null,
+      "robloxAssetId": "132224690298312",
       "companyCommonBase": true,
       "gameExclusive": false,
       "consumerGameIds": [],
@@ -82955,6 +83265,20 @@
           "assets/roblox/actors/native/quaternius-skeleton/application.json",
           "assets/roblox/actors/native/quaternius-skeleton/evidence.json"
         ]
+      },
+      "platformVariants": {
+        "ROBLOX": {
+          "assetId": "132224690298312",
+          "sha256": "497a736cf80fdaabd2c8804d3f44d08e25d3cb207820eee3155293b682b55e86",
+          "creator": {
+            "userId": "11686873137"
+          },
+          "sourcePath": "assets/roblox/actors/native/quaternius-skeleton/master.glb",
+          "sourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+          "importedAt": "2026-10-12T18:32:39.427Z",
+          "productionVerified": false,
+          "runtimeVerificationState": "NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING"
+        }
       }
     }
   ],
