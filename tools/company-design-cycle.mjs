@@ -1265,6 +1265,7 @@ function computeVibeNativeDesign(){
     materials:freeTopicMode?[]:materials,variant:nativeDesignVariation,
     designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
     topicRevision:freeTopicMode?seed.ownerResetRevision:'',
+    aSystemReference:freeTopicMode?seed.A_SYSTEM_REFERENCE:null,
     discoveryCount:seed.designDiscoveryCount
   });
   const sketch=!freeTopicMode&&seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'

@@ -123,10 +123,18 @@ jobs:
           for(const request of activeOwnerDesignResetRequests()){
             const gameId=String(request.gameId||'').trim();
             const source=String(request.designRequest?.baselineSource||'').trim();
-            if(!source)continue;
-            const match=/^design\/([a-z0-9-]+)\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.exec(source);
-            if(!match||match[1]!==gameId)throw new Error('OWNER_DESIGN_BASELINE_PATH_INVALID:'+gameId);
-            baselines.add(source);
+            const aOnly=request.designRequest?.aSystemReference;
+            const aSource=String(aOnly?.source||'').trim();
+            if(!source&&!aSource)continue;
+            if(aSource&&(request.designRequest?.topicMode!=='VIBE_FREE_TOPIC'
+              ||aOnly?.scope!=='A_SYSTEM_ONLY'||Object.keys(aOnly).some(key=>!['scope','source'].includes(key))))
+              throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID:'+gameId);
+            for(const [selected,kind]of [[source,'BASELINE'],[aSource,'A_SYSTEM_ONLY']]){
+              if(!selected)continue;
+              const match=/^design\/([a-z0-9-]+)\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.exec(selected);
+              if(!match||match[1]!==gameId)throw new Error('OWNER_DESIGN_'+kind+'_PATH_INVALID:'+gameId);
+              baselines.add(selected);
+            }
           }
           for(const source of baselines){
             let contents;

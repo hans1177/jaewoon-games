@@ -479,6 +479,54 @@ test('explicit free-topic owner reset discards prior design input while keeping 
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
+test('fresh owner reset reads only the first actual seed system for A, without copying other original design fields',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-a-auto-seed-'));
+  try{
+    const file=path.join(dir,'queue.json');
+    const origin='design/cozy-island/2026-09-22/design-revised.json';
+    const originalPath=path.join(dir,origin);
+    fs.mkdirSync(path.dirname(originalPath),{recursive:true});
+    const old={gameId:'cozy-island',content:{identity:'기존 왕국 정복 주제',
+      coreLoop:['기존 나무 수집','주민 훈련','옛 왕국 성장'],
+      creativeGrammar:{a:{material:'왕조 계승'},b:{material:'철학'}},
+      signatureSystems:[
+        {name:'원본 첫 핵심 게임플레이',purpose:'원본 월드에서 플레이어가 대상과 상호작용해 기본 자원을 획득한다.'},
+        {name:'과거 두 번째 시스템',purpose:'기존 게임의 상세 문법과 B 시스템을 복제해선 안 된다.'}
+      ]}};
+    fs.writeFileSync(originalPath,JSON.stringify(old));
+    const request={revision:'AUTO-A-1',gameId:'cozy-island',gameName:'포근섬',status:'ACTIVE',
+      designRequest:{topicMode:'VIBE_FREE_TOPIC',baselineSource:'',originalPlatform:'ROBLOX',
+        multiplayerMode:'COOP',instruction:'원본 시드에서 A 게임 시스템만 자동 추출하고 B C @와 MAIN은 새로 창작한다.',
+        aSystemReference:{scope:'A_SYSTEM_ONLY',source:origin}}};
+    fs.writeFileSync(file,JSON.stringify({requests:[request]}));
+    const state={seeds:[]};
+    const first=ensureOwnerDesignResetSeed(state,'cozy-island',{file});
+    assert.equal(first.changed,true);
+    assert.deepEqual(first.seed.A_SYSTEM_REFERENCE,{scope:'A_SYSTEM_ONLY',source:origin,
+      systemFamily:old.content.signatureSystems[0].name,playerChoice:old.content.signatureSystems[0].purpose});
+    assert.deepEqual(first.seed.originalDesignContext.content,{});
+    assert.equal(first.seed.DESIGN_BASELINE_SOURCE,null);
+    assert.equal(first.seed.designTopicMode,'VIBE_FREE_TOPIC');
+    assert.equal(first.seed.MULTIPLAYER_DESIGN_MODE,'COOP');
+    assert.ok(!JSON.stringify(first.seed.A_SYSTEM_REFERENCE).includes('왕조 계승'));
+    assert.ok(!JSON.stringify(first.seed.A_SYSTEM_REFERENCE).includes('과거 두 번째 시스템'));
+    assert.equal(ensureOwnerDesignResetSeed(state,'cozy-island',{file}).changed,false);
+    for(const invalid of [
+      {scope:'A_SYSTEM_ONLY',source:'design/other-game/2026-09-22/design-revised.json'},
+      {scope:'A_SYSTEM_ONLY',source:origin,systemFamily:'대화가 지정한 가짜 시스템'},
+      {scope:'A_AND_B',source:origin}
+    ]){
+      request.revision+='-NEXT';request.designRequest.aSystemReference=invalid;
+      fs.writeFileSync(file,JSON.stringify({requests:[request]}));
+      assert.throws(()=>ensureOwnerDesignResetSeed(state,'cozy-island',{file}),
+        /OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID/);
+    }
+    request.revision+='-NEXT';request.designRequest.aSystemReference={scope:'A_SYSTEM_ONLY',source:origin};
+    fs.unlinkSync(originalPath);fs.writeFileSync(file,JSON.stringify({requests:[request]}));
+    assert.throws(()=>ensureOwnerDesignResetSeed(state,'cozy-island',{file}),
+      /OWNER_FREE_TOPIC_A_SYSTEM_SOURCE_READ_FAILED/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
 test('design runtime lazily restores only validated active owner baselines before reset materialization',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const segment=workflow.slice(workflow.indexOf('      - name: Load latest company runtime state'),workflow.indexOf('      - name: Synchronize active owner design reset seeds'));
@@ -508,6 +556,20 @@ test('design runtime lazily restores only validated active owner baselines befor
   assert.deepEqual(writes.map(row=>row.file),[one,two]);
   assert.ok(messages.includes('OWNER_DESIGN_BASELINE_SELECTED_COUNT=2'));
   assert.ok(messages.includes('OWNER_DESIGN_BASELINE_LOAD_MODE=TARGET_FILES_ONLY'));
+  reads.length=0;
+  writes.length=0;
+  const aSeed='design/cozy-island/2026-09-22/design-revised.json';
+  execute([{gameId:'cozy-island',designRequest:{topicMode:'VIBE_FREE_TOPIC',baselineSource:'',
+    aSystemReference:{scope:'A_SYSTEM_ONLY',source:aSeed}}}]);
+  assert.deepEqual(reads,['origin/company-runtime:'+aSeed],
+    'the free redesign may download the exact original design only for A seed system extraction');
+  assert.deepEqual(writes.map(row=>row.file),[aSeed]);
+  reads.length=0;
+  writes.length=0;
+  assert.throws(()=>execute([{gameId:'cozy-island',designRequest:{topicMode:'VIBE_FREE_TOPIC',
+    aSystemReference:{scope:'A_SYSTEM_ONLY',source:'design/another-game/2026-09-22/design-revised.json'}}}]),
+    /OWNER_DESIGN_A_SYSTEM_ONLY_PATH_INVALID/);
+  assert.equal(reads.length,0);
   reads.length=0;
   writes.length=0;
   assert.throws(()=>execute([{gameId:'daechung-rpg',designRequest:{baselineSource:'design/daechung-rpg/../unsafe.json'}}]),/OWNER_DESIGN_BASELINE_PATH_INVALID/);

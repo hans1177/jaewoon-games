@@ -611,3 +611,60 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
     assert.deepEqual(computeVibeSeedProposal({...target,gameName:'옛 포근섬 왕국',ownerBrief:'이전 주제 재사용'}),result);
   }
 });
+
+test('cozy fresh design reuses only the verified old seed A gameplay system, not genre, themes or MAIN',()=>{
+  const base={requestId:'cozy-island',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'OWNER-COZY-A-SEED-AUTO-20261012-5',materials:[]};
+  // Producer is owner-design-reset: its source selection is independently tested using an actual old-seed fixture.
+  // The composer only receives the extracted gameplay system, never the source design or owner-written choice.
+  const sourceDesign={gameId:'cozy-island',content:{signatureSystems:[
+    {name:'원본 첫 핵심 게임플레이',purpose:'원본 월드에서 플레이어가 대상과 상호작용해 기본 자원을 획득한다.'},
+    {name:'예전 후속 역할',purpose:'다음 역할을 A 입력으로 사용하거나 복제하지 않는다.'}
+  ]}};
+  const aOnly={scope:'A_SYSTEM_ONLY',
+    systemFamily:sourceDesign.content.signatureSystems[0].name,
+    playerChoice:sourceDesign.content.signatureSystems[0].purpose,
+    source:'design/cozy-island/2026-09-22/design-revised.json'};
+  const without=computeVibeSeedProposal(base);
+  const fresh=computeVibeSeedProposal({...base,aSystemReference:aOnly});
+  const legacyPoison=computeVibeSeedProposal({...base,aSystemReference:aOnly,
+    gameName:'포근섬: 작은 왕국 키우기',ownerBrief:'왕조 계승과 주민 병영 5개 거점 점령',
+    coreLoop:['과거 집 꾸미기','과거 생활 공간 탐색','과거 시드 정답'],
+    materials:[{causalDNA:['DYNASTIC_INHERITANCE','PATRONAGE_NETWORK']}],
+    category:'CASUAL'});
+  assert.deepEqual(fresh,legacyPoison,'old game content must never alter the new composition');
+  const fusion=fresh.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
+  const control=without.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
+  assert.equal(fusion.majorAxes[0].systemFamily,aOnly.systemFamily);
+  assert.equal(fusion.majorAxes[0].playerChoice.includes(aOnly.playerChoice),true);
+  assert.notEqual(fusion.majorAxes[1].systemFamily,aOnly.systemFamily);
+  assert.deepEqual(fusion.majorAxes[1],control.majorAxes[1],
+    'B gameplay family and independently selected B creative material cannot inherit the old system');
+  assert.deepEqual(fusion.themeFusion.themes,control.themeFusion.themes,
+    'C creative source selection cannot inherit the old gameplay system');
+  assert.deepEqual(fusion.themeFusion.genres.map(row=>({role:row.role,name:row.name})),
+    control.themeFusion.genres.map(row=>({role:row.role,name:row.name})),
+    'C primary and secondary genre identities must be selected independently of the old gameplay system');
+  assert.notEqual(fusion.themeFusion.abGameplayEffect,control.themeFusion.abGameplayEffect,
+    'C must rebind its actual effects to the A/B causal chain after the A gameplay system is resolved');
+  assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.causalDNAs,
+    without.gameplaySketch.novelGameGrammar.causalDNAs);
+  assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3),
+    without.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3));
+  assert.notEqual(fresh.distinctIdentity,without.distinctIdentity);
+  assert.notEqual(fresh.gameName,without.gameName);
+  assert.match(fresh.distinctIdentity,/MAIN은 A\(/);
+  assert.match(fresh.distinctIdentity,/C\(메인/);
+  assert.match(fresh.distinctIdentity,/@\(/);
+  assert.ok(!fresh.distinctIdentity.includes('포근섬: 작은 왕국 키우기'));
+  assert.ok(!fresh.distinctIdentity.includes('왕조 계승과 주민 병영'));
+  assert.equal(fresh.gameplaySketch.novelGameGrammar.emergentGenre.grammarFormula,
+    'MAIN × A × B × C + @');
+  const sketch=normalizeGameplaySketch({...base,aSystemReference:aOnly},fresh,fresh.coreLoop,fresh.gameName);
+  const seed={...legacySeed(),GAMEPLAY_SKETCH:sketch,CORE_LOOP:fresh.coreLoop,
+    DISTINCT_IDENTITY:fresh.distinctIdentity,CORE_FUN_TO_LEARN:fresh.coreFunToLearn,
+    INITIAL_TARGET_PLATFORM:fresh.initialTargetPlatform,INITIAL_PLAY_MODE:fresh.initialPlayMode,
+    MULTIPLAYER_DESIGN_MODE:fresh.multiplayerDesignMode,
+    CROSS_PLATFORM_EXPANSION_VALUE:fresh.crossPlatformExpansionValue};
+  assert.equal(validateGameSeed(seed).pass,true,'the fresh basic design must satisfy the seed contract');
+});

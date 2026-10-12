@@ -33,6 +33,31 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
     const game=clean(request.gameId);
     const baselineSource=clean(brief.baselineSource);
     const freeTopicMode=clean(brief.topicMode)==='VIBE_FREE_TOPIC';
+    // 기존 게임 재설계에서 A는 실제 과거 시드의 첫 핵심 시스템 하나만 자동 추출한다.
+    // 요청에는 원본 경로만 넣는다. 시스템 명칭과 플레이어 행동을 대화·수정자가 직접 고르지 않는다.
+    const aSystemReference=brief.aSystemReference;
+    let resolvedAOnly=null;
+    if(aSystemReference!==undefined){
+      const allowed=['scope','source'];
+      const source=clean(aSystemReference?.source);
+      const match=/^design\/([a-z0-9-]+)\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.exec(source);
+      if(!freeTopicMode||!aSystemReference||typeof aSystemReference!=='object'||Array.isArray(aSystemReference)
+        ||aSystemReference.scope!=='A_SYSTEM_ONLY'
+        ||Object.keys(aSystemReference).some(key=>!allowed.includes(key))
+        ||!match||match[1]!==game)throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID: '+game);
+      let originalSeed;
+      try{originalSeed=JSON.parse(fs.readFileSync(path.resolve(path.dirname(file),source),'utf8'));}
+      catch{throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_SOURCE_READ_FAILED: '+source);}
+      if(originalSeed?.gameId&&clean(originalSeed.gameId)!==game)
+        throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_SOURCE_GAME_MISMATCH: '+game);
+      const signatures=originalSeed?.content?.signatureSystems||originalSeed?.signatureSystems||[];
+      const firstSystem=Array.isArray(signatures)?signatures.find(row=>clean(row?.name)&&clean(row?.purpose)):null;
+      if(!firstSystem)throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_SOURCE_EMPTY: '+source);
+      const systemFamily=clean(firstSystem.name),playerChoice=clean(firstSystem.purpose);
+      if(systemFamily.length<2||systemFamily.length>160||playerChoice.length<10||playerChoice.length>280)
+        throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_SOURCE_INVALID: '+source);
+      resolvedAOnly={scope:'A_SYSTEM_ONLY',systemFamily,playerChoice,source};
+    }
     if(freeTopicMode&&baselineSource)throw new Error('OWNER_FREE_TOPIC_BASELINE_FORBIDDEN: '+game);
     if(baselineSource&&(!baselineSource.startsWith('design/'+game+'/')||!/^design\/[a-z0-9-]+\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.test(baselineSource)))throw new Error('OWNER_DESIGN_BASELINE_PATH_INVALID: '+game);
     const original=baselineSource?JSON.parse(fs.readFileSync(path.resolve(path.dirname(file),baselineSource),'utf8')):null;
@@ -46,6 +71,7 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
       gameId:game,gameName,
       designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY',
       designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
+      ...(resolvedAOnly?{A_SYSTEM_REFERENCE:resolvedAOnly}:{}),
       OWNER_LATEST_DESIGN_REQUEST:clean(brief.instruction),
       DESIGN_BASELINE_SOURCE:baselineSource||null,
       GAME_CATEGORY:clean(original?.gameCategory||'CASUAL'),
