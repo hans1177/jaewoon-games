@@ -32124,11 +32124,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_b96c8f65bff40a1f6c6fd52c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7814",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "606a4a845c02d5fe8542adf29294f682ced06404",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7814,
+        "baseBranch": "main",
+        "headBranch": "fix/design-standard-20261012",
+        "baseSha": "606a4a845c02d5fe8542adf29294f682ced06404",
+        "headSha": "b6af3137f349adc25d2c86da6211c9051eef6909",
+        "mergeCommitSha": "fef2d64194b7fc70bb22dd868c1a96abafe2daa9",
+        "mergedAt": "2026-10-12T11:43:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1749a4db8f0db4459828f509e9654409ed8147da3817bbce41076b87cdee5bbc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/design-standard-20261012",
+        "candidateSha": "b6af3137f349adc25d2c86da6211c9051eef6909"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 167,
+        "deletedLineCount": 44,
+        "changedFiles": [
+          "company-learning/game-design-grammar.md",
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-design-gate-scoring-v2.test.mjs",
+          "tools/company-design-cycle.mjs",
+          "tools/company-design-gate-scoring-v2.mjs",
+          "tools/company-game-seed-bootstrap.mjs"
+        ],
+        "codingRelevantFiles": [
+          "company-learning/platform-release-roadmap.json",
+          "qa/company-design-gate-scoring-v2.test.mjs",
+          "tools/company-design-cycle.mjs",
+          "tools/company-design-gate-scoring-v2.mjs",
+          "tools/company-game-seed-bootstrap.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7814",
+        "merge-commit:fef2d64194b7fc70bb22dd868c1a96abafe2daa9",
+        "base-main:606a4a845c02d5fe8542adf29294f682ced06404"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 258
+    "total": 259
   }
 }
