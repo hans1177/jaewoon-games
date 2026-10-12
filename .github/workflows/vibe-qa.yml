@@ -33,6 +33,7 @@ on:
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-package.mjs'
+      - 'tools/company-development-roblox-gameplay-product-readiness.mjs'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - 'qa/vibe-regression.mjs'
       - 'qa/vibe-*.mjs'
@@ -42,6 +43,7 @@ on:
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'qa/company-development-roblox-package.test.mjs'
+      - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
       - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
@@ -78,6 +80,7 @@ on:
       - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
       - 'tools/company-development-roblox-package.mjs'
+      - 'tools/company-development-roblox-gameplay-product-readiness.mjs'
       - '.github/workflows/company-development-roblox-runtime.yml'
       - 'qa/vibe-regression.mjs'
       - 'qa/vibe-*.mjs'
@@ -87,6 +90,7 @@ on:
       - 'qa/company-roblox-source-drift-sync.test.mjs'
       - 'qa/company-development-roblox-source-reconcile.test.mjs'
       - 'qa/company-development-roblox-package.test.mjs'
+      - 'qa/company-development-roblox-gameplay-product-readiness.test.mjs'
       - 'qa/external-mobile-free-game-playtest-workflow.test.mjs'
       - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
@@ -305,7 +309,8 @@ jobs:
           node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
           node --check tools/company-development-roblox-package.mjs
-          node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs
+          node --check tools/company-development-roblox-gameplay-product-readiness.mjs
+          node --test qa/company-roblox-source-drift-sync.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-gameplay-product-readiness.test.mjs
 
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
