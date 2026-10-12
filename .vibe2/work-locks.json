@@ -1,5 +1,27 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-1f558ql",
+      "worker": "vibe2",
+      "taskId": "dice-battle-board-studio-evolution-roblox-stability-v1",
+      "gameId": "dice-battle-board",
+      "files": [
+        "roblox-games/dice-battle-board/client/Game.client.luau",
+        "roblox-games/dice-battle-board/shared/GameConfig.luau",
+        "roblox-games/dice-battle-board/server/Game.server.luau"
+      ],
+      "baseSha": "13720b27e7844649a4d6569aa7d57f4cb2507cb4",
+      "runId": "38319921537",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-12T23:13:55.937Z",
+      "expiresAt": "2026-10-12T23:58:55.937Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:dice-battle-board-studio-evolution-roblox-stability-v1"
+      ]
+    }
+  ]
 }
