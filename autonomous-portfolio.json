@@ -147,13 +147,13 @@
       "id": "P0001",
       "slug": "survival",
       "name": "나의 생존기",
-      "sourcePath": "web-games/survival",
+      "sourcePath": "unity-games/survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
       "unityProjectReady": false,
       "developmentFocus": {
@@ -185,18 +185,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/survival/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0002",
       "slug": "insect-survival",
       "name": "곤충 생존기",
-      "sourcePath": "web-games/insect-survival",
+      "sourcePath": "unity-games/insect-survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
       "developmentFocus": {
         "scores": {
@@ -225,18 +238,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/insect-survival/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/insect-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/insect-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0003",
       "slug": "crystal-defense",
       "name": "수정 디펜스",
-      "sourcePath": "web-games/crystal-defense",
+      "sourcePath": "roblox-games/crystal-defense",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -265,18 +291,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/crystal-defense/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/crystal-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/crystal-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0004",
       "slug": "bug-defense",
       "name": "곤충 디펜스",
-      "sourcePath": "web-games/bug-defense",
+      "sourcePath": "unity-games/bug-defense",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
       "developmentFocus": {
         "scores": {
@@ -305,18 +344,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/bug-defense/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/bug-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/bug-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0005",
       "slug": "human-go",
       "name": "휴먼 GO",
-      "sourcePath": "web-games/human-go",
+      "sourcePath": "roblox-games/human-go",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "developmentFocus": {
         "scores": {
           "playability": 1,
@@ -345,20 +397,33 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/human-go/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/human-go/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/human-go/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0006",
       "slug": "daechung-rpg",
       "name": "대충 RPG",
-      "sourcePath": "web-games/daechung-rpg",
+      "sourcePath": "roblox-games/daechung-rpg",
       "productionSourcePath": "unity-games/daechung-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "UNITY",
+      "selectedPlatform": "ROBLOX",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -390,18 +455,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/daechung-rpg/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/daechung-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/daechung-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0007",
       "slug": "island-village",
       "name": "무인도 마을",
-      "sourcePath": "web-games/island-village",
+      "sourcePath": "roblox-games/island-village",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "protectedValues": [],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
@@ -416,18 +494,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/island-village/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/island-village/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/island-village/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0008",
       "slug": "egg-heist",
       "name": "알 도둑 대작전",
-      "sourcePath": "web-games/egg-heist",
+      "sourcePath": "roblox-games/egg-heist",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "protectedValues": [],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
@@ -442,18 +533,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/egg-heist/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/egg-heist/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/egg-heist/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0009",
       "slug": "monster-adventure",
       "name": "몬스터 어드벤처",
-      "sourcePath": "web-games/monster-adventure",
+      "sourcePath": "unity-games/monster-adventure",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
       "developmentFocus": {
         "scores": {
@@ -485,18 +589,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/monster-adventure/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/monster-adventure/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/monster-adventure/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0101",
       "slug": "chess-battle",
       "name": "체스 배틀",
-      "sourcePath": "web-games/chess-battle",
+      "sourcePath": "roblox-games/chess-battle",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -516,18 +633,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/chess-battle/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/chess-battle/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/chess-battle/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0102",
       "slug": "survival2",
       "name": "숲의 생존자들",
-      "sourcePath": "web-games/survival2",
+      "sourcePath": "roblox-games/survival2",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -547,18 +677,31 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/survival2/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/survival2/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/survival2/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "P0103",
       "slug": "territory-war",
       "name": "영토전쟁",
-      "sourcePath": "web-games/territory-war",
+      "sourcePath": "roblox-games/territory-war",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -578,7 +721,20 @@
       },
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/territory-war/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/territory-war/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/territory-war/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-cozy-island",
@@ -586,7 +742,7 @@
       "name": "포근섬",
       "sourcePath": "roblox-games/cozy-island",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -604,10 +760,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -615,7 +784,7 @@
       "name": "잃어버린 별의 메아리",
       "sourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -633,10 +802,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-single-defense-strat-celestial-bastion",
@@ -644,7 +826,7 @@
       "name": "천상의 보루",
       "sourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -662,10 +844,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-puzzle-chromatic-cascade",
@@ -673,7 +868,7 @@
       "name": "색채의 연쇄",
       "sourcePath": "unity-games/seed-puzzle-chromatic-cascade",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -691,10 +886,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-puzzle-chromatic-cascade/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-casual-realm-weaver",
@@ -702,7 +910,7 @@
       "name": "세계의 직조자",
       "sourcePath": "unity-games/seed-casual-realm-weaver",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -720,10 +928,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-casual-realm-weaver/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
@@ -731,7 +952,7 @@
       "name": "수정의 개화",
       "sourcePath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -749,10 +970,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
@@ -760,7 +994,7 @@
       "name": "엘도리아 연대기",
       "sourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -778,10 +1012,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-village-dungeons",
@@ -789,7 +1036,7 @@
       "name": "마을 던전 RPG",
       "sourcePath": "unity-games/village-dungeons",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -807,10 +1054,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/village-dungeons/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/village-dungeons/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/village-dungeons/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-amusement-tycoon",
@@ -818,7 +1078,7 @@
       "name": "놀이공원 타이쿤",
       "sourcePath": "unity-games/amusement-tycoon",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -836,10 +1096,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/amusement-tycoon/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/amusement-tycoon/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/amusement-tycoon/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-line-defense",
@@ -847,7 +1120,7 @@
       "name": "골목 군단 대전",
       "sourcePath": "unity-games/line-defense",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -865,10 +1138,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/line-defense/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/line-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/line-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-fantasy-survival",
@@ -876,7 +1162,7 @@
       "name": "마력숲 생존기",
       "sourcePath": "unity-games/fantasy-survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -894,10 +1180,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/fantasy-survival/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fantasy-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/fantasy-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-zombie-survival",
@@ -905,7 +1204,7 @@
       "name": "좀비 생존기",
       "sourcePath": "unity-games/zombie-survival",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -923,10 +1222,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/zombie-survival/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/zombie-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/zombie-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-horror-escape-room",
@@ -934,7 +1246,7 @@
       "name": "심야 대탈출",
       "sourcePath": "roblox-games/horror-escape-room",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -952,10 +1264,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/horror-escape-room/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/horror-escape-room/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/horror-escape-room/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-core-clash-4v4",
@@ -963,7 +1288,7 @@
       "name": "코어 전장 4대4",
       "sourcePath": "roblox-games/core-clash-4v4",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -981,10 +1306,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/core-clash-4v4/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/core-clash-4v4/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/core-clash-4v4/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-human-go-temp",
@@ -992,7 +1330,7 @@
       "name": "휴먼 GO!",
       "sourcePath": "roblox-games/human-go-temp",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -1010,10 +1348,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/human-go-temp/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/human-go-temp/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/human-go-temp/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-party-rpg",
@@ -1021,7 +1372,7 @@
       "name": "파티 RPG",
       "sourcePath": "roblox-games/party-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -1039,10 +1390,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/party-rpg/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/party-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/party-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -1050,7 +1414,7 @@
       "name": "Harbor Days",
       "sourcePath": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -1068,10 +1432,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
@@ -1079,7 +1456,7 @@
       "name": "Pocket Foundry",
       "sourcePath": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -1097,10 +1474,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-roblox-story-rpg-adventur-blox-fruits",
@@ -1108,7 +1498,7 @@
       "name": "Shardbound Odyssey",
       "sourcePath": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -1126,10 +1516,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-seed-roblox-survival-horror-es-doors",
@@ -1137,7 +1540,7 @@
       "name": "Last Lantern",
       "sourcePath": "roblox-games/seed-roblox-survival-horror-es-doors",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
@@ -1155,10 +1558,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-cat-step",
@@ -1166,7 +1582,7 @@
       "name": "캣 스텝",
       "sourcePath": "unity-games/cat-step",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1184,10 +1600,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/cat-step/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cat-step/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cat-step/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-defense",
@@ -1195,7 +1624,7 @@
       "name": "숲길 디펜스",
       "sourcePath": "unity-games/defense",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1213,10 +1642,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/defense/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-dice-battle-board",
@@ -1224,7 +1666,7 @@
       "name": "주사위 전투 보드",
       "sourcePath": "unity-games/dice-battle-board",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1242,10 +1684,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/dice-battle-board/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/dice-battle-board/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/dice-battle-board/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-exorcist-office",
@@ -1253,7 +1708,7 @@
       "name": "퇴마 사무소",
       "sourcePath": "unity-games/exorcist-office",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1271,10 +1726,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/exorcist-office/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/exorcist-office/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/exorcist-office/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-fifty-days",
@@ -1282,7 +1750,7 @@
       "name": "50일",
       "sourcePath": "unity-games/fifty-days",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1300,10 +1768,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/fifty-days/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/fifty-days/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/fifty-days/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-gem-survivor",
@@ -1311,7 +1792,7 @@
       "name": "보석 생존전",
       "sourcePath": "unity-games/gem-survivor",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1329,10 +1810,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/gem-survivor/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/gem-survivor/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/gem-survivor/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-kingshot-ad",
@@ -1340,7 +1834,7 @@
       "name": "킹샷 광고풍",
       "sourcePath": "unity-games/kingshot-ad",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1358,10 +1852,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/kingshot-ad/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/kingshot-ad/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/kingshot-ad/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-realistic-builder",
@@ -1369,7 +1876,7 @@
       "name": "현실 건축가",
       "sourcePath": "unity-games/realistic-builder",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1387,10 +1894,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/realistic-builder/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/realistic-builder/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/realistic-builder/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-simple-rpg",
@@ -1398,7 +1918,7 @@
       "name": "작은 모험 RPG",
       "sourcePath": "unity-games/simple-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1416,10 +1936,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/simple-rpg/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/simple-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/simple-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-star-frontier",
@@ -1427,7 +1960,7 @@
       "name": "별길 개척자",
       "sourcePath": "unity-games/star-frontier",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1445,10 +1978,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/star-frontier/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/star-frontier/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/star-frontier/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     },
     {
       "id": "RUNTIME-tower-choice-rpg",
@@ -1456,7 +2002,7 @@
       "name": "10층 탑 RPG",
       "sourcePath": "unity-games/tower-choice-rpg",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
       "profileStatus": "DEVELOPMENT_CONFIRMED",
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
@@ -1474,10 +2020,23 @@
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
       "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
-      "targetEngine": "roblox-unity-native",
+      "targetEngine": "ROBLOX_UNITY",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T03:25:07.208Z",
+      "productionTier": 2
     }
   ],
   "productionClassState": {
@@ -2261,5 +2820,6 @@
         "sourceReady": true
       }
     ]
-  }
+  },
+  "updatedAt": "2026-10-12T03:25:07.208Z"
 }
