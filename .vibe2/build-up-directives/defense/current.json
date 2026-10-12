@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "defense-build-up-g1-e6e7ede2767f",
-  "directiveFingerprint": "e6e7ede2767f35bb1e56725f728554b47620c3911760eaf9be83bd0b40d1e79a",
-  "previousDirectiveFingerprint": null,
-  "forbiddenRepeatFingerprint": null,
+  "directiveId": "defense-build-up-g2-87baa37ff3ae",
+  "directiveFingerprint": "87baa37ff3aea8c46e753a1dfe98866d8b1e10836bbb4fcc8df5045d68b43851",
+  "previousDirectiveFingerprint": "e6e7ede2767f35bb1e56725f728554b47620c3911760eaf9be83bd0b40d1e79a",
+  "forbiddenRepeatFingerprint": "e6e7ede2767f35bb1e56725f728554b47620c3911760eaf9be83bd0b40d1e79a",
   "gameId": "defense",
   "gameName": "숲길 디펜스",
-  "generation": 1,
+  "generation": 2,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
-  "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-  "previousDirectiveOutcome": null,
+  "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/defense",
-  "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
-  "designFingerprint": "0d45fa15284b6a5bc0657362762e7277328dcbf71f96666d245570104a57a4ec",
+  "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
+  "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -129,22 +129,80 @@
         {
           "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
           "newGameplay": "방어 시설 배치의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "기존 첫 진입 조건을 만족하고 숲길 디펜스의 목표를 확인한 뒤 방어 시설 배치 × 역사적 세력 균형의 접근 가능한 선택을 제시한다.",
+          "playerChoice": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 방어 시설 배치 × 역사적 세력 균형의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
           "newGameplay": "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 적 패턴과 자원 대응 × 왕조의 정통성과 민심의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
           "newGameplay": "서사시의 맹세와 계약과 비극과 희극의 운명 반전의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "역사적 세력 균형의 제약과 왕조의 정통성과 민심의 대응을 같은 지역에서 순서대로 시험한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 방어 시설 배치 × 역사적 세력 균형의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
           "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.와 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 적 패턴과 자원 대응 × 왕조의 정통성과 민심의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         }
       ],
       "integrityNotes": [
@@ -234,7 +292,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+        "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -257,7 +315,7 @@
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
       "canonicalGameId": "defense",
-      "canonicalDesignFingerprint": "0d45fa15284b6a5bc0657362762e7277328dcbf71f96666d245570104a57a4ec",
+      "canonicalDesignFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
       "unityWebProjectRoot": "unity-games/defense",
       "unityWebBuildOutputRoot": "web-games/defense",
       "unityWebSourceAvailable": false,
@@ -281,8 +339,8 @@
       "shadowPipelineForbidden": true,
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
-    "designFingerprint": "0d45fa15284b6a5bc0657362762e7277328dcbf71f96666d245570104a57a4ec",
-    "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+    "designFingerprint": "2e4c917d72ee812bd324c3eb097c03ef4c83ad879084ed11312192f4f62e8c56",
+    "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -801,7 +859,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+    "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -3081,6 +3139,11 @@
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "detailedDesign": {},
+    "tutorialPlan": {},
+    "presentationPlan": {},
+    "interfacePlan": {},
+    "verificationPlan": {},
     "spatialLayout": {},
     "spatialDimension": "",
     "creativeGrammar": {
@@ -3506,22 +3569,80 @@
       {
         "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
         "newGameplay": "방어 시설 배치의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "기존 첫 진입 조건을 만족하고 숲길 디펜스의 목표를 확인한 뒤 방어 시설 배치 × 역사적 세력 균형의 접근 가능한 선택을 제시한다.",
+        "playerChoice": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B"
+        ],
+        "stateKeys": [
+          "RouteState",
+          "RiskState",
+          "ResourceState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 방어 시설 배치 × 역사적 세력 균형의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
         "newGameplay": "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B"
+        ],
+        "stateKeys": [
+          "RiskState",
+          "ResourceState",
+          "RouteState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 적 패턴과 자원 대응 × 왕조의 정통성과 민심의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
         "newGameplay": "서사시의 맹세와 계약과 비극과 희극의 운명 반전의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "역사적 세력 균형의 제약과 왕조의 정통성과 민심의 대응을 같은 지역에서 순서대로 시험한다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B",
+          "VIBE_DELVE"
+        ],
+        "stateKeys": [
+          "RouteState",
+          "RiskState",
+          "ResourceState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 방어 시설 배치 × 역사적 세력 균형의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
         "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.와 웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B",
+          "VIBE_DELVE"
+        ],
+        "stateKeys": [
+          "RiskState",
+          "ResourceState",
+          "RouteState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 적 패턴과 자원 대응 × 왕조의 정통성과 민심의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       }
     ],
     "failureRetryRisk": {
@@ -4793,7 +4914,13 @@
     ]
   },
   "previousVersionDelta": {
-    "state": "NO_PREVIOUS_DIRECTIVE"
+    "previousGoal": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
+    "previousFocus": "STABILITY",
+    "previousGeneration": 1,
+    "previousSourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+    "currentSourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
+    "sourceChanged": true,
+    "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
@@ -5948,7 +6075,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 398655,
+        "sourceBytes": 398489,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5981,8 +6108,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=NONE; previousEffect=NO_PREVIOUS_GENERATION; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5992,9 +6119,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -6030,7 +6158,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 68,
+        "score": 210,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -6144,12 +6272,12 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 1,
-    "previousGeneration": 0,
+    "generation": 2,
+    "previousGeneration": 1,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
-    "priorSourceFingerprint": null,
-    "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
+    "sourceFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
+    "priorSourceFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+    "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
     "sourceMutationRequiredWhenBindingMissingStaleOrQualityGapExists": true,
@@ -6559,7 +6687,7 @@
     "gameId": "defense",
     "genreProfile": "DEFENSE",
     "conceptIdentity": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "배치·대응 선택",
+    "coreAction": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -6617,10 +6745,11 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+    "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
+    "detailedDesignContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -6658,7 +6787,7 @@
     "gameId": "defense",
     "genreProfile": "DEFENSE",
     "conceptIdentity": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "배치·대응 선택",
+    "coreAction": "방어 시설 배치: 접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -6716,10 +6845,11 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+    "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
+    "detailedDesignContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -6978,12 +7108,12 @@
   "effectivenessMeasurement": {
     "expectedPlayerEffect": "숲길 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 숲길 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.에서 동일 입력과 상태가 반복 가능한 결과를 만들고 진행 차단·복구 실패가 사라진다.",
     "previousGeneration": {
-      "classification": "NO_PREVIOUS_GENERATION",
-      "reason": "initial build-up generation",
+      "classification": "UNKNOWN_RUNTIME_EFFECT",
+      "reason": "previous generation lacks sufficient verified effect evidence",
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "e5678d1fad11cc8d0fef9d2134558081f9beaf3a8d97c3c770a8e879dce9ed6f",
+      "sourceTreeFingerprint": "bf9769f6fcf076b1f5c11b6f72003d4b1732987796c20de2ba8592ba74989b7d",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -6998,8 +7128,8 @@
     "sourceDeltaAloneDoesNotProvePlayerValueImprovement": true
   },
   "nextActionDecision": {
-    "action": "CONTINUE_BUILD_UP_CURRENT_SYSTEM",
-    "reason": "initial STABILITY build-up has no previous generation effect to compare"
+    "action": "REQUEST_REQUIRED_RUNTIME_OBSERVATION",
+    "reason": "effect cannot be promoted until relevant runtime or deterministic gameplay evidence is observed"
   },
   "acceptanceEvidence": [
     "CURRENT_GAME_SOURCE_CHANGED_IN_RESPONSIBLE_SYSTEM",
@@ -7039,12 +7169,12 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 2,
+    "nextGeneration": 3,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
-    "escalationMode": "INITIAL_GAME_SPECIFIC_BUILD_UP",
-    "sourceChangedSincePrevious": false,
+    "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
+    "sourceChangedSincePrevious": true,
     "verifiedEvolution": false,
     "reuseSameGoalWithoutNewEvidence": false,
     "completedGoalBecomesBaseline": false
@@ -7101,5 +7231,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-12T06:09:08.124Z"
+  "generatedAt": "2026-10-12T18:10:55.037Z"
 }

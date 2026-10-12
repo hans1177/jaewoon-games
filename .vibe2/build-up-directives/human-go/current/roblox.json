@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "human-go-build-up-g1-e517753b7957",
-  "directiveFingerprint": "e517753b795708ab1a2c2c81183c849a55aab98cf8aec3e9ddcb4b441eb1a073",
+  "directiveId": "human-go-build-up-g1-a71518f4b005",
+  "directiveFingerprint": "a71518f4b005d2ec74f72d3f7273e79772182115257636d011c223256b81f228",
   "previousDirectiveFingerprint": null,
   "forbiddenRepeatFingerprint": null,
   "gameId": "human-go",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/human-go",
-  "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
-  "designFingerprint": "6a8898145f7f2b81080e56feb439715445052a1afc44ded4aa4f51a4feb3e2bb",
+  "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
+  "designFingerprint": "90e5e8479f2f600f01af3375afbdd77a30b8b70aaf8072312c95bca15a005953",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Simulation",
@@ -129,22 +129,80 @@
         {
           "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
           "newGameplay": "사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "기존 첫 진입 조건을 만족하고 휴먼 GO의 목표를 확인한 뒤 사회관계 선택 × 희극의 오해와 엇갈림의 접근 가능한 선택을 제시한다.",
+          "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 틀린 믿음·잘못 전달된 정보가 실제 목표·동선·관계 상태를 바꾼다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 사회관계 선택 × 희극의 오해와 엇갈림의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
           "newGameplay": "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 생활 공간 탐색 × 비극과 희극의 운명 반전의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
           "newGameplay": "축제의 신분 반전과 증언과 합의된 현실의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "희극의 오해와 엇갈림의 제약과 비극과 희극의 운명 반전의 대응을 같은 지역에서 순서대로 시험한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 사회관계 선택 × 희극의 오해와 엇갈림의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
           "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 틀린 믿음·잘못 전달된 정보가 실제 목표·동선·관계 상태를 바꾼다.와 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 생활 공간 탐색 × 비극과 희극의 운명 반전의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         }
       ],
       "integrityNotes": [
@@ -234,7 +292,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+        "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -257,7 +315,7 @@
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
       "canonicalGameId": "human-go",
-      "canonicalDesignFingerprint": "6a8898145f7f2b81080e56feb439715445052a1afc44ded4aa4f51a4feb3e2bb",
+      "canonicalDesignFingerprint": "90e5e8479f2f600f01af3375afbdd77a30b8b70aaf8072312c95bca15a005953",
       "unityWebProjectRoot": "unity-games/human-go",
       "unityWebBuildOutputRoot": "web-games/human-go",
       "unityWebSourceAvailable": false,
@@ -281,8 +339,8 @@
       "shadowPipelineForbidden": true,
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
-    "designFingerprint": "6a8898145f7f2b81080e56feb439715445052a1afc44ded4aa4f51a4feb3e2bb",
-    "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+    "designFingerprint": "90e5e8479f2f600f01af3375afbdd77a30b8b70aaf8072312c95bca15a005953",
+    "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -801,7 +859,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+    "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -3081,6 +3139,11 @@
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "detailedDesign": {},
+    "tutorialPlan": {},
+    "presentationPlan": {},
+    "interfacePlan": {},
+    "verificationPlan": {},
     "spatialLayout": {},
     "spatialDimension": "",
     "creativeGrammar": {
@@ -3506,22 +3569,80 @@
       {
         "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
         "newGameplay": "사회관계 선택의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "기존 첫 진입 조건을 만족하고 휴먼 GO의 목표를 확인한 뒤 사회관계 선택 × 희극의 오해와 엇갈림의 접근 가능한 선택을 제시한다.",
+        "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 틀린 믿음·잘못 전달된 정보가 실제 목표·동선·관계 상태를 바꾼다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B"
+        ],
+        "stateKeys": [
+          "RouteState",
+          "RiskState",
+          "ResourceState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 사회관계 선택 × 희극의 오해와 엇갈림의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
         "newGameplay": "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B"
+        ],
+        "stateKeys": [
+          "RiskState",
+          "ResourceState",
+          "RouteState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 생활 공간 탐색 × 비극과 희극의 운명 반전의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
         "newGameplay": "축제의 신분 반전과 증언과 합의된 현실의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "희극의 오해와 엇갈림의 제약과 비극과 희극의 운명 반전의 대응을 같은 지역에서 순서대로 시험한다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B",
+          "VIBE_DELVE"
+        ],
+        "stateKeys": [
+          "RouteState",
+          "RiskState",
+          "ResourceState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 사회관계 선택 × 희극의 오해와 엇갈림의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
         "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "인물과 대상의 요청 가운데 우선순위를 결정하면서 틀린 믿음·잘못 전달된 정보가 실제 목표·동선·관계 상태를 바꾼다.와 이전 관계의 결과로 열린 장소와 상호작용을 탐색하면서 큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B",
+          "VIBE_DELVE"
+        ],
+        "stateKeys": [
+          "RiskState",
+          "ResourceState",
+          "RouteState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 생활 공간 탐색 × 비극과 희극의 운명 반전의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       }
     ],
     "failureRetryRisk": {
@@ -5921,7 +6042,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 400348,
+        "sourceBytes": 400213,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -6120,7 +6241,7 @@
     "generation": 1,
     "previousGeneration": 0,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+    "sourceFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
     "priorSourceFingerprint": null,
     "previousRuntimeEffect": "NO_PREVIOUS_GENERATION",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
@@ -6590,10 +6711,11 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+    "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
+    "detailedDesignContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -6689,10 +6811,11 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+    "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
+    "detailedDesignContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -6956,7 +7079,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "c0277dd50488d2fd157e43c5b006b63a76c0a636150d359075adadb2701aed40",
+      "sourceTreeFingerprint": "feec3ee72c9dc30dfc9f587d1d2b7e2c9254dcce767d84454292364b583fdd33",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -7074,5 +7197,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-12T06:09:10.262Z"
+  "generatedAt": "2026-10-12T18:10:57.612Z"
 }

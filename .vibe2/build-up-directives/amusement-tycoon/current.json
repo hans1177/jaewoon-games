@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "amusement-tycoon-build-up-g36-541dcb9eda5e",
-  "directiveFingerprint": "541dcb9eda5e09b6ab9b460abdef58c60ea5e1782fc531bd229f74d966e010fe",
-  "previousDirectiveFingerprint": "aab0d274034c18554997599aa95428d1e2af6cb78917a9a12212ca0cbdec7ef0",
-  "forbiddenRepeatFingerprint": "aab0d274034c18554997599aa95428d1e2af6cb78917a9a12212ca0cbdec7ef0",
+  "directiveId": "amusement-tycoon-build-up-g37-de2903c04d61",
+  "directiveFingerprint": "de2903c04d61e1987e594f94efdcd10460da8d8d1ce495d1ec030d5bcfbba700",
+  "previousDirectiveFingerprint": "541dcb9eda5e09b6ab9b460abdef58c60ea5e1782fc531bd229f74d966e010fe",
+  "forbiddenRepeatFingerprint": "541dcb9eda5e09b6ab9b460abdef58c60ea5e1782fc531bd229f74d966e010fe",
   "gameId": "amusement-tycoon",
   "gameName": "놀이공원 타이쿤",
-  "generation": 36,
+  "generation": 37,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/amusement-tycoon",
-  "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
-  "designFingerprint": "4761456b4b2f95e0a1fda4dcc949c69b20fa9331249eebd3ea06cbbd46571403",
+  "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+  "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Simulation",
@@ -129,22 +129,80 @@
         {
           "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
           "newGameplay": "시설 건설과 공간 배치의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "기존 첫 진입 조건을 만족하고 놀이공원 타이쿤의 목표를 확인한 뒤 시설 건설과 공간 배치 × 후원과 인맥 관계의 접근 가능한 선택을 제시한다.",
+          "playerChoice": "시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 시설 건설과 공간 배치 × 후원과 인맥 관계의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
           "newGameplay": "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "손님 수요와 직원 배치의 결과를 확인해 다음 시설 투자를 결정하면서 보상 획득이 동시에 행동 제한·동맹 의무·위험을 생성한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 손님과 직원 운영 × 서사시의 맹세와 계약의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
           "newGameplay": "풍자 속 관료제과 비극과 희극의 운명 반전의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "후원과 인맥 관계의 제약과 서사시의 맹세와 계약의 대응을 같은 지역에서 순서대로 시험한다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RouteState",
+            "RiskState",
+            "ResourceState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 시설 건설과 공간 배치 × 후원과 인맥 관계의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         },
         {
           "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
           "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+          "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+          "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+          "playerChoice": "시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.와 손님 수요와 직원 배치의 결과를 확인해 다음 시설 투자를 결정하면서 보상 획득이 동시에 행동 제한·동맹 의무·위험을 생성한다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+          "ruleIds": [
+            "VIBE_MAIN",
+            "VIBE_A",
+            "VIBE_B",
+            "VIBE_DELVE"
+          ],
+          "stateKeys": [
+            "RiskState",
+            "ResourceState",
+            "RouteState"
+          ],
+          "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+          "validationEvidence": "동일 시작 상태에서 손님과 직원 운영 × 서사시의 맹세와 계약의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
         }
       ],
       "integrityNotes": [
@@ -234,7 +292,7 @@
           "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+        "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -257,7 +315,7 @@
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
       "canonicalGameId": "amusement-tycoon",
-      "canonicalDesignFingerprint": "4761456b4b2f95e0a1fda4dcc949c69b20fa9331249eebd3ea06cbbd46571403",
+      "canonicalDesignFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
       "unityWebProjectRoot": "unity-games/amusement-tycoon",
       "unityWebBuildOutputRoot": "web-games/amusement-tycoon",
       "unityWebSourceAvailable": false,
@@ -281,8 +339,8 @@
       "shadowPipelineForbidden": true,
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
-    "designFingerprint": "4761456b4b2f95e0a1fda4dcc949c69b20fa9331249eebd3ea06cbbd46571403",
-    "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+    "designFingerprint": "c44325fe28414d7460894b3ff1f50998c046357b47bfff26761cfed32e35c6b0",
+    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -741,7 +799,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -3021,6 +3079,11 @@
   },
   "designImplementationContext": {
     "source": "LATEST_VERIFIED_DESIGN_FIELDS",
+    "detailedDesign": {},
+    "tutorialPlan": {},
+    "presentationPlan": {},
+    "interfacePlan": {},
+    "verificationPlan": {},
     "spatialLayout": {},
     "spatialDimension": "",
     "creativeGrammar": {
@@ -3446,22 +3509,80 @@
       {
         "milestone": "초반 선택에 따른 접근 경로와 위험 재구성",
         "newGameplay": "시설 건설과 공간 배치의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.",
-        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "기존 첫 진입 조건을 만족하고 놀이공원 타이쿤의 목표를 확인한 뒤 시설 건설과 공간 배치 × 후원과 인맥 관계의 접근 가능한 선택을 제시한다.",
+        "playerChoice": "시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B"
+        ],
+        "stateKeys": [
+          "RouteState",
+          "RiskState",
+          "ResourceState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 시설 건설과 공간 배치 × 후원과 인맥 관계의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "중반 두 시스템의 반작용과 대응 조건 충돌",
         "newGameplay": "손님과 직원 운영의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
-        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "손님 수요와 직원 배치의 결과를 확인해 다음 시설 투자를 결정하면서 보상 획득이 동시에 행동 제한·동맹 의무·위험을 생성한다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B"
+        ],
+        "stateKeys": [
+          "RiskState",
+          "ResourceState",
+          "RouteState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 손님과 직원 운영 × 서사시의 맹세와 계약의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "숨겨진 세계 인과법칙을 이용한 새로운 접근",
         "newGameplay": "풍자 속 관료제과 비극과 희극의 운명 반전의 조합에 다른 인간 갈등을 연결한다. 숨겨진 규칙의 발견으로 우회 접근과 새로운 대응법을 연다.",
-        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RouteState·RiskState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "후원과 인맥 관계의 제약과 서사시의 맹세와 계약의 대응을 같은 지역에서 순서대로 시험한다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B",
+          "VIBE_DELVE"
+        ],
+        "stateKeys": [
+          "RouteState",
+          "RiskState",
+          "ResourceState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 시설 건설과 공간 배치 × 후원과 인맥 관계의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       },
       {
         "milestone": "누적된 관계를 되짚는 재방문과 장기 숙련",
         "newGameplay": "발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다. 재방문 시 이전 행동이 만든 관계·접근 조건과 결말을 다시 평가한다.",
-        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다."
+        "systemImpact": "VIBE_B의 기존 Luau 책임 함수에서 RiskState·ResourceState 입력 → RouteState·RiskState 출력 → VIBE_A의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.",
+        "trigger": "직전 확장 단계의 행동 결과가 현재 RiskState·ResourceState와 일치할 때 후속 선택을 연다. 기존 해금 조건을 확인하며 임의 수치를 추가하지 않는다.",
+        "playerChoice": "시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.와 손님 수요와 직원 배치의 결과를 확인해 다음 시설 투자를 결정하면서 보상 획득이 동시에 행동 제한·동맹 의무·위험을 생성한다.를 이전 결과와 비교해 재방문 경로를 고른다.",
+        "ruleIds": [
+          "VIBE_MAIN",
+          "VIBE_A",
+          "VIBE_B",
+          "VIBE_DELVE"
+        ],
+        "stateKeys": [
+          "RiskState",
+          "ResourceState",
+          "RouteState"
+        ],
+        "failureRecovery": "조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.",
+        "validationEvidence": "동일 시작 상태에서 손님과 직원 운영 × 서사시의 맹세와 계약의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다."
       }
     ],
     "failureRetryRisk": {
@@ -4650,9 +4771,9 @@
   "previousVersionDelta": {
     "previousGoal": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 35,
-    "previousSourceTreeFingerprint": "61811bd1318bb5f9c6733139f6da625f8821e033416a46dcdfde089e983d314a",
-    "currentSourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+    "previousGeneration": 36,
+    "previousSourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+    "currentSourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5809,7 +5930,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 364824,
+        "sourceBytes": 364852,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5842,8 +5963,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 2,
-    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=2.",
+    "themeDepth": 3,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=2.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5851,13 +5972,12 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 10,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 10,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 2,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 3,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 10
       },
       "sequence": [
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -5868,6 +5988,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
         "ENEMY_BOSS_COMBAT_ECOLOGY",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM"
       ],
@@ -5896,7 +6017,7 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 164,
+        "score": 146,
         "gapDomains": []
       },
       {
@@ -6010,11 +6131,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 36,
-    "previousGeneration": 35,
+    "generation": 37,
+    "previousGeneration": 36,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
-    "priorSourceFingerprint": "61811bd1318bb5f9c6733139f6da625f8821e033416a46dcdfde089e983d314a",
+    "sourceFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
+    "priorSourceFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6425,7 +6546,7 @@
     "gameId": "amusement-tycoon",
     "genreProfile": "TYCOON",
     "conceptIdentity": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "건설·운영 선택",
+    "coreAction": "시설 건설과 공간 배치: 시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -6483,10 +6604,11 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
+    "detailedDesignContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -6524,7 +6646,7 @@
     "gameId": "amusement-tycoon",
     "genreProfile": "TYCOON",
     "conceptIdentity": "놀이공원 타이쿤. 후원과 인맥 관계·서사시의 맹세와 계약 경영. 놀이공원 타이쿤에서 시설 건설과 공간 배치 × 후원과 인맥 관계과 손님과 직원 운영 × 서사시의 맹세와 계약이 서로 결과를 되돌려 바꾸며 경영·코믹의 판단이 실제 세계 상태를 변화시킨다.",
-    "coreAction": "건설·운영 선택",
+    "coreAction": "시설 건설과 공간 배치: 시설 위치와 이동 동선을 선택해 수용 능력과 서비스 비용을 조정하면서 관계망의 누구를 밀어주고 누구에게 빚지는지가 능력과 콘텐츠 접근을 결정한다.",
     "ownerFeatureChanges": [],
     "ownerChangeFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
     "systemConnection": "현재 실패 원인 → 기존 행동 복구",
@@ -6582,10 +6704,11 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+    "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
+    "detailedDesignContract": null,
     "qualityContract": {
       "reference": "SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX",
       "implementation": "EXISTING_LUAU_SERVER_CLIENT_AND_ASSET_BINDINGS",
@@ -6849,7 +6972,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "6111ad2053dfb0b5fea93cfd3f0548fd72ba1147b505f48d4cfbae6d15717846",
+      "sourceTreeFingerprint": "beecaa9fed302d7492d7bd1c0cd7ae4802a8184812c5229182814b9defa56146",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -6905,7 +7028,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 37,
+    "nextGeneration": 38,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -6967,5 +7090,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-12T05:18:52.956Z"
+  "generatedAt": "2026-10-12T18:10:51.697Z"
 }
