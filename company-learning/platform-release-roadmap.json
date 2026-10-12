@@ -28972,5 +28972,32 @@
     "verifiedAssetAdaptationLearningOnlyFromRealBuildQaAndRuntimeEvidence": true,
     "preserveExistingGamesUntilIndependentlyVerified3dReplacement": true,
     "canonicalExistingSourceAndBuildUpF0F9SequenceUnchanged": true
+  },
+  "vibeQueueStorage": {
+    "version": 1,
+    "implementation": "tools/vibe2-queue-control.mjs",
+    "branch": "vibe2-unreal-core",
+    "index": ".vibe2/queue.json",
+    "partsRoot": ".vibe2/queue/",
+    "activeAndPermanentHistorySeparated": true,
+    "terminalHistoryStatuses": [
+      "verified",
+      "cancelled"
+    ],
+    "failedRetryableTasksRemainActive": true,
+    "maxPartBytes": 8388608,
+    "githubBlobMaxBytes": 104857600,
+    "losslessTaskFieldsAndOrderRequired": true,
+    "restoreBeforeExecutionRequired": true,
+    "summaryCannotAuthorizeExecution": true,
+    "atomicIndexAndPartsInSameCommit": true,
+    "push": "NORMAL_NON_FORCE_WITH_SEMANTIC_REPLAY_ON_LATEST_REF",
+    "migrationRequiresNoObservedLegacyQueueWriter": true,
+    "legacyWriterRunsAreNotCancelled": true,
+    "verifiedLearningCheckpointBeforeMigrationPreserved": true,
+    "provenanceLedgersRemainIndependent": true,
+    "finalDevelopmentLockV2Unchanged": true,
+    "canonicalSequenceUnchanged": true,
+    "newPipelineCreated": false
   }
 }

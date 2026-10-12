@@ -3598,5 +3598,24 @@
    "ROBLOX"
   ],
   "queueHoldField": "ownerDevelopmentHold"
+ },
+ "vibeQueueStorage": {
+  "authority": "company-learning/platform-release-roadmap.json#vibeQueueStorage",
+  "markers": [
+   "VIBE2_QUEUE_STORAGE=",
+   "VIBE2_QUEUE_STORAGE_MIGRATION=",
+   "VIBE2_QUEUE_SERIALIZED_BYTES=",
+   "VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED="
+  ],
+  "requiredEvidence": [
+   "TASK_COUNTS_BEFORE_AND_AFTER",
+   "RAW_FIELD_ROUNDTRIP",
+   "SHA256_INTEGRITY",
+   "MAX_PART_BYTES",
+   "NORMAL_PUSH_RESULT",
+   "NEXT_RUN_RESTORE_RESULT"
+  ],
+  "migrationDeferralIsNotCompletion": true,
+  "remoteResumeMustBeObservedSeparately": true
  }
 }

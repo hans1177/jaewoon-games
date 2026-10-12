@@ -581,12 +581,16 @@ jobs:
             echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if [ "$result" = PASS ]; then
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-deploy-attempted,web-static-qa-pass,web-cloudflare-deployment-pass,main-pr-merged,web-runtime-source-tree:${PROMOTED_SOURCE_TREE_SHA},web-main-sha:${PROMOTED_MAIN_SHA},web-publication-retry-resolved,actions-run-${GITHUB_RUN_ID}"
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=web-release-qa-failed --evidence="web-f0-f9-verified,web-f9-verified,web-playable-deployment-required,web-qa-${QA_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               settled=1
               break
@@ -693,8 +697,12 @@ jobs:
             echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-web-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               settled=1
               break
@@ -779,8 +787,12 @@ jobs:
             echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               settled=1
               break
@@ -1270,6 +1282,7 @@ jobs:
             echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if [ "$EVIDENCE_ONLY" = true ]; then
               node <<'NODE'
           const fs=require('fs');const file='.vibe2/queue.json';
@@ -1305,7 +1318,10 @@ jobs:
             else
               node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
             fi
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               settled=1
               break
@@ -1390,8 +1406,12 @@ jobs:
             echo "VIBE2_CANDIDATE_QUEUE_WRITE_ATTEMPT=$attempt"
             git fetch --no-tags --depth=1 origin +refs/heads/vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="$REASON" --evidence="candidate-release-rejected,actions-run-${GITHUB_RUN_ID}"
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               settled=1
               break

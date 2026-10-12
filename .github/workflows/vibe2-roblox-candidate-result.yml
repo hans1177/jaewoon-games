@@ -131,7 +131,9 @@ jobs:
             attempt=$((attempt+1))
             echo "VIBE2_ROBLOX_RECONCILE_ATTEMPT=$attempt"
             git fetch origin "$CONTROL_BRANCH"
+            git reset --hard HEAD
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
             node vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs \
               --branch="$CANDIDATE_BRANCH" \
               --target=roblox \
@@ -153,7 +155,10 @@ jobs:
                 --post-native-branch="$CANDIDATE_BRANCH" \
                 --post-native-target=roblox | tee /tmp/vibe2-roblox-post-native-specialized.log
             fi
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'updated=0' >> "$GITHUB_OUTPUT"
               echo "continue_work=$continue_work" >> "$GITHUB_OUTPUT"
@@ -313,7 +318,9 @@ jobs:
             attempt=$((attempt+1))
             echo "VIBE2_R5_SETTLE_ATTEMPT=$attempt"
             git fetch origin "$CONTROL_BRANCH"
+            git reset --hard HEAD
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
             node vibe2-main-contract/tools/vibe2-queue-control.mjs pass \
               --id="$TASK_ID" \
               --evidence="roblox-studio-run:$QA_RUN_ID,candidate-head-sha:$CANDIDATE_SHA,main-pr-merged:$PR_URL,main-promotion-sha:$MAIN_SHA,r5-target-stage-improvement-pass" | tee /tmp/vibe2-r5-settle.log
@@ -348,7 +355,10 @@ jobs:
             node tools/vibe2-experience-control.mjs \
               --memory=.vibe2/experience.json \
               --review=/tmp/vibe2-r5-experience-review.json | tee /tmp/vibe2-r5-experience.log
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json .vibe2/experience.json
+            node "$GITHUB_WORKSPACE/vibe2-main-contract/tools/vibe2-queue-control.mjs" storage-unpack --queue=.vibe2/queue.json
             git diff --cached --check
             if git diff --cached --quiet; then
               persisted=1

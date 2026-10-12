@@ -336,6 +336,7 @@ jobs:
             rm -rf /tmp/vibe2-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
             control_root="$PWD"
             main_sha="$(git -C /tmp/vibe2-main rev-parse HEAD)"
             core_qa_reuse=0
@@ -486,7 +487,10 @@ jobs:
             # Focused release caretakers are primary game work. Persist them before auxiliary planning
             # so unrelated marketing/learning failures cannot erase or delay the 24H game queue.
             if grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES$' /tmp/vibe2-post-release-focus.log; then
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+              if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
               git add .vibe2/queue.json
+              node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
               if ! git diff --cached --quiet; then
                 git commit -m 'vibe2: checkpoint focused release caretakers [skip ci]'
                 git push origin HEAD:vibe2-unreal-core
@@ -761,9 +765,9 @@ jobs:
           }
           NODE
 
-            # The queue is already minified; pushing a blob above GitHub's 100 MiB
-            # hard limit cannot succeed. Keep every task intact and fail closed with
-            # measured evidence rather than burning unlimited retries on GH001.
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-migrate
+            # Keep the #7702 diagnostic on the persisted index; all task parts are
+            # independently bounded and hash-verified by the queue storage owner.
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const file='.vibe2/queue.json';
@@ -779,6 +783,7 @@ jobs:
           }
           NODE
 
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
               --runtime=/tmp/vibe2-main/vibe2-runtime.json \
               --queue="$control_root/.vibe2/queue.json" \
@@ -791,7 +796,10 @@ jobs:
               cd /tmp/vibe2-main
             )
 
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/external-ai-distilled-knowledge.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json .vibe2/system-ai-queue.json .vibe2/marketing-decisions .vibe2/portfolio-decisions.json .vibe2/tester-debug-tickets.json .vibe2/platform-suitability.json .vibe2/platform-exposure-state.json .vibe2/homepage-platform-exposure.json
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
@@ -1185,6 +1193,7 @@ jobs:
             echo "VIBE2_RELEASE_RECOVERY_OPTIMISTIC_ATTEMPT=$attempt/3"
             git fetch origin vibe2-unreal-core --quiet
             git reset --hard origin/vibe2-unreal-core
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack
 
             node /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs \
               --queue=.vibe2/queue.json \
@@ -1227,7 +1236,10 @@ jobs:
                 --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
             done < /tmp/vibe2-release-recovery-current.tsv
 
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-pack --queue=.vibe2/queue.json
+            if [ -d ./.vibe2/queue ]; then git add -A -- .vibe2/queue; fi
             git add .vibe2/queue.json
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-unpack --queue=.vibe2/queue.json
             if git diff --cached --quiet; then
               cp /tmp/vibe2-release-recovery-current.tsv /tmp/vibe2-release-recovery-dispatch.tsv
               pushed=1

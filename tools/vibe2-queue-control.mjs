@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
 import {
   createVibeContinuousQueue,
   selectNextVibeQueueTask,
@@ -42,6 +43,143 @@ function readJson(file, fallback = {}) {
   return JSON.parse(raw);
 }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); const compactQueue=/(?:^|\/)\.vibe2\/queue\.json$/.test(String(file).replaceAll('\\','/')); fs.writeFileSync(file, `${JSON.stringify(value, null, compactQueue?0:2)}\n`, 'utf8'); }
+
+// 저장: 실행 중에는 기존 전체 큐를 사용하고 Git 체크포인트에서만 활성/영구 이력을 분리한다.
+// 인덱스와 모든 조각은 같은 정상 push로 저장한다. 충돌 시 최신 ref에서 의미 작업을 재실행한다.
+export const VIBE_QUEUE_BLOB_MAX_BYTES = 100 * 1024 * 1024;
+const QUEUE_PART_BYTES = 8 * 1024 * 1024;
+const queueDigest = value => createHash('sha256').update(value).digest('hex');
+function writeQueueAtomic(file, data) {
+  fs.mkdirSync(path.dirname(file), {recursive:true});
+  const temporary = `${file}.${process.pid}.tmp`;
+  try { fs.writeFileSync(temporary, data); fs.renameSync(temporary, file); }
+  finally { fs.rmSync(temporary, {force:true}); }
+}
+export function assertVibeQueueBlobSize(bytes) {
+  if (!Number.isSafeInteger(bytes) || bytes < 0 || bytes > VIBE_QUEUE_BLOB_MAX_BYTES)
+    throw new Error(`VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED=${bytes}`);
+}
+export function readVibeQueueStorage(file, index = JSON.parse(fs.readFileSync(file, 'utf8'))) {
+  if (!index.queueStorage) return index;
+  const storage = index.queueStorage;
+  if (storage.version !== 1 || !Array.isArray(storage.entries) || !Array.isArray(index.tasks))
+    throw new Error('VIBE2_QUEUE_STORAGE_INVALID');
+  if (queueDigest(JSON.stringify(index.tasks)) !== storage.summarySha256)
+    throw new Error('VIBE2_QUEUE_STORAGE_SUMMARY_MUTATED_WITHOUT_RESTORE');
+  const seen = new Set();
+  const tasks = storage.entries.map(entry => {
+    if (!entry.id || seen.has(entry.id) || !['active','history'].includes(entry.lane) || !Array.isArray(entry.parts) || !entry.parts.length)
+      throw new Error('VIBE2_QUEUE_STORAGE_ENTRY_INVALID');
+    seen.add(entry.id);
+    const buffers = entry.parts.map(part => {
+      if (!/^[a-f0-9]{64}$/.test(part.sha256) || !Number.isSafeInteger(part.bytes) || part.bytes < 1 || part.bytes > QUEUE_PART_BYTES)
+        throw new Error('VIBE2_QUEUE_STORAGE_PART_INVALID');
+      const root = path.join(path.dirname(file), 'queue', entry.lane);
+      const target = path.join(root, `${part.sha256}.part`);
+      if (fs.lstatSync(path.dirname(root)).isSymbolicLink() || fs.lstatSync(root).isSymbolicLink() || fs.lstatSync(target).isSymbolicLink()) throw new Error('VIBE2_QUEUE_STORAGE_SYMLINK');
+      const buffer = fs.readFileSync(target);
+      if (buffer.length !== part.bytes || queueDigest(buffer) !== part.sha256) throw new Error('VIBE2_QUEUE_STORAGE_PART_CORRUPT');
+      return buffer;
+    });
+    const buffer = Buffer.concat(buffers);
+    if (buffer.length !== entry.bytes || queueDigest(buffer) !== entry.sha256) throw new Error('VIBE2_QUEUE_STORAGE_TASK_CORRUPT');
+    const task = JSON.parse(buffer.toString('utf8'));
+    if (task.id !== entry.id || (['verified','cancelled'].includes(task.status) ? 'history' : 'active') !== entry.lane)
+      throw new Error('VIBE2_QUEUE_STORAGE_TASK_IDENTITY');
+    return task;
+  });
+  const {queueStorage, ...queue} = index;
+  queue.tasks = tasks;
+  if (queueDigest(JSON.stringify(queue)) !== storage.queueSha256) throw new Error('VIBE2_QUEUE_STORAGE_QUEUE_CORRUPT');
+  return queue;
+}
+export function unpackVibeQueueStorage(file) {
+  const stored = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const queue = readVibeQueueStorage(file, stored);
+  if (stored.queueStorage) writeQueueAtomic(file, JSON.stringify(queue) + '\n');
+  return {tasks:queue.tasks.length, restored:Boolean(stored.queueStorage), queue};
+}
+export function packVibeQueueStorage(file) {
+  const queue = readVibeQueueStorage(file);
+  if (!queue || !Array.isArray(queue.tasks)) throw new Error('VIBE2_QUEUE_STORAGE_TASKS_REQUIRED');
+  const seen = new Set(), entries = [], parts = new Map();
+  const root = path.join(path.dirname(file), 'queue');
+  for (const directory of [root,path.join(root,'active'),path.join(root,'history')]) {
+    if (fs.existsSync(directory) && fs.lstatSync(directory).isSymbolicLink()) throw new Error('VIBE2_QUEUE_STORAGE_SYMLINK');
+  }
+  // 검증 전에는 기존 큐/조각을 변경하지 않는다. 미지 필드와 원래 배열 순서도 그대로 보존한다.
+  for (const task of queue.tasks) {
+    if (!task || typeof task.id !== 'string' || !task.id || seen.has(task.id)) throw new Error('VIBE2_QUEUE_STORAGE_DUPLICATE_OR_MISSING_ID');
+    seen.add(task.id);
+    const lane = ['verified','cancelled'].includes(task.status) ? 'history' : 'active';
+    const buffer = Buffer.from(JSON.stringify(task));
+    const entry = {id:task.id, lane, bytes:buffer.length, sha256:queueDigest(buffer), parts:[]};
+    for (let offset = 0; offset < buffer.length; offset += QUEUE_PART_BYTES) {
+      const part = buffer.subarray(offset, offset + QUEUE_PART_BYTES), sha256 = queueDigest(part);
+      entry.parts.push({sha256, bytes:part.length});
+      parts.set(`${lane}/${sha256}.part`, part);
+    }
+    entries.push(entry);
+  }
+  // 기존 읽기 전용 경량 dispatch/API 소비자의 상태 관찰은 인덱스에 남긴다.
+  // 실행/변경 소비자는 반드시 복원하며 createVibeContinuousQueue도 요약 실행을 거부한다.
+  const summaryFields = ['id','gameId','target','department','type','status','blocker','executionLane','assetProductionLane','systemSteward','reservationId','reservationRunId','reservationRunAttempt','reservedAt','priority','ownerDirective','ownerDevelopmentHold','dependencies','retries','retryPolicy','maxRetries'];
+  const tasks = queue.tasks.map(task => Object.fromEntries(summaryFields.filter(key => Object.hasOwn(task,key)).map(key => [key,task[key]])));
+  const index = {...queue, tasks, queueStorage:{version:1, queueSha256:queueDigest(JSON.stringify(queue)), summarySha256:queueDigest(JSON.stringify(tasks)), entries}};
+  const data = JSON.stringify(index) + '\n';
+  assertVibeQueueBlobSize(Buffer.byteLength(data));
+  for (const [relative, buffer] of parts) {
+    const target = path.join(root,relative);
+    if (fs.existsSync(target)) {
+      if (fs.lstatSync(target).isSymbolicLink() || !fs.readFileSync(target).equals(buffer)) throw new Error('VIBE2_QUEUE_STORAGE_EXISTING_PART_CORRUPT');
+    } else writeQueueAtomic(target, buffer);
+  }
+  // 먼저 모든 조각을 보존한 뒤 인덱스를 원자 교체한다. 영구 이력 조각은 삭제하지 않는다.
+  writeQueueAtomic(file, data);
+  readVibeQueueStorage(file);
+  writeQueueAtomic(path.join(root,'format.json'), '{"version":1}\n');
+  const activeRoot = path.join(root,'active');
+  if (fs.existsSync(activeRoot)) for (const name of fs.readdirSync(activeRoot)) {
+    if (/^[a-f0-9]{64}\.part$/.test(name) && !parts.has(`active/${name}`)) fs.unlinkSync(path.join(activeRoot,name));
+  }
+  return {tasks:tasks.length, active:entries.filter(row=>row.lane==='active').length, history:entries.filter(row=>row.lane==='history').length, indexBytes:Buffer.byteLength(data), maxPartBytes:Math.max(0,...[...parts.values()].map(row=>row.length))};
+}
+
+// 이전 실행의 직렬화 코드는 새 인덱스를 쓸 수 없다. 모든 기존 큐 writer가 새 전송 계약을
+// 사용함을 관찰한 첫 24H 계획에서만 전환한다. 진행 중인 작업을 취소하거나 잠금을 늘리지 않는다.
+export async function canMigrateVibeQueueStorage({repository, token, runId, request=fetch}={}) {
+  const writers = new Set(['vibe2-24h-runner.yml','vibe2-continuous-core.yml','vibe2-candidate-release.yml','vibe2-unity-release-result.yml','vibe2-unity-candidate-result.yml','vibe2-roblox-candidate-result.yml','vibe2-system-evolution-release.yml','vibe2-recovery-fast.yml','unity-web-first-stage-build.yml','company-development-unity-runtime.yml','company-development-roblox-final-review-revalidation.yml','pwa-command-bridge.yml']);
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repository||'') || !token || !runId) return {ready:false, reason:'MISSING_ACTIONS_IDENTITY'};
+  const headers = {Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  const cache = new Map();
+  try {
+    for (const status of ['requested','waiting','pending','queued','in_progress']) {
+      for (let page=1; page<=10; page++) {
+        const response = await request(`https://api.github.com/repos/${repository}/actions/runs?status=${status}&per_page=100&page=${page}`, {headers,signal:AbortSignal.timeout(15000)});
+        if (!response.ok) throw new Error(`ACTIONS_HTTP_${response.status}`);
+        const payload = await response.json();
+        if (!Array.isArray(payload.workflow_runs) || payload.total_count>1000) throw new Error('ACTIONS_INCOMPLETE');
+        for (const run of payload.workflow_runs) {
+          if (String(run.id)===String(runId) || run.status==='completed') continue;
+          const workflow = String(run.path||'').split('@')[0];
+          if (!workflow) throw new Error('ACTIONS_WORKFLOW_UNKNOWN');
+          if (!writers.has(workflow.split('/').pop())) continue;
+          if (!/^[a-f0-9]{40}$/.test(run.head_sha||'')) throw new Error('ACTIONS_SHA_UNKNOWN');
+          const key = `${run.head_sha}:${workflow}`;
+          if (!cache.has(key)) {
+            const source = await request(`https://api.github.com/repos/${repository}/contents/${workflow}?ref=${run.head_sha}`, {headers:{...headers,Accept:'application/vnd.github.raw+json'},signal:AbortSignal.timeout(15000)});
+            if (!source.ok) throw new Error(`WORKFLOW_HTTP_${source.status}`);
+            cache.set(key,(await source.text()).includes('storage-pack'));
+          }
+          if (!cache.get(key)) return {ready:false, reason:'LEGACY_WRITER_ACTIVE', runId:run.id};
+        }
+        if (payload.workflow_runs.length<100) break;
+        if (page===10) throw new Error('ACTIONS_PAGINATION_LIMIT');
+      }
+    }
+    return {ready:true, reason:'ALL_OBSERVED_QUEUE_WRITERS_COMPATIBLE'};
+  } catch(error) { return {ready:false, reason:String(error.message)}; }
+}
 
 function fixedGamePrimaryRepeatSlots() {
   const policy=readJson(CANONICAL_RESERVATION_POLICY,{});
@@ -996,7 +1134,7 @@ export function runQueueCommand(args = {}) {
   const file = queueFileFrom(args);
   const queueFileMissing=!fs.existsSync(file);
   const queueFileBlank=!queueFileMissing&&!clean(fs.readFileSync(file,'utf8'));
-  const rawQueue = readJson(file, { tasks: [] });
+  const rawQueue = queueFileMissing || queueFileBlank ? {tasks:[]} : readVibeQueueStorage(file);
   const rawTasks = Array.isArray(rawQueue) ? rawQueue : Array.isArray(rawQueue?.tasks) ? rawQueue.tasks : [];
   const atomicSchemaMigrationNeeded = rawQueue?.scheduling?.atomicNeuronCompletion !== true
     || rawTasks.some((task) => {
@@ -1250,6 +1388,29 @@ export function runQueueCommand(args = {}) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const storageArgs = parseArgs();
+  if (['storage-pack','storage-unpack','storage-migrate'].includes(storageArgs.command)) {
+    const file = queueFileFrom(storageArgs);
+    let enabled=fs.existsSync(path.join(path.dirname(file),'queue','format.json'));
+    if (!enabled && storageArgs.command==='storage-migrate') {
+      const migration=await canMigrateVibeQueueStorage({repository:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,runId:process.env.GITHUB_RUN_ID});
+      console.log('VIBE2_QUEUE_STORAGE_MIGRATION='+JSON.stringify(migration));
+      enabled=migration.ready;
+    }
+    let result;
+    if (storageArgs.command==='storage-unpack') result=unpackVibeQueueStorage(file);
+    else if (enabled) result=packVibeQueueStorage(file);
+    else {
+      // 배포 중인 구버전 writer가 남으면 형식 전환만 보류하고 기존 JSON/한도 보호를 유지한다.
+      const legacy=JSON.stringify(readVibeQueueStorage(file))+'\n';
+      assertVibeQueueBlobSize(Buffer.byteLength(legacy));
+      writeQueueAtomic(file,legacy);
+      result={migration:'DEFERRED',bytes:Buffer.byteLength(legacy)};
+    }
+    const {queue, ...evidence} = result;
+    console.log(`VIBE2_QUEUE_STORAGE=${storageArgs.command}:${JSON.stringify(evidence)}`);
+    process.exit(0);
+  }
   const result = runQueueCommand(parseArgs());
   console.log(`VIBE2_QUEUE_COMMAND=${result.command}`);
   console.log(`VIBE2_QUEUE_STATE_RECOVERED=${result.queueStateRecovered===true?'YES':'NO'}`);
