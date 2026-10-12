@@ -617,11 +617,11 @@ def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
     if name in LOOP_CLIPS and t >= 1.0 - 1e-9:
+        # [실제 루프 키] 첫 키가 없으면 시작 포즈를 추정하지 않고 제작을 차단한다.
         authored_first = LOOP_FIRST_AUTHORED_POSES.get(name)
-        if authored_first is not None:
-            apply_snapshot(authored_first)
-            return
-        t = 0.0
+        assert authored_first is not None, 'LOOP_FIRST_AUTHORED_POSE_MISSING:' + name
+        apply_snapshot(authored_first)
+        return
     if name == 'hero_idle_hq':
         idle_pose(t)
     elif name == 'hero_walk_hq':
