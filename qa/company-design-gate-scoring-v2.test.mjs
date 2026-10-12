@@ -115,6 +115,22 @@ assert.equal(strong.thirtyMinuteHardGateApplied,false);
 assert.ok(strong.totalScore>=80);
 for(const value of Object.values(strong.evidenceLevels))assert.ok(DESIGN_DIRECT_SCORE_LEVELS.includes(value));
 
+// 웹 제작이 없어도 이전 Unity 시드는 앱 네이티브 플랫폼 프로필로 설계 검수를 받는다.
+const heldUnitySeed={...seed,INITIAL_TARGET_PLATFORM:'UNITY'};
+const heldUnityRecord=structuredClone(designRecord);
+heldUnityRecord.content.platformFitPlan.targetPlatform='UNITY';
+heldUnityRecord.content.platformProfiles.UNITY={
+  ...heldUnityRecord.content.platformProfiles.UNITY,
+  sessionModel:'Unity Android native session and resume remain on owner hold.',
+  performanceBudget:'Unity Android GPU CPU thermals memory and mobile input budgets are deferred until owner release.',
+  internalReleaseTarget:'Unity Android native build is owner held; no Unity WebGL production is requested.',
+  validationEvidence:'No app or browser runtime PASS is claimed before explicit owner authorization.'
+};
+delete heldUnityRecord.content.platformProfiles.UNITY.unityWebSpatialPresentation;
+const heldUnityScore=scoreDesignGateV2({seed:heldUnitySeed,designRecord:heldUnityRecord,cycleStatus,robloxGenreProfile:profile});
+assert.ok(heldUnityScore.evidenceLevels.PLATFORM_FIT_DESIGN>=80,'native platform match must not create the old 60-point mismatch');
+assert.equal(heldUnityScore.hardFailures.includes('CRITICAL_AXIS_MINIMUM_FAIL'),false,'held Unity WebGL cannot be a basic-design admission gate');
+
 const grammarSeed=structuredClone(seed);
 grammarSeed.GAMEPLAY_SKETCH={version:4,novelGameGrammar:{
   newPrimaryVerb:'오해를 설득해 현실로 만든다',
