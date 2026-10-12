@@ -3,68 +3,10 @@
   "gameId": "horror-escape-room",
   "date": "2026-10-12",
   "productionClass": "DESIGN_ONLY",
-  "tierAlias": 3,
-  "tier": 3,
   "gameSeedId": "OWNER-DESIGN-HORROR-ESCAPE-ROOM",
-  "gameSeedSource": "design/horror-escape-room/2026-10-12/design-seed.json",
-  "gameSeedInputSource": "game-seed-state.json",
-  "gameplaySketchVersion": 5,
-  "inputGameplaySketchVersion": 1,
-  "gameplaySketch": {
-    "version": 1,
-    "source": "OWNER_BRIEF_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN",
-    "worldModel": "CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
-    "actors": [
-      "플레이어: 인간4/몬스터4 배정, 빈자리 AI 충원",
-      "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
-    ],
-    "interactionChains": [
-      "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
-    ],
-    "stateMachine": [
-      "START_OR_WORLD_ENTRY",
-      "REAL_PLAYER_INPUT",
-      "CORE_GAMEPLAY_ACTION",
-      "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
-      "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
-      "RISK_FAILURE_OR_RESOURCE_PRESSURE",
-      "GOAL_OR_RETRY"
-    ],
-    "firstPlayableCycle": [
-      "월드/세션 진입",
-      "인간4/몬스터4 배정, 빈자리 AI 충원",
-      "인간은 고유 도구·대시·정화로 생존/반격",
-      "보상 또는 의미 있는 선택 적용",
-      "위험·실패·자원 압박 경험",
-      "몬스터는 에너지를 소모하는 명시적 감염 공격으로 인간을 감염"
-    ],
-    "expansionPlan": [
-      "새 적·위협 또는 행동 패턴",
-      "새 공간·경로 또는 목표",
-      "새 상호작용 또는 전략 결과"
-    ],
-    "longGoalScenario": [
-      "초기 핵심 루프 완료",
-      "성장·보상으로 새 선택 개방",
-      "새 위협·공간·목표를 거쳐 중간 목표 달성"
-    ],
-    "validationRisks": [
-      "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
-      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
-    ]
-  },
-  "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:horror-escape-room",
-  "designEvolutionLoopVersion": 1,
-  "authorRole": "GAME_DESIGNER_AI",
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
   "authorModel": "vibe-native:causal-design-v1",
-  "singleAuthor": true,
-  "preGate": {
-    "pass": true,
-    "totalScore": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "attempts": 0
-  },
+  "status": "DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT",
   "content": {
     "identity": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.",
     "creativeGrammar": {
@@ -2144,5 +2086,11 @@
       "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     }
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "e6600cf939c58a1f2ca98e19b4dcb705ab30edf99b7d7b666f9c718c5282daf4",
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-10-12T02:10:17.931Z"
   }
 }
