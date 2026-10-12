@@ -598,13 +598,15 @@ test('external Roblox runtime failure preserves same immutable candidate without
 test('canonical reusable parent keeps final fan-in while successful games hand off without sibling completion',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   for(const name of [
-    'company-development-roblox-runtime.yml','company-development-unity-runtime.yml',
-    'unity-web-first-stage-build.yml','unity-web-floor-source-bootstrap.yml'
+    'company-development-roblox-runtime.yml','company-development-unity-runtime.yml'
   ]){
     assert.ok(workflow.includes('uses: ./.github/workflows/'+name),'missing canonical reusable workflow: '+name);
     assert.ok(!workflow.includes('gh workflow run '+name),'duplicate API lane dispatch: '+name);
   }
-  assert.ok(workflow.includes('needs: [native-plan, dispatch-roblox, dispatch-unity, dispatch-unity-web-floor, dispatch-unity-web-bootstrap]'));
+  assert.ok(workflow.includes('needs: [native-plan, dispatch-roblox, dispatch-unity]'));
+  assert.ok(!workflow.includes('dispatch-unity-web-floor:'));
+  assert.ok(!workflow.includes('dispatch-unity-web-bootstrap:'));
+
   assert.ok(workflow.includes('--arg control_sha "$GITHUB_SHA"'));
   assert.ok(workflow.includes('select(.head_sha == $control_sha)'));
   assert.ok(workflow.includes('DEVELOPMENT_COORDINATOR_OLDER_MAIN_RUNS_MAY_NOT_BLOCK_NEW_REVISION=YES'));
