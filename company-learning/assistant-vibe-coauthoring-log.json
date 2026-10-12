@@ -1080,8 +1080,11 @@
         "source:tools/company-development-roblox-gameplay-product-readiness.mjs",
         "source:.github/workflows/company-development-roblox-runtime.yml",
         "qa:in-memory-real-simple-rpg-fixture-5-assertions:PASS_WITH_STUBBED_IMPORTS",
-        "qa:qa/company-development-roblox-gameplay-product-readiness.test.mjs:NEW_REGRESSION_CI_PENDING",
-        "qa:qa/company-development-roblox-package.test.mjs:NEW_REGRESSION_CI_PENDING"
+        "actions-run:38185935927:Vibe-QA-success:3fc65fb8b6a096c10803d5e3eaceba57ba6c985c",
+        "qa:managed-foundation-midblock-and-generic-skeleton-regression:PASS:38185935927",
+        "qa:late-package-and-F0-source-repair-preservation-regression:PASS:38185935927",
+        "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9",
+        "main-merge:f83da5f45a55d01deae21626a47094ec6c9bc1d9"
       ],
       "reusablePatterns": [
         "STRIP_ONLY_STRUCTURALLY_BOUND_MANAGED_CODE_BEFORE_SCORING_GAMEPLAY",
@@ -1096,12 +1099,25 @@
         "PROMOTE_STATIC_QA_TO_NATIVE_RUNTIME_OR_TRAINED_MODEL_PASS"
       ],
       "qa": [
-        "real-source in-memory boundary fixture 5 assertions PASS with stubbed imports, not full Node regression",
-        "repository Node tests and latest-head CI required before merge",
-        "Roblox runtime, F9, deployment and model training NOT_VERIFIED"
+        "exact-head GitHub Vibe QA run38185935927 completed success with both gameplay and package source-preservation regression cases executed",
+        "remote main-write guard, central policy, Vibe3 Engine, and Security Immune scan completed success; security findings 0",
+        "F0/package state-preservation scripts and actual Roblox source boundary locally reproduced; standalone Studio and native live QA NOT_RUN",
+        "Roblox native gameplay, independent runtime QA, F9 release, and model weights NOT_VERIFIED"
       ],
       "learningState": "TRACE_ONLY",
-      "liveState": "SOURCE_PATCH_AWAITING_REMOTE_CI;NO_ENGINE_OR_RELEASE_PASS"
+      "liveState": "MERGED_MAIN_STATIC_REMOTE_QA_VERIFIED;EXISTING_VIBE_DISTILLATION_ADVISORY_CANDIDATE;NO_ROBLOX_RUNTIME_OR_WEIGHT_PROMOTION",
+      "verification": {
+        "independent": true,
+        "status": "PASS",
+        "method": "independent-qa",
+        "scope": "GITHUB_REMOTE_STATIC_SOURCE_AND_WORKFLOW_REGRESSION_ONLY",
+        "evidence": [
+          "actions-run:38185935927:Vibe-QA-success:3fc65fb8b6a096c10803d5e3eaceba57ba6c985c",
+          "qa:managed-foundation-midblock-and-generic-skeleton-regression:PASS:38185935927",
+          "qa:late-package-and-F0-source-repair-preservation-regression:PASS:38185935927",
+          "source:github-merge-f83da5f45a55d01deae21626a47094ec6c9bc1d9"
+        ]
+      }
     }
   ]
 }
