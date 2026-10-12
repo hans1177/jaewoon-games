@@ -620,6 +620,7 @@ def animate(name, normalized_time):
         # [실제 루프 키] 첫 키가 없으면 시작 포즈를 추정하지 않고 제작을 차단한다.
         authored_first = LOOP_FIRST_AUTHORED_POSES.get(name)
         assert authored_first is not None, 'LOOP_FIRST_AUTHORED_POSE_MISSING:' + name
+        assert len(authored_first) == len(RIG.pose.bones), 'LOOP_FIRST_AUTHORED_POSE_INCOMPLETE:' + name
         apply_snapshot(authored_first)
         return
     if name == 'hero_idle_hq':
