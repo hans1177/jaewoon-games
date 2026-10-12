@@ -184,6 +184,22 @@ const catalog={games:[
   {id:'third-web',name:'Third Web',webPath:'/web-games/third-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}
 ]};
 
+test('24h planner optimistic retry reuses source QA only after a verified exact-main pass',()=>{
+  const source=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(source,/validated_main_sha=''/);
+  assert.match(source,/if \[ -n "\$validated_main_sha" \] && \[ "\$validated_main_sha" = "\$main_sha" \]; then/);
+  assert.match(source,/VIBE2_24H_SAME_MAIN_QA_REUSE=REVALIDATE_NEW_MAIN_SHA:/);
+  assert.match(source,/VIBE2_24H_DUPLICATE_CORE_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:/);
+  assert.match(source,/VIBE2_24H_PLANNER_DEPENDENCY_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:/);
+  assert.match(source,/node --test qa\/vibe2-auto-planner\.test\.mjs/);
+  assert.match(source,/node --test qa\/vibe-studio-asset-universe\.test\.mjs/);
+  const testPosition=source.indexOf('node --test qa/vibe-studio-asset-universe.test.mjs');
+  const qaAcceptedPosition=source.indexOf('validated_main_sha="$main_sha"');
+  const systemStatePosition=source.indexOf('node /tmp/vibe2-main/tools/vibe2-system-steward.mjs');
+  assert.ok(testPosition>=0&&qaAcceptedPosition>testPosition,'same-main mark must only follow successful source QA');
+  assert.ok(systemStatePosition>qaAcceptedPosition,'control queue reconciliation and handoff remain independently mandatory');
+});
+
 test('planner reads one current central policy snapshot per cycle and refreshes after each cycle',()=>{
   const root=tempRepo();
   const policyFile=path.resolve(root,'company-learning/platform-release-roadmap.json');
