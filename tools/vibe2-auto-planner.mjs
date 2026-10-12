@@ -734,8 +734,12 @@ export function projectSort(a,b){
   }
   return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);
 }
+// [중앙정책] 동기식 기획 1회 동안만 같은 main 정책 스냅샷을 공유한다.
+let activePlanningPolicySnapshot=null;
 function centralPresentationPolicy(repoRoot=process.cwd()){
-  return readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),{});
+  const file=path.resolve(repoRoot,CANONICAL_POLICY_PATH);
+  if(activePlanningPolicySnapshot?.file===file)return activePlanningPolicySnapshot.value;
+  return readJson(file,{});
 }
 function assetProductionEnabled(repoRoot=process.cwd()){
   const policy=centralPresentationPolicy(repoRoot),contract=policy?.assetProductionParallelContract||{};
@@ -3803,6 +3807,11 @@ function supersedeLegacyMicroTasksForStudioQuality(queueInput){
 }
 
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,queueMaxConcurrentTasks=maxConcurrentTasks,planningBacklogTarget=maxConcurrentTasks,planningBacklogMinimum=Math.min(40,Number(planningBacklogTarget)||0),workPackagePolicy={},recombinationMemory={},historicalRegistry={},robloxDistillationLedger={},robloxPlaybooks={}}={}){
+  // 기획 도중의 반복 정책 파싱을 제거한다. 다음 계획/독립 호출은 언제나 파일을 재확인한다.
+  const previousPlanningPolicySnapshot=activePlanningPolicySnapshot;
+  const policyFile=path.resolve(repoRoot,CANONICAL_POLICY_PATH);
+  activePlanningPolicySnapshot={file:policyFile,value:readJson(policyFile,{})};
+  try{
   catalog=discoverExistingRobloxGames(catalog,repoRoot).catalog;
   const executionWaveMax=parallelLimit(maxConcurrentTasks);
   const persistentQueueMax=parallelLimit(queueMaxConcurrentTasks);
@@ -4050,6 +4059,9 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   };
   if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'AWAITING_INDEPENDENT_CAUSAL_SIGNAL':'CAUSAL_REPLAN_REQUIRED',brainLive:true,causalReplanRequired:true,queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
   return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,planningBacklog:{...planningBacklog,after:developmentPlanningPool(queue).length,remainingToTarget:Math.max(0,backlogTarget-developmentPlanningPool(queue).length)},holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_80_88_TO_89_THEN_SINGLE_BLOCKER_THEN_REWORK_THEN_REBUILD_THEN_NEW_DEVELOPMENT',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  }finally{
+    activePlanningPolicySnapshot=previousPlanningPolicySnapshot;
+  }
 }
 
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}

@@ -326,6 +326,8 @@ jobs:
           git config user.email 'vibe2-planner@users.noreply.github.com'
 
           attempt=0
+          # 동일 main SHA에서 통과한 비변경 원본 QA는 낙관적 control push 충돌 재시도 때 재사용한다.
+          validated_main_sha=''
           echo 'VIBE2_AUTOPLAN_OPTIMISTIC_RETRY_POLICY=UNTIL_JOB_TIMEOUT'
           while true; do
             attempt=$((attempt+1))
@@ -365,6 +367,13 @@ jobs:
               echo "VIBE2_24H_CORE_QA_REUSE_OBSERVATION=FAIL_RUN_TARGETED_QA:$main_sha"
             fi
             export VIBE2_24H_CORE_QA_REUSE="$core_qa_reuse"
+            if [ -n "$validated_main_sha" ] && [ "$validated_main_sha" = "$main_sha" ]; then
+              export VIBE2_24H_SAME_MAIN_QA_REUSE=1
+              echo "VIBE2_24H_SAME_MAIN_QA_REUSE=VERIFIED_SAME_MAIN_SHA:$main_sha"
+            else
+              export VIBE2_24H_SAME_MAIN_QA_REUSE=0
+              echo "VIBE2_24H_SAME_MAIN_QA_REUSE=REVALIDATE_NEW_MAIN_SHA:$main_sha"
+            fi
 
             (
               cd /tmp/vibe2-main
@@ -388,7 +397,9 @@ jobs:
               node --check tools/company-development-web-gameplay-validation.mjs
               node --check tools/vibe2-practice-distillation.mjs
               node --check tools/vibe2-design-intelligence.mjs
-              if [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
+              if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+                echo "VIBE2_24H_DUPLICATE_CORE_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
+              elif [ "${VIBE2_24H_CORE_QA_REUSE:-0}" = '1' ]; then
                 echo 'VIBE2_24H_DUPLICATE_CORE_TESTS=SKIPPED_EXACT_SHA_CORE_QA_PASS'
               else
                 node --test qa/vibe2-learning-motor.test.mjs
@@ -405,10 +416,14 @@ jobs:
                 node --test qa/vibe2-practice-distillation.test.mjs
                 node --test qa/vibe2-design-intelligence.test.mjs
               fi
-              # 24H-only planner dependencies remain directly tested even when Core QA is reusable.
-              node --test qa/vibe-studio-asset-universe.test.mjs
-              node --test qa/vibe3-roblox-distillation.test.mjs
-              node --test qa/company-development-web-runtime.test.mjs
+              # 24H 전용 QA는 처음 실행에 반드시 통과해야 하며, 같은 main SHA 낙관적 재시도만 재사용한다.
+              if [ "${VIBE2_24H_SAME_MAIN_QA_REUSE:-0}" = '1' ]; then
+                echo "VIBE2_24H_PLANNER_DEPENDENCY_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:$main_sha"
+              else
+                node --test qa/vibe-studio-asset-universe.test.mjs
+                node --test qa/vibe3-roblox-distillation.test.mjs
+                node --test qa/company-development-web-runtime.test.mjs
+              fi
 
               # Rule 4 final-stage neural expansion readiness is derived from direct targeted QA.
               node --check tools/vibe2-neural-expansion-readiness.mjs
@@ -416,6 +431,8 @@ jobs:
                 --root=. \
                 --output=/tmp/vibe2-neural-expansion-readiness.json | tee /tmp/vibe2-neural-expansion-readiness.log
             )
+            # 단일 작업의 전체 소스 QA 성공만 기록한다. control 상태/큐/인계 검증은 매 시도 새로 실행한다.
+            validated_main_sha="$main_sha"
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
             node --check /tmp/vibe2-main/tools/vibe2-system-steward.mjs

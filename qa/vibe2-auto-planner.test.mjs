@@ -184,6 +184,52 @@ const catalog={games:[
   {id:'third-web',name:'Third Web',webPath:'/web-games/third-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}
 ]};
 
+test('24h planner optimistic retry reuses source QA only after a verified exact-main pass',()=>{
+  const source=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.match(source,/validated_main_sha=''/);
+  assert.match(source,/if \[ -n "\$validated_main_sha" \] && \[ "\$validated_main_sha" = "\$main_sha" \]; then/);
+  assert.match(source,/VIBE2_24H_SAME_MAIN_QA_REUSE=REVALIDATE_NEW_MAIN_SHA:/);
+  assert.match(source,/VIBE2_24H_DUPLICATE_CORE_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:/);
+  assert.match(source,/VIBE2_24H_PLANNER_DEPENDENCY_TESTS=REUSED_THIS_RUN_EXACT_MAIN_SHA:/);
+  assert.match(source,/node --test qa\/vibe2-auto-planner\.test\.mjs/);
+  assert.match(source,/node --test qa\/vibe-studio-asset-universe\.test\.mjs/);
+  const testPosition=source.indexOf('node --test qa/vibe-studio-asset-universe.test.mjs');
+  const qaAcceptedPosition=source.indexOf('validated_main_sha="$main_sha"');
+  const systemStatePosition=source.indexOf('node /tmp/vibe2-main/tools/vibe2-system-steward.mjs');
+  assert.ok(testPosition>=0&&qaAcceptedPosition>testPosition,'same-main mark must only follow successful source QA');
+  assert.ok(systemStatePosition>qaAcceptedPosition,'control queue reconciliation and handoff remain independently mandatory');
+});
+
+test('planner reads one current central policy snapshot per cycle and refreshes after each cycle',()=>{
+  const root=tempRepo();
+  const policyFile=path.resolve(root,'company-learning/platform-release-roadmap.json');
+  const initial=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  const originalRead=fs.readFileSync;
+  let policyReads=0;
+  // [검증] 호출 횟수만 관찰하며 기획기/정책 접근 구현은 변경하지 않는다.
+  fs.readFileSync=function(file,...args){
+    if(typeof file==='string'&&path.resolve(file)===policyFile)policyReads++;
+    return originalRead.call(fs,file,...args);
+  };
+  try{
+    const args={status:{projects:[]},catalog:{games:[]},queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4};
+    fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:2}}),'utf8');
+    const first=planVibe2AutonomousTasks(args);
+    assert.equal(first.planningBacklog.distinctGameFlow.target,2);
+    // 기획기 1회 + 기존 다른 책임 모듈 1회 조회는 유지하되 게임별 반복 파싱을 막는다.
+    const firstReads=policyReads;
+    assert.equal(firstReads,2,'same planning cycle must bound the planner and independent policy reads');
+    fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:5}}),'utf8');
+    const second=planVibe2AutonomousTasks(args);
+    assert.equal(second.planningBacklog.distinctGameFlow.target,5,'next planning cycle must see changed policy');
+    assert.equal(policyReads-firstReads,firstReads,'next cycle must reload fresh policy without adding per-game policy reads');
+  }finally{
+    fs.readFileSync=originalRead;
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
 
 test('build-up directive persistence keeps platform currents independent and compatibility current prefers autonomous contract',()=>{
   const legacyUnity={
