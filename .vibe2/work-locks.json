@@ -3,27 +3,6 @@
   "branch": "vibe2-work-locks",
   "locks": [
     {
-      "id": "wl-w9pldh",
-      "worker": "vibe2",
-      "taskId": "seed-casual-realm-weaver-studio-evolution-roblox-stability-v1",
-      "gameId": "seed-casual-realm-weaver",
-      "files": [
-        "roblox-games/seed-casual-realm-weaver/client/Game.client.luau",
-        "roblox-games/seed-casual-realm-weaver/shared/GameConfig.luau",
-        "roblox-games/seed-casual-realm-weaver/server/Game.server.luau"
-      ],
-      "baseSha": "4e036b4e97b6816f58fd1ef9ccbbbe084f1a9141",
-      "runId": "38276238256",
-      "runAttempt": "1",
-      "acquiredAt": "2026-10-12T16:50:09.246Z",
-      "expiresAt": "2026-10-12T17:35:09.246Z",
-      "status": "active",
-      "evidence": [
-        "compiled-central-work-contract",
-        "change-set:seed-casual-realm-weaver-studio-evolution-roblox-stability-v1"
-      ]
-    },
-    {
       "id": "wl-1og0h0h",
       "worker": "vibe2",
       "taskId": "internal-motion-brahmadaitya-walk-v1",
@@ -154,6 +133,25 @@
       "evidence": [
         "compiled-central-work-contract",
         "change-set:internal-motion-churel-walk-v1"
+      ]
+    },
+    {
+      "id": "wl-14eazjn",
+      "worker": "vibe2",
+      "taskId": "internal-motion-vetala-walk-v1",
+      "gameId": "horror-escape-room",
+      "files": [
+        "assets/roblox/world-ghosts/motions/vetala/init.luau"
+      ],
+      "baseSha": "d6d329b02a3c3ee026e61072c51c46410166a527",
+      "runId": "38281867267",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-12T17:35:16.223Z",
+      "expiresAt": "2026-10-12T18:20:16.223Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:internal-motion-vetala-walk-v1"
       ]
     }
   ]
