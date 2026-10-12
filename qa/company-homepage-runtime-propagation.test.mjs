@@ -525,7 +525,7 @@ test('homepage does not advertise generic app icons or shared page backgrounds a
 
 test('Cloudflare Pages keeps native runtime APIs while bypassing static assets',()=>{
   const routes=JSON.parse(fs.readFileSync('_routes.json','utf8'));
-  assert.deepEqual(routes,{version:1,include:['/*'],exclude:['/assets/*']});
+  assert.deepEqual(routes,{version:1,include:['/*'],exclude:['/assets/*','/test-game-candidates.json','/homepage-portfolio-status.json']});
   const edge=fs.readFileSync('_worker.js','utf8');
   assert.match(edge,/url\.pathname==='\/game-catalog\.json'/);
   assert.match(edge,/url\.pathname==='\/company-status\.json'/);
@@ -534,4 +534,6 @@ test('Cloudflare Pages keeps native runtime APIs while bypassing static assets',
   assert.match(homepage,/SYNC_INTERVAL_MS=30000/);
   assert.doesNotMatch(homepage,/probeFetch|unity-web-deploy-manifest|bindAvailableUnityWebSurfaces/);
   assert.match(homepage,/function platformLinks\(game\)/);
+  const index=fs.readFileSync('index.html','utf8');
+  assert.doesNotMatch(index,/prefetchVisibleGames|rel='prefetch'/);
 });
