@@ -150,134 +150,7 @@ function canonicalWebHref(row){
 function playableWebHref(row){
   return '';
 }
-// 실제 Unity C# WebGL 빌드와 3회 브라우저 검증, 네이티브 3D 및 저장 검증을 모두 확인한다.
-async function bindAvailableUnityWebSurfaces(catalog,onAvailable=()=>{}){
-  if(!Array.isArray(catalog?.games))return catalog;
-  const enabled=platformExposure?.unityWebEnabled===true;
-  const probeFetch=async(url,options={})=>{
-    const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),10000);
-    try{return await fetch(url,{...options,signal:controller.signal,cache:'no-store'});}
-    finally{clearTimeout(timer);}
-  };
-  const candidates=enabled?catalog.games.filter(game=>{
-    const id=gameIdOf(game);
-    const unity=sourcesOf(game).unity||{};
-    const projectPath=String(unity.projectPath||game?.unityProjectPath||game?.targetSourcePaths?.UNITY||'').replace(/^\/+|\/+$/g,'');
-    return /^[a-z0-9][a-z0-9-]*$/.test(id)
-      &&(projectPath===`unity-games/${id}`||(activeLifecycle(game)&&Boolean(canonicalWebHref(game))));
-  }):[];
-  const available=new Map();
-  const snapshot=()=>({...catalog,games:catalog.games.map(game=>available.has(gameIdOf(game))
-    ?{...game,unityWebTestUrl:available.get(gameIdOf(game)).href,unityWebAvailable:true,unityWebVerified:available.get(gameIdOf(game)).verified}
-    :{...game,unityWebTestUrl:null,unityWebAvailable:false,unityWebVerified:false})});
-  const probeGame=async game=>{
-    const id=gameIdOf(game),stamp=Date.now();
-    for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`]){
-      try{
-        const [indexResponse,manifestResponse]=await Promise.all([
-          probeFetch(`${href}index.html?ts=${stamp}`),
-          probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`)
-        ]);
-        if(!indexResponse.ok)continue;
-        const html=await indexResponse.text();
-        if(!/createUnityInstance\s*\(/.test(html)||!/\.loader\.js/.test(html))continue;
-        const manifest=manifestResponse.ok?await manifestResponse.json().catch(()=>null):null;
-        let refs=[];
-        if(manifest){
-          // Unity 원본과 실행 번들의 식별자는 정확해야 한다. QA 합격 여부는 링크 활성화와 분리한다.
-          const hex64=/^[a-f0-9]{64}$/,hex40=/^[a-f0-9]{40}$/;
-          if(manifest?.engine!=='UNITY_WEB'||manifest.gameId!==id||manifest.bundleComplete!==true||
-             manifest.requiredDimension!=='3D'||
-             manifest.canonicalSourceRoot!==`unity-games/${id}`||
-             !hex64.test(String(manifest.unitySourceTreeSha256||''))||
-             !hex64.test(String(manifest.buildTreeSha256||''))||
-             !hex40.test(String(manifest.sourceCommit||'')))continue;
-          const groups=manifest.requiredGroups||{};
-          if(!['loader','data','framework','wasm'].every(key=>Array.isArray(groups[key])&&groups[key].length>0))continue;
-          refs=['loader','data','framework','wasm'].flatMap(key=>groups[key]);
-        }else{
-          // 이전 Unity WebGL 빌드: index의 실제 WebGL 로더 4종을 찾아 확인한다.
-          const patterns=[
-            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.loader\.js)(?:\?[^"']*)?["']/g,
-            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.data(?:\.gz|\.br)?)(?:\?[^"']*)?["']/g,
-            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.framework\.js(?:\.gz|\.br)?)(?:\?[^"']*)?["']/g,
-            /["'](?:Build\/|\/)([A-Za-z0-9_.-]+\.wasm(?:\.gz|\.br)?)(?:\?[^"']*)?["']/g
-          ];
-          refs=patterns.map(pattern=>{
-            const match=pattern.exec(html);
-            return match?`Build/${match[1]}`:'';
-          });
-        }
-        if(refs.length<4||!refs.every(ref=>typeof ref==='string'&&/^Build\/[a-zA-Z0-9_.-]+$/.test(ref)))continue;
-        const probes=await Promise.all(refs.map(ref=>
-          probeFetch(`${href}${ref}?ts=${stamp}`,{method:'HEAD'}).catch(()=>null)
-        ));
-        if(!probes.every(response=>response?.ok===true))continue;
-        // 실행 파일이 실재하면 개발 테스트 링크를 표시한다. QA가 없거나 실패해도 PASS로 표시하지 않는다.
-        let verified=false;
-        available.set(id,{href,verified:false});
-        onAvailable(snapshot());
-        // 추가 QA 조회 실패가 이미 확인한 실행 번들을 다시 숨기면 안 된다.
-        try{if(manifest?.homepageVerified===true){
-          const files=['unity-web-build.json','upper-platform-development-readiness.json',
-            'unity-web-gameplay-validation.json','unity-web-independent-qa.json','unity-web-regression.json'];
-          const responses=await Promise.all(files.map(file=>probeFetch(`${href}${file}?ts=${stamp}`).catch(()=>null)));
-          if(responses.every(response=>response?.ok===true)){
-            const [build,readiness,...qa]=await Promise.all(responses.map(response=>response.json()));
-            const actual3d=e=>e?.spatialGameplay?.pass===true
-              &&e.spatialGameplay.requiredDimension==='3D'
-              &&e.spatialGameplay.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'
-              &&e.spatialGameplay.perspectiveCamera===true&&e.spatialGameplay.depthPass===true
-              &&Number(e.spatialGameplay.observedMeshCount)>0&&Number(e.spatialGameplay.observedTriangles)>0
-              &&Number(e.spatialGameplay.worldMeshes3d)>=2&&Number(e.spatialGameplay.worldDepthCm)>=50
-              &&Number(e.spatialGameplay.gameplayActors3d)>=1&&e.spatialGameplay.spriteGameplayActors===0
-              &&e.visualQa?.nativeUnityMesh?.pass===true
-              &&e.visualQa.nativeUnityMesh.measurementState==='UNITY_RUNTIME_MESH_INSPECTION';
-            const qaPassed=e=>e?.engine==='UNITY_WEB'&&e.gameId===id&&e.pass===true
-              &&e.playableBrowserTest===true&&e.boot?.pass===true&&e.input?.pass===true
-              &&e.gameplay?.pass===true&&e.coreFun?.pass===true&&e.saveRestore?.pass===true
-              &&e.mobile?.pass===true&&e.mobile?.actualBrowserTouchDispatched===true
-              &&e.mobile?.realGameTouchHandlerObserved===true&&e.performance?.pass===true
-              &&e.noCriticalRuntimeError===true&&actual3d(e);
-            const verifiedFailed=manifest.homepageVerified!==true
-              ||build?.gameId!==id||build.canonicalSourceRoot!==`unity-games/${id}`
-              ||build.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
-              ||build.buildTreeSha256!==manifest.buildTreeSha256||build.sourceCommit!==manifest.sourceCommit
-              ||build.bootSmoke!=='PASS'||build.actualBrowserPlay!=='PASS'
-              ||build.independentQa!=='PASS'||build.regression!=='PASS'
-              ||build.upperPlatformGateCandidate!==true
-              ||readiness?.gameId!==id||readiness.pass!==true||readiness.state!=='UPPER_PLATFORM_DEVELOPMENT_READY'
-              ||readiness.sourceCommit!==manifest.sourceCommit
-              ||readiness.unitySourceTreeSha256!==manifest.unitySourceTreeSha256
-              ||readiness.buildTreeSha256!==manifest.buildTreeSha256
-              ||readiness.criteria?.graphics?.native3dVerified!==true
-              ||readiness.criteria?.qa?.pass!==true||readiness.criteria?.qa?.multiplayerPass!==true
-              ||!qa.every(qaPassed);
-            verified=!verifiedFailed;
-          }
-        }}catch{}
-        if(verified){
-          available.set(id,{href,verified:true});
-          onAvailable(snapshot());
-        }
-        break;
-      }catch{}
-    }
-  };
-  // 모바일 연결 한도를 넘는 전체 게임 동시 요청 때문에 정상 빌드까지 시간 초과되지 않게 한다.
-  const pending=candidates.slice();
-  await Promise.all(Array.from({length:Math.min(4,pending.length)},async()=>{
-    while(pending.length)await probeGame(pending.shift());
-  }));
-  return snapshot();
-}
-function webPublishedRows(catalog){
-  return (Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(game=>activeLifecycle(game)&&game.unityWebAvailable===true&&Boolean(game.unityWebTestUrl))
-    .map(game=>({...game,webPath:game.unityWebTestUrl,homepageDisplayMode:'WEB_PUBLISHED'}))
-    .sort(catalogOrderCompare);
-}
+// 유니티 웹 제작 중단: 게임별 브라우저 빌드 탐색과 재검증 요청을 제거한다.
 function verifiedRobloxDeploymentRows(catalog){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>{
@@ -296,7 +169,7 @@ function mediaImageHref(asset){return asset?.src?`${asset.src}?v=${String(asset.
 function mergeGame(row){
   const identity=identityOf(row),id=gameIdOf(row),web=sourcesOf(row).web||{};
   const media=marketingOf(row).homepageMedia;
-  const webPath=row?.unityWebAvailable===true?String(row.unityWebTestUrl||''):'';
+  const webPath='';
   const canonicalThumbnail=String(marketingOf(row).thumbnail||identity.image||'').trim();
   // 로블록스 본서버 원본 썸네일은 어떤 해상도 대체도 하지 않는다.
   const sharedRobloxThumbnail=/^assets\/roblox-thumbnails\/[a-z0-9-]+\.(svg|png|jpe?g)$/i.test(canonicalThumbnail);
@@ -329,9 +202,8 @@ function platformLinks(game){
   const rp=platform('ROBLOX'),up=platform('UNITY');
   const roblox=String((rp.publicRelease===true?rp.publicUrl:rp.internalUrl)||'').trim();
   const unity=String((game?.unityBuildVerified===true?game?.unityBuildUrl:'')||(up.publicRelease===true?up.publicUrl:up.internalUrl)||'').trim();
-  const unityWeb=platformExposure?.unityWebEnabled===true&&game?.unityWebAvailable===true?String(game?.unityWebTestUrl||'').trim():'';
   const web=playableWebHref(game);
-  return {roblox,unity,unityWeb,web};
+  return {roblox,unity,web};
 }
 function internalReleaseLinks(game){
   const links=platformLinks(game);
@@ -341,14 +213,13 @@ function internalReleaseLinks(game){
   return {
     roblox:roblox.executionAvailable===true||(roblox.internalReleaseReady===true&&roblox.releaseReadiness?.homepageReady===true)||roblox.historicalInternalRelease===true?links.roblox:'',
     unity:unity.executionAvailable===true||(unity.internalReleaseReady===true&&unity.releaseReadiness?.homepageReady===true)||game?.unityBuildVerified===true?links.unity:'',
-    unityWeb:platformExposure?.unityWebEnabled===true?links.unityWeb:'',
     web:links.web
   };
 }
 function hasRunnableHomepageTarget(game){
   // 검증된 실제 실행 링크만 활성화한다. 카드 목록 필터로 사용하지 않는다.
   const links=internalReleaseLinks(game);
-  return Boolean(links.unityWeb||links.roblox||links.unity);
+  return Boolean(links.roblox||links.unity);
 }
 function hasInternalRelease(game){
   const exposure=exposureOf(gameIdOf(game));
@@ -380,7 +251,7 @@ function recentModificationRows(catalog){
 }
 function platformHref(game){
   const links=platformLinks(game);
-  return links.unityWeb||links.roblox||links.unity||'';
+  return links.roblox||links.unity||'';
 }
 function installStyles(){
   document.documentElement.dataset.homeVisualMode='SAMPLE_FRONT_DOOR_V1';
@@ -415,8 +286,8 @@ function buildFocus(catalog,status){
   const row=rows.find(item=>gameIdOf(item)===FEATURED_GAME_ID)||rows[0];
   if(!row)return;
   const game=mergeGame(row),links=internalReleaseLinks(game);
-  const direct=links.unityWeb||links.roblox||links.unity||'';
-  const actionLabel=links.unityWeb?(game.unityWebVerified?'Unity Web 플레이':'Unity Web 개발 테스트'):links.roblox?'Roblox 플레이':links.unity?'Unity 앱 플레이':'게임 보기';
+  const direct=links.roblox||links.unity||'';
+  const actionLabel=links.roblox?'Roblox 플레이':links.unity?'Unity 앱 플레이':'게임 보기';
   hero.className='hero homeFocus';
   hero.style.setProperty('--focus-bg',`url('${String(game.heroImage||'assets/page-bg-v4.webp').replaceAll("'","%27")}')`);
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1>${game.subtitle?`<div class="homeGameSubtitle">${esc(game.subtitle)}</div>`:''}<p>${esc(game.description)}</p>${direct?`<a class="homeFocusBtn" href="${esc(direct)}">${esc(actionLabel)}</a>`:'<a class="homeFocusBtn" href="#gameHub">게임 보기</a>'}</div>`;
@@ -428,13 +299,9 @@ function buildCard(row){
   const actions=[
     button(links.roblox,`Roblox · ${state('ROBLOX')}`,`Roblox · ${state('ROBLOX')}`,'platformAction robloxAction'),
     button(links.unity,`Unity 앱 · ${state('UNITY')}`,`Unity 앱 · ${state('UNITY')}`,'platformAction unityAction'),
-    platformExposure?.unityWebEnabled===true
-      ?button(links.unityWeb,game.unityWebVerified?'Unity Web · 개발중':'Unity Web · 개발 테스트',game.unityWebAvailable===false?'Unity Web · 빌드없음':'Unity Web · 확인 중','webAction unityWebAction')
-      :'',
-    // 일반 HTML 게임 링크는 홈페이지에 표시하지 않는다.
-    ''
+    // 유니티 웹 개발 링크와 기존 HTML 시제품 링크는 노출하지 않는다.
   ].join('');
-  const meta=links.unityWeb?(game.unityWebVerified?'Unity WebGL · 3D·브라우저·모바일·저장 검증 통과':'Unity WebGL · 실행 가능한 개발 빌드 · 추가 검증 필요'):hasInternalRelease(game)?'출시 게임 · Unity Web 실행 검증 대기':'개발 중 · Unity Web 실행 검증 대기';
+  const meta=hasInternalRelease(game)?'출시 게임':'개발 중';
   const completions=(exposure?.platforms||[]).map(p=>{
     const label=p.platform==='ROBLOX'?'로블록스':p.platform==='UNITY'?'유니티':esc(p.platform);
     const history=p.completion;
@@ -447,7 +314,7 @@ function buildCard(row){
     if(!count)return `<div>${title} · 검증된 배포 기록 없음</div>`;
     return `<details><summary>${esc(title)}</summary><small>보존된 최종 검증·배포 기록 기준. 현재 수리 상태와 별개야. 최근 ${records.length}건 · 한국 시간</small><ol>${records.map(r=>`<li><a href="${esc(r.evidenceUrl)}" target="_blank" rel="noopener noreferrer">${esc(formatDate(r.completedAt))} · 증거 보기</a></li>`).join('')}</ol></details>`;
   }).join('');
-  const direct=links.unityWeb||links.roblox||links.unity||'';
+  const direct=links.roblox||links.unity||'';
   const media=game.homepageMedia;
   const video=hasInternalRelease(game)&&media?.video?.runtimeVerification?.pass===true&&/^assets\/homepage-media\/[a-z0-9-]+\.mp4$/.test(media.video.src||'')?media.video:null;
   const videoMarkup=video?`<details class="homeGameplayVideo"><summary>실제 플레이 · ${esc(video.platform==='WEB'?'웹':video.platform==='UNITY_WEB'?'Unity Web':'Unity 앱')}</summary><video controls playsinline preload="none" data-src="/${esc(video.src)}?v=${esc(video.sha256.slice(0,12))}" poster="${esc(mediaImageHref(media.small))}" aria-label="${esc(game.subtitle||game.name)} 실제 플레이"></video></details>`:'';
@@ -596,9 +463,7 @@ async function refresh(){
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
     // 첫 로딩에서만 카드를 즉시 표시한다. 이후 갱신은 검증된 빌드 상태와 함께 반영해 모바일 카드가 흔들리지 않게 한다.
-    if(!lastSignature)renderCatalog(catalog);
-    const boundCatalog=await bindAvailableUnityWebSurfaces(catalog,renderCatalog);
-    renderCatalog(boundCatalog);
+    renderCatalog(catalog);
   }finally{refreshInFlight=false;}
 }
 function main(){
