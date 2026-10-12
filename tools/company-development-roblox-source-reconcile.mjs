@@ -273,10 +273,14 @@ export function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
   }
 }
 
-export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={},playbooks={}}={}){
+export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline,assetLibrary={},playbooks={},requestedGameId=''}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
+  const requested=clean(requestedGameId);
+  if(requested&&!/^[a-z0-9][a-z0-9-]{1,48}$/.test(requested))throw new Error('ROBLOX_REQUESTED_GAME_ID_INVALID:'+requested);
   const results=[];
   for(const item of queue.items||[]){
+    // 메인: 단일 게임의 재검수는 다른 게임 소스·설계·학습 상태를 읽거나 변경하지 않는다.
+    if(requested&&clean(item.gameId)!==requested)continue;
     if(!eligibleForRobloxSourceReconciliation(item))continue;
     const sourcePath=`roblox-games/${item.gameId}`;
     const root=path.join(repoRoot,sourcePath);
@@ -480,6 +484,7 @@ function runCli(){
   const sourceRevision=arg('source-revision');
   const resultsFile=arg('results','/tmp/roblox-source-reconciliation.json');
   const playbooksFile=arg('playbooks');
+  const requestedGameId=arg('game-id');
   if(!queueFile||!runtimeRef||!sourceRevision)throw new Error('required: --queue, --runtime-ref, --source-revision');
   const queue=readJson(queueFile);
   const assetLibrary=readJson(path.join(repoRoot,'company-asset-library.json'));
@@ -490,6 +495,7 @@ function runCli(){
     sourceRevision,
     assetLibrary,
     playbooks,
+    requestedGameId,
     loadBaseline:item=>{
       const baselinePath=clean(item.designBaselineSource);
       if(!baselinePath)throw new Error(`designBaselineSource missing: ${item.gameId}`);

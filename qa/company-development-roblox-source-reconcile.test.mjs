@@ -12,6 +12,53 @@ import {robloxDesignProfileFromBaseline} from '../tools/company-development-robl
 
 const gameId='seed-roblox-simulator-tycoon-i-adopt-me';
 
+test('common library compile selector discovers the actual native libraries',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe3-engine-contract.yml','utf8');
+  const step=workflow.split('      - name: Compile common Roblox libraries before game binding')[1].split('      - name: ')[0];
+  const selection=step.split('\n').find(line=>line.includes('mapfile -t libraries')).trim();
+  const files=execFileSync('bash',['-c',selection+'\nprintf "%s\\n" "${libraries[@]}"'],{encoding:'utf8'}).trim().split('\n');
+  assert.ok(files.includes('assets/roblox/common-ui-v1/RobloxCommonUI.luau'));
+  assert.ok(files.includes('assets/roblox/common-character-gear-v1/RobloxCommonCharacterGear.luau'));
+  assert.ok(files.length>2);
+  assert.ok(files.every(file=>fs.existsSync(file)&&file.endsWith('.luau')));
+});
+
+// 검수 범위: 단일 게임은 무관한 설계·과거 소스·학습 상태를 방문하지 않는다.
+test('requested source reconciliation isolates one game while batch keeps all games',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-requested-reconcile-'));
+  try{
+    const queue={items:[{...staleItem(),gameId:'daechung-rpg'},{...staleItem(),gameId:'other-game'}]};
+    const before=JSON.stringify(queue);
+    const visited=[];
+    const run=requestedGameId=>evaluateExistingRobloxSources({queue,repoRoot:tmp,sourceRevision:'b'.repeat(40),requestedGameId,
+      loadBaseline:item=>{visited.push(item.gameId);return baseline;}});
+    const requested=run('daechung-rpg');
+    assert.deepEqual(visited,['daechung-rpg']);
+    assert.deepEqual(requested.map(row=>row.gameId),['daechung-rpg']);
+    visited.length=0;
+    assert.deepEqual(run('').map(row=>row.gameId),['daechung-rpg','other-game']);
+    assert.deepEqual(visited,['daechung-rpg','other-game']);
+    visited.length=0;
+    assert.deepEqual(run('missing-game'),[]);
+    assert.deepEqual(visited,[]);
+    assert.throws(()=>run('../other-game'),/ROBLOX_REQUESTED_GAME_ID_INVALID/);
+    assert.equal(JSON.stringify(queue),before);
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});
+
+test('requested workflow fetches only its bound revision and forwards the same CLI scope',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+  const fetchStep=workflow.split('      - name: Fetch current company runtime and verified Vibe learning')[1].split('      - name: ')[0];
+  const code=fetchStep.match(/node - <<'NODE' > \/tmp\/roblox-bound-source-revisions\n([\s\S]*?)\n          NODE/)[1];
+  const items=[{gameId:'daechung-rpg',robloxSourceCommit:'a'.repeat(40)},{gameId:'other-game',robloxSourceCommit:'b'.repeat(40)}];
+  const invoke=requested=>{const revisions=[];runInNewContext(code,{require:()=>({readFileSync:()=>JSON.stringify({items})}),process:{env:{REQUESTED_GAME_ID:requested}},console:{log:value=>revisions.push(value)}});return revisions;};
+  assert.deepEqual(invoke('daechung-rpg'),['a'.repeat(40)]);
+  assert.deepEqual(invoke(''),['a'.repeat(40),'b'.repeat(40)]);
+  const reconcileStep=workflow.split('      - name: Revalidate exact-main Roblox source already merged')[1].split('      - name: ')[0];
+  assert.match(reconcileStep,/REQUESTED_GAME_ID: \$\{\{ inputs\.game_id \|\| '' \}\}/);
+  assert.match(reconcileStep,/--game-id="\$REQUESTED_GAME_ID"/);
+});
+
 test('release handoff skips obsolete intent before historical fetch and preserves active evidence checks',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-release-handoff.yml','utf8');
   const step=workflow.split('      - name: Resolve exact owner release intent')[1].split('      - name: ')[0];
