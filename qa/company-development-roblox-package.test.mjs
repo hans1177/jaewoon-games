@@ -327,6 +327,20 @@ ${familyRows}
 });
 
 test('Roblox dynamic asset family detection follows actual native systems and ignores generic scaffold words',()=>{
+  const materials=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).MOTION,false,'재질 BONE은 모션 시스템이 아니다');
+  for(const sourceText of [
+    'local presets = { BONE = {}, Animation = "idle", Animator = "actor" }',
+    'local message = "Bone AnimationTrack TweenService RenderStepped Heartbeat"',
+  ])assert.equal(detectRobloxStudioAssetSystems({sourceText}).MOTION,false);
+  for(const sourceText of [
+    'local bone = Instance.new("Bone")',
+    'local animator = humanoid:FindFirstChildOfClass("Animator")',
+    'local track = animator:LoadAnimation(animation)',
+    'track:AdjustSpeed(1)',
+    'local tween = game:GetService("TweenService")',
+    'runService.Heartbeat:Connect(function() end)',
+  ])assert.equal(detectRobloxStudioAssetSystems({sourceText}).MOTION,true,sourceText);
   const generic=detectRobloxStudioAssetSystems({sourceText:[
     'local camera = workspace.CurrentCamera',
     'local itemCount = 3',
