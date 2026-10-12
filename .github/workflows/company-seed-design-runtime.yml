@@ -665,7 +665,7 @@ jobs:
             [ -f "$seed_path" ] && cp "$seed_path" /tmp/design-seed.json || true
             [ -f "$progress_path" ] && cp "$progress_path" /tmp/design-progress.json || true
             local pushed=0
-            for attempt in 1 2 3 4; do
+            for attempt in $(seq 1 24); do
               git fetch origin "$COMPANY_RUNTIME_BRANCH"
               git worktree remove -f "$worktree" >/dev/null 2>&1 || true
               rm -rf "$worktree"
@@ -694,7 +694,7 @@ jobs:
                 break
               fi
               git worktree remove -f "$worktree" >/dev/null 2>&1 || true
-              sleep "$attempt"
+              sleep "$((1 + RANDOM % 5))"
             done
             test "$pushed" = 1
             last_checkpoint_sync_key="$sync_key"
@@ -888,7 +888,7 @@ jobs:
           game_path="design/$GAME_ID"
           worktree="/tmp/minimum-design-persist-$GAME_ID-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           pushed=0
-          for attempt in 1 2 3 4; do
+          for attempt in $(seq 1 24); do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
             rm -rf "$worktree"
@@ -902,7 +902,7 @@ jobs:
             if git -C "$worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$worktree" commit -m "runtime: minimum dual-platform design $GAME_ID $DESIGN_DATE"
             if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
-            sleep $((attempt * 2))
+            sleep "$((1 + RANDOM % 5))"
           done
           git worktree remove --force "$worktree" 2>/dev/null || true
           git worktree prune
@@ -972,7 +972,7 @@ jobs:
           generated_commit="$(git rev-parse HEAD)"
           runtime_worktree="/tmp/seed-design-persist-${{ matrix.target.game_id }}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           pushed=0
-          for attempt in 1 2 3 4; do
+          for attempt in $(seq 1 24); do
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$runtime_worktree" 2>/dev/null || true
             rm -rf "$runtime_worktree"
@@ -1007,7 +1007,7 @@ jobs:
             if git -C "$runtime_worktree" diff --cached --quiet; then pushed=1; break; fi
             git -C "$runtime_worktree" commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
             if git -C "$runtime_worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
-            sleep $((attempt * 2))
+            sleep "$((1 + RANDOM % 5))"
           done
           git worktree remove --force "$runtime_worktree" 2>/dev/null || true
           git worktree prune
@@ -1063,7 +1063,7 @@ jobs:
           git config user.name 'jaewoon-design-score-sync'
           git config user.email 'design-score-sync@users.noreply.github.com'
           pushed=0
-          for attempt in 1 2 3 4; do
+          for attempt in $(seq 1 24); do
             git fetch --no-tags --depth=1 --filter=blob:none origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
             # 전체 design 브랜치 대신 동기화에 필요한 점수 증거와 상태만 checkout.
             git sparse-checkout init --no-cone
@@ -1140,7 +1140,7 @@ jobs:
             if git diff --cached --quiet; then pushed=1; echo 'STRICT_DESIGN_SCORE_SYNC_CHANGE=NO'; break; fi
             git commit -m 'runtime: sync post-reset strict design scores'
             if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; echo 'STRICT_DESIGN_SCORE_SYNC=PERSISTED'; break; fi
-            sleep $((attempt * 2))
+            sleep "$((1 + RANDOM % 5))"
           done
           test "$pushed" = 1
 
