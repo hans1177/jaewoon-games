@@ -135,13 +135,13 @@ test('architecture preserves Unity Web adapters behind the owner hold',()=>{
   assert.match(runtime,/upper-platform-development-readiness\.json/);
   assert.match(runtime,/UPPER_PLATFORM_GRANDFATHERED_IDS=/);
   assert.match(runtime,/eligible_json:/);
-  assert.match(runtime,/unity_web_json:/);
-  assert.match(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
-  assert.match(runtime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.doesNotMatch(runtime,/unity_web_json:/);
+  assert.doesNotMatch(runtime,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS=/);
+  assert.doesNotMatch(runtime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.match(runtime,/grandfatherGameIds/);
   assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
   assert.match(runtime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
-  assert.match(runtime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(runtime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(runtime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
   const webWorkflow=fs.readFileSync('.github/workflows/unity-web-first-stage-build.yml','utf8');
   assert.match(webWorkflow,/Run Unity Web independent QA/);
@@ -270,6 +270,6 @@ test('development orchestrator never globally serializes heavy platform or Unity
   assert.doesNotMatch(runtime,/^concurrency:\s*\n\s*group:\s*company-development-confirmed-runtime\s*$/m);
   assert.match(runtime,/dispatch-roblox:/);
   assert.match(runtime,/dispatch-unity:/);
-  assert.match(runtime,/dispatch-unity-web-floor:/);
-  assert.match(runtime,/dispatch-unity-web-bootstrap:/);
+  assert.doesNotMatch(runtime,/dispatch-unity-web-floor:/);
+  assert.doesNotMatch(runtime,/dispatch-unity-web-bootstrap:/);
 });
