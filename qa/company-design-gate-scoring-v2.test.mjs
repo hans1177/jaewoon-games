@@ -427,7 +427,7 @@ const legacyWithoutWeb=authoredSpatialDesign();
 delete legacyWithoutWeb.platformProfiles.UNITY.unityWebSpatialPresentation;
 assert.equal(authoredRejections(legacyWithoutWeb).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
 const foreignNative=authoredSpatialDesign();
-foreignNative.platformProfiles.ROBLOX.inputModel='Unity Input System only for this Roblox project.';
+foreignNative.platformProfiles.ROBLOX={inputModel:'Unity Input System only for this Roblox project.'};
 assert.ok(authoredRejections(foreignNative).some(row=>row.code==='DESIGN_PLATFORM_NATIVE_CONTRADICTION'),
   '웹 제작 의무를 없애도 실제 네이티브 플랫폼 혼동은 계속 반려한다.');
 // 기존 게임의 표현 보존 설계에서도 MAIN/A/B/c/@는 실제 상태 입력과 출력으로 이어야 한다.
