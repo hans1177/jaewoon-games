@@ -1027,7 +1027,7 @@ test('model-authored basic coding specification remains non-authoritative until 
 
 test('missing role IDs cannot be silently treated as validated source rules',()=>{
   const start=design.indexOf('const originalRoles=');
-  const end=design.indexOf('const rulePlan=originalRoles?',start);
+  const end=design.indexOf('const rulePlan=originalRoles',start);
   assert.ok(start>0&&end>start);
   const source=design.slice(start,end);
   assert.match(source,/row\.id&&Array\.isArray\(row\.stateInputs\)/);
@@ -1075,7 +1075,7 @@ test('authored MAIN A B C delve grammar is carried into downstream checkpoint an
   assert.ok(writer.length>1000,'canonical design authoring function must exist');
   assert.match(writer,/const priorRules=Object\.fromEntries\(\['identity','creativeGrammar','coreFun'/);
   assert.match(writer,/const dependencyHash=createHash\('sha256'\)\.update\(JSON\.stringify\(priorRules\)\)/);
-  for(const marker of ['mainIdentity:value.mainIdentity','abEvolution:value.abEvolution','cThemes:value.cThemes','cGenres:value.cGenres','cGenreInterlock:value.cGenreInterlock','delveGrowthRule:value.delveGrowthRule']){
+  for(const marker of ['mainIdentity:value.mainIdentity','abEvolution:value.abEvolution','dCreations:value.dCreations','cGenres:value.cGenres','cGenreInterlock:value.cGenreInterlock','delveGrowthRule:value.delveGrowthRule']){
     assert.ok(writer.includes(marker),'missing authored grammar handoff: '+marker);
   }
   assert.ok(writer.includes('SHARED_RULE_ANCHORS=${JSON.stringify({...anchors,...partial})}'));
@@ -1201,7 +1201,7 @@ test('native design repairs only failing fields and requires scored improvement 
 // 회귀검증: 기본 설계 원본의 형식만 채워진 규칙을 실제 상태 그래프 없이 재사용하지 않는다.
 test('native design authoring reuses only validated original grammar and causal role graph',()=>{
   const start=design.indexOf('function computeVibeNativeDesign(){');
-  const end=design.indexOf('  const rulePlan=originalRoles?',start);
+  const end=design.indexOf('  const rulePlan=originalRoles',start);
   assert.ok(start>=0&&end>start);
   const originalChoice=design.slice(start,end);
   assert.match(originalChoice,/validateDesignAuthoringContent\(\{design:\{creativeGrammar:original\.creativeGrammar\}/);
@@ -1458,3 +1458,4 @@ test('forty-five independently authored games do not fail runtime persistence af
   assert.match(workflow,/group: company-seed-design-game-\$\{\{ matrix\.target\.game_id \}\}/);
   assert.match(workflow,/fail-fast: false/);
 });
+

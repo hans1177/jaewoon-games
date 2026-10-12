@@ -123,13 +123,14 @@ jobs:
           for(const request of activeOwnerDesignResetRequests()){
             const gameId=String(request.gameId||'').trim();
             const source=String(request.designRequest?.baselineSource||'').trim();
-            const aOnly=request.designRequest?.aSystemReference;
+            const bSupporting=request.designRequest?.bSystemReference!==undefined;
+            const aOnly=request.designRequest?.bSystemReference||request.designRequest?.aSystemReference;
             const aSource=String(aOnly?.source||'').trim();
             if(!source&&!aSource)continue;
             if(aSource&&(request.designRequest?.topicMode!=='VIBE_FREE_TOPIC'
-              ||aOnly?.scope!=='A_SYSTEM_ONLY'||Object.keys(aOnly).some(key=>!['scope','source'].includes(key))))
+              ||aOnly?.scope!==(bSupporting?'B_SUPPORTING_REFERENCE_ONLY':'A_SYSTEM_ONLY')||Object.keys(aOnly).some(key=>!['scope','source'].includes(key))))
               throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID:'+gameId);
-            for(const [selected,kind]of [[source,'BASELINE'],[aSource,'A_SYSTEM_ONLY']]){
+            for(const [selected,kind]of [[source,'BASELINE'],[aSource,bSupporting?'B_SUPPORTING_REFERENCE_ONLY':'A_SYSTEM_ONLY']]){
               if(!selected)continue;
               const match=/^design\/([a-z0-9-]+)\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.exec(selected);
               if(!match||match[1]!==gameId)throw new Error('OWNER_DESIGN_'+kind+'_PATH_INVALID:'+gameId);
@@ -1212,4 +1213,5 @@ jobs:
             echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=NO_ALL_PASS'
           fi
           echo 'DESIGN_GATE_REPAIR_LIMIT=UNLIMITED'
+
 
