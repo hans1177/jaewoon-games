@@ -209,7 +209,6 @@ jobs:
           echo "NATIVE_ACTIVE_RUN_SCAN_ROBLOX_ROWS=$(jq '.workflow_runs|length' /tmp/active-roblox-native-runs.json)"
           echo "NATIVE_ACTIVE_RUN_SCAN_UNITY_ROWS=$(jq '.workflow_runs|length' /tmp/active-unity-native-runs.json)"
           echo 'NATIVE_ACTIVE_RUN_SCAN_PAGES=3'
-          echo 'UNITY_WEB_ACTIVE_RUN_SCAN_PAGES=3'
           echo 'NATIVE_ACTIVE_RUN_SCAN=PASS'
 
       - name: Resolve native upper-platform eligibility
