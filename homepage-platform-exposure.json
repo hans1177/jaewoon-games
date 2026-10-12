@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": true,
-  "generatedAt": "2026-10-12T01:26:54.760Z",
+  "generatedAt": "2026-10-12T01:59:38.327Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -737,7 +737,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "WAITING_SOURCE",
+          "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -747,22 +747,20 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
-              "publication": false,
+              "design": true,
+              "publication": true,
               "exactRuntime": false,
               "lobby": false,
               "movement": false,
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
-              "publication",
               "exactRuntime",
               "lobby",
               "movement",
@@ -772,14 +770,14 @@
             "artifactIdentity": null,
             "verifiedAt": null
           },
-          "executionAvailable": false,
-          "historicalInternalRelease": false,
-          "internalReleaseState": "NOT_READY",
+          "executionAvailable": true,
+          "historicalInternalRelease": true,
+          "internalReleaseState": "DEPLOYED_REVALIDATING",
           "publicReleaseReady": false,
           "publicRelease": false,
           "publicReleaseState": "INTERNAL_ONLY",
-          "placeId": null,
-          "internalUrl": null,
+          "placeId": "116850096561713",
+          "internalUrl": "https://www.roblox.com/games/116850096561713",
           "publicUrl": null,
           "internalLinkSuppressedReason": null
         },
@@ -792,7 +790,7 @@
             "scope": "RETAINED_VERIFIED_PUBLICATION_RECORDS",
             "records": []
           },
-          "developmentState": "WAITING_SOURCE",
+          "developmentState": "NATIVE_DEVELOPMENT",
           "buildRunId": null,
           "executionAvailable": false,
           "runtimePassed": false,
@@ -804,13 +802,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -818,7 +816,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -837,7 +834,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-10-04"
+      "updatedAt": "2026-10-12T01:59:37.497Z"
     },
     {
       "gameId": "crystal-defense",
