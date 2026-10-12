@@ -479,6 +479,42 @@ test('explicit free-topic owner reset discards prior design input while keeping 
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 
+test('fresh owner reset can whitelist only the former seed A gameplay family, never old B C themes',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'owner-a-system-only-'));
+  try{
+    const file=path.join(dir,'queue.json');
+    const core={scope:'A_SYSTEM_ONLY',systemFamily:'직접 채집과 주민 작업 배분',
+      playerChoice:'직접 자원을 채집하거나 주민에게 맡길 작업의 대상과 우선순위를 선택',
+      source:'game-catalog.json#cozy-island.description'};
+    const request={revision:'A-SYSTEM-ONLY-V1',gameId:'cozy-island',gameName:'포근섬',status:'ACTIVE',
+      designRequest:{topicMode:'VIBE_FREE_TOPIC',baselineSource:'',originalPlatform:'ROBLOX',
+        multiplayerMode:'COOP',instruction:'A의 원래 시스템만 참고하고 나머지는 처음부터 새로 설계한다.',
+        aSystemReference:core}};
+    fs.writeFileSync(file,JSON.stringify({requests:[request]}));
+    const state={seeds:[]},result=ensureOwnerDesignResetSeed(state,'cozy-island',{file});
+    assert.equal(result.changed,true);
+    assert.deepEqual(result.seed.A_SYSTEM_REFERENCE,core);
+    assert.deepEqual(result.seed.originalDesignContext.content,{});
+    assert.equal(result.seed.DESIGN_BASELINE_SOURCE,null);
+    assert.equal(result.seed.designTopicMode,'VIBE_FREE_TOPIC');
+    assert.equal(result.seed.MULTIPLAYER_DESIGN_MODE,'COOP');
+    assert.ok(!('B_SYSTEM_REFERENCE' in result.seed));
+    assert.ok(!('CREATIVE_THEME_REFERENCE' in result.seed));
+    assert.ok(!('OLD_MAIN_REFERENCE' in result.seed));
+    assert.equal(ensureOwnerDesignResetSeed(state,'cozy-island',{file}).changed,false);
+    for(const malformed of [
+      {...core,sourceMaterial:'old dynasty history'},
+      {...core,scope:'MAIN_AND_B'},
+      {...core,playerChoice:''},
+      {...core,systemFamily:''}
+    ]){
+      request.revision+='-NEXT';request.designRequest.aSystemReference=malformed;
+      fs.writeFileSync(file,JSON.stringify({requests:[request]}));
+      assert.throws(()=>ensureOwnerDesignResetSeed(state,'cozy-island',{file}),
+        /OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID/);
+    }
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
 test('design runtime lazily restores only validated active owner baselines before reset materialization',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   const segment=workflow.slice(workflow.indexOf('      - name: Load latest company runtime state'),workflow.indexOf('      - name: Synchronize active owner design reset seeds'));
