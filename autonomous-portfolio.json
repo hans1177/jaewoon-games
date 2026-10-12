@@ -269,12 +269,12 @@
       "id": "P0005",
       "slug": "human-go",
       "name": "휴먼 GO",
-      "sourcePath": "web-games/human-go",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "sourcePath": "roblox-games/human-go",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "ROBLOX_UNITY",
       "developmentFocus": {
         "scores": {
           "playability": 1,
@@ -292,7 +292,28 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true
+      "targetPlatformReady": true,
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/human-go",
+        "UNITY": "unity-games/human-go"
+      },
+      "designBaselineSource": "design/human-go/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/human-go/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/human-go/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0006",
@@ -347,7 +368,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0007",
@@ -383,7 +404,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0008",
@@ -419,7 +440,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0009",
@@ -472,7 +493,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0101",
@@ -513,7 +534,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0102",
@@ -554,7 +575,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "P0103",
@@ -615,7 +636,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z",
+      "updatedAt": "2026-10-12T02:22:20.011Z",
       "productionTier": 2
     },
     {
@@ -654,7 +675,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-DESIGN-SEED-PUZZLE-CHROMATIC-CASCADE",
@@ -692,7 +713,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-DESIGN-SEED-CASUAL-REALM-WEAVER",
@@ -730,7 +751,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-DESIGN-SEED-STORY-COMPLETE-RPG-CHRONICLES-OF-ELDORIA",
@@ -768,7 +789,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-ZOMBIE-SURVIVAL-20260917",
@@ -806,7 +827,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-DESIGN-HORROR-ESCAPE-ROOM",
@@ -844,7 +865,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-CORE-CLASH-4V4-20260917",
@@ -882,7 +903,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-ROLEPLAY-LIFE-AVAT-BROOKHAVEN-RP-20260917",
@@ -920,7 +941,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SURVIVAL-HORROR-ES-DOORS-20260917",
@@ -958,7 +979,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-CAT-STEP-20260917",
@@ -996,7 +1017,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-DICE-BATTLE-BOARD-20260917",
@@ -1034,7 +1055,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-GEM-SURVIVOR-20260917",
@@ -1072,7 +1093,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-KINGSHOT-AD-20260917",
@@ -1110,7 +1131,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-REALISTIC-BUILDER-20260917",
@@ -1148,7 +1169,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-SIMPLE-RPG-20260917",
@@ -1186,7 +1207,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-TOWER-CHOICE-RPG-20260917",
@@ -1224,7 +1245,159 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:21:08.360Z"
+      "updatedAt": "2026-10-12T02:22:20.011Z"
+    },
+    {
+      "id": "SEED-OWNER-DESIGN-COZY-ISLAND",
+      "slug": "cozy-island",
+      "name": "포근섬",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/cozy-island",
+        "UNITY": "unity-games/cozy-island"
+      },
+      "sourcePath": "roblox-games/cozy-island",
+      "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:22:20.011Z"
+    },
+    {
+      "id": "SEED-OWNER-DESIGN-LINE-DEFENSE",
+      "slug": "line-defense",
+      "name": "골목 군단 대전",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/line-defense",
+        "UNITY": "unity-games/line-defense"
+      },
+      "sourcePath": "unity-games/line-defense",
+      "designBaselineSource": "design/line-defense/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/line-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/line-defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:22:20.011Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-SIMULATOR-TYCOON-I-ADOPT-ME-20260917",
+      "slug": "seed-roblox-simulator-tycoon-i-adopt-me",
+      "name": "Pocket Foundry",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "ROBLOX",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
+        "UNITY": "unity-games/seed-roblox-simulator-tycoon-i-adopt-me"
+      },
+      "sourcePath": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
+      "designBaselineSource": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:22:20.011Z"
+    },
+    {
+      "id": "SEED-OWNER-ALL-DESIGN-RESET-DEFENSE-20260917",
+      "slug": "defense",
+      "name": "숲길 디펜스",
+      "protectedValues": [
+        "core-loop",
+        "design-baseline",
+        "save-meaning"
+      ],
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "productionTier": 2,
+      "targetEngine": "ROBLOX_UNITY",
+      "selectedPlatform": "UNITY",
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/defense",
+        "UNITY": "unity-games/defense"
+      },
+      "sourcePath": "unity-games/defense",
+      "designBaselineSource": "design/defense/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/defense/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:22:20.011Z"
     }
   ],
   "productionClassState": {
@@ -1450,5 +1623,5 @@
       }
     ]
   },
-  "updatedAt": "2026-10-12T02:21:08.360Z"
+  "updatedAt": "2026-10-12T02:22:20.011Z"
 }
