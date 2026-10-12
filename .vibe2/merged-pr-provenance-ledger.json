@@ -30975,11 +30975,165 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e32968213d703312a564937f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-7775",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "bc64ae77c6da6ba9838d4511d86f7c518f56b688",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 7775,
+        "baseBranch": "main",
+        "headBranch": "fix/vibe2-provenance-narrow-fetch-20261012",
+        "baseSha": "bc64ae77c6da6ba9838d4511d86f7c518f56b688",
+        "headSha": "68bb06892a013bcefaab342016db3d74d29a4c04",
+        "mergeCommitSha": "b8804e0b83f30a3d4b96e46515763532fb9e42ac",
+        "mergedAt": "2026-10-12T05:04:03Z",
+        "authorLogin": "hans1177",
+        "titleHash": "78e265617b8919816f07422250e8c9d730a04862d8b46a5b6c42e6ec0e6f688a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/vibe2-provenance-narrow-fetch-20261012",
+        "candidateSha": "68bb06892a013bcefaab342016db3d74d29a4c04"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 709,
+        "deletedLineCount": 832,
+        "changedFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/vibe2-merged-pr-provenance.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "owner-design-reset-queue.json",
+          "qa/company-design-gate-scoring-v2.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-game-seed-gameplay-sketch.test.mjs",
+          "qa/vibe2-merged-pr-provenance.test.mjs",
+          "roblox-games/exorcist-office/roblox-source-bootstrap.json",
+          "roblox-games/horror-escape-room/roblox-source-bootstrap.json",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/roblox-source-bootstrap.json",
+          "roblox-games/star-frontier/roblox-source-bootstrap.json",
+          "roblox-games/village-dungeons/roblox-source-bootstrap.json",
+          "tools/company-design-cycle.mjs",
+          "tools/company-game-seed-bootstrap.mjs",
+          "tools/game-seed-state.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/vibe2-merged-pr-provenance.yml",
+          "game-catalog.json",
+          "homepage-platform-exposure.json",
+          "owner-design-reset-queue.json",
+          "qa/company-design-gate-scoring-v2.test.mjs",
+          "qa/company-development-web-runtime.test.mjs",
+          "qa/company-game-seed-gameplay-sketch.test.mjs",
+          "qa/vibe2-merged-pr-provenance.test.mjs",
+          "roblox-games/exorcist-office/roblox-source-bootstrap.json",
+          "roblox-games/horror-escape-room/roblox-source-bootstrap.json",
+          "roblox-games/horror-escape-room/shared/GameConfig.luau",
+          "roblox-games/seed-idle-growth-rpg-crystal-bloom/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/roblox-source-bootstrap.json",
+          "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits/roblox-source-bootstrap.json",
+          "roblox-games/star-frontier/roblox-source-bootstrap.json",
+          "roblox-games/village-dungeons/roblox-source-bootstrap.json",
+          "tools/company-design-cycle.mjs",
+          "tools/company-game-seed-bootstrap.mjs",
+          "tools/game-seed-state.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:7775",
+        "merge-commit:b8804e0b83f30a3d4b96e46515763532fb9e42ac",
+        "base-main:bc64ae77c6da6ba9838d4511d86f7c518f56b688"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 249
+    "total": 250
   }
 }
