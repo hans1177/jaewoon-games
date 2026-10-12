@@ -199,6 +199,7 @@ jobs:
             git worktree prune
             git fetch origin vibe2-unreal-core --quiet
             git worktree add --detach /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+            node tools/vibe2-queue-control.mjs storage-unpack --queue=/tmp/system-ai-control/.vibe2/queue.json
             test -f /tmp/system-ai-control/.vibe2/system-ai-queue.json
             test -f /tmp/system-ai-control/.vibe2/recovery-queue.json
 
@@ -795,6 +796,7 @@ jobs:
             git worktree prune
             git fetch origin vibe2-unreal-core --quiet
             git worktree add --detach /tmp/system-ai-control origin/vibe2-unreal-core >/dev/null
+            node tools/vibe2-queue-control.mjs storage-unpack --queue=/tmp/system-ai-control/.vibe2/queue.json
 
             node tools/company-system-ai-queue.mjs --command=fan-in --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --results=/tmp/company-system-ai-results
             node tools/company-system-ai-queue.mjs --command=handoff-missing --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json --reservation="$reservation" --results=/tmp/company-system-ai-results

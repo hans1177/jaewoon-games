@@ -10,100 +10,16 @@ import vm from 'node:vm';
 import {mergeRuntimeCatalogMissingGames} from '../tools/company-status-sync.mjs';
 import {buildHomepagePlatformExposure,verifiedCompletionHistory} from '../tools/company-homepage-platform-exposure-sync.mjs';
 
-test('Unity WebGL 실제 번들 확인 시 개발 링크 제공, 정식 검증 표시는 별도 관리',async()=>{
+test('paused Unity Web never generates build probes or launch links',()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const headless={document:{readyState:'loading',addEventListener(){}},AbortController,setTimeout,clearTimeout};
-  const html='<div id="unity-container"></div><script src="Build/demo.loader.js"></script><script>createUnityInstance(canvas, {dataUrl:"Build/demo.data", frameworkUrl:"Build/demo.framework.js", codeUrl:"Build/demo.wasm"});</script>';
-  const manifest={engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,homepageVerified:true,requiredDimension:'3D',canonicalSourceRoot:'unity-games/demo',sourceCommit:'a'.repeat(40),unitySourceTreeSha256:'b'.repeat(64),buildTreeSha256:'c'.repeat(64),requiredGroups:{loader:['Build/demo.loader.js'],data:['Build/demo.data'],framework:['Build/demo.framework.js'],wasm:['Build/demo.wasm']}};
-  const build={gameId:'demo',canonicalSourceRoot:'unity-games/demo',sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256,bootSmoke:'PASS',actualBrowserPlay:'PASS',independentQa:'PASS',regression:'PASS',upperPlatformGateCandidate:true};
-  const readiness={gameId:'demo',pass:true,state:'UPPER_PLATFORM_DEVELOPMENT_READY',sourceCommit:manifest.sourceCommit,unitySourceTreeSha256:manifest.unitySourceTreeSha256,buildTreeSha256:manifest.buildTreeSha256,criteria:{graphics:{native3dVerified:true},qa:{pass:true,multiplayerPass:true}}};
-  const qa={engine:'UNITY_WEB',gameId:'demo',pass:true,playableBrowserTest:true,boot:{pass:true},input:{pass:true},gameplay:{pass:true},coreFun:{pass:true},saveRestore:{pass:true},mobile:{pass:true,actualBrowserTouchDispatched:true,realGameTouchHandlerObserved:true},performance:{pass:true},noCriticalRuntimeError:true,spatialGameplay:{pass:true,requiredDimension:'3D',source:'UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF',perspectiveCamera:true,depthPass:true,observedMeshCount:2,observedTriangles:20,worldMeshes3d:2,worldDepthCm:55,gameplayActors3d:1,spriteGameplayActors:0},visualQa:{nativeUnityMesh:{pass:true,measurementState:'UNITY_RUNTIME_MESH_INSPECTION'},renderedScene:{pass:true}}};
-  const data={'unity-web-deploy-manifest.json':manifest,'unity-web-build.json':build,'upper-platform-development-readiness.json':readiness,'unity-web-gameplay-validation.json':qa,'unity-web-independent-qa.json':qa,'unity-web-regression.json':qa};
-  const scanned=[];
-  let verified=true,serveManifest=true;
-  const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces})',{
-    ...headless,fetch:async(url,options={})=>{
-      const route=String(url);scanned.push(route);
-      if(route.includes('/unity/'))return{ok:false};
-      if(route.includes('index.html'))return{ok:true,text:async()=>html};
-      const name=Object.keys(data).find(name=>route.includes('/'+name));
-      if(name)return name==='unity-web-deploy-manifest.json'&&!serveManifest?{ok:false}:{ok:true,json:async()=>name==='unity-web-deploy-manifest.json'&&verified===false?{...manifest,homepageVerified:false}:data[name]};
-      if(options.method==='HEAD')return{ok:true};
-      return{ok:false};
-    }
+  assert.doesNotMatch(source,/bindAvailableUnityWebSurfaces|unityWebTestUrl|unityWebAction/);
+  const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},platformLinks,buildCard})',{
+    document:{readyState:'loading',addEventListener(){}},Date,Intl
   });
   api.setExposure({unityWebEnabled:true,games:[]});
-  const catalog={games:[{id:'demo',canonical:{sources:{unity:{projectPath:'unity-games/demo'}}}}]};
-  const first=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(first.games[0].unityWebAvailable,true);
-  assert.equal(first.games[0].unityWebTestUrl,'/web-games/demo/');
-  assert.equal(scanned.filter(url=>url.includes('/Build/demo.')).length,4);
-  assert.equal(first.games[0].unityWebVerified,true);
-  data['unity-web-deploy-manifest.json']={...manifest,homepageVerified:false,homepageDevelopmentTest:true};
-  data['unity-web-build.json']={...build,actualBrowserPlay:'PLAYABLE_TEST_ONLY',independentQa:'REPAIR_REQUIRED',upperPlatformGateCandidate:false};
-  data['upper-platform-development-readiness.json']={...readiness,pass:false,state:'REPAIR_REQUIRED'};
-  data['unity-web-independent-qa.json']={...qa,pass:false,performance:{pass:false}};
-  const dev=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(dev.games[0].unityWebAvailable,true,'real browser-playable development build is exposed');
-  assert.equal(dev.games[0].unityWebVerified,false,'development build never claims strict verified release');
-  data['unity-web-deploy-manifest.json']=manifest;
-  data['unity-web-build.json']=build;
-  data['upper-platform-development-readiness.json']=readiness;
-  data['unity-web-independent-qa.json']=qa;
-  verified=false;
-  const rejected=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(rejected.games[0].unityWebAvailable,true,'real deployable Unity WebGL bundle remains owner-playable');
-  assert.equal(rejected.games[0].unityWebVerified,false,'missing formal QA approval cannot be labeled PASS');
-  verified=true;
-  data['unity-web-independent-qa.json']={...qa,saveRestore:{pass:false}};
-  const unsafeSave=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(unsafeSave.games[0].unityWebAvailable,true,'verified bundle remains accessible as a development test');
-  assert.equal(unsafeSave.games[0].unityWebVerified,false,'failed save/restore blocks QA PASS claim');
-  data['unity-web-independent-qa.json']=qa;
-  data['unity-web-regression.json']={...qa,mobile:{...qa.mobile,realGameTouchHandlerObserved:false}};
-  const unsafeMobile=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(unsafeMobile.games[0].unityWebAvailable,true,'verified bundle remains accessible as a development test');
-  assert.equal(unsafeMobile.games[0].unityWebVerified,false,'missing actual mobile touch blocks QA PASS claim');
-  serveManifest=false;
-  const legacy=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(legacy.games[0].unityWebAvailable,true,'index and four real assets allow legacy Unity WebGL launch');
-  assert.equal(legacy.games[0].unityWebVerified,false,'index-only probe cannot create QA PASS claim');
-});
-
-test('verified bundle links render before an unrelated slow game finishes probing',async()=>{
-  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  let releaseSlow,resolveFirst,finished=false;
-  const slow=new Promise(resolve=>{releaseSlow=resolve;});
-  const first=new Promise(resolve=>{resolveFirst=resolve;});
-  const html=fs.readFileSync('web-games/daechung-rpg/unity/index.html','utf8');
-  const snapshots=[];
-  const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces,buildCard})',{
-    document:{readyState:'loading',addEventListener(){}},AbortController,setTimeout,clearTimeout,
-    fetch:async(url,options={})=>{
-      if(String(url).includes('/slow/')){await slow;return{ok:false};}
-      if(String(url).includes('/unity/'))return{ok:false};
-      if(String(url).includes('index.html'))return{ok:true,text:async()=>html};
-      if(options.method==='HEAD')return{ok:true};
-      return{ok:false};
-    }
-  });
-  api.setExposure({unityWebEnabled:true,games:[]});
-  const row=id=>({id,lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',unityProjectPath:'unity-games/'+id});
-  const pending=api.bindAvailableUnityWebSurfaces({games:[row('ready'),row('slow')]},snapshot=>{
-    snapshots.push(snapshot);resolveFirst(snapshot);
-  }).then(result=>{finished=true;return result;});
-  try{
-    const shown=await first;
-    assert.equal(finished,false,'slow unrelated lookup must not withhold a confirmed launch link');
-    assert.equal(shown.games[0].unityWebAvailable,true);
-    assert.equal(shown.games[0].unityWebVerified,false,'bundle presence alone must never manufacture QA approval');
-    assert.equal(shown.games[1].unityWebAvailable,false);
-    assert.match(api.buildCard(shown.games[0]),/href="\/web-games\/ready\/"/);
-  }finally{releaseSlow();}
-  const final=await pending;
-  assert.equal(final.games[0].unityWebTestUrl,'/web-games/ready/');
-  assert.equal(final.games[1].unityWebAvailable,false);
-  assert.equal(snapshots.length,1);
+  const game={id:'demo',unityWebAvailable:true,unityWebTestUrl:'/web-games/demo/unity/'};
+  assert.equal(Object.hasOwn(api.platformLinks(game),'unityWeb'),false);
+  assert.doesNotMatch(api.buildCard(game),/Unity Web|unityWebAction|\/web-games\/demo\/unity\//);
 });
 
 test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼 버튼은 활성화하지 않는다',()=>{
@@ -128,8 +44,8 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
   const card=api.buildCard(dev);
   assert.match(card,/Roblox · 개발 중/);
   assert.match(card,/Unity 앱 · 개발 중/);
-  assert.match(card,/Unity Web · 확인 중/);
-  assert.match(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web · 빌드없음/);
+  assert.doesNotMatch(card,/Unity Web/);
+  assert.doesNotMatch(api.buildCard({...dev,unityWebAvailable:false}),/Unity Web/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*robloxAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityAction"/);
   assert.doesNotMatch(card,/<a[^>]*class="foldGameBtn[^"]*unityWebAction"/);
@@ -137,40 +53,6 @@ test('개발 확정 전체 목록은 배포 없는 게임도 보이되 플랫폼
 });
 
 // 회귀: 실행 링크는 선택적 QA 문서 장애와 무관하고, 하위 Unity 경로도 카드에 남아야 한다.
-test('versioned Unity-only catalog routes remain visible when optional QA JSON is broken',async()=>{
-  const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const html='<script>createUnityInstance(canvas,{dataUrl:"Build/demo.data.gz?v=abc",frameworkUrl:"Build/demo.framework.js.gz?v=abc",codeUrl:"Build/demo.wasm.gz?v=abc"});</script><script src="Build/demo.loader.js?v=abc"></script>';
-  let manifestEnabled=false;
-  const manifest={engine:'UNITY_WEB',gameId:'demo',bundleComplete:true,homepageVerified:true,requiredDimension:'3D',canonicalSourceRoot:'unity-games/demo',sourceCommit:'a'.repeat(40),unitySourceTreeSha256:'b'.repeat(64),buildTreeSha256:'c'.repeat(64),requiredGroups:{loader:['Build/demo.loader.js'],data:['Build/demo.data.gz'],framework:['Build/demo.framework.js.gz'],wasm:['Build/demo.wasm.gz']}};
-  let missing=false;
-  const api=vm.runInNewContext(source+';({setExposure(value){platformExposure=value},bindAvailableUnityWebSurfaces,developmentRows,buildCard})',{
-    document:{readyState:'loading',addEventListener(){}},AbortController,setTimeout,clearTimeout,
-    fetch:async(url,options={})=>{
-      if(!String(url).includes('/unity/'))return{ok:false};
-      if(String(url).includes('index.html'))return{ok:true,text:async()=>html};
-      if(String(url).includes('deploy-manifest'))return{ok:manifestEnabled,json:async()=>manifest};
-      if(options.method==='HEAD')return{ok:!missing};
-      return{ok:true,json:async()=>{throw new Error('invalid optional QA JSON');}};
-    }
-  });
-  api.setExposure({unityWebEnabled:true,games:[]});
-  const catalog={games:[{id:'demo',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',webPath:'/web-games/demo/unity/'}]};
-  assert.equal(api.developmentRows(catalog,{}).length,1);
-  for(const withManifest of [false,true]){
-    manifestEnabled=withManifest;
-    const snapshots=[];
-    const result=await api.bindAvailableUnityWebSurfaces(catalog,snapshot=>snapshots.push(snapshot));
-    assert.equal(result.games[0].unityWebAvailable,true);
-    assert.equal(result.games[0].unityWebVerified,false);
-    assert.equal(snapshots[0].games[0].unityWebTestUrl,'/web-games/demo/unity/');
-    assert.match(api.buildCard(result.games[0]),/href="\/web-games\/demo\/unity\/"/);
-  }
-  missing=true;
-  const rejected=await api.bindAvailableUnityWebSurfaces(catalog);
-  assert.equal(rejected.games[0].unityWebAvailable,false);
-  assert.equal(api.developmentRows(rejected,{}).length,1,'missing build disables only the link');
-});
-
 test('card gallery uses the exact shared Roblox thumbnail and verified video frames',()=>{
   const source=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   const api=vm.runInNewContext(source+';({mergeGame,buildCard,setExposure(value){platformExposure=value}})',{
@@ -452,56 +334,20 @@ test('homepage suppresses superseded shared Roblox targets until a dedicated cur
   assert.equal(roblox.internalLinkSuppressedReason,'STALE_SHARED_TARGET_AWAITING_DEDICATED_TARGET');
 });
 
-test('homepage exposes only verified native 3D Unity WebGL as a development link, without granting release authority',()=>{
+test('homepage disables Unity Web browser links without affecting native platforms',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
-  const web=policy.directNativeDualPlatformDevelopment.unityWebValidationSurface;
-  const listing=policy.serverHomepageIntegration.managerContract.developmentProgressDisplay;
-  assert.equal(policy.serverHomepageIntegration.showUnityWeb,true);
-  assert.equal(policy.serverHomepageIntegration.showWebPlay,true);
-  assert.equal(policy.serverHomepageIntegration.ownerWebUpload.changedGameIdsOnly,false);
-  assert.equal(policy.serverHomepageIntegration.ownerWebUpload.reconcileExistingCatalogGamesEveryStatusSync,true);
-  assert.equal(listing.cardVisibilityRequiresRunnableTarget,false);
-  assert.equal(listing.titleOnlyCardExposureForbidden,false);
-  assert.equal(snap.unityWebEnabled,true);
+  assert.deepEqual(snap.supportedPlatforms,['ROBLOX','UNITY']);
+  assert.equal(snap.unityWebEnabled,false);
+  assert.equal(policy.serverHomepageIntegration.showUnityWeb,false);
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.enabled,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
-  assert.equal(web.sameCanonicalUnityProjectRequired,true);
-  assert.equal(web.requiredForDevelopmentAdmission,false);
-  assert.equal(web.releaseStage,false);
-  assert.equal(policy.ownerUnityWeb3dOnly20261009.finalGameplayDimension,'3D');
-  assert.equal(policy.ownerUnityWeb3dOnly20261009.noShadowPipelineOr2dFallbackAsFinal,true);
-  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.homepageTestLinkIsNotDeploymentOrRelease,true);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
-  const required=[
-    'async function bindAvailableUnityWebSurfaces(catalog,onAvailable=()=>{})',
-    'projectPath===`unity-games/${id}`',
-    'for(const href of [`/web-games/${id}/unity/`,`/web-games/${id}/`])',
-    'probeFetch(`${href}unity-web-deploy-manifest.json?ts=${stamp}`)',
-    'manifest.homepageVerified!==true',
-    "manifest.requiredDimension!=='3D'",
-    'manifest.canonicalSourceRoot!==`unity-games/${id}`',
-    'build.upperPlatformGateCandidate!==true',
-    'readiness.criteria?.graphics?.native3dVerified!==true',
-    "e.spatialGameplay.source==='UNITY_RUNTIME_MESH_FILTER_TRIANGLE_AND_3AXIS_WORLD_DEPTH_PROOF'",
-    'Number(e.spatialGameplay.observedTriangles)>0',
-    'e.saveRestore?.pass===true',
-    'e.mobile?.realGameTouchHandlerObserved===true',
-    'qa.every(qaPassed)',
-    'unityWebAvailable:false',
-    'const direct=links.unityWeb||links.roblox||links.unity||',
-    "button(links.unityWeb,game.unityWebVerified?'Unity Web · 개발중':'Unity Web · 개발 테스트'",
-    'function playableWebHref(row)',
-    'function hasRunnableHomepageTarget(game)',
-    'renderCatalog(catalog);'
-  ];
-  for(const marker of required)assert.ok(renderer.includes(marker),'missing Unity Web development and safety contract: '+marker);
-  assert.match(renderer,/createUnityInstance/);
-  assert.match(renderer,/method:'HEAD'/);
-  assert.doesNotMatch(renderer,/\.filter\(hasRunnableHomepageTarget\)/);
-  assert.doesNotMatch(renderer,/unityWebValidationVerified===true/);
+  assert.doesNotMatch(renderer,/unityWebAction|bindAvailableUnityWebSurfaces|createUnityInstance/);
+  assert.match(renderer,/function hasRunnableHomepageTarget\(game\)/);
+  assert.match(renderer,/renderCatalog\(catalog\);/);
 });
-
 
 test('homepage keeps Roblox runtime truth separate from independent QA',()=>{
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -675,4 +521,19 @@ test('homepage does not advertise generic app icons or shared page backgrounds a
   assert.doesNotMatch(html,/src="assets\/pwa-icon-512\.png"/);
   assert.match(source,/homeGallerySlide img\.homeOriginalTitleLogo\{object-fit:contain/);
   assert.match(source,/scroll-snap-type:x mandatory/);
+});
+
+test('Cloudflare Pages keeps native runtime APIs while bypassing static assets',()=>{
+  const routes=JSON.parse(fs.readFileSync('_routes.json','utf8'));
+  assert.deepEqual(routes,{version:1,include:['/*'],exclude:['/assets/*','/test-game-candidates.json','/homepage-portfolio-status.json']});
+  const edge=fs.readFileSync('_worker.js','utf8');
+  assert.match(edge,/url\.pathname==='\/game-catalog\.json'/);
+  assert.match(edge,/url\.pathname==='\/company-status\.json'/);
+  assert.match(edge,/url\.pathname==='\/homepage-platform-exposure\.json'/);
+  const homepage=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+  assert.match(homepage,/SYNC_INTERVAL_MS=30000/);
+  assert.doesNotMatch(homepage,/probeFetch|unity-web-deploy-manifest|bindAvailableUnityWebSurfaces/);
+  assert.match(homepage,/function platformLinks\(game\)/);
+  const index=fs.readFileSync('index.html','utf8');
+  assert.doesNotMatch(index,/prefetchVisibleGames|rel='prefetch'/);
 });

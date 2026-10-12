@@ -253,7 +253,7 @@ test('reserve batch persists control state only through the explicit Vibe2 contr
     'reset --hard origin/vibe2-unreal-core',
     'fetch origin company-runtime --quiet',
     'diff --quiet -- "${state_paths[@]}"',
-    'add "${state_paths[@]}"',
+    'add -A -- "${state_paths[@]}"',
     'commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"',
     'push origin HEAD:vibe2-unreal-core'
   ]){

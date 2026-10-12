@@ -55,8 +55,8 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   AUDIO = "NOT_APPLICABLE",
   VFX = "NOT_APPLICABLE",
   UI = "APPLIED",
-  MOTION = "NOT_APPLICABLE",
-  PROP = "NOT_APPLICABLE",
+  MOTION = "APPLIED",
+  PROP = "APPLIED",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
@@ -77,9 +77,9 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = gui
-local verifiedLearningSemanticVariant = "DEFENSE_WAVE"
+local verifiedLearningSemanticVariant = "OBJECTIVE_GOAL"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(255, 148, 74)
+local verifiedLearningSemanticColor = Color3.fromRGB(255, 220, 124)
 local verifiedLearningSemanticMood = "PRESERVE_AUTHORED_PRESENTATION"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)

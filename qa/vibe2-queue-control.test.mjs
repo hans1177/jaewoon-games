@@ -28,6 +28,10 @@ import {
   recoverTransientWorkLockBlocks,
   recoverFanInRegressionFailure,
   verifyVibeWorkerSynchronization,
+  packVibeQueueStorage,
+  unpackVibeQueueStorage,
+  readVibeQueueStorage,
+  assertVibeQueueBlobSize,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -2665,4 +2669,147 @@ test('Roblox-only asset production holds Unity, web, and mislabeled Unity source
   const result=reserveVibeTaskBatch({tasks,maxConcurrentTasks:63},{lane:'asset-development',policy});
   assert.deepEqual(result.tasks.map(row=>row.id),['roblox']);
   assert.ok(result.queue.tasks.filter(row=>row.id!=='roblox').every(row=>row.ownerDevelopmentHold));
+});
+
+// 저장 회귀: 작업 원문·재시도·의존성·검증/학습 근거는 직렬화 경계에서 변경하지 않는다.
+function queueStorageFixture(t, tasks) {
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-queue-storage-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const file=path.join(root,'.vibe2/queue.json');
+  fs.mkdirSync(path.dirname(file),{recursive:true});
+  const queue={version:5,mode:'hierarchical-dag-sharded-work-stealing-queue',maxConcurrentTasks:4,unknownMetadata:{preserve:true},tasks};
+  fs.writeFileSync(file,JSON.stringify(queue)+'\n');
+  return{root,file,queue};
+}
+
+test('storage keeps every raw field and order across active/history split, replay and reopen',t=>{
+  const {file,queue}=queueStorageFixture(t,[
+    {id:'done',status:'verified',evidence:['independent-qa:PASS'],retries:5,unknown:{nested:[1,null,'한글']}},
+    {id:'active',status:'queued',dependencies:['done'],retries:7,retryPolicy:'UNLIMITED_CAUSAL_REPAIR',maxRetries:null,neuronResults:[{variant:2,evidence:['result']}],reservationId:'reservation:1'},
+    {id:'failure',status:'failed',retries:3,evidence:['failure-evidence']},
+    {id:'cancelled',status:'cancelled',evidence:['owner-reason']}
+  ]);
+  const result=packVibeQueueStorage(file);
+  assert.equal(result.active,2);assert.equal(result.history,2);
+  const stored=fs.readFileSync(file,'utf8');
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.throws(()=>createVibeContinuousQueue(JSON.parse(stored)),/RESTORE_REQUIRED/);
+  packVibeQueueStorage(file);assert.equal(fs.readFileSync(file,'utf8'),stored);
+  unpackVibeQueueStorage(file);assert.deepEqual(JSON.parse(fs.readFileSync(file)),queue);
+  const history=fs.readdirSync(path.join(path.dirname(file),'queue/history'));
+  queue.tasks[0].status='queued';queue.tasks[0].retries++;
+  fs.writeFileSync(file,JSON.stringify(queue));packVibeQueueStorage(file);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.deepEqual(fs.readdirSync(path.join(path.dirname(file),'queue/history')),history);
+});
+
+test('storage handles an individual task beyond 100 MiB and UTF-8 split boundaries without truncation',t=>{
+  const payload='가'.repeat(Math.ceil(101*1024*1024/3));
+  const {file,queue}=queueStorageFixture(t,[{id:'oversized',status:'running',evidence:[payload],retries:19,neuronResults:[{variant:1,qa:{pass:true}}]}]);
+  assert.ok(fs.statSync(file).size>100*1024*1024);
+  const output=execFileSync(process.execPath,[path.resolve('tools/vibe2-queue-control.mjs'),'storage-migrate','--queue='+file],{encoding:'utf8',env:{...process.env,GITHUB_REPOSITORY:'',GH_TOKEN:'',GITHUB_RUN_ID:''}});
+  assert.match(output,/CANONICAL_PLANNER_IMMEDIATE_MIGRATION/);
+  const result=JSON.parse(output.split('VIBE2_QUEUE_STORAGE=storage-migrate:')[1]);
+  assert.ok(result.indexBytes<1024*1024);assert.ok(result.maxPartBytes<=8*1024*1024);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.doesNotThrow(()=>assertVibeQueueBlobSize(100*1024*1024));
+  assert.throws(()=>assertVibeQueueBlobSize(100*1024*1024+1),/BLOB_LIMIT_BLOCKED/);
+});
+
+test('missing, corrupt or mutated index fails closed and cannot replace the stored queue',t=>{
+  const {file}=queueStorageFixture(t,[{id:'a',status:'queued',goal:'original'}]);
+  packVibeQueueStorage(file);
+  const original=fs.readFileSync(file,'utf8'),index=JSON.parse(original);
+  const part=path.join(path.dirname(file),'queue/active',index.queueStorage.entries[0].parts[0].sha256+'.part');
+  const data=fs.readFileSync(part);fs.unlinkSync(part);
+  assert.throws(()=>unpackVibeQueueStorage(file));assert.equal(fs.readFileSync(file,'utf8'),original);
+  fs.writeFileSync(part,'broken');assert.throws(()=>packVibeQueueStorage(file),/CORRUPT/);
+  fs.writeFileSync(part,data);
+  index.tasks[0].status='verified';fs.writeFileSync(file,JSON.stringify(index));
+  assert.throws(()=>unpackVibeQueueStorage(file),/SUMMARY_MUTATED/);
+  fs.writeFileSync(file,original);assert.equal(readVibeQueueStorage(file).tasks[0].status,'queued');
+});
+
+test('storage rejects duplicate IDs before replacing any queue data',t=>{
+  const {file}=queueStorageFixture(t,[{id:'same',status:'queued'},{id:'same',status:'verified'}]);
+  const before=fs.readFileSync(file);
+  assert.throws(()=>packVibeQueueStorage(file),/DUPLICATE/);
+  assert.deepEqual(fs.readFileSync(file),before);
+});
+
+test('restored verified dependencies unlock the same work and exact reservation resumes',t=>{
+  const tasks=[{id:'done',status:'verified'},{id:'next',status:'queued',dependencies:['done'],department:'development',target:'roblox',gameId:'g',goal:'build',responsibleFiles:['server/Main.luau'],retries:8}];
+  const {file,queue}=queueStorageFixture(t,tasks);
+  const reservation={id:'resume:1',runId:'1234',runAttempt:2,reservedAt:'2026-10-12T02:00:00Z'};
+  const before=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation});
+  packVibeQueueStorage(file);
+  const after=reserveVibeTaskBatch(readVibeQueueStorage(file),{maxConcurrentTasks:4,reservation});
+  assert.deepEqual(after,before);assert.equal(after.tasks[0].id,'next');
+  fs.writeFileSync(file,JSON.stringify(after.queue));packVibeQueueStorage(file);
+  const sync=verifyVibeWorkerSynchronization(readVibeQueueStorage(file),{taskId:'next',reservationId:reservation.id,reservationRunId:reservation.runId,reservationRunAttempt:reservation.runAttempt,reservedAt:reservation.reservedAt});
+  assert.equal(sync.pass,true);
+});
+
+test('normal Git push rejects stale queue, semantic retry preserves both updates and independent learning/provenance',t=>{
+  const {root,file}=queueStorageFixture(t,[{id:'base',status:'verified',evidence:['qa:PASS']}]);
+  const git=(cwd,...args)=>execFileSync('git',['-c','user.name=queue-test','-c','user.email=queue-test@example.invalid',...args],{cwd,encoding:'utf8',stdio:['ignore','pipe','pipe']});
+  const bare=path.join(root,'remote.git'),a=path.join(root,'a'),b=path.join(root,'b');
+  git(root,'init','--bare',bare);git(root,'init',a);
+  fs.cpSync(path.dirname(file),path.join(a,'.vibe2'),{recursive:true});
+  const af=path.join(a,'.vibe2/queue.json');packVibeQueueStorage(af);
+  fs.writeFileSync(path.join(a,'.vibe2/external-ai-distilled-knowledge.json'),'[{"id":"verified-knowledge","qa":"independent"}]\n');
+  git(a,'add','.vibe2');git(a,'commit','-m','baseline');git(a,'branch','-M','vibe2-unreal-core');git(a,'remote','add','origin',bare);git(a,'push','origin','HEAD:vibe2-unreal-core');
+  git(root,'clone','--branch','vibe2-unreal-core',bare,b);
+  const update=(cwd,id)=>{
+    const qf=path.join(cwd,'.vibe2/queue.json'),q=unpackVibeQueueStorage(qf).queue;
+    q.tasks.push({id,status:'queued',dependencies:['base'],retries:4,evidence:['keep:'+id]});
+    fs.writeFileSync(qf,JSON.stringify(q));packVibeQueueStorage(qf);
+    git(cwd,'add','-A','.vibe2/queue.json','.vibe2/queue');git(cwd,'commit','-m',id);
+  };
+  update(a,'a');fs.writeFileSync(path.join(a,'.vibe2/merged-pr-provenance-ledger.json'),'{"traces":[{"pr":7701}]}\n');git(a,'add','.vibe2/merged-pr-provenance-ledger.json');git(a,'commit','-m','independent-provenance');git(a,'push','origin','HEAD:vibe2-unreal-core');
+  update(b,'b');assert.throws(()=>git(b,'push','origin','HEAD:vibe2-unreal-core'));
+  git(b,'fetch','origin','vibe2-unreal-core');git(b,'reset','--hard','origin/vibe2-unreal-core');update(b,'b');git(b,'push','origin','HEAD:vibe2-unreal-core');
+  const c=path.join(root,'resume');git(root,'clone','--branch','vibe2-unreal-core',bare,c);
+  assert.deepEqual(readVibeQueueStorage(path.join(c,'.vibe2/queue.json')).tasks.map(row=>row.id),['base','a','b']);
+  assert.equal(fs.readFileSync(path.join(c,'.vibe2/external-ai-distilled-knowledge.json'),'utf8'),'[{"id":"verified-knowledge","qa":"independent"}]\n');
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(c,'.vibe2/merged-pr-provenance-ledger.json'))),{traces:[{pr:7701}]});
+});
+
+test('canonical migration starts without Actions identity and supports subsequent resume and checkpoints',t=>{
+  const {root,file,queue}=queueStorageFixture(t,[
+    {id:'done',status:'verified',evidence:['qa:PASS'],retries:2},
+    {id:'active',status:'queued',dependencies:['done'],retries:7,unknown:{preserve:true}}
+  ]);
+  const env={...process.env,GITHUB_REPOSITORY:'',GH_TOKEN:'',GITHUB_RUN_ID:''};
+  const tool=path.resolve('tools/vibe2-queue-control.mjs');
+  const run=command=>execFileSync(process.execPath,[tool,command,'--queue='+file],{cwd:root,env,encoding:'utf8'});
+  assert.match(run('storage-migrate'),/CANONICAL_PLANNER_IMMEDIATE_MIGRATION/);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.match(run('storage-unpack'),/"restored":true/);
+  assert.deepEqual(JSON.parse(fs.readFileSync(file)),queue);
+  queue.tasks[1].retries++;
+  fs.writeFileSync(file,JSON.stringify(queue));
+  assert.doesNotMatch(run('storage-pack'),/DEFERRED/);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.doesNotMatch(run('storage-migrate'),/DEFERRED/);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+});
+
+test('every canonical queue writer stages storage parts, restores before execution, and preserves provenance isolation',()=>{
+  const root='.github/workflows';
+  const writers=fs.readdirSync(root).filter(name=>name.endsWith('.yml')).map(name=>({name,source:fs.readFileSync(path.join(root,name),'utf8')})).filter(row=>/git(?: -C [^\n]+?)? add \.vibe2\/queue\.json/.test(row.source));
+  assert.ok(writers.length>=10);
+  for(const {name,source} of writers){
+    const lines=source.split('\n');
+    lines.forEach((line,index)=>{
+      if(!/git(?: -C [^\n]+?)? add \.vibe2\/queue\.json/.test(line))return;
+      assert.match(lines.slice(Math.max(0,index-3),index).join('\n'),/storage-pack/,name+' must serialize before staging');
+      assert.match(lines[index-1],/add -A -- \.vibe2\/queue/,name+' must commit every part with the index');
+      assert.match(lines.slice(index+1,index+4).join('\n'),/storage-unpack/,name+' must restore the live worktree');
+    });
+  }
+  const runner=fs.readFileSync(root+'/vibe2-24h-runner.yml','utf8');
+  assert.ok(runner.indexOf('VIBE2_VERIFIED_ADVISORY_CHECKPOINT=PUSHED')<runner.indexOf('storage-migrate'));
+  const provenance=fs.readFileSync(root+'/vibe2-merged-pr-provenance.yml','utf8');
+  assert.doesNotMatch(provenance,/storage-pack|\.vibe2\/queue\//);
 });

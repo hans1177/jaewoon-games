@@ -68,8 +68,8 @@ test('merged Roblox source stays in the Roblox lane while the central orchestrat
   assert.ok(parentWorkflow.includes('uses: ./.github/workflows/company-development-unity-runtime.yml'));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_ELIGIBLE_COUNT='));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_GRANDFATHERED_IDS='));
-  assert.ok(parentWorkflow.includes('uses: ./.github/workflows/unity-web-first-stage-build.yml'));
-  assert.ok(parentWorkflow.includes('uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml'));
+  assert.ok(!parentWorkflow.includes('uses: ./.github/workflows/unity-web-first-stage-build.yml'));
+  assert.ok(!parentWorkflow.includes('uses: ./.github/workflows/unity-web-floor-source-bootstrap.yml'));
   assert.ok(parentWorkflow.includes('UPPER_PLATFORM_READINESS_GATE_REQUIRED'));
   assert.ok(workflow.includes('persist Roblox source-bind results'));
   assert.ok(workflow.includes('technical-plan:'));

@@ -7449,5 +7449,13 @@
     "admissionOwner": "tools/company-upper-platform-admission.mjs::classifyUpperPlatformAdmission",
     "latestMainBuildPreflightRequired": true,
     "existingExecutorsOnly": true
-  }
+  },
+ "vibeQueueStorage": {
+  "authority": "company-learning/platform-release-roadmap.json#vibeQueueStorage",
+  "owner": "tools/vibe2-queue-control.mjs",
+  "index": ".vibe2/queue.json",
+  "activeParts": ".vibe2/queue/active/",
+  "permanentHistoryParts": ".vibe2/queue/history/",
+  "executionRepresentation": "SHA256_VERIFIED_FULL_QUEUE"
+ }
 }

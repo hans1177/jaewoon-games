@@ -4,15 +4,15 @@
   "publicSafe": true,
   "authority": "SANITIZED_PORTFOLIO_CONTROL_SNAPSHOT",
   "source": "vibe2-unreal-core:.vibe2/portfolio-decisions.json",
-  "generatedAt": "2026-10-11T23:28:31.700Z",
+  "generatedAt": "2026-10-12T02:57:31.385Z",
   "counts": {
     "ACCELERATE": 0,
     "CONTINUE": 0,
-    "FOCUSED_REPAIR": 45,
+    "FOCUSED_REPAIR": 43,
     "REDESIGN": 0,
     "PAUSE": 0,
     "RETIRE_REVIEW": 0,
-    "PENDING": 0
+    "PENDING": 2
   },
   "games": [
     {
@@ -26,15 +26,6 @@
     },
     {
       "gameId": "ant-simulator",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
-      "gameId": "bug-defense",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
       "priorityRank": 1,
@@ -358,15 +349,6 @@
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
     },
     {
-      "gameId": "survival",
-      "decision": "FOCUSED_REPAIR",
-      "label": "집중수리",
-      "priorityRank": 1,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "lifecycleState": "ACTIVE",
-      "authority": "PRIMARY_AI_AND_VIBE_JOINT"
-    },
-    {
       "gameId": "survival2",
       "decision": "FOCUSED_REPAIR",
       "label": "집중수리",
@@ -419,6 +401,24 @@
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "lifecycleState": "ACTIVE",
       "authority": "PRIMARY_AI_AND_VIBE_JOINT"
+    },
+    {
+      "gameId": "bug-defense",
+      "decision": "PENDING",
+      "label": "판정 대기",
+      "priorityRank": 6,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PENDING_AUTOMATION"
+    },
+    {
+      "gameId": "survival",
+      "decision": "PENDING",
+      "label": "판정 대기",
+      "priorityRank": 6,
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "ACTIVE",
+      "authority": "PENDING_AUTOMATION"
     }
   ]
 }

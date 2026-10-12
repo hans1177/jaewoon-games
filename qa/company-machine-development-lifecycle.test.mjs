@@ -149,14 +149,14 @@ for(const stage of ['MINIMUM_DESIGN_CONTRACT_READY','TARGET_PLATFORM_SOURCE_BIND
   assert(continuation.verifiedLearningMaxUse.applyAt.includes(stage),stage);
 }
 
-assert.match(webRuntime,/Resolve Unity Web floor and upper-platform eligibility/);
+assert.match(webRuntime,/Resolve native upper-platform eligibility/);
 assert.match(webRuntime,/UPPER_PLATFORM_MACHINE_CONTRACT=PASS/);
 assert.match(webRuntime,/eligible_json:/);
-assert.match(webRuntime,/unity_web_json:/);
+assert.doesNotMatch(webRuntime,/unity_web_json:/);
 assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
 assert.match(webRuntime,/uses: \.\/\.github\/workflows\/company-development-unity-runtime\.yml/);
-assert.match(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-assert.match(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+assert.doesNotMatch(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+assert.doesNotMatch(webRuntime,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
 assert.doesNotMatch(webRuntime,/gh workflow run (?:company-development-roblox-runtime|company-development-unity-runtime|unity-web-first-stage-build|unity-web-floor-source-bootstrap)\.yml/);
 assert.doesNotMatch(webRuntime,/company-development-web-bootstrap\.mjs/);
 assert.doesNotMatch(webRuntime,/company-development-web-gameplay-validation\.mjs/);

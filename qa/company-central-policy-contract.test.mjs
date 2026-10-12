@@ -263,7 +263,7 @@ test('Unity Web gates upper-platform development without deployment or release',
   assert.equal(roadmap.changeRecord?.unityWebUpperPlatformDevelopmentGate20260925?.implementationState,'CENTRAL_POLICY_ARCHITECTURE_AND_EXECUTOR_BOUND');
   assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.unityWebValidationSurface?.sameCanonicalUnityProjectRequired,true);
   assert.equal(directive.production.webCompanion?.legacyDirectWebAuthoring,false);
-  assert.match(nativeDevelopmentWorkflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(nativeDevelopmentWorkflow,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
   assert.doesNotMatch(nativeDevelopmentWorkflow,/gh workflow run unity-web-first-stage-build\.yml/);
   assert.match(unityWebWorkflow,/canonicalGameSourceRoot!=='unity-games\/<gameId>\/'/);
 });

@@ -419,6 +419,7 @@ function normalizeTask(input = {}, index = 0) {
 }
 
 export function createVibeContinuousQueue(seed = {}) {
+  if (seed?.queueStorage) throw new Error('VIBE2_QUEUE_STORAGE_RESTORE_REQUIRED');
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
   const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : normalizeConcurrencyLimit(seed?.maxConcurrentTasks, DEFAULT_MAX_CONCURRENT_TASKS);
   const tasks = source.map(normalizeTask);

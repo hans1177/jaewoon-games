@@ -548,7 +548,9 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(reserveBlock.includes('.vibe2/queue.json'));
   assert(reserveBlock.includes('.vibe2/parallelism-control.json'));
   assert(reserveBlock.includes('.vibe2/learning-motor-state.json'));
-  assert(reserveBlock.includes('git -C "$control_root" add "${state_paths[@]}"'));
+  assert(reserveBlock.includes('git -C "$control_root" add -A -- "${state_paths[@]}"'));
+  assert(reserveBlock.includes('state_paths+=(.vibe2/queue)'));
+  assert(reserveBlock.indexOf('storage-pack') < reserveBlock.indexOf('git -C "$control_root" add -A -- "${state_paths[@]}"'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
   assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
   assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
