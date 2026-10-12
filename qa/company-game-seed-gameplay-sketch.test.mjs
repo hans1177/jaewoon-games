@@ -579,3 +579,35 @@ test('delve grows beyond four through previous discoveries without duplicate nam
   }
   assert.throws(()=>computeVibeSeedProposal({...base,discoveryCount:3}),/VIBE_NATIVE_DELVE_COUNT_INVALID/);
 });
+
+// MAIN은 A/B/C/@를 설계한 뒤 그 결과에서 생성한다. 자유주제 이전 명칭은 정답으로 쓰지 않는다.
+test('free MAIN is synthesized after independent A and B, fused C genres and expandable @',()=>{
+  const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  const start=source.indexOf('export function computeVibeSeedProposal(');
+  const composer=source.slice(start,source.indexOf('\nfunction buildSeed(',start));
+  const discoveryPos=composer.indexOf('const delveConditions=freeTopicMode?');
+  const mainPos=composer.indexOf('const gameName=requestedName||');
+  const grammarPos=composer.indexOf('const grammar={');
+  assert.ok(discoveryPos>0&&mainPos>discoveryPos&&grammarPos>mainPos,
+    'MAIN must be determined only after the A/B systems, C genres and @ discoveries exist');
+  for(let index=0;index<32;index++){
+    const target={requestId:'bottom-up-main',category:'CASUAL',platform:'ROBLOX',
+      designTopicMode:'VIBE_FREE_TOPIC',topicRevision:`BOTTOM-UP-${index}`,materials:[]};
+    const result=computeVibeSeedProposal(target);
+    const grammar=result.gameplaySketch.novelGameGrammar;
+    const {main,majorAxes,themeFusion}=grammar.gameplaySystemFusion;
+    const discoveries=grammar.delveLayer.elements;
+    assert.equal(result.gameName,main.name);
+    assert.match(result.distinctIdentity,/MAIN은 A\(/);
+    assert.match(result.distinctIdentity,/B\(/);
+    assert.match(result.distinctIdentity,/C\(메인/);
+    assert.match(result.distinctIdentity,/@\(/);
+    assert.ok(result.distinctIdentity.includes(majorAxes[0].sourceMaterial));
+    assert.ok(result.distinctIdentity.includes(majorAxes[1].sourceMaterial));
+    for(const genre of themeFusion.genres)assert.ok(result.distinctIdentity.includes(genre.name));
+    assert.ok(result.distinctIdentity.includes(discoveries[0].name));
+    assert.notEqual(majorAxes[0].systemFamily,majorAxes[1].systemFamily);
+    assert.equal(grammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
+    assert.deepEqual(computeVibeSeedProposal({...target,gameName:'옛 포근섬 왕국',ownerBrief:'이전 주제 재사용'}),result);
+  }
+});
