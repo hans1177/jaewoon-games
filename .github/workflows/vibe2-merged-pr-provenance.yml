@@ -23,19 +23,41 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
+          filter: blob:none
           path: source
 
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
         with:
           ref: vibe2-unreal-core
-          fetch-depth: 0
+          fetch-depth: 1
+          fetch-tags: false
+          filter: blob:none
+          sparse-checkout: |
+            .vibe2/merged-pr-provenance-ledger.json
+            .vibe2/coding-trace-ledger.json
+          sparse-checkout-cone-mode: false
           path: control
 
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Fetch event base and merged commit for exact provenance diff
+        working-directory: source
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$PR_BASE_SHA" =~ ^[a-fA-F0-9]{40}$ ]]
+          [[ "$PR_MERGE_SHA" =~ ^[a-fA-F0-9]{40}$ ]]
+          git fetch --no-tags --depth=1 --filter=blob:none origin "$PR_BASE_SHA" "$PR_MERGE_SHA" --quiet
+          git cat-file -e "$PR_BASE_SHA^{commit}"
+          git cat-file -e "$PR_MERGE_SHA^{commit}"
 
       - name: Validate provenance collector
         working-directory: source
@@ -88,7 +110,7 @@ jobs:
               break
             fi
             echo "VIBE2_MERGED_PR_PUSH_RACE_REPLAY=$attempt"
-            git fetch origin vibe2-unreal-core --quiet
+            git fetch origin vibe2-unreal-core --quiet --filter=blob:none
             git reset --hard origin/vibe2-unreal-core
             node "$GITHUB_WORKSPACE/source/tools/vibe2-merged-pr-provenance.mjs" \
               --event="$GITHUB_EVENT_PATH" \
