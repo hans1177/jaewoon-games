@@ -875,7 +875,7 @@ export function computeVibeSeedProposal(target){
     delveConditions.push({
       name:`${parentLabel}·${materialName} ${path.name} ${generationLabel}`,
       condition:`${parent.name}을(를) 먼저 발견한 뒤 ${path.condition} 이전에 발견한 규칙을 적용하지 않으면 이 실험은 열리지 않는다.`,
-      insight:`${parent.masteryOrInsight.slice(0,140)}를 출발점으로 ${material.principle} 원리와 ${path.insight}을(를) 결합해 선행 발견의 결과를 재해석한다.`,
+      insight:`${parent.insight.slice(0,140)}를 출발점으로 ${material.principle} 원리와 ${path.insight}을(를) 결합해 선행 발견의 결과를 재해석한다.`,
       effect:`${path.effect} ${material.gameGrammar} 다음 @의 조건은 이 결과에서 파생된다. 실패·취소 시 이전 WorldAccessState·RouteState를 보존한다.`,
       links:path.links
     });
