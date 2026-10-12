@@ -610,7 +610,7 @@ test('acquired Roblox GLBs are previewable through the existing safe native view
     '/assets/roblox/actors/sources/unknown.glb','/assets/roblox/actors/native/test.fbx',
     '/assets/roblox/actors/native/test/../../test.glb','/assets/shared/../secrets.glb'])
     assert.equal(nativeGLB(bad),'',bad);
-  assert.match(viewer,/roblox\\/actors\\/native/);
+  assert.ok(viewer.includes('roblox\\/actors\\/native'));
   assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
   assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
   assert.match(library,/로블록스 실행 미검증/);
