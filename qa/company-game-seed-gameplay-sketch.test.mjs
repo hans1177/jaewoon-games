@@ -456,3 +456,20 @@ test('native repair variants vary derived materials without overwriting explicit
   assert.equal(first.gameName,'나선 경주');
   assert.equal(changed.gameName,'나선 경주');
 });
+
+
+test('free-topic Vibe seed proposal ignores supplied prior genre, name, system and materials',()=>{
+  const base={requestId:'fresh-creative-design',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'FREE-20261012',variant:0,materials:[]};
+  const cleanInput=computeVibeSeedProposal(base);
+  const legacyInput=computeVibeSeedProposal({...base,
+    gameName:'옛 왕국 정복',gameDescription:'기존 왕국 주민 고용과 전투',
+    ownerBrief:'기존 게임을 그대로 재현',coreLoop:['채집','왕국 운영','거점 정복'],
+    materials:[{causalDNA:['DYNASTIC_INHERITANCE','PATRONAGE_NETWORK']}]});
+  assert.deepEqual(cleanInput,legacyInput,'fresh theme must be independent of prior design hints');
+  assert.equal(cleanInput.gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes.length,2);
+  assert.equal(cleanInput.gameplaySketch.novelGameGrammar.gameplaySystemFusion.themeFusion.themes.length,2);
+  assert.equal(cleanInput.gameplaySketch.novelGameGrammar.delveLayer.elements.length,4);
+  assert.notEqual(cleanInput.gameName,'옛 왕국 정복');
+  assert.notEqual(computeVibeSeedProposal({...base,topicRevision:'FREE-20261013'}).gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes.length,0);
+});
