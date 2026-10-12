@@ -82,8 +82,16 @@ export function robloxStudioAssetDetectionSourceFromRoot(root='',{onSource=null}
 function robloxStudioAssetSystemNearby(source='',semanticPattern,nativePattern,window=1200){
   const flags=semanticPattern.flags.includes('i')?'ig':'g';
   const matcher=new RegExp(semanticPattern.source,flags);
+  const literals=[...source.matchAll(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g)];
   for(const match of source.matchAll(matcher)){
     const index=Number(match.index||0);
+    // 재질 열거값·목록 키·설명 문자열은 월드 객체의 존재 증거가 아니다.
+    const before=source.slice(Math.max(0,index-100),index);
+    const after=source.slice(index+match[0].length,index+match[0].length+100);
+    if(/Enum\s*\.\s*Material\s*\.\s*$/.test(before))continue;
+    if(/^\s*=\s*(?:table\s*\.\s*freeze\s*\(|\{|["'])/.test(after)&&!/\blocal\s*$/.test(before))continue;
+    const literal=literals.find(row=>index>row.index&&index<row.index+row[0].length);
+    if(literal&&!/\.\s*Name\s*=\s*$/.test(source.slice(Math.max(0,literal.index-100),literal.index)))continue;
     const slice=source.slice(Math.max(0,index-window),Math.min(source.length,index+String(match[0]||'').length+window));
     if(nativePattern.test(slice))return true;
   }

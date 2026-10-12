@@ -1,3 +1,4 @@
+-- 파일명: roblox-games/simple-rpg/server/Game.server.luau
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
@@ -15,6 +16,26 @@ if not remote then
   remote = Instance.new("RemoteEvent")
   remote.Name = Config.RemoteName
   remote.Parent = ReplicatedStorage
+end
+
+-- 시작 지면: 스폰 표시와 분리된 실제 고정 지면이다. 검수 통과를 대신하지 않는다.
+local STUDIO_ASSET_SELECTION = Config.StudioAssets.Families
+local startGround = workspace:FindFirstChild("SimpleRpgGround")
+if not startGround then
+  if table.find(STUDIO_ASSET_SELECTION.ENVIRONMENT, "TERRAIN_FLAT") then
+    startGround = Instance.new("Part")
+    startGround.Name = "SimpleRpgGround"
+    startGround.Size = Vector3.new(72, 2, 72)
+    startGround.Position = Vector3.new(0, -1, 0)
+  else error("SIMPLE_RPG_START_TERRAIN_ASSET_MISSING") end
+  if table.find(STUDIO_ASSET_SELECTION.MATERIAL, "STONE") then
+    startGround.Material = Enum.Material.Slate
+    startGround.Color = Color3.fromRGB(111, 116, 115)
+  else error("SIMPLE_RPG_START_MATERIAL_ASSET_MISSING") end
+  startGround.Anchored = true
+  startGround.CanCollide = true
+  startGround:SetAttribute("WalkableGround", true)
+  startGround.Parent = workspace
 end
 
 -- native-foundation-sentinel-v1

@@ -333,6 +333,9 @@ ${familyRows}
 test('Roblox dynamic asset family detection follows actual native systems and ignores generic scaffold words',()=>{
   const materials=fs.readFileSync('assets/roblox/common-materials-v1/RobloxCommonMaterials.luau','utf8');
   assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).MOTION,false,'재질 BONE은 모션 시스템이 아니다');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).ENVIRONMENT,false,'재질 Water·Rock 목록은 환경 객체가 아니다');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:materials}).PROP,false,'재질 Rock 목록은 소품 객체가 아니다');
+  assert.equal(detectRobloxStudioAssetSystems({sourceText:'local part = Instance.new("Part")\npart.Name = "Rock"'}).PROP,true);
   for(const sourceText of [
     'local presets = { BONE = {}, Animation = "idle", Animator = "actor" }',
     'local message = "Bone AnimationTrack TweenService RenderStepped Heartbeat"',

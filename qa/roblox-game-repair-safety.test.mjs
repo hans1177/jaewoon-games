@@ -18,6 +18,44 @@ function runLuau(source){
  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 }
 
+test('simple-rpg publishes separate anchored ground before its spawn and preserves an existing ground',{skip:!luau},()=>{
+ const server=read('roblox-games/simple-rpg/server/Game.server.luau');
+ const source=server.slice(server.indexOf('local STUDIO_ASSET_SELECTION ='),server.indexOf('-- native-foundation-sentinel-v1'));
+ assert.ok(source.includes('SimpleRpgGround'));
+ runLuau(`
+local Config={StudioAssets={Families={ENVIRONMENT={"TERRAIN_FLAT"},MATERIAL={"STONE"}}}}
+local objects={}
+local workspace={FindFirstChild=function(_,name)return objects[name]end}
+local Enum={Material={Slate="slate"}}
+local Vector3={new=function(x,y,z)return{X=x,Y=y,Z=z}end}
+local Color3={fromRGB=function(r,g,b)return{R=r,G=g,B=b}end}
+local created=0
+local Instance={new=function(class)
+ created+=1
+ local part={ClassName=class,attributes={}}
+ function part:SetAttribute(k,v)self.attributes[k]=v end
+ return setmetatable(part,{__newindex=function(self,k,v)
+  if k=="Parent" then
+   assert(self.ClassName=="Part" and self.Anchored and self.CanCollide)
+   assert(self.attributes.WalkableGround==true)
+   assert(self.Position.Y+self.Size.Y*.5==0)
+   objects[self.Name]=self
+  end
+  rawset(self,k,v)
+ end})
+end}
+local function boot()
+${source}
+end
+boot()
+local original=objects.SimpleRpgGround
+assert(created==1 and original.Size.X==72 and original.Material=="slate")
+original.Material="authored"
+boot()
+assert(created==1 and objects.SimpleRpgGround==original and original.Material=="authored")
+`);
+});
+
 test('cozy preserves existing progress after read failures and reports failed writes',{skip:!luau},()=>{
  const source=cozy.slice(cozy.indexOf('local function init(p)'),cozy.indexOf('\nlocal H={'));
  assert.ok(source.includes('local function save(p)'));
