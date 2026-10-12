@@ -5,7 +5,7 @@
   "scoreScale": 100,
   "passThreshold": 80,
   "excellentThreshold": 90,
-  "excellent": true,
+  "excellent": false,
   "totalScore": 97.2,
   "scores": {
     "IDEA_AND_DISTINCTNESS": 12,
@@ -41,8 +41,10 @@
       "gap": 2.8000000000000007
     }
   ],
-  "hardFailures": [],
-  "verdict": "PASS",
+  "hardFailures": [
+    "DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE"
+  ],
+  "verdict": "REVISE",
   "evidence": {
     "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
     "seedGeneration": "OWNER_REDESIGN_RESET",
@@ -94,7 +96,7 @@
     "initialWebStrictRequires30Minutes": false,
     "final30MinuteContentDepthValidationOnly": true
   },
-  "reviewedAt": "2026-10-11T23:42:26.608Z",
+  "reviewedAt": "2026-10-12T02:11:54.555Z",
   "scoreSystem": "STAGE_GATE_SCORING_V2",
   "scoreSystemVersion": 2,
   "directScoreLevels": [
@@ -108,5 +110,34 @@
   "criticalAxisMinimumPercent": 75,
   "criticalAxisFailures": [],
   "thirtyMinuteHardGateApplied": false,
-  "rejectionReasons": []
+  "rejectionReasons": [
+    {
+      "code": "DESIGN_GRAMMAR_FIVE_W_ONE_H_INCOMPLETE",
+      "kind": "HARD_GATE",
+      "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+      "evidenceLevel": null,
+      "minimumRequired": null,
+      "evidence": {
+        "missing": [
+          "MAIN",
+          "A",
+          "B",
+          "C",
+          "DELVE[0]",
+          "DELVE[1]",
+          "DELVE[2]",
+          "DELVE[3]"
+        ],
+        "malformed": [],
+        "expected": 8,
+        "actual": 0
+      },
+      "requiredAction": "MAIN/A/B/C 각각과 모든 @ 발견마다 누가·언제·어디서·무엇을·어떻게·왜 및 결과/다음 선택을 구분해 작성한다. ruleIds·regionIds는 설계에 선언한 항목에 연결한다. @는 0부터 시작하는 discoveryIndex로 일대일 대응하고 linkedElements에 MAIN/A/B/C 중 최소 두 항목을 연결한다. 상한은 없다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2",
+      "fields": [
+        "creativeGrammar"
+      ]
+    }
+  ]
 }
