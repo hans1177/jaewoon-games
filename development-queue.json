@@ -28946,8 +28946,8 @@
       },
       "robloxProjectPath": "roblox-games/survival",
       "unityProjectPath": "unity-games/survival",
-      "targetSourcePath": "unity-games/survival",
-      "sourcePath": "unity-games/survival",
+      "targetSourcePath": "roblox-games/survival",
+      "sourcePath": "roblox-games/survival",
       "designBaselineSource": "design/survival/2026-10-12/design-revised.json",
       "designDate": "2026-10-12",
       "minimumDesignContract": {
@@ -28987,11 +28987,11 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "PENDING_DUAL_NATIVE_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T03:05:15.145Z",
-      "updatedAt": "2026-10-12T07:03:45.796Z",
-      "robloxSourceBootstrapFailedAt": "2026-10-12T06:33:51.412Z",
+      "updatedAt": "2026-10-12T07:06:40.988Z",
+      "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -29038,7 +29038,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
       "robloxFailureSignature": "existing-source-static-revalidation-failed",
       "routingBlockers": [
-        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        "roblox-runtime-evidence-pending"
       ],
       "sourceRootBootstrapRequired": false,
       "legacyWebReference": {
@@ -29049,8 +29049,8 @@
         "capturedAt": "2026-10-12T03:25:06.835Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "bc64ae77c6da6ba9838d4511d86f7c518f56b688",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T05:02:18.861Z",
+      "robloxSourceCommit": "691a93bcbb162a5bdd10b4437213c2f5c12855d0",
+      "robloxSourceBootstrapPassedAt": "2026-10-12T07:06:40.988Z",
       "robloxStudioAssetBindingApplied": true,
       "robloxStudioAssetBinding": {
         "version": 3,
@@ -30187,7 +30187,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-12T07:06:30.148Z",
+  "updatedAt": "2026-10-12T07:06:40.988Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
