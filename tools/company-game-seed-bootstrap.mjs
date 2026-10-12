@@ -821,7 +821,14 @@ export function computeVibeSeedProposal(target){
     SHIP_OF_THESEUS_IDENTITY:'테세우스의 배와 정체성',TESTIMONY_CONSENSUS_REALITY:'증언과 합의된 현실',
     DYNASTIC_INHERITANCE:'왕조 계승과 유산',FACTION_BALANCE:'역사적 세력 균형',PATRONAGE_NETWORK:'후원과 인맥 관계',
     EXILE_RETURN:'서사시의 추방과 귀환',MARTYRDOM_MOVEMENT:'순교와 집단 결속',PILGRIMAGE_TRANSFORMATION:'순례와 인물 변화',
-    FORTUNE_REVERSAL:'비극과 희극의 운명 반전',ABSURD_BUREAUCRACY:'풍자 속 관료제',NAME_AND_REPUTATION_POWER:'영웅서사의 이름과 평판'
+    FORTUNE_REVERSAL:'비극과 희극의 운명 반전',ABSURD_BUREAUCRACY:'풍자 속 관료제',NAME_AND_REPUTATION_POWER:'영웅서사의 이름과 평판',
+    SCIENCE_ECOLOGY:'생태학과 관계의 변화',SCIENCE_ASTRONOMY:'천문학과 별의 관측',SCIENCE_INVENTION:'과학적 발명과 실험',NARRATIVE_PERSPECTIVE:'서사의 시점 변화',
+    EAST_ASIAN_CONFUCIAN_RITES:'동아시아 예절과 관계',EAST_ASIAN_BUDDHIST_CAUSALITY:'동아시아 불교의 인과',SOUTH_ASIAN_DHARMA_DUTY:'남아시아의 의무와 삶의 길',
+    WESTERN_MONASTIC_COMMUNITY:'서양 수도원 공동체',WEST_ASIAN_COMMUNITY_STEWARDSHIP:'서아시아 공동체의 돌봄과 책임',
+    EAST_ASIAN_HISTORICAL_ASTRONOMER:'동아시아 천문학자의 관측',WESTERN_RENAISSANCE_INVENTOR:'르네상스 발명가의 실험',MEDIEVAL_SCHOLAR_OPTICS:'중세 학자의 빛과 시각 연구',HISTORICAL_NAVIGATOR:'역사적 항해가의 길 찾기',
+    SCIENCE_THERMAL_COST:'열역학과 에너지의 대가',SCIENCE_CHEMICAL_REACTIONS:'화학의 반응 조건',SCIENCE_GENETIC_ADAPTATION:'유전과 환경 적응',
+    PHILOSOPHY_ETHICAL_TRADEOFF:'윤리철학의 가치 충돌',PHILOSOPHY_FREE_WILL:'철학의 자유와 책임',EAST_ASIAN_DAOIST_BALANCE:'동아시아 도가의 균형',
+    NARRATIVE_FORESHADOWING:'소설의 복선과 회수',NARRATIVE_MULTIPLE_VIEWPOINTS:'서사의 다중 시점',ART_PERSPECTIVE:'예술의 시각과 구도',MUSIC_RHYTHM:'음악의 리듬 조합',NATURE_SEASONAL_CYCLES:'자연의 계절과 생태 순환'
   };
   // 자유주제에서만 사용하는 열린 창작 소재 후보. 기존 일반 시드와 저장된 소재 풀은 변경하지 않는다.
   const freeCreativeSources=freeTopicMode?[
