@@ -262,3 +262,32 @@ test('workflow persists only the two provenance retention files and never mutate
   assert.match(workflow,/VIBE2_WAVE_REORDER=NO/);
   assert.match(workflow,/VIBE2_AUTHORITY_EXPANSION=NO/);
 });
+
+test('merged PR collector checks out only exact provenance evidence without full branch history',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-merged-pr-provenance.yml','utf8');
+  const collector=fs.readFileSync('tools/vibe2-merged-pr-provenance.mjs','utf8');
+  const source=workflow.split('      - name: Checkout trusted merged main\n')[1]?.split('      - name: Checkout Vibe2 control branch\n')[0]||'';
+  const control=workflow.split('      - name: Checkout Vibe2 control branch\n')[1]?.split('      - uses: actions/setup-node@v4\n')[0]||'';
+  assert.ok(source&&control,'both canonical checkouts must remain');
+  assert.match(source,/ref: main/);
+  assert.match(source,/fetch-depth: 1/);
+  assert.match(source,/fetch-tags: false/);
+  assert.match(source,/filter: blob:none/);
+  assert.match(control,/ref: vibe2-unreal-core/);
+  assert.match(control,/fetch-depth: 1/);
+  assert.match(control,/fetch-tags: false/);
+  assert.match(control,/filter: blob:none/);
+  assert.match(control,/sparse-checkout: \|/);
+  assert.match(control,/\.vibe2\/merged-pr-provenance-ledger\.json/);
+  assert.match(control,/\.vibe2\/coding-trace-ledger\.json/);
+  assert.match(control,/sparse-checkout-cone-mode: false/);
+  assert.doesNotMatch(control,/\.vibe2\/queue(?:\/|\.json)/);
+  assert.doesNotMatch(workflow,/fetch-depth: 0|git push --force/);
+  assert.match(workflow,/PR_BASE_SHA: \$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
+  assert.match(workflow,/PR_MERGE_SHA: \$\{\{ github\.event\.pull_request\.merge_commit_sha \}\}/);
+  assert.match(workflow,/git fetch --no-tags --depth=1 --filter=blob:none origin "\$PR_BASE_SHA" "\$PR_MERGE_SHA" --quiet/);
+  assert.match(workflow,/git cat-file -e "\$PR_BASE_SHA\^\{commit\}"/);
+  assert.match(workflow,/git cat-file -e "\$PR_MERGE_SHA\^\{commit\}"/);
+  assert.match(workflow,/git fetch origin vibe2-unreal-core --quiet --filter=blob:none/);
+  assert.match(collector,/execFileSync\('git',\['diff','--numstat','--no-renames',base,merge\]/);
+});
