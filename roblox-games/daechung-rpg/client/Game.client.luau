@@ -10,6 +10,7 @@ local touchEnabled=UserInputService.TouchEnabled
 local p=Players.LocalPlayer
 local C=require(RS:WaitForChild("Shared"):WaitForChild("GameConfig"))
 local CommonUI=require(RS:WaitForChild("Shared"):WaitForChild("RobloxCommonUI"))
+local Style=require(RS:WaitForChild("Shared"):WaitForChild("VisualStyle"))
 -- VERIFIED_EXTERNAL_LEARNING_CLIENT_CONTEXT_BEGIN
 local verifiedExternalLearningContext = C.VerifiedExternalLearning or C.LearningContext or {}
 local verifiedExternalLearningIds = verifiedExternalLearningContext.VerifiedExternalLearningIds or {}
@@ -933,6 +934,27 @@ local function render()
  renderClassPanel()
  refreshObjectInteraction()
 end
+local function applyBiomePresentation()
+ local id=tonumber(p:GetAttribute("CurrentZone"))or 0
+ local zone=nil;for _,entry in ipairs(C.Portals)do if entry.Id==id then zone=entry;break end end
+ local biome=zone and Style.Biomes and Style.Biomes[zone.Theme]
+ local lighting=game:GetService("Lighting")
+ lighting.Ambient=biome and biome.Ambient or Style.Lighting.Ambient
+ lighting.OutdoorAmbient=biome and biome.Ambient or Style.Lighting.OutdoorAmbient
+ for _,name in ipairs({"StudioRpgAtmosphere","VerifiedLearningAtmosphere"})do
+  local atmosphere=lighting:FindFirstChild(name)
+  if atmosphere and atmosphere:IsA("Atmosphere")then
+   atmosphere.Color=biome and biome.Color or Color3.fromRGB(205,213,225)
+   atmosphere.Density=biome and biome.Density or .12
+   atmosphere.Haze=biome and biome.Haze or .65
+  end
+ end
+end
+p:GetAttributeChangedSignal("CurrentZone"):Connect(applyBiomePresentation)
+game:GetService("Lighting").ChildAdded:Connect(function(child)
+ if child.Name=="StudioRpgAtmosphere"or child.Name=="VerifiedLearningAtmosphere"then task.defer(applyBiomePresentation)end
+end)
+task.defer(applyBiomePresentation)
 for _,k in ipairs({"Level","XP","MaxHP","AttackPower","Gold","WeaponTier","ArmorTier","RelicId","MasteryLevel","SecondAdvancementId","CompanionUnlockCount","CurrentZone","QuestPortal","QuestKills","QuestNeed","LastAction","PartyCount","PartyKills","Contribution","PartyHuntActive","InCombat","RoomCode","ClassId","AdvancementId","AdvancementTrialActive","AdvancementTrialProgress","AdvancementTrialPassed","RespecReady","RuneElement","SoulCharge","Guard","Blocking","GuardBrokenUntil","ParryCount","CurrentRunSeed"})do p:GetAttributeChangedSignal(k):Connect(render)end
 local function bindChar(c)combatTracks={};local h=c:WaitForChild("Humanoid");h.HealthChanged:Connect(render);render()end
 if p.Character then task.defer(bindChar,p.Character)end;p.CharacterAdded:Connect(bindChar)
