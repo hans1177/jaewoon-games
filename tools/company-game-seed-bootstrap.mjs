@@ -737,13 +737,17 @@ export function computeVibeSeedProposal(target){
     ||topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
   // 오너가 주제를 완전히 재창작하도록 요청한 경우, 기존 게임명·소개·장르의 프로필 매칭을 하지 않는다.
   // 후보 시스템 선택도 외부 대필 없이 기존 Vibe의 결정론적 선택으로 수행한다.
-  const freeProfiles=Object.values(profiles);
+  const freeProfiles=[...new Map(Object.values(profiles).map(row=>[`${row.genre}|${row.a}|${row.b}`,row])).values()];
   const freeFingerprint=[...`${target.requestId}|${target.topicRevision||''}|${target.variant||0}`]
     .reduce((hash,ch)=>Math.imul(hash^ch.codePointAt(0),16777619)>>>0,2166136261);
-  const profile=freeTopicMode?freeProfiles[freeFingerprint%freeProfiles.length]:
+  // 자유주제는 과거 장르의 A/B 한 벌을 그대로 고르는 대신 서로 다른 행동 계열을 인과적으로 결합한다.
+  const baseProfile=freeTopicMode?freeProfiles[freeFingerprint%freeProfiles.length]:
     (explicitObby?obbyProfile:null)||schoolProfile||topicMatch?.[1]||profiles[category]||
     topicalProfiles.find(([pattern])=>pattern.test(context))?.[1]||
     {genre:'모험',a:'경로 탐색과 목표 선택',b:'환경과 상대의 상태 대응',choiceA:'목표를 향할 경로와 상호작용 순서를 결정',choiceB:'경로 결과로 바뀐 세계와 상대의 상태에 대응',playerRole:'플레이어'};
+  const freePartners=freeTopicMode?freeProfiles.filter(row=>row.genre!==baseProfile.genre&&row.b!==baseProfile.b&&row.b!==baseProfile.a):[];
+  const partner=freePartners.length?freePartners[(freeFingerprint>>>9)%freePartners.length]:baseProfile;
+  const profile=freeTopicMode?{...baseProfile,b:partner.b,choiceB:partner.choiceB}:baseProfile;
   const materialNames={
     KARMA_RETURN:'업보와 인과응보',MANDATE_LEGITIMACY:'왕조의 정통성과 민심',RITUAL_RECIPROCITY:'의례와 호혜 관계',ANCESTOR_MEMORY:'조상 기억과 계승',
     PROPHECY_SELF_FULFILLMENT:'그리스 비극의 자기실현 예언',HUBRIS_NEMESIS:'오만과 응보',OATH_CONTRACT:'서사시의 맹세와 계약',
@@ -784,15 +788,18 @@ export function computeVibeSeedProposal(target){
   };
   const variance=Math.max(0,Math.floor(Number(target.variant)||0));
   const hash=value=>{let n=2166136261;for(const ch of value)n=Math.imul(n^ch.codePointAt(0),16777619)>>>0;return n;};
+  // 자유주제의 소재 선택은 게임 ID/요청 개정만 사용한다. 옛 장르·주제·고정 장르별 소재 우선순위를 배제한다.
+  const compositionKey=freeTopicMode?[target.requestId,target.topicRevision||'',variance]:[target.requestId,category,requestedName,ownerBrief,variance];
   const orderedPool=[...CAUSAL_DNA_LIBRARY].sort((a,b)=>
-    hash([target.requestId,category,requestedName,ownerBrief,variance,a.id].join('|'))-
-    hash([target.requestId,category,requestedName,ownerBrief,variance,b.id].join('|')));
+    hash([...compositionKey,a.id].join('|'))-hash([...compositionKey,b.id].join('|')));
   const genreChoices=genreMaterialIds[profile.genre]||[];
-  const optionalIds=variance>0
+  const optionalIds=freeTopicMode?orderedPool.map(row=>row.id):variance>0
     ?[...orderedPool.map(row=>row.id),...genreChoices]
     :[...genreChoices,...orderedPool.map(row=>row.id)];
   const ids=uniq([...explicitIds,...materialHints,...optionalIds]);
-  const chosen=ids.map(id=>CAUSAL_DNA_LIBRARY.find(row=>row.id===id)).filter(Boolean).slice(0,4);
+  const orderedMaterials=ids.map(id=>CAUSAL_DNA_LIBRARY.find(row=>row.id===id)).filter(Boolean);
+  const distinctSources=orderedMaterials.filter((row,index)=>orderedMaterials.findIndex(candidate=>candidate.source===row.source)===index);
+  const chosen=(freeTopicMode?[...distinctSources,...orderedMaterials.filter(row=>!distinctSources.includes(row))]:orderedMaterials).slice(0,4);
   if(chosen.length<4)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
   const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
   const named=row=>materialNames[row.id]||row.id.replaceAll('_',' ');
@@ -802,20 +809,43 @@ export function computeVibeSeedProposal(target){
   const creativeIds=chosen.map(row=>row.id).join('|');
   const secondary=/COMEDIC|CARNIVAL|ABSURD/.test(creativeIds)?'코믹':/TABOO/.test(creativeIds)?'호러':/TESTIMONY/.test(creativeIds)?'미스터리':'추리';
   const secondaryGenre=secondary===profile.genre?'사회극':secondary;
-  const gameName=requestedName||`${aMaterial}의 ${profile.genre} 세계`;
+  const gameName=requestedName||(freeTopicMode?`${aMaterial}와 ${bMaterial}의 ${profile.genre} 세계`:`${aMaterial}의 ${profile.genre} 세계`);
   const identity=`${gameName}에서 ${profile.playerRole}가 ${profile.a}와 ${profile.b}의 선택을 통해 ${aMaterial}·${bMaterial}의 인과법칙을 바꾸는 ${profile.genre} 복합 게임`;
-  const chooseA=`${profile.choiceA}하면서 ${first.gameGrammar}`;
-  const chooseB=`${profile.choiceB}하면서 ${second.gameGrammar}`;
-  const stateA=`플레이어가 ${profile.a}을 선택하면 ${aMaterial}의 규칙에 따라 다음 위험과 가능 행동이 변화한다.`;
-  const stateB=`플레이어가 ${profile.b}을 선택하면 ${bMaterial}의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다.`;
-  const bridge=`${chooseA} 그 결과 ${profile.b}의 가능 행동과 위험이 바뀌며, ${chooseB} 다시 ${profile.a}의 조건을 바꾼다.`;
-  const genreInterlock=`${profile.genre} 장르의 주 목표를 진행하는 동안 ${secondaryGenre} 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. ${secondaryGenre}를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.`;
-  const coreLoop=[
+  const chooseA=freeTopicMode
+    ?`행동: ${profile.choiceA}. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.`
+    :`${profile.choiceA}하면서 ${first.gameGrammar}`;
+  const chooseB=freeTopicMode
+    ?`행동: ${profile.choiceB}. 선택: A가 남긴 ResourceState로 대응을 바꿀지, RiskState를 감수하고 다른 경로를 열지 결정한다.`
+    :`${profile.choiceB}하면서 ${second.gameGrammar}`;
+  // 각 대축은 입력 조건·플레이어 선택·출력·실패 후 재선택을 가진다. 수치·보상·저장키를 임의로 창작하지 않는다.
+  const stateA=freeTopicMode
+    ?`MAIN의 RouteState와 현재 RiskState를 읽어 ${profile.a} 실행 가능성을 확인한다. ${first.gameGrammar} 실행하면 RiskState·ResourceState를 갱신해 B의 허용 행동과 비용을 바꾼다. 접근 불가·취소라면 기존 상태를 보존하고 다른 경로를 고른다.`
+    :`플레이어가 ${profile.a}을 선택하면 ${aMaterial}의 규칙에 따라 다음 위험과 가능 행동이 변화한다.`;
+  const stateB=freeTopicMode
+    ?`A가 출력한 RiskState·ResourceState가 ${profile.b}의 선행 조건이다. ${second.gameGrammar} 대응이 성공하면 RouteState·RiskState를 기록해 다음 A의 이동·위험을 바꾼다. 조건 미충족이면 소비 없이 대응을 다시 선택한다.`
+    :`플레이어가 ${profile.b}을 선택하면 ${bMaterial}의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다.`;
+  const bridge=freeTopicMode
+    ?`A에서 ${profile.a}를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 ${profile.b} 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.`
+    :`${chooseA} 그 결과 ${profile.b}의 가능 행동과 위험이 바뀌며, ${chooseB} 다시 ${profile.a}의 조건을 바꾼다.`;
+  const genreInterlock=freeTopicMode
+    ?`${profile.genre} 목표를 해결하려면 A의 ResourceState 확보와 B의 RouteState 변경을 반복한다. ${secondaryGenre} 판단에서는 ${cMaterial1}의 단서를 먼저 해석하거나 ${cMaterial2}의 반작용을 감수해야 B의 대응·A의 재진입 중 하나가 가능하다. 보조 장르를 제거하면 실제 접근 조건이 달라진다.`
+    :`${profile.genre} 장르의 주 목표를 진행하는 동안 ${secondaryGenre} 장르의 판단 때문에 정보·접근 비용과 다음 선택이 달라진다. ${secondaryGenre}를 제거하면 같은 경로를 선택해도 인물 반응과 결과가 달라진다.`;
+  const coreLoop=freeTopicMode?[
+    `A 시작: RouteState·RiskState를 확인한 뒤 ${profile.choiceA}. 성공하면 ResourceState·RiskState가 바뀌고, 실패하면 대체 경로를 선택한다.`,
+    `B 대응: A의 ResourceState·RiskState를 확인한 뒤 ${profile.choiceB}. 성공하면 RouteState·RiskState를 갱신하고 불가능하면 소비 없이 다시 선택한다.`,
+    `A 재진입: B가 갱신한 RouteState와 이전 경로를 비교해 ${profile.a}의 새 선택을 실행하거나 @ 발견 조건을 시험한다.`
+  ]:[
     `${profile.a}: ${chooseA}`,
     `${profile.b}: ${chooseB}`,
     `${profile.a}로 되돌아가 변한 세계 상태·관계·위험을 비교하고 다음 목표를 선택한다.`
   ];
-  const delveConditions=[
+  // @는 주제별로 이름·조건·발견·실제 선택 변화가 달라지며 MAIN/A/B/C 두 항목 이상을 연결한다.
+  const delveConditions=freeTopicMode?[
+    {name:`${aMaterial}의 경로 해독`,condition:`A의 RouteState로 진입해 RiskState·ResourceState가 바뀐 이유를 확인하고 B의 대응을 시험한다.`,insight:`${first.principle} 원리를 A의 선택과 B의 결과를 비교해 발견한다.`,effect:`B에서 비용이 다른 대응을 선택한 뒤 WorldAccessState에 새 접근 조건을 반영한다. 실패하면 원래 RouteState를 유지한다.`,links:['A','B','C']},
+    {name:`${bMaterial}의 귀환 흔적`,condition:`B가 RouteState·RiskState를 갱신한 뒤 A의 이전 진입 장소를 다시 방문해 차이를 확인한다.`,insight:`${second.principle} 원리 때문에 같은 A 행동도 재방문에서는 다른 조건으로 판정됨을 발견한다.`,effect:`다음 A에서 위험을 낮추는 우회 RouteState 또는 정보 회복을 선택한다. 재방문 전에는 해금하지 않는다.`,links:['MAIN','A','B']},
+    {name:`${cMaterial1}·${cMaterial2}의 이중 단서`,condition:`C의 두 소재가 각각 A의 RiskState와 B의 ResourceState를 바꾸는 사례를 관찰한 뒤 순서를 비교한다.`,insight:`${third.principle}와 ${fourth.principle}가 결합될 때 ${secondaryGenre}의 해석이 다음 행동 허용 여부를 바꾼다.`,effect:`단서 해석을 선택해 IntentState를 갱신하고 B의 다른 대응을 연다. 조건 미달이면 기존 행동을 유지한다.`,links:['B','C','MAIN']},
+    {name:`${profile.a}와 ${profile.b}의 역전`,condition:`A의 위험 선택을 바꾼 두 결과에 동일한 B 대응을 적용해 RouteState·RiskState를 비교한다.`,insight:`${aMaterial}의 불리한 결과가 ${bMaterial}의 다른 조건에서는 유리해지는 실제 인과를 발견한다.`,effect:`A로 재진입할 때 WorldAccessState에 반대 경로를 기록해 다른 해결을 선택한다. 실패한 시도는 기존 상태를 보존한다.`,links:['A','B','MAIN']}
+  ]:[
     {name:'금기와 기회의 교차',condition:`${aMaterial}의 제약과 ${bMaterial}의 대응을 같은 지역에서 순서대로 시험한다.`,insight:`${first.principle} 상황을 ${second.gameGrammar} 방식으로 해석한다.`,effect:`${profile.a}에서 평소에는 불가능했던 대안 경로와 선택을 연다.`,links:['A','B','C']},
     {name:'되돌아온 선택',condition:`${profile.b}를 완료한 뒤 처음 ${profile.a} 지역을 다시 방문해 달라진 증거를 찾는다.`,insight:`${second.principle} 결과가 과거 선택의 의미를 바꿀 수 있음을 발견한다.`,effect:'보상이 아닌 관계·정보의 복원과 다른 해결 경로를 선택한다.',links:['MAIN','A','B']},
     {name:'두 소재의 숨은 규칙',condition:`${cMaterial1}와 ${cMaterial2}의 조건을 동시에 만족시키는 행동 순서를 실험한다.`,insight:`${third.principle} 원리와 ${fourth.principle} 원리가 동시에 작동함을 파악한다.`,effect:'주 장르의 목표를 보조 장르의 정보 판단으로 우회하는 선택을 연다.',links:['B','C','MAIN']},
@@ -827,7 +857,7 @@ export function computeVibeSeedProposal(target){
     causalDNAs:chosen.slice(0,4).map((row,index)=>({id:row.id,source:row.source,principle:row.principle,gameplayConversion:row.gameGrammar,fusionRole:index%2===0?`${profile.a}의 선택 조건을 바꾼다.`:`${profile.b}의 대응 결과를 바꾼다.` })),
     brokenGenreAssumption:`${profile.genre}의 단순한 목표 달성이 끝이 아니다. ${aMaterial}과 ${bMaterial}의 반작용이 다음 세계법칙을 변경한다.`,
     newPrimaryVerb:`${profile.a}의 결과를 ${profile.b}로 전환하고 달라진 조건을 다시 활용한다.`,
-    worldRule:`${aMaterial}에 의해 바뀐 인물·지역의 상태는 ${bMaterial}의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.`,
+    worldRule:freeTopicMode?`A의 RiskState·ResourceState가 B의 ${bMaterial} 판정을 바꾸고 B의 RouteState·RiskState가 MAIN의 WorldAccessState를 거쳐 다시 A의 접근 조건이 된다.`:`${aMaterial}에 의해 바뀐 인물·지역의 상태는 ${bMaterial}의 선택으로 되돌아오며 다음 사건의 입장 조건을 결정한다.`,
     causalFusion:[bridge,`${cMaterial1}에 의한 반응은 ${cMaterial2}의 비용과 정보를 바꾸고, 그 결과는 ${secondaryGenre}의 판단 규칙으로 다시 반영된다.`],
     irreducibilityTest:{removeFirstAxis:`${profile.a}을 빼면 ${aMaterial}의 제약이 사라져 ${profile.b} 대응의 원인을 잃는다.`,removeSecondAxis:`${profile.b}를 빼면 ${bMaterial}의 반작용이 사라져 다음 ${profile.a}에서 배울 수 있는 선택지가 사라진다.`,verdict:'A/B 중 어느 하나나 C의 보조 장르를 제거하면 정보·동선·세계 반응이 달라지므로 장식으로 대체할 수 없다.'},
     storyWorldBindings:{
@@ -840,17 +870,17 @@ export function computeVibeSeedProposal(target){
     },
     gameplaySystemFusion:{
       formula:'MAIN × A × B × C',
-      main:{name:gameName,purpose:`${identity}에서 플레이어는 선택을 누적해 목적을 완수한다.`,playerAction:coreLoop[0],stateContribution:'플레이어 행동은 다음 목표·위험·세계 반응의 공통 상태를 갱신한다.'},
+      main:{name:gameName,purpose:`${identity}에서 플레이어는 선택을 누적해 목적을 완수한다.`,playerAction:coreLoop[0],stateContribution:freeTopicMode?'WorldAccessState·IntentState를 읽고 A의 첫 RouteState를 정한다. @ 발견으로 새로운 접근 조건이 생겼을 때만 WorldAccessState를 갱신한다.':'플레이어 행동은 다음 목표·위험·세계 반응의 공통 상태를 갱신한다.'},
       majorAxes:[
-        {key:'A',name:`${profile.a} × ${aMaterial}`,systemFamily:profile.a,sourceMaterial:aMaterial,sourceDomain:first.source,materialRule:`${first.gameGrammar} 따라서 ${profile.a}의 경로와 비용이 바뀐다.`,purpose:stateA,playerChoice:chooseA,stateContribution:stateA},
-        {key:'B',name:`${profile.b} × ${bMaterial}`,systemFamily:profile.b,sourceMaterial:bMaterial,sourceDomain:second.source,materialRule:`${second.gameGrammar} 따라서 ${profile.b}의 정보·대응이 바뀐다.`,purpose:stateB,playerChoice:chooseB,stateContribution:stateB}
+        {key:'A',name:`${profile.a} × ${aMaterial}`,systemFamily:profile.a,sourceMaterial:aMaterial,sourceDomain:first.source,materialRule:freeTopicMode?stateA:`${first.gameGrammar} 따라서 ${profile.a}의 경로와 비용이 바뀐다.`,purpose:stateA,playerChoice:chooseA,stateContribution:stateA},
+        {key:'B',name:`${profile.b} × ${bMaterial}`,systemFamily:profile.b,sourceMaterial:bMaterial,sourceDomain:second.source,materialRule:freeTopicMode?stateB:`${second.gameGrammar} 따라서 ${profile.b}의 정보·대응이 바뀐다.`,purpose:stateB,playerChoice:chooseB,stateContribution:stateB}
       ],
       themeFusion:{
-        themes:[{name:cMaterial1,kind:'MATERIAL',causalEffect:`${third.gameGrammar} 그 결과 A와 B가 공유하는 조건이 바뀐다.`},{name:cMaterial2,kind:'MATERIAL',causalEffect:`${fourth.gameGrammar} 그 결과 사건의 비용과 다음 선택이 달라진다.`}],
+        themes:[{name:cMaterial1,kind:'MATERIAL',causalEffect:freeTopicMode?`${third.gameGrammar} 이 단서의 확인 여부가 A의 RiskState와 B의 ResourceState 사용 조건을 바꾼다.`:`${third.gameGrammar} 그 결과 A와 B가 공유하는 조건이 바뀐다.`},{name:cMaterial2,kind:'MATERIAL',causalEffect:freeTopicMode?`${fourth.gameGrammar} B의 RouteState 해금과 A의 재진입 조건을 바꾸며 대가를 선택하게 한다.`:`${fourth.gameGrammar} 그 결과 사건의 비용과 다음 선택이 달라진다.`}],
         genres:[{role:'PRIMARY',name:profile.genre,gameplayEffect:`${profile.a}와 ${profile.b}를 통한 중심 목표와 위험·보상을 판단한다.`},{role:'SECONDARY',name:secondaryGenre,gameplayEffect:`${cMaterial1}의 단서와 ${cMaterial2}의 반응 때문에 같은 목표의 정보·행동·결과가 달라진다.`}],
         genreInterlock,jointWorldRule:`${cMaterial1}와 ${cMaterial2}가 충돌하면 지역의 접근·인물의 입장과 목표가 갱신된다.`,abGameplayEffect:bridge
       },
-      crossSystemRules:[`MAIN의 목표가 ${profile.a}에서 추적할 경로와 정보를 결정한다.`,`A의 결과로 ${profile.b}의 비용·위험·가능 행동이 달라진다.`,`B의 대응 결과가 다음 ${profile.a}의 조건을 되돌려 바꾼다.`,`C의 두 소재와 ${secondaryGenre} 판단이 위 두 시스템의 정보·경로를 변경한다.`]
+      crossSystemRules:freeTopicMode?[`MAIN이 WorldAccessState·IntentState를 확인해 A의 RouteState 진입을 결정한다.`,`A가 RouteState·RiskState를 읽고 실행하면 RiskState·ResourceState가 변해 B의 행동 비용과 허용 조건이 바뀐다.`,`B가 RiskState·ResourceState를 판정해 RouteState·RiskState를 출력한 뒤 A로 반환한다. 실패·취소 시 원래 상태를 보존한다.`,`C의 ${cMaterial1}·${cMaterial2} 단서 해석이 A의 RiskState 및 B의 ResourceState·RouteState 조건을 변경하며 ${secondaryGenre} 판단이 실제 대안 선택을 만든다.`]:[`MAIN의 목표가 ${profile.a}에서 추적할 경로와 정보를 결정한다.`,`A의 결과로 ${profile.b}의 비용·위험·가능 행동이 달라진다.`,`B의 대응 결과가 다음 ${profile.a}의 조건을 되돌려 바꾼다.`,`C의 두 소재와 ${secondaryGenre} 판단이 위 두 시스템의 정보·경로를 변경한다.`]
     },
     delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveConditions.map(row=>({name:row.name,discoveryCondition:row.condition,masteryOrInsight:row.insight,gameplayEffect:row.effect,connectsTo:row.links}))},
     emergentGenre:{name:`${aMaterial}·${bMaterial} ${profile.genre}`,definition:`${profile.a}과 ${profile.b}의 왕복 결과에 ${cMaterial1}·${cMaterial2}와 ${secondaryGenre} 판단이 개입해 다음 월드 상태가 변하는 복합 장르다.`,whyNotSingleConventionalGenre:'한쪽 시스템이나 소재, 보조 장르를 제거하면 가능 경로와 사건 원인이 바뀌므로 단일 장르 규칙으로 환원할 수 없다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
@@ -863,8 +893,8 @@ export function computeVibeSeedProposal(target){
     crossPlatformExpansionValue:'동일 인과문법을 보존한 플랫폼별 네이티브 구현에 적용 가능하다.',
     steamExpansionPossible:'POSSIBLE',transformationMode:'ORIGINAL_COMPOSITION',
     gameplaySketch:{version:5,source:'VIBE_NATIVE_CAUSAL_COMPOSITION',novelGameGrammar:grammar,
-      worldModel:`${gameName}의 공간은 ${aMaterial}와 ${bMaterial} 선택의 결과로 목표·동선·위험이 달라진다.`,
-      interactionChains:[`${chooseA} -> ${stateA} -> ${chooseB} -> ${stateB}`],
+      worldModel:freeTopicMode?`${gameName}의 첫 선택 장소에서는 A의 RouteState를, 되돌림 장소에서는 B의 ResourceState·RiskState를 검증한다. 돌아오면 동일 장소의 접근 조건과 결과가 변경된다.`:`${gameName}의 공간은 ${aMaterial}와 ${bMaterial} 선택의 결과로 목표·동선·위험이 달라진다.`,
+      interactionChains:freeTopicMode?[`MAIN(WorldAccessState) → A(RouteState·RiskState 입력, ResourceState 출력) → B(ResourceState·RiskState 입력, RouteState 출력) → A 재진입`,`@ 발견 조건 충족 → MAIN(WorldAccessState·IntentState 변경) → A의 새로운 경로를 판정`]:[`${chooseA} -> ${stateA} -> ${chooseB} -> ${stateB}`],
       actors:[`플레이어: ${profile.a}와 ${profile.b}의 선택을 담당한다.`,`인물과 상대: ${aMaterial}·${bMaterial}의 결과를 기억하고 반응한다.`],
       identityCore:{oneLineFantasy:identity,playerRole:`${gameName}의 ${profile.playerRole}이자 인과 선택의 책임자`,
         representativeAction:coreLoop[0],representativeChoice:coreLoop[1],
