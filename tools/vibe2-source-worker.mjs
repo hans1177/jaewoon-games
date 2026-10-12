@@ -5052,6 +5052,7 @@ function normalizeBlueprintSourcePaths(blueprint,scope){
   return{...blueprint,
     ...(Array.isArray(blueprint.objects)?{objects:blueprint.objects.map(row)}:{}),
     ...(Array.isArray(blueprint.connections)?{connections:blueprint.connections.map(row)}:{}),
+    ...(Array.isArray(blueprint.experienceScenarios)?{experienceScenarios:blueprint.experienceScenarios.map(row)}:{}),
     ...(Array.isArray(blueprint.screens)?{screens:blueprint.screens.map(screen=>screen&&Array.isArray(screen.controls)?{...screen,controls:screen.controls.map(row)}:screen)}:{})
   };
 }
@@ -7318,3 +7319,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     throw error;
   }
 }
+

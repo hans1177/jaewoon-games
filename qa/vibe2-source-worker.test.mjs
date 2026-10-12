@@ -7,6 +7,16 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+
+test('experience scenario source paths use the same owned-file normalization as interface controls',()=>{
+  const base={edits:[{path:'roblox-games/demo/client/Menu.client.luau',find:'local state = 0',replace:'local state = 1'}],
+    interfaceBlueprint:{experienceScenarios:[{id:'first',binding:{path:'roblox-games/demo/client/Menu.client.luau',symbol:'openMenu'}}]}};
+  const scope={target:'roblox',responsibleFiles:['client/Menu.client.luau'],sourceRootRelative:'roblox-games/demo'};
+  const candidate=normalizeCandidate(base,scope);
+  assert.equal(candidate.interfaceBlueprint.experienceScenarios[0].binding.path,'client/Menu.client.luau');
+  const outside=structuredClone(base);outside.interfaceBlueprint.experienceScenarios[0].binding.path='roblox-games/other/client/Menu.client.luau';
+  assert.throws(()=>normalizeCandidate(outside,scope));
+});
 import { runInNewContext } from 'node:vm';
 import { robloxProductionPromptLines } from '../tools/company-roblox-production-plan.mjs';
 import crypto from 'node:crypto';
@@ -8703,3 +8713,4 @@ test('internal library source execution honors Roblox asset focus without a game
     assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{...order,source:{root:'assets/unity/fixture'}}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+

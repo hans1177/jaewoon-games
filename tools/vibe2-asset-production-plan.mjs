@@ -4440,7 +4440,8 @@ export function buildVibeAssetProductionPlan({
   }):null;
   const requestedSharedDocument=task.assetCustomization?.sharedDocument||(!task.assetCustomization?.recipes?.length?currentCustomizationDocument:null);
   const sharedCustomizationDocument=requestedSharedDocument&&(!currentGameId||requestedSharedDocument.gameId===currentGameId)
-    &&(!approvedStyleFamily||requestedSharedDocument.styleBible?.profileKey===approvedStyleFamily)?requestedSharedDocument:null;
+    &&(!approvedStyleFamily||requestedSharedDocument.styleBible?.profileKey===approvedStyleFamily)
+    &&Object.entries(approvedStyleBible).every(([key,value])=>JSON.stringify(requestedSharedDocument.styleBible?.[key])===JSON.stringify(value))?requestedSharedDocument:null;
   if(sharedCustomizationDocument)task={...task,styleFamily:sharedCustomizationDocument.styleBible?.profileKey,styleBible:sharedCustomizationDocument.styleBible,concept:{...task.concept,styles:[{family:sharedCustomizationDocument.styleBible?.profileKey,weight:1}]},motionStyleModifiers:sharedCustomizationDocument.motionStyle?.modifiers};
   if(verifiedDesign&&(approvedStyleFamily||approvedStyleDescription)){
     const approvedConcept=inferRequestedConcept(approvedStyleFamily?{styleFamily:approvedStyleFamily}: {},approvedStyleDescription);
