@@ -403,15 +403,17 @@ assert.ok(authoredRejections(noDelve).some(row=>row.code==='DESIGN_MAIN_A_B_DELV
 const duplicateAxis=authoredSpatialDesign();
 duplicateAxis.signatureSystems[2].grammarRole='A';
 assert.ok(authoredRejections(duplicateAxis).some(row=>row.code==='DESIGN_MAIN_A_B_DELVE_REQUIRED'));
+// 유니티 웹은 제작 대상이 아니며 과거 공간 필드는 선택적 호환 입력이다.
 const flatWorld=authoredSpatialDesign();
 flatWorld.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='2D';
-assert.ok(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
-const markerOnly=authoredSpatialDesign();
-markerOnly.platformProfiles.UNITY.unityWebSpatialPresentation.worldDepth='2.5D';
-assert.ok(authoredRejections(markerOnly).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'));
-const true3d=authoredSpatialDesign();
-true3d.platformProfiles.UNITY.unityWebSpatialPresentation.dimension='3D';
-assert.equal(authoredRejections(true3d).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+assert.equal(authoredRejections(flatWorld).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+const legacyWithoutWeb=authoredSpatialDesign();
+delete legacyWithoutWeb.platformProfiles.UNITY.unityWebSpatialPresentation;
+assert.equal(authoredRejections(legacyWithoutWeb).some(row=>row.code==='DESIGN_UNITY_WEB_SPATIAL_DEPTH_REQUIRED'),false);
+const foreignNative=authoredSpatialDesign();
+foreignNative.platformProfiles.ROBLOX.inputModel='Unity Input System only for this Roblox project.';
+assert.ok(authoredRejections(foreignNative).some(row=>row.code==='DESIGN_PLATFORM_NATIVE_CONTRADICTION'),
+  '웹 제작 의무를 없애도 실제 네이티브 플랫폼 혼동은 계속 반려한다.');
 // 기존 게임의 표현 보존 설계에서도 MAIN/A/B/c/@는 실제 상태 입력과 출력으로 이어야 한다.
 const preserved=authoredSpatialDesign();
 const preservedRoles=preserved.signatureSystems;
