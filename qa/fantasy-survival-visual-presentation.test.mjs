@@ -4,6 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 
 const source=fs.readFileSync('web-games/fantasy-survival/index.html','utf8');
 
@@ -379,3 +380,82 @@ test('manual world targeting stays separate from automatic nearest selection',()
   assert.doesNotMatch(auto,/manualTarget/);
 });
 
+
+// 전투 회귀 · 태양석 유도 구슬과 근접 무기의 허공 공격 / 잘못된 처치 판정을 검증한다.
+test('sunstone orb hits a real forward target rather than nearer sand spirit or invisible enemies',()=>{
+  const state={area:'surface',camera:{x:-100,y:-140},enemies:[]};
+  const ctx={state,innerWidth:500,innerHeight:320,performance:{now:()=>10000}};
+  runInNewContext(functionBody('nearestSporeTarget'),ctx);
+  const player={x:0,y:0,faceX:1,faceY:0};
+  const target=weapon=>runInNewContext('nearestSporeTarget('+JSON.stringify(player)+','+JSON.stringify(weapon)+')?.netId ?? null',ctx);
+  const sand={netId:'sand',x:60,y:80,hp:400,area:'surface',type:{r:24,mood:'aggressive'}};
+  const front={netId:'front',x:220,y:0,hp:600,area:'surface',type:{r:30,mood:'aggressive'}};
+  state.enemies=[sand,front];
+  assert.equal(target({range:780,sunMagic:true}),'front','directly frontal monster wins over nearer side sand spirit');
+  assert.equal(target({range:760}),'sand','normal spore weapon retains original nearest targeting');
+  state.enemies=[{...sand,x:-60,y:0}];
+  assert.equal(target({range:780,sunMagic:true}),null,'backward-only target means no orb');
+  state.enemies=[{...front,x:900}];
+  assert.equal(target({range:780,sunMagic:true}),null,'offscreen target means no orb');
+  state.enemies=[{...front,hp:0}];
+  assert.equal(target({range:780,sunMagic:true}),null,'dead target means no orb');
+  const attack=functionBody('attack');
+  assert.ok(attack.includes('e.x+e.type.r<cam.x'),'melee must check visible target');
+  assert.ok(attack.includes('if(dot<-.18)continue'),'preserve existing directional melee rule');
+  assert.ok(attack.includes('if(e.hp<=0){'),'kill/reward follows actual death only');
+  const native=fs.readFileSync('unity-games/fantasy-survival/Assets/Scripts/UnityWebFloorGame.cs','utf8');
+  const nativeAttack=native.slice(native.indexOf('private void Attack()'),native.indexOf('private void Update()'));
+  assert.ok(nativeAttack.includes('WorldToViewportPoint'),'native target must be onscreen');
+  assert.ok(nativeAttack.includes('Vector3.Dot(player.forward,offset.normalized)'),'native melee respects facing');
+  assert.ok(nativeAttack.includes('if(orb && alignedTarget!=null)target=alignedTarget'),'native orb prefers the frontal enemy');
+  assert.ok(nativeAttack.includes('if(target==null)'),'native empty attack does not damage anyone');
+  assert.ok(native.includes('if(target.hp<=0f)'),'native kill text follows real HP death');
+});
+
+// 전투 회귀 · 실제 태양석 구슬 발사/충돌/체력 차감까지 기존 함수 그대로 실행한다.
+test('sunstone orb projectile damages the frontal monster and never the closer sand spirit',()=>{
+  const sand={netId:'sand',hp:400,x:60,y:80,area:'surface',type:{id:'sandSpirit',r:24,mood:'aggressive',name:'모래 정령'}};
+  const front={netId:'front',hp:600,x:220,y:0,area:'surface',type:{id:'goblin',r:30,mood:'aggressive',name:'숲 고블린'}};
+  const state={player:{x:0,y:0,faceX:1,faceY:0},enemies:[sand,front],area:'surface',projectiles:[],camera:{x:-100,y:-140},respawns:[],dirty:false};
+  const ctx={state,innerWidth:500,innerHeight:320,performance:{now:()=>10000},currentDamage:()=>300,multiplayer:{connected:false,playerId:'self'},WORLD:{w:1000,h:1000},
+    dist:(x,y,a,b)=>Math.hypot(x-a,y-b),enemyIncomingDamage:(target,damage)=>damage,
+    multiIsHost:()=>true,engagePet:()=>{},playGameSfx:()=>{},markEnemyHitByPlayer:()=>{},finishPlayerArrowKill:()=>{}};
+  for(const fn of ['nearestSporeTarget','fireSporeSeeker','updateProjectiles'])
+    runInNewContext(functionBody(fn),ctx);
+  runInNewContext('fireSporeSeeker(10000,state.player,{sunMagic:true,range:780,power:300},nearestSporeTarget(state.player,{sunMagic:true,range:780}))',ctx);
+  assert.equal(state.projectiles.length,1);
+  assert.equal(state.projectiles[0].targetId,'front');
+  runInNewContext('updateProjectiles(.35,10350)',ctx);
+  assert.equal(front.hp,300,'frontal target takes the existing 300 damage');
+  assert.equal(sand.hp,400,'nearby sand spirit receives no unrelated damage');
+  assert.equal(state.projectiles.length,0,'orb disappears only after real impact');
+});
+
+// 전투 회귀 · 눈앞의 적과 화면 밖의 적을 동시에 두고 실제 근접 공격 함수를 검사한다.
+test('melee empty air never awards a sand spirit kill while an actual visible enemy can be hit',()=>{
+  const enemy=(name,x,y)=>({netId:name,x,y,hp:100,area:'surface',type:{id:name,name,mood:'aggressive',r:10,summoned:true}});
+  const strike=enemies=>{
+    const notices=[];
+    const player={x:0,y:0,faceX:1,faceY:0,weapon:'sunstone-scorpion-blade',armor:null,attackAt:0,attackBlockedUntil:0,stunnedUntil:0,kills:0};
+    const state={player,enemies,area:'surface',camera:{x:0,y:0},flowerWebs:[],dirty:false,respawns:[]};
+    const ctx={state,innerWidth:70,innerHeight:70,performance:{now:()=>10000},currentWeapon:()=>({range:98,power:360,cooldown:850}),
+      currentCooldown:()=>850,interruptAutoGather:()=>{},petMountedAttack:()=>false,
+      dist:(x,y,a,b)=>Math.hypot(x-a,y-b),music:{enabled:false},playGameSfx:()=>{},item:()=>null,
+      playCombatAudio:()=>{},multiplayer:{connected:false},currentRange:()=>98,currentDamage:()=>360,
+      enemyIncomingDamage:(target,damage)=>damage,engagePet:()=>{},markEnemyHitByPlayer:()=>{},queueDeathAnimation:()=>{},
+      awardLoot:()=>{},rewardBoss:()=>{},enemyRespawnDelay:()=>1000,showNotice:message=>notices.push(message),updateHud:()=>{}};
+    runInNewContext(functionBody('attack'),ctx);
+    runInNewContext('attack()',ctx);
+    return{kills:player.kills,hit:enemies.filter(e=>e.hp<100).map(e=>e.netId),notices};
+  };
+  const missed=strike([enemy('모래 정령',95,0)]);
+  assert.equal(missed.kills,0);
+  assert.equal(missed.hit.length,0);
+  assert.equal(missed.notices.length,0,'empty air must not report a monster kill');
+  const struck=strike([enemy('모래 정령',95,0),enemy('숲 고블린',40,0)]);
+  assert.equal(struck.kills,1);
+  assert.deepEqual(Array.from(struck.hit),['숲 고블린']);
+  assert.deepEqual(Array.from(struck.notices),['숲 고블린 처치']);
+  const behind=strike([enemy('모래 정령',-20,0)]);
+  assert.equal(behind.kills,0);
+});
