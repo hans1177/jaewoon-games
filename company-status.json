@@ -296,11 +296,13 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 0,
+        "developmentConfirmed": 1,
         "designOnly": 12
       },
       "releaseConfirmedGameIds": [],
-      "developmentConfirmedGameIds": [],
+      "developmentConfirmedGameIds": [
+        "RUNTIME-cozy-island"
+      ],
       "designOnlyGameIds": [
         "P0001",
         "P0002",
@@ -328,7 +330,8 @@
           "P0009",
           "P0101",
           "P0102",
-          "P0103"
+          "P0103",
+          "RUNTIME-cozy-island"
         ],
         "paused": [],
         "rebuild": [],
@@ -337,11 +340,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 12,
+        "count": 13,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 48
+        "deficit": 47
       },
       "ranking": [
         {
@@ -472,6 +475,21 @@
           "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "STRATEGY",
+          "evidenceScore": 6,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "sourceReady": true
+        },
+        {
+          "rank": 10,
+          "rawEvidenceRank": 10,
+          "gameId": "RUNTIME-cozy-island",
+          "slug": "cozy-island",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
           "evidenceScore": 6,
           "developmentFocus": 0,
           "artbookBaselineRank": 0,
