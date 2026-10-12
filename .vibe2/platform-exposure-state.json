@@ -3,7 +3,7 @@
   "kind": "platform-exposure-state",
   "authority": "OWNER_DIRECTIVE_2026-09-25",
   "policy": "PERPETUAL_INTERNAL_BUILDUP_WITH_FAIL_CLOSED_EXTERNAL_PUBLIC_HARD_GATE",
-  "updatedAt": "2026-10-12T02:57:32.836Z",
+  "updatedAt": "2026-10-12T05:19:52.239Z",
   "games": [
     {
       "gameId": "fantasy-survival",
@@ -1189,8 +1189,8 @@
               "movement",
               "noRuntimeErrors"
             ],
-            "sourceRevision": null,
-            "artifactIdentity": null,
+            "sourceRevision": "f2dbbb9d06a30f70e0dacb9e5529b23502e6f819",
+            "artifactIdentity": "sha256:0e7016a060b9772aa5ab19389e4bf9a1b6663658ddf88403b2a4ca39f52988e1",
             "verifiedAt": null
           },
           "internalReleasePublished": false,
@@ -1210,7 +1210,7 @@
               "gameCompletion": false,
               "platformAdaptation": false,
               "saveRejoin": false,
-              "multiplayer": false,
+              "multiplayer": true,
               "serverClientAuthority": false,
               "mobileAndPerformance": false,
               "security": false,
@@ -1227,7 +1227,6 @@
               "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
               "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
               "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
-              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
               "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
               "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
               "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
@@ -1235,7 +1234,7 @@
               "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
               "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
             ],
-            "candidateVersionNumber": 0
+            "candidateVersionNumber": 2
           },
           "perpetualBuildupActive": false,
           "testerTickets": {
@@ -8583,6 +8582,663 @@
         },
         "signals": {
           "genre": "Strategy",
+          "playMode": "COOP",
+          "multiplayer": true,
+          "deepSystemGenre": true,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": {
+            "pass": false,
+            "checks": {
+              "technical": false,
+              "realServerBoot": true,
+              "exactRuntime": false,
+              "actualVibePlay": false,
+              "vibeScenarioCoverage": false,
+              "noBlockingTickets": true,
+              "gameCompletion": false,
+              "platformAdaptation": false,
+              "saveRejoin": false,
+              "multiplayer": false,
+              "serverClientAuthority": false,
+              "mobileAndPerformance": false,
+              "security": false,
+              "presentation": false,
+              "stability": false,
+              "exactFinal": false
+            },
+            "blockers": [
+              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
+              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
+              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
+              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
+              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
+              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
+              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
+            ],
+            "candidateVersionNumber": 0
+          },
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": null,
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ],
+      "publicReleaseReady": false,
+      "publicReleased": false,
+      "anyPlatformPublicReleased": false,
+      "externalPublicReleaseState": "INTERNAL_ONLY"
+    },
+    {
+      "gameId": "bug-defense",
+      "gameName": "곤충 디펜스",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
+      "suitability": {
+        "gameId": "bug-defense",
+        "gameName": "곤충 디펜스",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 77,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 85,
+            "development": 83,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 77,
+            "balance": 78,
+            "growthMarketing": 77
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 78,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 80,
+            "development": 70,
+            "graphics": 87,
+            "audio": 84,
+            "qa": 72,
+            "balance": 80,
+            "growthMarketing": 75
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "Strategy",
+          "playMode": "COOP",
+          "multiplayer": true,
+          "deepSystemGenre": true,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": {
+            "pass": false,
+            "checks": {
+              "technical": false,
+              "realServerBoot": true,
+              "exactRuntime": false,
+              "actualVibePlay": false,
+              "vibeScenarioCoverage": false,
+              "noBlockingTickets": false,
+              "gameCompletion": false,
+              "platformAdaptation": false,
+              "saveRejoin": false,
+              "multiplayer": false,
+              "serverClientAuthority": false,
+              "mobileAndPerformance": false,
+              "security": false,
+              "presentation": false,
+              "stability": false,
+              "exactFinal": false
+            },
+            "blockers": [
+              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
+              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_NOBLOCKINGTICKETS",
+              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
+              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
+              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
+              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
+              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
+              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
+            ],
+            "candidateVersionNumber": 0
+          },
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": [
+              "bug-2d9eb45865e17276bf07"
+            ]
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": null,
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ],
+      "publicReleaseReady": false,
+      "publicReleased": false,
+      "anyPlatformPublicReleased": false,
+      "externalPublicReleaseState": "INTERNAL_ONLY"
+    },
+    {
+      "gameId": "survival",
+      "gameName": "나의 생존기",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
+      "suitability": {
+        "gameId": "survival",
+        "gameName": "나의 생존기",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 77,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 85,
+            "development": 83,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 77,
+            "balance": 78,
+            "growthMarketing": 77
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 78,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 80,
+            "development": 70,
+            "graphics": 87,
+            "audio": 84,
+            "qa": 72,
+            "balance": 80,
+            "growthMarketing": 75
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "Survival",
+          "playMode": "COOP",
+          "multiplayer": true,
+          "deepSystemGenre": true,
+          "socialGenre": false
+        },
+        "lowerSuitabilityDoesNotDisableDevelopment": true
+      },
+      "platforms": [
+        {
+          "platform": "ROBLOX",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": {
+            "pass": false,
+            "checks": {
+              "technical": false,
+              "realServerBoot": true,
+              "exactRuntime": false,
+              "actualVibePlay": false,
+              "vibeScenarioCoverage": false,
+              "noBlockingTickets": true,
+              "gameCompletion": false,
+              "platformAdaptation": false,
+              "saveRejoin": false,
+              "multiplayer": false,
+              "serverClientAuthority": false,
+              "mobileAndPerformance": false,
+              "security": false,
+              "presentation": false,
+              "stability": false,
+              "exactFinal": false
+            },
+            "blockers": [
+              "ROBLOX_PUBLIC_HARD_GATE_TECHNICAL",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTRUNTIME",
+              "ROBLOX_PUBLIC_HARD_GATE_ACTUALVIBEPLAY",
+              "ROBLOX_PUBLIC_HARD_GATE_VIBESCENARIOCOVERAGE",
+              "ROBLOX_PUBLIC_HARD_GATE_GAMECOMPLETION",
+              "ROBLOX_PUBLIC_HARD_GATE_PLATFORMADAPTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_SAVEREJOIN",
+              "ROBLOX_PUBLIC_HARD_GATE_MULTIPLAYER",
+              "ROBLOX_PUBLIC_HARD_GATE_SERVERCLIENTAUTHORITY",
+              "ROBLOX_PUBLIC_HARD_GATE_MOBILEANDPERFORMANCE",
+              "ROBLOX_PUBLIC_HARD_GATE_SECURITY",
+              "ROBLOX_PUBLIC_HARD_GATE_PRESENTATION",
+              "ROBLOX_PUBLIC_HARD_GATE_STABILITY",
+              "ROBLOX_PUBLIC_HARD_GATE_EXACTFINAL"
+            ],
+            "candidateVersionNumber": 0
+          },
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": []
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedVisibility": "PRIVATE_OR_RESTRICTED_TEST_EXPERIENCE",
+            "publicDiscoveryAllowed": false
+          },
+          "rebuildRequired": false
+        },
+        {
+          "platform": "UNITY",
+          "technicalReady": false,
+          "internalReleaseState": "NATIVE_DEVELOPMENT",
+          "internalReleaseReady": false,
+          "releaseReadiness": {
+            "version": 1,
+            "ready": false,
+            "homepageReady": false,
+            "technicalReady": false,
+            "designReady": true,
+            "lobbyReady": false,
+            "ownerConfirmed": false,
+            "basis": "PENDING_EVIDENCE",
+            "experience": "DEVELOPMENT",
+            "checks": {
+              "design": true,
+              "publication": false,
+              "exactRuntime": false,
+              "lobby": false,
+              "movement": false,
+              "noRuntimeErrors": false
+            },
+            "blockers": [
+              "publication",
+              "exactRuntime",
+              "lobby",
+              "movement",
+              "noRuntimeErrors"
+            ],
+            "sourceRevision": null,
+            "artifactIdentity": null,
+            "verifiedAt": null
+          },
+          "internalReleasePublished": false,
+          "internalPlaytestPassed": false,
+          "externalExposureAllowed": false,
+          "externalExposureState": "INTERNAL_ONLY",
+          "publicReleaseReady": false,
+          "publicHardGate": null,
+          "perpetualBuildupActive": false,
+          "testerTickets": {
+            "openBlocking": [
+              "bug-55c89f1f0ada19db03eb",
+              "bug-2bf05d127fa34aa81a46"
+            ]
+          },
+          "publication": {
+            "explicitPublicEvidence": false,
+            "publicReleased": false
+          },
+          "distribution": {
+            "intendedTrack": "INTERNAL_OR_CLOSED_APP_TEST",
+            "productionTrackAllowed": false,
+            "credentialsRequiredForStoreUpload": true
+          },
+          "rebuildRequired": false
+        }
+      ],
+      "publicReleaseReady": false,
+      "publicReleased": false,
+      "anyPlatformPublicReleased": false,
+      "externalPublicReleaseState": "INTERNAL_ONLY"
+    },
+    {
+      "gameId": "star-frontier",
+      "gameName": "별길 개척자",
+      "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
+      "homepageVisibility": "INTERNAL_COMPANY_HOME_FULL_DETAIL_ALLOWED",
+      "suitability": {
+        "gameId": "star-frontier",
+        "gameName": "별길 개척자",
+        "executionMode": "ROBLOX_UNITY_CONCURRENT",
+        "suitabilityPurpose": "DISPLAY_AND_WORK_DIRECTION_ONLY",
+        "ROBLOX": {
+          "score": 77,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 85,
+            "development": 83,
+            "graphics": 68,
+            "audio": 70,
+            "qa": 77,
+            "balance": 78,
+            "growthMarketing": 77
+          },
+          "adaptationProfile": "SOCIAL_FAST_SESSION",
+          "direction": [
+            "FAST_ENTRY",
+            "MOBILE_FIRST",
+            "SOCIAL_AND_MULTIPLAYER",
+            "SHORT_REPEATABLE_GOALS",
+            "SERVER_AUTHORITATIVE_SYNC",
+            "ROBLOX_NATIVE_SERVICES"
+          ]
+        },
+        "UNITY": {
+          "score": 78,
+          "label": "MEDIUM",
+          "departments": {
+            "planning": 80,
+            "development": 70,
+            "graphics": 87,
+            "audio": 84,
+            "qa": 72,
+            "balance": 80,
+            "growthMarketing": 75
+          },
+          "adaptationProfile": "DEEP_IMMERSIVE_SESSION",
+          "direction": [
+            "DEEP_SYSTEM_PRESENTATION",
+            "RICHER_VISUALS",
+            "CAMERA_AND_CINEMATIC_LANGUAGE",
+            "LONGER_SESSION_SUPPORT",
+            "DETAILED_CONTROLS",
+            "PERFORMANCE_SCALING",
+            "IMMERSIVE_AUDIO"
+          ]
+        },
+        "signals": {
+          "genre": "Puzzle",
           "playMode": "COOP",
           "multiplayer": true,
           "deepSystemGenre": true,
