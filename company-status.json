@@ -303,7 +303,7 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 28,
+        "developmentConfirmed": 30,
         "designOnly": 5
       },
       "releaseConfirmedGameIds": [],
@@ -323,8 +323,10 @@
         "RUNTIME-fantasy-survival",
         "RUNTIME-gem-survivor",
         "RUNTIME-horror-escape-room",
+        "RUNTIME-human-go-temp",
         "RUNTIME-kingshot-ad",
         "RUNTIME-line-defense",
+        "RUNTIME-party-rpg",
         "RUNTIME-realistic-builder",
         "RUNTIME-seed-casual-realm-weaver",
         "RUNTIME-seed-puzzle-chromatic-cascade",
@@ -368,6 +370,8 @@
           "RUNTIME-zombie-survival",
           "RUNTIME-horror-escape-room",
           "RUNTIME-core-clash-4v4",
+          "RUNTIME-human-go-temp",
+          "RUNTIME-party-rpg",
           "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
           "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
           "RUNTIME-seed-roblox-survival-horror-es-doors",
@@ -387,11 +391,11 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 33,
+        "count": 35,
         "activeDevelopmentWipMax": null,
         "capacityOnly": true,
         "noArtificialGlobalGameCountCap": true,
-        "deficit": 27
+        "deficit": 25
       },
       "ranking": [
         {
@@ -682,8 +686,8 @@
         {
           "rank": 20,
           "rawEvidenceRank": 20,
-          "gameId": "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
-          "slug": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+          "gameId": "RUNTIME-human-go-temp",
+          "slug": "human-go-temp",
           "lifecycleState": "ACTIVE",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "RPG",
@@ -697,6 +701,36 @@
         {
           "rank": 21,
           "rawEvidenceRank": 21,
+          "gameId": "RUNTIME-party-rpg",
+          "slug": "party-rpg",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "RPG",
+          "evidenceScore": 6,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "sourceReady": true
+        },
+        {
+          "rank": 22,
+          "rawEvidenceRank": 22,
+          "gameId": "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
+          "slug": "seed-roblox-roleplay-life-avat-brookhaven-rp",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "RPG",
+          "evidenceScore": 6,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": true,
+          "sourceReady": true
+        },
+        {
+          "rank": 23,
+          "rawEvidenceRank": 23,
           "gameId": "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
           "slug": "seed-roblox-simulator-tycoon-i-adopt-me",
           "lifecycleState": "ACTIVE",
@@ -710,8 +744,8 @@
           "sourceReady": true
         },
         {
-          "rank": 22,
-          "rawEvidenceRank": 22,
+          "rank": 24,
+          "rawEvidenceRank": 24,
           "gameId": "RUNTIME-seed-roblox-survival-horror-es-doors",
           "slug": "seed-roblox-survival-horror-es-doors",
           "lifecycleState": "ACTIVE",
@@ -725,8 +759,8 @@
           "sourceReady": true
         },
         {
-          "rank": 23,
-          "rawEvidenceRank": 23,
+          "rank": 25,
+          "rawEvidenceRank": 25,
           "gameId": "RUNTIME-cat-step",
           "slug": "cat-step",
           "lifecycleState": "ACTIVE",
@@ -740,8 +774,8 @@
           "sourceReady": true
         },
         {
-          "rank": 24,
-          "rawEvidenceRank": 24,
+          "rank": 26,
+          "rawEvidenceRank": 26,
           "gameId": "RUNTIME-defense",
           "slug": "defense",
           "lifecycleState": "ACTIVE",
@@ -755,8 +789,8 @@
           "sourceReady": true
         },
         {
-          "rank": 25,
-          "rawEvidenceRank": 25,
+          "rank": 27,
+          "rawEvidenceRank": 27,
           "gameId": "RUNTIME-dice-battle-board",
           "slug": "dice-battle-board",
           "lifecycleState": "ACTIVE",
@@ -770,8 +804,8 @@
           "sourceReady": true
         },
         {
-          "rank": 26,
-          "rawEvidenceRank": 26,
+          "rank": 28,
+          "rawEvidenceRank": 28,
           "gameId": "RUNTIME-fantasy-survival",
           "slug": "fantasy-survival",
           "lifecycleState": "ACTIVE",
@@ -785,8 +819,8 @@
           "sourceReady": true
         },
         {
-          "rank": 27,
-          "rawEvidenceRank": 27,
+          "rank": 29,
+          "rawEvidenceRank": 29,
           "gameId": "RUNTIME-gem-survivor",
           "slug": "gem-survivor",
           "lifecycleState": "ACTIVE",
@@ -800,8 +834,8 @@
           "sourceReady": true
         },
         {
-          "rank": 28,
-          "rawEvidenceRank": 28,
+          "rank": 30,
+          "rawEvidenceRank": 30,
           "gameId": "RUNTIME-kingshot-ad",
           "slug": "kingshot-ad",
           "lifecycleState": "ACTIVE",
@@ -815,8 +849,8 @@
           "sourceReady": true
         },
         {
-          "rank": 29,
-          "rawEvidenceRank": 29,
+          "rank": 31,
+          "rawEvidenceRank": 31,
           "gameId": "RUNTIME-line-defense",
           "slug": "line-defense",
           "lifecycleState": "ACTIVE",
@@ -830,8 +864,8 @@
           "sourceReady": true
         },
         {
-          "rank": 30,
-          "rawEvidenceRank": 30,
+          "rank": 32,
+          "rawEvidenceRank": 32,
           "gameId": "RUNTIME-realistic-builder",
           "slug": "realistic-builder",
           "lifecycleState": "ACTIVE",
@@ -845,8 +879,8 @@
           "sourceReady": true
         },
         {
-          "rank": 31,
-          "rawEvidenceRank": 31,
+          "rank": 33,
+          "rawEvidenceRank": 33,
           "gameId": "RUNTIME-simple-rpg",
           "slug": "simple-rpg",
           "lifecycleState": "ACTIVE",
@@ -860,8 +894,8 @@
           "sourceReady": true
         },
         {
-          "rank": 32,
-          "rawEvidenceRank": 32,
+          "rank": 34,
+          "rawEvidenceRank": 34,
           "gameId": "RUNTIME-tower-choice-rpg",
           "slug": "tower-choice-rpg",
           "lifecycleState": "ACTIVE",
@@ -875,8 +909,8 @@
           "sourceReady": true
         },
         {
-          "rank": 33,
-          "rawEvidenceRank": 33,
+          "rank": 35,
+          "rawEvidenceRank": 35,
           "gameId": "RUNTIME-zombie-survival",
           "slug": "zombie-survival",
           "lifecycleState": "ACTIVE",
