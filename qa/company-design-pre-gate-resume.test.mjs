@@ -204,7 +204,8 @@ test('design target selection never waits for three other games to validate the 
     };
     runInNewContext(source,{
       fs:{readFileSync:file=>{if(file.startsWith('tools/'))return 'current engine';if(file in files)return JSON.stringify(files[file]);throw new Error('missing '+file);},existsSync:()=>false},
-      path,createHash,process:{env:{}},console:{log:line=>output.push(line),error:()=>{}}
+      path,createHash,execFileSync:()=>'',process:{env:{COMPANY_RUNTIME_BRANCH:'company-runtime'}},
+      console:{log:line=>output.push(line),error:()=>{}}
     });
     const targets=JSON.parse(output.find(line=>line.startsWith('targets=')).slice('targets='.length));
     assert.equal(targets.length,limit||6,'missing engine canary must not hide independent pending games');
@@ -1311,4 +1312,52 @@ test('A and B keep every shared state key in both directions',()=>{
   assert.deepEqual(Array.from(edges.find(row=>row.fromId==='A'&&row.toId==='B').stateKeys),['risk','resource']);
   assert.deepEqual(Array.from(edges.find(row=>row.fromId==='B'&&row.toId==='A').stateKeys),['route']);
   assert.match(edges.find(row=>row.fromId==='A'&&row.toId==='B').stateChange,/취소·조건 미충족이면 출력과 후속 선택을 보존/);
+});
+
+test('design resolver reads only indexed strict evidence, never the entire runtime design tree',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const overlay=workflow.slice(workflow.indexOf('- name: Load latest company runtime state'),workflow.indexOf('- name: Synchronize active owner design reset seeds'));
+  assert.match(overlay,/COMPANY_RUNTIME_DESIGN_EVIDENCE=LAZY_READ_ONLY/);
+  assert.doesNotMatch(overlay,/git checkout "origin\/\$COMPANY_RUNTIME_BRANCH" -- "\$runtime_path"/);
+  assert.doesNotMatch(overlay,/game-seed-state\.json design; do/);
+  const section=workflow.slice(workflow.indexOf('- name: Resolve central-policy active incomplete GAME_SEED targets'));
+  const source=section.slice(section.indexOf('import fs'),section.indexOf('\n          NODE')).replace(/^\s*import .*;\s*$/gm,'');
+  const now=new Date().toISOString();
+  const root='design/ready/2026-10-12/';
+  const exactEvidence={
+    [root+'cycle-status.json']:{baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}},
+    [root+'strict-design-review.json']:{reviewedAt:now,verdict:'PASS',totalScore:92,hardFailures:[]},
+    [root+'design-revised.json']:{content:{identity:'ready',creativeGrammar:{}}},
+    [root+'design-checkpoint.json']:{status:'COMPLETE'},
+  };
+  const tree=[...Object.keys(exactEvidence),root+'core-artbook.json','design/pending/2026-10-12/GAME_DESIGN.md'].join('\n');
+  const reads=[],output=[];
+  const files={
+    'company-learning/platform-release-roadmap.json':{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:null,externalMatrixBatchMax:256,internalArtificialConcurrencyCapsForbidden:true}},
+    'company-directive.json':{},
+    'game-seed-state.json':{seeds:[
+      {gameId:'ready',seedId:'seed-ready',status:'ACTIVE',createdAt:'2026-10-12'},
+      {gameId:'pending',seedId:'seed-pending',status:'ACTIVE',createdAt:'2026-10-12'},
+    ]},
+    'owner-design-reset-queue.json':{requests:[]},
+  };
+  runInNewContext(source,{
+    fs:{readFileSync:file=>{if(file.startsWith('tools/'))return 'unchanged engine';if(file in files)return JSON.stringify(files[file]);throw new Error('unexpected local read '+file);}},
+    path,createHash,evaluateMinimumDesignContract:()=>({pass:true}),
+    execFileSync:(program,args)=>{
+      assert.equal(program,'git');
+      if(args[0]==='ls-tree')return tree;
+      assert.equal(args[0],'show');
+      const name=args[1].split(':').slice(1).join(':');
+      reads.push(name);
+      if(!Object.hasOwn(exactEvidence,name))throw new Error('unexpected design blob '+name);
+      return JSON.stringify(exactEvidence[name]);
+    },
+    process:{env:{COMPANY_RUNTIME_BRANCH:'company-runtime'}},
+    console:{log:line=>output.push(line),error:()=>{}},
+  });
+  const targets=JSON.parse(output.find(line=>line.startsWith('targets=')).slice('targets='.length));
+  assert.deepEqual(targets.map(t=>t.game_id),['pending']);
+  assert.deepEqual(new Set(reads),new Set([root+'cycle-status.json',root+'strict-design-review.json',root+'design-revised.json']));
+  assert.equal(reads.length,3,'each needed blob is read once, checkpoint and artbook are not fetched');
 });
