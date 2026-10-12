@@ -1336,6 +1336,11 @@ test('current static source failure goes to existing Vibe repair and rejects sta
     const rows=evaluateExistingRobloxSources({queue:{items:[{...staleItem(),robloxSourceCommit:revision}]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
     assert.equal(rows[0].pass,false);
     assert.equal(rows[0].sourceContractRepairRequired,true);
+    const failedTechnicalItem={...staleItem(),currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',robloxSourceCommit:revision,
+      robloxBuildOrPackagePassed:false,robloxFailureSignature:'existing-source-static-revalidation-failed'};
+    const sameTree=evaluateExistingRobloxSources({queue:{items:[failedTechnicalItem]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(sameTree[0].sourceContractRepairRequired,true,'unchanged source must not hide an unresolved failed contract');
+
     const evidence=rows[0].sourceContractRepairEvidence;
     assert.equal(evidence.authority,'roblox-source-static-contract-failure');
     assert.ok(evidence.staticContract.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));

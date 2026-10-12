@@ -353,14 +353,17 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
       results.push(studioRefreshResult);
       continue;
     }
+    // A prior failed contract/package is unresolved even when the game bytes did not change.
+    const sourceContractRecheck=!sourceBind&&item.robloxBuildOrPackagePassed!==true
+      &&/existing-source-static-revalidation-failed|existing-source-studio-asset-binding-required|roblox-build-package-failed/i.test(clean(item.robloxFailureSignature));
     const boundRevision=clean(item.robloxSourceCommit);
     if(sha40(boundRevision)&&sha40(currentRevision)){
       if(boundRevision===currentRevision){
-        if(!sourceBind)continue;
+        if(!sourceBind&&!sourceContractRecheck)continue;
       }else{
         try{
           execFileSync('git',['diff','--quiet',boundRevision,currentRevision,'--',`${sourcePath}/default.project.json`,`${sourcePath}/shared`,`${sourcePath}/server`,`${sourcePath}/client`],{cwd:repoRoot,stdio:'ignore'});
-          if(!sourceBind)continue;
+          if(!sourceBind&&!sourceContractRecheck)continue;
           const exactBuildReusable=item.robloxBuildOrPackagePassed===true
             &&item.robloxBuildSourceRevision===boundRevision
             &&/^sha256:[0-9a-f]{64}$/i.test(clean(item.robloxBuildArtifactIdentity));

@@ -27,6 +27,15 @@
         "applied": true,
         "runtimeVerified": false,
         "libraryVersion": 139
+      },
+      "correctedReconciliation": {
+        "pass": false,
+        "failure": "existing-source-static-revalidation-failed",
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED"
+        ],
+        "sourceTreeSha": "6260b2c433ae7ab99e53877eee18f75ec945d197",
+        "sourceContractRepairRequired": true
       }
     },
     {
@@ -56,6 +65,20 @@
         "applied": true,
         "runtimeVerified": false,
         "libraryVersion": 139
+      },
+      "correctedReconciliation": {
+        "pass": false,
+        "failure": "existing-source-static-revalidation-failed",
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED",
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        ],
+        "sourceTreeSha": "c63f65b3a6e032ad0eecc584263b110855c7c5bb",
+        "sourceContractRepairRequired": true
       }
     },
     {
@@ -85,6 +108,20 @@
         "applied": true,
         "runtimeVerified": false,
         "libraryVersion": 139
+      },
+      "correctedReconciliation": {
+        "pass": false,
+        "failure": "existing-source-static-revalidation-failed",
+        "blockers": [
+          "CONFIG_GENRE_PROFILE_REQUIRED",
+          "CONFIG_PLAY_MODE_PROFILE_REQUIRED",
+          "CONFIG_MULTIPLAYER_PROFILE_REQUIRED",
+          "SERVER_MULTIPLAYER_BROADCAST_REQUIRED",
+          "SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+          "CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        ],
+        "sourceTreeSha": "4b050b5c05da8dffea3d968d18d8b47e49a6964d",
+        "sourceContractRepairRequired": true
       }
     }
   ],
@@ -108,7 +145,7 @@
     }
   ],
   "duplicateExecutionDispatched": false,
-  "finding": "Existing-source asset refresh unconditionally reported sourceValidationPassed=true and PR Static source contract: PASS without validating current source against current design. Report actual verdict without rewriting game rules or weakening package gates.",
+  "finding": "Existing-source refresh reported static PASS without validation. Unchanged game bytes then concealed an unresolved static/package failure. Corrected existing reconciliation emits exact source/design/validator-bound repair evidence and existing Vibe planner/compact worker receives causal source repairs; actual game repair/runtime/deployment remains unverified.",
   "preservation": {
     "gameSourceChanged": false,
     "balanceChanged": false,
@@ -122,5 +159,7 @@
     "Actual multiplayer/play/image QA",
     "Independent QA/regression/F9/private deployment"
   ],
-  "releaseClaim": false
+  "releaseClaim": false,
+  "repairRoutingVerifiedLocally": true,
+  "repairRoutingAppliedOnMain": false
 }
