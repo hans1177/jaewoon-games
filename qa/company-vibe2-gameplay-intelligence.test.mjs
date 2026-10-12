@@ -44,6 +44,7 @@ test('companion play participation and stable bot names stay scoped to approved 
   const text=JSON.stringify(plan.tasks);
   assert.match(text,/IMPLEMENT_AI_PARTICIPANT_PLAY_LOOP/);
   assert.match(text,/IMPLEMENT_STABLE_AI_PARTICIPANT_NICKNAMES/);
+  assert.match(text,/IMPLEMENT_AI_PARTICIPANT_BRIEF_SPEECH/);
   assert.match(text,/never Roblox UserIds/);
   assert.match(text,/cannot count as real humans/);
   assert.match(text,/real seeded native terrain/);
