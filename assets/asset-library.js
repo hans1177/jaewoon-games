@@ -18,7 +18,11 @@ let viewer=null,viewerPromise=null,refreshing=false,paused=matchMedia('(prefers-
 const cache=new Map();
 const localImage=value=>typeof value==='string'&&/^\/(assets|web-games)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg|avif)$/i.test(value)&&!value.split('/').includes('..')?value:'';
 const validSamplePath=value=>typeof value==='string'&&/^\/assets\/roblox\/world-ghosts\/native\/gallery\/(monster|environment)-[a-z0-9-]+\.json$/.test(value);
-const nativeGLB=value=>typeof value==='string'&&/^\/assets\/shared\/[a-z0-9-]+\.glb$/.test(value)?value:'';
+const nativeGLB=value=>{
+ if(typeof value!=='string')return '';
+ const uri='/'+value.replace(/^\/+/, '');
+ return /^\/assets\/(?:shared\/[a-z0-9-]+|roblox\/actors\/native\/[a-z0-9-]+(?:\/master)?)\.glb$/i.test(uri)?uri:'';
+};
 let nativeClip='';
 function nativeClipName(name){
  const key=String(name).toLowerCase();
@@ -259,17 +263,28 @@ async function refresh(force=false){
   const nextRegistrySignature=nextRegistry===registry?registryViewSignature:registrySignature(nextRegistry);
   const changed=!manifest||manifest.sourceFingerprint!==nextManifest.sourceFingerprint||registryViewSignature!==nextRegistrySignature;
   manifest=nextManifest;registry=nextRegistry;registryViewSignature=nextRegistrySignature;syncFeaturedButtons();
-  // 공용 외부 모델은 실제 게임 자산이 아니라 출처·라이선스 검증 후보로 분리해 표시한다.
-  const meshySources=Array.isArray(registry.externalSources)?registry.externalSources.filter(source=>source.source==='Meshy Community'&&source.license==='CC0-1.0'):[];
-  $('meshySourceCount').textContent=meshySources.length.toLocaleString('ko-KR');
-  const meshyList=$('meshySourceList');meshyList.replaceChildren();
-  for(const source of meshySources){
-   if(typeof source.sourceUrl!=='string'||!/^https:\/\/www\.meshy\.ai\/3d-models\/[A-Za-z0-9-]+$/.test(source.sourceUrl))continue;
+  // [외부 에셋] 로블록스 대상의 출처 검증 후보를 기존 등록부에서 노출한다.
+  // 실제 파일 확보 여부와 네이티브 실행 검증은 별도 상태로 표시하며 승격하지 않는다.
+  const robloxSources=Array.isArray(registry.externalSources)?registry.externalSources.filter(source=>
+   source.status==='LICENSE_VERIFIED_EXTERNAL_CANDIDATE'
+   &&Array.isArray(source.platformTargets)&&source.platformTargets.includes('ROBLOX')
+   &&typeof source.sourceUrl==='string'&&/^https:\/\/[A-Za-z0-9.-]+(?:\/|$)/.test(source.sourceUrl)
+   &&Boolean(source.license)&&!/UNKNOWN|NON.?COMMERCIAL|(?:^|-)NC(?:-|$)/i.test(source.license)
+  ):[];
+  robloxSources.sort((a,b)=>Number(b.acquisitionState==='ACQUIRED_ORIGINAL_FILES')-Number(a.acquisitionState==='ACQUIRED_ORIGINAL_FILES')
+   ||String(a.name||a.id).localeCompare(String(b.name||b.id),'ko'));
+  $('externalSourceCount').textContent=robloxSources.length.toLocaleString('ko-KR');
+  const sourceList=$('externalSourceList');sourceList.replaceChildren();
+  for(const source of robloxSources){
    const link=document.createElement('a');link.href=source.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';
    const name=document.createElement('strong');name.textContent=source.name||source.id;
    const category=document.createElement('small');
-   category.textContent=[categoryLabels[source.category]||source.category,'CC0 출처 확인',source.assetBinaryAcquired?'원본 확보':'원본 미확보','재질 수정만'].filter(Boolean).join(' · ');
-   link.append(name,category);meshyList.append(link);
+   const families=[source.category,...(Array.isArray(source.categories)?source.categories:[])].filter(Boolean);
+   const acquired=source.acquisitionState==='ACQUIRED_ORIGINAL_FILES';
+   category.textContent=[families.map(family=>categoryLabels[family]||family).join('·'),source.license,
+    acquired?'원본 확보':'외부 후보',acquired&&source.modelCount?source.modelCount+'종':'',
+    source.productionVerified===true?'실행 검증':'로블록스 실행 미검증'].filter(Boolean).join(' · ');
+   link.append(name,category);sourceList.append(link);
   }
   $('assetCount').textContent=registry.assets.length.toLocaleString('ko-KR');
   // 등록 경로 수는 파일 존재 또는 실제 제작 검증 수와 같지 않다.
