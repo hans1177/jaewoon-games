@@ -21,7 +21,7 @@ test('유니티 웹 중지 시 게임별 탐색을 하지 않고 네이티브 �
   // 이전 배포가 웹 노출 활성화를 담고 있어도 프런트엔드에서 웹 링크를 만들지 않아야 한다.
   api.setExposure({unityWebEnabled:true,games:[]});
   const game={id:'native-only',lifecycleState:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
-    canonical:{identity:{gameId:'native-only'},production:{class:'DEVELOPMENT_CONFIRMED'},sources:{unity:{projectPath:'unity-games/native-only'}}}};
+    canonical:{identity:{gameId:'native-only'},production:{class:'DEVELOPMENT_CONFIRMED'},sources:{web:{path:'web-games/native-only',playable:false,archive:true},unity:{projectPath:'unity-games/native-only'}}}};
   assert.equal(api.developmentRows({games:[game]},{}).length,1);
   assert.equal(api.internalReleaseRows({games:[game]},{}).length,0);
   assert.equal(api.hasRunnableHomepageTarget(game),false);
