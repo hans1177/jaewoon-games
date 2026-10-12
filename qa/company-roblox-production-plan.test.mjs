@@ -10,6 +10,25 @@ import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/compan
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
 
+test('simple genre menus and creature identity reach owned presentation workers without inventing repair gameplay',()=>{
+  const args={gameId:'demo',platform:'ROBLOX',policy,responsibleFiles:['roblox-games/demo/client/Main.client.luau','roblox-games/demo/server/Main.server.luau'],design:{genre:'SURVIVAL',identity:'existing survival'},focus:'USABILITY'};
+  const plan=buildRobloxProductionPlan(args);
+  assert.deepEqual(plan.simpleMenuDirection.candidates,['가방','제작','지도']);
+  assert.equal(plan.simpleMenuDirection.candidateAuthority,'EXISTING_HANDLER_MATCH_ONLY');
+  assert.equal(plan.creatureIdentityDirection.runtimeVerified,false);
+  assert.match(plan.creatureIdentityDirection.behavior,/cannot add behavior or alter hitboxes/);
+  const client=robloxProductionPromptLines(plan,{responsibleFiles:['client/Main.client.luau']}).join('\n');
+  assert.match(client,/SIMPLE_MENU=/);assert.match(client,/CREATURE_IDENTITY=/);
+  const server=robloxProductionPromptLines(plan,{responsibleFiles:['server/Main.server.luau']}).join('\n');
+  assert.doesNotMatch(server,/SIMPLE_MENU=|CREATURE_IDENTITY=/);
+  const repair=buildRobloxProductionPlan({...args,focus:'STABILITY'});
+  assert.equal(repair.simpleMenuDirection,null);assert.equal(repair.creatureIdentityDirection,null);
+  const unknown=buildRobloxProductionPlan({...args,design:{genre:'UNLISTED',identity:'approved game'}});
+  assert.deepEqual(unknown.simpleMenuDirection.candidates,[]);
+  const puzzle=buildRobloxProductionPlan({...args,design:{genre:'PUZZLE',identity:'approved puzzle'}});
+  assert.deepEqual(puzzle.simpleMenuDirection.candidates,['되돌리기','재시작','목표']);
+});
+
 function spatialFixture(dimension='2D'){
   const source='const world = {scale: 1};';
   const binding={path:'scene.js',symbol:'world',sourceEvidence:source};
