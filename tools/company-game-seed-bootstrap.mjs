@@ -710,6 +710,60 @@ export function computeVibeSeedProposal(target){
     INFECTION:{genre:'감염 추격',a:'진영 전환과 추격 경로',b:'정화와 팀 대응',choiceA:'상대 진영과 이동 경로를 읽고 감염 또는 회피의 시점과 대상을 선택',choiceB:'바뀐 인원과 역할을 읽고 정화·지원·반격의 우선순위를 선택',playerRole:'감염 추격전 참가자'},
     KINGDOM:{genre:'왕국 경영',a:'채집과 주민 자동화',b:'병력 편성과 거점 정복',choiceA:'자원 부족과 주민 역할을 비교해 직접 채집과 자동화 투자의 순서를 선택',choiceB:'확보한 자원과 병력의 조건으로 다음 거점·지원·귀환 경로를 선택',playerRole:'작은 왕국의 운영자'},
     DEFENSE:{genre:'전략',a:'방어 시설 배치',b:'적 패턴과 자원 대응',choiceA:'접근 경로와 적의 사거리 사이에서 배치 위치를 선택',choiceB:'웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정',playerRole:'방어 지휘관'},
+    CASUAL_TOUCH:{genre:"캐주얼",a:"짧은 입력과 점수 획득",b:"보너스 선택과 빠른 재시도",choiceA:"화면의 대상과 타이밍을 고르고 입력 결과를 확인",choiceB:"획득한 점수와 위험에 따라 다음 도전 목표를 선택",playerRole:"도전자"},
+    ACTION:{genre:"액션",a:"움직임과 공격 타이밍",b:"회피와 적 행동 대응",choiceA:"공격 범위와 적 전조를 읽어 행동을 입력",choiceB:"이전 공격 결과에 맞춰 회피 위치와 다음 대응을 선택",playerRole:"액션 플레이어"},
+    ACTION_RPG:{genre:"액션 RPG",a:"능력 조합과 실시간 전투",b:"장비 성장과 퀘스트 분기",choiceA:"공격 기술과 이동을 조합해 교전 방식을 선택",choiceB:"획득한 기술과 장비로 다음 의뢰 및 전투 방식을 조정",playerRole:"모험가"},
+    TACTICAL_RPG:{genre:"전술 RPG",a:"동료 배치와 행동 순서",b:"지형과 적 대응 전술",choiceA:"부대의 위치와 턴 행동의 순서를 결정",choiceB:"이전 턴의 피해와 지형 변화를 읽고 역할 분담을 변경",playerRole:"전술 지휘관"},
+    MMORPG:{genre:"다중접속 RPG",a:"파티 역할과 공동 전투",b:"거래와 장기 성장 경로",choiceA:"동료의 역할과 공동 목표를 확인해 협동 행동을 선택",choiceB:"파티 획득 보상과 장비·교환 조건으로 다음 지역을 선택",playerRole:"파티 모험가"},
+    ADVENTURE:{genre:"어드벤처",a:"지역 조사와 이야기 목표",b:"선택 결과와 새로운 길",choiceA:"현재 지역의 단서를 확인하고 조사할 장소를 결정",choiceB:"획득한 증거에 따라 사건 접근 순서와 다음 장소를 선택",playerRole:"탐험가"},
+    ACTION_ADVENTURE:{genre:"액션 어드벤처",a:"탐험 경로와 실시간 행동",b:"환경 장치와 위험 대응",choiceA:"이동 경로와 사용할 행동 기술의 순서를 고름",choiceB:"이전 상호작용이 바꾼 지형 조건을 활용해 다음 장치를 선택",playerRole:"모험가"},
+    EXPLORATION:{genre:"탐험",a:"미지 공간과 지도 정보 수집",b:"지형 발견과 위험 경로 계획",choiceA:"새 지역에서 지도 단서와 접근 가능 통로를 조사",choiceB:"발견한 지형과 위험 정보를 반영해 귀환과 탐험 경로를 결정",playerRole:"탐사자"},
+    OPEN_WORLD:{genre:"오픈월드",a:"자유 목적지와 환경 사건 선택",b:"지역 변화와 평판 반응",choiceA:"여러 월드 목표 중 방문할 장소와 행동을 스스로 선택",choiceB:"완료한 목표가 바꾼 지역 관계에 맞춰 다음 활동을 결정",playerRole:"여행자"},
+    SHOOTER:{genre:"슈팅",a:"조준과 탄약 운용",b:"엄폐와 상대 위치 변화",choiceA:"목표의 움직임을 읽고 사격 위치와 시점을 선택",choiceB:"발사 결과와 남은 탄약에 따라 엄폐와 다음 표적을 변경",playerRole:"사수"},
+    FPS:{genre:"일인칭 슈팅",a:"시야와 조준 정밀도",b:"장비 선택과 전술 이동",choiceA:"일인칭 시야에서 위협 위치와 사격 타이밍을 결정",choiceB:"적 반응과 사격 결과에 맞춰 무기와 경로를 조정",playerRole:"전투원"},
+    BATTLE_ROYALE:{genre:"배틀로얄",a:"안전 구역과 수집 경로",b:"상대 교전과 생존 판단",choiceA:"줄어드는 안전 지대와 획득 장비를 보고 이동 경로를 결정",choiceB:"다른 참가자의 위치와 장비 차이를 읽고 교전 또는 회피 선택",playerRole:"생존 참가자"},
+    FIGHTING:{genre:"격투",a:"거리 조절과 기술 연계",b:"방어 판정과 반격",choiceA:"상대 거리와 빈틈을 읽고 기본기와 연계를 선택",choiceB:"막기와 회피 결과에 따라 반격 타이밍과 다음 기술을 결정",playerRole:"격투가"},
+    BEAT_EM_UP:{genre:"난투 액션",a:"다수 적 상대 위치 선정",b:"공격 범위와 군중 대응",choiceA:"주변 적의 분포와 이동 경로를 읽고 공격 방향을 선택",choiceB:"적의 밀집과 공격 전조에 따라 회피와 제압 순서를 변경",playerRole:"전투가"},
+    SPORTS:{genre:"스포츠",a:"플레이 선택과 공간 점유",b:"팀 전술과 점수 대응",choiceA:"공 또는 목표물의 위치를 읽고 패스·이동·공격을 선택",choiceB:"점수와 상대 진형 변화에 따라 선수 위치와 전술을 수정",playerRole:"선수"},
+    SOCCER:{genre:"축구",a:"패스 경로와 슈팅 기회",b:"상대 수비와 포지션 변경",choiceA:"동료의 공간과 상대 수비를 읽고 패스 또는 드리블을 선택",choiceB:"공격 결과에 맞춰 압박과 수비 라인을 조정",playerRole:"축구 선수"},
+    BASKETBALL:{genre:"농구",a:"드리블과 득점 위치 선택",b:"스크린과 수비 전환",choiceA:"코트의 빈 공간을 찾고 돌파·패스·슛 중 하나를 선택",choiceB:"이전 공격 결과를 보고 수비 위치와 다음 공격 전개를 조정",playerRole:"농구 선수"},
+    RHYTHM:{genre:"리듬",a:"박자 입력과 콤보 유지",b:"패턴 예측과 난이도 조절",choiceA:"음악 신호에 맞춰 노트의 입력 위치와 타이밍을 선택",choiceB:"판정 결과에 따라 연속 입력 방식과 다음 구간 전략을 변경",playerRole:"연주자"},
+    MUSIC:{genre:"음악",a:"악기 연주와 소리 조합",b:"리듬 변화와 연주 목표",choiceA:"악기의 음정과 리듬 순서를 선택해 연주를 구성",choiceB:"청중 또는 합주 결과를 보고 다음 구간의 소리와 구성을 수정",playerRole:"연주자"},
+    STEALTH:{genre:"잠입",a:"시야와 소음 회피",b:"경비 경로와 은폐 선택",choiceA:"경비 시야와 움직임을 읽고 진입 타이밍과 은폐 장소를 선택",choiceB:"들킨 흔적과 경비 반응을 보고 우회·대기·장치 사용을 결정",playerRole:"잠입자"},
+    SIMULATION:{genre:"시뮬레이션",a:"실제 동작과 환경 상태 조작",b:"결과 관찰과 절차 수정",choiceA:"장치 또는 대상의 현재 상태를 읽고 조작 순서를 선택",choiceB:"시뮬레이션 결과를 분석해 설정과 다음 실험을 조정",playerRole:"운영자"},
+    LIFE_SIM:{genre:"생활 시뮬레이션",a:"일상 활동과 시간 배분",b:"관계와 주거 변화",choiceA:"일과 중 방문할 장소와 상호작용 대상을 선택",choiceB:"활동 성과와 관계 변화를 바탕으로 다음 일정을 재구성",playerRole:"주민"},
+    ROLEPLAY:{genre:"역할놀이",a:"아바타 역할과 사회 활동",b:"관계와 상황극 선택",choiceA:"자신의 역할과 다른 플레이어와의 상호작용을 결정",choiceB:"대화와 행동으로 바뀐 관계에 맞춰 다음 활동을 선택",playerRole:"역할 연기자"},
+    FARMING:{genre:"농장 경영",a:"작물 재배와 수확 계획",b:"토지와 판매 전략",choiceA:"토양과 계절 조건을 읽고 재배할 작물과 경작 구역을 선택",choiceB:"수확 결과와 주문 수요에 맞춰 판매·저장·다음 파종을 변경",playerRole:"농장주"},
+    CRAFTING:{genre:"제작",a:"재료 조합과 작업 순서",b:"도구 사용과 제작 효율",choiceA:"보유 재료를 확인하고 만들 물건과 제작 순서를 선택",choiceB:"완성한 도구의 성능과 사용처를 보고 다음 제작 목표를 결정",playerRole:"제작자"},
+    SANDBOX:{genre:"샌드박스",a:"자유 건축과 물리 조작",b:"창작물 상호작용과 재구성",choiceA:"월드의 재료와 배치 규칙을 이용해 건축 구조를 선택",choiceB:"구조물의 실제 반응을 관찰해 연결 방식과 다음 목표를 변경",playerRole:"창작자"},
+    CITY_BUILDER:{genre:"도시 건설",a:"지역 배치와 도시 서비스",b:"시민 수요와 시설 균형",choiceA:"구역별 교통과 생활 수요를 보고 도로 및 시설 위치를 선택",choiceB:"수용 능력과 예산 변화를 확인해 다른 구역의 계획을 조정",playerRole:"도시 운영자"},
+    TOWER_DEFENSE:{genre:"타워 디펜스",a:"방어 유닛과 공격 경로 배치",b:"웨이브에 따른 업그레이드",choiceA:"적의 진입로와 사거리를 확인해 방어 시설을 선택",choiceB:"도착한 적의 특성과 보유 자원에 따라 강화·수리·교체를 결정",playerRole:"방어 지휘관"},
+    RTS:{genre:"실시간 전략",a:"실시간 자원 수급과 부대 통제",b:"정찰과 기습 방어",choiceA:"현재 전장을 보고 일꾼과 부대에 이동·생산 명령을 선택",choiceB:"적의 동선을 확인해 수비·공격·자원 전환 순서를 수정",playerRole:"전략 지휘관"},
+    TURN_BASED:{genre:"턴제 전략",a:"행동 순서와 턴 자원 배분",b:"적의 다음 행동 예측",choiceA:"턴당 행동 기회를 배분해 이동과 능력 사용을 선택",choiceB:"상대 턴의 결과에 따라 다음 턴의 위치와 우선 대상을 변경",playerRole:"전술 지휘관"},
+    AUTO_BATTLER:{genre:"자동 전투",a:"유닛 조합과 배치",b:"상성 대응과 장비 선택",choiceA:"전투 전 유닛 역할과 자리 배치를 결정",choiceB:"자동 전투 결과에 따라 유닛·시너지·장비 조합을 변경",playerRole:"편성 관리자"},
+    ROGUELIKE:{genre:"로그라이크",a:"무작위 경로와 위험 보상 선택",b:"획득 능력과 재도전 전략",choiceA:"진행 중 등장한 보상과 위험 중 선택지를 결정",choiceB:"실패로 학습한 패턴을 적용해 다음 진입 빌드와 경로를 바꿈",playerRole:"탐험가"},
+    METROIDVANIA:{genre:"탐험 플랫포머",a:"능력으로 여는 지형 경로",b:"이전 장소 재방문과 비밀 발견",choiceA:"현재 이동 능력으로 도달 가능한 지역의 통로를 탐색",choiceB:"새 능력 획득 후 과거 장소로 돌아가 다른 접근 경로를 찾음",playerRole:"탐험가"},
+    DETECTIVE:{genre:"추리",a:"증거 수집과 가설 조합",b:"증언 검증과 사건 해석",choiceA:"조사한 단서들을 연결해 확인할 가설을 선택",choiceB:"증언의 모순을 판정해 새로운 조사 대상과 해결 방향을 정함",playerRole:"탐정"},
+    VISUAL_NOVEL:{genre:"비주얼 노벨",a:"대화 선택과 인물 관계",b:"분기 사건과 정보 회수",choiceA:"대화 속 선택이 인물에게 주는 영향을 읽고 답변을 결정",choiceB:"바뀐 관계와 사건 정보를 활용해 다음 대화와 장면을 선택",playerRole:"주인공"},
+    PARTY:{genre:"파티",a:"짧은 미니게임 규칙 대응",b:"협력 경쟁과 라운드 전략",choiceA:"라운드 목표를 읽고 사용할 이동·상호작용을 선택",choiceB:"점수 결과와 다음 규칙에 맞춰 협력 또는 경쟁 방식을 변경",playerRole:"참가자"},
+    MINIGAME:{genre:"미니게임",a:"즉각적인 목표 달성과 입력",b:"시간 제한과 점수 경로",choiceA:"짧은 규칙에 맞춰 버튼·이동·상호작용의 타이밍을 선택",choiceB:"결과에 따라 다음 시도의 접근법과 목표 점수를 조정",playerRole:"참가자"},
+    BOARD:{genre:"보드 게임",a:"칸 이동과 차례별 선택",b:"상대의 다음 수와 전략 변화",choiceA:"주어진 차례에서 이동할 칸이나 사용할 행동을 선택",choiceB:"상대의 선택으로 바뀐 판 상황을 읽고 다음 차례를 계획",playerRole:"플레이어"},
+    ARCADE:{genre:"아케이드",a:"빠른 조작과 점수 수집",b:"난이도 변화와 실수 회복",choiceA:"접근하는 목표에 맞춰 이동과 입력 타이밍을 조정",choiceB:"연속 성공과 실패 결과를 확인해 다음 패턴 대응을 변경",playerRole:"도전자"},
+    COLLECTION:{genre:"수집",a:"수집 대상 탐색과 확보",b:"도감 완성과 교환 조합",choiceA:"희귀도와 위치 정보를 보고 수집할 대상을 결정",choiceB:"수집 진척과 중복 자원을 활용해 교환 또는 새로운 탐색을 선택",playerRole:"수집가"},
+    PET_SIM:{genre:"펫 시뮬레이션",a:"반려동물 돌보기와 성장",b:"훈련과 성격 상호작용",choiceA:"현재 상태를 읽고 돌봄·먹이·놀기 활동을 선택",choiceB:"친밀도와 행동 변화에 따라 훈련과 다음 모험을 조정",playerRole:"보호자"},
+    IDLE:{genre:"방치형",a:"자동 생산과 자원 소비 선택",b:"생산 라인과 성장 투자",choiceA:"수익률과 생산 대기를 비교해 강화할 시설을 선택",choiceB:"획득 자원을 새로운 단계와 자동화에 재투자",playerRole:"운영자"},
+    EDUCATIONAL:{genre:"교육",a:"문제 해결과 지식 적용",b:"피드백 분석과 학습 경로",choiceA:"현재 문제를 읽고 해결 절차와 정답 후보를 선택",choiceB:"오답의 이유를 확인해 다음 학습 과제와 연습 방법을 조정",playerRole:"학습자"},
+    VEHICLE_SIM:{genre:"운전 시뮬레이션",a:"차량 조작과 도로 판단",b:"노면과 안전 운행 계획",choiceA:"차량 속도와 도로 상태에 맞춰 조향·가속·제동을 선택",choiceB:"주행 결과와 목적지 조건에 따라 차량 운용을 수정",playerRole:"운전자"},
+    COOKING:{genre:"요리",a:"조리 단계와 재료 조합",b:"주문 시간과 주방 동선",choiceA:"레시피와 재료 상태에 맞춰 조리 순서를 선택",choiceB:"완성된 요리와 주문 피드백을 확인해 다음 조리 계획을 조정",playerRole:"요리사"},
+    SOCIAL_DEDUCTION:{genre:"사회적 추리",a:"증언과 거짓 정보 비교",b:"투표와 집단 신뢰 결정",choiceA:"참가자의 행동과 발언을 관찰해 의심 대상을 선택",choiceB:"공개된 증거와 투표 결과에 따라 다음 설득 전략을 변경",playerRole:"조사자"},
+    SURVIVAL_CRAFTING:{genre:"생존 제작",a:"자원 채집과 생존 경로",b:"장비 제작과 기지 위험 대응",choiceA:"체력·환경 위험과 자원 위치를 읽고 채집 지역을 선택",choiceB:"제작한 도구와 자원 상태에 따라 안전거점과 다음 탐색을 계획",playerRole:"생존자"},
+    HORROR_ESCAPE:{genre:"공포 탈출",a:"위협 회피와 탈출 단서 조사",b:"방 잠금과 협력 퍼즐",choiceA:"공간의 소리와 흔적을 통해 안전한 이동 및 단서 조사를 선택",choiceB:"발견한 열쇠·규칙과 위협 위치에 맞춰 탈출 경로를 바꿈",playerRole:"탈출자"},
+    OBBY_PARTY_MINIGAME:{genre:"장애물 파티",a:"장애물 이동과 짧은 라운드 목표",b:"반응 타이밍과 경쟁 보상 선택",choiceA:"발판 위험과 라운드 목표를 읽고 점프·회피 경로를 선택",choiceB:"완료 결과와 다음 규칙에 맞춰 이동 전략을 조정",playerRole:"참가자"},
+    ROLEPLAY_LIFE_AVATAR:{genre:"아바타 역할놀이",a:"아바타 꾸미기와 역할 활동",b:"집과 사회 공간 관리",choiceA:"아바타 역할을 고르고 월드에서 수행할 활동을 선택",choiceB:"완료한 활동과 사회적 피드백으로 집·의상·모임 목표를 변경",playerRole:"주민"},
+    SIMULATOR_TYCOON_INCREMENTAL:{genre:"시뮬레이터 경영",a:"자원 생산과 업그레이드 선택",b:"자동화와 구역 확장",choiceA:"획득 자원과 생산 속도를 비교해 강화 대상을 선택",choiceB:"이전 수익으로 자동화 설비와 다음 구역을 결정",playerRole:"운영자"},
+    BATTLEGROUND_FIGHTING_SHOOTER:{genre:"대전 슈팅 액션",a:"전장 이동과 공격 기술 사용",b:"상대 기술과 팀 전술 대응",choiceA:"상대 위치와 공격 전조에 맞춰 기술·조준을 선택",choiceB:"교전 결과와 팀 상황에 따라 장비·엄폐·협동 공격을 조정",playerRole:"전투원"},
+    SURVIVAL_HORROR_ESCAPE:{genre:"생존 공포 탈출",a:"위험한 장소 탐색과 자원 관리",b:"위협 대응과 탈출 목표",choiceA:"위협 징후를 보고 탐색할 장소와 사용할 물건을 선택",choiceB:"획득 단서와 자원에 따라 회피·협동·탈출 경로를 결정",playerRole:"생존자"},
+    STORY_RPG_ADVENTURE_RPG:{genre:"스토리 RPG",a:"의뢰 수주와 월드 탐험",b:"전투 성장과 이야기 선택",choiceA:"NPC 의뢰와 지역 정보를 읽고 다음 목적지를 선택",choiceB:"전투 결과로 얻은 능력을 바탕으로 퀘스트 경로와 선택을 변경",playerRole:"모험가"},
   };
   const explicitObby=['OBBY','PLATFORMER','OBBY_PLATFORMER'].includes(category.toUpperCase())||/오비|플랫포머|obby|platformer|파쿠르|parkour/i.test(requestedName);
   const school=/학교|school/.test(context);
@@ -737,7 +791,18 @@ export function computeVibeSeedProposal(target){
     ||topicalProfiles.find(([pattern])=>pattern.test(requestContext.toLowerCase()));
   // 오너가 주제를 완전히 재창작하도록 요청한 경우, 기존 게임명·소개·장르의 프로필 매칭을 하지 않는다.
   // 후보 시스템 선택도 외부 대필 없이 기존 Vibe의 결정론적 선택으로 수행한다.
-  const freeProfiles=[...new Map(Object.values(profiles).map(row=>[`${row.genre}|${row.a}|${row.b}`,row])).values()];
+  // 자유주제는 일반 게임 장르 전체를 시스템 후보로 사용한다. 신규 플랫폼 장르도 같은 원본 프로필에서 자동 수용한다.
+  const registeredCategories=freeTopicMode?Object.values(typeof platformProfiles==='object'?platformProfiles?.platforms||{}:{})
+    .flatMap(platform=>Object.entries(platform?.categories||{})):[];
+  const registeredProfiles=registeredCategories.filter(([id])=>!profiles[id]).map(([id,registered])=>{
+    const groups=(registered.requiredConceptGroups||[]).map(group=>Array.isArray(group)?group.filter(Boolean).slice(0,2).join('·'):'').filter(Boolean);
+    const genre=id.replaceAll('_',' ').toLowerCase();
+    const first=groups[0]||'목표·행동',second=groups[1]||'상태·결과';
+    return {genre,a:`${first} 목표 선택`,b:`${second} 대응 선택`,
+      choiceA:`${first} 관련 상태를 관찰하고 수행할 행동과 대상을 결정`,
+      choiceB:`앞선 결과를 읽고 ${second} 조건에 맞춰 다음 대응과 재진입을 선택`,playerRole:'플레이어'};
+  });
+  const freeProfiles=[...new Map([...Object.values(profiles),...registeredProfiles].map(row=>[`${row.genre}|${row.a}|${row.b}`,row])).values()];
   const freeFingerprint=[...`${target.requestId}|${target.topicRevision||''}|${target.variant||0}`]
     .reduce((hash,ch)=>Math.imul(hash^ch.codePointAt(0),16777619)>>>0,2166136261);
   // 자유주제는 과거 장르의 A/B 한 벌을 그대로 고르는 대신 서로 다른 행동 계열을 인과적으로 결합한다.
