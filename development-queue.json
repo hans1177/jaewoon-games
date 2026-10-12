@@ -5109,10 +5109,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T18:09:47.970Z",
+      "updatedAt": "2026-10-12T18:15:50.926Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -5146,8 +5146,8 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "1bcd3e8c4223fbacd7660b219080283ed19e4c92",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T18:06:21.732Z",
+      "robloxSourceCommit": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+      "robloxSourceBootstrapPassedAt": "2026-10-12T18:15:50.926Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": "development/roblox-daechung-rpg-38283530693-1",
       "robloxSourceCandidateReadyAt": "2026-10-12T18:09:47.970Z",
@@ -5549,7 +5549,7 @@
       "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxFailureSignature": "ROBLOX_BUILD_PACKAGE_REVALIDATION_PENDING",
       "routingBlockers": [
-        "roblox-source-promotion-pending"
+        "roblox-build-package-revalidation-pending"
       ],
       "robloxExactRevisionPassed": false,
       "robloxValidationTarget": {
@@ -5654,9 +5654,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "f2dbbb9d06a30f70e0dacb9e5529b23502e6f819",
-        "newSourceRevision": "1bcd3e8c4223fbacd7660b219080283ed19e4c92",
-        "invalidatedAt": "2026-10-12T18:06:21.732Z"
+        "previousSourceRevision": "1bcd3e8c4223fbacd7660b219080283ed19e4c92",
+        "newSourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
+        "invalidatedAt": "2026-10-12T18:15:50.926Z"
       }
     },
     {
@@ -34028,7 +34028,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-12T18:15:24.442Z",
+  "updatedAt": "2026-10-12T18:15:50.926Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
