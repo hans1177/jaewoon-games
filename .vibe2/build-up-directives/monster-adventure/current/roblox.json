@@ -1,21 +1,21 @@
 {
   "version": 2,
-  "directiveId": "monster-adventure-build-up-g18-e6e06edb1b73",
-  "directiveFingerprint": "e6e06edb1b73365efce1a3b280720fe40f21f2fb5163e67755e09418ca9acaf7",
-  "previousDirectiveFingerprint": "c8113799105708bd9b07eced50887594051280d78e1185a15c12bd6b75848d87",
-  "forbiddenRepeatFingerprint": "c8113799105708bd9b07eced50887594051280d78e1185a15c12bd6b75848d87",
+  "directiveId": "monster-adventure-build-up-g19-cd5fe5e703ed",
+  "directiveFingerprint": "cd5fe5e703edc8e112886f88af235c2ff0bb76a78c89d930876f2313df7b78dc",
+  "previousDirectiveFingerprint": "e6e06edb1b73365efce1a3b280720fe40f21f2fb5163e67755e09418ca9acaf7",
+  "forbiddenRepeatFingerprint": "e6e06edb1b73365efce1a3b280720fe40f21f2fb5163e67755e09418ca9acaf7",
   "gameId": "monster-adventure",
   "gameName": "몬스터 어드벤처",
-  "generation": 18,
+  "generation": 19,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "queued",
+  "previousDirectiveOutcome": "running",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/monster-adventure",
-  "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
-  "designFingerprint": "7da58e27d3a6516aa4de2f9604dc24ab5d9a117a5683260a6f0c7f519a1b8bd1",
+  "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
+  "designFingerprint": "9ac2eec48024982cca5069b48323da298a74b7d1abdf057ccc3e5bb4379a9325",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Simulation",
@@ -230,7 +230,7 @@
           "생활 공간 탐색의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+        "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -253,7 +253,7 @@
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
       "canonicalGameId": "monster-adventure",
-      "canonicalDesignFingerprint": "7da58e27d3a6516aa4de2f9604dc24ab5d9a117a5683260a6f0c7f519a1b8bd1",
+      "canonicalDesignFingerprint": "9ac2eec48024982cca5069b48323da298a74b7d1abdf057ccc3e5bb4379a9325",
       "unityWebProjectRoot": "unity-games/monster-adventure",
       "unityWebBuildOutputRoot": "web-games/monster-adventure",
       "unityWebSourceAvailable": false,
@@ -277,8 +277,8 @@
       "shadowPipelineForbidden": true,
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
-    "designFingerprint": "7da58e27d3a6516aa4de2f9604dc24ab5d9a117a5683260a6f0c7f519a1b8bd1",
-    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "designFingerprint": "9ac2eec48024982cca5069b48323da298a74b7d1abdf057ccc3e5bb4379a9325",
+    "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -789,7 +789,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 50,
     "authoredCounts": {
@@ -3370,8 +3370,8 @@
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
-          "family": "CREATURE",
-          "role": "CREATURE의 인과 표현 소재",
+          "family": "CHARACTER",
+          "role": "CHARACTER의 인과 표현 소재",
           "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
@@ -3387,8 +3387,8 @@
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
-          "family": "ENVIRONMENT",
-          "role": "ENVIRONMENT의 인과 표현 소재",
+          "family": "CREATURE",
+          "role": "CREATURE의 인과 표현 소재",
           "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
@@ -3404,8 +3404,8 @@
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
-          "family": "MOTION",
-          "role": "MOTION의 인과 표현 소재",
+          "family": "ENVIRONMENT",
+          "role": "ENVIRONMENT의 인과 표현 소재",
           "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
@@ -3421,13 +3421,47 @@
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
+          "family": "MOTION",
+          "role": "MOTION의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "useLocation": "순교와 집단 결속의 되돌림 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
           "family": "PROP",
           "role": "PROP의 인과 표현 소재",
           "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
           "ruleIds": [
-            "VIBE_A"
+            "VIBE_B"
+          ],
+          "useLocation": "신화 속 트릭스터의 질서 역전의 첫 선택 공간에서 세계 반응을 표시한다.",
+          "assetId": "",
+          "decision": "AUTHOR",
+          "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
+          "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
+          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
+        },
+        {
+          "family": "SKILL",
+          "role": "SKILL의 인과 표현 소재",
+          "bodyPlan": "플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태",
+          "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
+          "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
+          "ruleIds": [
+            "VIBE_DELVE"
           ],
           "useLocation": "순교와 집단 결속의 되돌림 공간에서 세계 반응을 표시한다.",
           "assetId": "",
@@ -3444,7 +3478,7 @@
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
           "ruleIds": [
-            "VIBE_B"
+            "VIBE_MAIN"
           ],
           "useLocation": "신화 속 트릭스터의 질서 역전의 첫 선택 공간에서 세계 반응을 표시한다.",
           "assetId": "",
@@ -3461,7 +3495,7 @@
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
           "ruleIds": [
-            "VIBE_DELVE"
+            "VIBE_A"
           ],
           "useLocation": "순교와 집단 결속의 되돌림 공간에서 세계 반응을 표시한다.",
           "assetId": "",
@@ -3478,7 +3512,7 @@
           "behavior": "사회관계 선택 × 신화 속 트릭스터의 질서 역전와 생활 공간 탐색 × 순교와 집단 결속의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.",
           "presentation": "영웅서사의 이름과 평판와 후원과 인맥 관계의 차이를 조명·표면·동작으로 구분한다.",
           "ruleIds": [
-            "VIBE_MAIN"
+            "VIBE_B"
           ],
           "useLocation": "신화 속 트릭스터의 질서 역전의 첫 선택 공간에서 세계 반응을 표시한다.",
           "assetId": "",
@@ -4482,9 +4516,9 @@
   "previousVersionDelta": {
     "previousGoal": "몬스터 어드벤처. 신화 속 트릭스터의 질서 역전·순교와 집단 결속 생활. 몬스터 어드벤처에서 사회관계 선택 × 신화 속 트릭스터의 질서 역전과 생활 공간 탐색 × 순교와 집단 결속이 서로 결과를 되돌려 바꾸며 생활·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 17,
-    "previousSourceTreeFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
-    "currentSourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "previousGeneration": 18,
+    "previousSourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "currentSourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
@@ -5641,7 +5675,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 392559,
+        "sourceBytes": 362889,
         "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -5673,14 +5707,14 @@
       ],
       "weakExistingContentMayPreemptNewContent": true
     },
-    "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 12,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=11; uncoveredBefore=5.",
+    "selectedTheme": "ENEMY_BOSS_COMBAT_ECOLOGY",
+    "themeDepth": 1,
+    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=5.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
         "WORLD_ECOLOGY_STORY_CHAIN": 6,
-        "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
+        "ENEMY_BOSS_COMBAT_ECOLOGY": 1,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
@@ -5689,7 +5723,6 @@
       },
       "sequence": [
         "WORLD_ECOLOGY_STORY_CHAIN",
-        "WORLD_ECOLOGY_STORY_CHAIN",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
@@ -5701,7 +5734,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION"
+        "PRESENTATION_WORLD_COHESION",
+        "ENEMY_BOSS_COMBAT_ECOLOGY"
       ],
       "requiredThemes": [
         "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5712,18 +5746,16 @@
         "MID_LATE_ENDGAME_COMPLETION",
         "PRESENTATION_WORLD_COHESION"
       ],
-      "distinctCovered": 2,
+      "distinctCovered": 3,
       "totalThemes": 7,
       "breadthCycleComplete": false,
       "missingThemes": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "MID_LATE_ENDGAME_COMPLETION"
       ],
       "leastCoveredThemes": [
-        "ENEMY_BOSS_COMBAT_ECOLOGY",
         "QUEST_STORY_PROGRESSION_CHAIN",
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
@@ -5732,16 +5764,6 @@
       "selectionPolicy": "SUCCESSFUL_ITERATIONS_PRIORITIZE_UNCOVERED_OR_LEAST_COVERED_COHERENT_THEMES; VERIFIED_FAILURE_MAY_DEEPEN_THE_SAME_CAUSAL_THEME"
     },
     "scoredThemes": [
-      {
-        "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 30,
-        "gapDomains": [
-          "ENVIRONMENT",
-          "TERRAIN",
-          "CHARACTER_VISUALS",
-          "ENEMY_VISUALS"
-        ]
-      },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
@@ -5770,19 +5792,29 @@
         "gapDomains": []
       },
       {
+        "theme": "PRESENTATION_WORLD_COHESION",
+        "score": 12,
+        "gapDomains": [
+          "ENVIRONMENT",
+          "TERRAIN",
+          "CHARACTER_VISUALS",
+          "ENEMY_VISUALS"
+        ]
+      },
+      {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
         "score": -92,
         "gapDomains": []
       }
     ],
     "coherentContentBundle": [
-      "BACKGROUND_DEPTH: 전경·중경·후경·지형·랜드마크로 빈 무대 느낌을 줄이고 장소의 기능을 읽게 한다.",
-      "CHARACTER_AND_ENEMY_IDENTITY: 역할과 위험도가 실루엣·자세·모션·재질에서 구별되어야 한다.",
-      "ACTION_TIMELINE: anticipation→impact→recovery와 VFX·카메라·오디오·판정을 같은 사건에 동기화한다.",
-      "ENVIRONMENTAL_MOTION: 식생·물·빛·먼지·기계 등 세계에 맞는 움직임으로 정적인 배경을 줄인다.",
-      "STATE_READABILITY: 위험·보상·상호작용·퀘스트 상태를 UI와 월드 표현에서 같은 언어로 보여준다.",
-      "REGION_COHESION: 배경·몹·아이템·스토리·규칙의 시각적 이유가 같은 지역 정체성을 공유한다.",
-      "PERFORMANCE_BUDGET: 표현을 늘리면서 모바일·플랫폼별 객체·파티클·조명·메모리 비용을 같이 관리한다."
+      "ENEMY_ROLE_SET: 추격·견제·방어·지원·매복·지역 통제 등 서로 다른 전투 역할을 만든다.",
+      "BEHAVIOR_AND_COUNTERPLAY: 이름·HP·공격력만 다른 적이 아니라 이동·전조·공격·약점·대응 선택이 달라야 한다.",
+      "ENCOUNTER_COMPOSITION: 적 역할 조합과 지형·목표가 만나 새로운 판단을 만들게 한다.",
+      "ELITE_OR_BOSS_SIGNATURE: 보스·엘리트는 페이즈·공간 압박·전조·대응·보상 중 여러 축에서 일반 적과 구별한다.",
+      "ECOLOGICAL_WORLD_REASON: 적이 해당 지역·스토리·자원·세력 관계 안에 존재하는 이유를 연결한다.",
+      "DISTINCT_REWARD_PURPOSE: 처치 보상은 다음 장비·퀘스트·제작·지역 해금 중 실제 목적을 가진다.",
+      "VISUAL_TELEGRAPH: 실루엣·모션·VFX·음향·UI 전조가 행동 규칙과 일치해야 한다."
     ],
     "bundleRule": "MAJOR_EXPANSION_MUST_CONNECT_MULTIPLE_CONTENT_SURFACES_INTO_ONE_PLAYABLE_FLOW_NOT_ISOLATED_OBJECT_COUNT",
     "antiCloneContract": {
@@ -5848,11 +5880,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 18,
-    "previousGeneration": 17,
+    "generation": 19,
+    "previousGeneration": 18,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
-    "priorSourceFingerprint": "b166194af215c032be6304d7e03be001d82daba38023570daebe2f5a16e9303a",
+    "sourceFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
+    "priorSourceFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -6321,7 +6353,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -6420,7 +6452,7 @@
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+    "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -6687,7 +6719,7 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ec8963adb3206b6dc7cac5cf27dde4896a76982b952d9d708dd91d84186f2e86",
+      "sourceTreeFingerprint": "2eb88ca0e3fe140317e1d245ba592b592c241c39c2a283cdad4aa13738e3f230",
       "runtimeObserved": false,
       "runtimePassed": false,
       "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
@@ -6743,7 +6775,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 19,
+    "nextGeneration": 20,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -6805,5 +6837,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T22:41:30.929Z"
+  "generatedAt": "2026-10-11T23:47:07.419Z"
 }

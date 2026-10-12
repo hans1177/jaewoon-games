@@ -1,20 +1,20 @@
 {
   "version": 2,
-  "directiveId": "bug-defense-build-up-g25-385f7f507789",
-  "directiveFingerprint": "385f7f5077897e6a0de9936d4a82301d397d499ef7bee01c8d23f51a051cf2c6",
-  "previousDirectiveFingerprint": "16a03d00c5856084f134259f6a74ce28ad9929cda1aa26792da15c0a0a42a71f",
-  "forbiddenRepeatFingerprint": "16a03d00c5856084f134259f6a74ce28ad9929cda1aa26792da15c0a0a42a71f",
+  "directiveId": "bug-defense-build-up-g27-3c60562f38d5",
+  "directiveFingerprint": "3c60562f38d5d125c7094d1fc29b44ddaee6672a35d63176d005a3be0a241497",
+  "previousDirectiveFingerprint": "1493bb34687f39f88e0a40f6fac44f65204f1d83e1416e68e6e8036f2c819bd4",
+  "forbiddenRepeatFingerprint": "1493bb34687f39f88e0a40f6fac44f65204f1d83e1416e68e6e8036f2c819bd4",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
-  "generation": 25,
+  "generation": 27,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "blocked",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/bug-defense",
-  "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+  "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
   "designFingerprint": "976e94ad0082af6a5489a7612699c1e3b7817ecc8930f2654fd5ba794806f919",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "적 패턴과 자원 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+        "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -247,6 +247,8 @@
     "gameId": "bug-defense",
     "requestedPlatform": "ROBLOX",
     "activePlatform": "ROBLOX",
+    "originalSourcePlatform": "ROBLOX",
+    "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": {
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
@@ -264,16 +266,19 @@
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
       "ruleOwner": "COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT",
-      "codeConversion": "REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS",
+      "codeConversion": "IMPLEMENT_APPROVED_DESIGN_IN_ORIGINAL_ROBLOX_LUAU_OWNER_FUNCTIONS",
+      "originalSourcePlatform": "ROBLOX",
+      "originalSourceLanguage": "LUAU",
+      "unitySourceIsOriginal": false,
       "optimizationTarget": "ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE",
       "protectedState": "SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY",
       "sourceReferenceOnly": true,
       "directCsCopyForbidden": true,
       "shadowPipelineForbidden": true,
-      "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
+      "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "976e94ad0082af6a5489a7612699c1e3b7817ecc8930f2654fd5ba794806f919",
-    "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+    "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -360,7 +365,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/bug-defense/server/Game.server.luau",
-            "roblox-games/bug-defense/client/Game.client.luau"
+            "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -368,7 +373,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/bug-defense/server/Game.server.luau",
           "roblox-games/bug-defense/shared/GameConfig.luau",
-          "roblox-games/bug-defense/client/Game.client.luau"
+          "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -392,8 +397,8 @@
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/bug-defense/client/Game.client.luau",
-            "symbol": "render",
+            "file": "roblox-games/bug-defense/server/Game.server.luau",
+            "symbol": "attackEnemy",
             "kind": "FUNCTION"
           }
         ],
@@ -466,7 +471,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/bug-defense/server/Game.server.luau",
-            "roblox-games/bug-defense/client/Game.client.luau"
+            "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -474,7 +479,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/bug-defense/server/Game.server.luau",
           "roblox-games/bug-defense/shared/GameConfig.luau",
-          "roblox-games/bug-defense/client/Game.client.luau"
+          "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -498,8 +503,8 @@
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/bug-defense/client/Game.client.luau",
-            "symbol": "render",
+            "file": "roblox-games/bug-defense/server/Game.server.luau",
+            "symbol": "attackEnemy",
             "kind": "FUNCTION"
           }
         ],
@@ -565,7 +570,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/bug-defense/server/Game.server.luau",
-            "roblox-games/bug-defense/client/Game.client.luau"
+            "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -573,7 +578,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/bug-defense/server/Game.server.luau",
           "roblox-games/bug-defense/shared/GameConfig.luau",
-          "roblox-games/bug-defense/client/Game.client.luau"
+          "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -597,8 +602,8 @@
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/bug-defense/client/Game.client.luau",
-            "symbol": "render",
+            "file": "roblox-games/bug-defense/server/Game.server.luau",
+            "symbol": "attackEnemy",
             "kind": "FUNCTION"
           }
         ],
@@ -664,7 +669,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/bug-defense/server/Game.server.luau",
-            "roblox-games/bug-defense/client/Game.client.luau"
+            "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -672,7 +677,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/bug-defense/server/Game.server.luau",
           "roblox-games/bug-defense/shared/GameConfig.luau",
-          "roblox-games/bug-defense/client/Game.client.luau"
+          "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -696,8 +701,8 @@
             "kind": "FUNCTION"
           },
           {
-            "file": "roblox-games/bug-defense/client/Game.client.luau",
-            "symbol": "render",
+            "file": "roblox-games/bug-defense/server/Game.server.luau",
+            "symbol": "attackEnemy",
             "kind": "FUNCTION"
           }
         ],
@@ -750,13 +755,19 @@
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
+      "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
       "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/shared/GameConfig.luau",
-      "roblox-games/bug-defense/client/Game.client.luau"
+      "roblox-games/bug-defense/client/Game.client.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
     ],
     "executableCodeCandidateFiles": [
+      "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
       "roblox-games/bug-defense/server/Game.server.luau",
-      "roblox-games/bug-defense/client/Game.client.luau"
+      "roblox-games/bug-defense/client/Game.client.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -778,10 +789,11 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+    "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
-    "authoredItemCount": 47,
+    "authoredItemCount": 50,
     "authoredCounts": {
+      "PLAYTHROUGH": 3,
       "CORE_LOOP": 3,
       "SIGNATURE_SYSTEM": 4,
       "SYSTEM_CONNECTION": 6,
@@ -802,7 +814,7 @@
       "IMPLEMENTATION_TRACE": 4
     },
     "namedSourceCandidateCount": 0,
-    "sourceReviewRequiredCount": 47,
+    "sourceReviewRequiredCount": 50,
     "implementationVerifiedCount": 0,
     "runtimeVerifiedCount": 0,
     "authoredCountsAreNotImplementedOrPlayableCounts": true,
@@ -820,6 +832,320 @@
       "PRESERVE_EXISTING_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY"
     ],
     "items": [
+      {
+        "ref": "PLAYTHROUGH[0]",
+        "family": "PLAYTHROUGH",
+        "index": 0,
+        "title": "OPENING",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "OPENING",
+          "entryState": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+          "playerChoice": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
+          "actionAndResponse": "방어 시설 배치 × 역사적 세력 균형의 RouteState·RiskState 입력을 확인하고 RiskState 출력만 변경한다. 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다. 따라서 방어 시설 배치의 경로와 비용이 바뀐다.",
+          "exitState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "DEVELOPMENT에서 변경된 RiskState가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.",
+          "startSeconds": 0,
+          "endSeconds": 60,
+          "timeReason": "OPENING에서 RouteState·RiskState 입력과 RiskState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 0
+            },
+            {
+              "key": "RouteState",
+              "value": 0
+            },
+            {
+              "key": "RiskState",
+              "value": 0
+            },
+            {
+              "key": "ResourceState",
+              "value": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 0
+            },
+            {
+              "key": "RouteState",
+              "value": 0
+            },
+            {
+              "key": "RiskState",
+              "value": 1
+            },
+            {
+              "key": "ResourceState",
+              "value": 0
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 30,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "방어 시설 배치 × 역사적 세력 균형의 상태 출력 RiskState가 다음 시스템의 선택 조건에 전달된다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "ONGOING"
+        },
+        "playerChoice": "접근 경로와 적의 사거리 사이에서 배치 위치를 선택하면서 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다.",
+        "trigger": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+        "stateChange": "방어 시설 배치 × 역사적 세력 균형의 RouteState·RiskState 입력을 확인하고 RiskState 출력만 변경한다. 적 제거보다 세력 간 힘의 비율을 조절하는 것이 장기 승리 조건이 된다. 따라서 방어 시설 배치의 경로와 비용이 바뀐다.",
+        "linkedRuleIds": [
+          "VIBE_A"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 OPENING 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
+      {
+        "ref": "PLAYTHROUGH[1]",
+        "family": "PLAYTHROUGH",
+        "index": 1,
+        "title": "DEVELOPMENT",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "DEVELOPMENT",
+          "entryState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+          "actionAndResponse": "적 패턴과 자원 대응 × 왕조의 정통성과 민심의 RiskState·ResourceState 입력을 확인하고 RouteState 출력만 변경한다. 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 따라서 적 패턴과 자원 대응의 정보·대응이 바뀐다.",
+          "exitState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "RESOLUTION에서 변경된 RouteState가 다음 행동의 접근·위험 조건을 바꾸는지 시험한다.",
+          "startSeconds": 60,
+          "endSeconds": 120,
+          "timeReason": "DEVELOPMENT에서 RiskState·ResourceState 입력과 RouteState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 0
+            },
+            {
+              "key": "RouteState",
+              "value": 0
+            },
+            {
+              "key": "RiskState",
+              "value": 1
+            },
+            {
+              "key": "ResourceState",
+              "value": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 0
+            },
+            {
+              "key": "RouteState",
+              "value": 1
+            },
+            {
+              "key": "RiskState",
+              "value": 1
+            },
+            {
+              "key": "ResourceState",
+              "value": 0
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_RESPOND",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 90,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "적 패턴과 자원 대응 × 왕조의 정통성과 민심의 상태 출력 RouteState가 다음 시스템의 선택 조건에 전달된다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_B"
+          ],
+          "outcome": "ONGOING"
+        },
+        "playerChoice": "웨이브와 자원 상태에 따라 강화·수리·대응 대상을 결정하면서 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다.",
+        "trigger": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+        "stateChange": "적 패턴과 자원 대응 × 왕조의 정통성과 민심의 RiskState·ResourceState 입력을 확인하고 RouteState 출력만 변경한다. 영토보다 정당성과 지지가 실제 통치 가능성을 결정한다. 따라서 적 패턴과 자원 대응의 정보·대응이 바뀐다.",
+        "linkedRuleIds": [
+          "VIBE_B"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 DEVELOPMENT 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
+      {
+        "ref": "PLAYTHROUGH[2]",
+        "family": "PLAYTHROUGH",
+        "index": 2,
+        "title": "RESOLUTION",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "RESOLUTION",
+          "entryState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "역사적 세력 균형의 제약과 왕조의 정통성과 민심의 대응을 같은 지역에서 순서대로 시험한다.",
+          "actionAndResponse": "금기와 기회의 교차의 RouteState·RiskState 입력을 확인하고 WorldAccessState 출력만 변경한다. 방어 시설 배치에서 평소에는 불가능했던 대안 경로와 선택을 연다.",
+          "exitState": "한 판의 결과와 다음 선택을 기록한다.",
+          "nextDecision": "이전에 변한 세계 상태와 발견 정보를 비교하고 새로운 접근 경로 또는 재시작 방법을 고른다.",
+          "startSeconds": 120,
+          "endSeconds": 180,
+          "timeReason": "RESOLUTION에서 RouteState·RiskState 입력과 WorldAccessState 출력의 설계 전이를 관찰하는 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 0
+            },
+            {
+              "key": "RouteState",
+              "value": 1
+            },
+            {
+              "key": "RiskState",
+              "value": 1
+            },
+            {
+              "key": "ResourceState",
+              "value": 0
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 0
+            },
+            {
+              "key": "RouteState",
+              "value": 1
+            },
+            {
+              "key": "RiskState",
+              "value": 1
+            },
+            {
+              "key": "ResourceState",
+              "value": 0
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 150,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "금기와 기회의 교차의 상태 출력 WorldAccessState가 다음 시스템의 선택 조건에 전달된다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_DELVE",
+            "VIBE_A"
+          ],
+          "outcome": "SUCCESS"
+        },
+        "playerChoice": "역사적 세력 균형의 제약과 왕조의 정통성과 민심의 대응을 같은 지역에서 순서대로 시험한다.",
+        "trigger": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+        "stateChange": "금기와 기회의 교차의 RouteState·RiskState 입력을 확인하고 WorldAccessState 출력만 변경한다. 방어 시설 배치에서 평소에는 불가능했던 대안 경로와 선택을 연다.",
+        "linkedRuleIds": [
+          "VIBE_DELVE",
+          "VIBE_A"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 RESOLUTION 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
       {
         "ref": "CORE_LOOP[0]",
         "family": "CORE_LOOP",
@@ -1150,7 +1476,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 곤충 디펜스 → 방어 시설 배치 × 역사적 세력 균형 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1194,7 +1521,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 방어 시설 배치 × 역사적 세력 균형 → 적 패턴과 자원 대응 × 왕조의 정통성과 민심 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1238,7 +1566,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 적 패턴과 자원 대응 × 왕조의 정통성과 민심 → 방어 시설 배치 × 역사적 세력 균형 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1282,7 +1611,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 적 패턴과 자원 대응 × 왕조의 정통성과 민심 → 금기와 기회의 교차 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1326,7 +1656,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 금기와 기회의 교차 → 곤충 디펜스 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1370,7 +1701,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 방어 시설 배치 × 역사적 세력 균형 → 금기와 기회의 교차 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1405,6 +1737,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1440,6 +1773,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1475,6 +1809,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1510,6 +1845,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -3721,46 +4057,50 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=4",
+      "CURRENT_SOURCE_FILES=7",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 228,
-      "progression": 211,
-      "ai": 49,
-      "save": 55,
-      "multiplayer": 25,
-      "animation": 29,
-      "motionStates": 198,
-      "gameFeel": 35,
-      "vfx": 25,
+      "combat": 292,
+      "progression": 545,
+      "ai": 73,
+      "save": 91,
+      "multiplayer": 34,
+      "animation": 37,
+      "motionStates": 677,
+      "gameFeel": 41,
+      "vfx": 44,
       "camera": 33,
       "audio": 4,
-      "audioDynamics": 17,
-      "ui": 62,
-      "uiFlow": 41,
-      "entryFlow": 24,
+      "audioDynamics": 16,
+      "ui": 870,
+      "uiFlow": 1123,
+      "entryFlow": 30,
       "loadingFlow": 0,
-      "input": 62,
-      "map": 162,
-      "landmark": 66,
-      "interaction": 29,
-      "inventory": 6,
-      "equipment": 6,
-      "settings": 2,
-      "feedback": 68,
-      "session": 103,
-      "content": 214,
-      "choice": 29,
-      "connection": 1,
-      "performance": 23,
-      "lighting": 48,
+      "input": 121,
+      "map": 250,
+      "landmark": 94,
+      "interaction": 257,
+      "inventory": 241,
+      "equipment": 68,
+      "settings": 25,
+      "feedback": 96,
+      "session": 118,
+      "content": 589,
+      "choice": 1649,
+      "connection": 7,
+      "performance": 32,
+      "lighting": 72,
       "primitive": 19,
       "todo": 0,
-      "errorRecovery": 20
+      "errorRecovery": 33
     },
     "topFiles": [
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "score": 1517
+      },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
         "score": 496
@@ -3771,14 +4111,46 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "score": 173
+        "score": 158
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+        "score": 6
       },
       {
         "file": "roblox-games/bug-defense/default.project.json",
         "score": 2
+      },
+      {
+        "file": "roblox-games/bug-defense/client/MaterialPresentation.client.luau",
+        "score": 1
       }
     ],
     "sourceAnchors": [
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3921,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3960,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
         "line": 311,
@@ -3794,6 +4166,22 @@
         "symbol": "spawnEnemy",
         "context": "local function spawnEnemy(player, enemyKind, wave, index)",
         "score": 130
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3937,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 130
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3993,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
@@ -3812,8 +4200,16 @@
         "score": 114
       },
       {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4011,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 114
+      },
+      {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 453,
+        "line": 407,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -3828,11 +4224,27 @@
         "score": 106
       },
       {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 2761,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
+      {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
         "line": 341,
         "kind": "FUNCTION",
         "symbol": "runEnemyAI",
         "context": "local function runEnemyAI(player, enemy)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 2872,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
         "score": 98
       },
       {
@@ -3844,8 +4256,64 @@
         "score": 90
       },
       {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3466,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3957,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3973,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3990,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4027,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4101,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 482,
+        "line": 436,
         "kind": "FUNCTION",
         "symbol": "reportNativeFoundationReady",
         "context": "local function reportNativeFoundationReady()",
@@ -3857,6 +4325,70 @@
         "kind": "FUNCTION",
         "symbol": "finishWave",
         "context": "local function finishWave(player, reason)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 1050,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 2581,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateItemStateBadges",
+        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 3933,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4164,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4319,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4373,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 4885,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.AdaptActionMenu",
+        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
         "score": 82
       },
       {
@@ -3932,12 +4464,12 @@
         "score": 74
       },
       {
-        "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 212,
+        "file": "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+        "line": 1010,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
       },
       {
         "file": "roblox-games/bug-defense/server/Game.server.luau",
@@ -3978,81 +4510,25 @@
         "symbol": "bindNativeFoundationPlayer",
         "context": "local function bindNativeFoundationPlayer(player)",
         "score": 66
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 58,
-        "kind": "FUNCTION",
-        "symbol": "initializePlayer",
-        "context": "local function initializePlayer(player)",
-        "score": 58
-      },
-      {
-        "file": "roblox-games/bug-defense/server/Game.server.luau",
-        "line": 65,
-        "kind": "FUNCTION",
-        "symbol": "savePlayer",
-        "context": "local function savePlayer(player)",
-        "score": 58
-      },
-      {
-        "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 289,
-        "kind": "FUNCTION",
-        "symbol": "bindVerifiedLearningControl",
-        "context": "local function bindVerifiedLearningControl(control)",
-        "score": 50
-      },
-      {
-        "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 142,
-        "kind": "FUNCTION",
-        "symbol": "syncVerifiedLearningCharacterMotion",
-        "context": "local function syncVerifiedLearningCharacterMotion(character)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 368,
-        "kind": "FUNCTION",
-        "symbol": "applyCreaturePresentation",
-        "context": "local function applyCreaturePresentation(instance)",
-        "score": 42
-      },
-      {
-        "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 29,
-        "kind": "FUNCTION",
-        "symbol": "hasStudioAssetAtom",
-        "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
-        "score": 34
-      },
-      {
-        "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 25,
-        "kind": "FUNCTION",
-        "symbol": "studioAssetFamily",
-        "context": "local function studioAssetFamily(family)",
-        "score": 26
       }
     ]
   },
   "previousVersionDelta": {
     "previousGoal": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.",
     "previousFocus": "STABILITY",
-    "previousGeneration": 24,
-    "previousSourceTreeFingerprint": "6b9947b3aa28793e17e5c64ccabe1b8424aa4e29444518484e688cdcc273fbcb",
-    "currentSourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+    "previousGeneration": 26,
+    "previousSourceTreeFingerprint": "b9d4694d55961c1c3c2d13b9df613870de1e98e8b7186054155d03e02245a19e",
+    "currentSourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-studio-asset-binding-required",
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "roblox-build-package-failed",
     "blockers": [
-      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+      "roblox-build-package:roblox-build-package-failed"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -4216,8 +4692,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "SESSION_FLOW",
@@ -4704,8 +5180,8 @@
     },
     {
       "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "MONITOR_OR_CONNECT",
       "developmentDepth": 1,
       "directive": "드랍→인벤토리→제작/장착→전투/탐색→보상/해금처럼 현재 게임의 주요 시스템들이 실제 상태를 주고받게 하고 서로 고립된 메뉴 기능을 줄인다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -5110,11 +5586,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "SYSTEM_CONNECTION",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5204,8 +5675,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 117320,
-        "largestFileBytes": 48561,
+        "sourceBytes": 401464,
+        "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5237,8 +5708,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-    "themeDepth": 3,
-    "selectedThemeReason": "1 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=3.",
+    "themeDepth": 5,
+    "selectedThemeReason": "0 explicit GAP(s) and 7 applicable domain(s); focus=STABILITY; previousTheme=RULES_EVENTS_REPLAYABILITY_SYSTEM; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=4; uncoveredBefore=3.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5246,7 +5717,7 @@
         "ENEMY_BOSS_COMBAT_ECOLOGY": 0,
         "QUEST_STORY_PROGRESSION_CHAIN": 0,
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 7,
-        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 3,
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM": 5,
         "MID_LATE_ENDGAME_COMPLETION": 0,
         "PRESENTATION_WORLD_COHESION": 11
       },
@@ -5260,8 +5731,8 @@
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
-        "PRESENTATION_WORLD_COHESION",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
+        "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM",
         "RULES_EVENTS_REPLAYABILITY_SYSTEM"
@@ -5293,10 +5764,8 @@
     "scoredThemes": [
       {
         "theme": "RULES_EVENTS_REPLAYABILITY_SYSTEM",
-        "score": 158,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
+        "score": 110,
+        "gapDomains": []
       },
       {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
@@ -5322,10 +5791,8 @@
       },
       {
         "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": -92,
-        "gapDomains": [
-          "SYSTEM_CONNECTION"
-        ]
+        "score": -110,
+        "gapDomains": []
       },
       {
         "theme": "PRESENTATION_WORLD_COHESION",
@@ -5411,11 +5878,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 25,
-    "previousGeneration": 24,
+    "generation": 27,
+    "previousGeneration": 26,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
-    "priorSourceFingerprint": "6b9947b3aa28793e17e5c64ccabe1b8424aa4e29444518484e688cdcc273fbcb",
+    "sourceFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
+    "priorSourceFingerprint": "b9d4694d55961c1c3c2d13b9df613870de1e98e8b7186054155d03e02245a19e",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -5648,7 +6115,7 @@
   ],
   "platformAdaptationDirectives": {
     "WEB": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "ROBLOX": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
     "UNITY": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UNITY_WEB": "곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"곤충 디펜스. 역사적 세력 균형·왕조의 정통성과 민심 전략. 곤충 디펜스에서 방어 시설 배치 × 역사적 세력 균형과 적 패턴과 자원 대응 × 왕조의 정통성과 민심이 서로 결과를 되돌려 바꾸며 전략·추리의 판단이 실제 세계 상태를 변화시킨다.의 현재 실패 근거를 원인 시스템에서 제거하고 핵심 루프·저장·복구가 같은 상태에서 반복 가능하게 만든다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
@@ -5660,10 +6127,13 @@
     "version": 1,
     "required": true,
     "responsibleFiles": [
-      "roblox-games/bug-defense/shared/GameConfig.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/default.project.json"
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/bug-defense/default.project.json",
+      "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -5704,7 +6174,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 453,
+        "line": 407,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -5866,19 +6336,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/bug-defense/client/Game.client.luau"
+          "roblox-games/bug-defense/client/Game.client.luau",
+          "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/bug-defense/shared/GameConfig.luau"
+          "roblox-games/bug-defense/shared/GameConfig.luau",
+          "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+    "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -5962,19 +6435,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/bug-defense/client/Game.client.luau"
+          "roblox-games/bug-defense/client/Game.client.luau",
+          "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
         ],
         "implementation": "기존 입력·월드·HUD에서 같은 행동의 조건과 결과를 표현한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/bug-defense/shared/GameConfig.luau"
+          "roblox-games/bug-defense/shared/GameConfig.luau",
+          "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+          "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "기존 콘텐츠 정의와 안정된 ID를 재사용해 행동·조건·결과를 연결한다."
       }
     ],
-    "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+    "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
     "spatialBlueprintContract": null,
     "interfaceBlueprintContract": null,
     "libraryReuseContract": null,
@@ -6014,10 +6490,13 @@
   ],
   "responsibleSystemsAndFiles": {
     "files": [
-      "roblox-games/bug-defense/shared/GameConfig.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/default.project.json"
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/bug-defense/default.project.json",
+      "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
       {
@@ -6070,7 +6549,7 @@
       },
       {
         "file": "roblox-games/bug-defense/client/Game.client.luau",
-        "line": 453,
+        "line": 407,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -6158,10 +6637,13 @@
     "gameId": "bug-defense",
     "platform": "ROBLOX",
     "plannedFiles": [
-      "roblox-games/bug-defense/shared/GameConfig.luau",
-      "roblox-games/bug-defense/server/Game.server.luau",
       "roblox-games/bug-defense/client/Game.client.luau",
-      "roblox-games/bug-defense/default.project.json"
+      "roblox-games/bug-defense/server/Game.server.luau",
+      "roblox-games/bug-defense/shared/GameConfig.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonUI.luau",
+      "roblox-games/bug-defense/shared/RobloxCommonMaterials.luau",
+      "roblox-games/bug-defense/default.project.json",
+      "roblox-games/bug-defense/client/MaterialPresentation.client.luau"
     ],
     "impact": {
       "version": 1,
@@ -6235,11 +6717,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "ab99d96fee2b03bb5b11bafb430eab931425b31ec93d6565b310cf98bdb83be8",
+      "sourceTreeFingerprint": "f439264f794c0d698cd383632e400ccfeef043f53ab8dbe132b78544a178531a",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-studio-asset-binding-required"
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "roblox-build-package-failed"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -6291,7 +6773,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 26,
+    "nextGeneration": 28,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -6348,11 +6830,10 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "SYSTEM_CONNECTION",
       "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T14:17:14.481Z"
+  "generatedAt": "2026-10-11T23:17:27.394Z"
 }

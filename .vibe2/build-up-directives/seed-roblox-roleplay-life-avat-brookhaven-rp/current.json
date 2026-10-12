@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g3-dba5d0dd7a9a",
-  "directiveFingerprint": "dba5d0dd7a9afab862955cdd358f77589218da890e6867589df17f8dfa6ea39f",
-  "previousDirectiveFingerprint": "4439d5eeab78b3c7a07e25418cd037d97bc4d376cc620b0a1991c6b0bcb4d513",
-  "forbiddenRepeatFingerprint": "4439d5eeab78b3c7a07e25418cd037d97bc4d376cc620b0a1991c6b0bcb4d513",
+  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g4-fd4dd65a6b8d",
+  "directiveFingerprint": "fd4dd65a6b8dc19faa9ab1376162130b4453215f3ce9688113a76b07842f2256",
+  "previousDirectiveFingerprint": "dba5d0dd7a9afab862955cdd358f77589218da890e6867589df17f8dfa6ea39f",
+  "forbiddenRepeatFingerprint": "dba5d0dd7a9afab862955cdd358f77589218da890e6867589df17f8dfa6ea39f",
   "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
   "gameName": "Harbor Days",
-  "generation": 3,
+  "generation": 4,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,7 +14,7 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
-  "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+  "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
   "designFingerprint": "9ac9130893f3e3bad683d97da505e6151cd5198069706808d3a111950618db19",
   "identityReinforcement": {
     "appliesToAllGenres": true,
@@ -230,7 +230,7 @@
           "제작과 거점 구축의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+        "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -247,6 +247,8 @@
     "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
     "requestedPlatform": "ROBLOX",
     "activePlatform": "ROBLOX",
+    "originalSourcePlatform": "ROBLOX",
+    "originalSourceLanguage": "LUAU",
     "unityWebSourceSync": {
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
@@ -264,16 +266,19 @@
       "sourceImplementationPassed": false,
       "robloxRuntimeVerified": false,
       "ruleOwner": "COMMON_APPROVED_DESIGN_MAIN_A_B_C_AT",
-      "codeConversion": "REIMPLEMENT_CSHARP_RULE_STATE_INPUTS_OUTPUTS_IN_EXISTING_ROBLOX_LUAU_FUNCTIONS",
+      "codeConversion": "IMPLEMENT_APPROVED_DESIGN_IN_ORIGINAL_ROBLOX_LUAU_OWNER_FUNCTIONS",
+      "originalSourcePlatform": "ROBLOX",
+      "originalSourceLanguage": "LUAU",
+      "unitySourceIsOriginal": false,
       "optimizationTarget": "ROBLOX_NATIVE_SERVER_CLIENT_MOBILE_STREAMING_ANIMATION_UI_PERFORMANCE",
       "protectedState": "SAVE_KEYS_BALANCE_REWARDS_HIT_TIMING_MULTIPLAYER_SERVER_AUTHORITY",
       "sourceReferenceOnly": true,
       "directCsCopyForbidden": true,
       "shadowPipelineForbidden": true,
-      "nextAction": "CONTINUE_CURRENT_CANONICAL_ROBLOX_WORK_WITH_SHARED_DESIGN_AND_RECHECK_UNITY_WEB_SOURCE_WHEN_AVAILABLE"
+      "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
     "designFingerprint": "9ac9130893f3e3bad683d97da505e6151cd5198069706808d3a111950618db19",
-    "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+    "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -360,7 +365,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -368,7 +373,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -466,7 +471,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -474,7 +479,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -565,7 +570,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -573,7 +578,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -664,7 +669,7 @@
           ],
           "inspectedExecutableFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "exactRuntimeStateTransitionVerified": false,
           "rule": "IDENTIFIER_REFERENCE_AND_ASSIGNMENT_ARE_DIAGNOSTIC_CANDIDATES_NOT_GAMEPLAY_PARITY_PASS"
@@ -672,7 +677,7 @@
         "suggestedExistingOwnerFiles": [
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
           "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
         ],
         "inspectedSymbols": [
           {
@@ -750,13 +755,19 @@
       "runtimeVerified": false
     },
     "observedGameCodeFiles": [
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau"
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
     ],
     "executableCodeCandidateFiles": [
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau"
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
     ],
     "gapReasons": [
       "DESIGN_TO_CODE_STATE_KEYS_NOT_MAPPED:MAIN",
@@ -778,10 +789,11 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+    "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
-    "authoredItemCount": 47,
+    "authoredItemCount": 50,
     "authoredCounts": {
+      "PLAYTHROUGH": 3,
       "CORE_LOOP": 3,
       "SIGNATURE_SYSTEM": 4,
       "SYSTEM_CONNECTION": 6,
@@ -802,7 +814,7 @@
       "IMPLEMENTATION_TRACE": 4
     },
     "namedSourceCandidateCount": 0,
-    "sourceReviewRequiredCount": 47,
+    "sourceReviewRequiredCount": 50,
     "implementationVerifiedCount": 0,
     "runtimeVerifiedCount": 0,
     "authoredCountsAreNotImplementedOrPlayableCounts": true,
@@ -820,6 +832,294 @@
       "PRESERVE_EXISTING_BALANCE_SAVE_ECONOMY_AND_NETWORK_AUTHORITY"
     ],
     "items": [
+      {
+        "ref": "PLAYTHROUGH[0]",
+        "family": "PLAYTHROUGH",
+        "index": 0,
+        "title": "OPENING",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "OPENING",
+          "entryState": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+          "playerChoice": "위험한 구역을 조사해 자원과 생존 단서를 확보하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+          "actionAndResponse": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 탐험과 채집의 경로와 비용이 바뀐다. 플레이어 입력의 결과로 B의 대응 가능성이 변한다.",
+          "exitState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "DEVELOPMENT의 다른 위험·경로·정보 선택으로 진행한다.",
+          "startSeconds": 0,
+          "endSeconds": 60,
+          "timeReason": "OPENING에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 0
+            },
+            {
+              "key": "IntentState",
+              "value": 1
+            },
+            {
+              "key": "RouteState",
+              "value": 2
+            },
+            {
+              "key": "RiskState",
+              "value": 3
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 2
+            },
+            {
+              "key": "RouteState",
+              "value": 3
+            },
+            {
+              "key": "RiskState",
+              "value": 4
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 30,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "A의 선택 결과가 B의 대응 위험과 비용을 바꾼다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "ONGOING"
+        },
+        "playerChoice": "위험한 구역을 조사해 자원과 생존 단서를 확보하면서 현재 선택이 미래 적·지역·관계 규칙의 원인이 된다.",
+        "trigger": "플레이어가 현재 목표와 경로 상태를 확인한다.",
+        "stateChange": "현재 선택이 미래 적·지역·관계 규칙의 원인이 된다. 따라서 탐험과 채집의 경로와 비용이 바뀐다. 플레이어 입력의 결과로 B의 대응 가능성이 변한다.",
+        "linkedRuleIds": [
+          "VIBE_A"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 OPENING 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
+      {
+        "ref": "PLAYTHROUGH[1]",
+        "family": "PLAYTHROUGH",
+        "index": 1,
+        "title": "DEVELOPMENT",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "DEVELOPMENT",
+          "entryState": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "수집한 단서에 맞춰 제작 순서와 거점 배치를 변경하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+          "actionAndResponse": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 제작과 거점 구축의 정보·대응이 바뀐다. A의 다음 선택 상태가 달라진다.",
+          "exitState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "nextDecision": "RESOLUTION의 다른 위험·경로·정보 선택으로 진행한다.",
+          "startSeconds": 60,
+          "endSeconds": 120,
+          "timeReason": "DEVELOPMENT에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 1
+            },
+            {
+              "key": "IntentState",
+              "value": 2
+            },
+            {
+              "key": "RouteState",
+              "value": 3
+            },
+            {
+              "key": "RiskState",
+              "value": 4
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 2
+            },
+            {
+              "key": "IntentState",
+              "value": 3
+            },
+            {
+              "key": "RouteState",
+              "value": 4
+            },
+            {
+              "key": "RiskState",
+              "value": 5
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_RESPOND",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 90,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "B의 선택 결과가 다음 A의 위험과 경로에 전달된다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_B"
+          ],
+          "outcome": "ONGOING"
+        },
+        "playerChoice": "수집한 단서에 맞춰 제작 순서와 거점 배치를 변경하면서 정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다.",
+        "trigger": "다음 단계 DEVELOPMENT의 입장 조건과 세계 상태가 결정된다.",
+        "stateChange": "정면 승리보다 규칙 해석·오용·역이용이 핵심 능력이 된다. 따라서 제작과 거점 구축의 정보·대응이 바뀐다. A의 다음 선택 상태가 달라진다.",
+        "linkedRuleIds": [
+          "VIBE_B"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 DEVELOPMENT 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
+      {
+        "ref": "PLAYTHROUGH[2]",
+        "family": "PLAYTHROUGH",
+        "index": 2,
+        "title": "RESOLUTION",
+        "authoredId": null,
+        "designDetail": {
+          "phase": "RESOLUTION",
+          "entryState": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+          "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다.",
+          "actionAndResponse": "탐험과 채집에서 평소에는 불가능했던 대안 경로와 선택을 연다. 앞선 결과를 되돌아보며 최종 목표와 재시작 여부를 결정한다.",
+          "exitState": "한 판의 결과와 다음 선택을 기록한다.",
+          "nextDecision": "획득한 정보와 현재 원본 규칙의 실패·복구 경로에서 다음 플레이를 선택한다.",
+          "startSeconds": 120,
+          "endSeconds": 180,
+          "timeReason": "RESOLUTION에서 서로 다른 상태 입력과 피드백을 관찰하는 데 필요한 설계상 시간 구간이다. 실제 실행 시간은 미검증이다.",
+          "before": [
+            {
+              "key": "WorldAccessState",
+              "value": 2
+            },
+            {
+              "key": "IntentState",
+              "value": 3
+            },
+            {
+              "key": "RouteState",
+              "value": 4
+            },
+            {
+              "key": "RiskState",
+              "value": 5
+            }
+          ],
+          "after": [
+            {
+              "key": "WorldAccessState",
+              "value": 3
+            },
+            {
+              "key": "IntentState",
+              "value": 4
+            },
+            {
+              "key": "RouteState",
+              "value": 5
+            },
+            {
+              "key": "RiskState",
+              "value": 6
+            }
+          ],
+          "actions": [
+            {
+              "abilityId": "VIBE_CHOOSE",
+              "actorId": "PLAYER",
+              "targetId": "WORLD",
+              "atSeconds": 150,
+              "distance": 0,
+              "energyBefore": 10,
+              "energyAfter": 10,
+              "hit": false,
+              "response": "A의 선택 결과가 B의 대응 위험과 비용을 바꾼다."
+            }
+          ],
+          "ruleIds": [
+            "VIBE_A"
+          ],
+          "outcome": "SUCCESS"
+        },
+        "playerChoice": "업보와 인과응보의 제약과 신화 속 트릭스터의 질서 역전의 대응을 같은 지역에서 순서대로 시험한다.",
+        "trigger": "다음 단계 RESOLUTION의 입장 조건과 세계 상태가 결정된다.",
+        "stateChange": "탐험과 채집에서 평소에는 불가능했던 대안 경로와 선택을 연다. 앞선 결과를 되돌아보며 최종 목표와 재시작 여부를 결정한다.",
+        "linkedRuleIds": [
+          "VIBE_A"
+        ],
+        "designResponsibleSystem": null,
+        "sourceCandidates": [],
+        "sourceEvidenceState": "EXACT_SOURCE_OWNER_REVIEW_REQUIRED",
+        "implementationVerified": false,
+        "runtimeVerified": false,
+        "designReviewNeeded": [],
+        "requiredBehavior": [
+          "ENTRY_FIRST_INPUT_CONDITION_FEEDBACK_RESULT_NEXT_CHOICE_CONNECTED",
+          "CANCEL_FAILURE_AND_RETRY_PRESERVE_EXISTING_STATE_AND_SAVE",
+          "PLANNED_BEFORE_AFTER_VALUES_ARE_NOT_RUNTIME_EVIDENCE"
+        ],
+        "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
+        "observableAcceptance": "실제 RESOLUTION 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
+        "requiredStages": [
+          "INSPECT_EXISTING_RESPONSIBLE_FUNCTION",
+          "IMPLEMENT_AUTHORED_BEHAVIOR_AND_CONNECTED_STATE",
+          "VERIFY_ACTUAL_PLAYER_ACTION_AND_RESULT",
+          "REPLAY_PLATFORM_QA_SAVE_AND_RUNTIME"
+        ]
+      },
       {
         "ref": "CORE_LOOP[0]",
         "family": "CORE_LOOP",
@@ -1150,7 +1450,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 업보와 인과응보의 생존 세계 → 탐험과 채집 × 업보와 인과응보 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1194,7 +1495,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 탐험과 채집 × 업보와 인과응보 → 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1238,7 +1540,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전 → 탐험과 채집 × 업보와 인과응보 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1282,7 +1585,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전 → 금기와 기회의 교차 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1326,7 +1630,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 금기와 기회의 교차 → 업보와 인과응보의 생존 세계 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1370,7 +1675,8 @@
         "requiredBehavior": [
           "FROM_SYSTEM_EMITS_DECLARED_STATE_KEYS",
           "TO_SYSTEM_CONSUMES_SAME_STATE_KEYS_WITHOUT_DUPLICATE_SHADOW_STATE",
-          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES"
+          "TRIGGER_AND_RESULT_VERIFIED_BOTH_SIDES",
+          "SUCCESS_ALTERNATIVE_CANCEL_AND_REVERSE_HANDOFF_USE_EXISTING_STATE"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
         "observableAcceptance": "실제 탐험과 채집 × 업보와 인과응보 → 금기와 기회의 교차 입력/조건→권위 상태 변화→피드백→다음 선택의 정상·실패·재시도 경로를 검증",
@@ -1405,6 +1711,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1440,6 +1747,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1475,6 +1783,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -1510,6 +1819,7 @@
         "requiredBehavior": [
           "MILESTONE_UNLOCK_CONDITION_AND_PREVIOUS_PROGRESS_REACHABLE",
           "NEW_GAMEPLAY_CONNECTED_TO_EXISTING_ACTION_REWARD_AND_NEXT_GOAL",
+          "NEW_PLAYER_CHOICE_AND_PREVIOUS_MILESTONE_STATE_LINKED_TO_EXISTING_OWNER",
           "MILESTONE_FAILURE_RETRY_AND_SAVED_PROGRESS_PRESERVED"
         ],
         "buildUpStatus": "AUTHORED_REQUIREMENTS_NOT_YET_NATIVE_IMPLEMENTATION_VERIFIED",
@@ -3696,64 +4006,132 @@
   },
   "currentImplementationFindings": {
     "sourceObservations": [
-      "CURRENT_SOURCE_FILES=4",
+      "CURRENT_SOURCE_FILES=7",
       "PLACEHOLDER_OR_PRIMITIVE_USAGE_HIGH",
       "UI_MENU_FLOW_SPARSE"
     ],
     "signals": {
-      "combat": 41,
-      "progression": 104,
-      "ai": 17,
-      "save": 37,
-      "multiplayer": 5,
-      "animation": 29,
-      "motionStates": 128,
-      "gameFeel": 29,
-      "vfx": 24,
+      "combat": 105,
+      "progression": 438,
+      "ai": 41,
+      "save": 73,
+      "multiplayer": 14,
+      "animation": 37,
+      "motionStates": 607,
+      "gameFeel": 35,
+      "vfx": 43,
       "camera": 27,
       "audio": 4,
-      "audioDynamics": 14,
-      "ui": 58,
-      "uiFlow": 32,
-      "entryFlow": 6,
+      "audioDynamics": 13,
+      "ui": 866,
+      "uiFlow": 1113,
+      "entryFlow": 12,
       "loadingFlow": 0,
-      "input": 46,
-      "map": 108,
-      "landmark": 6,
-      "interaction": 30,
-      "inventory": 6,
-      "equipment": 3,
-      "settings": 2,
-      "feedback": 68,
-      "session": 4,
-      "content": 74,
-      "choice": 25,
-      "connection": 2,
-      "performance": 13,
-      "lighting": 39,
+      "input": 105,
+      "map": 196,
+      "landmark": 34,
+      "interaction": 257,
+      "inventory": 241,
+      "equipment": 65,
+      "settings": 25,
+      "feedback": 96,
+      "session": 19,
+      "content": 449,
+      "choice": 1645,
+      "connection": 8,
+      "performance": 22,
+      "lighting": 63,
       "primitive": 12,
       "todo": 0,
-      "errorRecovery": 11
+      "errorRecovery": 24
     },
     "topFiles": [
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "score": 1517
+      },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
         "score": 251
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "score": 151
+        "score": 134
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
         "score": 94
       },
       {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "score": 6
+      },
+      {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
         "score": 4
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+        "score": 1
       }
     ],
     "sourceAnchors": [
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3921,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3960,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3976,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 138
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3937,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 130
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3993,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 122
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4011,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 114
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 2761,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 106
+      },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
         "line": 36,
@@ -3795,16 +4173,152 @@
         "score": 98
       },
       {
-        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 223,
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 2872,
         "kind": "FUNCTION",
-        "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 98
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3466,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateMountInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3952,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateSeatInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3957,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateBedInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3973,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateHarvestInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3990,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+        "context": "function RobloxCommonUI.CreateContainerInteractionPrompt(options)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4027,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4101,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 90
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 1050,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 2581,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateItemStateBadges",
+        "context": "function RobloxCommonUI.CreateItemStateBadges(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3914,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionProgress",
+        "context": "function RobloxCommonUI.CreateInteractionProgress(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 3933,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+        "context": "function RobloxCommonUI.CreateInteractionStateCard(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4164,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+        "context": "function RobloxCommonUI.CreateMenuContextQuickActionSheet(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4319,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4373,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+        "context": "function RobloxCommonUI.CreateBossPhaseStrip(options)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 4885,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonUI.AdaptActionMenu",
+        "context": "function RobloxCommonUI.AdaptActionMenu(gui,root,list,title,status,healthTrack,multiplayerStatus,primary)",
+        "score": 82
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "line": 1010,
+        "kind": "FUNCTION",
+        "symbol": "sync",
+        "context": "local function sync(state)",
+        "score": 74
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 399,
+        "line": 177,
+        "kind": "FUNCTION",
+        "symbol": "playVerifiedLearningActionFeedback",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 58
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+        "line": 353,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -3820,7 +4334,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 300,
+        "line": 254,
         "kind": "FUNCTION",
         "symbol": "bindVerifiedLearningControl",
         "context": "local function bindVerifiedLearningControl(control)",
@@ -3828,7 +4342,7 @@
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 153,
+        "line": 154,
         "kind": "FUNCTION",
         "symbol": "syncVerifiedLearningCharacterMotion",
         "context": "local function syncVerifiedLearningCharacterMotion(character)",
@@ -3852,18 +4366,98 @@
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 26,
+        "line": 27,
         "kind": "FUNCTION",
         "symbol": "hasStudioAssetAtom",
         "context": "local function hasStudioAssetAtom(familyOrAtom, atom)",
         "score": 34
       },
       {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 299,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.Apply",
+        "context": "function RobloxCommonMaterials.Apply(part, atomId, options)",
+        "score": 34
+      },
+      {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 22,
+        "line": 23,
         "kind": "FUNCTION",
         "symbol": "studioAssetFamily",
         "context": "local function studioAssetFamily(family)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+        "line": 7,
+        "kind": "FUNCTION",
+        "symbol": "flush",
+        "context": "local function flush()",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+        "line": 20,
+        "kind": "FUNCTION",
+        "symbol": "enqueue",
+        "context": "local function enqueue(instance)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 236,
+        "kind": "FUNCTION",
+        "symbol": "clamp",
+        "context": "local function clamp(value, minValue, maxValue)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 240,
+        "kind": "FUNCTION",
+        "symbol": "clonePhysicalProperties",
+        "context": "local function clonePhysicalProperties(properties)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 253,
+        "kind": "FUNCTION",
+        "symbol": "resolvePreset",
+        "context": "local function resolvePreset(atomId, variant)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 263,
+        "kind": "FUNCTION",
+        "symbol": "tag",
+        "context": "local function tag(part, atomId, variantId)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 281,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.Describe",
+        "context": "function RobloxCommonMaterials.Describe(atomId)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 347,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.ApplyMany",
+        "context": "function RobloxCommonMaterials.ApplyMany(parts, atomId, options)",
+        "score": 26
+      },
+      {
+        "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "line": 360,
+        "kind": "FUNCTION",
+        "symbol": "RobloxCommonMaterials.ApplyAuthoredSurface",
+        "context": "function RobloxCommonMaterials.ApplyAuthoredSurface(part,style)",
         "score": 26
       }
     ]
@@ -3871,20 +4465,18 @@
   "previousVersionDelta": {
     "previousGoal": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.",
     "previousFocus": "USABILITY",
-    "previousGeneration": 2,
-    "previousSourceTreeFingerprint": "58693bcc979ccc09039d95debfaa471ff7ed42bd3c21448acde7ea69bce41500",
-    "currentSourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+    "previousGeneration": 3,
+    "previousSourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+    "currentSourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-    "failureSignature": "existing-source-studio-asset-binding-required",
-    "blockers": [
-      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
-    ],
+    "failureStage": "",
+    "failureSignature": "",
+    "blockers": [],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -4037,8 +4629,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
+      "state": "PASS",
+      "reason": "current source and approved design provide sufficient implementation signal"
     },
     {
       "domain": "CRAFTING",
@@ -4517,8 +5109,8 @@
     },
     {
       "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "priority": "FIX_NOW",
+      "state": "PASS",
+      "priority": "BUILD_UP_NOW",
       "developmentDepth": 1,
       "directive": "장비/무기 슬롯, 교체, 비교, 장착 표시, 캐릭터 외형/스탯/행동 반영이 같은 authoritative 장착 상태를 사용하도록 연결한다.",
       "implementationContract": "WHAT→TRIGGER/CONDITION→STATE_CHANGE→PLAYER_FEEDBACK→SYSTEM_CONNECTION→OBSERVABLE_ACCEPTANCE",
@@ -4941,11 +5533,6 @@
   ],
   "detectedGaps": [
     {
-      "domain": "EQUIPMENT_LOADOUT",
-      "state": "GAP",
-      "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
-    },
-    {
       "domain": "MENU_FLOW",
       "state": "GAP",
       "reason": "current source signals indicate shallow, missing, disconnected, or placeholder-heavy implementation"
@@ -5035,8 +5622,8 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 85209,
-        "largestFileBytes": 43490,
+        "sourceBytes": 339988,
+        "largestFileBytes": 233644,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
         "mobileFps": 0
@@ -5068,8 +5655,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 3,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=2; uncoveredBefore=6.",
+    "themeDepth": 4,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=USABILITY; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=3; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -5079,9 +5666,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 3
+        "PRESENTATION_WORLD_COHESION": 4
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
@@ -5119,7 +5707,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 200,
+        "score": 182,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -5128,18 +5716,16 @@
         ]
       },
       {
-        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
-        "score": 42,
-        "gapDomains": [
-          "EQUIPMENT_LOADOUT"
-        ]
-      },
-      {
         "theme": "ENEMY_BOSS_COMBAT_ECOLOGY",
         "score": 26,
         "gapDomains": [
           "ENEMY_VISUALS"
         ]
+      },
+      {
+        "theme": "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN",
+        "score": 24,
+        "gapDomains": []
       },
       {
         "theme": "WORLD_ECOLOGY_STORY_CHAIN",
@@ -5235,11 +5821,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 3,
-    "previousGeneration": 2,
+    "generation": 4,
+    "previousGeneration": 3,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
-    "priorSourceFingerprint": "58693bcc979ccc09039d95debfaa471ff7ed42bd3c21448acde7ea69bce41500",
+    "sourceFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
+    "priorSourceFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -5472,7 +6058,7 @@
   ],
   "platformAdaptationDirectives": {
     "WEB": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
-    "ROBLOX": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. Unity Web의 동일 게임 unity-games/<gameId>/Assets/Scripts C# 실제 소스가 존재하면 기존 DESIGN_TO_PLATFORM_CODING_CHECK.unityWebSourceSync의 정확한 함수명·파일·원본 지문을 읽어 공통 설계 MAIN/A/B/C/@의 입력·출력·상태 전이를 대조하고 Roblox 기존 Luau 책임 함수에 직접 재구현한다. Unity Web C#를 직역하거나 실행/QA PASS를 승계하지 말고 Roblox 서버 권한·RemoteEvent·DataStore·터치·StreamingEnabled·네이티브 애니메이션·자원 예산에 최적화한다. 유니티 원본이 아직 없으면 Roblox 작업을 거짓 중단하거나 독립 파이프라인을 만들지 말고 공통 설계와 기존 소스를 기준으로 진행하되 후속 루프에서 유니티와 규칙 동기화를 재검사한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Roblox는 추가 집중 대상이다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Studio 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 Official Studio MCP 전후 캡처와 실제 입력이 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
+    "ROBLOX": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Roblox 네이티브 Luau/server-client/Remote/touch/3D presentation 구조로 구현한다. 게임 원본은 roblox-games/<gameId>/의 Roblox Luau다. 설계 생성부터 MAIN/A/B/C/@의 상태 입력·출력·시스템 연결을 기존 Luau 서버·공유·클라이언트 책임 함수에 연결한다. 유니티 웹·안드로이드는 보류이며 C#를 원본이나 필수 변환 입력으로 요구하지 않는다. 남아 있는 유니티 소스는 선택적 호환 비교 자료일 뿐 규칙 권한이 없다. 설계 문법 → 실제 시스템 구현 → 연결된 콘텐츠 확장 → 내부 자산 적용 → 원본 소스 변경 → 기존 F0~F9 검증 → 다음 빌드업으로 이어간다. 각 시스템·콘텐츠는 실제 함수와 상태 변경 및 런타임 행동 결과로 확인한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 공통 원본을 따른다. C는 두 창작 소재와 메인·보조 장르의 인과이고 소문자 c는 기존 원본에 있을 때만 사용한다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 현재 개발 집중 대상은 Roblox다. 플레이어/NPC/크리처의 관절 기반 Animator·Motor6D/Bone 모션, idle/walk/jog/run/start/stop/turn/jump/land/attack anticipation-impact-recovery/hit/death 전환, 무게 이동·보조 모션을 실제 상태에 연결하고 root/CFrame 전체 이동만으로 모션 PASS를 주장하지 않는다. HUD/메뉴/인벤은 44px 상당 터치 타깃·safe area·스크롤·닫기·선택 유지·장착 표시·교체 피드백을 검증한다. 오디오는 owner가 끈 카테고리는 되살리지 않되 SoundService/SoundGroup 수명주기, 월드 3D rolloff, 지역/상태/전투 BGM 전환과 중복 재생 방지를 실제 Roblox 클라우드 API 런타임에서 확인한다. VFX·카메라·오디오는 authoritative impact에 동기화하고 중앙 정책의 Roblox 클라우드 API 전후 증거와 실제 행동 결과가 없으면 체감 품질 완료로 계산하지 않는다. 다른 플랫폼 구현을 그대로 복사하지 않는다.",
     "UNITY": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 원본의 규칙과 상태를 보존하며 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Unity 네이티브 코드로 구현한다. 플랫폼별 재설계는 금지하고 입력·물리 표현·카메라·애니메이션·UI·성능·저장 전송을 같은 원본에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다. Animator/BlendTree 또는 동등 상태 모션, Canvas safe area와 인벤/메뉴 흐름, AudioMixer/AudioSource 상태 전환, Android 터치 런타임과 프레임·메모리 예산을 Unity 특성에 맞게 응용한다.",
     "FORTNITE_UEFN": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.: 동일 공통 목표 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 Fortnite UEFN의 Verse/device/world/replication 구조와 플레이 공간에 맞게 구현한다. Roblox/Unity/Web 코드를 직역하지 말고 UEFN 네이티브 책임과 멀티플레이 권한을 사용한다.",
     "UNITY_WEB": "Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.: 게임당 하나인 공통 설계 원본을 기준으로 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"를 구현한다. MAIN/A/B/C/@·규칙·상태·진행·멀티는 같은 원본을 따른다. 플랫폼별 재설계는 금지하고 게임 규칙 확장은 공통 원본 개정으로 돌아간다. 실제 터치/포인터 입력, DOM/Canvas 또는 Unity WebGL 표현, 모바일 safe-area/스크롤/모달 흐름, WebAudio/BGM 상태 전환, 렌더·메모리 비용을 WEB 특성에 맞게 응용한다. 중앙 정책이 Unity WebGL을 canonical Web으로 지정한 게임은 같은 unity-games 소스를 사용하며 별도 복제 코드베이스를 만들지 않는다.",
@@ -5486,8 +6072,11 @@
     "responsibleFiles": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json"
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
     ],
     "sourceSymbolsOrStateAnchors": [
       {
@@ -5537,16 +6126,16 @@
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 223,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
-        "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
+        "currentBehavior": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
         "intendedBehavior": "USABILITY primary goal \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "observableAcceptance": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 399,
+        "line": 353,
         "kind": "FUNCTION",
         "symbol": "render",
         "currentBehavior": "local function render()",
@@ -5683,19 +6272,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+    "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -6048,6 +6640,41 @@
         "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
         "sourceAnchors": [
           {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
             "symbol": "scopeHandler1",
             "kind": "FUNCTION"
@@ -6070,6 +6697,91 @@
           {
             "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
             "symbol": "scopeHandler5",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateItemStateBadges",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionProgress",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.AdaptActionMenu",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
@@ -6113,8 +6825,58 @@
             "kind": "FUNCTION"
           },
           {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.Apply",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
             "symbol": "studioAssetFamily",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+            "symbol": "flush",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+            "symbol": "enqueue",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "clamp",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "clonePhysicalProperties",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "resolvePreset",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "tag",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.Describe",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.ApplyMany",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.ApplyAuthoredSurface",
             "kind": "FUNCTION"
           }
         ],
@@ -6144,7 +6906,10 @@
       "sourceFiles": [
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -6275,6 +7040,16 @@
           "runtimeVerified": false
         },
         {
+          "id": "CONDITIONAL_LOOT_FILTER",
+          "game": "Diablo IV",
+          "sourceUrl": "https://news.blizzard.com/en-us/article/24267729/prepare-for-the-reckoning-lord-of-hatred-draws-near",
+          "observedAt": "2026-10-07",
+          "principle": "Reusable conditions reduce irrelevant loot information; filters can be shared.",
+          "adaptation": "Expose filter state and reset; filtering must not delete rewards or silently auto-sell.",
+          "authority": "DESIGN_REFERENCE_ONLY",
+          "runtimeVerified": false
+        },
+        {
           "id": "TRAVEL_FAVORITES",
           "game": "No Man's Sky",
           "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
@@ -6305,7 +7080,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -6317,7 +7092,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -6341,7 +7116,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -6433,6 +7208,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -6470,11 +7246,48 @@
           "library": "assets/character-progression.js",
           "sourceFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -6503,11 +7316,13 @@
         {
           "id": "ECONOMY_LOOT_SHOP",
           "library": "assets/economy-loot-shop.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6519,11 +7334,13 @@
         {
           "id": "INPUT_ACTIONS",
           "library": "assets/input-actions.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6587,11 +7404,13 @@
         {
           "id": "RESOURCE_GATHERING",
           "library": "assets/resource-gathering.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6651,11 +7470,13 @@
         {
           "id": "STAT_MODIFIERS",
           "library": "assets/stat-modifiers.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6667,11 +7488,13 @@
         {
           "id": "STATE_MACHINE",
           "library": "assets/state-machine.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6683,11 +7506,13 @@
         {
           "id": "STATUS_EFFECTS",
           "library": "assets/status-effects.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -6732,7 +7557,9 @@
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -6773,7 +7600,10 @@
       "sourceFiles": [
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -6864,6 +7694,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -6901,7 +7732,80 @@
           "library": "assets/character-progression.js",
           "sourceFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ECONOMY_LOOT_SHOP",
+          "library": "assets/economy-loot-shop.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "INPUT_ACTIONS",
+          "library": "assets/input-actions.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -6952,10 +7856,84 @@
           "runtimeVerified": false
         },
         {
+          "id": "RESOURCE_GATHERING",
+          "library": "assets/resource-gathering.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STAT_MODIFIERS",
+          "library": "assets/stat-modifiers.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATE_MACHINE",
+          "library": "assets/state-machine.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATUS_EFFECTS",
+          "library": "assets/status-effects.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -7047,19 +8025,22 @@
       {
         "role": "CLIENT_PRESENTATION",
         "files": [
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       },
       {
         "role": "SHARED_DEFINITION",
         "files": [
-          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+          "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
         ],
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+    "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -7412,6 +8393,41 @@
         "mobileUx": "터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.",
         "sourceAnchors": [
           {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
             "symbol": "scopeHandler1",
             "kind": "FUNCTION"
@@ -7434,6 +8450,91 @@
           {
             "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
             "symbol": "scopeHandler5",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMountInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateSeatInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBedInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateHarvestInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateContainerInteractionPrompt",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateItemStateBadges",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionProgress",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateInteractionStateCard",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateMenuContextQuickActionSheet",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.CreateBossPhaseStrip",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "RobloxCommonUI.AdaptActionMenu",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "symbol": "sync",
             "kind": "FUNCTION"
           },
           {
@@ -7477,8 +8578,58 @@
             "kind": "FUNCTION"
           },
           {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.Apply",
+            "kind": "FUNCTION"
+          },
+          {
             "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
             "symbol": "studioAssetFamily",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+            "symbol": "flush",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau",
+            "symbol": "enqueue",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "clamp",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "clonePhysicalProperties",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "resolvePreset",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "tag",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.Describe",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.ApplyMany",
+            "kind": "FUNCTION"
+          },
+          {
+            "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+            "symbol": "RobloxCommonMaterials.ApplyAuthoredSurface",
             "kind": "FUNCTION"
           }
         ],
@@ -7508,7 +8659,10 @@
       "sourceFiles": [
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
       ],
       "authoringOrder": [
         "MACRO_REGIONS",
@@ -7639,6 +8793,16 @@
           "runtimeVerified": false
         },
         {
+          "id": "CONDITIONAL_LOOT_FILTER",
+          "game": "Diablo IV",
+          "sourceUrl": "https://news.blizzard.com/en-us/article/24267729/prepare-for-the-reckoning-lord-of-hatred-draws-near",
+          "observedAt": "2026-10-07",
+          "principle": "Reusable conditions reduce irrelevant loot information; filters can be shared.",
+          "adaptation": "Expose filter state and reset; filtering must not delete rewards or silently auto-sell.",
+          "authority": "DESIGN_REFERENCE_ONLY",
+          "runtimeVerified": false
+        },
+        {
           "id": "TRAVEL_FAVORITES",
           "game": "No Man's Sky",
           "sourceUrl": "https://www.nomanssky.com/worlds-part-ii-update/",
@@ -7669,7 +8833,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -7681,7 +8845,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -7705,7 +8869,7 @@
           "runtimeVerified": false,
           "matchEvidence": {
             "design": true,
-            "sourceAnchor": false
+            "sourceAnchor": true
           }
         },
         {
@@ -7797,6 +8961,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -7834,11 +8999,48 @@
           "library": "assets/character-progression.js",
           "sourceFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
             "source": true
           },
           "optional": true,
@@ -7867,11 +9069,13 @@
         {
           "id": "ECONOMY_LOOT_SHOP",
           "library": "assets/economy-loot-shop.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -7883,11 +9087,13 @@
         {
           "id": "INPUT_ACTIONS",
           "library": "assets/input-actions.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -7951,11 +9157,13 @@
         {
           "id": "RESOURCE_GATHERING",
           "library": "assets/resource-gathering.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8015,11 +9223,13 @@
         {
           "id": "STAT_MODIFIERS",
           "library": "assets/stat-modifiers.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8031,11 +9241,13 @@
         {
           "id": "STATE_MACHINE",
           "library": "assets/state-machine.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8047,11 +9259,13 @@
         {
           "id": "STATUS_EFFECTS",
           "library": "assets/status-effects.js",
-          "sourceFiles": [],
-          "status": "DESIGN_HINT_ONLY",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
             "design": true,
-            "source": false
+            "source": true
           },
           "optional": true,
           "firstParty": true,
@@ -8096,7 +9310,9 @@
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -8137,7 +9353,10 @@
       "sourceFiles": [
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
         "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
-        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau"
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+        "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
       ],
       "selectionRule": "OPTIONAL_EXISTING_SYSTEM_AND_SOURCE_MATCH_NOT_GENRE_TEMPLATE. Match external UX principles and internal tools automatically, but apply only for actual existing handlers and player friction. Reject irrelevant suggestions; never force a genre-wide menu.",
       "scope": "TASK_LOCAL_SCREENS_AND_EXISTING_ENTRY_RETURN_BOUNDARIES",
@@ -8228,6 +9447,7 @@
           "id": "ANIMATION_STATE",
           "library": "assets/animation-state.js",
           "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
@@ -8265,7 +9485,80 @@
           "library": "assets/character-progression.js",
           "sourceFiles": [
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
             "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_ACTIONS",
+          "library": "assets/combat-actions.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "COMBAT_VITALS",
+          "library": "assets/combat-vitals.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": false,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "ECONOMY_LOOT_SHOP",
+          "library": "assets/economy-loot-shop.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "INPUT_ACTIONS",
+          "library": "assets/input-actions.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -8316,10 +9609,84 @@
           "runtimeVerified": false
         },
         {
+          "id": "RESOURCE_GATHERING",
+          "library": "assets/resource-gathering.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STAT_MODIFIERS",
+          "library": "assets/stat-modifiers.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATE_MACHINE",
+          "library": "assets/state-machine.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
+          "id": "STATUS_EFFECTS",
+          "library": "assets/status-effects.js",
+          "sourceFiles": [
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau"
+          ],
+          "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
+          "matchEvidence": {
+            "design": true,
+            "source": true
+          },
+          "optional": true,
+          "firstParty": true,
+          "automaticImport": false,
+          "newGameplayAuthority": false,
+          "integration": "NATIVE_IMPLEMENTATION_IN_EXISTING_PROJECT",
+          "runtimeVerified": false
+        },
+        {
           "id": "VISUAL_STYLE",
           "library": "assets/visual-style.js",
           "sourceFiles": [
-            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau"
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
+            "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau"
           ],
           "status": "SOURCE_SIGNAL_MATCH_UNVERIFIED",
           "matchEvidence": {
@@ -8376,8 +9743,11 @@
     "files": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json"
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
     ],
     "sourceAnchors": [
       {
@@ -8442,19 +9812,19 @@
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 223,
+        "line": 177,
         "kind": "FUNCTION",
         "symbol": "playVerifiedLearningActionFeedback",
-        "context": "local function playVerifiedLearningActionFeedback(control)",
-        "score": 66,
-        "currentBehavior": "local function playVerifiedLearningActionFeedback(control)",
+        "context": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
+        "score": 58,
+        "currentBehavior": "local function playVerifiedLearningActionFeedback(control, serverConfirmed)",
         "intendedBehavior": "USABILITY primary goal \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.의 핵심 행동과 다음 목표를 모바일에서도 즉시 이해하고 실수 없이 조작할 수 있도록 입력·HUD·피드백 흐름을 다듬는다.\"에 맞춰 playVerifiedLearningActionFeedback의 입력/조건→상태 변화→피드백 연결을 직접 심화하고, 플레이어 관찰 결과가 \"Harbor Days을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.. 업보와 인과응보·신화 속 트릭스터의 질서 역전 생존. 업보와 인과응보의 생존 세계에서 탐험과 채집 × 업보와 인과응보과 제작과 거점 구축 × 신화 속 트릭스터의 질서 역전이 서로 결과를 되돌려 바꾸며 생존·추리의 판단이 실제 세계 상태를 변화시킨다.에서 핵심 행동과 다음 목표를 모바일에서 더 적은 오입력과 탐색 비용으로 수행한다.\"가 되게 한다.",
         "whyThisAnchor": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau::playVerifiedLearningActionFeedback이 현재 소스에서 primary goal과 직접 연결된 책임 앵커로 선택됨",
         "observableAcceptance": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau에 실제 source delta가 있고 관련 QA/runtime에서 USABILITY 상태 변화와 expected player effect가 관찰되어야 함"
       },
       {
         "file": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
-        "line": 399,
+        "line": 353,
         "kind": "FUNCTION",
         "symbol": "render",
         "context": "local function render()",
@@ -8487,15 +9857,13 @@
     "categories": [
       "GRAPHICS",
       "MAP",
-      "UI",
-      "GAMEPLAY"
+      "UI"
     ],
     "requiredQa": [
       "CHANGED_RESPONSIBILITY_STATIC_QA",
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -8522,8 +9890,11 @@
     "plannedFiles": [
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/Game.client.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/server/Game.server.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonUI.luau",
       "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/GameConfig.luau",
-      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json"
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/shared/RobloxCommonMaterials.luau",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/default.project.json",
+      "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp/client/MaterialPresentation.client.luau"
     ],
     "impact": {
       "version": 1,
@@ -8531,15 +9902,13 @@
       "categories": [
         "GRAPHICS",
         "MAP",
-        "UI",
-        "GAMEPLAY"
+        "UI"
       ],
       "requiredQa": [
         "CHANGED_RESPONSIBILITY_STATIC_QA",
         "ROBLOX_LUAU_COMPILE",
         "MAP_PROTECTED_ANCHOR_QA",
         "MOBILE_TOUCH_UI_QA",
-        "GAMEPLAY_STATE_DELTA_QA",
         "VISUAL_BINDING_QA",
         "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
       ],
@@ -8571,7 +9940,6 @@
       "ROBLOX_LUAU_COMPILE",
       "MAP_PROTECTED_ANCHOR_QA",
       "MOBILE_TOUCH_UI_QA",
-      "GAMEPLAY_STATE_DELTA_QA",
       "VISUAL_BINDING_QA",
       "ROBLOX_OPEN_CLOUD_WORLD_EVIDENCE"
     ],
@@ -8600,11 +9968,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "9b8c7850569aa6be240453bb4256702ad0c6dcc9913e4f993c227b6f2bad9474",
+      "sourceTreeFingerprint": "7161019662de4691db469744a9651ef1e7e570a19eb00132cfa5dd155e6ddb49",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "failureSignature": "existing-source-studio-asset-binding-required"
+      "failureStage": null,
+      "failureSignature": null
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -8656,7 +10024,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 4,
+    "nextGeneration": 5,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -8713,11 +10081,10 @@
       "RUNTIME_STABILITY"
     ],
     "holisticGaps": [
-      "EQUIPMENT_LOADOUT",
       "MENU_FLOW"
     ],
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-11T13:13:57.179Z"
+  "generatedAt": "2026-10-12T02:21:40.002Z"
 }
