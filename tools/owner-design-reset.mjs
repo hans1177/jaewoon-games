@@ -33,6 +33,17 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
     const game=clean(request.gameId);
     const baselineSource=clean(brief.baselineSource);
     const freeTopicMode=clean(brief.topicMode)==='VIBE_FREE_TOPIC';
+    // 신설계는 이전 원본을 통째로 읽지 않는다. 오너가 허용한 A 시스템의 최소 행동만 제한적으로 전달한다.
+    const aSystemReference=brief.aSystemReference;
+    if(aSystemReference!==undefined){
+      const allowed=['scope','systemFamily','playerChoice','source'];
+      if(!freeTopicMode||!aSystemReference||typeof aSystemReference!=='object'||Array.isArray(aSystemReference)
+        ||aSystemReference.scope!=='A_SYSTEM_ONLY'
+        ||Object.keys(aSystemReference).some(key=>!allowed.includes(key))
+        ||clean(aSystemReference.systemFamily).length<2||clean(aSystemReference.systemFamily).length>160
+        ||clean(aSystemReference.playerChoice).length<10||clean(aSystemReference.playerChoice).length>280
+        ||!clean(aSystemReference.source))throw new Error('OWNER_FREE_TOPIC_A_SYSTEM_ONLY_INVALID: '+game);
+    }
     if(freeTopicMode&&baselineSource)throw new Error('OWNER_FREE_TOPIC_BASELINE_FORBIDDEN: '+game);
     if(baselineSource&&(!baselineSource.startsWith('design/'+game+'/')||!/^design\/[a-z0-9-]+\/\d{4}-\d{2}-\d{2}\/design-revised\.json$/.test(baselineSource)))throw new Error('OWNER_DESIGN_BASELINE_PATH_INVALID: '+game);
     const original=baselineSource?JSON.parse(fs.readFileSync(path.resolve(path.dirname(file),baselineSource),'utf8')):null;
@@ -46,6 +57,7 @@ export function ownerDesignResetSeedForGame(gameId,file=OWNER_DESIGN_RESET_FILE)
       gameId:game,gameName,
       designInputMode:'OWNER_BRIEF_AND_ORIGINAL_ONLY',
       designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
+      ...(freeTopicMode&&aSystemReference?{A_SYSTEM_REFERENCE:clone(aSystemReference)}:{}),
       OWNER_LATEST_DESIGN_REQUEST:clean(brief.instruction),
       DESIGN_BASELINE_SOURCE:baselineSource||null,
       GAME_CATEGORY:clean(original?.gameCategory||'CASUAL'),
