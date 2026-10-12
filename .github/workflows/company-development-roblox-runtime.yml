@@ -80,6 +80,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
+      accepted: ${{ steps.freshness.outputs.run || 'false' }}
       count: ${{ steps.targets.outputs.count || '0' }}
       matrix: ${{ steps.targets.outputs.matrix || '{"include":[]}' }}
       targets_json: ${{ steps.targets.outputs.targets_json || '[]' }}
@@ -652,7 +653,7 @@ jobs:
   source-bootstrap:
     name: persist Roblox source-bind results
     needs: [source-plan, source-worker]
-    if: always() && needs.source-plan.result == 'success'
+    if: always() && needs.source-plan.result == 'success' && needs.source-plan.outputs.accepted == 'true' && (needs.source-plan.outputs.count != '0' || needs.source-plan.outputs.reconciliation_count != '0')
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
@@ -1032,7 +1033,7 @@ jobs:
   technical-plan:
     name: resolve Roblox technical package work
     needs: source-plan
-    if: always() && needs.source-plan.result == 'success'
+    if: always() && needs.source-plan.result == 'success' && needs.source-plan.outputs.accepted == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     outputs:
@@ -2178,6 +2179,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -2191,13 +2193,22 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           let packagePending=0,preflightReady=0,f0Ready=0,externalBlocked=0;
+          let runtimeQaReady=0;
           const readyIds=new Set();
+          const runtimeQaIds=new Set();
           for(const item of q.items||[]){
+            if(requested&&String(item.gameId||'').trim()!==requested)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            // 비공개 게시로 개발 레인이 닫혀도 기존 정확 후보의 실행 검수는 끝까지 이어간다.
+            const pendingRuntimeQa=roadmap.developmentAccess?.ROBLOX==='ALWAYS_ALLOWED'
+              &&item.robloxBuildOrPackagePassed===true&&item.robloxBuildPreflightPassed===true&&item.robloxFoundationF0Passed===true
+              &&item.robloxRuntimeCandidateEvidence?.published===true
+              &&(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion);
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(!concurrentDefault&&!secondaryOwnerFocus&&!pendingRuntimeQa)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();
@@ -2224,6 +2235,16 @@ jobs:
               }else if(runtimePassed!==true||String(runtimeHarness||'')!==harnessVersion){
                 const securityBlocked=securityHoldFlag===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(runtimeEvidence?.failure);
                 if(securityBlocked)externalBlocked++;
+                else if(!secondaryOwnerFocus){
+                  const f0=item.robloxFoundationF0Evidence||{};
+                  const candidate=item.robloxRuntimeCandidateEvidence||{};
+                  const exactCandidate=f0Passed&&f0.pass===true&&/^[a-f0-9]{40}$/i.test(revision)&&/^sha256:[a-f0-9]{64}$/i.test(artifact)
+                    &&f0.sourceRevision===revision&&f0.artifactIdentity===artifact
+                    &&candidate.published===true&&candidate.sourceRevision===revision&&candidate.artifactIdentity===artifact
+                    &&Number(candidate.versionNumber)>0&&String(candidate.universeId||'').trim()!==''&&String(candidate.placeId||'').trim()!=='';
+                  const qualityRepair=item.robloxQualityBuildUpRequired===true&&item.robloxQualityBuildUpSourceRevision===revision;
+                  if(exactCandidate&&!qualityRepair){runtimeQaReady++;runtimeQaIds.add(item.gameId);}
+                }
               }
               continue;
             }
@@ -2236,14 +2257,16 @@ jobs:
             packagePending++;
           }
           fs.writeFileSync('/tmp/roblox-continuation-ready-ids',[...readyIds].filter(Boolean).sort().join('\n')+([...readyIds].length?'\n':''));
-          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked}`);
+          fs.writeFileSync('/tmp/roblox-runtime-qa-ready-ids',[...runtimeQaIds].sort().join('\n')+(runtimeQaIds.size?'\n':''));
+          process.stdout.write(`${packagePending} ${preflightReady} ${f0Ready} ${externalBlocked} ${runtimeQaReady}`);
           NODE
           )"
-          read -r package_pending preflight_ready f0_ready external_blocked <<<"$state"
+          read -r package_pending preflight_ready f0_ready external_blocked runtime_qa_ready <<<"$state"
           echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
           echo "ROBLOX_F0_READY_COUNT=$f0_ready"
           echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
+          echo "ROBLOX_RUNTIME_FOUNDATION_QA_READY_COUNT=$runtime_qa_ready"
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
           echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED_CAUSAL_REPAIR'
           echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
@@ -2296,3 +2319,25 @@ jobs:
           fi
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH_COUNT=$dispatch_count"
           echo "ROBLOX_POST_PACKAGE_CONTINUATION_DEDUPED_COUNT=$deduped_count"
+
+          # 이미 배포된 정확한 F0 후보는 다시 업로드하지 않고 기존 실행 검수로 인계한다.
+          if [ "$runtime_qa_ready" -gt 0 ]; then
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-post-runtime-qa.yml/runs?per_page=100" > /tmp/roblox-runtime-qa-active-runs.json
+            node <<'NODE' > /tmp/roblox-runtime-qa-active-ids
+          const fs=require('fs');
+          const payload=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-qa-active-runs.json','utf8'));
+          const states=new Set(['queued','pending','in_progress','requested']);
+          const prefix='Roblox runtime foundation QA · ';
+          for(const id of new Set((payload.workflow_runs||[]).filter(run=>states.has(String(run.status||'').toLowerCase())&&String(run.display_title||'').startsWith(prefix)).map(run=>String(run.display_title).slice(prefix.length).trim()).filter(id=>/^[a-z0-9][a-z0-9-]{1,48}$/.test(id))))console.log(id);
+          NODE
+            while read -r id; do
+              [ -n "$id" ] || continue
+              if grep -Fxq "$id" /tmp/roblox-runtime-qa-active-ids; then
+                echo "ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=DEDUPED_ACTIVE:$id"
+                continue
+              fi
+              gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+              printf '%s\n' "$id" >> /tmp/roblox-runtime-qa-active-ids
+              echo "ROBLOX_RUNTIME_FOUNDATION_QA_DISPATCH=YES:$id"
+            done < /tmp/roblox-runtime-qa-ready-ids
+          fi
