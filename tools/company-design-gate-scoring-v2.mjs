@@ -155,7 +155,7 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
   // 육하원칙 기본설계는 V5 저작 결과다. 옛 접수 스케치 버전 때문에 c 축을 다시 강제하지 않는다.
   const ownerV5Grammar=Array.isArray(design.creativeGrammar?.fiveWOneH)||seed?.GAMEPLAY_SKETCH==null||Number(seed?.GAMEPLAY_SKETCH?.version||0)>=5||Number(seed?.novelGrammarBackfill?.version||0)>=5;
   if(ownerV5Grammar||selected.has('creativeGrammar')){
-    const grammar=design.creativeGrammar,axes=[grammar?.a,grammar?.b];
+    const grammar=design.creativeGrammar||{},axes=[grammar?.a,grammar?.b];
     const standard=Number(seed.designGrammarStandardVersion||grammar?.standardVersion||0)>=1;
     const creations=list(grammar?.dCreations);
     if(standard){

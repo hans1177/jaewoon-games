@@ -1818,7 +1818,7 @@ function computeVibeNativeDesign(){
     implementationTraceability:[
       {designElement:a.name,responsibleSystem:`roblox-games/${gameId}/에서 ${roles.A.name}의 기존 Luau 책임 함수와 코드 모듈`,validationEvidence:'같은 조건의 입력 전후 위험·세계 상태 값과 다음 B의 선택 변화를 비교한다.'},
       {designElement:b.name,responsibleSystem:`roblox-games/${gameId}/에서 ${roles.B.name}의 기존 Luau 책임 함수와 코드 모듈`,validationEvidence:'B의 반작용 이전/이후 A의 다음 경로·비용·행동 가능성을 비교한다.'},
-      {designElement:creativeGrammar.cGenreInterlock,responsibleSystem:'세계 상태·스토리 반응의 기존 책임 시스템',validationEvidence:'보조 장르를 제거한 반사실 비교에서 실제 선택과 정보가 달라지는지 재생한다.'},
+      {designElement:shorten(creativeGrammar.cGenreInterlock,240),responsibleSystem:'세계 상태·스토리 반응의 기존 책임 시스템',validationEvidence:'보조 장르를 제거한 반사실 비교에서 실제 선택과 정보가 달라지는지 재생한다.'},
       {designElement:delve[0].name,responsibleSystem:'진행·탐색·발견을 연결하는 기존 책임 함수',validationEvidence:'숨은 발견 조건 이전/이후의 새로운 선택과 재방문 결과를 검증한다.'}
     ],
     openQuestions:[]

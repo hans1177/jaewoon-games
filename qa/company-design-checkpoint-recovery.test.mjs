@@ -1,3 +1,4 @@
+// 파일명: qa/company-design-checkpoint-recovery.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -137,4 +138,17 @@ test('native designer stamps current owner event and topic mode on every checkpo
   assert.match(design,/ownerDesignEventId:activeOwnerDesignEventId\|\|null/);
   assert.match(design,/designTopicMode:activeDesignTopicMode\|\|null/);
   assert.match(design,/designCheckpoint\.ownerDesignEventId=activeOwnerDesignEventId\|\|null/);
+});
+
+
+// 회귀검증: 이전 점수가 높아도 현재 기본문법 원문이 빠지면 정식 생성기로 복귀한다.
+test('current basic grammar rejects stale checkpoint before candidate files are written',()=>{
+  const root=fixture();
+  try{
+    const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+    write(root,'company-learning/platform-release-roadmap.json',policy);
+    assert.throws(()=>materializeDeterministicCheckpointCandidate({gameId:'g',date:'2026-09-19',root}),/DESIGN_CHECKPOINT_RECOVERY_CONTENT_STALE/);
+    assert.equal(fs.existsSync(path.join(root,'design/g/2026-09-19/design-revised.json')),false);
+    assert.equal(fs.existsSync(path.join(root,'design/g/2026-09-19/cycle-status.json')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });

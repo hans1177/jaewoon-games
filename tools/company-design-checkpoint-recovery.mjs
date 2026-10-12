@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {validateDesignAuthoringContent} from './company-design-gate-scoring-v2.mjs';
 
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -102,6 +103,16 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
     const err=new Error('DESIGN_CHECKPOINT_RECOVERY_PRESERVATION_CONTRACT_STALE');
     err.code='PRESERVATION_CONTRACT_STALE';
     throw err;
+  }
+  // 메인: 과거 점수만으로 새 기본문법의 작성 결과를 복구하지 않는다. 현재 검수 실패는 기존 생성기로 돌려보낸다.
+  const standard=roadmap?.continuousGameplaySystemEvolutionContract?.gameIdentityConceptContract?.novelCausalGameGrammar?.ownerBasicDesignMethod;
+  if(standard?.version){
+    const failures=validateDesignAuthoringContent({design:revised,seed:{...seed,designGrammarStandardVersion:standard.version},fields:['creativeGrammar']});
+    if(failures.length){
+      const err=new Error('DESIGN_CHECKPOINT_RECOVERY_CONTENT_STALE: '+failures.map(row=>row.code).join(','));
+      err.code='CONTENT_STALE';
+      throw err;
+    }
   }
 
   const catalog=readJson(path.join(root,'game-catalog.json'),{games:[]});
@@ -204,3 +215,4 @@ function main(){
   }
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main();
+
