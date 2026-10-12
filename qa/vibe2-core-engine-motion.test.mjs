@@ -216,3 +216,14 @@ test('studio motion core keeps contact, IK and presentation timing non-authorita
   assert.equal(retarget.plantedContactMustPreserveWorldPosition,true);
   assert.equal(retarget.gameplayColliderAndRootAuthorityImmutable,true);
 });
+
+
+test('existing lobby menu new-session label does not enter new-project owner gate',()=>{
+ const request='[WORLD_LOBBY_FIRST] 기존 게임의 로비와 저장을 보존한다. menuStructure: 타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구. 새 게임 버튼은 새 세션을 시작한다.';
+ const plan=planVibeCoreTask({request,target:'roblox',gameId:'daechung-rpg'});
+ assert.equal(plan.workbench.companyDevelopment.required,false);
+ assert.equal(plan.executionGate.mayExecute,true);
+ const newProject=planVibeCoreTask({request:'새 게임 만들어. 타이틀에는 새 게임 버튼을 넣어.',target:'roblox',gameId:'new-project'});
+ assert.equal(newProject.workbench.companyDevelopment.required,true);
+ assert.ok(newProject.executionGate.reasons.includes('company-owner-gate-required'));
+});
