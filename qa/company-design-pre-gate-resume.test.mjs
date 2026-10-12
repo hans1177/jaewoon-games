@@ -1147,7 +1147,7 @@ test('native grammar authoring uses same repository systems and does not mint fa
   assert.match(native,/A/);
   assert.match(native,/sourceMaterial/);
   assert.match(native,/delveDiscoveries/);
-  assert.match(native,/targetPlatform:'ROBLOX'/);
+  assert.match(native,/targetPlatform:clean\(seed\.INITIAL_TARGET_PLATFORM\)==='UNITY'\?'UNITY':'ROBLOX'/);
   assert.match(native,/원본 언어는 Roblox Luau/);
   assert.match(native,/revised\.platformProfiles\.ROBLOX/);
   assert.match(native,/기존 F0~F9 및 Roblox 클라우드 API/);
