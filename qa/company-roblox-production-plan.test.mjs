@@ -32,6 +32,8 @@ test('simple genre menus and creature identity reach owned presentation workers 
   const actorPrompt=robloxProductionPromptLines(companions,{responsibleFiles:['server/Main.server.luau']}).join('\n');
   assert.match(actorPrompt,/AI_PARTICIPANT=/);assert.match(actorPrompt,/fhfgjjgdd75/);
   assert.match(actorPrompt,/never invent Roblox UserIds/);
+  assert.match(actorPrompt,/나무 좀 모을게/);
+  assert.match(actorPrompt,/same-event dedupe/);
   assert.match(actorPrompt,/Missing sibling implementation remains an explicit gap/);
 });
 
