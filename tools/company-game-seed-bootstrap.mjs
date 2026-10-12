@@ -854,6 +854,32 @@ export function computeVibeSeedProposal(target){
     {name:'두 소재의 숨은 규칙',condition:`${cMaterial1}와 ${cMaterial2}의 조건을 동시에 만족시키는 행동 순서를 실험한다.`,insight:`${third.principle} 원리와 ${fourth.principle} 원리가 동시에 작동함을 파악한다.`,effect:'주 장르의 목표를 보조 장르의 정보 판단으로 우회하는 선택을 연다.',links:['B','C','MAIN']},
     {name:'역전된 종착점',condition:`${profile.a}의 결과를 의도적으로 반대로 선택한 뒤 ${profile.b}를 수행해 후속 변화를 확인한다.`,insight:'한쪽의 불리한 결과가 다른 쪽의 고급 활용 조건이 되는 인과 반전을 학습한다.',effect:'같은 공간과 자원으로도 다른 결말·동선·운용법에 도달한다.',links:['A','B','MAIN']}
   ];
+  // @는 최초 네 발견으로 출발하지만 상한이 없다. 다음 발견은 이전 @의 결과를 선행 조건으로 삼아
+  // A↔B의 상태 교환과 C의 해석을 더 깊게 조합한다. 현재 설계에서 필요한 수만 생성한다.
+  const discoveryCount=target.discoveryCount===undefined?4:Number(target.discoveryCount);
+  if(!Number.isSafeInteger(discoveryCount)||discoveryCount<4)throw new Error('VIBE_NATIVE_DELVE_COUNT_INVALID');
+  const delvePaths=[
+    {name:'되돌림 경로',condition:'B의 RouteState를 A의 이전 경로에 적용하고 RiskState 차이를 관찰한다.',insight:'B의 결과를 복구와 재진입의 조건으로 바꾸는 숙련',effect:'A의 다른 접근 경로를 열고 다시 B의 ResourceState 조건을 시험한다.',links:['MAIN','A','B']},
+    {name:'교환된 비용',condition:'A의 ResourceState 결과를 다른 B 대응 순서로 시험하고 RiskState를 비교한다.',insight:'동일 자원이 다른 B 행동에 서로 다른 선택 비용을 만드는 관계',effect:'B의 비용을 바꾸어 다음 A의 RouteState 선택지를 넓힌다.',links:['A','B','C']},
+    {name:'숨은 증거',condition:'C의 서로 다른 소재 단서를 A와 B에서 역순으로 해석하고 IntentState 변화를 확인한다.',insight:'주 장르 목표에 보조 장르의 정보 판정이 뒤늦게 개입하는 규칙',effect:'IntentState를 새 조건으로 연결해 B의 우회 선택을 연다.',links:['B','C','MAIN']},
+    {name:'다음 갈림길',condition:'앞서 밝혀진 WorldAccessState 조건에서 A→B→A를 다시 수행해 새로운 차이를 비교한다.',insight:'같은 월드도 발견된 선행 조건에 따라 다음 숙련을 계속 만든다는 관계',effect:'WorldAccessState에 다음 실험 경로를 연결하고 발견 실패 시 기존 선택을 보존한다.',links:['MAIN','A','C']}
+  ];
+  for(let index=4;index<discoveryCount;index++){
+    // 네 최초 발견에서 시작해 모든 후속 발견이 앞선 @ 중 하나에 의존하는 확장 트리.
+    const parent=delveConditions[Math.floor((index-4)/2)];
+    const path=delvePaths[(index-4)%delvePaths.length];
+    const material=chosen[(index+1)%chosen.length];
+    const materialName=named(material);
+    const parentLabel=parent.name.length>92?parent.name.slice(0,92):parent.name;
+    const generationLabel=[...String(index-3)].map(d=>'영일이삼사오육칠팔구'[Number(d)]||'열').join('');
+    delveConditions.push({
+      name:`${parentLabel}·${materialName} ${path.name} ${generationLabel}`,
+      condition:`${parent.name}을(를) 먼저 발견한 뒤 ${path.condition} 이전에 발견한 규칙을 적용하지 않으면 이 실험은 열리지 않는다.`,
+      insight:`${parent.masteryOrInsight.slice(0,140)}를 출발점으로 ${material.principle} 원리와 ${path.insight}을(를) 결합해 선행 발견의 결과를 재해석한다.`,
+      effect:`${path.effect} ${material.gameGrammar} 다음 @의 조건은 이 결과에서 파생된다. 실패·취소 시 이전 WorldAccessState·RouteState를 보존한다.`,
+      links:path.links
+    });
+  }
   const grammar={
     toneBlend:[profile.genre,secondaryGenre],
     familiarAnchor:`플레이어는 ${profile.a}에서 얻은 이익과 ${profile.b}의 책임 사이에서 선택의 대가를 직접 감당한다.`,
@@ -887,7 +913,7 @@ export function computeVibeSeedProposal(target){
     },
     delveLayer:{formulaSuffix:'+ @',role:'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS',elements:delveConditions.map(row=>({name:row.name,discoveryCondition:row.condition,masteryOrInsight:row.insight,gameplayEffect:row.effect,connectsTo:row.links}))},
     emergentGenre:{name:freeTopicMode?`${aMaterial}·${bMaterial} ${profile.genre}·${secondaryGenre}`:`${aMaterial}·${bMaterial} ${profile.genre}`,definition:freeTopicMode?`A(${profile.a})와 B(${profile.b})의 상태 왕복에 ${cMaterial1}·${cMaterial2} 소재와 ${secondaryGenre} 판단이 적용돼 다음 월드 접근이 달라지는 복합 장르다.`:`${profile.a}과 ${profile.b}의 왕복 결과에 ${cMaterial1}·${cMaterial2}와 ${secondaryGenre} 판단이 개입해 다음 월드 상태가 변하는 복합 장르다.`,whyNotSingleConventionalGenre:'한쪽 시스템이나 소재, 보조 장르를 제거하면 가능 경로와 사건 원인이 바뀌므로 단일 장르 규칙으로 환원할 수 없다.',grammarFormula:'MAIN × A × B × C + @',categoryRole:'SEED_DISCOVERY_HINT_ONLY_NOT_FINAL_GENRE'},
-    expansionVectors:[`${profile.a}의 새로운 지역에서 이전 인과 선택을 다시 해석한다.`,`${profile.b}의 새 상대는 기존 상태를 증폭하거나 반전한다.`,`${cMaterial1}과 ${cMaterial2}의 조합에 다른 인간 갈등을 연결한다.`,'발견된 단서와 숙련을 기존 시스템 두 개 이상의 새로운 운용으로 확장한다.']
+    expansionVectors:[`${profile.a}의 새로운 지역에서 이전 인과 선택을 다시 해석한다.`,`${profile.b}의 새 상대는 기존 상태를 증폭하거나 반전한다.`,`${cMaterial1}과 ${cMaterial2}의 조합에 다른 인간 갈등을 연결한다.`,`@의 각 발견 결과에서 다음 A→B→A 조건과 C의 새 해석을 파생한다. 동일 상태값이나 번호만 바꾼 발견은 제외하고 기존 숙련과 다음 숙련의 새 행동·판정·결과를 확인해 상한 없이 이어 간다.`]
   };
   return {
     requestId:target.requestId,category,gameName,referenceGames:[],coreFunToLearn:[bridge,genreInterlock],
