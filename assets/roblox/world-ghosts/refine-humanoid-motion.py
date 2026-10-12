@@ -905,6 +905,17 @@ qa_metrics={
     'failures':qa_failures,
     'staticMotionQaPass':not qa_failures,
 }
+if qa_failures:
+    # [실제 블렌더 고장 진단] 루프 원본 키와 평가 시점의 차이를 로그에서 분리한다.
+    # 검사 임계값/차단과 자산 상태는 변경하지 않는다.
+    print('MOTION_STATIC_QA_DIAGNOSTIC='+json.dumps({
+        'loopMetrics':loop_metrics,
+        'bakedLoopEndpoints':baked_loop_metrics,
+        'walkFirstVsAuthored':snapshot_distance(
+            sampled_snapshot('hero_walk_hq',0.0),LOOP_FIRST_AUTHORED_POSES['hero_walk_hq']),
+        'walkLastVsAuthored':snapshot_distance(
+            sampled_snapshot('hero_walk_hq',1.0),LOOP_FIRST_AUTHORED_POSES['hero_walk_hq']),
+    },sort_keys=True),flush=True)
 assert not qa_failures, 'MOTION_STATIC_QA_FAILED:'+'|'.join(qa_failures)
 
 # 새 파생 GLB에는 공용 기초 이동·회전·점프·웅크리기 17모션만 포함한다.
