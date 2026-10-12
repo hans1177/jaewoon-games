@@ -365,15 +365,14 @@ test('source-sync contract edits wake runtime control while game edits use exact
 });
 
 
-test('stale exact-game cleanup never cancels in-progress Roblox work',()=>{
+test('batch cannot cancel queued exact games for unrelated commit changes',()=>{
   const runtime=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
-  const start=runtime.indexOf('      - name: Cancel stale exact-game runtime runs after contract change');
-  const end=runtime.indexOf('      - name: Bind Roblox source-plan contract fingerprint',start);
-  const block=runtime.slice(start,end);
-  assert.ok(start>=0&&end>start);
-  assert.match(block,/const states=new Set\(\['queued','pending','requested'\]\)/);
-  assert.doesNotMatch(block,/const states=new Set\(\[[^\]]*in_progress/);
-  assert.match(block,/ROBLOX_STALE_EXACT_RUNTIME_CANCEL_COUNT=/);
+  const sourcePlan=runtime.slice(runtime.indexOf('\n  source-plan:\n'),runtime.indexOf('\n  source-worker:\n'));
+  assert.doesNotMatch(sourcePlan,/actions\/runs\/\$run_id\/cancel/);
+  assert.match(sourcePlan,/ROBLOX_QUEUED_EXACT_CONTRACT_SELF_VALIDATION=YES/);
+  assert.match(sourcePlan,/git diff --quiet "\$GITHUB_SHA" "\$current_main" -- "\$\{contract_paths\[@\]\}"/);
+  assert.match(sourcePlan,/ROBLOX_BATCH_UNRELATED_MAIN_ADVANCE_ACCEPTED=/);
+  assert.match(sourcePlan,/ROBLOX_EXACT_CONTRACT_SUPERSEDED_REDISPATCH=YES:/);
 });
 
 test('exact Roblox runs deduplicate before work without cancelling an active build',()=>{
@@ -381,7 +380,7 @@ test('exact Roblox runs deduplicate before work without cancelling an active bui
   assert.doesNotMatch(runtime.slice(0,runtime.indexOf('\njobs:\n')),/\nconcurrency:\n/);
   const sourcePlan=runtime.slice(runtime.indexOf('\n  source-plan:\n'),runtime.indexOf('\n  source-worker:\n'));
   assert.match(sourcePlan,/concurrency:\n\s+group: roblox-runtime-source-plan-v2-\$\{\{ inputs\.game_id \|\| 'batch' \}\}/);
-  const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Cancel stale exact-game runtime runs'));
+  const freshness=runtime.slice(runtime.indexOf('      - name: Reject superseded batch scheduler'),runtime.indexOf('      - name: Bind Roblox source-plan contract fingerprint'));
   assert.match(freshness,/String\(r\.display_title\|\|''\)===title/);
   assert.match(sourcePlan,/cancel-in-progress: false/);
   assert.doesNotMatch(sourcePlan,/cancel-in-progress: true/);
