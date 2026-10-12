@@ -47,7 +47,31 @@ export const CAUSAL_DNA_LIBRARY=Object.freeze([
   {id:'PILGRIMAGE_TRANSFORMATION',source:'RELIGION_EPIC_JOURNEY',principle:'목적지보다 여정에서 받은 흔적과 관계가 사람을 바꾼다.',gameGrammar:'이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다.'},
   {id:'FORTUNE_REVERSAL',source:'TRAGEDY_COMEDY_DRAMATIC_STRUCTURE',principle:'최고점과 최저점이 서로의 원인이 되어 운명이 반전된다.',gameGrammar:'큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.'},
   {id:'ABSURD_BUREAUCRACY',source:'SATIRE_POLITICAL_COMEDY',principle:'규칙을 지키려 할수록 규칙의 모순이 더 큰 문제를 만든다.',gameGrammar:'허가·서류·명령·등급 같은 시스템을 역이용해 세계를 조작한다.'},
-  {id:'NAME_AND_REPUTATION_POWER',source:'EPIC_HEROIC_TRADITION_SOCIAL_HISTORY',principle:'실제 힘과 별개로 이름·소문·평판이 타인의 행동을 결정한다.',gameGrammar:'플레이어의 실제 행동보다 퍼진 이야기와 평판이 적·상점·세력의 규칙을 바꾼다.'}
+  {id:'NAME_AND_REPUTATION_POWER',source:'EPIC_HEROIC_TRADITION_SOCIAL_HISTORY',principle:'실제 힘과 별개로 이름·소문·평판이 타인의 행동을 결정한다.',gameGrammar:'플레이어의 실제 행동보다 퍼진 이야기와 평판이 적·상점·세력의 규칙을 바꾼다.'},
+  {"id":"SCIENCE_ECOLOGY","source":"SCIENCE_ECOLOGY","principle":"환경과 생물 집단은 서로 영향을 주어 자원과 서식 공간을 변화시킨다.","gameGrammar":"한 자원의 이용과 보존 결정이 다른 생물과 공간의 위험 조건을 바꾼다."},
+  {"id":"SCIENCE_ASTRONOMY","source":"SCIENCE_ASTRONOMY","principle":"공전과 위치 변화에 따라 관측 가능 시각과 방향이 달라진다.","gameGrammar":"공간과 시간 조건을 읽어 다른 진입 경로와 환경 반응을 선택한다."},
+  {"id":"SCIENCE_INVENTION","source":"SCIENCE_ENGINEERING","principle":"같은 도구도 구조와 연결 방식을 바꾸면 새로운 용도로 사용할 수 있다.","gameGrammar":"장치의 배치와 조합에 따라 이전에는 막힌 길의 접근 조건이 변화한다."},
+  {"id":"NARRATIVE_PERSPECTIVE","source":"LITERATURE_NARRATIVE","principle":"관찰자에 따라 같은 사건의 정보와 의미가 다르게 전달될 수 있다.","gameGrammar":"사건을 전달한 인물과 단서를 비교해 조사·교섭 조건을 갱신한다."},
+  {"id":"EAST_ASIAN_CONFUCIAN_RITES","source":"EAST_ASIAN_CONFUCIAN_TRADITION","principle":"예절과 관계 속 책임은 단독 행동뿐 아니라 공동체의 신뢰에도 영향을 준다.","gameGrammar":"약속과 의무를 지킨 결과가 동료 협력과 인물 관계의 접근 조건을 바꾼다."},
+  {"id":"EAST_ASIAN_BUDDHIST_CAUSALITY","source":"EAST_ASIAN_BUDDHIST_TRADITION","principle":"행동과 의도의 결과를 돌이켜 보며 연관된 존재의 고통과 관계를 성찰한다.","gameGrammar":"즉각적인 이득을 얻는 선택과 타인을 돕는 선택이 다른 다음 사건을 만든다."},
+  {"id":"SOUTH_ASIAN_DHARMA_DUTY","source":"SOUTH_ASIAN_PHILOSOPHY_RELIGIOUS_TRADITION","principle":"상황과 역할에서 생겨나는 책무는 서로 충돌하는 가치 사이에 갈등을 만든다.","gameGrammar":"서로 다른 역할의 의무를 고르면 동료의 지원과 목표의 선행 조건이 달라진다."},
+  {"id":"WESTERN_MONASTIC_COMMUNITY","source":"WESTERN_CHRISTIAN_MONASTIC_HISTORY","principle":"공동 규율과 돌봄의 실천은 개인의 자원과 공동체의 시간을 나누도록 요구한다.","gameGrammar":"공동체를 도울 때 자원의 즉시 사용은 줄지만 협력과 피난의 선택지가 달라진다."},
+  {"id":"WEST_ASIAN_COMMUNITY_STEWARDSHIP","source":"WEST_ASIAN_ISLAMIC_CIVILIZATION_HISTORY","principle":"공동체를 위한 신뢰와 나눔의 실천은 관계망과 물자 흐름에 영향을 준다.","gameGrammar":"자원을 혼자 쓰거나 공동으로 기여하는 선택이 지역의 거래·지원 조건을 변화시킨다."},
+  {"id":"EAST_ASIAN_HISTORICAL_ASTRONOMER","source":"EAST_ASIAN_HISTORICAL_SCIENCE","principle":"하늘의 주기와 계절을 관찰한 기록은 시간과 여행 계획을 새롭게 조직한다.","gameGrammar":"별과 계절의 관찰 결과를 이용해 다른 이동 시간과 위험 구간을 선택한다."},
+  {"id":"WESTERN_RENAISSANCE_INVENTOR","source":"WESTERN_RENAISSANCE_INVENTION_HISTORY","principle":"형태를 관찰하고 장치를 실험하면 익숙한 도구에서 예상 못한 기능을 찾아낼 수 있다.","gameGrammar":"다르게 연결한 장치가 이동·운반·공간 탐색의 새로운 선택을 만든다."},
+  {"id":"MEDIEVAL_SCHOLAR_OPTICS","source":"WEST_ASIAN_HISTORICAL_OPTICS","principle":"빛과 관찰의 관계를 실험하면 기존의 시각적 판단을 다시 검증할 수 있다.","gameGrammar":"빛의 반사와 관찰 위치를 바꿔 숨겨진 단서와 경로를 확인한다."},
+  {"id":"HISTORICAL_NAVIGATOR","source":"GLOBAL_HISTORICAL_EXPLORATION","principle":"새 지도는 미지의 땅보다도 기록과 실제 지형의 차이를 발견하도록 돕는다.","gameGrammar":"새 관측과 기록을 대조해 과거 통로의 의미와 다음 목적지를 바꾼다."},
+  {"id":"SCIENCE_THERMAL_COST","source":"SCIENCE_THERMODYNAMICS","principle":"열과 에너지의 분산은 어떤 변화를 되돌리기 어렵게 만든다.","gameGrammar":"강력한 장치 사용 뒤 남는 열과 자원 압박이 다음 제작·이동을 제약한다."},
+  {"id":"SCIENCE_CHEMICAL_REACTIONS","source":"SCIENCE_CHEMISTRY","principle":"재료의 조합과 환경 조건은 변화가 일어나는 순서와 결과를 바꿀 수 있다.","gameGrammar":"도구의 비위험한 가상 반응 조건을 비교해 다른 제작 방식과 길을 연다."},
+  {"id":"SCIENCE_GENETIC_ADAPTATION","source":"SCIENCE_BIOLOGY_EVOLUTION","principle":"환경의 압력과 변이는 생물 집단의 특성을 장기적으로 변화시킨다.","gameGrammar":"동일 대응을 반복할수록 상대 집단의 반응과 환경 선택지가 진화한다."},
+  {"id":"PHILOSOPHY_ETHICAL_TRADEOFF","source":"GLOBAL_ETHICAL_PHILOSOPHY","principle":"한 집단의 편의를 높인 결정이 다른 집단의 권리와 자원을 줄일 수 있다.","gameGrammar":"보상이 같아도 누구에게 비용을 넘겼는지에 따라 목표와 협력 규칙이 바뀐다."},
+  {"id":"PHILOSOPHY_FREE_WILL","source":"WESTERN_EXISTENTIAL_PHILOSOPHY","principle":"행동의 선택을 미루는 일도 사건에 영향을 주며 선택의 책임을 없애지 않는다.","gameGrammar":"플레이어가 개입하거나 방치한 결과가 다음 사건의 우선순위와 관계를 바꾼다."},
+  {"id":"EAST_ASIAN_DAOIST_BALANCE","source":"EAST_ASIAN_DAOIST_PHILOSOPHY","principle":"강한 개입보다 변화의 흐름에 맞춘 조절이 다른 결과를 만들기도 한다.","gameGrammar":"대상을 밀어붙이거나 흐름을 따라가는 선택이 위험·이동 경로를 달리 만든다."},
+  {"id":"NARRATIVE_FORESHADOWING","source":"GLOBAL_LITERATURE_FORESHADOWING","principle":"앞선 장면의 작은 단서는 나중 사건에서 뜻밖의 의미와 원인으로 드러난다.","gameGrammar":"기억한 단서 여부에 따라 뒤늦은 사건의 위험 신호와 대응이 달라진다."},
+  {"id":"NARRATIVE_MULTIPLE_VIEWPOINTS","source":"GLOBAL_LITERATURE_MULTIPLE_NARRATORS","principle":"서로 다른 인물의 시선은 같은 사건에 관한 각기 다른 단서를 드러낸다.","gameGrammar":"서로 다른 기록과 증언을 조합해 동선·사건 접근을 새롭게 판정한다."},
+  {"id":"ART_PERSPECTIVE","source":"VISUAL_ART_PERSPECTIVE","principle":"보는 위치와 구도는 공간의 형태와 길을 다르게 인식하도록 만든다.","gameGrammar":"카메라 위치에 따라 보이지 않던 표식과 통로를 발견할 수 있다."},
+  {"id":"MUSIC_RHYTHM","source":"WORLD_MUSIC_RHYTHM","principle":"다른 박자를 겹치면 새로운 반복 구조와 예측이 만들어진다.","gameGrammar":"소리와 박자의 패턴이 장치와 인물의 반응 시간을 달리 만든다."},
+  {"id":"NATURE_SEASONAL_CYCLES","source":"GLOBAL_NATURE_SEASONAL_ECOLOGY","principle":"계절과 이동의 주기는 서식 공간과 자원 접근성을 변화시킨다.","gameGrammar":"계절의 단서에 따라 같은 지역의 이동과 자원 확보 시점을 달리 고른다."}
 ]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
 export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([

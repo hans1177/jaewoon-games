@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {runInNewContext} from 'node:vm';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture} from '../tools/company-vibe2-game-flow-architect.mjs';
 import {computeVibeSeedProposal,normalizeGameplaySketch} from '../tools/company-game-seed-bootstrap.mjs';
@@ -472,4 +473,141 @@ test('free-topic Vibe seed proposal ignores supplied prior genre, name, system a
   assert.equal(cleanInput.gameplaySketch.novelGameGrammar.delveLayer.elements.length,4);
   assert.notEqual(cleanInput.gameName,'옛 왕국 정복');
   assert.notEqual(computeVibeSeedProposal({...base,topicRevision:'FREE-20261013'}).gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes.length,0);
+});
+
+// 메인: 자유주제 Vibe 기본설계는 과거 템플릿을 벗어나도 동일한 정식 문법·상태 계약을 지킨다.
+test('free-topic composition keeps independent causal inputs and actionable discoveries',()=>{
+  const base={requestId:'free-quality-regression',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',materials:[]};
+  const candidates=Array.from({length:16},(_,i)=>computeVibeSeedProposal({...base,topicRevision:`FREE-QUALITY-${i}`}));
+  const systems=new Set(),materials=new Set(),titles=new Set();
+  for(const proposal of candidates){
+    const grammar=proposal.gameplaySketch.novelGameGrammar;
+    const fusion=grammar.gameplaySystemFusion;
+    const [a,b]=fusion.majorAxes;
+    const discoveries=grammar.delveLayer.elements;
+    assert.deepEqual(fusion.majorAxes.map(row=>row.key),['A','B']);
+    assert.notEqual(a.systemFamily,b.systemFamily,'A and B must use independent gameplay families');
+    assert.match(a.materialRule,/RouteState.*RiskState|RiskState.*ResourceState/);
+    assert.match(b.materialRule,/RiskState.*ResourceState|ResourceState.*RouteState/);
+    assert.match(fusion.main.stateContribution,/WorldAccessState/);
+    assert.match(grammar.worldRule,/RiskState.*ResourceState.*RouteState/);
+    assert.equal(fusion.themeFusion.themes.length,2);
+    assert.equal(fusion.themeFusion.genres.length,2);
+    assert.match(fusion.themeFusion.genreInterlock,/ResourceState/);
+    assert.ok(fusion.crossSystemRules.every(row=>/State/.test(row)));
+    assert.ok(discoveries.length>=4);
+    assert.equal(new Set(discoveries.map(row=>row.name)).size,discoveries.length);
+    assert.ok(discoveries.every(row=>row.connectsTo.length>=2&&/State/.test(row.discoveryCondition)&&/State/.test(row.gameplayEffect)));
+    assert.ok(!discoveries.some(row=>row.name==='금기와 기회의 교차'),'free topics must not inherit a universal discovery title');
+    assert.ok(proposal.coreLoop.every(row=>/State/.test(row)));
+    assert.equal(grammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
+    systems.add(`${a.systemFamily}|${b.systemFamily}`);
+    materials.add(grammar.causalDNAs.slice(0,2).map(row=>row.id).join('|'));
+    titles.add(proposal.gameName);
+  }
+  assert.ok(systems.size>=6,'free design must compose several cross-family systems');
+  assert.ok(materials.size>=6,'free design must not force a genre-fixed material pair');
+  assert.ok(titles.size>=6,'MAIN title should reflect the generated original materials');
+  const proposal=candidates[0];
+  const sketch=normalizeGameplaySketch(base,proposal,proposal.coreLoop,proposal.gameName);
+  const seed={...legacySeed(),GAME_CATEGORY:'CASUAL',GAMEPLAY_SKETCH:sketch,
+    CORE_FUN_TO_LEARN:proposal.coreFunToLearn,CORE_LOOP:proposal.coreLoop,
+    DISTINCT_IDENTITY:proposal.distinctIdentity,INITIAL_TARGET_PLATFORM:proposal.initialTargetPlatform,
+    INITIAL_PLAY_MODE:proposal.initialPlayMode,MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode,
+    CROSS_PLATFORM_EXPANSION_VALUE:proposal.crossPlatformExpansionValue};
+  const result=validateGameSeed(seed);
+  assert.equal(result.pass,true,'canonical seed validation: '+result.errors.join('|'));
+  assert.deepEqual(computeVibeSeedProposal({...base,topicRevision:'FREE-QUALITY-0'}),proposal);
+});
+
+// 메인: A/B의 시스템 창작 후보는 보통의 게임 장르 전체를 포함하고 신규 등록 장르도 열린 입력으로 인정한다.
+test('free A/B uses broad gameplay genres and supports newly registered genre families',()=>{
+  const input={requestId:'genre-diversity-contract',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',materials:[]};
+  const genres=new Set(),systemsA=new Set(),systemsB=new Set();
+  for(let index=0;index<1000;index++){
+    const authored=computeVibeSeedProposal({...input,topicRevision:`GENRE-${index}`});
+    const fusion=authored.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
+    const [a,b]=fusion.majorAxes;
+    for(const row of fusion.themeFusion.genres)genres.add(row.name);
+    systemsA.add(a.systemFamily);systemsB.add(b.systemFamily);
+    assert.notEqual(a.systemFamily,b.systemFamily,'A and B must be different gameplay systems');
+    assert.notEqual(fusion.themeFusion.genres[0].name,fusion.themeFusion.genres[1].name);
+  }
+  for(const genre of ['롤플레잉','캐주얼','퍼즐','레이싱','액션','액션 RPG','어드벤처','슈팅',
+    '격투','스포츠','리듬','시뮬레이션','샌드박스','농장 경영','도시 건설',
+    '턴제 전략','타워 디펜스','추리','시뮬레이터 경영','스토리 RPG'])
+    assert.ok(genres.has(genre),`missing mainstream genre: ${genre}`);
+  assert.ok(systemsA.size>=40&&systemsB.size>=40,'all gameplay system families must be sampled');
+  const moduleText=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  const begin=moduleText.indexOf('export function computeVibeSeedProposal(');
+  const end=moduleText.indexOf('\nfunction buildSeed(',begin);
+  assert.ok(begin>=0&&end>begin);
+  const syntheticPlatforms={platforms:{ROBLOX:{categories:{FUTURE_HYBRID_GENRE:{
+    requiredConceptGroups:[['future','signal'],['new','response']]
+  }}}}};
+  const dynamicAuthor=runInNewContext(moduleText.slice(begin,end).replace('export function ','function ')
+    +'\ncomputeVibeSeedProposal',{
+      CAUSAL_DNA_LIBRARY,platformProfiles:syntheticPlatforms,
+      clean:value=>String(value??'').trim(),
+      uniq:items=>[...new Set((items||[]).map(value=>String(value??'').trim()).filter(Boolean))]
+    });
+  const found=Array.from({length:500},(_,index)=>dynamicAuthor({...input,topicRevision:`REGISTERED-${index}`}))
+    .some(proposal=>proposal.gameplaySketch.novelGameGrammar.gameplaySystemFusion.themeFusion.genres
+      .some(row=>row.name==='future hybrid genre'));
+  assert.ok(found,'future registered genres should participate without editing the A/B generator again');
+});
+
+// 메인: @는 최소 네 발견만 초기화하며 각 발견의 결과에서 다음 파고들기와 콘텐츠가 확장된다.
+test('delve grows beyond four through previous discoveries without duplicate names or a fixed maximum',()=>{
+  const base={requestId:'delve-depth-contract',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'DEPTH-1',materials:[]};
+  const four=computeVibeSeedProposal({...base,discoveryCount:4}).gameplaySketch.novelGameGrammar.delveLayer.elements;
+  for(const depth of [10,24,60]){
+    const expanded=computeVibeSeedProposal({...base,discoveryCount:depth});
+    const entries=expanded.gameplaySketch.novelGameGrammar.delveLayer.elements;
+    assert.equal(entries.length,depth);
+    assert.deepEqual(entries.slice(0,4),four,'earlier discoveries must remain stable');
+    assert.equal(new Set(entries.map(row=>row.name)).size,depth);
+    assert.ok(entries.slice(4).every(row=>/먼저 발견|먼저 발견한/.test(row.discoveryCondition)));
+    assert.ok(entries.slice(4).every(row=>row.connectsTo.length>=2));
+    assert.ok(entries.slice(4).every(row=>/다음 @의 조건/.test(row.gameplayEffect)));
+    assert.ok(entries.every(row=>row.name.length<=180&&row.discoveryCondition.length<=600
+      &&row.masteryOrInsight.length<=700&&row.gameplayEffect.length<=700));
+    assert.equal(expanded.gameplaySketch.novelGameGrammar.delveLayer.role,'DELVE_LAYER_NOT_GENERAL_SYSTEM_AXIS');
+  }
+  assert.throws(()=>computeVibeSeedProposal({...base,discoveryCount:3}),/VIBE_NATIVE_DELVE_COUNT_INVALID/);
+});
+
+// MAIN은 A/B/C/@를 설계한 뒤 그 결과에서 생성한다. 자유주제 이전 명칭은 정답으로 쓰지 않는다.
+test('free MAIN is synthesized after independent A and B, fused C genres and expandable @',()=>{
+  const source=fs.readFileSync('tools/company-game-seed-bootstrap.mjs','utf8');
+  const start=source.indexOf('export function computeVibeSeedProposal(');
+  const composer=source.slice(start,source.indexOf('\nfunction buildSeed(',start));
+  const discoveryPos=composer.indexOf('const delveConditions=freeTopicMode?');
+  const mainPos=composer.indexOf('const gameName=requestedName||');
+  const grammarPos=composer.indexOf('const grammar={');
+  assert.ok(discoveryPos>0&&mainPos>discoveryPos&&grammarPos>mainPos,
+    'MAIN must be determined only after the A/B systems, C genres and @ discoveries exist');
+  for(let index=0;index<32;index++){
+    const target={requestId:'bottom-up-main',category:'CASUAL',platform:'ROBLOX',
+      designTopicMode:'VIBE_FREE_TOPIC',topicRevision:`BOTTOM-UP-${index}`,materials:[]};
+    const result=computeVibeSeedProposal(target);
+    const grammar=result.gameplaySketch.novelGameGrammar;
+    const {main,majorAxes,themeFusion}=grammar.gameplaySystemFusion;
+    const discoveries=grammar.delveLayer.elements;
+    assert.equal(result.gameName,main.name);
+    assert.match(result.distinctIdentity,/MAIN은 A\(/);
+    assert.match(result.distinctIdentity,/B\(/);
+    assert.match(result.distinctIdentity,/C\(메인/);
+    assert.match(result.distinctIdentity,/@\(/);
+    assert.ok(result.distinctIdentity.includes(majorAxes[0].sourceMaterial));
+    assert.ok(result.distinctIdentity.includes(majorAxes[1].sourceMaterial));
+    for(const genre of themeFusion.genres)assert.ok(result.distinctIdentity.includes(genre.name));
+    assert.ok(result.distinctIdentity.includes(discoveries[0].name));
+    assert.notEqual(majorAxes[0].systemFamily,majorAxes[1].systemFamily);
+    assert.equal(grammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
+    assert.deepEqual(computeVibeSeedProposal({...target,gameName:'옛 포근섬 왕국',ownerBrief:'이전 주제 재사용'}),result);
+  }
 });
