@@ -5112,7 +5112,7 @@
       "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T18:31:06.672Z",
+      "updatedAt": "2026-10-12T18:51:00.779Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "daechung-rpg",
@@ -5146,8 +5146,8 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceCommit": "39e1c2c8ebbfb71e202823de7b8412309e7fd956",
-      "robloxSourceBootstrapPassedAt": "2026-10-12T18:31:06.672Z",
+      "robloxSourceCommit": "b52fdffd9f3f18480d10701e3bd28992e59087d9",
+      "robloxSourceBootstrapPassedAt": "2026-10-12T18:51:00.779Z",
       "robloxSourceBootstrapFailedAt": null,
       "robloxSourceCandidateBranch": "development/roblox-daechung-rpg-38283530693-1",
       "robloxSourceCandidateReadyAt": "2026-10-12T18:09:47.970Z",
@@ -5654,9 +5654,9 @@
       "robloxFastMvpPublished": false,
       "robloxFastMvpPublishedAt": null,
       "robloxEvidenceInvalidatedBySourceChange": {
-        "previousSourceRevision": "ac17f5b507f2db1faf49eb4dac453ddb066624aa",
-        "newSourceRevision": "39e1c2c8ebbfb71e202823de7b8412309e7fd956",
-        "invalidatedAt": "2026-10-12T18:31:06.672Z"
+        "previousSourceRevision": "39e1c2c8ebbfb71e202823de7b8412309e7fd956",
+        "newSourceRevision": "b52fdffd9f3f18480d10701e3bd28992e59087d9",
+        "invalidatedAt": "2026-10-12T18:51:00.779Z"
       }
     },
     {
@@ -10134,10 +10134,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:21:08.360Z",
-      "updatedAt": "2026-10-12T18:09:47.970Z",
+      "updatedAt": "2026-10-12T18:51:00.779Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "horror-escape-room",
@@ -10171,7 +10171,7 @@
         "capturedAt": "2026-10-12T02:22:19.692Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-12T18:51:00.779Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -10216,9 +10216,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-studio-asset-binding-required",
+      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
       "robloxSourceCommit": "4dcb4408028a35c704b41d8aa24259447c98d095",
       "robloxSourceBootstrapPassedAt": "2026-10-12T18:09:47.970Z",
@@ -10724,7 +10724,9 @@
         "gameplayAuthority": false
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null
+      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxInternalReleasePublished": false,
+      "robloxPublicRelease": false
     },
     {
       "gameId": "core-clash-4v4",
@@ -22022,10 +22024,10 @@
         "UNITY": "INTERNAL_OR_CLOSED_APP_TEST_BUILD"
       },
       "externalReleasePolicy": "PLATFORM_INDEPENDENT_AFTER_OWN_QA",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
       "canonicalState": "TARGET_PLATFORM_REPAIR_REQUIRED",
       "enqueuedAt": "2026-10-12T02:22:20.011Z",
-      "updatedAt": "2026-10-12T16:31:41.669Z",
+      "updatedAt": "2026-10-12T18:51:00.779Z",
       "robloxPublicationTarget": {
         "version": 3,
         "gameId": "cozy-island",
@@ -22059,7 +22061,7 @@
         "capturedAt": "2026-10-12T02:23:12.492Z"
       },
       "strictDesignReviewRefreshRequired": true,
-      "robloxSourceBootstrapFailedAt": null,
+      "robloxSourceBootstrapFailedAt": "2026-10-12T18:51:00.779Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -22104,9 +22106,9 @@
       "robloxReleaseClaim": false,
       "robloxReleasePublishedAt": null,
       "robloxFailureStage": "TARGET_PLATFORM_SOURCE_BIND",
-      "robloxFailureSignature": "existing-source-static-revalidation-failed",
+      "robloxFailureSignature": "ROBLOX_CHANGED_SOURCE_REVALIDATION_FAILED",
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-source-drift:CONFIG_GENRE_PROFILE_REQUIRED"
       ],
       "robloxSourceCommit": "4e036b4e97b6816f58fd1ef9ccbbbe084f1a9141",
       "robloxSourceBootstrapPassedAt": "2026-10-12T16:31:41.669Z",
@@ -22612,7 +22614,9 @@
         "gameplayAuthority": false
       },
       "robloxStudioAssetRuntimeBindingPassed": false,
-      "robloxStudioAssetRuntimeBindingEvidence": null
+      "robloxStudioAssetRuntimeBindingEvidence": null,
+      "robloxInternalReleasePublished": false,
+      "robloxPublicRelease": false
     },
     {
       "gameId": "human-go",
@@ -36488,7 +36492,7 @@
       "robloxStudioAssetRuntimeBindingEvidence": null
     }
   ],
-  "updatedAt": "2026-10-12T18:50:46.794Z",
+  "updatedAt": "2026-10-12T18:51:00.779Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
