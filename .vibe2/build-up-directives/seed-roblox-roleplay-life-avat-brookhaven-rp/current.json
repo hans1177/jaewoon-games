@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g5-a7e95712b0a7",
-  "directiveFingerprint": "a7e95712b0a7a3397d5e31f789de95df199ed6b881d40ab099daaaa4606a0f76",
+  "directiveId": "seed-roblox-roleplay-life-avat-brookhaven-rp-build-up-g5-a413d83529ca",
+  "directiveFingerprint": "a413d83529caf3361d8ecf33c3b5a76ef949e39a150f9f9b6c1e21c27c16cd53",
   "previousDirectiveFingerprint": "575eca03045c09c82364c53d95a6f82efb8394d4d3fe49401b80395f19036ffa",
   "forbiddenRepeatFingerprint": "575eca03045c09c82364c53d95a6f82efb8394d4d3fe49401b80395f19036ffa",
   "gameId": "seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -10,7 +10,7 @@
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
-  "previousDirectiveOutcome": "running",
+  "previousDirectiveOutcome": "queued",
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
@@ -4935,7 +4935,7 @@
     "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
     "failureSignature": "existing-source-static-revalidation-failed",
     "blockers": [
-      "roblox-runtime-evidence-pending"
+      "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_POLICY_SOURCE_REQUIRED|CONFIG_GENRE_PROFILE_REQUIRED|CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
     ],
     "runtimeObserved": false,
     "runtimePassed": false,
@@ -13065,5 +13065,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-12T18:25:00.563Z"
+  "generatedAt": "2026-10-12T18:59:01.706Z"
 }
