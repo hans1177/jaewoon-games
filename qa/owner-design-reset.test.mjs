@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {runInNewContext} from 'node:vm';
 import {ensureOwnerDesignResetSeed,materializeOwnerDesignResetSeeds} from '../tools/owner-design-reset.mjs';
 import {runOwnerAllGamesDesignReset,autoEnrollMissingDesignSeeds} from '../tools/company-all-games-design-reset.mjs';
 
@@ -476,4 +477,47 @@ test('explicit free-topic owner reset discards prior design input while keeping 
     fs.writeFileSync(queueFile,JSON.stringify({requests:[request]}));
     assert.throws(()=>ensureOwnerDesignResetSeed(state,'cozy-island',{file:queueFile}),/OWNER_FREE_TOPIC_BASELINE_FORBIDDEN/);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('design runtime lazily restores only validated active owner baselines before reset materialization',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const segment=workflow.slice(workflow.indexOf('      - name: Load latest company runtime state'),workflow.indexOf('      - name: Synchronize active owner design reset seeds'));
+  assert.match(segment,/OWNER_DESIGN_BASELINE_LOAD_MODE=TARGET_FILES_ONLY/);
+  assert.doesNotMatch(segment,/git checkout "origin\/\$COMPANY_RUNTIME_BRANCH" -- "\$runtime_path"/);
+  const match=segment.match(/node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/);
+  assert.ok(match,'existing load step must validate and restore explicitly referenced originals');
+  const source=match[1].replace(/^          /gm,'').replace(/^import .*;\n/gm,'');
+  const one='design/daechung-rpg/2026-09-22/design-revised.json';
+  const two='design/horror-escape-room/2026-09-22/design-revised.json';
+  const requests=[
+    {gameId:'cozy-island',designRequest:{topicMode:'VIBE_FREE_TOPIC',baselineSource:''}},
+    {gameId:'daechung-rpg',designRequest:{baselineSource:one}},
+    {gameId:'horror-escape-room',designRequest:{baselineSource:two}}
+  ];
+  const reads=[],writes=[],messages=[];
+  const execute=rows=>runInNewContext(source,{
+    activeOwnerDesignResetRequests:()=>rows,
+    execFileSync:(program,args)=>{assert.equal(program,'git');assert.equal(args[0],'show');reads.push(args[1]);return JSON.stringify({gameId:args[1]});},
+    fs:{mkdirSync:()=>{},writeFileSync:(file,content)=>writes.push({file,content})},
+    path,
+    process:{env:{COMPANY_RUNTIME_BRANCH:'company-runtime'}},
+    console:{log:message=>messages.push(message)}
+  });
+  execute(requests);
+  assert.deepEqual(reads,['origin/company-runtime:'+one,'origin/company-runtime:'+two]);
+  assert.deepEqual(writes.map(row=>row.file),[one,two]);
+  assert.ok(messages.includes('OWNER_DESIGN_BASELINE_SELECTED_COUNT=2'));
+  assert.ok(messages.includes('OWNER_DESIGN_BASELINE_LOAD_MODE=TARGET_FILES_ONLY'));
+  reads.length=0;
+  writes.length=0;
+  assert.throws(()=>execute([{gameId:'daechung-rpg',designRequest:{baselineSource:'design/daechung-rpg/../unsafe.json'}}]),/OWNER_DESIGN_BASELINE_PATH_INVALID/);
+  assert.equal(reads.length,0);
+  assert.equal(writes.length,0);
+  assert.throws(()=>runInNewContext(source,{
+    activeOwnerDesignResetRequests:()=>[requests[1]],
+    execFileSync:()=>{throw new Error('missing')},
+    fs:{mkdirSync:()=>{throw new Error('should not create')},writeFileSync:()=>{throw new Error('should not write')}},
+    path,process:{env:{COMPANY_RUNTIME_BRANCH:'company-runtime'}},
+    console:{log:()=>{}}
+  }),/OWNER_DESIGN_BASELINE_READ_FAILED/);
 });
