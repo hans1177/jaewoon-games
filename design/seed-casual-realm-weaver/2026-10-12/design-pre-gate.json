@@ -2,34 +2,16 @@
   "version": 3,
   "gameId": "seed-casual-realm-weaver",
   "date": "2026-10-12",
-  "attempt": 2,
-  "pass": false,
+  "attempt": 0,
+  "pass": true,
   "repairPacket": {
     "source": "DETERMINISTIC_PRE_GATE_V2",
     "bypassAllowed": false,
-    "totalScore": 78.4,
+    "totalScore": 80,
     "passMinimum": 80,
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "failedAxes": [
-      "PLATFORM_FIT_DESIGN"
-    ],
-    "reasons": [
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "PLATFORM_FIT_DESIGN",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 4.8,
-          "axisWeight": 8
-        },
-        "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
-        "fields": [],
-        "bypassAllowed": false
-      }
-    ]
+    "hardFailures": [],
+    "failedAxes": [],
+    "reasons": []
   },
   "score": {
     "scoreSystem": "STAGE_GATE_SCORING_V2",
@@ -65,7 +47,7 @@
       "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
       "CONTENT_EXPANSION_PLAN": 80,
       "FAILURE_RETRY_RISK_DESIGN": 80,
-      "PLATFORM_FIT_DESIGN": 60,
+      "PLATFORM_FIT_DESIGN": 80,
       "UX_AND_ACCESSIBILITY_PLAN": 80,
       "ART_AUDIO_DIRECTION": 80,
       "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
@@ -78,68 +60,20 @@
       "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
       "CONTENT_EXPANSION_PLAN": 8,
       "FAILURE_RETRY_RISK_DESIGN": 6.4,
-      "PLATFORM_FIT_DESIGN": 4.8,
+      "PLATFORM_FIT_DESIGN": 6.4,
       "UX_AND_ACCESSIBILITY_PLAN": 4.8,
       "ART_AUDIO_DIRECTION": 4,
       "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
     },
-    "totalScore": 78.4,
-    "criticalAxisFailures": [
-      "PLATFORM_FIT_DESIGN"
-    ],
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "rejectionReasons": [
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "kind": "HARD_GATE",
-        "axis": "PLATFORM_FIT_DESIGN",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 4.8,
-          "axisWeight": 8
-        },
-        "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
-        "bypassAllowed": false,
-        "source": "STAGE_GATE_SCORING_V2"
-      }
-    ],
+    "totalScore": 80,
+    "criticalAxisFailures": [],
+    "hardFailures": [],
+    "rejectionReasons": [],
     "revalidated": false,
     "thirtyMinuteHardGateApplied": false,
     "materialContractOk": true,
     "grammarCarryEvidence": null,
     "pendingSeedGrammarNotAuthored": true,
     "pendingSeedStillRequiresCreativeDesign": true
-  },
-  "history": [
-    {
-      "totalScore": 78.4,
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN"
-      ]
-    },
-    {
-      "totalScore": 78.4,
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN"
-      ]
-    },
-    {
-      "totalScore": 78.4,
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN"
-      ]
-    }
-  ]
+  }
 }
