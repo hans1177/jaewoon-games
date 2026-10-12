@@ -1161,8 +1161,8 @@
         "MULTIPLAYER_INTENT"
       ],
       "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
-      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
-      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "webRule": "웹은 현재 플랫폼 제작 대상이 아니다. 과거 webCanonicalDesign 필드는 기록 호환용 참고 뷰일 뿐, 별도 게임이나 Unity WebGL 빌드를 생성하지 않는다.",
+      "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     },
     "robloxBuildProfile": {
@@ -1196,7 +1196,7 @@
     "appliedRepairs": [],
     "aiReviewUsed": false,
     "aiVerdictUsed": false,
-    "materializedAt": "2026-10-12T02:53:06.043Z"
+    "materializedAt": "2026-10-12T03:03:08.904Z"
   },
   "prePromotionRepair": {
     "phase": "PRE_REVIEW",
@@ -1204,11 +1204,15 @@
       {
         "field": "robloxBuildProfile",
         "source": "GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY"
+      },
+      {
+        "field": "platformExpansionPolicy",
+        "source": "SINGLE_ORIGINAL_PLATFORM_IMPLEMENTATION_POLICY"
       }
     ],
     "groundedOnly": true,
     "legacyMultiplayerNormalization": false,
     "strictScoreOrVerdictModified": false,
-    "repairedAt": "2026-10-12T02:53:06.209Z"
+    "repairedAt": "2026-10-12T03:03:09.027Z"
   }
 }
