@@ -3,68 +3,12 @@
   "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
   "date": "2026-10-12",
   "productionClass": "DESIGN_ONLY",
-  "tierAlias": 3,
-  "tier": 3,
   "gameSeedId": "OWNER-DESIGN-SEED-STORY-COMPLETE-RPG-CHRONICLES-OF-ELDORIA",
-  "gameSeedSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-seed.json",
-  "gameSeedInputSource": "game-seed-state.json",
-  "gameplaySketchVersion": 5,
-  "inputGameplaySketchVersion": 1,
-  "gameplaySketch": {
-    "version": 1,
-    "source": "OWNER_BRIEF_COMPATIBILITY_INPUT_NOT_AUTHORED_DESIGN",
-    "worldModel": "CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
-    "actors": [
-      "플레이어: 월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
-      "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
-    ],
-    "interactionChains": [
-      "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
-    ],
-    "stateMachine": [
-      "START_OR_WORLD_ENTRY",
-      "REAL_PLAYER_INPUT",
-      "CORE_GAMEPLAY_ACTION",
-      "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
-      "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
-      "RISK_FAILURE_OR_RESOURCE_PRESSURE",
-      "GOAL_OR_RETRY"
-    ],
-    "firstPlayableCycle": [
-      "월드/세션 진입",
-      "월드 맵을 탐험하며 자원과 단서를 수집하고, 특정 지역의 환경 퍼즐을 해결하여 숨겨진 보상이나 스토리 분기를 발견합니다.",
-      "턴제 전투 시스템에서 적의 속성을 파악하고 스킬 콤보를 설계하여 승리한 뒤, 경험치와 고대 유물 파편을 획득하여 캐릭터를 강화합니다.",
-      "보상 또는 의미 있는 선택 적용",
-      "위험·실패·자원 압박 경험",
-      "획득한 유물 파편을 사용하여 스킬 트리를 커스터마이징하고, 강화된 능력으로 이전에는 도달할 수 없었던 고난도 지역에 도전하여 서사를 완결합니다."
-    ],
-    "expansionPlan": [
-      "새 적·위협 또는 행동 패턴",
-      "새 공간·경로 또는 목표",
-      "새 상호작용 또는 전략 결과"
-    ],
-    "longGoalScenario": [
-      "초기 핵심 루프 완료",
-      "성장·보상으로 새 선택 개방",
-      "새 위협·공간·목표를 거쳐 중간 목표 달성"
-    ],
-    "validationRisks": [
-      "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
-      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
-    ]
-  },
   "ownerDesignEventId": "OWNER-UNITY-WEB-3D-NEW-DESIGN-20261010-2:seed-story-complete-rpg-chronicles-of-eldoria",
-  "designEvolutionLoopVersion": 1,
-  "authorRole": "GAME_DESIGNER_AI",
+  "designTopicMode": null,
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
   "authorModel": "vibe-native:causal-design-v1",
-  "singleAuthor": true,
-  "preGate": {
-    "pass": true,
-    "totalScore": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "attempts": 0
-  },
+  "status": "DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT",
   "content": {
     "identity": "엘도리아 연대기. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 엘도리아 연대기에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
     "creativeGrammar": {
@@ -1460,5 +1404,11 @@
       "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     }
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "dffc53187e0c120140b24779b1a9ebaf68c126b005ceb84a8af47d6cd4493f1f",
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-10-12T03:09:01.519Z"
   }
 }
