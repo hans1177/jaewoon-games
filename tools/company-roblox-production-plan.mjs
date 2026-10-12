@@ -573,7 +573,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     evidenceRule:'Bind library revision and selected capabilities to actual source consumers and exact-build action/state/visual evidence. Imports, names, configuration, menu presence or match counts alone cannot claim use or quality improvement.'
   }:null;
   return {
-    version:4,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
+    version:5,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
     systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
@@ -589,6 +589,19 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     ideas,selectedIdea:chosen,ideaHistory:unique([...(available.length||repair?used:[]),chosen.id]),
     implementationPackages:packages,sourceTreeFingerprint:clean(source.sourceTreeFingerprint),
     spatialBlueprintContract:buildSpatialBlueprintContract({design,source,files,mode,platform:target,enabled:policy.spatialBlueprint?.enabled===true}),
+    ecosystemDirection:sourceOnly?null:{
+      scope:'EXISTING_APPROVED_WORLD_AND_HABITATS',
+      components:['LIGHT_AND_CLIMATE','HYDROLOGY_AND_SALINITY','SOIL_AND_GEOLOGY','MICROCLIMATE','PRODUCERS','HERBIVORES','PREDATORS','DECOMPOSERS','POLLINATION_AND_SEED_DISPERSAL','NUTRIENT_AND_ENERGY_FLOWS','SEASONS','SUCCESSION_AND_RECOVERY'],
+      implementation:'Reuse the actual hierarchy and habitat ecosystem output from assets/vibe-environment-director.js. Bind approved internal native models, materials, motion and ambient sound to the actual habitat microclimate, seasonal cues and matter-cycle state. Keep nature-like connected patches rather than uniform random decoration. Missing guild assets remain authoring gaps, not invented monsters. The normalized matter model is a presentation approximation, not a biological forecast.',
+      authority:'The owner now requests biome-composed spawn, drops and stats. Author ecologyGameplayRules and species gameplay definitions in the existing approved world design, then consume biomeGameplay entries through existing server spawn/combat/reward functions. The biome system owns generated configuration; server handlers own actual effects and exactly-once rewards. Preserve save identity, network security, route safety and mobile budgets.',runtimeVerified:false
+    },
+    biomeGameplayDirection:sourceOnly?null:{
+      ownerRequest:'OWNER_BIOME_SPAWN_DROP_STATS_20261012',mode:presentationOnly?'PRESENT_EXISTING_BIOME_RULES_ONLY':'BIOME_COMPOSES_SPAWN_DROPS_AND_STATS',
+      source:'assets/vibe-environment-director.js#createVibeProceduralWorldLayout',
+      requiredInputs:'ecologyGameplayRules: enabled, ownerAuthorized, revision, maxAlive, growthPerCell, statMultiplierRange, dropMultiplierRange, existing itemIds. Each species needs gameplay health, damage, spawnCount, respawnSeconds and itemId/chance/quantity drops.',
+      rule:'Use habitat fit, food availability, ecological pressure and distance/progression to generate concrete spawn, stat and independent drop tables. Do not keep those values unchanged merely because the former presentation-only rule did. Use actual game definitions, validate finite ranges and missing species/items, bind the generated revision to existing server consumers and verify spawn/death/loot/restore. Rebalance is authorized for biome gameplay; save schema and network bypass are not.',
+      runtimeVerified:false
+    },
     interfaceBlueprintContract:interfaceContract,libraryReuseContract,simpleMenuDirection,creatureIdentityDirection,aiParticipantDirection,
     qualityContract:{
       reference:'SAME_CONNECTED_PLAY_AND_PRESENTATION_STANDARD_AS_ROBLOX',
@@ -599,7 +612,7 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
     },
     handoffRule:'Use the observed files and symbols within the existing allowed write scope. Reuse existing event/data contracts; missing context is not permission to invent an API or edit another file.',
     contentRule:sourceOnly?'REPAIR_EXISTING_BEHAVIOR_ONLY':presentationOnly?'PRESENT_EXISTING_BEHAVIOR_ONLY':'CONNECT_ONE_PLAYABLE_CONTENT_PACKAGE_TO_EXISTING_CORE_LOOP',
-    preservation:['APPROVED_CONCEPT','APPROVED_GENRE','STYLE_LOCK','SAVE_IDENTITY','BALANCE_AND_ECONOMY_MEANING','SERVER_AUTHORITY'],
+    preservation:['APPROVED_CONCEPT','APPROVED_GENRE','STYLE_LOCK','SAVE_IDENTITY',sourceOnly||presentationOnly?'BALANCE_AND_ECONOMY_MEANING':'OWNER_AUTHORIZED_BIOME_BALANCE_REVISION','SERVER_AUTHORITY'],
     newWorkflow:false,newQaStage:false,implementationStatus:'PLANNED_NOT_IMPLEMENTED'
   };
 }
@@ -635,6 +648,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     prefix+'IDEA='+JSON.stringify(plan.selectedIdea),
     prefix+'CONNECTION='+JSON.stringify({flow:plan.systemConnection,coreLoop:plan.approvedCoreLoop,systems:plan.signatureSystems,nextGoal:plan.progressionDirection}),
     prefix+'FILES='+JSON.stringify(packages),
+    ...(packages.length&&plan.biomeGameplayDirection?[prefix+'BIOME_GAMEPLAY='+JSON.stringify(plan.biomeGameplayDirection)]:[]),
     ...(packages.some(row=>['CLIENT_PRESENTATION','GAMEPLAY_AND_PRESENTATION'].includes(row.role))&&plan.simpleMenuDirection?[
       prefix+'SIMPLE_MENU='+JSON.stringify(plan.simpleMenuDirection)
     ]:[]),
@@ -661,6 +675,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ]:[]),
     ...(plan.spatialBlueprintContract?[
       prefix+'SPATIAL='+JSON.stringify(blueprints.spatial),
+      ...(blueprints.spatial?.required&&plan.ecosystemDirection?[prefix+'ECOSYSTEM='+JSON.stringify(plan.ecosystemDirection)]:[]),
       ...(blueprints.spatial?.macroSketch?.proceduralWorldStudy?[
         prefix+'AUTO_BIOME_RULE=Translate the approved auto-biome study into actual native terrain, climate-matched vegetation/materials, water and coherent biome transitions inside owned world source. Low-poly detail is acceptable; biome labels, a flat recolored floor or a proposal alone are not implementation. Connect supported spawn, resource, settlement and objective routes before decoration. Validate slopes, shoreline, collisions, actor grounding, camera sightlines and mobile object/update budgets in the exact build. Preserve authored layout, resource quantities, spawn counts, save and combat semantics. If this worker cannot own the required terrain or bindings, report the exact missing responsibility; never claim full-world completion from bounded study samples.'
       ]:[]),
@@ -669,7 +684,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
     ]:[]),
     ...(plan.qualityContract?[prefix+'QUALITY='+JSON.stringify(plan.qualityContract)]:[]),
     ...list(plan.ownerFeatureChanges).map(change=>prefix+'OWNER='+JSON.stringify(change)+'; latest owner intent wins; REMOVE must not be restored by autonomous expansion; ADD/UPDATE must be preserved within this request scope.'),
-    prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+' Preserve approved concept, style, balance, save and server authority. Independent files can proceed in parallel inside the existing worker; this is no new stage.'
+    prefix+'SCOPE='+plan.contentRule+'; '+plan.handoffRule+(plan.biomeGameplayDirection?.mode==='BIOME_COMPOSES_SPAWN_DROPS_AND_STATS'?' Apply the owner-authorized biome balance revision through existing server handlers; preserve approved concept, style, save identity and network security.':' Preserve approved concept, style, balance, save and server authority.')+' Independent files can proceed in parallel inside the existing worker; this is no new stage.'
   ];
 }
 

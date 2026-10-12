@@ -3832,7 +3832,7 @@ test('queued autonomous expansion v1 without breadth ledger upgrades to v2 witho
   assert.ok(migrated.evidence.includes('build-up-directive-freshness:MIGRATED_LEGACY_DIRECTIVE_TO_AUTONOMOUS_CONTENT_EXPANSION_SAME_GENERATION'));
 });
 
-test('queued existing platform directives adopt production v4 without rewriting running work or consuming a generation',()=>{
+test('queued existing platform directives adopt production v5 without rewriting running work or consuming a generation',()=>{
   for(const [engine,gameId,target] of [['roblox','native-demo','roblox'],['unity','demo','unity-android'],['web','dev-web','web']]){
     const root=tempRepo();
     if(engine==='roblox'){
@@ -3856,7 +3856,7 @@ test('queued existing platform directives adopt production v4 without rewriting 
     const updated=result.queue.tasks.find(row=>row.id===queued.id);
     const untouched=result.queue.tasks.find(row=>row.id===running.id);
     assert.equal(updated.buildUpGeneration,queued.buildUpGeneration);
-    assert.equal(updated.buildUpDirective.productionPlan.version,4);
+    assert.equal(updated.buildUpDirective.productionPlan.version,5);
     assert.ok(updated.buildUpDirective.productionPlan.simpleMenuDirection);
     assert.ok(updated.buildUpDirective.productionPlan.creatureIdentityDirection);
     assert.equal(updated.buildUpDirective.productionPlan.platform,engine.toUpperCase());

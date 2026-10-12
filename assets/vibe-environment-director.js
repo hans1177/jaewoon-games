@@ -1,6 +1,6 @@
 // 파일명: assets/vibe-environment-director.js
 // 역할: 세계관/맵/사물/배경/날씨를 사실적 원인-반응과 제한된 물리·화학 상호작용으로 표현하는 결정론적 환경 Director
-// 절대 규칙: 개발/디자인 AI 사용 금지. 게임 런타임 AI만 허용. 물리·화학 표현은 기존 충돌/데미지/스폰/진행/밸런스/저장 규칙을 임의 변경하지 않음.
+// 규칙: 표현은 게임 상태를 임의 변경하지 않는다. 명시적으로 승인된 바이옴 게임 규칙은 스폰·능력치·드랍 설정을 생성하며 실제 적용은 기존 서버가 담당한다.
 
 const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
 const uniq=a=>[...new Set((a||[]).filter(Boolean))];
@@ -328,7 +328,7 @@ function proceduralGradientNoise(seed,x,z){
   const u=fade(fx),v=fade(fz),lerp=(a,b,t)=>a+(b-a)*t;
   return lerp(lerp(dot(ix,iz,fx,fz),dot(ix+1,iz,fx-1,fz),u),lerp(dot(ix,iz+1,fx,fz-1),dot(ix+1,iz+1,fx-1,fz-1),u),v);
 }
-export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[]}={}){
+export function createVibeProceduralWorldLayout({seed='world',width=24,height=24,cellSize=3,dimension='3D',biome='TEMPERATE',climate='TEMPERATE',buildingStyle='LOCAL',density=.25,mobile=true,approvedDesign=false,reservedCells=[],maxSlopeDegrees=35,fovDegrees=95,cameraForward={x:1,z:0},libraryAssets=[],gameId='',target='UNITY',styleFamily='STYLIZED_FANTASY',season='ANNUAL',ecosystemFeedback=null,era='AUTO',eraByZone={},waterMode='AUTO',ecologyActors=[],authoredDungeonSites=[],ecologyGameplayRules=null}={}){
   const noMutation={sourceMutationPerformed:false,nativeAssetInstancingPerformed:false,runtimeVerified:false,gameplayRuleMutation:false,saveMeaningMutation:false};
   if(approvedDesign!==true)return Object.freeze({status:'APPROVED_DESIGN_REQUIRED',issues:Object.freeze(['APPROVED_WORLD_DESIGN_REQUIRED']),...noMutation});
   const maximum=mobile?48:72,validNumber=n=>typeof n==='number'&&Number.isFinite(n);
@@ -827,9 +827,12 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
   const observedCoverByHabitat=new Map(),habitatCapacityByType=new Map();
   for(const tile of terrain){
     const type=tile.ecology.habitat;
-    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,scenicCapacity:0,waterCells:0};
+    const data=habitatCapacityByType.get(type)||{cells:0,capacity:0,scenicCapacity:0,waterCells:0,temperature:0,humidity:0,soil:0,erosion:0,salinity:0,aquaticCells:0};
     data.cells++;data.capacity+=tile.ecology.carryingCapacity;
     data.scenicCapacity+=tile.aquatic?tile.hydroVisual.scenicCarryingCapacity:tile.ecology.carryingCapacity;
+    data.temperature+=tile.surface.temperature;data.humidity+=tile.surface.humidity;data.soil+=tile.surface.soilDepth;
+    data.erosion+=tile.catchment.erosionRisk;data.salinity+=tile.hydroVisual.salinityPpt;
+    if(tile.aquatic)data.aquaticCells++;
     if(tile.surface.waterDistanceCells!==null&&tile.surface.waterDistanceCells<=2)data.waterCells++;
     habitatCapacityByType.set(type,data);
   }
@@ -855,6 +858,40 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     const nextPredator=clamp01(predator+.2*(.13*prey*predator-.09*predator));
     const foodWebVisual=Object.freeze({algorithm:'BOUNDED_LOTKA_VOLTERRA_SCENIC_PREVIEW',producerIndex:+producer.toFixed(3),
       preyIndex:+nextPrey.toFixed(3),predatorIndex:+nextPredator.toFixed(3),visualOnly:true,realCreatureCountChanged:false});
+    // 자연형 생태계: 물질 저장소 사이 이동을 계산해 생산·소비·분해·재순환을 연결한다.
+    // 지표는 무차원 표현 모델이며 실제 생물 개체수/수확/전투 결과를 변경하지 않는다.
+    const average=key=>row[key]/Math.max(1,row.cells),aquatic=row.aquaticCells>row.cells/2;
+    const temperature=average('temperature'),moisture=average('humidity'),soil=average('soil');
+    const light=seasonKey==='WINTER'?.35:seasonKey==='SUMMER'?.9:.65;
+    const productivity=clamp01(light*(aquatic?.7:moisture)*Math.max(.05,1-Math.abs(temperature-.55)*1.6));
+    const matter={nutrients:.25,producers:.45,herbivores:.12,predators:.04,detritus:.14};
+    const trace=[];
+    for(let step=0;step<24;step++){
+      const flows=[
+        ['nutrients','producers',matter.nutrients*.12*productivity],
+        ['producers','herbivores',matter.producers*matter.herbivores*.08],
+        ['herbivores','predators',matter.herbivores*matter.predators*.12],
+        ['producers','detritus',matter.producers*(seasonKey==='AUTUMN'?.035:.012)],
+        ['herbivores','detritus',matter.herbivores*.018],
+        ['predators','detritus',matter.predators*.014],
+        ['detritus','nutrients',matter.detritus*.08*(.2+moisture*.8)*(.3+temperature*.7)]
+      ];
+      for(const [from,to,requested] of flows){const amount=Math.min(matter[from],Math.max(0,requested));matter[from]-=amount;matter[to]+=amount;}
+      if(step%6===5)trace.push(Object.freeze({step:step+1,...matter}));
+    }
+    const ecosystem=Object.freeze({model:'BOUNDED_NATURE_INSPIRED_MATTER_CYCLE',scientificSimulation:false,units:'NORMALIZED_PRESENTATION_INDEX',
+      abiotic:Object.freeze({light,temperature,moisture,soilDepth:soil,erosion:average('erosion'),salinityPpt:average('salinity'),
+        dissolvedOxygenProxy:aquatic?clamp01(1-temperature*.45-matter.detritus*.35):null}),
+      guilds:Object.freeze({producers:aquatic?['ALGAE','AQUATIC_PLANTS']:['CANOPY','SHRUB','HERB','MOSS'],
+        primaryConsumers:['HERBIVORE','SEED_EATER'],secondaryConsumers:['SMALL_PREDATOR'],topConsumers:['PREDATOR'],
+        decomposers:['FUNGI','MICROBE','DETRITIVORE'],mutualists:aquatic?['CLEANER_SYMBIOSIS']:['POLLINATOR','SEED_DISPERSER','ROOT_SYMBIOSIS']}),
+      processes:Object.freeze(['PRIMARY_PRODUCTION','HERBIVORY','PREDATION','DECOMPOSITION','NUTRIENT_RECYCLE','WATER_CYCLE','COMPETITION','MUTUALISM','SEASONAL_DORMANCY','SUCCESSION','DISTURBANCE_RECOVERY']),
+      matterState:Object.freeze({...matter}),matterTotal:Object.values(matter).reduce((sum,value)=>sum+value,0),trace:Object.freeze(trace),
+      energy:Object.freeze({solarInput:light,primaryProduction:productivity,trophicTransferEfficiency:.1,heatDissipation:true}),
+      succession:Object.freeze({stage:soil<.25?'PIONEER':soil<.6?'ESTABLISHING':'MATURE_MOSAIC',recoverySuitability:clamp01(soil*moisture*(1-average('erosion')))}),
+      seasonalCues:Object.freeze(seasonKey==='WINTER'?['DORMANCY','REDUCED_ACTIVITY']:seasonKey==='AUTUMN'?['LEAF_LITTER','SEED_DISPERSAL']:seasonKey==='SPRING'?['BUDDING','POLLINATION']:['GROWTH','FORAGING']),
+      disturbanceCues:Object.freeze(average('erosion')>.45?['RUNOFF','SEDIMENT','BANK_RECOVERY']:moisture<.25?['DRY_SOIL','SPARSE_COVER']:['PATCH_GROWTH','LOCAL_REGENERATION']),
+      sourceBindingRequired:true,unavailableGuildAssetIsGap:true,actualSpawnCount:0,gameplayAuthority:false,nativeRuntimeVerified:false});
     const cue=/CORAL_REEF|OPEN_OCEAN|DEEP_OCEAN/.test(habitat)?'CURRENT_REEF_MARINE_SOUNDS'
       :/KELP_FOREST/.test(habitat)?'KELP_SWAY_AND_BUBBLES'
       :/FRESHWATER_LAKE/.test(habitat)?'LAKE_REEDS_AND_SHOREBIRDS'
@@ -868,7 +905,7 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
       carryingCapacitySum:+usableCapacity.toFixed(3),averageHabitatCapacity:+(usableCapacity/Math.max(1,row.cells)).toFixed(3),
       idealVisualCover:+desired.toFixed(3),nextVisualCover:+nextVisualCover.toFixed(3),
       validatedVisualDensityFeedbackApplied:feedbackAccepted,visualDensityFeedback:visualDensityDelta(habitat),
-      ambientCue:cue,foodWebVisual,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
+      ambientCue:cue,foodWebVisual,ecosystem,producerGuild:'VEGETATION',consumerGuild:'SCENIC_WILDLIFE_CUE_ONLY',
       decomposerGuild:'SOIL_AND_FALLEN_MATTER_CUE_ONLY',actualCreatureSpawnCount:0,
       actualHarvestableResourceCount:0,actualNativeVisualsVerified:false});
   });
@@ -1091,7 +1128,9 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
         if(membership[next].biomeId===biomeId&&terrain[next].ecology.habitat===first.ecology.habitat){seenHabitat.add(next);queue.push(next);}
       }
     }
-    habitatNodes.push(Object.freeze({id:habitatId,parentId:biomeId,level:'HABITAT',habitat:first.ecology.habitat,cells:Object.freeze(cells),material:first.surface.primary}));
+    const localMean=read=>queue.reduce((sum,index)=>sum+read(terrain[index]),0)/queue.length;
+    habitatNodes.push(Object.freeze({id:habitatId,parentId:biomeId,level:'HABITAT',habitat:first.ecology.habitat,cells:Object.freeze(cells),material:first.surface.primary,
+      ecosystemProfileId:first.ecology.habitat,microclimate:Object.freeze({temperature:localMean(tile=>tile.surface.temperature),moisture:localMean(tile=>tile.surface.humidity),soilDepth:localMean(tile=>tile.surface.soilDepth),erosion:localMean(tile=>tile.catchment.erosionRisk)}),nativeRuntimeVerified:false}));
   }
   const hierarchyBinding=(x,z)=>membership[z*w+x]||null;
   const hierarchy=Object.freeze({version:1,root:Object.freeze({id:worldId,level:'WORLD',seed:String(seed),climate:String(climate).toUpperCase()}),
@@ -1105,10 +1144,59 @@ export function createVibeProceduralWorldLayout({seed='world',width=24,height=24
     inheritance:Object.freeze(['CLIMATE','BIOME_IDENTITY','HABITAT','MATERIAL','SOURCE_SEED']),
     crossLayerRule:'Routes connect habitats; patches and actors belong to their actual habitat rather than arbitrary route ancestry.',
     nativeRuntimeVerified:false,gameplayAuthority:false});
+  // 메인: 명시적 바이옴 게임 규칙으로 스폰·능력치·드랍을 함께 구성한다.
+  // 현재 게임의 종/아이템 정의를 사용하고 결과는 동일 게임의 기존 서버 소유자가 적용한다.
+  const gameplayRows=[],gameplayIssues=[],rules=ecologyGameplayRules;
+  if(rules?.enabled===true){
+    const validRange=value=>Array.isArray(value)&&value.length===2&&value.every(n=>Number.isFinite(n)&&n>=0)&&value[1]>=value[0];
+    const validRules=typeof rules.revision==='string'&&rules.revision.length>0&&rules.ownerAuthorized===true
+      &&Number.isSafeInteger(rules.maxAlive)&&rules.maxAlive>=0&&Number.isFinite(rules.growthPerCell)&&rules.growthPerCell>=0
+      &&validRange(rules.statMultiplierRange)&&validRange(rules.dropMultiplierRange)&&Array.isArray(rules.itemIds)
+      &&rules.itemIds.every(id=>typeof id==='string'&&id.length>0&&id.length<=80);
+    if(!validRules)gameplayIssues.push('BIOME_GAMEPLAY_RULES_INVALID');
+    else{
+      const itemIds=new Set(rules.itemIds),definitions=new Map(ecologyActors.map(actor=>[String(actor.id),actor]));
+      let remaining=rules.maxAlive;
+      for(const site of lifeAndEncounterSites){
+        if(site.kind==='NPC'||site.status!=='DESIGN_MAPPED_NATIVE_BINDING_REQUIRED')continue;
+        const actor=definitions.get(site.actorId),base=actor?.gameplay,eco=habitatBalance.find(row=>row.habitat===site.habitat)?.ecosystem;
+        const validBase=base&&Number.isFinite(base.health)&&base.health>0&&Number.isFinite(base.damage)&&base.damage>=0
+          &&Number.isSafeInteger(base.spawnCount)&&base.spawnCount>=0&&Number.isFinite(base.respawnSeconds)&&base.respawnSeconds>0
+          &&Array.isArray(base.drops)&&base.drops.every(drop=>itemIds.has(drop.itemId)&&Number.isFinite(drop.chance)&&drop.chance>=0&&drop.chance<=1&&Number.isSafeInteger(drop.quantity)&&drop.quantity>0);
+        if(!validBase||!eco){gameplayIssues.push('BIOME_SPECIES_GAMEPLAY_INVALID:'+site.actorId);continue;}
+        const distance=entry&&site.cell?Math.hypot(site.cell.x-entry.x,site.cell.z-entry.z):0;
+        const pressure=clamp01(1-eco.energy.primaryProduction+eco.matterState.predators);
+        const multiplier=Math.max(rules.statMultiplierRange[0],Math.min(rules.statMultiplierRange[1],1+distance*rules.growthPerCell+pressure*.25));
+        const abundance=clamp01(eco.energy.primaryProduction+eco.matterState.producers);
+        const dropMultiplier=Math.max(rules.dropMultiplierRange[0],Math.min(rules.dropMultiplierRange[1],.5+abundance));
+        const requested=Math.max(0,Math.round(base.spawnCount*(.5+abundance)));
+        const health=Math.max(1,Math.round(base.health*multiplier)),damage=Math.max(0,Math.round(base.damage*multiplier));
+        const respawnSeconds=base.respawnSeconds/(.75+abundance*.5);
+        if(!Number.isSafeInteger(health)||!Number.isSafeInteger(damage)||!Number.isFinite(respawnSeconds)){
+          gameplayIssues.push('BIOME_GAMEPLAY_NUMERIC_OVERFLOW:'+site.actorId);continue;
+        }
+        const count=Math.min(remaining,requested);remaining-=count;
+        gameplayRows.push(Object.freeze({actorId:site.actorId,species:site.species,tier:site.tier,
+          habitatId:site.cell?hierarchyBinding(site.cell.x,site.cell.z)?.habitatId:null,
+          spawn:Object.freeze({anchor:site.position,maxAlive:count,respawnSeconds,
+            habitatFitRequired:true,existingNavigationAndClearanceRequired:true,safePlayerSpawnExclusionRequired:true}),
+          stats:Object.freeze({health,damage,multiplier}),
+          drops:Object.freeze(base.drops.map(drop=>Object.freeze({itemId:drop.itemId,chance:clamp01(drop.chance*dropMultiplier),quantity:drop.quantity}))),
+          causes:Object.freeze({distanceFromEntry:distance,ecologicalPressure:pressure,foodAbundance:abundance}),
+          sourceRuleRevision:rules.revision,appliedToGame:false}));
+      }
+    }
+  }
+  const biomeGameplay=Object.freeze({enabled:rules?.enabled===true,ruleRevision:rules?.revision||null,
+    status:rules?.enabled!==true?'NOT_REQUESTED':gameplayIssues.length?'REPAIR_REQUIRED':'GENERATED_SERVER_APPLICATION_REQUIRED',
+    entries:Object.freeze(gameplayIssues.length?[]:gameplayRows),issues:Object.freeze(gameplayIssues),
+    configurationOwner:'EXISTING_GAME_BIOME_SYSTEM',applicationOwner:'EXISTING_SERVER_SPAWN_COMBAT_AND_REWARD_HANDLERS',
+    dropPolicy:'INDEPENDENT_ITEM_PROBABILITIES',plannedMaxAlive:gameplayIssues.length?0:gameplayRows.reduce((sum,row)=>sum+row.spawn.maxAlive,0),
+    noDirectSaveWrite:true,serverApplicationVerified:false,runtimeVerified:false});
   const result={
     version:1,status:issues.length?'LAYOUT_REVIEW_REQUIRED':'STATIC_LAYOUT_PROPOSED',issues:Object.freeze(issues),
     seed:String(seed),dimension,regionalBiome:String(biome).toUpperCase(),climate:String(climate).toUpperCase(),coordinateSystem:dimension==='3D'?'Y_UP_HEIGHTFIELD':'GRID_XZ_TO_TOP_DOWN_XY_PROPOSED',
-    size:{width:w,height:h,cellSize},hierarchy,terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
+    size:{width:w,height:h,cellSize},hierarchy,biomeGameplay,terrain:Object.freeze(terrain),river:Object.freeze(river),riverType,roads:Object.freeze(routes),roadCells:Object.freeze([...roadSet].sort((a,b)=>a-b).map(id=>({x:id%w,z:Math.floor(id/w)}))),
     routeGraph,buildings:Object.freeze(buildings),vegetation:Object.freeze(vegetation),instancingPlan:Object.freeze([...instanceGroups.values(),...natureGroups.values()]),landmark:Object.freeze({cell:landmark,reason:'VISIBLE_NAVIGATION_ANCHOR'}),
     livingBiomePopulation:Object.freeze({algorithm:'DETERMINISTIC_HABITAT_FIT_AND_AUTHORED_UTILITY_AI_ADVISORY',
       inputActorCount:ecologyActors.length,plannedActorCount:lifeAndEncounterSites.length,issues:Object.freeze(rosterIssues),

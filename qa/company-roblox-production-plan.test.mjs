@@ -35,6 +35,38 @@ test('biome hierarchy partitions actual cells and connects routes patches and ac
   assert.equal(h.gameplayAuthority,false);assert.equal(h.nativeRuntimeVerified,false);
 });
 
+test('nature-inspired ecosystems conserve matter and adapt seasonal cycles without spawning actors',()=>{
+  const spec={approvedDesign:true,dimension:'3D',seed:'nature-cycle',width:24,height:24,biome:'FOREST',climate:'TEMPERATE'};
+  const spring=createVibeProceduralWorldLayout({...spec,season:'SPRING'}),winter=createVibeProceduralWorldLayout({...spec,season:'WINTER'});
+  for(const world of [spring,winter])for(const habitat of world.ecologyBalance.habitats){
+    const eco=habitat.ecosystem;assert.ok(eco.processes.includes('DECOMPOSITION'));assert.ok(eco.processes.includes('MUTUALISM'));
+    assert.ok(Math.abs(eco.matterTotal-1)<1e-10);
+    for(const row of eco.trace){const values=Object.entries(row).filter(([key])=>key!=='step').map(([,value])=>value);assert.ok(values.every(value=>Number.isFinite(value)&&value>=0&&value<=1));assert.ok(Math.abs(values.reduce((a,b)=>a+b,0)-1)<1e-10);}
+    assert.equal(eco.actualSpawnCount,0);assert.equal(eco.gameplayAuthority,false);assert.equal(eco.scientificSimulation,false);
+  }
+  const common=spring.ecologyBalance.habitats.find(row=>winter.ecologyBalance.habitats.some(other=>other.habitat===row.habitat));
+  const cold=winter.ecologyBalance.habitats.find(row=>row.habitat===common.habitat);
+  assert.ok(common.ecosystem.energy.primaryProduction>cold.ecosystem.energy.primaryProduction);
+  assert.ok(common.ecosystem.seasonalCues.includes('POLLINATION'));
+  assert.ok(cold.ecosystem.seasonalCues.includes('DORMANCY'));
+});
+
+test('biome composes real spawn stat and drop configuration within authored world budgets',()=>{
+  const spec={approvedDesign:true,dimension:'3D',seed:'biome-gameplay',width:24,height:24,biome:'FOREST',climate:'TEMPERATE',
+    ecologyActors:[{id:'wolf',kind:'MONSTER',species:'wolf',tier:'NORMAL',approved:true,gameplay:{health:100,damage:12,spawnCount:6,respawnSeconds:60,drops:[{itemId:'hide',chance:.4,quantity:1}]}}],
+    ecologyGameplayRules:{enabled:true,ownerAuthorized:true,revision:'owner-biome-20261012',maxAlive:4,growthPerCell:.04,statMultiplierRange:[1,3],dropMultiplierRange:[.5,1.5],itemIds:['hide']}};
+  const world=createVibeProceduralWorldLayout(spec),plan=world.biomeGameplay;
+  assert.equal(plan.status,'GENERATED_SERVER_APPLICATION_REQUIRED');assert.equal(plan.entries.length,1);
+  const row=plan.entries[0];assert.ok(row.stats.health>100);assert.ok(row.stats.damage>=12);
+  assert.ok(row.spawn.maxAlive<=4);assert.ok(row.spawn.respawnSeconds>0);assert.ok(row.habitatId);
+  assert.equal(row.drops[0].itemId,'hide');assert.ok(row.drops[0].chance>=0&&row.drops[0].chance<=1);
+  assert.deepEqual(plan,createVibeProceduralWorldLayout(spec).biomeGameplay);
+  assert.equal(plan.serverApplicationVerified,false);assert.equal(row.appliedToGame,false);
+  assert.equal(createVibeProceduralWorldLayout({...spec,ecologyGameplayRules:{...spec.ecologyGameplayRules,ownerAuthorized:false}}).biomeGameplay.status,'REPAIR_REQUIRED');
+  const invalid=createVibeProceduralWorldLayout({...spec,ecologyActors:[{...spec.ecologyActors[0],gameplay:{...spec.ecologyActors[0].gameplay,health:NaN}}]}).biomeGameplay;
+  assert.equal(invalid.status,'REPAIR_REQUIRED');assert.deepEqual(invalid.entries,[]);
+});
+
 test('native biome factory executes deterministic relief and keeps collision authority outside the asset',{skip:!process.env.VIBE2_LUAU_BINARY},t=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'biome-native-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   const source=fs.readFileSync(new URL('../assets/roblox/common-environment-v1/RobloxCommonEnvironment.luau',import.meta.url),'utf8');
