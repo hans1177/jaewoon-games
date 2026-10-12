@@ -180,14 +180,13 @@
       "id": "P0002",
       "slug": "insect-survival",
       "name": "곤충 생존기",
-      "sourcePath": "web-games/insect-survival",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "sourcePath": "unity-games/insect-survival",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "targetEngine": "ROBLOX_UNITY",
       "targetPlatformReady": true,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -204,7 +203,28 @@
         "core-loop"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "UNITY"
+      "selectedPlatform": "UNITY",
+      "productionTier": 2,
+      "concurrentTargetPlatforms": [
+        "ROBLOX",
+        "UNITY"
+      ],
+      "targetSourcePaths": {
+        "ROBLOX": "roblox-games/insect-survival",
+        "UNITY": "unity-games/insect-survival"
+      },
+      "designBaselineSource": "design/insect-survival/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/insect-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/insect-survival/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:35:08.290Z"
     },
     {
       "id": "P0003",
@@ -315,7 +335,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -373,7 +393,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -412,7 +432,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -451,7 +471,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -507,7 +527,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -551,7 +571,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -595,7 +615,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -637,7 +657,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z"
+      "updatedAt": "2026-10-12T02:35:08.290Z"
     },
     {
       "id": "RUNTIME-cozy-island",
@@ -678,7 +698,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -720,7 +740,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -762,7 +782,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -804,7 +824,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -846,7 +866,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -888,7 +908,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -930,7 +950,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -972,7 +992,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1014,7 +1034,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1056,7 +1076,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1098,7 +1118,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1140,7 +1160,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1182,7 +1202,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1224,7 +1244,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1266,7 +1286,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1308,7 +1328,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1350,7 +1370,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1392,7 +1412,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1434,7 +1454,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1476,7 +1496,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1518,7 +1538,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1560,7 +1580,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1602,7 +1622,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z",
+      "updatedAt": "2026-10-12T02:35:08.290Z",
       "productionTier": 2
     },
     {
@@ -1641,7 +1661,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z"
+      "updatedAt": "2026-10-12T02:35:08.290Z"
     },
     {
       "id": "SEED-OWNER-DESIGN-VILLAGE-DUNGEONS",
@@ -1679,7 +1699,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z"
+      "updatedAt": "2026-10-12T02:35:08.290Z"
     },
     {
       "id": "SEED-OWNER-ALL-DESIGN-RESET-FIFTY-DAYS-20260917",
@@ -1717,7 +1737,7 @@
           "jsonPointer": "/content/platformProfiles/UNITY"
         }
       },
-      "updatedAt": "2026-10-12T02:33:59.629Z"
+      "updatedAt": "2026-10-12T02:35:08.290Z"
     }
   ],
   "productionClassState": {
@@ -2367,5 +2387,5 @@
       }
     ]
   },
-  "updatedAt": "2026-10-12T02:33:59.629Z"
+  "updatedAt": "2026-10-12T02:35:08.290Z"
 }
