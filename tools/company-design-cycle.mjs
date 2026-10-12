@@ -1341,7 +1341,7 @@ function computeVibeNativeDesign(){
       stateChange:freeTopicMode?shorten(a.materialRule):shorten(`${a.materialRule} ${a.stateContribution} 그 결과 ${b.name}의 다음 행동 조건이 달라진다.`)},
     b:{system:b.name,material:b.sourceMaterial,materialDomain:`${b.sourceDomain.replaceAll('_',' ').toLowerCase()}의 문화·역사 인과 소재`,
       stateChange:freeTopicMode?shorten(b.materialRule):shorten(`${b.materialRule} ${b.stateContribution} 그 결과 ${a.name}의 선택 비용과 경로가 달라진다.`)},
-    abCausality:freeTopicMode?shorten(`A는 RouteState·RiskState를 읽어 ${a.systemFamily}를 실행하고 ResourceState를 B로 보낸다. B는 ${b.systemFamily}의 선택과 RiskState·ResourceState를 판정해 RouteState·RiskState를 다시 A에 보낸다. 실패나 취소 때는 상태를 보존하고 다른 선택을 한다.`):shorten(`${a.playerChoice} 이후 ${a.stateContribution} 그 결과 ${b.playerChoice}가 바뀌고 ${b.stateContribution} 다시 A의 선택 조건이 달라진다.`),
+    abCausality:freeTopicMode?shorten(`A(${a.systemFamily})는 RouteState·RiskState를 읽어 실행 여부를 판정하고 ResourceState를 B에 보낸다. B(${b.systemFamily})는 RiskState·ResourceState를 읽어 행동을 선택하고 RouteState·RiskState를 A에 반환한다. 실패나 취소 때는 상태를 보존하고 다른 선택을 한다.`):shorten(`${a.playerChoice} 이후 ${a.stateContribution} 그 결과 ${b.playerChoice}가 바뀌고 ${b.stateContribution} 다시 A의 선택 조건이 달라진다.`),
     abEvolution:{
       aChangesB:freeTopicMode?shorten(`${a.systemFamily} 성공으로 RiskState·ResourceState가 바뀐 때만 B의 ${b.systemFamily} 대응이 열리고, 실패 시 기존 값과 이전 선택을 보존한다.`):shorten(`${a.playerChoice} 선택이 ${b.name}의 행동 가능성·비용·위험을 변화시킨다. ${a.materialRule}`),
       bChangesA:freeTopicMode?shorten(`B의 ${b.systemFamily} 성공 결과인 RouteState·RiskState에 따라 A의 ${a.systemFamily} 재진입 경로와 위험·선택 비용이 달라진다. 불가능한 선택은 이전 상태로 복구한다.`):shorten(`${b.playerChoice} 결과가 다음 ${a.name}의 지형 접근·자원 판단·상대 대응을 바꾼다. ${b.materialRule}`),
