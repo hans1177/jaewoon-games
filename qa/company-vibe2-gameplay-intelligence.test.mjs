@@ -38,6 +38,19 @@ const inventory=[
   {id:'scope-progress',path:'progression.quest',label:'quest reward and unlock'},
 ];
 
+test('companion play participation and stable bot names stay scoped to approved actors',()=>{
+  const actors={runtimeActorIntelligenceRequired:true,companionIntelligenceRequired:true,individualActivitySimulationRequired:true};
+  const plan=buildVibePatchPlan({gameplaySketch:{actors,worldModel:{requiresPlayableSpace:true}}});
+  const text=JSON.stringify(plan.tasks);
+  assert.match(text,/IMPLEMENT_AI_PARTICIPANT_PLAY_LOOP/);
+  assert.match(text,/IMPLEMENT_STABLE_AI_PARTICIPANT_NICKNAMES/);
+  assert.match(text,/never Roblox UserIds/);
+  assert.match(text,/cannot count as real humans/);
+  assert.match(text,/real seeded native terrain/);
+  const unrelated=JSON.stringify(buildVibePatchPlan({gameplaySketch:{actors:{},worldModel:{}}}).tasks);
+  assert.doesNotMatch(unrelated,/IMPLEMENT_AI_PARTICIPANT_PLAY_LOOP|IMPLEMENT_STABLE_AI_PARTICIPANT_NICKNAMES/);
+});
+
 test('GAME_FLOW_ARCHITECT creates diverse macro progression instead of one repeated loop',()=>{
   const flow=buildGameFlowArchitecture({gameId:'tower-alpha',genre:'SINGLE_DEFENSE_STRATEGY',baseline:{content:{coreLoop:['prepare','place','defend','adapt']}},inventory});
   const review=evaluateGameFlowArchitecture(flow);
