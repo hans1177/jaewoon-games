@@ -1315,8 +1315,14 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
   const roleEvidence=asset=>{
     const family=clean(asset?.family||asset?.category).toUpperCase();
     const roles=unique([asset.role,asset.subfamily,...(Array.isArray(asset.tags)?asset.tags:[])]).map(value=>value.toLowerCase().replace(/[\s-]+/g,'_'));
+    // [외부 3D 재사용] 실제 원본이 등록된 캐릭터·몬스터는 이름의 독립된 역할 단어도 비교한다.
+    // 단순 부분 문자열은 다른 종족/역할을 잘못 선택할 수 있으므로 허용하지 않는다.
+    const namedRoles=unique([asset.title,asset.id]).flatMap(value=>{
+      const normalized=value.toLowerCase().replace(/[^a-z0-9가-힣]+/g,'_').replace(/^_+|_+$/g,'');
+      return unique([normalized,...normalized.split('_').filter(part=>part.length>=4)]);
+    });
     const required=requestedRolesByFamily.get(family)||[];
-    const explicit=required.filter(role=>roles.includes(role));
+    const explicit=required.filter(role=>roles.includes(role)||namedRoles.includes(role));
     const inferred=roles.filter(role=>role.length>=3&&role!==family.toLowerCase()&&requestText.includes(role.replaceAll('_',' ')));
     const matched=required.length?explicit:inferred;
     const bound=currentAssetConsumerIds(asset).includes(id);
@@ -1386,7 +1392,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         /^assets\/[a-zA-Z0-9_.\/-]+\.(?:glb|obj|stl)$/i.test(value)&&!value.split('/').includes('..'))||null:null;
       const license=clean(base?.license).toLowerCase();
       const credit=clean(base?.sourceCredit||base?.attribution||base?.credit)||null;
-      const rightsValid=['project-original','cc0','cc-by'].includes(license)
+      const rightsValid=['project-original','cc0','cc0-1.0','cc-by'].includes(license)
         &&(license!=='cc-by'||Boolean(credit));
       const modelReady=Boolean(sourceModel&&rightsValid);
       const pbr=spatial||family==='MATERIAL';
@@ -1394,7 +1400,7 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
         libraryReuse:freeze({
           sourceAssetId:clean(base?.id),sourceModel,
           sourceLicense:rightsValid?license:null,sourceCredit:credit,
-          expectedSourceSha256:clean(base?.sourceSha256||base?.sha256)||null,
+          expectedSourceSha256:clean(base?.masterGlbHash||base?.sourceSha256||base?.sha256||base?.sourceHash)||null,
           sourceFileAndSha256InspectionRequired:true,
           sourceRoleEvidence:row.roleEvidence||null,
           derivativeCandidateReady:modelReady,
@@ -1441,11 +1447,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     if(usedCount){
       if(!(repairsByFamily.get(family)||[]).length){
         const asset=currentPrimaryByFamily.get(family),mode=internalAssetPlatformApplicationMode(asset,target);
+        const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
         pushAction({
-          action:mode==='USE_AS_IS'?'USE':'ADAPT',
+          action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
           assetId:clean(asset?.id)||null,
           family,
-          reason:mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
+          reason:pendingImport?'CURRENT_SOURCE_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'CURRENT_SOURCE_BOUND_READY':'CURRENT_SOURCE_BOUND_PLATFORM_OR_STYLE_ADAPT',
           applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset?.id))
         });
       }
@@ -1454,11 +1461,12 @@ export function buildAssetSupplyDecisionSummary({gameId='',target='',request='',
     const asset=bestReusableByFamily.get(family);
     if(asset){
       const mode=internalAssetPlatformApplicationMode(asset,target);
+      const pendingImport=asset?.nativeBindingRequired===true&&!assetRuntimeConsumerVerified(asset);
       pushAction({
-        action:mode==='USE_AS_IS'?'USE':'ADAPT',
+        action:mode==='USE_AS_IS'&&!pendingImport?'USE':'ADAPT',
         assetId:clean(asset.id)||null,
         family,
-        reason:mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
+        reason:pendingImport?'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED':mode==='USE_AS_IS'?'REUSABLE_LIBRARY_MATCH':'REUSABLE_LIBRARY_ADAPTATION',
         applicationMode:mode,roleEvidence:roleEvidenceById.get(clean(asset.id))
       });
     }else{
@@ -1994,7 +2002,7 @@ export function synchronizeCompanyCommonAssetRegistry({repoRoot=process.cwd(),re
     const allowedSource=asset=>{
       const license=clean(asset?.license).toLowerCase();
       return !asset?.parentSourceId&&!asset?.derivedFromAssetId
-        &&['project-original','cc0','cc-by'].includes(license)
+        &&['project-original','cc0','cc0-1.0','cc-by'].includes(license)
         &&(license!=='cc-by'||Boolean(clean(asset?.sourceCredit||asset?.credit||asset?.attribution)))
         &&!internalAssetHardBlockReason(asset);
     };
