@@ -43,7 +43,6 @@ const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
 // 자산 · 동일 실행 프로세스에서 여러 게임이 참조하는 동일 원본은 재해시/전체 API 재파싱하지 않는다.
 // 크기, 생성 시각, 수정 시각, inode, device가 달라지면 다음 요청에서 다시 읽는다.
 // 원본 SHA-256 및 동일 원본 선택/권한/QA 계약은 유지한다. 파일 복제/우회 임포터는 만들지 않는다.
-const INTERNAL_ASSET_SOURCE_HASH_CACHE=new Map();
 const INTERNAL_ASSET_API_SIGNATURE_CACHE=new Map();
 const INTERNAL_ASSET_TOOL_EXPORT_CACHE=new Map();
 const INTERNAL_ASSET_CACHE_MAX_ENTRIES=2048;
@@ -3146,21 +3145,12 @@ export function buildInternalAssetSourceUsageContract(order={}, {cwd=process.cwd
   const selectedSourceHashes=Object.freeze(allSelectedPaths.map(relative=>{
     const absolute=path.resolve(cwd,relative);
     if(!fs.existsSync(absolute))return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
-    // Nanosecond timestamps prevent same-size, same-millisecond asset edits from reusing stale hashes.
+    // 동기화 검증: 파일 기록 시간의 정밀도와 무관하게 현재 실제 내용을 확인한다.
     const stat=fs.statSync(absolute,{bigint:true});
     if(!stat.isFile())return Object.freeze({path:relative,sha256:null,status:'SOURCE_UNAVAILABLE'});
     const real=fs.realpathSync(absolute);
     if(!real.startsWith(canonicalRoot))throw new Error('INTERNAL_ASSET_SOURCE_OUTSIDE_REPOSITORY:'+relative);
-    const stamp=[stat.size,stat.mtimeNs,stat.ctimeNs,stat.ino,stat.dev].join(':');
-    const cached=INTERNAL_ASSET_SOURCE_HASH_CACHE.get(real);
-    let digest;
-    if(cached&&cached.stamp===stamp)digest=cached.sha256;
-    else{
-      digest=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
-      INTERNAL_ASSET_SOURCE_HASH_CACHE.set(real,{stamp,sha256:digest});
-      if(INTERNAL_ASSET_SOURCE_HASH_CACHE.size>INTERNAL_ASSET_CACHE_MAX_ENTRIES)
-        INTERNAL_ASSET_SOURCE_HASH_CACHE.delete(INTERNAL_ASSET_SOURCE_HASH_CACHE.keys().next().value);
-    }
+    const digest=crypto.createHash('sha256').update(fs.readFileSync(real)).digest('hex');
     return Object.freeze({path:relative,sha256:digest,status:'SOURCE_HASHED'});
   }));
   const libraryVersion=Number(dynamicLibraryBinding?.libraryVersion||loadout?.robloxSelectionLibraryVersion||loadout?.libraryVersion||assetProduction?.companyGraphicsLibrary?.libraryVersion||0);
