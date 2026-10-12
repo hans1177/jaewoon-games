@@ -1,5 +1,5 @@
 {
-  "version": 569,
+  "version": 570,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -23618,7 +23618,7 @@
         "existingHomepageAndRecordsPathScopesPreserved": true
       },
       "controlPlaneRunnerIsolation": {
-        "version": 4,
+        "version": 5,
         "status": "CODE_UPDATED_PENDING_QA_AND_LIVE",
         "runner": "ubuntu-slim",
         "workflows": [
@@ -23640,7 +23640,12 @@
         "systemAiReserveAndFanInSlim": true,
         "seedDesignNonModelControlJobsSlim": true,
         "heavyGameAndModelWorkersRemainFullRunner": true,
-        "nativeHeavyWorkerSplit": true
+        "nativeHeavyWorkerSplit": true,
+        "runnerByWorkflow": {
+          ".github/workflows/company-central-policy-contract-qa.yml": "ubuntu-24.04",
+          ".github/workflows/main-write-guard.yml": "ubuntu-24.04"
+        },
+        "runnerAssignmentNoteKo": "필수 중앙 검사와 쓰기 검수는 소형 러너 미배정 병목을 피하기 위해 기존 고정 버전 실행 환경을 사용한다. 기본 환경은 소형 러너를 유지하며 게임의 기본 실행 환경 이름을 사용하지 않는다. 검사 내용·권한·시간 제한·개발 흐름은 유지하고 실제 배정과 용량 격리는 별도 원격 검증 대상이다."
       },
       "latestHeadControlPlaneDedupe": {
         "version": 1,

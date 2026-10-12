@@ -224,7 +224,7 @@ permissions:
 
 jobs:
   central-policy-contract:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Full-policy QA includes real timeout/rejection scenarios; keep every check within the runner's 15-minute budget.
     timeout-minutes: 15
     steps:
