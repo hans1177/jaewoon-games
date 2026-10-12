@@ -292,7 +292,9 @@
         "source": "CATALOG_GENRE",
         "membershipInfluence": false,
         "adjusted": false,
-        "distinctFamilies": []
+        "distinctFamilies": [
+          "RPG"
+        ]
       },
       "counts": {
         "releaseConfirmed": 0,
@@ -301,7 +303,7 @@
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
-        "RUNTIME-cozy-island"
+        "RUNTIME-fantasy-survival"
       ],
       "designOnlyGameIds": [
         "P0001",
@@ -331,7 +333,7 @@
           "P0101",
           "P0102",
           "P0103",
-          "RUNTIME-cozy-island"
+          "RUNTIME-fantasy-survival"
         ],
         "paused": [],
         "rebuild": [],
@@ -485,15 +487,15 @@
         {
           "rank": 10,
           "rawEvidenceRank": 10,
-          "gameId": "RUNTIME-cozy-island",
-          "slug": "cozy-island",
+          "gameId": "RUNTIME-fantasy-survival",
+          "slug": "fantasy-survival",
           "lifecycleState": "ACTIVE",
           "productionClass": "DEVELOPMENT_CONFIRMED",
-          "gameplayFamily": "UNCLASSIFIED",
+          "gameplayFamily": "RPG",
           "evidenceScore": 6,
           "developmentFocus": 0,
           "artbookBaselineRank": 0,
-          "targetPlatform": "ROBLOX",
+          "targetPlatform": "UNITY",
           "targetPlatformReady": true,
           "sourceReady": true
         }
