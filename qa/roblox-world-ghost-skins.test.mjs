@@ -405,3 +405,26 @@ test('automatic asset gallery binds every monster and environment to exact sourc
   }
  }
 });
+
+
+test('shared humanoid gait keeps the existing measured foot-contact QA while baking real rig-space corrections',()=>{
+  const source=fs.readFileSync(root+'refine-humanoid-motion.py','utf8');
+  const match=source.match(/GAIT_NAME_TO_PACE = \{([\s\S]*?)\n\}/);
+  assert.ok(match,'original authored gait family must remain bound to measured QA');
+  for(const clip of ['hero_walk_hq','hero_jog_hq','hero_run_hq','hero_sprint_hq','hero_backward_hq']){
+    assert.ok(match[1].includes("'"+clip+"'"),clip+' missing foot-plant correction');
+    assert.ok(source.includes("'"+clip+"':"),clip+' missing original clip duration/QA');
+  }
+  assert.match(source,/GAIT_CONTACT_ANCHORS\[\(_pace, _foot\)\]/);
+  assert.match(source,/RIG\.matrix_world @ _joint\.matrix\.translation/);
+  assert.match(source,/bone\.location = original_location \+ local_to_world\.inverted\(\) @ delta_world/);
+  assert.match(source,/stabilize_planted_feet\(t, GAIT_NAME_TO_PACE\[name\]\)/);
+  assert.match(source,/pose_bone\.name in \('Hips', 'FootL', 'FootR'\)/,'contact edits must be baked in native action');
+  assert.match(source,/contact_drift\(clip_name,'FootL'/);
+  assert.match(source,/contact_drift\(clip_name,'FootR'/);
+  assert.match(source,/qa_failures\.append\(f'FOOT_CONTACT_DRIFT:\{clip_name\}:\{side\}'\)/);
+  assert.match(source,/'hero_walk_hq': 0\.035/,'retain original stricter base walk QA');
+  assert.match(source,/assert not qa_failures, 'MOTION_STATIC_QA_FAILED:'/,'do not bypass measured QA');
+  assert.match(source,/'nativeStudioVerified': False/,'static preview cannot become platform PASS');
+  assert.match(source,/'productionVerified': False/);
+});
