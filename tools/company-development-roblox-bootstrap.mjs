@@ -1350,20 +1350,6 @@ function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
   return blockers;
 }
 
-// A binding refresh preserves gameplay; report the actual current contract separately.
-export function inspectExistingRobloxSourceContract({root='',baseline={}}={}){
-  const read=relative=>{
-    const file=path.join(root,relative);
-    return fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';
-  };
-  return validateRobloxBootstrap({
-    sharedConfig:read('shared/GameConfig.luau'),
-    serverCode:read('server/Game.server.luau'),
-    clientCode:read('client/Game.client.luau'),
-    baseline,
-  });
-}
-
 export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCode='',baseline={},profile=null,learning={},studioAssets={}}={}){
   const buildProfile=profile||robloxBuildProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
@@ -1605,7 +1591,12 @@ async function main(){
   if(buildUpDirectiveConsumed&&clean(buildUpDirective?.gameId)!==gameId)throw new Error('BUILD_UP_DIRECTIVE_GAME_ID_MISMATCH');
   if(existingSource){
     const applied=applyRobloxStudioAssetBindingToExistingSource({root:outputRoot,gameId,baseline,assetLibrary,foundationRepair,learning:existingLearning});
-    const staticContract=inspectExistingRobloxSourceContract({root:outputRoot,baseline});
+    const staticContract=validateRobloxBootstrap({
+      sharedConfig:fs.readFileSync(path.join(outputRoot,'shared','GameConfig.luau'),'utf8'),
+      serverCode:fs.readFileSync(path.join(outputRoot,'server','Game.server.luau'),'utf8'),
+      clientCode:fs.readFileSync(path.join(outputRoot,'client','Game.client.luau'),'utf8'),
+      baseline,
+    });
     const evidence={
       version:6,gameId,gameName,platform:'ROBLOX',policyDocument:'company-learning/platform-release-roadmap.json',stage:'TARGET_PLATFORM_SOURCE_BIND',
       sourcePath:outputRoot,sourceValidationPassed:staticContract.pass,sourceValidationBlockers:staticContract.blockers,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,

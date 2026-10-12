@@ -5183,6 +5183,18 @@ test('package asset failure reaches the existing Roblox buildup with asset-prese
   assert.ok(task.responsibleFiles.includes(`roblox-games/${gameId}/client/Game.client.luau`));
   assert.ok(task.responsibleFiles.every(file=>!file.includes('..')&&!file.includes('assets/library.luau')));
 
+  const contractEvidence={...evidence,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
+    staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']},
+    qualityFailureKinds:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']};
+  const contractItem={...item,robloxQualityFailureClass:'SOURCE_CONTRACT',robloxQualityBuildUpEvidence:contractEvidence};
+  const contractResult=planVibe2AutonomousTasks({status:{projects:[]},catalog,developmentQueue:{items:[contractItem]},
+    queue:{maxConcurrentTasks:20,tasks:[]},repoRoot:root,maxConcurrentTasks:20,queueMaxConcurrentTasks:20,planningBacklogTarget:5,planningBacklogMinimum:0});
+  const contractTask=contractResult.tasks.find(row=>row.gameId===gameId&&row.buildUpDirective?.playtestRuntimeFindings?.studioQualityFailure?.authority===contractEvidence.authority);
+  assert.ok(contractTask,'static contract failure must reach actual existing Vibe source repair');
+  assert.equal(contractTask.buildUpDirective.playtestRuntimeFindings.runtimeObserved,false);
+  assert.equal(contractTask.buildUpNextAction,'CAUSAL_REPAIR');
+  for(const owner of ['server','client','shared'])assert.ok(contractTask.responsibleFiles.includes(`roblox-games/${gameId}/${owner}/${owner==='shared'?'GameConfig':'Game.'+owner}.luau`));
+
   fs.appendFileSync(path.join(gameRoot,'server','Game.server.luau'),'\n-- completed repair changed the exact game source tree\n');
   execFileSync('git',['add',`roblox-games/${gameId}/server/Game.server.luau`],{cwd:root});
   execFileSync('git',['commit','-m','complete exact package repair'],{cwd:root,stdio:'ignore'});

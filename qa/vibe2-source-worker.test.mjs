@@ -8614,6 +8614,17 @@ test('package asset repair evidence survives focused and oversized worker prompt
   };
   verify(block);
   for(const options of [{compact:true},{compact:true,focusedRobloxVisual:true},{compact:true,focusedPresentation:true}])verify(compact(block,options));
+  const contractFailure={...failure,authority:'roblox-source-static-contract-failure',assetThreshold:undefined,
+    staticContract:{pass:false,blockers:['CONFIG_PLAY_MODE_PROFILE_REQUIRED','SERVER_COOP_SHARED_OBJECTIVE_REQUIRED']}};
+  const contractDirective={...directive,playtestRuntimeFindings:{studioQualityFailure:contractFailure,runtimeObserved:false,runtimePassed:false}};
+  const contractBlock=guidance({target:'roblox',selectedTask:{buildUpDirective:contractDirective}},[relative]);
+  for(const candidate of [contractBlock,compact(contractBlock,{compact:true}),compact(contractBlock,{compact:true,focusedRobloxVisual:true})]){
+    assert.match(candidate,/roblox-source-static-contract-failure/);
+    assert.match(candidate,/CONFIG_PLAY_MODE_PROFILE_REQUIRED/);
+    assert.match(candidate,/SERVER_COOP_SHARED_OBJECTIVE_REQUIRED/);
+    assert.doesNotMatch(candidate,/runtimeObserved[=:]\s*true|runtimePassed[=:]\s*true/);
+  }
+
   const cwd=tempRoot();
   try{
     const content='local panel = script.Parent\npanel.BackgroundColor3=Color3.fromRGB(20,30,40)\n';

@@ -5,8 +5,8 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {runInNewContext} from 'node:vm';
-import {inspectExistingRobloxSourceContract,applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
-import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
+import {applyRobloxStudioAssetBindingToExistingSource,applyVerifiedExternalLearningToExistingRobloxSource,compileRobloxSource,projectJsonForGame,robloxBuildProfileFromBaseline,robloxStudioAssetDetectionSourceFromRoot,robloxStudioAssetFamilyStatusFromSource,ROBLOX_STUDIO_ASSET_REQUIRED_FAMILIES} from '../tools/company-development-roblox-bootstrap.mjs';
+import {eligibleForRobloxSourceReconciliation,evaluateExistingRobloxSources,robloxPackageAssetRepairContext,hasCurrentRobloxPackageAssetRepair,hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from '../tools/company-development-roblox-source-reconcile.mjs';
 import {createRobloxVibe3LearningContext,verifiedExternalBlackBoxPlaybookContract} from '../tools/vibe3-roblox-learning-context.mjs';
 import {robloxDesignProfileFromBaseline} from '../tools/company-development-roblox-gameplay-product-readiness.mjs';
 
@@ -1305,21 +1305,52 @@ test('Roblox verified learning sweep rebinds exact runtime design and config wit
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeCompiledTree(root);
-    const pass=inspectExistingRobloxSourceContract({root,baseline});
+    const pass=validateExistingRobloxSourceTree({root,baseline});
     assert.equal(pass.pass,true,pass.blockers.join(','));
     const config=path.join(root,'shared','GameConfig.luau');
     const before=fs.readFileSync(config,'utf8');
     fs.writeFileSync(config,before.replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
-    const failed=inspectExistingRobloxSourceContract({root,baseline});
+    const failed=validateExistingRobloxSourceTree({root,baseline});
     assert.equal(failed.pass,false);
     assert.ok(failed.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));
     assert.equal(fs.readFileSync(config,'utf8'),before.replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
     const server=path.join(root,'server','Game.server.luau');
     fs.writeFileSync(server,'-- preserved custom source; not a validated contract');
-    const invalid=inspectExistingRobloxSourceContract({root,baseline});
+    const invalid=validateExistingRobloxSourceTree({root,baseline});
     assert.equal(invalid.pass,false);
     assert.ok(invalid.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
     const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
     assert.ok(!workflow.includes('Static source contract: PASS.'));
   }finally{fs.rmSync(tmp,{recursive:true,force:true});}
  });
+
+test('current static source failure goes to existing Vibe repair and rejects stale source, design and validator evidence',()=>{
+  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-contract-repair-'));
+  try{
+    const root=path.join(tmp,'roblox-games',gameId);writeCompiledTree(root);
+    const config=path.join(root,'shared','GameConfig.luau');
+    fs.writeFileSync(config,fs.readFileSync(config,'utf8').replace(/Genre = "[^"]*"/,'Genre = "wrong-profile"'));
+    initGitRepo(tmp);
+    const git=(...args)=>execFileSync('git',args,{cwd:tmp,encoding:'utf8'}).trim();
+    const revision=git('rev-parse','HEAD'),sourceTreeSha=git('rev-parse',`HEAD:roblox-games/${gameId}`);
+    const rows=evaluateExistingRobloxSources({queue:{items:[{...staleItem(),robloxSourceCommit:revision}]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(rows[0].pass,false);
+    assert.equal(rows[0].sourceContractRepairRequired,true);
+    const evidence=rows[0].sourceContractRepairEvidence;
+    assert.equal(evidence.authority,'roblox-source-static-contract-failure');
+    assert.ok(evidence.staticContract.blockers.includes('CONFIG_GENRE_PROFILE_REQUIRED'));
+    assert.equal(evidence.artifactIdentity,null);
+    const item={...staleItem(),robloxSourceCommit:revision,robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision,robloxQualityBuildUpEvidence:evidence};
+    const inspect=(extra={})=>hasCurrentRobloxPackageAssetRepair({item,baseline,sourceTreeSha,...extra});
+    assert.equal(inspect(),true);
+    assert.equal(inspect({sourceTreeSha:'9'.repeat(40)}),false);
+    assert.equal(inspect({baseline:{content:{identity:'changed design'}}}),false);
+    assert.equal(inspect({item:{...item,robloxQualityBuildUpEvidence:{...evidence,assetRepairContext:{...evidence.assetRepairContext,validatorFingerprint:'old'}}}}),false);
+    const pending=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:revision,loadBaseline:()=>baseline});
+    assert.equal(pending[0].sourceRepairPending,true);
+    assert.deepEqual(pending[0].blockers,evidence.staticContract.blockers);
+    const workflow=fs.readFileSync('.github/workflows/company-development-roblox-runtime.yml','utf8');
+    assert.ok(workflow.includes('reconciliationRow?.sourceContractRepairRequired===true'));
+    assert.ok(workflow.includes('robloxQualityBuildUpEvidence:{...result.sourceContractRepairEvidence'));
+  }finally{fs.rmSync(tmp,{recursive:true,force:true});}
+});

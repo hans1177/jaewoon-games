@@ -347,7 +347,7 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')continue;
             const target=`roblox-games/${item.gameId}`;
             const reconciliationRow=reconciliationById.get(item.gameId);
-            if(reconciliationRow?.sourceRepairPending===true){
+            if(reconciliationRow?.sourceRepairPending===true||reconciliationRow?.sourceContractRepairRequired===true){
               console.log('ROBLOX_SOURCE_REPAIR_OWNS_CURRENT_TREE='+item.gameId);
               continue;
             }
@@ -822,6 +822,13 @@ jobs:
                 robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxF9ReleaseRegressionPassed:false,robloxF9ReleaseRegressionEvidence:null,robloxPostRuntimeQaEvidence:null,
                 robloxInternalReleaseReady:false,robloxInternalReleaseAt:null,robloxInternalReleaseEvidence:null,robloxReleaseEvidence:null,
                 robloxPublicReleaseReady:false,robloxReleaseClaim:false,robloxReleasePublishedAt:null,
+                ...(result.sourceContractRepairRequired===true&&result.sourceContractRepairEvidence?{
+                  robloxSourceCommit:result.sourceRevision,
+                  robloxQualityBuildUpRequired:true,
+                  robloxQualityBuildUpSourceRevision:result.sourceRevision,
+                  robloxQualityFailureClass:'SOURCE_CONTRACT',
+                  robloxQualityBuildUpEvidence:{...result.sourceContractRepairEvidence,workflowRunId:Number(process.env.GITHUB_RUN_ID||0)||null,testedAt:stamp},
+                }:{}),
                 robloxFailureStage:'TARGET_PLATFORM_SOURCE_BIND',robloxFailureSignature:result.failure||'ROBLOX_SOURCE_REVALIDATION_FAILED',
                 routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
               });

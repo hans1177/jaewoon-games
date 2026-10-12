@@ -29,12 +29,13 @@ export function robloxPackageAssetRepairContext({assetLibrary={},baseline={}}={}
 export function hasCurrentRobloxPackageAssetRepair({item={},assetLibrary={},baseline={},sourceTreeSha=''}={}){
   const evidence=item.robloxQualityBuildUpEvidence;
   const revision=clean(item.robloxSourceCommit);
+  const failure=evidence?.authority==='roblox-source-static-contract-failure'?evidence.staticContract:evidence?.assetThreshold;
   if(item.robloxQualityBuildUpRequired!==true||!sha40(revision)
     ||clean(item.robloxQualityBuildUpSourceRevision)!==revision
-    ||evidence?.authority!=='roblox-package-asset-binding-failure'
+    ||!['roblox-package-asset-binding-failure','roblox-source-static-contract-failure'].includes(evidence?.authority)
     ||clean(evidence.gameId)!==clean(item.gameId)||clean(evidence.sourceRevision)!==revision
-    ||clean(evidence.artifactIdentity)||evidence.assetThreshold?.pass!==false
-    ||!Array.isArray(evidence.assetThreshold?.blockers)||!evidence.assetThreshold.blockers.some(clean)
+    ||clean(evidence.artifactIdentity)||failure?.pass!==false
+    ||!Array.isArray(failure?.blockers)||!failure.blockers.some(clean)
     ||!sha40(evidence.sourceTreeSha)
     ||(sourceTreeSha&&clean(evidence.sourceTreeSha)!==clean(sourceTreeSha)))return false;
   const current=robloxPackageAssetRepairContext({assetLibrary,baseline});
@@ -315,8 +316,8 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     }
     if(baseline&&sourceTreeSha&&hasCurrentRobloxPackageAssetRepair({item,assetLibrary,baseline,sourceTreeSha})){
       results.push({gameId:item.gameId,pass:false,sourcePath,sourceRevision:clean(item.robloxSourceCommit),sourceTreeSha,
-        sourceRepairPending:true,blockers:[...item.robloxQualityBuildUpEvidence.assetThreshold.blockers],
-        failure:'existing-source-package-asset-repair-required',authority:'roblox-package-asset-binding-failure'});
+        sourceRepairPending:true,blockers:[...(item.robloxQualityBuildUpEvidence.staticContract||item.robloxQualityBuildUpEvidence.assetThreshold).blockers],
+        failure:'existing-source-package-asset-repair-required',authority:item.robloxQualityBuildUpEvidence.authority});
       continue;
     }
     if(learningState.refreshRequired===true){
@@ -456,6 +457,16 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         sourceTreeSha,
         sourceDrift:!sourceBind,
         saveRequired:verdict.saveRequired,
+        sourceContractRepairRequired:!verdict.pass&&sha40(currentRevision)&&sha40(sourceTreeSha),
+        sourceContractRepairEvidence:!verdict.pass&&sha40(currentRevision)&&sha40(sourceTreeSha)?{
+          version:1,gameId:item.gameId,sourceRevision:currentRevision,sourceTreeSha,artifactIdentity:null,
+          authority:'roblox-source-static-contract-failure',
+          staticContract:{pass:false,blockers:[...verdict.blockers]},
+          assetRepairContext:robloxPackageAssetRepairContext({assetLibrary,baseline}),
+          qualityFailureKinds:[...verdict.blockers],
+          repairSurfaces:['SOURCE_CONTRACT'],
+          qualityFailureDetails:verdict.blockers.map(id=>({id,repairSurface:'SOURCE_CONTRACT',priority:'P0',hint:'Inspect the exact current approved design and existing source. Repair actual server/client functionality; do not add PASS markers or relabel an unrelated genre to satisfy the check. Preserve balance, rewards, save schema, permissions and asset originals. Resolve design/source conflicts through the existing design flow when gameplay changes are not authorized.'})),
+        }:null,
         blockers:verdict.blockers,
         failure:verdict.pass?null:'existing-source-static-revalidation-failed',
       });
