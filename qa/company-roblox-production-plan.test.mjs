@@ -27,6 +27,12 @@ test('simple genre menus and creature identity reach owned presentation workers 
   assert.deepEqual(unknown.simpleMenuDirection.candidates,[]);
   const puzzle=buildRobloxProductionPlan({...args,design:{genre:'PUZZLE',identity:'approved puzzle'}});
   assert.deepEqual(puzzle.simpleMenuDirection.candidates,['되돌리기','재시작','목표']);
+  assert.equal(puzzle.aiParticipantDirection,null);
+  const companions=buildRobloxProductionPlan({...args,focus:'CORE',design:{genre:'SURVIVAL',coreLoop:['동료와 탐험'],identity:'approved survival'}});
+  const actorPrompt=robloxProductionPromptLines(companions,{responsibleFiles:['server/Main.server.luau']}).join('\n');
+  assert.match(actorPrompt,/AI_PARTICIPANT=/);assert.match(actorPrompt,/fhfgjjgdd75/);
+  assert.match(actorPrompt,/never invent Roblox UserIds/);
+  assert.match(actorPrompt,/Missing sibling implementation remains an explicit gap/);
 });
 
 function spatialFixture(dimension='2D'){
