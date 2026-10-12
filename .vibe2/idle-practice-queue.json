@@ -23,7 +23,7 @@
   "falsificationGenerationLimit": null,
   "previousResultComparisonRequired": true,
   "externalGameplayPracticeDrills": 0,
-  "phase4GeneralizationDrills": 0,
+  "phase4GeneralizationDrills": 2,
   "drills": [
     {
       "id": "review-fail_wu3qnk",
@@ -283,6 +283,44 @@
         "CAMERA_LANGUAGE"
       ],
       "sourceFailure": "fail_17sa11i"
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b-control",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "phase4PairId": "phase4-pair-zw070l",
+      "phase4Role": "CONTROL",
+      "holdoutGameId": "fantasy-survival",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-1n5ddt7",
+      "mayPromoteGeneralization": false
+    },
+    {
+      "id": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b-challenger",
+      "kind": "CAPABILITY_GENERALIZATION_SCREEN",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAPABILITY_GENERALIZATION"
+      ],
+      "phase4Benchmark": true,
+      "phase4CapabilityId": "capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "phase4BenchmarkCaseId": "phase4-generalization-capability_ctrace_d2ee6e412a4de5a362ff451b",
+      "phase4PairId": "phase4-pair-zw070l",
+      "phase4Role": "CHALLENGER",
+      "holdoutGameId": "fantasy-survival",
+      "targetEngine": "web",
+      "unseenProblemFingerprint": "phase4-unseen-1n5ddt7",
+      "mayPromoteGeneralization": false
     },
     {
       "id": "roblox-scope",
