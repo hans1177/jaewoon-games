@@ -565,6 +565,58 @@ test('assistant actions enter the existing learning feed automatically and unver
   assert.notEqual(changed.records[0].id,changed.records[1].id);
 });
 
+test('24H runner checkpoints verified advisory knowledge without committing the large task queue',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const feedAt=workflow.indexOf('--assistant-trace=/tmp/vibe2-main/company-learning/assistant-vibe-coauthoring-log.json');
+  const acceptedAt=workflow.indexOf("if grep -Eq '^VIBE2_EXTERNAL_AI_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-external-ai-distillation.log; then",feedAt);
+  const checkpointAt=workflow.indexOf("git commit -m 'vibe2: checkpoint independently verified advisory learning [skip ci]'",acceptedAt);
+  const sizeGateAt=workflow.indexOf('VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED=',checkpointAt);
+  const mainQueueStageAt=workflow.indexOf('git add .vibe2/queue.json .vibe2/parallelism-control.json',sizeGateAt);
+  assert.ok(feedAt>=0&&acceptedAt>feedAt&&checkpointAt>acceptedAt&&sizeGateAt>checkpointAt&&mainQueueStageAt>sizeGateAt);
+  const checkpoint=workflow.slice(acceptedAt,sizeGateAt);
+  assert.match(checkpoint,/git add -- \.vibe2\/external-ai-distilled-knowledge\.json/);
+  assert.match(checkpoint,/test "\$staged" = '\.vibe2\/external-ai-distilled-knowledge\.json'/);
+  assert.match(checkpoint,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(checkpoint,/VIBE2_VERIFIED_ADVISORY_CHECKPOINT=STALE_CONTROL_REF_RETRY/);
+  const forbiddenMainRef=['HEAD:','ma','in'].join('');
+  assert.doesNotMatch(checkpoint,new RegExp('git push origin '+forbiddenMainRef));
+  assert.doesNotMatch(checkpoint,/git add .*\.vibe2\/queue\.json/);
+  assert.match(workflow,/VIBE2_QUEUE_TASKS_REMOVED=0/);
+});
+
+test('GitHub control queue over-size diagnostic uses exact byte cap and keeps all tasks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const marker='VIBE2_QUEUE_GITHUB_BLOB_MAX_BYTES=';
+  const at=workflow.indexOf(marker);
+  assert.ok(at>=0);
+  const blockStart=workflow.lastIndexOf("node --input-type=module <<'NODE'",at);
+  const blockEnd=workflow.indexOf('\n          NODE',at);
+  assert.ok(blockStart>=0&&blockEnd>at);
+  const script=workflow.slice(blockStart+"node --input-type=module <<'NODE'".length,blockEnd)
+    .replace(/^\s*import fs from 'node:fs';\s*$/m,'');
+  const execute=bytes=>{
+    const output=[],errors=[];
+    const stop=new Error('controlled process exit');
+    let exitCode=null;
+    try{
+      runInNewContext(script,{
+        fs:{statSync:file=>{assert.equal(file,'.vibe2/queue.json');return{size:bytes};}},
+        console:{log:value=>output.push(String(value)),error:value=>errors.push(String(value))},
+        process:{exit:code=>{exitCode=code;throw stop;}}
+      });
+    }catch(error){if(error!==stop)throw error;}
+    return{output,errors,exitCode};
+  };
+  const maximum=100*1024*1024;
+  const valid=execute(maximum);
+  assert.equal(valid.exitCode,null,'exact 100 MiB is not over the upper bound');
+  assert.ok(valid.output.includes('VIBE2_QUEUE_SERIALIZED_BYTES='+maximum));
+  const oversized=execute(maximum+1);
+  assert.equal(oversized.exitCode,1);
+  assert.ok(oversized.errors.includes('VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED='+(maximum+1)));
+  assert.ok(oversized.errors.includes('VIBE2_QUEUE_TASKS_REMOVED=0'));
+});
+
 test('existing 24-hour runner reads assistant trace changes through the canonical distillation step',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   assert.match(workflow,/--assistant-trace=\/tmp\/vibe2-main\/company-learning\/assistant-vibe-coauthoring-log\.json/);
