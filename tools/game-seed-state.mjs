@@ -63,7 +63,15 @@ export const CAUSAL_DNA_LIBRARY=Object.freeze([
   {"id":"HISTORICAL_NAVIGATOR","source":"GLOBAL_HISTORICAL_EXPLORATION","principle":"새 지도는 미지의 땅보다도 기록과 실제 지형의 차이를 발견하도록 돕는다.","gameGrammar":"새 관측과 기록을 대조해 과거 통로의 의미와 다음 목적지를 바꾼다."},
   {"id":"SCIENCE_THERMAL_COST","source":"SCIENCE_THERMODYNAMICS","principle":"열과 에너지의 분산은 어떤 변화를 되돌리기 어렵게 만든다.","gameGrammar":"강력한 장치 사용 뒤 남는 열과 자원 압박이 다음 제작·이동을 제약한다."},
   {"id":"SCIENCE_CHEMICAL_REACTIONS","source":"SCIENCE_CHEMISTRY","principle":"재료의 조합과 환경 조건은 변화가 일어나는 순서와 결과를 바꿀 수 있다.","gameGrammar":"도구의 비위험한 가상 반응 조건을 비교해 다른 제작 방식과 길을 연다."},
-  {"id":"SCIENCE_GENETIC_ADAPTATION","source":"SCIENCE_BIOLOGY_EVOLUTION","principle":"환경의 압력과 변이는 생물 집단의 특성을 장기적으로 변화시킨다.","gameGrammar":"동일 대응을 반복할수록 상대 집단의 반응과 환경 선택지가 진화한다."}
+  {"id":"SCIENCE_GENETIC_ADAPTATION","source":"SCIENCE_BIOLOGY_EVOLUTION","principle":"환경의 압력과 변이는 생물 집단의 특성을 장기적으로 변화시킨다.","gameGrammar":"동일 대응을 반복할수록 상대 집단의 반응과 환경 선택지가 진화한다."},
+  {"id":"PHILOSOPHY_ETHICAL_TRADEOFF","source":"GLOBAL_ETHICAL_PHILOSOPHY","principle":"한 집단의 편의를 높인 결정이 다른 집단의 권리와 자원을 줄일 수 있다.","gameGrammar":"보상이 같아도 누구에게 비용을 넘겼는지에 따라 목표와 협력 규칙이 바뀐다."},
+  {"id":"PHILOSOPHY_FREE_WILL","source":"WESTERN_EXISTENTIAL_PHILOSOPHY","principle":"행동의 선택을 미루는 일도 사건에 영향을 주며 선택의 책임을 없애지 않는다.","gameGrammar":"플레이어가 개입하거나 방치한 결과가 다음 사건의 우선순위와 관계를 바꾼다."},
+  {"id":"EAST_ASIAN_DAOIST_BALANCE","source":"EAST_ASIAN_DAOIST_PHILOSOPHY","principle":"강한 개입보다 변화의 흐름에 맞춘 조절이 다른 결과를 만들기도 한다.","gameGrammar":"대상을 밀어붙이거나 흐름을 따라가는 선택이 위험·이동 경로를 달리 만든다."},
+  {"id":"NARRATIVE_FORESHADOWING","source":"GLOBAL_LITERATURE_FORESHADOWING","principle":"앞선 장면의 작은 단서는 나중 사건에서 뜻밖의 의미와 원인으로 드러난다.","gameGrammar":"기억한 단서 여부에 따라 뒤늦은 사건의 위험 신호와 대응이 달라진다."},
+  {"id":"NARRATIVE_MULTIPLE_VIEWPOINTS","source":"GLOBAL_LITERATURE_MULTIPLE_NARRATORS","principle":"서로 다른 인물의 시선은 같은 사건에 관한 각기 다른 단서를 드러낸다.","gameGrammar":"서로 다른 기록과 증언을 조합해 동선·사건 접근을 새롭게 판정한다."},
+  {"id":"ART_PERSPECTIVE","source":"VISUAL_ART_PERSPECTIVE","principle":"보는 위치와 구도는 공간의 형태와 길을 다르게 인식하도록 만든다.","gameGrammar":"카메라 위치에 따라 보이지 않던 표식과 통로를 발견할 수 있다."},
+  {"id":"MUSIC_RHYTHM","source":"WORLD_MUSIC_RHYTHM","principle":"다른 박자를 겹치면 새로운 반복 구조와 예측이 만들어진다.","gameGrammar":"소리와 박자의 패턴이 장치와 인물의 반응 시간을 달리 만든다."},
+  {"id":"NATURE_SEASONAL_CYCLES","source":"GLOBAL_NATURE_SEASONAL_ECOLOGY","principle":"계절과 이동의 주기는 서식 공간과 자원 접근성을 변화시킨다.","gameGrammar":"계절의 단서에 따라 같은 지역의 이동과 자원 확보 시점을 달리 고른다."}
 ]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
 export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([
