@@ -55,6 +55,34 @@ test('current-game asset gap selects licensed external source for on-demand PBR 
   assert.equal(buildAssetSupplyDecisionSummary({...params,gameId:''}).selectedOnDemandExternalGapCount,0,'no unidentified game may trigger external acquisition');
 });
 
+// [로블록스 원본 재사용] 준비된 외부 GLB를 이름·라이선스·SHA 근거로 사용하되 실행 검증은 생략하지 않는다.
+test('acquired Roblox CC0-1.0 GLB is selected as pending native-import reuse, never falsely verified',()=>{
+  const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const registry=JSON.parse(fs.readFileSync(path.join(repo,'company-asset-library.json'),'utf8'));
+  const actor=registry.assets.find(row=>row.id==='external-actor-skeleton-warrior');
+  assert.ok(actor);
+  assert.equal(actor.nativeBindingRequired,true);
+  assert.equal(actor.productionVerified,false);
+  const params={gameId:'asset-reuse-qa',target:'roblox',request:'skeleton warrior',
+    requirements:[{family:'CREATURE',role:'skeleton_warrior'}]};
+  const selected=buildAssetSupplyDecisionSummary({...params,registry:{assets:[actor],externalSources:[]}});
+  const action=selected.nextActions.find(row=>row.family==='CREATURE');
+  assert.equal(action.assetId,actor.id);
+  assert.equal(action.action,'ADAPT','unimported GLB cannot be treated as native-runtime-ready');
+  assert.equal(action.reason,'REUSABLE_LIBRARY_NATIVE_IMPORT_REQUIRED');
+  assert.deepEqual(action.roleEvidence.matchedRoles,['skeleton_warrior']);
+  assert.equal(action.libraryReuse.sourceModel,actor.path);
+  assert.equal(action.libraryReuse.sourceLicense,'cc0-1.0');
+  assert.equal(action.libraryReuse.expectedSourceSha256,actor.masterGlbHash);
+  assert.equal(action.libraryReuse.derivativeCandidateReady,true);
+  assert.equal(action.assetization.productionVerified,false);
+  assert.equal(selected.productionVerificationGranted,false);
+  assert.equal(selected.selectedOnDemandExternalGapCount,0);
+  const wrongRole=buildAssetSupplyDecisionSummary({...params,request:'ghost',
+    requirements:[{family:'CREATURE',role:'ghost'}],registry:{assets:[actor],externalSources:[]}});
+  assert.notEqual(wrongRole.nextActions.find(row=>row.family==='CREATURE').assetId,actor.id);
+});
+
 // [재사용 → 소폭 재질 보정 → 자산화] 회사 원본을 별도 파생으로 연결하되 실물·엔진 증거는 엄격히 분리한다.
 test('eligible internal 3d asset auto-fill exposes exact native material derivative and unverified assetization',()=>{
   const original={
