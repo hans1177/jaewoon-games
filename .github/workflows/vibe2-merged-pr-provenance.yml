@@ -26,6 +26,13 @@ jobs:
           fetch-depth: 1
           fetch-tags: false
           filter: blob:none
+          sparse-checkout: |
+            .github/workflows/vibe2-merged-pr-provenance.yml
+            assets/vibe-experience-memory.js
+            qa/vibe2-merged-pr-provenance.test.mjs
+            tools/vibe2-capability-distillation.mjs
+            tools/vibe2-merged-pr-provenance.mjs
+          sparse-checkout-cone-mode: false
           path: source
 
       - name: Checkout Vibe2 control branch
