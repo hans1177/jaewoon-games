@@ -1183,8 +1183,16 @@ test('native design repairs only failing fields and requires scored improvement 
   assert.match(repair,/finally\{nativeDesignVariation=0;\}/);
   assert.match(repair,/DESIGN_NATIVE_REPAIR_UNRESOLVED=/);
   assert.doesNotMatch(repair,/callDesignerModel\(/);
-  assert.match(design,/gameName:freeTopicMode\?'':clean\(seed\.gameName\|\|game\.name\)/);
-  assert.match(design,/ownerBrief:freeTopicMode\?'':clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
+  // A free-topic design must not inherit the old owner-supplied game name or brief.
+  // An older original-context design still requires the original identity fields.
+  if(design.includes('const freeTopicMode=')){
+    assert.match(design,/gameName:freeTopicMode\?'':clean\(seed\.gameName\|\|game\.name\)/);
+    assert.match(design,/ownerBrief:freeTopicMode\?'':clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
+    assert.match(design,/designTopicMode:freeTopicMode\?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT'/);
+  }else{
+    assert.match(design,/gameName:clean\(seed\.gameName\|\|game\.name\)/);
+    assert.match(design,/ownerBrief:clean\(seed\.OWNER_LATEST_DESIGN_REQUEST\|\|seed\.OWNER_DESIGN_INTENT\)/);
+  }
   assert.doesNotMatch(design,/KARMA_RETURN','TRICKSTER_REVERSAL','TESTIMONY_CONSENSUS_REALITY','EXILE_RETURN'/);
 });
 
@@ -1255,7 +1263,7 @@ test('design runtime scheduler requeues structurally stale strict PASS and memoi
     path,resetGameIds:new Set(),resetTimestamp:0,
     evaluateMinimumDesignContract:()=>({pass:allowed})
   });
-    const invalid=check(false);
+  const invalid=check(false);
   assert.equal(invalid({gameId:'demo'}),null,'과거 PASS도 현재 설계 문법 결함이면 재작성 대상');
   const firstReads=reads;
   assert.equal(invalid({gameId:'demo'}),null);
