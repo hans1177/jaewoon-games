@@ -473,3 +473,49 @@ test('free-topic Vibe seed proposal ignores supplied prior genre, name, system a
   assert.notEqual(cleanInput.gameName,'옛 왕국 정복');
   assert.notEqual(computeVibeSeedProposal({...base,topicRevision:'FREE-20261013'}).gameplaySketch.novelGameGrammar.gameplaySystemFusion.majorAxes.length,0);
 });
+
+// 메인: 자유주제 Vibe 기본설계는 과거 템플릿을 벗어나도 동일한 정식 문법·상태 계약을 지킨다.
+test('free-topic composition keeps independent causal inputs and actionable discoveries',()=>{
+  const base={requestId:'free-quality-regression',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',materials:[]};
+  const candidates=Array.from({length:16},(_,i)=>computeVibeSeedProposal({...base,topicRevision:`FREE-QUALITY-${i}`}));
+  const systems=new Set(),materials=new Set(),titles=new Set();
+  for(const proposal of candidates){
+    const grammar=proposal.gameplaySketch.novelGameGrammar;
+    const fusion=grammar.gameplaySystemFusion;
+    const [a,b]=fusion.majorAxes;
+    const discoveries=grammar.delveLayer.elements;
+    assert.deepEqual(fusion.majorAxes.map(row=>row.key),['A','B']);
+    assert.notEqual(a.systemFamily,b.systemFamily,'A and B must use independent gameplay families');
+    assert.match(a.materialRule,/RouteState.*RiskState|RiskState.*ResourceState/);
+    assert.match(b.materialRule,/RiskState.*ResourceState|ResourceState.*RouteState/);
+    assert.match(fusion.main.stateContribution,/WorldAccessState/);
+    assert.match(grammar.worldRule,/RiskState.*ResourceState.*RouteState/);
+    assert.equal(fusion.themeFusion.themes.length,2);
+    assert.equal(fusion.themeFusion.genres.length,2);
+    assert.match(fusion.themeFusion.genreInterlock,/ResourceState/);
+    assert.ok(fusion.crossSystemRules.every(row=>/State/.test(row)));
+    assert.ok(discoveries.length>=4);
+    assert.equal(new Set(discoveries.map(row=>row.name)).size,discoveries.length);
+    assert.ok(discoveries.every(row=>row.connectsTo.length>=2&&/State/.test(row.discoveryCondition)&&/State/.test(row.gameplayEffect)));
+    assert.ok(!discoveries.some(row=>row.name==='금기와 기회의 교차'),'free topics must not inherit a universal discovery title');
+    assert.ok(proposal.coreLoop.every(row=>/State/.test(row)));
+    assert.equal(grammar.emergentGenre.grammarFormula,'MAIN × A × B × C + @');
+    systems.add(`${a.systemFamily}|${b.systemFamily}`);
+    materials.add(grammar.causalDNAs.slice(0,2).map(row=>row.id).join('|'));
+    titles.add(proposal.gameName);
+  }
+  assert.ok(systems.size>=6,'free design must compose several cross-family systems');
+  assert.ok(materials.size>=6,'free design must not force a genre-fixed material pair');
+  assert.ok(titles.size>=6,'MAIN title should reflect the generated original materials');
+  const proposal=candidates[0];
+  const sketch=normalizeGameplaySketch(base,proposal,proposal.coreLoop,proposal.gameName);
+  const seed={...legacySeed(),GAME_CATEGORY:'CASUAL',GAMEPLAY_SKETCH:sketch,
+    CORE_FUN_TO_LEARN:proposal.coreFunToLearn,CORE_LOOP:proposal.coreLoop,
+    DISTINCT_IDENTITY:proposal.distinctIdentity,INITIAL_TARGET_PLATFORM:proposal.initialTargetPlatform,
+    INITIAL_PLAY_MODE:proposal.initialPlayMode,MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode,
+    CROSS_PLATFORM_EXPANSION_VALUE:proposal.crossPlatformExpansionValue};
+  const result=validateGameSeed(seed);
+  assert.equal(result.pass,true,'canonical seed validation: '+result.errors.join('|'));
+  assert.deepEqual(computeVibeSeedProposal({...base,topicRevision:'FREE-QUALITY-0'}),proposal);
+});
