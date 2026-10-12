@@ -176,11 +176,10 @@
     "failureStage": "",
     "failureSignature": "",
     "blockers": [],
-    "runtimeObserved": true,
+    "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
-    "regressionPassed": false,
-    "studioQualityFailure": null
+    "regressionPassed": false
   },
   "qualityGapMap": [
     {
@@ -1060,16 +1059,5 @@
       "REPLAYABILITY_VARIATION"
     ]
   },
-  "generatedAt": "2026-09-25T21:51:20.606Z",
-  "nextActionDecision": {
-    "action": "CAUSAL_REPAIR",
-    "reason": "current source Studio product-quality failure requires source repair before another observation"
-  },
-  "effectivenessMeasurement": {
-    "previousGeneration": {
-      "classification": "REGRESSION",
-      "reason": "current source Studio product-quality failure",
-      "runtimeObserved": true
-    }
-  }
+  "generatedAt": "2026-09-25T21:51:20.606Z"
 }
