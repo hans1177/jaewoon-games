@@ -2074,7 +2074,7 @@ function nextGraphicsEvolutionTask(project,repoRoot,queue,relatives,stages){
   }
   return null;
 }
-export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
+export function findDeclaredDccAuthoringTask(project,repoRoot,queue,sharedAssetRegistry=null){
   const engine=clean(project?.engine).toLowerCase();
   if(!['roblox','unity'].includes(engine))return null;
   if(!['development-confirmed','release-confirmed'].includes(clean(project?.releaseState).toLowerCase()))return null;
@@ -2082,17 +2082,19 @@ export function findDeclaredDccAuthoringTask(project,repoRoot,queue){
   const responsibleFiles=presentationSourcesForProject(project,repoRoot);
   if(!responsibleFiles.length)return null;
   const targetPlatform=engine.toUpperCase(),gameId=clean(project?.gameId);
-  const registry=synchronizeSourceBoundAssetConsumers({
-    repoRoot,
-    registry:readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]}),
-    gameCatalog:{games:[{
-      id:gameId,
-      lifecycleState:'ACTIVE',
-      productionClass:project.releaseState,
-      robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
-      unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
-    }]}
-  }).registry;
+  // [내부 라이브러리] 동일 기획 실행에서 이미 검증된 현재 게임의 소스 바인딩 결과를 재사용한다.
+  const registry=(typeof sharedAssetRegistry==='function'?sharedAssetRegistry():sharedAssetRegistry)
+    ||synchronizeSourceBoundAssetConsumers({
+      repoRoot,
+      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]}),
+      gameCatalog:{games:[{
+        id:gameId,
+        lifecycleState:'ACTIVE',
+        productionClass:project.releaseState,
+        robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
+        unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
+      }]}
+    }).registry;
   const safeRelative=value=>{
     const normalized=posix(value);
     return Boolean(normalized&&!path.isAbsolute(normalized)&&!normalized.split('/').includes('..'));
@@ -3558,20 +3560,36 @@ export function findStudioContinuousImprovementTasks(project,repoRoot,queue){
   return applyBuildUpNextActionController(ordered);
 }
 
-export function findSafeTasks(project,repoRoot,queue){
+export function findSafeTasks(project,repoRoot,queue,assetRegistryCache=null){
   const focus=centralPresentationPolicy(repoRoot)?.assetProductionParallelContract?.parallelism?.internalAssetFocus;
-  if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
-    const motionRoot='assets/roblox/world-ghosts/motions';
-    const registry=synchronizeSourceBoundAssetConsumers({
-      repoRoot,
-      registry:readJson(path.join(repoRoot,'company-asset-library.json'),{}),
-      gameCatalog:{games:[{
-        id:project.gameId,
-        lifecycleState:'ACTIVE',
-        productionClass:project.releaseState,
-        robloxProjectPath:project.projectPath||('roblox-games/'+project.gameId)
+  // [바이브-내부 라이브러리] 단일 planning cycle 내 원장 파싱/실사용 소스 스캔을 게임별 1회로 묶는다.
+  // 원본/바인딩 캐시는 외부에서 넘긴 이번 기획 호출의 Map에만 보관한다. 다음 기획 호출은 항상 다시 읽는다.
+  let boundAssetRegistry=null;
+  const sourceBoundRegistry=()=>{
+    if(boundAssetRegistry)return boundAssetRegistry;
+    const gameId=clean(project.gameId),engine=clean(project.engine).toLowerCase();
+    const cacheKey=['BOUND',path.resolve(repoRoot),gameId,engine,posix(project.projectPath),clean(project.releaseState).toLowerCase()].join('|');
+    const cached=assetRegistryCache?.get(cacheKey);
+    if(cached){boundAssetRegistry=cached;return cached;}
+    const rawKey='RAW|'+path.resolve(repoRoot,'company-asset-library.json');
+    let raw=assetRegistryCache?.get(rawKey);
+    if(!raw){
+      raw=readJson(path.join(repoRoot,'company-asset-library.json'),{assets:[]});
+      assetRegistryCache?.set(rawKey,raw);
+    }
+    boundAssetRegistry=synchronizeSourceBoundAssetConsumers({
+      repoRoot,registry:raw,gameCatalog:{games:[{
+        id:gameId,lifecycleState:'ACTIVE',productionClass:project.releaseState,
+        robloxProjectPath:engine==='roblox'?(project.projectPath||('roblox-games/'+gameId)):undefined,
+        unityProjectPath:engine==='unity'?(project.projectPath||('unity-games/'+gameId)):undefined
       }]}
     }).registry;
+    assetRegistryCache?.set(cacheKey,boundAssetRegistry);
+    return boundAssetRegistry;
+  };
+  if(focus?.enabled===true&&project.engine==='roblox'&&(project.gameId===focus.gameId||focus.allRobloxConsumers===true)){
+    const motionRoot='assets/roblox/world-ghosts/motions';
+    const registry=sourceBoundRegistry();
     const tasks=[];
     for(const asset of registry.assets||[]){
       const currentConsumers=currentAssetConsumerGameIds(asset);
@@ -3611,7 +3629,7 @@ export function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox'){
     if(project.queueRobloxQualityBuildUpRequired===true)return uniqueTaskCandidates([
       ...holisticBackfillTasks,
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       ...normalStudioTasks,
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
@@ -3621,7 +3639,7 @@ export function findSafeTasks(project,repoRoot,queue){
     return uniqueTaskCandidates([
       findRobloxInternalPlaytestTask(project,repoRoot,queue),
       ...holisticBackfillTasks,
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findRobloxStudioAssetBackfillTask(project,repoRoot,queue),
       findWeatherPresentationTask(project,repoRoot,queue),
       findPresentationQualityTask(project,repoRoot,queue),
@@ -3639,7 +3657,7 @@ export function findSafeTasks(project,repoRoot,queue){
         // 진행 중 작업과의 파일 충돌은 기존 plannerConflict 및 예약 검사를 그대로 따른다.
         const independentAssetTasks=uniqueTaskCandidates([
           ...holisticBackfillTasks,
-          findDeclaredDccAuthoringTask(project,repoRoot,queue),
+          findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
           findPresentationQualityTask(project,repoRoot,queue),
           ...normalStudioTasks
         ]).filter(task=>task?.assetProductionLane===true
@@ -3649,7 +3667,7 @@ export function findSafeTasks(project,repoRoot,queue){
       }
       return uniqueTaskCandidates([
         ...holisticBackfillTasks,
-        findDeclaredDccAuthoringTask(project,repoRoot,queue),
+        findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
         findPresentationQualityTask(project,repoRoot,queue),
         ...normalStudioTasks,
         scanExplicitMarkerTask(project,repoRoot,queue)
@@ -3657,7 +3675,7 @@ export function findSafeTasks(project,repoRoot,queue){
     }
     if(project.releaseState==='development-confirmed'&&!pilot)return uniqueTaskCandidates([
       ...holisticBackfillTasks,
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
@@ -3667,7 +3685,7 @@ export function findSafeTasks(project,repoRoot,queue){
       ...(weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
       ...holisticBackfillTasks,
       ...(!weatherPilot?[findWeatherPresentationTask(project,repoRoot,queue)]:[]),
-      findDeclaredDccAuthoringTask(project,repoRoot,queue),
+      findDeclaredDccAuthoringTask(project,repoRoot,queue,sourceBoundRegistry),
       findPresentationQualityTask(project,repoRoot,queue),
       ...normalStudioTasks,
       scanExplicitMarkerTask(project,repoRoot,queue)
@@ -3961,6 +3979,8 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   const blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(project=>isAutonomousProductionTarget(project,repoRoot)).sort(projectSort);
   if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],planningBacklog,holisticPriorityDeferralCount:holisticPriorityDeferral.count,buildUpDirectiveBackfillCount:buildUpDirectiveBackfill.changed,runtimeNeuralEvents,runtimeNeuralMutations:runtimeNeuralIngress.applied,workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   const planned=[],packages=[],deferredSmallPackages=[];
+  // 이 Map은 매 기획 호출마다 새로 만든다. 병렬 게임 간 파일 책임/보안/런타임 게이트에는 관여하지 않는다.
+  const assetRegistryCache=new Map();
   let sequence=0;
   const planningProjects=[
     ...(webSeedCapacity?projects.filter(project=>(webFlowUnityOnly?(project.engine==='unity'&&project.firstStageUnityWeb===true):project.engine==='web')&&!webFlowGames.has(project.gameId)).map(project=>({project,webSeed:true,distinctSeed:false})):[]),
@@ -3975,7 +3995,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
     const ownerResumableLaneKey=clean(project.gameId)+'|'+studioQualityLane(project);
     const ownerResumableSeedRequired=ownerResumableMissingLaneKeys.has(ownerResumableLaneKey);
     const remaining=webSeed||distinctSeed||ownerResumableSeedRequired?1:Math.max(1,capacity-planned.length);
-    const candidates=findSafeTasks(project,repoRoot,queue).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
+    const candidates=findSafeTasks(project,repoRoot,queue,assetRegistryCache).filter(candidate=>!webSeed||(webFlowMatches(candidate)&&isDevelopmentImplementation(candidate)&&!candidate.assetProductionLane));
     let packageTasks=selectPackageCandidates(candidates.map(candidate=>applyWorldLobbyFirst(candidate,project,repoRoot)),queue,remaining,policy);
     if(!packageTasks.length)continue;
     if(packageTasks.every(task=>task.motionRepairWorkUnit?.scope==='INTERNAL_ASSET_LIBRARY')){
