@@ -47,7 +47,11 @@ export const CAUSAL_DNA_LIBRARY=Object.freeze([
   {id:'PILGRIMAGE_TRANSFORMATION',source:'RELIGION_EPIC_JOURNEY',principle:'목적지보다 여정에서 받은 흔적과 관계가 사람을 바꾼다.',gameGrammar:'이동 경로와 통과한 장소 순서가 능력·신분·결말을 바꾼다.'},
   {id:'FORTUNE_REVERSAL',source:'TRAGEDY_COMEDY_DRAMATIC_STRUCTURE',principle:'최고점과 최저점이 서로의 원인이 되어 운명이 반전된다.',gameGrammar:'큰 성공이 다음 위험의 재료가 되고 실패가 새로운 기회의 자원이 된다.'},
   {id:'ABSURD_BUREAUCRACY',source:'SATIRE_POLITICAL_COMEDY',principle:'규칙을 지키려 할수록 규칙의 모순이 더 큰 문제를 만든다.',gameGrammar:'허가·서류·명령·등급 같은 시스템을 역이용해 세계를 조작한다.'},
-  {id:'NAME_AND_REPUTATION_POWER',source:'EPIC_HEROIC_TRADITION_SOCIAL_HISTORY',principle:'실제 힘과 별개로 이름·소문·평판이 타인의 행동을 결정한다.',gameGrammar:'플레이어의 실제 행동보다 퍼진 이야기와 평판이 적·상점·세력의 규칙을 바꾼다.'}
+  {id:'NAME_AND_REPUTATION_POWER',source:'EPIC_HEROIC_TRADITION_SOCIAL_HISTORY',principle:'실제 힘과 별개로 이름·소문·평판이 타인의 행동을 결정한다.',gameGrammar:'플레이어의 실제 행동보다 퍼진 이야기와 평판이 적·상점·세력의 규칙을 바꾼다.'},
+  {"id":"SCIENCE_ECOLOGY","source":"SCIENCE_ECOLOGY","principle":"환경과 생물 집단은 서로 영향을 주어 자원과 서식 공간을 변화시킨다.","gameGrammar":"한 자원의 이용과 보존 결정이 다른 생물과 공간의 위험 조건을 바꾼다."},
+  {"id":"SCIENCE_ASTRONOMY","source":"SCIENCE_ASTRONOMY","principle":"공전과 위치 변화에 따라 관측 가능 시각과 방향이 달라진다.","gameGrammar":"공간과 시간 조건을 읽어 다른 진입 경로와 환경 반응을 선택한다."},
+  {"id":"SCIENCE_INVENTION","source":"SCIENCE_ENGINEERING","principle":"같은 도구도 구조와 연결 방식을 바꾸면 새로운 용도로 사용할 수 있다.","gameGrammar":"장치의 배치와 조합에 따라 이전에는 막힌 길의 접근 조건이 변화한다."},
+  {"id":"NARRATIVE_PERSPECTIVE","source":"LITERATURE_NARRATIVE","principle":"관찰자에 따라 같은 사건의 정보와 의미가 다르게 전달될 수 있다.","gameGrammar":"사건을 전달한 인물과 단서를 비교해 조사·교섭 조건을 갱신한다."}
 ]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
 export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([
