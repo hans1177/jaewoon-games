@@ -1,5 +1,28 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-w5rm4h",
+      "worker": "vibe2",
+      "taskId": "zombie-survival-studio-evolution-roblox-usability-v2",
+      "gameId": "zombie-survival",
+      "files": [
+        "roblox-games/zombie-survival/client/Game.client.luau",
+        "roblox-games/zombie-survival/shared/GameConfig.luau",
+        "roblox-games/zombie-survival/server/Game.server.luau",
+        "roblox-games/zombie-survival/client/MaterialPresentation.client.luau"
+      ],
+      "baseSha": "39dd862da13c6c226644e347c4f02df395db5ce5",
+      "runId": "38264711989",
+      "runAttempt": "1",
+      "acquiredAt": "2026-10-12T14:58:56.356Z",
+      "expiresAt": "2026-10-12T15:43:56.356Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:zombie-survival-studio-evolution-roblox-usability-v2"
+      ]
+    }
+  ]
 }
