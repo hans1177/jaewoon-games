@@ -211,6 +211,46 @@ test('runner migrates legacy PR traces and persists current PR only in dedicated
   assert.equal(JSON.stringify(provenanceLedger).includes('external assistant raw title'),false);
 });
 
+test('concurrent distinct merged PRs are both retained after stale ledger write is replayed',()=>{
+  const first=buildMergedPullRequestTrace({
+    eventPayload:event({number:7679,merge_commit_sha:'merge7679',merged_at:'2026-10-12T00:18:29Z'}),
+    changedFiles:[{path:'tools/first.mjs',added:7,deleted:2,codingRelevant:true}]
+  });
+  const second=buildMergedPullRequestTrace({
+    eventPayload:event({number:7698,merge_commit_sha:'merge7698',merged_at:'2026-10-12T00:35:00Z'}),
+    changedFiles:[{path:'qa/second.test.mjs',added:8,deleted:0,codingRelevant:true}]
+  });
+  assert.ok(first&&second);
+  assert.notEqual(first.traceId,second.traceId);
+  const firstCommitted=mergeMergedPrProvenanceLedger({},[first]);
+  const staleSecondCommit=mergeMergedPrProvenanceLedger({},[second]);
+  assert.equal(staleSecondCommit.traces.some(row=>row.traceId===first.traceId),false);
+  const replayedSecond=mergeMergedPrProvenanceLedger(firstCommitted,[second]);
+  assert.equal(replayedSecond.traces.length,2);
+  assert.ok(replayedSecond.traces.some(row=>row.provenance?.pullRequestNumber===7679));
+  assert.ok(replayedSecond.traces.some(row=>row.provenance?.pullRequestNumber===7698));
+  const repeated=mergeMergedPrProvenanceLedger(replayedSecond,[second]);
+  assert.equal(repeated.traces.length,2,'replayed PR must never duplicate provenance');
+  assert.ok(repeated.policy.mergedPrProvenanceOnly);
+  assert.equal(repeated.policy.unverifiedAttemptReusable,false);
+  assert.ok(repeated.traces.every(row=>row.verification?.mergeIsNotCapabilityVerification===true));
+});
+
+test('merged PR workflow isolates pending events and replays stale push against latest control ledger',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-merged-pr-provenance.yml','utf8');
+  assert.match(workflow,/group: vibe2-merged-pr-\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.doesNotMatch(workflow,/group: vibe2-control-state-vibe2-unreal-core/);
+  assert.match(workflow,/cancel-in-progress: false/);
+  assert.match(workflow,/git push origin HEAD:vibe2-unreal-core/);
+  assert.match(workflow,/git fetch origin vibe2-unreal-core --quiet/);
+  assert.match(workflow,/git reset --hard origin\/vibe2-unreal-core/);
+  assert.match(workflow,/node "\$GITHUB_WORKSPACE\/source\/tools\/vibe2-merged-pr-provenance\.mjs"/);
+  assert.match(workflow,/--event="\$GITHUB_EVENT_PATH"/);
+  assert.match(workflow,/--legacy-ledger="\$GITHUB_WORKSPACE\/control\/\.vibe2\/coding-trace-ledger\.json"/);
+  assert.match(workflow,/VIBE2_MERGED_PR_PUSH_RACE_REPLAY/);
+  assert.doesNotMatch(workflow,/git pull --rebase origin vibe2-unreal-core/);
+});
+
 test('workflow persists only the two provenance retention files and never mutates queue or experience',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-merged-pr-provenance.yml','utf8');
   assert.match(workflow,/\.vibe2\/merged-pr-provenance-ledger\.json/);
