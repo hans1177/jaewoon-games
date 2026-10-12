@@ -152,8 +152,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
       "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "UNITY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
       "unityProjectReady": false,
       "developmentFocus": {
@@ -174,20 +174,7 @@
         "core-loop",
         "public-web-archive"
       ],
-      "lifecycleState": "ACTIVE",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/survival",
-        "UNITY": "unity-games/survival"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "productionTier": 3,
-      "updatedAt": "2026-10-12T00:05:09.553Z"
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0002",
@@ -197,9 +184,10 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -216,31 +204,7 @@
         "core-loop"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/insect-survival",
-        "UNITY": "unity-games/insect-survival"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/insect-survival/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/insect-survival/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/insect-survival/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "selectedPlatform": "UNITY"
     },
     {
       "id": "P0003",
@@ -250,8 +214,8 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -269,31 +233,7 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/crystal-defense",
-        "UNITY": "unity-games/crystal-defense"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/crystal-defense/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/crystal-defense/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/crystal-defense/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "targetPlatformReady": true
     },
     {
       "id": "P0004",
@@ -303,9 +243,10 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -322,31 +263,7 @@
         "core-loop"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/bug-defense",
-        "UNITY": "unity-games/bug-defense"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/bug-defense/2026-10-11/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/bug-defense/2026-10-11/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/bug-defense/2026-10-11/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "selectedPlatform": "UNITY"
     },
     {
       "id": "P0005",
@@ -356,8 +273,8 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {
           "playability": 1,
@@ -375,20 +292,7 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/human-go",
-        "UNITY": "unity-games/human-go"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "productionTier": 3,
-      "updatedAt": "2026-10-12T00:05:09.553Z"
+      "targetPlatformReady": true
     },
     {
       "id": "P0006",
@@ -400,8 +304,8 @@
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
       "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "UNITY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -422,31 +326,7 @@
         "unity-primary",
         "public-web-archive"
       ],
-      "lifecycleState": "ACTIVE",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/daechung-rpg",
-        "UNITY": "unity-games/daechung-rpg"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/daechung-rpg/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/daechung-rpg/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/daechung-rpg/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0007",
@@ -455,37 +335,13 @@
       "sourcePath": "web-games/island-village",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "profileStatus": "HOLD_MISSING_SOURCE",
+      "mode": "HOLD",
+      "targetEngine": "design-only",
       "protectedValues": [],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/island-village",
-        "UNITY": "unity-games/island-village"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/island-village/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/island-village/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/island-village/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "targetPlatformReady": true
     },
     {
       "id": "P0008",
@@ -494,37 +350,13 @@
       "sourcePath": "web-games/egg-heist",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "profileStatus": "HOLD_REDIRECT_ONLY",
+      "mode": "HOLD",
+      "targetEngine": "design-only",
       "protectedValues": [],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/egg-heist",
-        "UNITY": "unity-games/egg-heist"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/egg-heist/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/egg-heist/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/egg-heist/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "targetPlatformReady": true
     },
     {
       "id": "P0009",
@@ -534,9 +366,10 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -556,31 +389,7 @@
         "dex"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/monster-adventure",
-        "UNITY": "unity-games/monster-adventure"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/monster-adventure/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/monster-adventure/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/monster-adventure/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "selectedPlatform": "UNITY"
     },
     {
       "id": "P0101",
@@ -590,8 +399,8 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -600,31 +409,7 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/chess-battle",
-        "UNITY": "unity-games/chess-battle"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/chess-battle/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/chess-battle/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/chess-battle/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "targetPlatformReady": true
     },
     {
       "id": "P0102",
@@ -634,8 +419,8 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -644,31 +429,7 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/survival2",
-        "UNITY": "unity-games/survival2"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/survival2/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/survival2/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/survival2/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "targetPlatformReady": true
     },
     {
       "id": "P0103",
@@ -678,8 +439,8 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
       "profileStatus": "DESIGN_ONLY",
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
@@ -688,1238 +449,7 @@
       ],
       "lifecycleState": "ACTIVE",
       "selectedPlatform": "ROBLOX",
-      "targetPlatformReady": true,
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/territory-war",
-        "UNITY": "unity-games/territory-war"
-      },
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/territory-war/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/territory-war/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/territory-war/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-cozy-island",
-      "slug": "cozy-island",
-      "name": "포근섬: 작은 왕국 키우기",
-      "sourcePath": "roblox-games/cozy-island",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cozy-island",
-        "UNITY": "unity-games/cozy-island"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/cozy-island/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/cozy-island/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-single-defense-strat-celestial-bastion",
-      "slug": "seed-single-defense-strat-celestial-bastion",
-      "name": "천상의 보루",
-      "sourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-single-defense-strat-celestial-bastion",
-        "UNITY": "unity-games/seed-single-defense-strat-celestial-bastion"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-single-defense-strat-celestial-bastion/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
-      "slug": "seed-idle-growth-rpg-crystal-bloom",
-      "name": "수정의 개화",
-      "sourcePath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-idle-growth-rpg-crystal-bloom",
-        "UNITY": "unity-games/seed-idle-growth-rpg-crystal-bloom"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-idle-growth-rpg-crystal-bloom/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
-      "slug": "seed-story-complete-rpg-chronicles-of-eldoria",
-      "name": "엘도리아 연대기",
-      "sourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-story-complete-rpg-chronicles-of-eldoria",
-        "UNITY": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-village-dungeons",
-      "slug": "village-dungeons",
-      "name": "마을 던전 RPG",
-      "sourcePath": "unity-games/village-dungeons",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/village-dungeons",
-        "UNITY": "unity-games/village-dungeons"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/village-dungeons/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/village-dungeons/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/village-dungeons/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-amusement-tycoon",
-      "slug": "amusement-tycoon",
-      "name": "놀이공원 타이쿤",
-      "sourcePath": "unity-games/amusement-tycoon",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/amusement-tycoon",
-        "UNITY": "unity-games/amusement-tycoon"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/amusement-tycoon/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/amusement-tycoon/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/amusement-tycoon/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-line-defense",
-      "slug": "line-defense",
-      "name": "골목 군단 대전",
-      "sourcePath": "unity-games/line-defense",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/line-defense",
-        "UNITY": "unity-games/line-defense"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/line-defense/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/line-defense/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/line-defense/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-fantasy-survival",
-      "slug": "fantasy-survival",
-      "name": "마력숲 생존기",
-      "sourcePath": "unity-games/fantasy-survival",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fantasy-survival",
-        "UNITY": "unity-games/fantasy-survival"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "productionTier": 3,
-      "updatedAt": "2026-10-12T00:05:09.553Z"
-    },
-    {
-      "id": "RUNTIME-zombie-survival",
-      "slug": "zombie-survival",
-      "name": "좀비 생존기",
-      "sourcePath": "unity-games/zombie-survival",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/zombie-survival",
-        "UNITY": "unity-games/zombie-survival"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/zombie-survival/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/zombie-survival/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/zombie-survival/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-horror-escape-room",
-      "slug": "horror-escape-room",
-      "name": "심야 대탈출",
-      "sourcePath": "roblox-games/horror-escape-room",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/horror-escape-room",
-        "UNITY": "unity-games/horror-escape-room"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/horror-escape-room/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/horror-escape-room/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/horror-escape-room/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-core-clash-4v4",
-      "slug": "core-clash-4v4",
-      "name": "코어 전장 4대4",
-      "sourcePath": "roblox-games/core-clash-4v4",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/core-clash-4v4",
-        "UNITY": "unity-games/core-clash-4v4"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/core-clash-4v4/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/core-clash-4v4/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/core-clash-4v4/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-human-go-temp",
-      "slug": "human-go-temp",
-      "name": "휴먼 GO!",
-      "sourcePath": "roblox-games/human-go-temp",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/human-go-temp",
-        "UNITY": "unity-games/human-go-temp"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/human-go-temp/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/human-go-temp/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/human-go-temp/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-party-rpg",
-      "slug": "party-rpg",
-      "name": "파티 RPG",
-      "sourcePath": "roblox-games/party-rpg",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/party-rpg",
-        "UNITY": "unity-games/party-rpg"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/party-rpg/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/party-rpg/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/party-rpg/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
-      "slug": "seed-roblox-roleplay-life-avat-brookhaven-rp",
-      "name": "Harbor Days",
-      "sourcePath": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-roblox-roleplay-life-avat-brookhaven-rp",
-        "UNITY": "unity-games/seed-roblox-roleplay-life-avat-brookhaven-rp"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
-      "slug": "seed-roblox-simulator-tycoon-i-adopt-me",
-      "name": "Pocket Foundry",
-      "sourcePath": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
-        "UNITY": "unity-games/seed-roblox-simulator-tycoon-i-adopt-me"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-roblox-story-rpg-adventur-blox-fruits",
-      "slug": "seed-roblox-story-rpg-adventur-blox-fruits",
-      "name": "Shardbound Odyssey",
-      "sourcePath": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-roblox-story-rpg-adventur-blox-fruits",
-        "UNITY": "unity-games/seed-roblox-story-rpg-adventur-blox-fruits"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-seed-roblox-survival-horror-es-doors",
-      "slug": "seed-roblox-survival-horror-es-doors",
-      "name": "Last Lantern",
-      "sourcePath": "roblox-games/seed-roblox-survival-horror-es-doors",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/seed-roblox-survival-horror-es-doors",
-        "UNITY": "unity-games/seed-roblox-survival-horror-es-doors"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-roblox-survival-horror-es-doors/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-cat-step",
-      "slug": "cat-step",
-      "name": "캣 스텝",
-      "sourcePath": "unity-games/cat-step",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/cat-step",
-        "UNITY": "unity-games/cat-step"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/cat-step/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/cat-step/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/cat-step/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-defense",
-      "slug": "defense",
-      "name": "숲길 디펜스",
-      "sourcePath": "unity-games/defense",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/defense",
-        "UNITY": "unity-games/defense"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/defense/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/defense/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/defense/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-dice-battle-board",
-      "slug": "dice-battle-board",
-      "name": "주사위 전투 보드",
-      "sourcePath": "unity-games/dice-battle-board",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/dice-battle-board",
-        "UNITY": "unity-games/dice-battle-board"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/dice-battle-board/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/dice-battle-board/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/dice-battle-board/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-exorcist-office",
-      "slug": "exorcist-office",
-      "name": "퇴마 사무소",
-      "sourcePath": "unity-games/exorcist-office",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/exorcist-office",
-        "UNITY": "unity-games/exorcist-office"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/exorcist-office/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/exorcist-office/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/exorcist-office/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-fifty-days",
-      "slug": "fifty-days",
-      "name": "50일",
-      "sourcePath": "unity-games/fifty-days",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/fifty-days",
-        "UNITY": "unity-games/fifty-days"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/fifty-days/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/fifty-days/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/fifty-days/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-gem-survivor",
-      "slug": "gem-survivor",
-      "name": "보석 생존전",
-      "sourcePath": "unity-games/gem-survivor",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/gem-survivor",
-        "UNITY": "unity-games/gem-survivor"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/gem-survivor/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/gem-survivor/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/gem-survivor/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-kingshot-ad",
-      "slug": "kingshot-ad",
-      "name": "킹샷 광고풍",
-      "sourcePath": "unity-games/kingshot-ad",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/kingshot-ad",
-        "UNITY": "unity-games/kingshot-ad"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/kingshot-ad/2026-10-10/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/kingshot-ad/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/kingshot-ad/2026-10-10/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-realistic-builder",
-      "slug": "realistic-builder",
-      "name": "현실 건축가",
-      "sourcePath": "unity-games/realistic-builder",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/realistic-builder",
-        "UNITY": "unity-games/realistic-builder"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/realistic-builder/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/realistic-builder/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/realistic-builder/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-simple-rpg",
-      "slug": "simple-rpg",
-      "name": "작은 모험 RPG",
-      "sourcePath": "unity-games/simple-rpg",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/simple-rpg",
-        "UNITY": "unity-games/simple-rpg"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/simple-rpg/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/simple-rpg/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/simple-rpg/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-star-frontier",
-      "slug": "star-frontier",
-      "name": "별길 개척자",
-      "sourcePath": "unity-games/star-frontier",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/star-frontier",
-        "UNITY": "unity-games/star-frontier"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/star-frontier/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/star-frontier/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/star-frontier/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-tower-choice-rpg",
-      "slug": "tower-choice-rpg",
-      "name": "10층 탑 RPG",
-      "sourcePath": "unity-games/tower-choice-rpg",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "UNITY",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/tower-choice-rpg",
-        "UNITY": "unity-games/tower-choice-rpg"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": true,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/tower-choice-rpg/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/tower-choice-rpg/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
-    },
-    {
-      "id": "RUNTIME-ant-simulator",
-      "slug": "ant-simulator",
-      "name": "개미 시뮬레이터",
-      "sourcePath": "roblox-games/ant-simulator",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
-      "profileStatus": "DESIGN_ONLY",
-      "selectedPlatform": "ROBLOX",
-      "concurrentTargetPlatforms": [
-        "ROBLOX",
-        "UNITY"
-      ],
-      "targetSourcePaths": {
-        "ROBLOX": "roblox-games/ant-simulator",
-        "UNITY": "unity-games/ant-simulator"
-      },
-      "developmentFocus": {
-        "total": 0
-      },
-      "runtimeSynthesized": true,
-      "lifecycleState": "ACTIVE",
-      "targetPlatformReady": false,
-      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
-      "targetEngine": "roblox-unity-native",
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true,
-      "designBaselineSource": "design/ant-simulator/2026-10-12/design-revised.json",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/ant-simulator/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/ant-simulator/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      },
-      "updatedAt": "2026-10-12T00:05:09.553Z",
-      "productionTier": 3
+      "targetPlatformReady": true
     }
   ],
   "productionClassState": {
@@ -1936,22 +466,16 @@
       "source": "CATALOG_GENRE",
       "membershipInfluence": false,
       "adjusted": false,
-      "distinctFamilies": [
-        "SURVIVAL",
-        "DEFENSE",
-        "COLLECTION",
-        "RPG",
-        "TURN_BASED",
-        "STRATEGY"
-      ]
+      "distinctFamilies": []
     },
     "counts": {
       "releaseConfirmed": 0,
-      "developmentConfirmed": 41,
-      "designOnly": 0
+      "developmentConfirmed": 0,
+      "designOnly": 12
     },
     "releaseConfirmedGameIds": [],
-    "developmentConfirmedGameIds": [
+    "developmentConfirmedGameIds": [],
+    "designOnlyGameIds": [
       "P0001",
       "P0002",
       "P0003",
@@ -1963,38 +487,8 @@
       "P0009",
       "P0101",
       "P0102",
-      "P0103",
-      "RUNTIME-amusement-tycoon",
-      "RUNTIME-ant-simulator",
-      "RUNTIME-cat-step",
-      "RUNTIME-core-clash-4v4",
-      "RUNTIME-cozy-island",
-      "RUNTIME-defense",
-      "RUNTIME-dice-battle-board",
-      "RUNTIME-exorcist-office",
-      "RUNTIME-fantasy-survival",
-      "RUNTIME-fifty-days",
-      "RUNTIME-gem-survivor",
-      "RUNTIME-horror-escape-room",
-      "RUNTIME-human-go-temp",
-      "RUNTIME-kingshot-ad",
-      "RUNTIME-line-defense",
-      "RUNTIME-party-rpg",
-      "RUNTIME-realistic-builder",
-      "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
-      "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
-      "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
-      "RUNTIME-seed-roblox-story-rpg-adventur-blox-fruits",
-      "RUNTIME-seed-roblox-survival-horror-es-doors",
-      "RUNTIME-seed-single-defense-strat-celestial-bastion",
-      "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
-      "RUNTIME-simple-rpg",
-      "RUNTIME-star-frontier",
-      "RUNTIME-tower-choice-rpg",
-      "RUNTIME-village-dungeons",
-      "RUNTIME-zombie-survival"
+      "P0103"
     ],
-    "designOnlyGameIds": [],
     "lifecycle": {
       "active": [
         "P0001",
@@ -2008,36 +502,7 @@
         "P0009",
         "P0101",
         "P0102",
-        "P0103",
-        "RUNTIME-cozy-island",
-        "RUNTIME-seed-single-defense-strat-celestial-bastion",
-        "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
-        "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
-        "RUNTIME-village-dungeons",
-        "RUNTIME-amusement-tycoon",
-        "RUNTIME-line-defense",
-        "RUNTIME-fantasy-survival",
-        "RUNTIME-zombie-survival",
-        "RUNTIME-horror-escape-room",
-        "RUNTIME-core-clash-4v4",
-        "RUNTIME-human-go-temp",
-        "RUNTIME-party-rpg",
-        "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
-        "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
-        "RUNTIME-seed-roblox-story-rpg-adventur-blox-fruits",
-        "RUNTIME-seed-roblox-survival-horror-es-doors",
-        "RUNTIME-cat-step",
-        "RUNTIME-defense",
-        "RUNTIME-dice-battle-board",
-        "RUNTIME-exorcist-office",
-        "RUNTIME-fifty-days",
-        "RUNTIME-gem-survivor",
-        "RUNTIME-kingshot-ad",
-        "RUNTIME-realistic-builder",
-        "RUNTIME-simple-rpg",
-        "RUNTIME-star-frontier",
-        "RUNTIME-tower-choice-rpg",
-        "RUNTIME-ant-simulator"
+        "P0103"
       ],
       "paused": [],
       "rebuild": [],
@@ -2046,11 +511,11 @@
     },
     "pipeline": {
       "target": 60,
-      "count": 41,
+      "count": 12,
       "activeDevelopmentWipMax": null,
       "capacityOnly": true,
       "noArtificialGlobalGameCountCap": true,
-      "deficit": 19
+      "deficit": 48
     },
     "ranking": [
       {
@@ -2059,7 +524,7 @@
         "gameId": "P0001",
         "slug": "survival",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 906,
         "developmentFocus": 9,
@@ -2074,7 +539,7 @@
         "gameId": "P0006",
         "slug": "daechung-rpg",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "RPG",
         "evidenceScore": 811,
         "developmentFocus": 8,
@@ -2089,7 +554,7 @@
         "gameId": "P0002",
         "slug": "insect-survival",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 806,
         "developmentFocus": 8,
@@ -2104,7 +569,7 @@
         "gameId": "P0004",
         "slug": "bug-defense",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "DEFENSE",
         "evidenceScore": 706,
         "developmentFocus": 7,
@@ -2119,7 +584,7 @@
         "gameId": "P0003",
         "slug": "crystal-defense",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "DEFENSE",
         "evidenceScore": 606,
         "developmentFocus": 6,
@@ -2134,7 +599,7 @@
         "gameId": "P0009",
         "slug": "monster-adventure",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "TURN_BASED",
         "evidenceScore": 511,
         "developmentFocus": 5,
@@ -2146,130 +611,40 @@
       {
         "rank": 7,
         "rawEvidenceRank": 7,
-        "gameId": "P0005",
-        "slug": "human-go",
+        "gameId": "P0101",
+        "slug": "chess-battle",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "COLLECTION",
-        "evidenceScore": 406,
-        "developmentFocus": 4,
+        "productionClass": "DESIGN_ONLY",
+        "gameplayFamily": "STRATEGY",
+        "evidenceScore": 6,
+        "developmentFocus": 0,
         "artbookBaselineRank": 0,
         "targetPlatform": "ROBLOX",
         "targetPlatformReady": true,
-        "sourceReady": false
+        "sourceReady": true
       },
       {
         "rank": 8,
         "rawEvidenceRank": 8,
-        "gameId": "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
-        "slug": "seed-idle-growth-rpg-crystal-bloom",
+        "gameId": "P0102",
+        "slug": "survival2",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 11,
+        "productionClass": "DESIGN_ONLY",
+        "gameplayFamily": "SURVIVAL",
+        "evidenceScore": 6,
         "developmentFocus": 0,
-        "artbookBaselineRank": 0.5,
-        "targetPlatform": "UNITY",
+        "artbookBaselineRank": 0,
+        "targetPlatform": "ROBLOX",
         "targetPlatformReady": true,
         "sourceReady": true
       },
       {
         "rank": 9,
         "rawEvidenceRank": 9,
-        "gameId": "RUNTIME-seed-single-defense-strat-celestial-bastion",
-        "slug": "seed-single-defense-strat-celestial-bastion",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "DEFENSE",
-        "evidenceScore": 11,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0.5,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 10,
-        "rawEvidenceRank": 10,
-        "gameId": "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
-        "slug": "seed-story-complete-rpg-chronicles-of-eldoria",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 11,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0.5,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 11,
-        "rawEvidenceRank": 11,
-        "gameId": "P0007",
-        "slug": "island-village",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "SURVIVAL",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 12,
-        "rawEvidenceRank": 12,
-        "gameId": "P0008",
-        "slug": "egg-heist",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "COLLECTION",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 13,
-        "rawEvidenceRank": 13,
-        "gameId": "P0101",
-        "slug": "chess-battle",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "STRATEGY",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 14,
-        "rawEvidenceRank": 14,
-        "gameId": "P0102",
-        "slug": "survival2",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "SURVIVAL",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 15,
-        "rawEvidenceRank": 15,
         "gameId": "P0103",
         "slug": "territory-war",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "STRATEGY",
         "evidenceScore": 6,
         "developmentFocus": 0,
@@ -2277,398 +652,7 @@
         "targetPlatform": "ROBLOX",
         "targetPlatformReady": true,
         "sourceReady": true
-      },
-      {
-        "rank": 16,
-        "rawEvidenceRank": 16,
-        "gameId": "RUNTIME-core-clash-4v4",
-        "slug": "core-clash-4v4",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 17,
-        "rawEvidenceRank": 17,
-        "gameId": "RUNTIME-cozy-island",
-        "slug": "cozy-island",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "UNCLASSIFIED",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 18,
-        "rawEvidenceRank": 18,
-        "gameId": "RUNTIME-horror-escape-room",
-        "slug": "horror-escape-room",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "UNCLASSIFIED",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 19,
-        "rawEvidenceRank": 19,
-        "gameId": "RUNTIME-human-go-temp",
-        "slug": "human-go-temp",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 20,
-        "rawEvidenceRank": 20,
-        "gameId": "RUNTIME-party-rpg",
-        "slug": "party-rpg",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 21,
-        "rawEvidenceRank": 21,
-        "gameId": "RUNTIME-seed-roblox-roleplay-life-avat-brookhaven-rp",
-        "slug": "seed-roblox-roleplay-life-avat-brookhaven-rp",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 22,
-        "rawEvidenceRank": 22,
-        "gameId": "RUNTIME-seed-roblox-simulator-tycoon-i-adopt-me",
-        "slug": "seed-roblox-simulator-tycoon-i-adopt-me",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "STRATEGY",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 23,
-        "rawEvidenceRank": 23,
-        "gameId": "RUNTIME-seed-roblox-story-rpg-adventur-blox-fruits",
-        "slug": "seed-roblox-story-rpg-adventur-blox-fruits",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 24,
-        "rawEvidenceRank": 24,
-        "gameId": "RUNTIME-seed-roblox-survival-horror-es-doors",
-        "slug": "seed-roblox-survival-horror-es-doors",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "SURVIVAL",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 25,
-        "rawEvidenceRank": 25,
-        "gameId": "RUNTIME-amusement-tycoon",
-        "slug": "amusement-tycoon",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "UNCLASSIFIED",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 26,
-        "rawEvidenceRank": 26,
-        "gameId": "RUNTIME-cat-step",
-        "slug": "cat-step",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 27,
-        "rawEvidenceRank": 27,
-        "gameId": "RUNTIME-defense",
-        "slug": "defense",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "DEFENSE",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 28,
-        "rawEvidenceRank": 28,
-        "gameId": "RUNTIME-dice-battle-board",
-        "slug": "dice-battle-board",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "DEFENSE",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 29,
-        "rawEvidenceRank": 29,
-        "gameId": "RUNTIME-exorcist-office",
-        "slug": "exorcist-office",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 30,
-        "rawEvidenceRank": 30,
-        "gameId": "RUNTIME-fantasy-survival",
-        "slug": "fantasy-survival",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 31,
-        "rawEvidenceRank": 31,
-        "gameId": "RUNTIME-fifty-days",
-        "slug": "fifty-days",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 32,
-        "rawEvidenceRank": 32,
-        "gameId": "RUNTIME-gem-survivor",
-        "slug": "gem-survivor",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 33,
-        "rawEvidenceRank": 33,
-        "gameId": "RUNTIME-kingshot-ad",
-        "slug": "kingshot-ad",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "DEFENSE",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 34,
-        "rawEvidenceRank": 34,
-        "gameId": "RUNTIME-line-defense",
-        "slug": "line-defense",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "STRATEGY",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 35,
-        "rawEvidenceRank": 35,
-        "gameId": "RUNTIME-realistic-builder",
-        "slug": "realistic-builder",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 36,
-        "rawEvidenceRank": 36,
-        "gameId": "RUNTIME-simple-rpg",
-        "slug": "simple-rpg",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 37,
-        "rawEvidenceRank": 37,
-        "gameId": "RUNTIME-star-frontier",
-        "slug": "star-frontier",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "STRATEGY",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 38,
-        "rawEvidenceRank": 38,
-        "gameId": "RUNTIME-tower-choice-rpg",
-        "slug": "tower-choice-rpg",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 39,
-        "rawEvidenceRank": 39,
-        "gameId": "RUNTIME-village-dungeons",
-        "slug": "village-dungeons",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "RPG",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 40,
-        "rawEvidenceRank": 40,
-        "gameId": "RUNTIME-zombie-survival",
-        "slug": "zombie-survival",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "SURVIVAL",
-        "evidenceScore": 6,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "UNITY",
-        "targetPlatformReady": true,
-        "sourceReady": true
-      },
-      {
-        "rank": 41,
-        "rawEvidenceRank": 41,
-        "gameId": "RUNTIME-ant-simulator",
-        "slug": "ant-simulator",
-        "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
-        "gameplayFamily": "SURVIVAL",
-        "evidenceScore": 0,
-        "developmentFocus": 0,
-        "artbookBaselineRank": 0,
-        "targetPlatform": "ROBLOX",
-        "targetPlatformReady": false,
-        "sourceReady": false
       }
     ]
-  },
-  "updatedAt": "2026-10-12T00:15:12.854Z"
+  }
 }
