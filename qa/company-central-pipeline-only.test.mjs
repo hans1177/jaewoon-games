@@ -611,6 +611,46 @@ test('director drain QA changes wake the existing runner drain',()=>{
   assert.match(pushBlock,/qa\/company-central-pipeline-only\.test\.mjs/);
 });
 
+test('legacy refill drain selects only stale main refill wakes and requires proven empty jobs before force cancel',t=>{
+  const director=read('.github/workflows/director-supervisor.yml');
+  const ending="            ))add(stale,'VIBE2_LEGACY_UNSTARTED_FANIN_REFILL');";
+  const end=director.indexOf(ending),start=director.lastIndexOf('            for(const stale of runs.filter(r=>',end);
+  assert.ok(start>=0&&end>start);
+  const base={id:1,path:'.github/workflows/vibe2-continuous-core.yml',event:'repository_dispatch',display_title:'vibe2-fanin-refill',status:'queued',head_branch:'main',head_sha:'old'};
+  const changes=[{}, {head_sha:'current'}, {status:'in_progress'}, {head_branch:'other'}, {display_title:'vibe2-neuron-complete'}, {event:'workflow_dispatch'}, {head_sha:''}];
+  const selected=[];
+  runInNewContext(director.slice(start,end+ending.length),{runs:changes.map((row,i)=>({...base,...row,id:i+1})),currentMain:'current',queued:new Set(['queued','pending','requested']),add:run=>selected.push(run.id)});
+  assert.deepEqual(selected,[1]);
+
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'legacy-refill-drain-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const loopStart=director.indexOf("          while IFS='|' read -r run_id reason; do");
+  const loopEnd=director.indexOf('          done < /tmp/director-run-cancel.list',loopStart);
+  assert.ok(loopStart>=0&&loopEnd>loopStart);
+  const loop=director.slice(loopStart,loopEnd)+"          done <<< '123|VIBE2_LEGACY_UNSTARTED_FANIN_REFILL'\n";
+  const fakeGh=`gh() {
+    if [[ "$*" == *'--method POST'* ]]; then
+      printf '%s\\n' "$*" >> "$DRAIN_CALLS"
+      [[ "$*" == *'/force-cancel'* ]]
+    elif [[ "\${!#}" == '.total_count' ]]; then
+      case "$DRAIN_JOBS" in
+        error) return 1 ;;
+        changed) if [ -f "$DRAIN_COUNTED" ]; then echo 1; else touch "$DRAIN_COUNTED"; echo 0; fi ;;
+        *) echo "$DRAIN_JOBS" ;;
+      esac
+    elif [[ "\${!#}" == '.status' ]]; then echo queued
+    else echo 0
+    fi
+  }\n`;
+  for(const jobCount of ['0','1','error','changed']){
+    const calls=path.join(root,jobCount+'.calls'),counted=path.join(root,jobCount+'.counted');
+    execFileSync('bash',['-c','set -euo pipefail\ncancelled=0\nfailed=0\n'+fakeGh+loop],{env:{...process.env,GITHUB_REPOSITORY:'owner/repo',DRAIN_JOBS:jobCount,DRAIN_CALLS:calls,DRAIN_COUNTED:counted},encoding:'utf8'});
+    const requests=fs.existsSync(calls)?fs.readFileSync(calls,'utf8').trim().split('\n'):[];
+    assert.equal(requests.length,jobCount==='0'?2:jobCount==='changed'?1:0,jobCount);
+    if(jobCount==='0')assert.match(requests[1],/\/force-cancel/);
+  }
+});
+
 test('director retires only pre-cloud-only Studio MCP tails with no active jobs',()=>{
   const director=read('.github/workflows/director-supervisor.yml');
   assert.match(director,/cloud_only_cutoff='2026-10-05T06:44:59Z'/);
