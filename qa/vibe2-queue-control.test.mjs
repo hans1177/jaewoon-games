@@ -32,7 +32,6 @@ import {
   unpackVibeQueueStorage,
   readVibeQueueStorage,
   assertVibeQueueBlobSize,
-  canMigrateVibeQueueStorage,
   runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -2708,7 +2707,9 @@ test('storage handles an individual task beyond 100 MiB and UTF-8 split boundari
   const payload='가'.repeat(Math.ceil(101*1024*1024/3));
   const {file,queue}=queueStorageFixture(t,[{id:'oversized',status:'running',evidence:[payload],retries:19,neuronResults:[{variant:1,qa:{pass:true}}]}]);
   assert.ok(fs.statSync(file).size>100*1024*1024);
-  const result=packVibeQueueStorage(file);
+  const output=execFileSync(process.execPath,[path.resolve('tools/vibe2-queue-control.mjs'),'storage-migrate','--queue='+file],{encoding:'utf8',env:{...process.env,GITHUB_REPOSITORY:'',GH_TOKEN:'',GITHUB_RUN_ID:''}});
+  assert.match(output,/CANONICAL_PLANNER_IMMEDIATE_MIGRATION/);
+  const result=JSON.parse(output.split('VIBE2_QUEUE_STORAGE=storage-migrate:')[1]);
   assert.ok(result.indexBytes<1024*1024);assert.ok(result.maxPartBytes<=8*1024*1024);
   assert.deepEqual(readVibeQueueStorage(file),queue);
   assert.doesNotThrow(()=>assertVibeQueueBlobSize(100*1024*1024));
@@ -2774,20 +2775,24 @@ test('normal Git push rejects stale queue, semantic retry preserves both updates
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(c,'.vibe2/merged-pr-provenance-ledger.json'))),{traces:[{pr:7701}]});
 });
 
-test('migration waits for old writers, checks every page, and fails closed on observation failure',async()=>{
-  const args={repository:'owner/repo',token:'test-only',runId:'1'};
-  const run={id:2,path:'.github/workflows/vibe2-continuous-core.yml',head_sha:'a'.repeat(40),status:'queued'};
-  const request=compatible=>async url=>url.includes('/contents/')?{ok:true,text:async()=>compatible?'node tool storage-pack':'old-writer'}:{ok:true,json:async()=>({total_count:1,workflow_runs:url.includes('status=queued')?[run]:[]})};
-  assert.equal((await canMigrateVibeQueueStorage({...args,request:request(false)})).ready,false);
-  assert.equal((await canMigrateVibeQueueStorage({...args,request:request(true)})).ready,true);
-  assert.equal((await canMigrateVibeQueueStorage({...args,request:async()=>({ok:false,status:403})})).ready,false);
-  let second=false;
-  const pages=async url=>{
-    if(url.includes('/contents/'))return{ok:true,text:async()=>''};
-    if(url.includes('status=queued')&&url.endsWith('page=2')){second=true;return{ok:true,json:async()=>({total_count:101,workflow_runs:[run]})};}
-    return{ok:true,json:async()=>({total_count:101,workflow_runs:url.includes('status=queued')?Array.from({length:100},()=>({id:1})):[]})};
-  };
-  assert.equal((await canMigrateVibeQueueStorage({...args,request:pages})).ready,false);assert.equal(second,true);
+test('canonical migration starts without Actions identity and supports subsequent resume and checkpoints',t=>{
+  const {root,file,queue}=queueStorageFixture(t,[
+    {id:'done',status:'verified',evidence:['qa:PASS'],retries:2},
+    {id:'active',status:'queued',dependencies:['done'],retries:7,unknown:{preserve:true}}
+  ]);
+  const env={...process.env,GITHUB_REPOSITORY:'',GH_TOKEN:'',GITHUB_RUN_ID:''};
+  const tool=path.resolve('tools/vibe2-queue-control.mjs');
+  const run=command=>execFileSync(process.execPath,[tool,command,'--queue='+file],{cwd:root,env,encoding:'utf8'});
+  assert.match(run('storage-migrate'),/CANONICAL_PLANNER_IMMEDIATE_MIGRATION/);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.match(run('storage-unpack'),/"restored":true/);
+  assert.deepEqual(JSON.parse(fs.readFileSync(file)),queue);
+  queue.tasks[1].retries++;
+  fs.writeFileSync(file,JSON.stringify(queue));
+  assert.doesNotMatch(run('storage-pack'),/DEFERRED/);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
+  assert.doesNotMatch(run('storage-migrate'),/DEFERRED/);
+  assert.deepEqual(readVibeQueueStorage(file),queue);
 });
 
 test('every canonical queue writer stages storage parts, restores before execution, and preserves provenance isolation',()=>{
