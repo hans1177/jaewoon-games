@@ -1264,7 +1264,8 @@ function computeVibeNativeDesign(){
     coreLoop:freeTopicMode?[]:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[],
     materials:freeTopicMode?[]:materials,variant:nativeDesignVariation,
     designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
-    topicRevision:freeTopicMode?seed.ownerResetRevision:''
+    topicRevision:freeTopicMode?seed.ownerResetRevision:'',
+    discoveryCount:seed.designDiscoveryCount
   });
   const sketch=!freeTopicMode&&seedGameplaySketch?.novelGameGrammar?.gameplaySystemFusion?.formula==='MAIN × A × B × C'
     &&!pendingSeedGrammarNotAuthored?seedGameplaySketch:computed.gameplaySketch;
@@ -1368,7 +1369,7 @@ function computeVibeNativeDesign(){
       discovery:shorten(`${d.name}: ${d.masteryOrInsight}`,490),
       newChoice:shorten(`${d.name}: ${d.gameplayEffect}`,490)
     })),
-    delveGrowthRule:shorten(`${delve[0].name} 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.`),
+    delveGrowthRule:freeTopicMode?shorten(`@는 최초 ${Math.min(4,delve.length)}개 발견으로 출발하지만 완성 개수가 아니다. 각 발견의 WorldAccessState·RouteState·ResourceState·IntentState 결과를 다음 @의 선행 조건으로 연결한다. A의 행동과 B의 대응, C의 두 소재·메인/보조 장르 해석을 다른 순서로 실험해 새 선택을 연다. 새 @마다 실제 상태 변화·실패 복구·육하원칙을 검증하고 단순 이름·순번 교체는 반려한다. 파고들기와 콘텐츠 확장에 최종 개수 제한을 두지 않는다.`,700):shorten(`${delve[0].name} 이후 새로운 발견은 A와 B, C 장르 반응의 서로 다른 조건을 실험해 새 길·정보·관계·숙련을 열고 제한 없이 깊어진다.`),
     finalGameIdentity:shorten(`${grammar.emergentGenre.name}. ${grammar.emergentGenre.definition}`)
   };
   const abilities=(playableRequirements.abilityFacts||[]).map(row=>({
