@@ -547,6 +547,9 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
         assert.ok(scoreDesignGateV2({seed,designRecord:{content:changed},cycleStatus:{status:'IN_PROGRESS'}}).hardFailures.includes(code),'strict gate carries '+code);
       };
       expectRejected(changed=>{changed.creativeGrammar.dCreations=[];},'DESIGN_D_CREATION_REQUIRED');
+      expectRejected(changed=>{changed.creativeGrammar.dCreations[0].materialPath[2]='분류의 기록 장치';},'DESIGN_D_SOURCE_FEATURE_UNGROUNDED');
+      expectRejected(changed=>{changed.creativeGrammar.dCreations[0].sourceFeature='아무 조건이나 바뀐다';},'DESIGN_D_SOURCE_FEATURE_UNGROUNDED');
+      expectRejected(changed=>{changed.creativeGrammar.dCreations[0].gameplayEffect='소재의 이름만 확인하고 세계 상태를 바꾸어 다음 경로를 선택한다.';},'DESIGN_D_SOURCE_FEATURE_UNGROUNDED');
       expectRejected(changed=>{changed.creativeGrammar.cGenres[0].name='액션';},'DESIGN_C_GAME_GENRE_FORBIDDEN');
       expectRejected(changed=>{changed.creativeGrammar.b.materialPath=['신화','로봇공학'];},'DESIGN_STANDARD_CLASSIFICATION_INVALID');
       expectRejected(changed=>{changed.creativeGrammar.delveDiscoveries[0].sourceDId='missing';},'DESIGN_DELVE_D_BASIS_MISSING');
@@ -616,4 +619,35 @@ for(const item of [
   assert.equal(actual.genre,item.genre,item.identity+' 기본 장르 유지');
   assert.equal(actual.subgenre,item.subgenre,item.identity+' 세부 장르 유지');
   assert.equal(actual.playMode,'COOP',item.identity+' 기존 멀티 규칙 보존');
+}
+
+// 대·중·소 연결과 생성 편향 회귀: 중앙 분류 확장을 실제로 소비한다.
+{
+  const method=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8')).continuousGameplaySystemEvolutionContract.gameIdentityConceptContract.novelCausalGameGrammar.ownerBasicDesignMethod;
+  const registered=new Map();
+  for(const family of method.materialClassification){
+    for(const middle of family.middle)assert.ok(family.specificMaterials.some(row=>row.middle===middle),`${family.broad}→${middle}: source missing`);
+    for(const source of family.specificMaterials){
+      assert.ok(family.middle.includes(source.middle));
+      assert.ok(['name','feature','action','condition','consequence','risk'].every(key=>typeof source[key]==='string'&&source[key].length>=(key==='name'?1:4)));
+      const key=[family.broad,source.middle,source.name].join('→');assert.ok(!registered.has(key));registered.set(key,source);
+    }
+  }
+  const broadCoverage=new Set(),middleCoverage=new Set(),specificCoverage=new Set();
+  for(let index=0;index<1000;index++){
+    const proposal=computeVibeSeedProposal({requestId:`taxonomy-audit-${index}`,category:'ACTION_SURVIVAL_ROGUELITE',platform:'ROBLOX',materials:[],basicDesignMethod:method,designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'AUDIT',variant:0});
+    const selection=proposal.basicDesignSelection;broadCoverage.add(selection.a.material);middleCoverage.add(selection.b.materialPath.join('→'));
+    for(const source of selection.dSources){const key=source.materialPath.join('→');assert.ok(registered.has(key));assert.equal(source.sourceFeature,registered.get(key).feature);assert.ok(!source.materialPath[2].endsWith('의 기록 장치'));specificCoverage.add(key);}
+  }
+  assert.equal(broadCoverage.size,method.materialClassification.length);
+  assert.equal(middleCoverage.size,method.materialClassification.reduce((total,row)=>total+row.middle.length,0));
+  assert.equal(specificCoverage.size,registered.size);
+  const target={requestId:'title-independent',category:'ACTION_SURVIVAL_ROGUELITE',platform:'ROBLOX',materials:[],basicDesignMethod:method};
+  assert.deepEqual(computeVibeSeedProposal({...target,gameName:'학교'}).basicDesignSelection,computeVibeSeedProposal({...target,gameName:'곤충'}).basicDesignSelection);
+  const expanded=structuredClone(method),source=expanded.materialClassification[0].specificMaterials[0];
+  expanded.materialClassification[0].specificMaterials.push({...source,name:'새 경계 대상',feature:'새 대상의 출입 조건'});
+  let consumed=false;
+  for(let index=0;index<300&&!consumed;index++){const p=computeVibeSeedProposal({...target,requestId:`extension-${index}`,basicDesignMethod:expanded,discoveryCount:12});consumed=p.basicDesignSelection.dSources.some(row=>row.materialPath[2]==='새 경계 대상');}
+  assert.ok(consumed,'new canonical source must be consumed without a code-list change');
+  console.log('DESIGN_MATERIAL_HIERARCHY_FEATURE_AND_COVERAGE_TEST=PASS');
 }
