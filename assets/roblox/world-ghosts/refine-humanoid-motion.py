@@ -550,6 +550,9 @@ GAIT_NAME_TO_PACE = {
     'hero_sprint_hq': 'sprint',
     'hero_backward_hq': 'backward',
 }
+# [루프 실제 제작] 시점 0에서 접지 보정까지 완료한 스킨드 포즈를 마지막 키프레임에 재사용한다.
+# 이는 QA 통과 표시가 아니라 실제 저장될 액션의 시작/끝 관절 키를 동일하게 보존한다.
+LOOP_FIRST_AUTHORED_POSES = {}
 GAIT_CONTACT_ANCHORS = {}
 for _pace in GAIT_STANCE_BY_PACE:
     for _foot, _phase in [('FootL', 0.0), ('FootR', 0.5)]:
@@ -614,6 +617,10 @@ def animate(name, normalized_time):
     reset_pose()
     t = clamp01(normalized_time)
     if name in LOOP_CLIPS and t >= 1.0 - 1e-9:
+        authored_first = LOOP_FIRST_AUTHORED_POSES.get(name)
+        if authored_first is not None:
+            apply_snapshot(authored_first)
+            return
         t = 0.0
     if name == 'hero_idle_hq':
         idle_pose(t)
@@ -683,6 +690,8 @@ def animate(name, normalized_time):
         raise AssertionError('UNKNOWN_CLIP:' + name)
     if name in GAIT_NAME_TO_PACE:
         stabilize_planted_feet(t, GAIT_NAME_TO_PACE[name])
+    if name in LOOP_CLIPS and t <= 1e-9:
+        LOOP_FIRST_AUTHORED_POSES[name] = pose_snapshot()
 
 
 for clip_name, duration in CLIPS.items():
@@ -755,9 +764,37 @@ def finite_snapshot(snapshot):
     )
 
 
+# 실제 액션 FCurve 끝점도 독립 검증한다. 단순 함수의 루프 표식만으로는 QA PASS가 아니다.
 loop_metrics={}
+baked_loop_metrics={}
 for clip_name in LOOP_CLIPS:
-    loop_metrics[clip_name]=snapshot_distance(sampled_snapshot(clip_name,0.0),sampled_snapshot(clip_name,1.0))
+    procedural = snapshot_distance(sampled_snapshot(clip_name,0.0),sampled_snapshot(clip_name,1.0))
+    action = bpy.data.actions[clip_name]
+    end_frame = round(CLIPS[clip_name] * FPS)
+    tracked_paths = tuple(f'pose.bones["{bone}"]' for bone in PRIMARY_QA_BONES)
+    rotation_delta = 0.0
+    location_delta = 0.0
+    tracked_channels = 0
+    for fcurve in action.fcurves:
+        path = fcurve.data_path
+        if not path.startswith(tracked_paths):
+            continue
+        delta = abs(float(fcurve.evaluate(0)) - float(fcurve.evaluate(end_frame)))
+        if path.endswith('.rotation_euler'):
+            rotation_delta = max(rotation_delta, delta)
+            tracked_channels += 1
+        elif path.endswith('.location'):
+            location_delta = max(location_delta, delta)
+            tracked_channels += 1
+    baked_loop_metrics[clip_name] = {
+        'rotationMaxRad': rotation_delta,
+        'locationMax': location_delta,
+        'verifiedChannelCount': tracked_channels,
+    }
+    loop_metrics[clip_name] = {
+        'rotationMaxRad': max(procedural['rotationMaxRad'], rotation_delta),
+        'locationMax': max(procedural['locationMax'], location_delta),
+    }
 
 transition_metrics={
     'startToWalk':snapshot_distance(sampled_snapshot('hero_start_hq',1.0),sampled_snapshot('hero_walk_hq',0.0)),
@@ -820,6 +857,8 @@ for clip_name in CLIPS:
 
 qa_failures=[]
 for clip_name,row in loop_metrics.items():
+    if baked_loop_metrics[clip_name]['verifiedChannelCount'] == 0:
+        qa_failures.append('LOOP_AUTHORED_CHANNELS_MISSING:'+clip_name)
     if row['rotationMaxRad']>QA_THRESHOLDS['loopRotationMaxRad'] or row['locationMax']>QA_THRESHOLDS['loopLocationMax']:
         qa_failures.append('LOOP_CONTINUITY:'+clip_name)
 for name,row in transition_metrics.items():
@@ -850,6 +889,7 @@ for clip_name,value in secondary_activity.items():
 qa_metrics={
     'thresholds':QA_THRESHOLDS,
     'loop':loop_metrics,
+    'bakedLoopEndpoints':baked_loop_metrics,
     'transitions':transition_metrics,
     'speedBlendRotationMaxRad':speed_blend_metrics,
     'leftRightPhaseErrorRad':phase_metrics,
