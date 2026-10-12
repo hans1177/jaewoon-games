@@ -583,3 +583,51 @@ test('canonical asset library previews actual local skinned GLB and animation cl
   }
   assert.match(library,/런타임|검증/);
 });
+
+
+// [외부 로블록스 에셋] 기존 등록 GLB를 그대로 미리보기하고 임의 경로·외부 URL은 차단한다.
+test('acquired Roblox GLBs are previewable through the existing safe native viewer',()=>{
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const viewer=fs.readFileSync('assets/asset-library-viewer.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const manifest=JSON.parse(fs.readFileSync('assets/roblox/actors/manifest.json','utf8'));
+  const start=library.indexOf('const nativeGLB='),end=library.indexOf('let nativeClip=',start);
+  assert.ok(start>=0&&end>start);
+  const nativeGLB=vm.runInNewContext(library.slice(start,end)+'\nnativeGLB');
+  assert.ok(manifest.models.length>=22);
+  for(const model of manifest.models){
+    const record=registry.assets.find(asset=>asset.id==='external-actor-'+model.id);
+    assert.ok(record,'unregistered acquired actor '+model.id);
+    assert.equal(record.path,model.path);
+    assert.equal(record.masterGlbHash,model.sha256);
+    assert.equal(record.productionVerified,false);
+    assert.equal(nativeGLB(model.path),'/'+model.path);
+    assert.equal(nativeGLB('/'+model.path),'/'+model.path);
+    assert.ok(fs.statSync(model.path).size>100,'empty GLB '+model.path);
+  }
+  assert.equal(nativeGLB('/assets/shared/forest-wolf.glb'),'/assets/shared/forest-wolf.glb');
+  for(const bad of ['https://example.org/test.glb','/assets/roblox/actors/native/../outside.glb',
+    '/assets/roblox/actors/sources/unknown.glb','/assets/roblox/actors/native/test.fbx',
+    '/assets/roblox/actors/native/test/../../test.glb','/assets/shared/../secrets.glb'])
+    assert.equal(nativeGLB(bad),'',bad);
+  assert.match(viewer,/roblox\\/actors\\/native/);
+  assert.match(viewer,/new GLTFLoader\(\)\.loadAsync\(uri\)/);
+  assert.match(viewer,/nativeMixer\.update\(dt\*speed\)/);
+  assert.match(library,/로블록스 실행 미검증/);
+});
+
+test('Roblox external pack gallery separates acquired originals from runtime-verified assets',()=>{
+  const page=fs.readFileSync('asset-library.html','utf8');
+  const library=fs.readFileSync('assets/asset-library.js','utf8');
+  const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
+  const sources=registry.externalSources.filter(row=>row.platformTargets?.includes('ROBLOX')&&
+    row.status==='LICENSE_VERIFIED_EXTERNAL_CANDIDATE');
+  const acquired=sources.filter(row=>row.acquisitionState==='ACQUIRED_ORIGINAL_FILES');
+  assert.ok(acquired.length>=6);
+  assert.match(page,/id="externalSourceList"/);
+  assert.match(page,/id="externalSourceCount"/);
+  assert.match(library,/source\.platformTargets\.includes\('ROBLOX'\)/);
+  assert.match(library,/source\.acquisitionState==='ACQUIRED_ORIGINAL_FILES'/);
+  assert.match(library,/source\.productionVerified===true/);
+  assert.ok(acquired.every(row=>row.productionVerified!==true));
+});
