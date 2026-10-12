@@ -135,7 +135,7 @@ local Catalog = table.freeze({
 			barkDark = c(57, 49, 43),
 			moss = c(73, 85, 57),
 		}),
-	}),,
+	}),
 	BROADLEAF_TREE = table.freeze({
 		id="BROADLEAF_TREE", name="활엽수", familyRootId="FOLIAGE_BROADLEAF", family="ENVIRONMENT", subfamily="BROADLEAF_TREE", environmentRole="CANOPY_TREE",
 		systemRoles=table.freeze({"BROADLEAF_TREE"}), silhouette="BRANCHED_TRUNK_ROUND_CANOPY", palette=table.freeze({bark=c(91,66,47), barkLight=c(121,87,58), leaf=c(69,111,62), leafLight=c(101,143,78), leafDark=c(48,80,48)}),

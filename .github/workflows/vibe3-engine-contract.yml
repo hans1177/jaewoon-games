@@ -19,6 +19,9 @@ on:
       - 'qa/vibe3-*.test.mjs'
       - 'qa/company-development-roblox-*.test.mjs'
       - 'roblox-games/survival/**'
+      - 'roblox-games/daechung-rpg/**'
+      - 'assets/roblox/common-*/**'
+      - 'qa/roblox-game-repair-safety.test.mjs'
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'qa/company-unity-web-floor-bootstrap.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
@@ -43,6 +46,9 @@ on:
       - 'qa/vibe3-*.test.mjs'
       - 'qa/company-development-roblox-*.test.mjs'
       - 'roblox-games/survival/**'
+      - 'roblox-games/daechung-rpg/**'
+      - 'assets/roblox/common-*/**'
+      - 'qa/roblox-game-repair-safety.test.mjs'
       - 'tools/company-unity-web-floor-bootstrap.mjs'
       - 'qa/company-unity-web-floor-bootstrap.test.mjs'
       - 'qa/company-tester-debug-intake.test.mjs'
@@ -157,6 +163,17 @@ jobs:
           test -x /tmp/luau-bin/luau-compile || chmod +x /tmp/luau-bin/luau-compile
           test -x /tmp/luau-bin/luau-compile
 
+      - name: Compile common Roblox libraries before game binding
+        run: |
+          set -euo pipefail
+          mapfile -t libraries < <(rg --files assets/roblox | rg '/common-[^/]+/[^/]+\.luau$')
+          test "${#libraries[@]}" -gt 0
+          for library in "${libraries[@]}"; do
+            /tmp/luau-bin/luau-compile "$library" >/dev/null
+          done
+          echo "ROBLOX_COMMON_LIBRARY_SYNTAX_PASS=${#libraries[@]}"
+          echo 'ROBLOX_COMMON_LIBRARY_RUNTIME_QUALITY=UNVERIFIED'
+
       - name: Compile Cozy Island Luau source with official compiler
         run: |
           set -euo pipefail
@@ -177,11 +194,11 @@ jobs:
           done
           echo "SURVIVAL_LUAU_COMPILE_PASS=${#files[@]}"
 
-      - name: Verify Survival DataStore failure recovery in Luau runtime
+      - name: Verify Survival recovery and Daechung asset binding in Luau runtime
         run: |
           set -euo pipefail
           test -x /tmp/luau-bin/luau
-          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival' qa/roblox-game-repair-safety.test.mjs
+          VIBE2_LUAU_BINARY=/tmp/luau-bin/luau node --test --test-name-pattern='survival|daechung' qa/roblox-game-repair-safety.test.mjs
 
       - name: Check Vibe3 syntax
         run: |
