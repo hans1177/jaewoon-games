@@ -544,6 +544,11 @@ export function extractDesignContext(record={}){
     genre:clean(d?.robloxBuildProfile?.genre||d?.genre),
     subgenre:clean(d?.robloxBuildProfile?.subgenre||d?.subgenre),
     ownerFeatureChanges:Array.isArray(d?.ownerFeatureChanges)?d.ownerFeatureChanges:[],
+    detailedDesign:asObject(d?.detailedDesign),
+    tutorialPlan:asObject(d?.tutorialPlan),
+    presentationPlan:asObject(d?.presentationPlan),
+    interfacePlan:asObject(d?.interfacePlan),
+    verificationPlan:asObject(d?.verificationPlan),
     spatialLayout:asObject(d?.spatialLayout),
     spatialDimension:clean(d?.spatialLayout?.dimension||d?.spatialDimension),
     coreFun:clean(d?.coreFun),
@@ -551,7 +556,7 @@ export function extractDesignContext(record={}){
     signatureSystems:systems,
     systemInterconnections:(Array.isArray(d?.systemInterconnections)?d.systemInterconnections:[]).map(row=>({...row,fromSystem:clean(row?.fromSystem),toSystem:clean(row?.toSystem),trigger:clean(row?.trigger),stateChange:clean(row?.stateChange)})).filter(row=>row.fromSystem||row.toSystem).slice(0,24),
     progressionEconomyBalance:asObject(d?.progressionEconomyBalance),
-    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
+    contentExpansionPlan:(Array.isArray(d?.contentExpansionPlan)?d.contentExpansionPlan:[]).map(row=>({...row,milestone:clean(row?.milestone),newGameplay:clean(row?.newGameplay),systemImpact:clean(row?.systemImpact)})).slice(0,8),
     failureRetryRisk:asObject(d?.failureRetryRisk),
     platformFitPlan:asObject(d?.platformFitPlan),
     webCanonicalDesign:projection.webCanonicalDesign,
@@ -2467,6 +2472,11 @@ export function buildGameSpecificBuildUpDirective({
     designImplementationContext:Object.freeze({
       source:'LATEST_VERIFIED_DESIGN_FIELDS',
       // 오토 바이옴의 월드 지오메트리·생태계 입력은 검증된 동일 게임 설계에서 가져온다.
+      detailedDesign:design.detailedDesign,
+      tutorialPlan:design.tutorialPlan,
+      presentationPlan:design.presentationPlan,
+      interfacePlan:design.interfacePlan,
+      verificationPlan:design.verificationPlan,
       spatialLayout:design.spatialLayout,
       spatialDimension:design.spatialDimension,
       creativeGrammar:design.creativeGrammar,
@@ -2613,4 +2623,5 @@ function cli(){
   console.log('BUILD_UP_SOURCE_TREE='+directive.sourceTreeFingerprint);
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)cli();
+
 

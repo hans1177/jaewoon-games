@@ -478,18 +478,18 @@ jobs:
               authority:'deterministic-f9-exact-runtime-candidate-review',
               verifiedAt:stamp,
             };
-            const releaseReadiness=evaluateInternalRelease(item,'ROBLOX',roadmap);
+            const releaseReadiness=evaluateInternalRelease({...item,robloxRuntimeCandidateEvidence:candidate},'ROBLOX',roadmap,'SERVER_DEPLOYMENT');
             const serverPublishEligible=
               releaseReadiness.ready===true
               &&item.robloxFinalReviewPassed===true
               &&item.robloxF9ReleaseRegressionPassed===true
-              &&candidate.published===true
+              &&(candidate.published===true||localPreF9CandidateExact)
               &&candidate.releaseClaim===false
               &&candidate.sourceRevision===sourceRevision
               &&candidate.artifactIdentity===artifactIdentity
               &&Number(candidate.versionNumber)>0
-              &&/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
-              &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''));
+              &&(localPreF9CandidateExact||(/^[1-9][0-9]*$/.test(String(candidate.universeId||''))
+                &&/^[1-9][0-9]*$/.test(String(candidate.placeId||''))));
             console.log('ROBLOX_F9_RELEASE_CLASS='+item.gameId+':'+releaseReadiness.basis+':'+(releaseReadiness.ready===true?'RELEASED':'DEVELOPMENT'));
             item.robloxInternalReleaseReady=serverPublishEligible;
             item.robloxInternalReleasePublished=false;
@@ -533,8 +533,10 @@ jobs:
                 releaseSnapshot:JSON.parse(JSON.stringify(Object.fromEntries([
                   'gameId','designBaselineSource','minimumDesignContract','robloxRuntimePassed',
                   'robloxIndependentQaPassed','robloxRegressionPassed','robloxInternalVibePlayEvidence',
+                  'robloxFinalReviewPassed','robloxF9ReleaseRegressionPassed','robloxF9ReleaseRegressionEvidence',
+                  'robloxFoundationF0Evidence',
                   'robloxRuntimeCandidateEvidence','robloxPublicationTarget','robloxSharedTargetCurrent'
-                ].map(key=>[key,item[key]])))),
+                ].map(key=>[key,key==='robloxRuntimeCandidateEvidence'?candidate:item[key]])))),
                 finalReviewPassed:true,
                 f9ReleaseRegressionPassed:true,
                 f9RuntimeReplay:false,
@@ -560,7 +562,7 @@ jobs:
             item.robloxPromotionBlockers=[];
             item.currentStep='POST_F9_CONTINUOUS_EVOLUTION';
             item.canonicalState=serverPublishEligible?'F9_VERIFIED_PUBLISH_DISPATCHED_CONTINUOUS_EVOLUTION':'F9_VERIFIED_DEVELOPMENT_CONTINUOUS_EVOLUTION';
-            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishEligible?'ELIGIBLE':'SKIPPED_DEVELOPMENT'));
+            console.log('ROBLOX_F9_SERVER_PUBLICATION='+item.gameId+':'+(serverPublishEligible?'ELIGIBLE':'BLOCKED_EXACT_F9'));
             item.robloxLastSuccessfulStage='F9_RELEASE_REGRESSION';
             item.robloxFailureStage=null;
             item.robloxFailureSignature=null;
@@ -1022,4 +1024,5 @@ jobs:
           echo 'ROBLOX_F9_VIBE_REFILL_REQUIRES_SETTLED_WAITER=NO'
           echo 'ROBLOX_F9_VIBE_FANIN=PASS'
           echo 'ROBLOX_NEXT_EVOLUTION_CYCLE_DEPENDS_ON_PUBLICATION_OUTCOME=NO'
+
 

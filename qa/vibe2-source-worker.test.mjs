@@ -7,6 +7,36 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import {buildInternalAssetSourceUsageContract} from '../tools/vibe2-source-worker.mjs';
+import {buildAllGameDynamicLibraryBindingPlan} from '../tools/vibe2-asset-production-plan.mjs';
+
+test('asset synchronization detects same-size byte changes even when file metadata is unchanged',()=>{
+  const cwd=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-sync-metadata-'));
+  fs.mkdirSync(path.join(cwd,'assets/shared'),{recursive:true});
+  const file=path.join(cwd,'assets/shared/model.glb');fs.writeFileSync(file,Buffer.from([1,2,3,4]));
+  const asset={id:'model',family:'CREATURE',platform:'SHARED_NATIVE_SOURCE',license:'project-original',nativeArtifacts:['assets/shared/model.glb'],fileRoles:{models:['assets/shared/model.glb']}};
+  const dynamic=buildAllGameDynamicLibraryBindingPlan({companyRegistry:{version:7,assets:[asset]},target:'web',gameId:'demo'});
+  const order={target:'web',gameId:'demo',assetProduction:{allGameDynamicLibraryBinding:dynamic}};
+  const originalStat=fs.statSync,oldStat=originalStat(file,{bigint:true});
+  try{
+    fs.statSync=function(p,options){return path.resolve(String(p))===file?oldStat:originalStat.call(fs,p,options);};
+    const first=buildInternalAssetSourceUsageContract(order,{cwd});
+    fs.writeFileSync(file,Buffer.from([1,2,3,5]));
+    const second=buildInternalAssetSourceUsageContract(order,{cwd});
+    assert.notEqual(first.fingerprint,second.fingerprint);
+    assert.equal(first.libraryVersion,second.libraryVersion);
+  }finally{fs.statSync=originalStat;fs.rmSync(cwd,{recursive:true,force:true});}
+});
+
+test('experience scenario source paths use the same owned-file normalization as interface controls',()=>{
+  const base={edits:[{path:'roblox-games/demo/client/Menu.client.luau',find:'local state = 0',replace:'local state = 1'}],
+    interfaceBlueprint:{experienceScenarios:[{id:'first',binding:{path:'roblox-games/demo/client/Menu.client.luau',symbol:'openMenu'}}]}};
+  const scope={target:'roblox',responsibleFiles:['client/Menu.client.luau'],sourceRootRelative:'roblox-games/demo'};
+  const candidate=normalizeCandidate(base,scope);
+  assert.equal(candidate.interfaceBlueprint.experienceScenarios[0].binding.path,'client/Menu.client.luau');
+  const outside=structuredClone(base);outside.interfaceBlueprint.experienceScenarios[0].binding.path='roblox-games/other/client/Menu.client.luau';
+  assert.throws(()=>normalizeCandidate(outside,scope));
+});
 import { runInNewContext } from 'node:vm';
 import { robloxProductionPromptLines } from '../tools/company-roblox-production-plan.mjs';
 import crypto from 'node:crypto';
@@ -8703,3 +8733,4 @@ test('internal library source execution honors Roblox asset focus without a game
     assert.throws(()=>assertOwnerDevelopmentAvailable({cwd:root,order:{...order,source:{root:'assets/unity/fixture'}}}),/OWNER_DIRECT_DEVELOPMENT_HELD/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+

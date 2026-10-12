@@ -8,6 +8,28 @@ const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadm
 const lobbyScenarios=policy.developmentLifecycleMachine.internalPlatformReleaseAndPublicExposureGate.internalRelease.lobbyGate.runtimeScenarios.map(id=>({id,pass:true}));
 const source='a'.repeat(40);
 const artifact='sha256:'+'b'.repeat(64);
+
+test('every exact F9 cycle is server-deployable without lobby or public approval and stale proof stays blocked',()=>{
+  const item={gameId:'new-game',robloxRuntimePassed:true,robloxIndependentQaPassed:true,robloxRegressionPassed:true,
+    robloxFinalReviewPassed:true,robloxF9ReleaseRegressionPassed:true,
+    robloxRuntimeCandidateEvidence:{published:true,releaseClaim:false,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7},
+    robloxF9ReleaseRegressionEvidence:{gameId:'new-game',sourceRevision:source,artifactIdentity:artifact,candidateVersionNumber:7,noCurrentCriticalOrHighTesterFailure:true}};
+  assert.equal(evaluateInternalRelease(item,'ROBLOX',policy).ready,false);
+  const verdict=evaluateInternalRelease(item,'ROBLOX',policy,'SERVER_DEPLOYMENT');
+  assert.equal(verdict.ready,true);assert.equal(verdict.publicRelease,false);assert.equal(verdict.ownerPublicDecisionRequired,true);
+  for(const mutation of [i=>i.robloxFinalReviewPassed=false,i=>i.robloxIndependentQaPassed=false,i=>i.robloxF9ReleaseRegressionEvidence.gameId='other',i=>i.robloxF9ReleaseRegressionEvidence.artifactIdentity='sha256:'+'c'.repeat(64),i=>i.robloxF9ReleaseRegressionEvidence.candidateVersionNumber=8,i=>i.robloxF9ReleaseRegressionEvidence.noCurrentCriticalOrHighTesterFailure=false,i=>i.robloxRuntimeCandidateEvidence.versionNumber=0]){
+    const broken=structuredClone(item);mutation(broken);assert.equal(evaluateInternalRelease(broken,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,false);
+  }
+  assert.equal(evaluateInternalRelease(item,'ROBLOX',{},'SERVER_DEPLOYMENT').ready,false);
+  const local=structuredClone(item);
+  local.robloxRuntimeCandidateEvidence={published:false,releaseClaim:false,authority:'roblox-local-f0-pre-f9-artifact',sourceRevision:source,artifactIdentity:artifact,artifactRunId:21,versionNumber:21};
+  local.robloxFoundationF0Evidence={sourcePreflightPassed:true,f0SourceIntegrityPassed:true,sourceRevision:source,artifactIdentity:artifact,artifactRunId:21};
+  local.robloxF9ReleaseRegressionEvidence.candidateVersionNumber=21;
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,true);
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy).ready,false);
+  local.robloxFoundationF0Evidence.artifactRunId=22;
+  assert.equal(evaluateInternalRelease(local,'ROBLOX',policy,'SERVER_DEPLOYMENT').ready,false);
+});
 const candidate={published:true,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7};
 const exact=(extra={})=>({pass:true,sourceRevision:source,artifactIdentity:artifact,universeId:'123',placeId:'456',versionNumber:7,...extra});
 
@@ -167,3 +189,4 @@ test('only explicitly owner-confirmed horror game remains released without fabri
   assert.equal(evaluateInternalRelease({...item,robloxPublicationTarget:{placeId:'999',verified:true}},'ROBLOX',policy).ready,false);
   assert.equal(evaluateInternalRelease(item,'UNITY',policy).ready,false);
 });
+

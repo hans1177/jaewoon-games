@@ -172,9 +172,9 @@ jobs:
           }
           const finalEntry=publishStage==='final'?(item.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===String(process.env.PUBLISH_CYCLE_ID||'')):null;
           if(publishStage==='final'&&(!finalEntry?.releaseSnapshot||finalEntry.finalReviewPassed!==true||finalEntry.f9ReleaseRegressionPassed!==true))throw new Error('ROBLOX_FINAL_PUBLISH_EXACT_F9_SNAPSHOT_REQUIRED:'+gameId);
-          const releaseReadiness=publishStage==='final'?evaluateInternalRelease(finalEntry.releaseSnapshot,'ROBLOX',roadmap):null;
+          const releaseReadiness=publishStage==='final'?evaluateInternalRelease({...finalEntry.releaseSnapshot,robloxFinalReviewPassed:finalEntry.finalReviewPassed,robloxF9ReleaseRegressionPassed:finalEntry.f9ReleaseRegressionPassed,robloxF9ReleaseRegressionEvidence:finalEntry.f9Evidence},'ROBLOX',roadmap,'SERVER_DEPLOYMENT'):null;
           if(publishStage==='final'&&releaseReadiness?.ready!==true){
-            console.log('ROBLOX_DEDICATED_TARGET=SKIPPED_DEVELOPMENT_RELEASE_GATE:'+gameId+':'+String(releaseReadiness?.basis||'PENDING_EVIDENCE'));
+            console.log('ROBLOX_DEDICATED_TARGET=BLOCKED_EXACT_F9_RELEASE_GATE:'+gameId+':'+String(releaseReadiness?.basis||'PENDING_EVIDENCE'));
             process.exit(0);
           }
           const valid=v=>/^[1-9][0-9]*$/.test(String(v||'').trim());
@@ -345,14 +345,14 @@ jobs:
             &&finalEntry?.f9Evidence?.artifactIdentity===artifact
             &&finalEntry?.releaseSnapshot?.gameId===gameId
           ))throw new Error('ROBLOX_FINAL_PUBLISH_EXACT_F9_IDENTITY_REQUIRED:'+gameId);
-          const releaseReadiness=publishStage==='final'?evaluateInternalRelease(finalEntry.releaseSnapshot,'ROBLOX',roadmap):null;
+          const releaseReadiness=publishStage==='final'?evaluateInternalRelease({...finalEntry.releaseSnapshot,robloxFinalReviewPassed:finalEntry.finalReviewPassed,robloxF9ReleaseRegressionPassed:finalEntry.f9ReleaseRegressionPassed,robloxF9ReleaseRegressionEvidence:finalEntry.f9Evidence},'ROBLOX',roadmap,'SERVER_DEPLOYMENT'):null;
           if(publishStage==='final'&&releaseReadiness?.ready!==true){
             put('skip','true');
             put('skip_reason','canonical-server-publication-development-skipped');
-            console.log('ROBLOX_SERVER_PUBLICATION=SKIPPED_DEVELOPMENT:'+gameId+':'+String(releaseReadiness?.basis||'PENDING_EVIDENCE'));
+            console.log('ROBLOX_SERVER_PUBLICATION=BLOCKED_EXACT_F9:'+gameId+':'+String(releaseReadiness?.basis||'PENDING_EVIDENCE'));
             process.exit(0);
           }
-          if(publishStage==='final')console.log('ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_AND_RELEASE_CLASS');
+          if(publishStage==='final')console.log('ROBLOX_CANONICAL_PRIVATE_SERVER_PUBLICATION_GATE=EXACT_F9_SERVER_DEPLOYMENT');
           const canonicalRobloxValidationMode=String(roadmap?.roblox?.validationMode||'').trim().toUpperCase();
           const f0Evidence=publishStage==='final'?(finalEntry.f0Evidence||{}):(item.robloxFoundationF0Evidence||{});
           const f0EvidenceMode=String(f0Evidence?.validationMode||item.robloxHeadlessFastMvpEvidence?.validationMode||'').trim().toUpperCase();
@@ -629,7 +629,7 @@ jobs:
           NODE
 
       - name: Ensure Roblox universe is private before runtime candidate publish
-        if: steps.target.outputs.skip != 'true'
+        if: steps.target.outputs.skip != 'true' && steps.target.outputs.publish_stage == 'validation'
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
@@ -750,7 +750,7 @@ jobs:
           if(process.env.PUBLISH_STAGE==='final'){
             const entry=(item.robloxCanonicalPublishQueue||[]).find(row=>row?.cycleId===process.env.PUBLISH_CYCLE_ID);
             const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-            if(evaluateInternalRelease(entry.releaseSnapshot,'ROBLOX',roadmap).ready!==true)throw new Error('ROBLOX_PUBLISH_EXACT_CYCLE_RELEASE_GATE_REQUIRED');
+            if(evaluateInternalRelease({...entry.releaseSnapshot,robloxFinalReviewPassed:entry.finalReviewPassed,robloxF9ReleaseRegressionPassed:entry.f9ReleaseRegressionPassed,robloxF9ReleaseRegressionEvidence:entry.f9Evidence},'ROBLOX',roadmap,'SERVER_DEPLOYMENT').ready!==true)throw new Error('ROBLOX_PUBLISH_EXACT_CYCLE_RELEASE_GATE_REQUIRED');
           }
           console.log('ROBLOX_PUBLISH_LATEST_SOURCE_GATE=PASS:'+String(process.env.PUBLISH_STAGE||'validation'));
           const f0=JSON.parse(fs.readFileSync('/tmp/roblox-runtime-candidate-evidence.json','utf8'));
@@ -1460,4 +1460,5 @@ jobs:
           done
           echo 'ROBLOX_THUMBNAIL_RUNTIME_PERSIST=FAILED'
           exit 1
+
 

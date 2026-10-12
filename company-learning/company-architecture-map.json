@@ -1,5 +1,5 @@
 {
-  "version": 338,
+  "version": 339,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -6895,7 +6895,8 @@
     "publicationOutcomeBlocksEvolution": false,
     "publicationVisibilityBlocksEvolution": false,
     "publicationOutcomeBlocksNextCycle": false,
-    "exposureStateBlocksNextCycle": false
+    "exposureStateBlocksNextCycle": false,
+    "serverDeployment": "fixedAutonomousDevelopmentOperatingContract.serverDeployment"
   },
   "platformVerifiedF0F9PublicationLoop": {
     "version": 1,
@@ -7370,7 +7371,8 @@
       "UNITY",
       "WEB"
     ],
-    "webCandidatePlanner": "tools/vibe2-auto-planner.mjs"
+    "webCandidatePlanner": "tools/vibe2-auto-planner.mjs",
+    "detailedDesign": "robloxStudioProductionFlowContract.detailedDesign"
   },
   "assetQualityFirstDevelopment": {
     "source": "company-learning/platform-release-roadmap.json#assetProductionParallelContract.parallelism.qualityFirstDevelopment",
@@ -7450,12 +7452,12 @@
     "latestMainBuildPreflightRequired": true,
     "existingExecutorsOnly": true
   },
- "vibeQueueStorage": {
-  "authority": "company-learning/platform-release-roadmap.json#vibeQueueStorage",
-  "owner": "tools/vibe2-queue-control.mjs",
-  "index": ".vibe2/queue.json",
-  "activeParts": ".vibe2/queue/active/",
-  "permanentHistoryParts": ".vibe2/queue/history/",
-  "executionRepresentation": "SHA256_VERIFIED_FULL_QUEUE"
- }
+  "vibeQueueStorage": {
+    "authority": "company-learning/platform-release-roadmap.json#vibeQueueStorage",
+    "owner": "tools/vibe2-queue-control.mjs",
+    "index": ".vibe2/queue.json",
+    "activeParts": ".vibe2/queue/active/",
+    "permanentHistoryParts": ".vibe2/queue/history/",
+    "executionRepresentation": "SHA256_VERIFIED_FULL_QUEUE"
+  }
 }

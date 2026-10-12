@@ -63,7 +63,7 @@ test('exact Roblox F9 review is deduped per game identity and current control SH
   assert.doesNotMatch(workflow,/group: company-development-roblox-f9-final-review\s*\n/);
 });
 
-test('F9 records exact verified evidence and queues publication only for released games',()=>{
+test('F9 records exact verified evidence and queues publication for every exact verified cycle',()=>{
   assert.match(workflow,/item\.robloxFinalReviewPassed=true/);
   assert.match(workflow,/item\.robloxF9ReleaseRegressionPassed=true/);
   assert.match(workflow,/evaluateInternalRelease/);
@@ -98,11 +98,11 @@ test('F9 runs in parallel and cannot pause internal playtest under an external-o
   assert.match(workflow,/PUBLIC_RELEASE_RUNTIME_OBSERVATION/);
 });
 
-test('F9 is nonterminal, publishes only released games, and continues development otherwise',()=>{
+test('F9 is nonterminal, publishes every exact verified cycle, and continues development otherwise',()=>{
   assert.match(workflow,/item\.robloxInternalReleaseReady=serverPublishEligible/);
   assert.match(workflow,/item\.robloxCanonicalPublishPending=serverPublishEligible/);
   assert.match(workflow,/ROBLOX_F9_SERVER_PUBLICATION=/);
-  assert.match(workflow,/SKIPPED_DEVELOPMENT/);
+  assert.match(workflow,/BLOCKED_EXACT_F9/);
   assert.match(workflow,/Dispatch exact F9-verified artifact to canonical Roblox game target/);
   assert.match(workflow,/publish_stage=final/);
   assert.match(workflow,/ROBLOX_F9_NEXT_CYCLE_DISPATCHED=/);
@@ -153,3 +153,4 @@ test('F9 requires gameplay product readiness and routes failures back to Vibe bu
   assert.match(workflow,/item\.robloxQualityBuildUpRequired=false/);
   assert.match(workflow,/gameplayProductReadiness:productReadiness/);
 });
+

@@ -3,12 +3,88 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {buildRobloxProductionPlan,robloxProductionPromptLines,ROBLOX_PRODUCTION_PROFILES,buildSpatialBlueprintContract,validateSpatialBlueprint,buildInterfaceBlueprintContract,validateInterfaceBlueprint,productionBlueprintContractsForFiles} from '../tools/company-roblox-production-plan.mjs';
-import {buildVibeAssetProductionPlan} from '../tools/vibe2-asset-production-plan.mjs';
+import {buildVibeAssetProductionPlan,assetProductionGuidance} from '../tools/vibe2-asset-production-plan.mjs';
 import {buildGameSpecificBuildUpDirective,directivePrompt} from '../tools/company-build-up-directive.mjs';
+import {extractDesignContext} from '../tools/company-build-up-directive.mjs';
 
 const central=JSON.parse(fs.readFileSync(new URL('../company-learning/platform-release-roadmap.json',import.meta.url),'utf8'));
 const policy=central.robloxStudioProductionFlowContract;
+
+test('common material variants follow each game concept and stale shared style cannot replace approved style',t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe-game-style-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning/platform-release-roadmap.json'),JSON.stringify(central));
+  const registry={version:1,assets:[],baseMaterialLibrary:{customization:{documents:[{gameId:'bright-game',styleBible:{profileKey:'DARK_FANTASY'}}]}}};
+  fs.writeFileSync(path.join(root,'company-asset-library.json'),JSON.stringify(registry));
+  for(const [gameId,styleFamily,visualDirection] of [['bright-game','CARTOON','밝은 둥근 원본 형태'],['dark-game','DARK_FANTASY','낡은 날카로운 원본 형태']]){
+    const task={gameId,goal:'공용 나무와 몬스터의 게임별 표현',styleFamily:'STYLIZED_FANTASY',
+      buildUpDirective:{designContextMode:'APPROVED_OR_MINIMUM_DESIGN',designFingerprint:gameId+'-design',
+        gameIdentityAndNonNegotiables:{identity:gameId},designImplementationContext:{visualDirection,presentationPlan:{styleFamily},artAudioDirection:{},creativeGrammar:{a:{system:gameId},b:{system:'보조'}}}}};
+    const plan=buildVibeAssetProductionPlan({task,target:'roblox',repoRoot:root,manifest:{assets:[]}});
+    assert.equal(plan.gameConceptStyle.gameId,gameId);assert.equal(plan.gameConceptStyle.styleFamily,styleFamily);
+    assert.equal(plan.gameConceptStyle.visualDirection,visualDirection);
+    assert.equal(plan.gameConceptStyle.materialVariantCountIsNotStyleCount,true);
+    assert.equal(plan.gameConceptStyle.runtimeVerified,false);
+    assert.equal(plan.styleBible.profileKey,styleFamily);
+    assert.match(assetProductionGuidance(plan),/공용 나무·몬스터·건물·재질/);
+  }
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'company-asset-library.json'),'utf8')),registry);
+});
+
+test('game-authored detailed design survives handoff without a genre prefab or invented completion',()=>{
+  const raw={genre:'SURVIVAL STRATEGY',identity:'서로 다른 게임의 고유 규칙',
+    creativeGrammar:{a:{system:'빛 경로 탐색'},b:{system:'증언 순서',existingGameReference:'B 보조 참고'}},
+    coreLoop:['빛을 읽는다','증언을 배열한다'],signatureSystems:[{name:'빛 경로'},{name:'증언 순서'}],
+    detailedDesign:{tutorial:{hintCondition:'첫 실패 후 빛의 방향만 안내'},world:{biome:'원본 지역'}},
+    tutorialPlan:{entryCondition:'첫 접속',successCondition:'첫 경로 발견'},
+    presentationPlan:{camera:'원본 시점',interruptAndSkip:'취소 후 입력 복구'},
+    interfacePlan:{screens:['원본 화면']},verificationPlan:{expectedState:'경로 상태 전이'},
+    contentExpansionPlan:[{milestone:'첫 발견',trigger:'원본 조건',ruleIds:['a'],newGameplay:'기존 다음 선택'}]};
+  const design=extractDesignContext({content:raw});
+  for(const key of ['detailedDesign','tutorialPlan','presentationPlan','interfacePlan','verificationPlan'])assert.deepEqual(design[key],raw[key]);
+  assert.equal(design.contentExpansionPlan[0].trigger,'원본 조건');
+  const plan=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau'],focus:'USABILITY'});
+  assert.equal(plan.detailedDesignContract.runtimeVerified,false);
+  assert.deepEqual(plan.detailedDesignContract.basicGrammar,raw.creativeGrammar);
+  assert.deepEqual(plan.detailedDesignContract.genreReviewContexts,['SURVIVAL','STRATEGY']);
+  assert.equal(plan.detailedDesignContract.sections.find(row=>row.id==='FIRST_PLAY_AND_TUTORIAL').authored.entryCondition,'첫 접속');
+  assert.ok(plan.detailedDesignContract.sections.every(row=>row.runtimeVerified===false));
+  const connected=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/server/Game.server.luau'],focus:'CORE_FUN'});
+  assert.ok(connected.selectedIdea.id.endsWith(':AUTHORED_SYSTEM_CONNECTION'));
+  assert.equal(connected.coreAction,'빛을 읽는다');
+  assert.doesNotMatch(connected.selectedIdea.implementation,/거점|방어 배치|자원 수급/);
+  const repaired=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,design,
+    responsibleFiles:['roblox-games/demo/server/Game.server.luau'],focus:'STABILITY'});
+  assert.equal(repaired.detailedDesignContract,null);
+  const inherited=buildRobloxProductionPlan({gameId:'demo',platform:'ROBLOX',policy,
+    design:extractDesignContext({genre:'PUZZLE',detailedDesign:raw.detailedDesign}),
+    responsibleFiles:['roblox-games/demo/client/Menu.client.luau'],focus:'USABILITY'});
+  assert.equal(inherited.detailedDesignContract.sections[0].authored.hintCondition,'첫 실패 후 빛의 방향만 안내');
+});
+
+test('tutorial presentation and UI plans require current executable bindings and cannot claim runtime PASS',()=>{
+  const f=interfaceFixture();
+  f.contract.experienceScenarioContract={required:true,designRefs:['FIRST_PLAY_AND_TUTORIAL','MOTION_AND_PRESENTATION','INTERFACE']};
+  const scenario={id:'first-choice',designRef:'FIRST_PLAY_AND_TUTORIAL',kind:'TUTORIAL',screenId:'play',controlId:'open',
+    entryCondition:'new player',inputs:['tap open'],expectedState:'existing gear panel opens',expectedFeedback:'selected equipment visible',
+    failureRecovery:'keep original gear and retry',skipPolicy:'skip preserves objective',interruptionRecovery:'close restores input',
+    binding:{path:'ui.js',symbol:'openMenu',sourceEvidence:f.sourceFiles['ui.js']},runtimeVerified:false};
+  f.blueprint.experienceScenarios=[scenario];
+  const passed=validateInterfaceBlueprint(f);assert.equal(passed.pass,true,JSON.stringify(passed.issues));
+  assert.equal(passed.runtimeVerified,false);assert.equal(passed.experienceRequests[0].verificationStatus,'EXACT_BUILD_RUNTIME_EVIDENCE_REQUIRED');
+  for(const mutation of [s=>delete s.interruptionRecovery,s=>s.runtimeVerified=true,s=>s.controlId='missing',s=>s.binding.path='sibling.js',s=>s.designRef='unknown',s=>s.actualEvidence='invented']){
+    const broken=structuredClone(f);mutation(broken.blueprint.experienceScenarios[0]);assert.equal(validateInterfaceBlueprint(broken).pass,false);
+  }
+  const missing=structuredClone(f);delete missing.blueprint.experienceScenarios;
+  assert.ok(validateInterfaceBlueprint(missing).issues.includes('EXPERIENCE_SCENARIOS_MISSING'));
+  const stale=structuredClone(f);stale.sourceFiles['ui.js']='// '+stale.sourceFiles['ui.js'];
+  assert.equal(validateInterfaceBlueprint(stale).pass,false);
+});
 
 function spatialFixture(dimension='2D'){
   const source='const world = {scale: 1};';
@@ -411,3 +487,4 @@ test('asset worker keeps the same authored auto-biome as the spatial design and 
   assert.equal(unspecified.proceduralWorldLayout.status,'APPROVED_DESIGN_REQUIRED');
   assert.equal(unspecified.autoBiomeEvaluation.missingDesignMustRouteToExistingDesignPipeline,true);
 });
+

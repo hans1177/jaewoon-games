@@ -1,5 +1,5 @@
 {
-  "version": 574,
+  "version": 575,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -6249,7 +6249,10 @@
           "f9Authority": ".github/workflows/company-development-roblox-final-review-revalidation.yml",
           "deployRoute": ".github/workflows/company-development-roblox-release-promotion.yml?publish_stage=final",
           "deploymentTarget": "ROBLOX_CANONICAL_GAME_TARGET_PRESERVE_EXISTING_VISIBILITY",
-          "nextCycleRoute": "vibe2-fanin-refill"
+          "nextCycleRoute": "vibe2-fanin-refill",
+          "serverPublicationEligibility": "EVERY_EXACT_F9_VERIFIED_CYCLE",
+          "lobbyOrPublicClassificationRequired": false,
+          "publicDecisionOwner": "OWNER_ONLY"
         },
         "UNITY": {
           "f9Authority": ".github/workflows/company-development-unity-runtime.yml#EXACT_BUILD_RUNTIME_INDEPENDENT_QA_REGRESSION",
@@ -28600,6 +28603,23 @@
         "ROBLOX",
         "UNITY_WEB"
       ]
+    },
+    "serverDeployment": {
+      "version": 1,
+      "enabled": true,
+      "platform": "ROBLOX",
+      "everyVerifiedCycle": true,
+      "eligibility": "EXACT_F9_AND_CURRENT_CANDIDATE_QA",
+      "lobbyOrHomepageClassificationRequired": false,
+      "publicReleaseDecisionOwner": "OWNER_ONLY",
+      "automaticVisibilityChange": false,
+      "preserveExistingTargetVisibility": true,
+      "existingRoute": ".github/workflows/company-development-roblox-release-promotion.yml?publish_stage=final",
+      "failedCycleIdentityPreserved": true,
+      "existingPublicationRetryOnly": true,
+      "sequenceUnchanged": true,
+      "ownerDirective": "2026-10-13",
+      "allowF9VerifiedLocalArtifact": true
     }
   },
   "homepageGameMediaContract": {
@@ -28880,6 +28900,41 @@
         "DUPLICATE_PURPOSE",
         "EXACTLY_ONCE_CLAIM"
       ]
+    },
+    "detailedDesign": {
+      "version": 1,
+      "enabled": true,
+      "scope": "ALL_GAMES_GAME_SPECIFIC_APPROVED_DESIGN",
+      "implementation": "tools/company-roblox-production-plan.mjs#buildRobloxProductionPlan",
+      "preserveBasicGrammar": true,
+      "existingGameReferenceRole": "B_SUPPORTING_REFERENCE",
+      "genreProfilesAreReviewOnly": true,
+      "sections": [
+        "FIRST_PLAY_AND_TUTORIAL",
+        "SYSTEM_CONNECTIONS",
+        "WORLD_AND_BIOME",
+        "CHARACTER_AND_BEHAVIOR",
+        "NARRATIVE_AND_DISCOVERY",
+        "MOTION_AND_PRESENTATION",
+        "INTERFACE",
+        "ASSET_AND_SOURCE_BINDING",
+        "VERIFICATION"
+      ],
+      "taskLocalOnly": true,
+      "missingDetailIsGap": true,
+      "expectedValuesAreNotRuntimeEvidence": true,
+      "existingBlueprintValidatorsOnly": true,
+      "newStage": false,
+      "newPipeline": false,
+      "gameConceptStyle": {
+        "source": "VERIFIED_GAME_DESIGN",
+        "implementation": "tools/vibe2-asset-production-plan.mjs#buildVibeAssetProductionPlan",
+        "commonMasterImmutable": true,
+        "gameSpecificNativeDerivativeRequired": true,
+        "materialVariantCountIsNotStyleCount": true,
+        "colorOnlyIsNotStyleFit": true,
+        "sameBuildVisualEvidenceRequired": true
+      }
     }
   },
   "ownerActiveDevelopmentScope20261009": {
