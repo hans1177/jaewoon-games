@@ -608,11 +608,14 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
-test('core QA cancels superseded main regressions while preserving non-main active runs',()=>{
-  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' && github\.ref == 'refs\/heads\/main' \}\}/);
+test('core QA coalesces same-PR and main regressions, not manual or unrelated branch runs',()=>{
+  assert.match(coreQaWorkflow,/concurrency:\n(?:\s+#.*\n)*\s+group: vibe2-core-qa-\$\{\{ github\.ref \}\}\n\s+cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \|\| \(github\.event_name == 'push' && github\.ref == 'refs\/heads\/main'\) \}\}/);
+  const concurrency=coreQaWorkflow.match(/cancel-in-progress: \$\{\{([^\n]+)\}\}/)?.[1]?.trim();
+  assert.equal(concurrency,"github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')");
   const regression=runtime.continuous.reserveContractRegressionPreflight;
   assert.equal(regression.coreQaActiveCompletion.concurrencyGroup,'vibe2-core-qa-${{ github.ref }}');
   assert.equal(regression.coreQaActiveCompletion.mainPushCancelsSupersededInProgress,true);
+  // Non-main branch *pushes* do not cancel; separate PR heads supersede their own stale QA.
   assert.equal(regression.coreQaActiveCompletion.nonMainCancelsInProgress,false);
   assert.equal(regression.coreQaActiveCompletion.pendingPolicy,'MAIN_LATEST_SHA_ONLY_NON_MAIN_LATEST_PENDING_SAME_REF');
   assert.equal(regression.coreQaActiveCompletion.runner,'ubuntu-slim');
