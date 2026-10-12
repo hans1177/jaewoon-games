@@ -213,11 +213,11 @@ test('runner migrates legacy PR traces and persists current PR only in dedicated
 
 test('concurrent distinct merged PRs are both retained after stale ledger write is replayed',()=>{
   const first=buildMergedPullRequestTrace({
-    eventPayload:event({number:7679,merge_commit_sha:'merge7679',merged_at:'2026-10-12T00:18:29Z'}),
+    eventPayload:{...event({number:7679,merge_commit_sha:'merge7679',merged_at:'2026-10-12T00:18:29Z'}),number:7679},
     changedFiles:[{path:'tools/first.mjs',added:7,deleted:2,codingRelevant:true}]
   });
   const second=buildMergedPullRequestTrace({
-    eventPayload:event({number:7698,merge_commit_sha:'merge7698',merged_at:'2026-10-12T00:35:00Z'}),
+    eventPayload:{...event({number:7698,merge_commit_sha:'merge7698',merged_at:'2026-10-12T00:35:00Z'}),number:7698},
     changedFiles:[{path:'qa/second.test.mjs',added:8,deleted:0,codingRelevant:true}]
   });
   assert.ok(first&&second);
