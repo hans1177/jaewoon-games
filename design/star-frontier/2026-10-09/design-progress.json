@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "gameId": "star-frontier",
+  "date": "2026-10-09",
+  "engineDigest": "99d97cd218cc96b09d93fa3463e513ee6dfe6cf6cb4cecf8f023674a19c6620b",
+  "status": "IN_PROGRESS",
+  "currentStage": "DESIGNER_DRAFT",
+  "percent": 17,
+  "completedPhases": [],
+  "completedPhaseCount": 0,
+  "cachedTaskCount": 9,
+  "lastSuccessfulModelCallAt": "2026-10-09T14:47:03.384Z",
+  "failedPhase": "designer_draft",
+  "failedTask": "identity-core",
+  "lastError": "DESIGN_GRAMMAR_ROLE_REPAIR_REQUIRED DESIGN_GRAMMAR_RULE_ID_REUSED",
+  "designerSeed": null,
+  "modelHealth": {
+    "ollama:qwen3:1.7b": {
+      "calls": 10,
+      "successes": 10,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 600444,
+      "lastMs": 46401,
+      "lastError": null,
+      "updatedAt": "2026-10-09T14:47:03.384Z"
+    }
+  },
+  "slowPhases": {},
+  "updatedAt": "2026-10-09T14:47:03.393Z"
+}
