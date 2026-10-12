@@ -920,7 +920,14 @@ export function computeVibeSeedProposal(target){
   const ids=uniq([...explicitIds,...materialHints,...optionalIds]);
   const orderedMaterials=ids.map(id=>creativeSourcePool.find(row=>row.id===id)).filter(Boolean);
   const distinctSources=orderedMaterials.filter((row,index)=>orderedMaterials.findIndex(candidate=>candidate.source===row.source)===index);
-  const chosen=(freeTopicMode?[...distinctSources,...orderedMaterials.filter(row=>!distinctSources.includes(row))]:orderedMaterials).slice(0,4);
+  // A(대규모 세계 규칙)와 B(세부 사건 규칙)는 서로 다른 독립 후보에서 선택한다.
+  // B를 A 소재의 하위 목록에서 찾거나 A 선택 결과로 계산하지 않는다.
+  const independentlyRanked=(axis)=>[...creativeSourcePool].sort((a,b)=>
+    hash([...compositionKey,axis,a.id].join('|'))-hash([...compositionKey,axis,b.id].join('|')));
+  const bIndependent=freeTopicMode?independentlyRanked('B_INDEPENDENT_DETAIL')[0]:null;
+  const aIndependent=freeTopicMode?independentlyRanked('A_BROAD_WORLD').find(row=>row.source!==bIndependent?.source):null;
+  const cSupporting=freeTopicMode?distinctSources.filter(row=>row.source!==aIndependent?.source&&row.source!==bIndependent?.source):[];
+  const chosen=(freeTopicMode?[aIndependent,bIndependent,...cSupporting]:orderedMaterials).filter(Boolean).slice(0,4);
   if(chosen.length<4)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
   const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
   const named=row=>materialNames[row.id]||row.label||row.id.replaceAll('_',' ');
@@ -943,10 +950,10 @@ export function computeVibeSeedProposal(target){
     :`${profile.choiceB}하면서 ${second.gameGrammar}`;
   // 각 대축은 입력 조건·플레이어 선택·출력·실패 후 재선택을 가진다. 수치·보상·저장키를 임의로 창작하지 않는다.
   const stateA=freeTopicMode
-    ?`MAIN의 RouteState와 현재 RiskState를 읽어 ${profile.a} 실행 가능성을 확인한다. ${first.gameGrammar} 실행하면 RiskState·ResourceState를 갱신해 B의 허용 행동과 비용을 바꾼다. 접근 불가·취소라면 기존 상태를 보존하고 다른 경로를 고른다.`
+    ?`A는 ${aMaterial}을 대규모 세계 규칙으로 창작한다. MAIN의 RouteState·RiskState를 읽어 ${profile.a} 실행 조건을 판정하고, ${first.gameGrammar} 결과로 RiskState·ResourceState를 갱신해 B와 세계의 다음 선택을 바꾼다. 조건 미충족·취소 시 이전 상태를 보존한다.`
     :`플레이어가 ${profile.a}을 선택하면 ${aMaterial}의 규칙에 따라 다음 위험과 가능 행동이 변화한다.`;
   const stateB=freeTopicMode
-    ?`A가 출력한 RiskState·ResourceState가 ${profile.b}의 선행 조건이다. ${second.gameGrammar} 대응이 성공하면 RouteState·RiskState를 기록해 다음 A의 이동·위험을 바꾼다. 조건 미충족이면 소비 없이 대응을 다시 선택한다.`
+    ?`B는 A의 하위 주제가 아니라 ${bMaterial}에서 독자적으로 만든 세부 사건·대상 규칙이다. 독립적으로 정한 ${profile.b} 행동은 A가 출력한 RiskState·ResourceState를 조건으로 읽는다. ${second.gameGrammar} 대응 성공 시 RouteState·RiskState를 A로 돌려보내 세계 규칙까지 바꾼다. 조건 미충족 시 상태를 보존한다.`
     :`플레이어가 ${profile.b}을 선택하면 ${bMaterial}의 규칙에 따라 처음 선택으로 되돌아갈 비용·정보·접근 조건이 변화한다.`;
   const bridge=freeTopicMode
     ?`A에서 ${profile.a}를 선택해 RiskState·ResourceState를 바꾸고, 그 값을 읽는 B의 ${profile.b} 대응을 실행한다. B의 RouteState·RiskState 출력은 다시 A의 접근 가능성과 다음 선택을 바꾼다. 실패 시 마지막 유효 상태로 돌아가 대안을 고른다.`
