@@ -1,5 +1,5 @@
 {
-  "version": 565,
+  "version": 566,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-11",
@@ -6938,7 +6938,7 @@
       "UNITY"
     ],
     "showWebPlay": true,
-    "showUnityWeb": true,
+    "showUnityWeb": false,
     "showInternalReleaseState": true,
     "showPublicReleaseState": true,
     "perGamePlatformStates": [
@@ -7025,7 +7025,7 @@
         ],
         "separateFromTop30Promotion": true,
         "mustNotClaimValidationOrRelease": true,
-        "webTestButtonEnabled": true,
+        "webTestButtonEnabled": false,
         "webTestButtonLabel": "Unity Web · 개발중",
         "platformTestButtonEnabled": true,
         "platformTestButtonLabelMode": "PLATFORM_NAME",
@@ -7043,8 +7043,8 @@
         "unityWebHomepageExposureGate": "DEPLOYABLE_BUNDLE_MANIFEST_OR_UNITY_INDEX_BUNDLE_PROBE",
         "unityWebQaPassRequiredForHomepageLink": false,
         "unityWebEvidenceFilesRequiredForHomepageLink": false,
-        "unityWebDevelopmentCardExposureRequiredWhenDeployable": true,
-        "unityWebMayBeCardDirectLaunchFallback": true,
+        "unityWebDevelopmentCardExposureRequiredWhenDeployable": false,
+        "unityWebMayBeCardDirectLaunchFallback": false,
         "staleSharedRobloxTargetHomepageLinkForbidden": true,
         "unityWebLegacyBuildCompatibility": true,
         "playableWebCompanionButtonEnabled": true,
@@ -7131,14 +7131,14 @@
     "homepagePolicyFingerprintMustMatchBeforePublication": true,
     "staleHomepagePolicyAction": "FAIL_CLOSED_BLOCK_PUBLICATION_AND_REQUEUE_HOMEPAGE_MANAGER",
     "unityWebValidationSurface": {
-      "enabled": true,
+      "enabled": false,
       "role": "OWNER_FACING_BROWSER_DEVELOPMENT_TEST_SURFACE",
       "releasePlatform": false,
       "developmentAdmissionGate": false,
       "nativeReleaseGate": false,
       "canonicalSource": "unity-games/<gameId>/",
       "verifiedOutput": "web-games/<gameId>/",
-      "homepageOwnerTestLink": true,
+      "homepageOwnerTestLink": false,
       "requiredEvidenceFiles": [
         "unity-web-build.json",
         "unity-web-gameplay-validation.json"
@@ -7160,8 +7160,8 @@
         "framework",
         "wasm"
       ],
-      "developmentConfirmedHomepageExposureRequiredWhenDeployable": true,
-      "cardDirectLaunchFallbackAllowed": true,
+      "developmentConfirmedHomepageExposureRequiredWhenDeployable": false,
+      "cardDirectLaunchFallbackAllowed": false,
       "homepageLinkRequiresDeployableBundle": true,
       "homepageLinkAllowsUnityIndexBundleProbe": true,
       "homepageLinkLegacyUnityBuildCompatibility": true,

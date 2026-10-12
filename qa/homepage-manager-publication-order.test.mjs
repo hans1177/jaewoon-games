@@ -445,6 +445,9 @@ test('homepage does not query Unity Web deployment assets',()=>{
   const runtime=fs.readFileSync('assets/homepage-enhancements.js','utf8');
   assert.doesNotMatch(runtime,/bindAvailableUnityWebSurfaces|unityWebTestUrl|unityWebAction/);
   assert.doesNotMatch(runtime,/unity-web-deploy-manifest\.json|probeFetch\(|createUnityInstance/);
+  assert.equal(roadmap.serverHomepageIntegration.showUnityWeb,false);
+  assert.equal(roadmap.serverHomepageIntegration.unityWebValidationSurface.enabled,false);
+  assert.equal(roadmap.serverHomepageIntegration.managerContract.developmentProgressDisplay.webTestButtonEnabled,false);
   assert.match(runtime,/renderCatalog\(catalog\);/);
   assert.match(runtime,/const SYNC_INTERVAL_MS=30000;/);
 });

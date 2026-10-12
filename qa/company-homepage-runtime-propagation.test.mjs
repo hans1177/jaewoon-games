@@ -338,6 +338,9 @@ test('homepage disables Unity Web browser links without affecting native platfor
   const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
   const snap=buildHomepagePlatformExposure({policy,catalog:{games:[]},queue:{items:[]}});
   assert.deepEqual(snap.supportedPlatforms,['ROBLOX','UNITY']);
+  assert.equal(snap.unityWebEnabled,false);
+  assert.equal(policy.serverHomepageIntegration.showUnityWeb,false);
+  assert.equal(policy.serverHomepageIntegration.unityWebValidationSurface.enabled,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebRequired,false);
   assert.equal(policy.directNativeDualPlatformDevelopment.unityWebGateRequired,false);
   const renderer=fs.readFileSync('assets/homepage-enhancements.js','utf8');
