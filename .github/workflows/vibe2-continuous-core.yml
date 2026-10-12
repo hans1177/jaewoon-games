@@ -204,6 +204,8 @@ jobs:
           rm -rf /tmp/vibe2-main
           mkdir -p /tmp/vibe2-main
           git archive "$contract_sha" | tar -x -C /tmp/vibe2-main
+          # An old callback contract must not silently execute index summaries.
+          grep -q '^export function unpackVibeQueueStorage' /tmp/vibe2-main/tools/vibe2-queue-control.mjs
           test -f /tmp/vibe2-main/vibe2-runtime.json
           echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
@@ -1265,6 +1267,7 @@ jobs:
           contract_root="$GITHUB_WORKSPACE/vibe2-contract"
           test -n "$CONTRACT_SHA"
           test "$(git -C "$contract_root" rev-parse HEAD)" = "$CONTRACT_SHA"
+          grep -q '^export function unpackVibeQueueStorage' "$contract_root/tools/vibe2-queue-control.mjs"
           node "$contract_root/tools/vibe2-queue-control.mjs" storage-unpack --queue="$GITHUB_WORKSPACE/.vibe2/queue.json"
           policy_sha="$(sha256sum "$contract_root/company-learning/platform-release-roadmap.json" | cut -d' ' -f1)"
           log_map_sha="$(sha256sum "$contract_root/company-learning/company-log-map.json" | cut -d' ' -f1)"
@@ -2797,7 +2800,9 @@ jobs:
           run-id: ${{ needs.reserve.outputs.stranded_review_run }}
 
       - name: Restore queue for immutable result aggregation
-        run: node vibe2-contract/tools/vibe2-queue-control.mjs storage-unpack
+        run: |
+          grep -q '^export function unpackVibeQueueStorage' vibe2-contract/tools/vibe2-queue-control.mjs
+          node vibe2-contract/tools/vibe2-queue-control.mjs storage-unpack
 
       - name: Aggregate immutable results
         env:

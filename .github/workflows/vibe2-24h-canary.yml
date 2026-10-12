@@ -31,6 +31,16 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Checkout current queue storage contract
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: vibe2-main-contract
+          fetch-depth: 1
+
+      - name: Restore complete queue for read-only canary
+        run: node vibe2-main-contract/tools/vibe2-queue-control.mjs storage-unpack
+
       - name: Verify Vibe2 runtime and shared Work Lock contracts
         shell: bash
         run: |
