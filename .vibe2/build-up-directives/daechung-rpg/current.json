@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "directiveId": "daechung-rpg-build-up-g34-cd8b0477dd82",
-  "directiveFingerprint": "cd8b0477dd82ff7937bf40e78a1a81965c37aa5726021e140c4c825f6ab62ca0",
+  "directiveId": "daechung-rpg-build-up-g34-a9890430d250",
+  "directiveFingerprint": "a9890430d2507841f74ccab685b626c08a57d1612db203a98193f773725d9fb8",
   "previousDirectiveFingerprint": "bf78c0339064d2ba3f949311ddbe18137014eadd3bd7dd67ac6984a0c82b40d3",
   "forbiddenRepeatFingerprint": "bf78c0339064d2ba3f949311ddbe18137014eadd3bd7dd67ac6984a0c82b40d3",
   "gameId": "daechung-rpg",
@@ -15,7 +15,7 @@
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/daechung-rpg",
   "sourceTreeFingerprint": "fb42fc73a7e468801db950507b3fda8c3b611daa5359ecb5c455c23ba51809f1",
-  "designFingerprint": "3765c01232aff557be1d5e4529282ebb5c77e91fa6285a3eb2a0941cfe6ba886",
+  "designFingerprint": "40eca0bcfa088ea98ae3279ee904cd7cc5f3b0856d4ff0b93606bda418934b76",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "RPG",
@@ -257,7 +257,7 @@
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
       "canonicalGameId": "daechung-rpg",
-      "canonicalDesignFingerprint": "3765c01232aff557be1d5e4529282ebb5c77e91fa6285a3eb2a0941cfe6ba886",
+      "canonicalDesignFingerprint": "40eca0bcfa088ea98ae3279ee904cd7cc5f3b0856d4ff0b93606bda418934b76",
       "unityWebProjectRoot": "unity-games/daechung-rpg",
       "unityWebBuildOutputRoot": "web-games/daechung-rpg",
       "unityWebSourceAvailable": true,
@@ -383,7 +383,7 @@
       "shadowPipelineForbidden": true,
       "nextAction": "OPTIONAL_COMPATIBILITY_COMPARISON_ONLY_ROBLOX_LUAU_REMAINS_ORIGINAL"
     },
-    "designFingerprint": "3765c01232aff557be1d5e4529282ebb5c77e91fa6285a3eb2a0941cfe6ba886",
+    "designFingerprint": "40eca0bcfa088ea98ae3279ee904cd7cc5f3b0856d4ff0b93606bda418934b76",
     "sourceTreeFingerprint": "fb42fc73a7e468801db950507b3fda8c3b611daa5359ecb5c455c23ba51809f1",
     "multiplayerMode": "COOP",
     "multiplayerRequired": true,
@@ -3711,8 +3711,8 @@
         "MULTIPLAYER_INTENT"
       ],
       "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
-      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
-      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "webRule": "웹은 현재 플랫폼 제작 대상이 아니다. 과거 webCanonicalDesign 필드는 기록 호환용 참고 뷰일 뿐, 별도 게임이나 Unity WebGL 빌드를 생성하지 않는다.",
+      "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     },
     "visualDirection": "그리스 비극의 자기실현 예언와 철학의 변증법의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
@@ -4940,9 +4940,11 @@
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+    "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING",
+    "blockers": [
+      "roblox-build-package-pending"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -10738,8 +10740,8 @@
       "sourceTreeFingerprint": "fb42fc73a7e468801db950507b3fda8c3b611daa5359ecb5c455c23ba51809f1",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
+      "failureSignature": "ROBLOX_BUILD_PACKAGE_PENDING"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -10853,5 +10855,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-12T02:21:39.390Z"
+  "generatedAt": "2026-10-12T02:56:39.578Z"
 }

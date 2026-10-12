@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "directiveId": "horror-escape-room-build-up-g2-2f3754172188",
-  "directiveFingerprint": "2f3754172188d7b0cda23266eb35e23943d51907c25b5187dda033eb1c9e9503",
-  "previousDirectiveFingerprint": "93d1a1c0d7a7641d08c263f6efbae392bc09223be27da74ff8ca95f624759cff",
-  "forbiddenRepeatFingerprint": "93d1a1c0d7a7641d08c263f6efbae392bc09223be27da74ff8ca95f624759cff",
+  "directiveId": "horror-escape-room-build-up-g3-9d10a4c15e4c",
+  "directiveFingerprint": "9d10a4c15e4c6214e3524dccf772bae6d4c8568c1b8fd2e3851841bd5e3965d9",
+  "previousDirectiveFingerprint": "2f3754172188d7b0cda23266eb35e23943d51907c25b5187dda033eb1c9e9503",
+  "forbiddenRepeatFingerprint": "2f3754172188d7b0cda23266eb35e23943d51907c25b5187dda033eb1c9e9503",
   "gameId": "horror-escape-room",
   "gameName": "심야 대탈출",
-  "generation": 2,
+  "generation": 3,
   "developmentDepth": 1,
   "escalationStage": "FOUNDATION_COMPLETENESS",
   "escalationMode": "CONTINUE_UNVERIFIED_DEPTH",
@@ -14,8 +14,8 @@
   "designContextMode": "APPROVED_OR_MINIMUM_DESIGN",
   "platform": "ROBLOX",
   "sourceRoot": "roblox-games/horror-escape-room",
-  "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
-  "designFingerprint": "e3ae55ec8ccb7809638e6bdf1e17ad45a033ae75d73089bc8a6498400ff7738e",
+  "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
+  "designFingerprint": "52c25c0af74d29b9957c12de20c0e038c841c73e41b512b73e3f2d105c01bc85",
   "identityReinforcement": {
     "appliesToAllGenres": true,
     "genre": "Strategy",
@@ -256,7 +256,7 @@
           "정화와 팀 대응의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 대가를 비교해 반대 선택을 실험한다.",
           "숨겨진 세계 인과법칙을 이용한 새로운 접근"
         ],
-        "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+        "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
         "rule": "MAIN_IS_GAME_TOPIC; A_AND_B_EACH_REQUIRE_SYSTEM_AND_SOURCE_MATERIAL; C_HAS_TWO_CREATIVE_MATERIALS_AND_PRIMARY_SECONDARY_DISTINCT_GENRES_WITH_GAMEPLAY_INTERLOCK; A_B_CAUSAL_PLAY_CHANGES_WORLD_STORY; @ IS_UNBOUNDED_DISCOVERY_MASTERY_AND_REVISIT",
         "identityRewriteRequired": false,
         "existingBalanceSaveEconomyAndAuthorityPreserved": true
@@ -279,7 +279,7 @@
       "version": 1,
       "kind": "UNITY_WEB_TO_ROBLOX_NATIVE_SOURCE_SYNC",
       "canonicalGameId": "horror-escape-room",
-      "canonicalDesignFingerprint": "e3ae55ec8ccb7809638e6bdf1e17ad45a033ae75d73089bc8a6498400ff7738e",
+      "canonicalDesignFingerprint": "52c25c0af74d29b9957c12de20c0e038c841c73e41b512b73e3f2d105c01bc85",
       "unityWebProjectRoot": "unity-games/horror-escape-room",
       "unityWebBuildOutputRoot": "web-games/horror-escape-room",
       "unityWebSourceAvailable": false,
@@ -303,8 +303,8 @@
       "shadowPipelineForbidden": true,
       "nextAction": "CONTINUE_ORIGINAL_ROBLOX_LUAU_DESIGN_SYSTEM_AND_CONTENT_IMPLEMENTATION"
     },
-    "designFingerprint": "e3ae55ec8ccb7809638e6bdf1e17ad45a033ae75d73089bc8a6498400ff7738e",
-    "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+    "designFingerprint": "52c25c0af74d29b9957c12de20c0e038c841c73e41b512b73e3f2d105c01bc85",
+    "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
     "multiplayerMode": "COMPETITIVE",
     "multiplayerRequired": true,
     "minimumParticipants": 2,
@@ -909,7 +909,7 @@
   "designedGameVolume": {
     "version": 1,
     "boundary": "EXISTING_GAME_SPECIFIC_BUILD_UP_DIRECTIVE_ONLY",
-    "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+    "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
     "mode": "APPROVED_DESIGN_TO_NATIVE_CONTENT_IMPLEMENTATION",
     "authoredItemCount": 74,
     "authoredCounts": {
@@ -5360,8 +5360,8 @@
         "MULTIPLAYER_INTENT"
       ],
       "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
-      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
-      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "webRule": "웹은 현재 플랫폼 제작 대상이 아니다. 과거 webCanonicalDesign 필드는 기록 호환용 참고 뷰일 뿐, 별도 게임이나 Unity WebGL 빌드를 생성하지 않는다.",
+      "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     },
     "visualDirection": "역사적 세력 균형와 업보와 인과응보의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
@@ -7383,20 +7383,22 @@
     ]
   },
   "previousVersionDelta": {
-    "previousGoal": "인간 4명과 몬스터 4명이 시작하고, 잡힌 인간이 몬스터로 전환돼 판세가 계속 뒤집히는 8인 감염 추격전.의 4대4 AI 충원와 감염 전환가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
+    "previousGoal": "심야 대탈출. 증언과 합의된 현실·오만과 응보 감염 추격. 심야 대탈출에서 진영 전환과 추격 경로 × 증언과 합의된 현실과 정화와 팀 대응 × 오만과 응보이 서로 결과를 되돌려 바꾸며 감염 추격·미스터리의 판단이 실제 세계 상태를 변화시킨다.의 심야 대탈출와 진영 전환과 추격 경로 × 증언과 합의된 현실가 캐릭터·적·환경·모션·VFX·카메라·UI 전체에서 한눈에 구별되도록 비주얼 정체성을 높인다.",
     "previousFocus": "PRESENTATION",
-    "previousGeneration": 1,
-    "previousSourceTreeFingerprint": "3611a41a9f8fcaf97733a2dd66623432d9f254855a5cfcf54866667cc75244ae",
-    "currentSourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+    "previousGeneration": 2,
+    "previousSourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+    "currentSourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
     "sourceChanged": true,
     "verifiedEvolution": false
   },
   "playtestRuntimeFindings": {
     "platform": "ROBLOX",
     "studioQualityFailure": null,
-    "failureStage": "",
-    "failureSignature": "",
-    "blockers": [],
+    "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+    "failureSignature": "existing-source-studio-asset-binding-required",
+    "blockers": [
+      "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED"
+    ],
     "runtimeObserved": false,
     "runtimePassed": false,
     "independentQaPassed": false,
@@ -8537,7 +8539,7 @@
       },
       "warningRatio": 0.8,
       "measured": {
-        "sourceBytes": 963054,
+        "sourceBytes": 934323,
         "largestFileBytes": 234988,
         "savePersistedDataBytes": 0,
         "mobileMemoryBytes": 0,
@@ -8570,8 +8572,8 @@
       "weakExistingContentMayPreemptNewContent": true
     },
     "selectedTheme": "PRESENTATION_WORLD_COHESION",
-    "themeDepth": 1,
-    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=NONE; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=0; uncoveredBefore=7.",
+    "themeDepth": 2,
+    "selectedThemeReason": "4 explicit GAP(s) and 10 applicable domain(s); focus=PRESENTATION; previousTheme=PRESENTATION_WORLD_COHESION; previousEffect=UNKNOWN_RUNTIME_EFFECT; previousCoverage=1; uncoveredBefore=6.",
     "themeCoverageLedger": {
       "version": 1,
       "counts": {
@@ -8581,9 +8583,10 @@
         "ITEM_EQUIPMENT_CRAFT_SYSTEM_CHAIN": 0,
         "RULES_EVENTS_REPLAYABILITY_SYSTEM": 0,
         "MID_LATE_ENDGAME_COMPLETION": 0,
-        "PRESENTATION_WORLD_COHESION": 1
+        "PRESENTATION_WORLD_COHESION": 2
       },
       "sequence": [
+        "PRESENTATION_WORLD_COHESION",
         "PRESENTATION_WORLD_COHESION"
       ],
       "requiredThemes": [
@@ -8619,7 +8622,7 @@
     "scoredThemes": [
       {
         "theme": "PRESENTATION_WORLD_COHESION",
-        "score": 76,
+        "score": 218,
         "gapDomains": [
           "ENVIRONMENT",
           "TERRAIN",
@@ -8733,11 +8736,11 @@
   },
   "internalAssetEvolution": {
     "required": true,
-    "generation": 2,
-    "previousGeneration": 1,
+    "generation": 3,
+    "previousGeneration": 2,
     "evaluateAllLibrariesAndFamiliesEveryCycle": true,
-    "sourceFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
-    "priorSourceFingerprint": "3611a41a9f8fcaf97733a2dd66623432d9f254855a5cfcf54866667cc75244ae",
+    "sourceFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
+    "priorSourceFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
     "previousRuntimeEffect": "UNKNOWN_RUNTIME_EFFECT",
     "replacementMode": "COMPATIBLE_REPLACEMENT_OR_RECOMPOSITION_IN_EXISTING_RESPONSIBLE_SOURCE",
     "currentLibrarySelectionAndSourceHashesRequired": true,
@@ -9209,7 +9212,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+    "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -11030,7 +11033,7 @@
         "implementation": "이 파일의 기존 입력·렌더·모션·UI 책임 블록만 개선하고 게임 상태·보상·저장 의미는 유지한다."
       }
     ],
-    "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+    "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
     "spatialBlueprintContract": {
       "version": 1,
       "required": false,
@@ -13034,11 +13037,11 @@
       "runtimeObserved": false
     },
     "baseline": {
-      "sourceTreeFingerprint": "23f8b15507ae6ce86729095bdc55c99babda1cb9dc06bfc48465c64e52b1c4c1",
+      "sourceTreeFingerprint": "23edf5e2101fd6be4a5567d640849103638a59ebc44b40f889781fa823fb3dd2",
       "runtimeObserved": false,
       "runtimePassed": false,
-      "failureStage": null,
-      "failureSignature": null
+      "failureStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "failureSignature": "existing-source-studio-asset-binding-required"
     },
     "requiredPostChangeEvidence": [
       "CHANGED_GAME_FILES",
@@ -13090,7 +13093,7 @@
   ],
   "loopEscalation": {
     "automatic": true,
-    "nextGeneration": 3,
+    "nextGeneration": 4,
     "currentDevelopmentDepth": 1,
     "nextDevelopmentDepth": 1,
     "escalationStage": "FOUNDATION_COMPLETENESS",
@@ -13150,5 +13153,5 @@
     "notApplicable": [],
     "silentApplicableGapOmissionForbidden": true
   },
-  "generatedAt": "2026-10-12T02:21:39.177Z"
+  "generatedAt": "2026-10-12T05:18:54.051Z"
 }
