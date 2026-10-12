@@ -202,6 +202,8 @@ jobs:
 
       - name: Fetch current company runtime and verified Vibe learning
         if: steps.freshness.outputs.run == 'true'
+        env:
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
@@ -212,7 +214,8 @@ jobs:
           node - <<'NODE' > /tmp/roblox-bound-source-revisions
           const fs=require('fs');
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
-          const revisions=[...new Set((q.items||[]).map(x=>String(x.robloxSourceCommit||'').trim()).filter(x=>/^[0-9a-f]{40}$/i.test(x)))];
+          const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
+          const revisions=[...new Set((q.items||[]).filter(x=>!requested||String(x.gameId||'').trim()===requested).map(x=>String(x.robloxSourceCommit||'').trim()).filter(x=>/^[0-9a-f]{40}$/i.test(x)))];
           for(const revision of revisions)console.log(revision);
           NODE
           while read -r revision; do
@@ -228,6 +231,7 @@ jobs:
         id: reconcile
         env:
           SOURCE_REVISION: ${{ github.sha }}
+          REQUESTED_GAME_ID: ${{ inputs.game_id || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -236,6 +240,7 @@ jobs:
             --runtime-ref="origin/$COMPANY_RUNTIME_BRANCH" \
             --repo-root=. \
             --source-revision="$SOURCE_REVISION" \
+            --game-id="$REQUESTED_GAME_ID" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --results=/tmp/roblox-source-reconciliation.json
 
