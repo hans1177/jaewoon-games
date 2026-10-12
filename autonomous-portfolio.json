@@ -456,9 +456,9 @@
       "slug": "cozy-island",
       "name": "포근섬",
       "sourcePath": "roblox-games/cozy-island",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+      "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -474,11 +474,24 @@
       "runtimeSynthesized": true,
       "lifecycleState": "ACTIVE",
       "targetPlatformReady": true,
-      "mode": "ROBLOX_UNITY_DIRECT_NATIVE_CONCURRENT",
+      "mode": "MINIMUM_DUAL_PLATFORM_DESIGN_REQUIRED",
       "targetEngine": "roblox-unity-native",
       "approvedDesignScopeMustBeFullyImplemented": true,
       "strictDesignScoreRequiredForAdmission": false,
-      "strictDesignReviewRunsInParallel": true
+      "strictDesignReviewRunsInParallel": true,
+      "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
+      "platformDesignProfiles": {
+        "ROBLOX": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/ROBLOX"
+        },
+        "UNITY": {
+          "source": "design/cozy-island/2026-10-12/design-revised.json",
+          "jsonPointer": "/content/platformProfiles/UNITY"
+        }
+      },
+      "updatedAt": "2026-10-12T02:07:05.484Z",
+      "productionTier": 3
     }
   ],
   "productionClassState": {
@@ -701,5 +714,6 @@
         "sourceReady": true
       }
     ]
-  }
+  },
+  "updatedAt": "2026-10-12T02:07:05.484Z"
 }

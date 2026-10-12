@@ -10050,9 +10050,9 @@
       "status": "ACTIVE",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-COZY-FRESH-GRAMMAR-20261012-1",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
+      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
       "semanticNormalization": {
@@ -10061,7 +10061,7 @@
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
       },
-      "productionTier": 2,
+      "productionTier": 3,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -10070,40 +10070,18 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": true,
-        "source": "design/cozy-island/2026-10-12/design-revised.json",
-        "date": "2026-10-12"
-      },
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/cozy-island/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/cozy-island/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
+        "pass": false,
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY"
       },
       "promotion": {
-        "from": "DESIGN_ONLY",
-        "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-        "requestedPlatform": "ROBLOX",
-        "concurrentTargetPlatforms": [
-          "ROBLOX",
-          "UNITY"
-        ],
-        "targetSourcePaths": {
-          "ROBLOX": "roblox-games/cozy-island",
-          "UNITY": "unity-games/cozy-island"
-        },
-        "designBaselineSource": "design/cozy-island/2026-10-12/design-revised.json",
-        "designDate": "2026-10-12",
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DESIGN_ONLY",
+        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_NOT_READY",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "promotedAt": "2026-10-12T01:59:37.497Z"
+        "updatedAt": "2026-10-12T02:07:05.484Z"
       },
-      "updatedAt": "2026-10-12T02:05:47.207Z",
+      "updatedAt": "2026-10-12T02:07:05.287Z",
       "novelGrammarBackfill": {
         "version": 5,
         "source": "CANONICAL_OWNER_MAIN_A_B_C_UNBOUNDED_DELVE_20261009",
@@ -10118,7 +10096,8 @@
           "createdAt": "2026-10-12T02:05:47.207Z",
           "source": "CANONICAL_GAME_SEED"
         }
-      ]
+      ],
+      "strictDesignReviewRefreshRequired": true
     },
     {
       "version": 1,
@@ -91732,7 +91711,7 @@
   ],
   "lastRunAt": "2026-09-19T16:17:06.466Z",
   "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
-  "updatedAt": "2026-10-12T01:59:37.497Z",
+  "updatedAt": "2026-10-12T02:07:05.484Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
@@ -91881,6 +91860,5 @@
       "tower-choice-rpg",
       "zombie-survival"
     ]
-  },
-  "policyDocument": "company-learning/platform-release-roadmap.json"
+  }
 }
