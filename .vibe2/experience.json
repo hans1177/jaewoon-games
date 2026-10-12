@@ -8,9 +8,7 @@
     "duplicateVerificationReinforces": true,
     "repeatedVerificationRaisesConfidence": true,
     "mayExpandAuthority": false,
-    "mayAutoCopyGameplayValues": false,
-    "rawExternalModelOutputForbidden": true,
-    "systemAiSelfAcceptanceForbidden": true
+    "mayAutoCopyGameplayValues": false
   },
   "records": [
     {
@@ -253887,72 +253885,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_cf225c64f505f718d4bd4ea1",
-          "taskId": "internal-motion-tsuchigumo-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:e4441c44fe8ac7581fe0f6baae0232893c81647e",
-            "actions-run:38268150286",
-            "reservation-id:38268150286:1",
-            "capability-application-sample:a132c38b405732137b0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_14d10fba1a148ff735dcd9e5",
-          "taskId": "internal-motion-banshee-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
-            "actions-run:38278188969",
-            "reservation-id:38278188969:1",
-            "capability-application-sample:70b1084859c5f7bdc8b0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_5437e15ec10939444718c255",
           "taskId": "internal-motion-barghest-walk-v1",
           "workKey": null,
@@ -255990,6 +255922,72 @@
             "actions-run:38281867267",
             "reservation-id:38281867267:1",
             "capability-application-sample:6d95f53766efcc136026"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_0a5e45f347200b2c3833b6f5",
+          "taskId": "internal-motion-karakasa-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:8ba82907fa38db50d0ff"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_67f1a3314d256f561f77404d",
+          "taskId": "internal-motion-tsuchigumo-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:d714313c58637ed9e3f1"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -353278,72 +353276,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_bba3a096e9f0e39b3a6a6ba7",
-          "taskId": "internal-motion-tsuchigumo-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:e4441c44fe8ac7581fe0f6baae0232893c81647e",
-            "actions-run:38268150286",
-            "reservation-id:38268150286:1",
-            "capability-application-sample:a132c38b405732137b0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_d278ad881f9e89a4c219ec1f",
-          "taskId": "internal-motion-banshee-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
-            "actions-run:38278188969",
-            "reservation-id:38278188969:1",
-            "capability-application-sample:70b1084859c5f7bdc8b0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_b1b4ddd57e6073d863e93533",
           "taskId": "internal-motion-barghest-walk-v1",
           "workKey": null,
@@ -355381,6 +355313,72 @@
             "actions-run:38281867267",
             "reservation-id:38281867267:1",
             "capability-application-sample:6d95f53766efcc136026"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_bf85dcf0e55c05c55792948c",
+          "taskId": "internal-motion-karakasa-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:8ba82907fa38db50d0ff"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_abd0014d845f20323bb7e26b",
+          "taskId": "internal-motion-tsuchigumo-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:d714313c58637ed9e3f1"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -413745,72 +413743,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_5c08483fb80396e0b0dbada7",
-          "taskId": "internal-motion-tsuchigumo-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:e4441c44fe8ac7581fe0f6baae0232893c81647e",
-            "actions-run:38268150286",
-            "reservation-id:38268150286:1",
-            "capability-application-sample:a132c38b405732137b0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_38fa5124853f13a6c6e5098d",
-          "taskId": "internal-motion-banshee-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
-            "actions-run:38278188969",
-            "reservation-id:38278188969:1",
-            "capability-application-sample:70b1084859c5f7bdc8b0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_bbd593fa3e914213c289be89",
           "taskId": "internal-motion-barghest-walk-v1",
           "workKey": null,
@@ -415848,6 +415780,72 @@
             "actions-run:38281867267",
             "reservation-id:38281867267:1",
             "capability-application-sample:6d95f53766efcc136026"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_5305960d0ed62f8066255988",
+          "taskId": "internal-motion-karakasa-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:8ba82907fa38db50d0ff"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_9f7ccf074e2c9d16fcee6e21",
+          "taskId": "internal-motion-tsuchigumo-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:d714313c58637ed9e3f1"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -435181,72 +435179,6 @@
       "capabilityApplications": [
         {
           "version": 1,
-          "applicationId": "capp_acc95cc3c9d94e4ec9d0beb8",
-          "taskId": "internal-motion-tsuchigumo-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:e4441c44fe8ac7581fe0f6baae0232893c81647e",
-            "actions-run:38268150286",
-            "reservation-id:38268150286:1",
-            "capability-application-sample:a132c38b405732137b0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_59423e734e44884a8174404b",
-          "taskId": "internal-motion-banshee-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
-            "actions-run:38278188969",
-            "reservation-id:38278188969:1",
-            "capability-application-sample:70b1084859c5f7bdc8b0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
           "applicationId": "capp_d16ac88bff6301b899d6eed6",
           "taskId": "internal-motion-barghest-walk-v1",
           "workKey": null,
@@ -437290,6 +437222,72 @@
           "rawModelOutputStored": false,
           "hiddenChainOfThoughtStored": false,
           "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_87b6ca989b5527f5caa76497",
+          "taskId": "internal-motion-karakasa-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:8ba82907fa38db50d0ff"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_76658bc6b84440e84abc4ea5",
+          "taskId": "internal-motion-tsuchigumo-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:d714313c58637ed9e3f1"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
         }
       ],
       "capabilityBenchmarks": [],
@@ -437400,72 +437398,6 @@
       "confirmations": 7,
       "confidence": 0.875,
       "capabilityApplications": [
-        {
-          "version": 1,
-          "applicationId": "capp_0d3de95d43898f1a975e9d7d",
-          "taskId": "internal-motion-tsuchigumo-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:e4441c44fe8ac7581fe0f6baae0232893c81647e",
-            "actions-run:38268150286",
-            "reservation-id:38268150286:1",
-            "capability-application-sample:a132c38b405732137b0f"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
-        {
-          "version": 1,
-          "applicationId": "capp_749e33be64640eee130a50d5",
-          "taskId": "internal-motion-banshee-walk-v1",
-          "workKey": null,
-          "gameId": "horror-escape-room",
-          "engine": "roblox",
-          "outcome": "TASK_FAILED_UNATTRIBUTED",
-          "selected": false,
-          "finalReviewPass": false,
-          "freshTaskQaPass": false,
-          "independent": true,
-          "capabilitySpecificSupport": false,
-          "capabilitySpecificContradiction": false,
-          "coAppliedCapabilityIds": [
-            "capability_ctrace_56ff4ac7392ffe4b2659b827",
-            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
-            "capability_ctrace_93e1c99c47d95b840096b89c",
-            "capability_ctrace_108af04a09f08ed3b248209f",
-            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
-          ],
-          "evidence": [
-            "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
-            "actions-run:38278188969",
-            "reservation-id:38278188969:1",
-            "capability-application-sample:70b1084859c5f7bdc8b0"
-          ],
-          "observedAt": null,
-          "rawCodeStored": false,
-          "rawModelOutputStored": false,
-          "hiddenChainOfThoughtStored": false,
-          "authorityExpanded": false
-        },
         {
           "version": 1,
           "applicationId": "capp_81630a6cf14079fcdc766711",
@@ -439505,6 +439437,72 @@
             "actions-run:38281867267",
             "reservation-id:38281867267:1",
             "capability-application-sample:6d95f53766efcc136026"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_8f2e7ec4c4affe820940c59a",
+          "taskId": "internal-motion-karakasa-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:8ba82907fa38db50d0ff"
+          ],
+          "observedAt": null,
+          "rawCodeStored": false,
+          "rawModelOutputStored": false,
+          "hiddenChainOfThoughtStored": false,
+          "authorityExpanded": false
+        },
+        {
+          "version": 1,
+          "applicationId": "capp_32ba2cad8df15fa9d4d18e77",
+          "taskId": "internal-motion-tsuchigumo-walk-v1",
+          "workKey": null,
+          "gameId": "horror-escape-room",
+          "engine": "roblox",
+          "outcome": "TASK_FAILED_UNATTRIBUTED",
+          "selected": false,
+          "finalReviewPass": false,
+          "freshTaskQaPass": false,
+          "independent": true,
+          "capabilitySpecificSupport": false,
+          "capabilitySpecificContradiction": false,
+          "coAppliedCapabilityIds": [
+            "capability_ctrace_56ff4ac7392ffe4b2659b827",
+            "capability_ctrace_5c9eae6cfbf7bacef69a1942",
+            "capability_ctrace_93e1c99c47d95b840096b89c",
+            "capability_ctrace_108af04a09f08ed3b248209f",
+            "capability_ctrace_a048f1c00bb3e0eb48913bf0"
+          ],
+          "evidence": [
+            "base-main:8079d71a3d8ec7b1395d002b9a68bd92904bf6e3",
+            "actions-run:38287856311",
+            "reservation-id:38287856311:1",
+            "capability-application-sample:d714313c58637ed9e3f1"
           ],
           "observedAt": null,
           "rawCodeStored": false,
@@ -605871,7 +605869,11 @@
         "base-main:39dd862da13c6c226644e347c4f02df395db5ce5",
         "actions-run:38265732687",
         "reservation-id:38265732687:1",
-        "coding-trace:ctrace_56ca098ffd548f4b479370db"
+        "coding-trace:ctrace_56ca098ffd548f4b479370db",
+        "base-main:9e2bcd0b0ac6e3fb24fcfe29d6b308ee0ef2304b",
+        "actions-run:38288610722",
+        "reservation-id:38288610722:1",
+        "coding-trace:ctrace_702040ef67219f63b3606cb2"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -605880,8 +605882,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 4,
-      "confidence": 0.8,
+      "confirmations": 5,
+      "confidence": 0.8333,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -606314,7 +606316,11 @@
         "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
         "actions-run:38278188969",
         "reservation-id:38278188969:1",
-        "coding-trace:ctrace_757b17d26e0b6e6c23d78f52"
+        "coding-trace:ctrace_757b17d26e0b6e6c23d78f52",
+        "base-main:9e2bcd0b0ac6e3fb24fcfe29d6b308ee0ef2304b",
+        "actions-run:38288610722",
+        "reservation-id:38288610722:1",
+        "coding-trace:ctrace_844daa24443716c48e39f464"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -606323,8 +606329,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 27,
-      "confidence": 0.9643,
+      "confirmations": 28,
+      "confidence": 0.9655,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
@@ -607152,7 +607158,11 @@
         "base-main:cc9fff5e1d5f9e47a368b3a492e3ae59f42a0253",
         "actions-run:38278188969",
         "reservation-id:38278188969:1",
-        "coding-trace:ctrace_24c50d91a467789314fa6139"
+        "coding-trace:ctrace_24c50d91a467789314fa6139",
+        "base-main:9e2bcd0b0ac6e3fb24fcfe29d6b308ee0ef2304b",
+        "actions-run:38288610722",
+        "reservation-id:38288610722:1",
+        "coding-trace:ctrace_3ece2f6965cf8b04c52efb60"
       ],
       "reusablePatterns": [],
       "avoidPatterns": [
@@ -607161,8 +607171,8 @@
       ],
       "verified": true,
       "reusable": true,
-      "confirmations": 7,
-      "confidence": 0.875,
+      "confirmations": 8,
+      "confidence": 0.8889,
       "capabilityApplications": [],
       "capabilityBenchmarks": [],
       "capabilityPortfolio": {
