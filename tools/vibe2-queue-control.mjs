@@ -145,41 +145,6 @@ export function packVibeQueueStorage(file) {
   return {tasks:tasks.length, active:entries.filter(row=>row.lane==='active').length, history:entries.filter(row=>row.lane==='history').length, indexBytes:Buffer.byteLength(data), maxPartBytes:Math.max(0,...[...parts.values()].map(row=>row.length))};
 }
 
-// 이전 실행의 직렬화 코드는 새 인덱스를 쓸 수 없다. 모든 기존 큐 writer가 새 전송 계약을
-// 사용함을 관찰한 첫 24H 계획에서만 전환한다. 진행 중인 작업을 취소하거나 잠금을 늘리지 않는다.
-export async function canMigrateVibeQueueStorage({repository, token, runId, request=fetch}={}) {
-  const writers = new Set(['vibe2-24h-runner.yml','vibe2-continuous-core.yml','vibe2-candidate-release.yml','vibe2-unity-release-result.yml','vibe2-unity-candidate-result.yml','vibe2-roblox-candidate-result.yml','vibe2-system-evolution-release.yml','vibe2-recovery-fast.yml','unity-web-first-stage-build.yml','company-development-unity-runtime.yml','company-development-roblox-final-review-revalidation.yml','pwa-command-bridge.yml']);
-  if (!/^[\w.-]+\/[\w.-]+$/.test(repository||'') || !token || !runId) return {ready:false, reason:'MISSING_ACTIONS_IDENTITY'};
-  const headers = {Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-  const cache = new Map();
-  try {
-    for (const status of ['requested','waiting','pending','queued','in_progress']) {
-      for (let page=1; page<=10; page++) {
-        const response = await request(`https://api.github.com/repos/${repository}/actions/runs?status=${status}&per_page=100&page=${page}`, {headers,signal:AbortSignal.timeout(15000)});
-        if (!response.ok) throw new Error(`ACTIONS_HTTP_${response.status}`);
-        const payload = await response.json();
-        if (!Array.isArray(payload.workflow_runs) || payload.total_count>1000) throw new Error('ACTIONS_INCOMPLETE');
-        for (const run of payload.workflow_runs) {
-          if (String(run.id)===String(runId) || run.status==='completed') continue;
-          const workflow = String(run.path||'').split('@')[0];
-          if (!workflow) throw new Error('ACTIONS_WORKFLOW_UNKNOWN');
-          if (!writers.has(workflow.split('/').pop())) continue;
-          if (!/^[a-f0-9]{40}$/.test(run.head_sha||'')) throw new Error('ACTIONS_SHA_UNKNOWN');
-          const key = `${run.head_sha}:${workflow}`;
-          if (!cache.has(key)) {
-            const source = await request(`https://api.github.com/repos/${repository}/contents/${workflow}?ref=${run.head_sha}`, {headers:{...headers,Accept:'application/vnd.github.raw+json'},signal:AbortSignal.timeout(15000)});
-            if (!source.ok) throw new Error(`WORKFLOW_HTTP_${source.status}`);
-            cache.set(key,(await source.text()).includes('storage-pack'));
-          }
-          if (!cache.get(key)) return {ready:false, reason:'LEGACY_WRITER_ACTIVE', runId:run.id};
-        }
-        if (payload.workflow_runs.length<100) break;
-        if (page===10) throw new Error('ACTIONS_PAGINATION_LIMIT');
-      }
-    }
-    return {ready:true, reason:'ALL_OBSERVED_QUEUE_WRITERS_COMPATIBLE'};
-  } catch(error) { return {ready:false, reason:String(error.message)}; }
-}
 
 function fixedGamePrimaryRepeatSlots() {
   const policy=readJson(CANONICAL_RESERVATION_POLICY,{});
@@ -1393,15 +1358,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const file = queueFileFrom(storageArgs);
     let enabled=fs.existsSync(path.join(path.dirname(file),'queue','format.json'));
     if (!enabled && storageArgs.command==='storage-migrate') {
-      const migration=await canMigrateVibeQueueStorage({repository:process.env.GITHUB_REPOSITORY,token:process.env.GH_TOKEN,runId:process.env.GITHUB_RUN_ID});
-      console.log('VIBE2_QUEUE_STORAGE_MIGRATION='+JSON.stringify(migration));
-      enabled=migration.ready;
+      // 기존 24H 계획이 즉시 전환한다. 취소 불가능한 오래된 실행을 기다리지 않는다.
+      console.log('VIBE2_QUEUE_STORAGE_MIGRATION='+JSON.stringify({ready:true,reason:'CANONICAL_PLANNER_IMMEDIATE_MIGRATION'}));
+      enabled=true;
     }
     let result;
     if (storageArgs.command==='storage-unpack') result=unpackVibeQueueStorage(file);
     else if (enabled) result=packVibeQueueStorage(file);
     else {
-      // 배포 중인 구버전 writer가 남으면 형식 전환만 보류하고 기존 JSON/한도 보호를 유지한다.
+      // 첫 형식 전환은 기존 24H 계획의 storage-migrate가 담당한다.
       const legacy=JSON.stringify(readVibeQueueStorage(file))+'\n';
       assertVibeQueueBlobSize(Buffer.byteLength(legacy));
       writeQueueAtomic(file,legacy);
