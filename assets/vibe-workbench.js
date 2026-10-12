@@ -133,7 +133,9 @@ function isNewGameDevelopmentRequest(request){
   const existingGameContext=/(?:기존\s*게임|existing\s+game)/i.test(text);
   const negativeNewGamePreservation=/새\s*게임(?:처럼|으로)?[^.\n]{0,96}(?:초기화하지|재생성하지|재구축하지|새로\s*만들지|만들지|바꾸지|하지\s*말|금지)/i.test(text);
   if(existingGameContext&&negativeNewGamePreservation)return false;
-  return has(text,['새 게임','신작','게임 만들어','게임 제작','새 프로젝트','처음부터 만들어','프로토타입 만들어']);
+  // 메뉴의 새 세션 항목은 새 프로젝트 제작 요청이 아니다. 제작 지시의 승인 경계는 유지한다.
+  const creationText=text.replace(/새\s*게임(?=\s*(?:→|버튼|메뉴|항목))/gi,'새 세션');
+  return has(creationText,['새 게임','신작','게임 만들어','게임 제작','새 프로젝트','처음부터 만들어','프로토타입 만들어']);
 }
 function majorCategoryOf(request){
   if(has(request,['장르']))return'genre';
