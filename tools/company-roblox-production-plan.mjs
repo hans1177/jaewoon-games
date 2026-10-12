@@ -560,10 +560,12 @@ export function buildRobloxProductionPlan({gameId='',platform='',design={},sourc
   const libraryReuseContract=interfaceContract?{
     status:'OPTIONAL_MATCH_NOT_APPLIED',firstPartyLibraryCount:interfaceContract.firstPartyLibraryCount,
     candidates:list(interfaceContract.internalLibraryMatches).filter(row=>row.status==='SOURCE_SIGNAL_MATCH_UNVERIFIED'),
-    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false
+    assetLibrarySelection:'EXISTING_CANONICAL_ASSET_LIBRARY_WITH_LICENSE_GATE',automaticImport:false,runtimeVerified:false,
+    applicationRule:'Evaluate the complete currently available internal game library index on every existing-game BUILD_UP without arbitrary candidate-count caps. For every compatible source-matched library within owned responsibilities, reuse its existing binding or implement the needed native integration in the responsible functions. Report exact incompatibility or missing owned source when not applied. Design-only matches remain hints. Never add an unrelated feature just to consume a library; existing working equivalent functionality must not be duplicated.',
+    evidenceRule:'Bind library revision and selected capabilities to actual source consumers and exact-build action/state/visual evidence. Imports, names, configuration, menu presence or match counts alone cannot claim use or quality improvement.'
   }:null;
   return {
-    version:3,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
+    version:4,executionBoundary:'EXISTING_BUILD_UP_ONLY',platform:target,executionSurface:requested,mode,gameId:id,genreProfile,
     conceptIdentity:identity,coreAction:selected?.action||coreLoop[0]||'승인된 핵심 행동',
     ownerFeatureChanges,ownerChangeFingerprint,
     systemConnection:sourceOnly?'현재 실패 원인 → 기존 행동 복구':presentationOnly?'기존 행동 → 상태별 표현/입력 피드백':selected?.connection||coreLoop.join(' → '),
@@ -640,6 +642,7 @@ export function robloxProductionPromptLines(plan,{prefix='',responsibleFiles=[]}
       prefix+'LIBRARY_MATCH='+JSON.stringify({
         firstPartyLibraryCount:plan.libraryReuseContract.firstPartyLibraryCount,
         candidates:libraryCandidates,assetLibrarySelection:plan.libraryReuseContract.assetLibrarySelection,
+        applicationRule:plan.libraryReuseContract.applicationRule,evidenceRule:plan.libraryReuseContract.evidenceRule,
         automaticImport:false,runtimeVerified:false
       }),
       prefix+'LIBRARY_RULE=Consider all currently available first-party game runtime libraries by actual game source evidence. Select only relevant, compatible matches within owned source. Use existing graphics asset registry and license gates. For Unity and Roblox implement platform-native functionality rather than importing Web JS. Never install external packages, force new gameplay, change balance/save/economy, or claim runtime PASS from a match.'
