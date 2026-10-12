@@ -51,7 +51,12 @@ export const CAUSAL_DNA_LIBRARY=Object.freeze([
   {"id":"SCIENCE_ECOLOGY","source":"SCIENCE_ECOLOGY","principle":"환경과 생물 집단은 서로 영향을 주어 자원과 서식 공간을 변화시킨다.","gameGrammar":"한 자원의 이용과 보존 결정이 다른 생물과 공간의 위험 조건을 바꾼다."},
   {"id":"SCIENCE_ASTRONOMY","source":"SCIENCE_ASTRONOMY","principle":"공전과 위치 변화에 따라 관측 가능 시각과 방향이 달라진다.","gameGrammar":"공간과 시간 조건을 읽어 다른 진입 경로와 환경 반응을 선택한다."},
   {"id":"SCIENCE_INVENTION","source":"SCIENCE_ENGINEERING","principle":"같은 도구도 구조와 연결 방식을 바꾸면 새로운 용도로 사용할 수 있다.","gameGrammar":"장치의 배치와 조합에 따라 이전에는 막힌 길의 접근 조건이 변화한다."},
-  {"id":"NARRATIVE_PERSPECTIVE","source":"LITERATURE_NARRATIVE","principle":"관찰자에 따라 같은 사건의 정보와 의미가 다르게 전달될 수 있다.","gameGrammar":"사건을 전달한 인물과 단서를 비교해 조사·교섭 조건을 갱신한다."}
+  {"id":"NARRATIVE_PERSPECTIVE","source":"LITERATURE_NARRATIVE","principle":"관찰자에 따라 같은 사건의 정보와 의미가 다르게 전달될 수 있다.","gameGrammar":"사건을 전달한 인물과 단서를 비교해 조사·교섭 조건을 갱신한다."},
+  {"id":"EAST_ASIAN_CONFUCIAN_RITES","source":"EAST_ASIAN_CONFUCIAN_TRADITION","principle":"예절과 관계 속 책임은 단독 행동뿐 아니라 공동체의 신뢰에도 영향을 준다.","gameGrammar":"약속과 의무를 지킨 결과가 동료 협력과 인물 관계의 접근 조건을 바꾼다."},
+  {"id":"EAST_ASIAN_BUDDHIST_CAUSALITY","source":"EAST_ASIAN_BUDDHIST_TRADITION","principle":"행동과 의도의 결과를 돌이켜 보며 연관된 존재의 고통과 관계를 성찰한다.","gameGrammar":"즉각적인 이득을 얻는 선택과 타인을 돕는 선택이 다른 다음 사건을 만든다."},
+  {"id":"SOUTH_ASIAN_DHARMA_DUTY","source":"SOUTH_ASIAN_PHILOSOPHY_RELIGIOUS_TRADITION","principle":"상황과 역할에서 생겨나는 책무는 서로 충돌하는 가치 사이에 갈등을 만든다.","gameGrammar":"서로 다른 역할의 의무를 고르면 동료의 지원과 목표의 선행 조건이 달라진다."},
+  {"id":"WESTERN_MONASTIC_COMMUNITY","source":"WESTERN_CHRISTIAN_MONASTIC_HISTORY","principle":"공동 규율과 돌봄의 실천은 개인의 자원과 공동체의 시간을 나누도록 요구한다.","gameGrammar":"공동체를 도울 때 자원의 즉시 사용은 줄지만 협력과 피난의 선택지가 달라진다."},
+  {"id":"WEST_ASIAN_COMMUNITY_STEWARDSHIP","source":"WEST_ASIAN_ISLAMIC_CIVILIZATION_HISTORY","principle":"공동체를 위한 신뢰와 나눔의 실천은 관계망과 물자 흐름에 영향을 준다.","gameGrammar":"자원을 혼자 쓰거나 공동으로 기여하는 선택이 지역의 거래·지원 조건을 변화시킨다."}
 ]);
 export const PORTFOLIO_DEPARTMENTS=Object.freeze(['planning','graphics','development','qa','balance']);
 export const SEED_MATERIAL_DYNAMIC_SIGNALS=Object.freeze([
