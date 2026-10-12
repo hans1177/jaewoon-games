@@ -637,13 +637,15 @@ jobs:
               git fetch origin "$COMPANY_RUNTIME_BRANCH"
               git worktree remove -f "$worktree" >/dev/null 2>&1 || true
               rm -rf "$worktree"
-              git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
+              git worktree add --detach --no-checkout "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
+              git -C "$worktree" read-tree HEAD
               mkdir -p "$worktree/$(dirname "$checkpoint_path")"
               cp /tmp/design-checkpoint.json "$worktree/$checkpoint_path"
               if [ -f /tmp/design-progress.json ]; then cp /tmp/design-progress.json "$worktree/$progress_path"; fi
               git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
               git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
-              git -C "$worktree" add -- "$checkpoint_path" "$progress_path"
+              git -C "$worktree" add -- "$checkpoint_path"
+              if [ -f /tmp/design-progress.json ]; then git -C "$worktree" add -- "$progress_path"; fi
               if [ -f /tmp/design-seed.json ]; then
                 cp /tmp/design-seed.json "$worktree/$seed_path"
                 git -C "$worktree" add -- "$seed_path"
@@ -858,7 +860,9 @@ jobs:
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
             rm -rf "$worktree"
-            git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git worktree add --detach --no-checkout "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git -C "$worktree" read-tree HEAD
+            mkdir -p "$(dirname "$worktree/$game_path")"
             git -C "$worktree" config user.name 'jaewoon-minimum-design'
             git -C "$worktree" config user.email 'minimum-design@users.noreply.github.com'
             git -C "$worktree" checkout "$GITHUB_SHA" -- "$game_path" 2>/dev/null || cp -R "$game_path" "$(dirname "$worktree/$game_path")/"
@@ -941,11 +945,13 @@ jobs:
             git worktree remove --force "$runtime_worktree" 2>/dev/null || true
             rm -rf "$runtime_worktree"
             git worktree prune
-            git worktree add --detach "$runtime_worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git worktree add --detach --no-checkout "$runtime_worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git -C "$runtime_worktree" read-tree HEAD
             git -C "$runtime_worktree" config user.name 'jaewoon-seed-design'
             git -C "$runtime_worktree" config user.email 'seed-design@users.noreply.github.com'
             git -C "$runtime_worktree" checkout "$generated_commit" -- "$game_path"
             if [ "$seed_changed" = 1 ]; then
+              git -C "$runtime_worktree" show HEAD:game-seed-state.json > "$runtime_worktree/game-seed-state.json"
               TARGET_GAME_ID="${{ matrix.target.game_id }}" \
               CANDIDATE_SEED_STATE="/tmp/seed-design-candidate-${{ matrix.target.game_id }}.json" \
               RUNTIME_SEED_STATE="$runtime_worktree/game-seed-state.json" \
