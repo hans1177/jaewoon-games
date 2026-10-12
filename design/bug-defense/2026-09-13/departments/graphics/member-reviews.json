@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game_seed_platform_profiles.json"
+          "game_seed_generation"
         ],
         "fix": [
-          "game_seed_market_evidence.json"
+          "game_seed_generation"
         ],
         "add": [
-          "game_seed_market_evidence.json"
+          "game_seed_style"
         ],
         "risks": [
-          "data_consistency"
+          "game_seed_risk"
         ],
         "evidence": [
-          "game_seed_market_evidence.json"
+          "game_seed_evidence"
         ],
         "questions": [
-          "design_strategy_clarity"
+          "game_seed_question"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game-seed"
+          "gameId"
         ],
         "fix": [
-          "game-seed"
+          "gameId"
         ],
         "add": [
-          "game-seed"
+          "gameId"
         ],
         "risks": [
-          "game-seed"
+          "gameId"
         ],
         "evidence": [
-          "game-seed"
+          "gameId"
         ],
         "questions": [
-          "game-seed"
+          "gameId"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "graphics"
+          "playerFantasy"
         ],
         "fix": [
-          "graphics"
+          "coreFun"
         ],
         "add": [
-          "graphics"
+          "signatureSystems"
         ],
         "risks": [
-          "graphics"
+          "validationQuestions"
         ],
         "evidence": [
-          "graphics"
+          "MARKET_EVIDENCE_SUMMARY"
         ],
         "questions": [
-          "graphics"
+          "progressionDirection"
         ]
       }
     }
