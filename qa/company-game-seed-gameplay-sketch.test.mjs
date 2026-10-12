@@ -614,10 +614,17 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
 
 test('cozy fresh design reuses only the verified old seed A gameplay system, not genre, themes or MAIN',()=>{
   const base={requestId:'cozy-island',category:'CASUAL',platform:'ROBLOX',
-    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'OWNER-COZY-A-SYSTEM-ONLY-20261012-4',materials:[]};
-  const aOnly={scope:'A_SYSTEM_ONLY',systemFamily:'직접 채집과 주민 작업 배분',
-    playerChoice:'직접 자원을 채집하거나 주민에게 맡길 작업의 대상과 우선순위를 선택',
-    source:'game-catalog.json#cozy-island.description'};
+    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'OWNER-COZY-A-SEED-AUTO-20261012-5',materials:[]};
+  // Producer is owner-design-reset: its source selection is independently tested using an actual old-seed fixture.
+  // The composer only receives the extracted gameplay system, never the source design or owner-written choice.
+  const sourceDesign={gameId:'cozy-island',content:{signatureSystems:[
+    {name:'원본 첫 핵심 게임플레이',purpose:'원본 월드에서 플레이어가 대상과 상호작용해 기본 자원을 획득한다.'},
+    {name:'예전 후속 역할',purpose:'다음 역할을 A 입력으로 사용하거나 복제하지 않는다.'}
+  ]}};
+  const aOnly={scope:'A_SYSTEM_ONLY',
+    systemFamily:sourceDesign.content.signatureSystems[0].name,
+    playerChoice:sourceDesign.content.signatureSystems[0].purpose,
+    source:'design/cozy-island/2026-09-22/design-revised.json'};
   const without=computeVibeSeedProposal(base);
   const fresh=computeVibeSeedProposal({...base,aSystemReference:aOnly});
   const legacyPoison=computeVibeSeedProposal({...base,aSystemReference:aOnly,
@@ -629,12 +636,17 @@ test('cozy fresh design reuses only the verified old seed A gameplay system, not
   const fusion=fresh.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
   const control=without.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
   assert.equal(fusion.majorAxes[0].systemFamily,aOnly.systemFamily);
-  assert.match(fusion.majorAxes[0].playerChoice,/직접 자원을 채집하거나 주민에게 맡길 작업/);
+  assert.equal(fusion.majorAxes[0].playerChoice.includes(aOnly.playerChoice),true);
   assert.notEqual(fusion.majorAxes[1].systemFamily,aOnly.systemFamily);
   assert.deepEqual(fusion.majorAxes[1],control.majorAxes[1],
     'B gameplay family and independently selected B creative material cannot inherit the old system');
-  assert.deepEqual(fusion.themeFusion,control.themeFusion,
-    'C creative sources and primary/secondary genres cannot inherit the old system');
+  assert.deepEqual(fusion.themeFusion.themes,control.themeFusion.themes,
+    'C creative source selection cannot inherit the old gameplay system');
+  assert.deepEqual(fusion.themeFusion.genres.map(row=>({role:row.role,name:row.name})),
+    control.themeFusion.genres.map(row=>({role:row.role,name:row.name})),
+    'C primary and secondary genre identities must be selected independently of the old gameplay system');
+  assert.notEqual(fusion.themeFusion.abGameplayEffect,control.themeFusion.abGameplayEffect,
+    'C must rebind its actual effects to the A/B causal chain after the A gameplay system is resolved');
   assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.causalDNAs,
     without.gameplaySketch.novelGameGrammar.causalDNAs);
   assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3),
