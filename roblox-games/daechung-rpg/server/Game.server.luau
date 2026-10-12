@@ -169,28 +169,50 @@ local function chooseMesh(assetId,keywords,seed)
    for _,k in ipairs(keywords)do if string.find(low,string.lower(k),1,true)then table.insert(preferred,d);break end end
   end
  end
- local pool=#preferred>0 and preferred or all;if #pool==0 then return nil end
+ local pool=#keywords>0 and preferred or all;if #pool==0 then return nil end
  return pool[((seed or 1)-1)%#pool+1]
 end
 local function assetProp(parent,assetId,keywords,pos,scale,seed,collide)
- local t=chooseMesh(assetId,keywords,seed);if not t then return nil end
- local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false;x.Size=x.Size*(scale or 1)
- x.CFrame=CFrame.new(pos)*CFrame.Angles(0,math.rad(((seed or 1)*41)%360),0);x.Parent=parent;return x
+ local t=chooseMesh(assetId,keywords,seed)
+ if not t then parent:SetAttribute("NativePropMissing_"..tostring(assetId),true);return nil end
+ local x=t:Clone();x.Name="AssetProp_"..t.Name;x.Anchored=true;x.CanCollide=collide==true;x.CanTouch=false;x.CanQuery=collide==true;x.Size=x.Size*(scale or 1)
+ x.CFrame=CFrame.new(pos+Vector3.new(0,x.Size.Y/2,0))*CFrame.Angles(0,math.rad(((seed or 1)*41)%360),0)
+ x:SetAttribute("SourceAssetId",tostring(assetId));x:SetAttribute("RuntimeVisualReview","PENDING")
+ x.Parent=parent;return x
 end
-local function wholeAsset(parent,assetId,pos,scale,name,yaw)
- local t=loadAsset(assetId);if not t then return nil end
- local x=t:Clone();x.Name=name or("AssetModel_"..assetId);stripAsset(x);x.Parent=parent
- pcall(function()x:ScaleTo(scale or 1)end);pcall(function()x:PivotTo(CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0))end);return x
+-- 원본 보존: 네이티브 복제본만 회전·축척·접지하고 불완전한 배치는 실패로 남긴다.
+local function wholeAsset(parent,assetId,pos,scale,name,yaw,targetWidth)
+ local t=loadAsset(assetId);if not t then parent:SetAttribute("NativeAssetMissing_"..tostring(assetId),true);return nil end
+ local x=t:Clone();x.Name=name or("AssetModel_"..assetId);stripAsset(x)
+ local ok=pcall(function()
+  local _,originalSize=x:GetBoundingBox()
+  if originalSize.X<=0 or originalSize.Y<=0 or originalSize.Z<=0 then error("EMPTY_NATIVE_MODEL")end
+  local factor=scale or 1
+  if targetWidth then factor=targetWidth/math.max(originalSize.X,originalSize.Z)end
+  x:ScaleTo(x:GetScale()*factor)
+  x:PivotTo(CFrame.new(pos)*CFrame.Angles(0,math.rad(yaw or 0),0))
+  local bounds,size=x:GetBoundingBox()
+  if math.max(size.X,size.Y,size.Z)>300 then error("NATIVE_MODEL_SCALE_OUT_OF_BUDGET")end
+  -- 원본 피벗이 중앙/바닥 중 어디든 바운딩 박스 바닥을 승인된 표면 높이에 맞춘다.
+  local offset=Vector3.new(pos.X-bounds.Position.X,pos.Y-(bounds.Position.Y-size.Y/2),pos.Z-bounds.Position.Z)
+  x:PivotTo(x:GetPivot()+offset)
+  for _,part in ipairs(x:GetDescendants())do
+   if part:IsA("BasePart")then part.CanCollide=false;part.CanTouch=false;part.CanQuery=false end
+  end
+ end)
+ if not ok then x:Destroy();parent:SetAttribute("NativeAssetMissing_"..tostring(assetId),true);return nil end
+ x:SetAttribute("SourceAssetId",tostring(assetId));x:SetAttribute("RuntimeVisualReview","PENDING")
+ x.Parent=parent;return x
 end
 local function decorateVillageAssets(parent)
  task.spawn(function()
   for i=1,24 do
    local a=i/24*math.pi*2;local r=94+(i%3)*18
-   assetProp(parent,ASSETS.Nature,{"tree","bush","flower","rock","log"},Vector3.new(math.cos(a)*r,2,math.sin(a)*r),.65+(i%4)*.08,i,false)
+   assetProp(parent,ASSETS.Nature,i%3==0 and {"bush","flower"}or{"tree"},Vector3.new(math.cos(a)*r,1,math.sin(a)*r),.65+(i%4)*.08,i,false)
   end
   for i=1,12 do
    local a=i/12*math.pi*2
-   assetProp(parent,ASSETS.City,{"bench","lamp","fence","trash","sign","table"},Vector3.new(math.cos(a)*58,2,math.sin(a)*58),.65,i,false)
+   assetProp(parent,ASSETS.City,{"bench"},Vector3.new(i%2==0 and -52 or 52,1.65,-42+math.floor((i-1)/2)*14),.65,i,false)
   end
  end)
 end
@@ -688,14 +710,7 @@ end
 
 local function fantasyHouse(parent,index,pos,yaw)
  local assetId=index%2==0 and ASSETS.MedievalHouseA or ASSETS.MedievalHouseB
- local model=wholeAsset(parent,assetId,pos,.42,"MedievalVillageHouse"..index,yaw)
- if model then return model end
- local body=ppart(parent,"VillageHouse",Vector3.new(20,11,17),pos+Vector3.new(0,5,0),Color3.fromRGB(145,108,76),Enum.Material.WoodPlanks)
- ppart(parent,"VillageRoof",Vector3.new(23,2,20),body.Position+Vector3.new(0,6.5,0),index%3==0 and Color3.fromRGB(103,62,55)or Color3.fromRGB(78,68,73),Enum.Material.Slate)
- ppart(parent,"HouseDoor",Vector3.new(4,7,.6),body.Position+Vector3.new(0,-1,-8.7),Color3.fromRGB(83,59,44),Enum.Material.Wood)
- local window=ppart(parent,"HouseWindow",Vector3.new(4,3,.35),body.Position+Vector3.new(6,1,-8.9),Color3.fromRGB(128,191,209),Enum.Material.Glass);window.Transparency=.22
- ppart(parent,"HouseChimney",Vector3.new(2.2,5,2.2),body.Position+Vector3.new(-6,8,3),Color3.fromRGB(91,78,72),Enum.Material.Brick)
- return body
+ return wholeAsset(parent,assetId,pos,1,"MedievalVillageHouse"..index,yaw,26)
 end
 local function trialInstruction(classId)
  if classId=="BREAKER"then return"파쇄기사 시험 · 스킬 공격 5회 적중"
@@ -771,9 +786,10 @@ local function makeVillage()
  ppart(f,"VillageGround",Vector3.new(300,2,300),Vector3.new(0,0,0),Color3.fromRGB(93,141,85),Enum.Material.Grass)
  ppart(f,"VillagePlaza",Vector3.new(96,2.3,96),Vector3.new(0,1.2,0),Color3.fromRGB(128,122,111),Enum.Material.Cobblestone)
  for _,z in ipairs({-112,-84,-56,56,84,112})do ppart(f,"MainRoad",Vector3.new(16,1,36),Vector3.new(0,1.15,z),Color3.fromRGB(119,105,88),Enum.Material.Cobblestone)end
- for i=1,12 do local a=i/12*math.pi*2;tree(f,Vector3.new(math.cos(a)*126,1,math.sin(a)*126),.9+(i%3)*.08)end
+ -- 로비 중심·포탈 진입로는 비우고 기존 네이티브 식생 원본을 외곽에 배치한다.
  for i=1,10 do
-  local a=i/10*math.pi*2;local pos=Vector3.new(math.cos(a)*82,1,math.sin(a)*82);fantasyHouse(f,i,pos,math.deg(-a)+90)
+  local side=i<=5 and -1 or 1;local row=(i-1)%5
+  fantasyHouse(f,i,Vector3.new(side*82,1,-56+row*28),side<0 and -90 or 90)
  end
  -- Functional buildings read clearly from the plaza instead of looking like ten identical houses.
  for _,entry in ipairs({
@@ -789,12 +805,13 @@ local function makeVillage()
   local light=ppart(f,"VillageLampGlow",Vector3.new(2,2,2),pole.Position+Vector3.new(0,4,0),Color3.fromRGB(245,202,116),Enum.Material.Neon);light.CanCollide=false
   local pl=Instance.new("PointLight");pl.Color=light.Color;pl.Range=20;pl.Brightness=.75;pl.Parent=light
  end
- for i=1,4 do
-  local stall=ppart(f,"MarketStall",Vector3.new(12,5,7),Vector3.new(-30+i*20,3.5,38),Color3.fromRGB(126,88,61),Enum.Material.WoodPlanks)
-  ppart(f,"MarketAwning",Vector3.new(14,.6,9),stall.Position+Vector3.new(0,3.2,0),i%2==0 and Color3.fromRGB(164,74,67)or Color3.fromRGB(197,157,82),Enum.Material.Fabric)
- end
+ -- 상자형 시장·중앙 분수 대신 기존 자산의 실제 소품을 광장 가장자리에 배치한다.
  decorateVillageAssets(f)
- local fountain=ppart(f,"Fountain",Vector3.new(14,3,14),Vector3.new(0,3,0),Color3.fromRGB(90,112,124),Enum.Material.Slate);label(fountain,"마을 광장",Color3.fromRGB(255,232,168),28)
+ for i=1,4 do
+  assetProp(f,ASSETS.City,{"market","stall","cart"},Vector3.new(-30+i*20,2.35,38),.65,i,false)
+ end
+ f:SetAttribute("LobbyVisualRevision","NATIVE_VILLAGE_OPEN_PLAZA_V1")
+ f:SetAttribute("LobbyRuntimeVisualReview","PENDING")
 
  local chief=humanoidFigure(f,"VillageChief",Vector3.new(-18,6,10),Color3.fromRGB(142,98,68),Color3.fromRGB(80,67,54),1);label(chief,"이장",Color3.fromRGB(255,221,145),28)
  prompt(chief,"마을 이장","퀘스트 받기","QUEST_NPC","VillageChief").Triggered:Connect(function(p)

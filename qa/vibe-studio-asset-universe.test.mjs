@@ -5624,3 +5624,35 @@ test('company catalog revision only claims synchronized common packs and retains
     assert.ok(Number(maintenance.assetCount||0)<=packs.length,'unrefreshed maintenance cannot invent current asset count');
   }
 });
+
+
+test('existing Roblox native importer preserves common masters, deduplicates conversion and isolates invalid hashes',async()=>{
+ const document={accessors:[{type:'VEC3',count:3},{type:'VEC3',count:3}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1}}]}]};
+ const json=Buffer.from(JSON.stringify(document).padEnd(Math.ceil(JSON.stringify(document).length/4)*4,' '));
+ const bytes=Buffer.alloc(20+json.length);bytes.write('glTF');bytes.writeUInt32LE(2,4);bytes.writeUInt32LE(bytes.length,8);bytes.writeUInt32LE(json.length,12);bytes.writeUInt32LE(0x4e4f534a,16);json.copy(bytes,20);
+ const hash=createHash('sha256').update(bytes).digest('hex');
+ const source='assets/roblox/world-ghosts/native/mesh/bride.glb';
+ const registryPath='company-asset-library.json';
+ const registry={assets:[
+  {id:'shared-a',companyCommonBase:true,license:'CC0-1.0',path:'assets/shared/a.glb',sourceHash:hash,productionVerified:false},
+  {id:'shared-b',companyCommonBase:true,license:'CC0-1.0',path:'assets/shared/b.glb',sourceHash:hash,productionVerified:false},
+  {id:'bad-hash',companyCommonBase:true,license:'CC0-1.0',path:'assets/shared/bad.glb',sourceHash:'0'.repeat(64)},
+  {id:'no-rights',companyCommonBase:true,license:'unknown',path:'assets/shared/no.glb',sourceHash:hash},
+ ]};
+ const files=new Map([[source,bytes],[registryPath,JSON.stringify(registry)],['assets/shared/a.glb',bytes],['assets/shared/b.glb',bytes],['assets/shared/bad.glb',bytes]]);
+ const writes=[];let uploads=0;const permissions=[];
+ const mockFs={existsSync:p=>files.has(p),readFileSync:(p,encoding)=>{assert.ok(files.has(p),p);const value=files.get(p);return encoding?String(value):value;},writeFileSync:(p,value)=>{writes.push(p);files.set(p,value);}};
+ const processMock={env:{ROBLOX_OPEN_CLOUD_API_KEY:'test-only',GITHUB_SHA:'exact-test-revision'},argv:['node','tool','--include-shared-models']};
+ const script=fs.readFileSync(new URL('../tools/horror-combat-assets.mjs',import.meta.url),'utf8').replace(/^import .*;\n/gm,'');
+ await vm.runInNewContext('(async()=>{'+script+'})()', {fs:mockFs,crypto:{createHash},process:processMock,Buffer,FormData,Blob,AbortSignal,setTimeout,console:{log(){},error(){}},
+  introspectRobloxApiKey:async()=>({scopes:[{name:'asset:write',operations:['write'],userIds:['1'],groupIds:[]}]}),
+  fetch:async(url,options)=>{if(url.endsWith('/assets/v1/assets')){uploads++;return {ok:true,json:async()=>({path:'operations/test-import',done:true,response:{assetId:'12345'}})};}
+   assert.ok(url.includes('/assets/permissions'));permissions.push(JSON.parse(options.body));return {ok:true,json:async()=>({errors:[]})};}
+ });
+ const result=JSON.parse(files.get(registryPath));
+ // Identical originals share the same native registration, including the existing combat donor.
+ assert.equal(uploads,1);assert.equal(processMock.exitCode,1);
+ for(const asset of result.assets.slice(0,2)){assert.equal(asset.robloxAssetId,'12345');assert.equal(asset.platformVariants.ROBLOX.sha256,hash);assert.equal(asset.productionVerified,false);assert.equal(asset.runtimeVerificationState,'NATIVE_IMPORT_PASS_RUNTIME_REVIEW_PENDING');}
+ assert.equal(result.assets[2].robloxAssetId,undefined);assert.equal(result.assets[3].robloxAssetId,undefined);
+ assert.ok(writes.every(p=>!p.endsWith('.glb')));assert.equal(permissions.length,7);
+});
