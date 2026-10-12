@@ -805,11 +805,14 @@ export function computeVibeSeedProposal(target){
   const named=row=>materialNames[row.id]||row.id.replaceAll('_',' ');
   const aMaterial=named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
   const distinct=chosen[0].id!==chosen[1].id&&cMaterial1!==cMaterial2;
+  // 정식 소재는 모두 보존하고 표시용 세계·발견 명칭만 소재의 핵심 명사로 압축한다.
+  const materialKeyword=material=>material.includes('의 ')?material.slice(material.lastIndexOf('의 ')+2):material;
+  const [aKeyword,bKeyword,cKeyword1,cKeyword2]=[aMaterial,bMaterial,cMaterial1,cMaterial2].map(materialKeyword);
   if(!distinct)throw new Error('VIBE_NATIVE_DESIGN_DISTINCT_CAUSAL_SOURCES_REQUIRED');
   const creativeIds=chosen.map(row=>row.id).join('|');
   const secondary=/COMEDIC|CARNIVAL|ABSURD/.test(creativeIds)?'코믹':/TABOO/.test(creativeIds)?'호러':/TESTIMONY/.test(creativeIds)?'미스터리':'추리';
   const secondaryGenre=freeTopicMode?partner.genre:(secondary===profile.genre?'사회극':secondary);
-  const gameName=requestedName||(freeTopicMode?`${aMaterial}·${bMaterial}: ${profile.genre}·${secondaryGenre} 경계`:`${aMaterial}의 ${profile.genre} 세계`);
+  const gameName=requestedName||(freeTopicMode?`${aKeyword}·${bKeyword}: ${profile.genre}·${secondaryGenre}`:`${aMaterial}의 ${profile.genre} 세계`);
   const identity=freeTopicMode?`${gameName}. 플레이어는 ${profile.playerRole} 역할로 A(${profile.a})의 결과를 B(${profile.b})에 연결하고 ${aMaterial}·${bMaterial}의 인과 규칙을 바꾸며 ${profile.genre}·${secondaryGenre} 목표를 해결한다.`:`${gameName}에서 ${profile.playerRole}가 ${profile.a}와 ${profile.b}의 선택을 통해 ${aMaterial}·${bMaterial}의 인과법칙을 바꾸는 ${profile.genre} 복합 게임`;
   const chooseA=freeTopicMode
     ?`행동: ${profile.choiceA}한다. 선택: 새 ResourceState를 얻기 위해 위험을 감수할지, 현재 RouteState로 안전하게 되돌아갈지 결정한다.`
@@ -841,9 +844,9 @@ export function computeVibeSeedProposal(target){
   ];
   // @는 주제별로 이름·조건·발견·실제 선택 변화가 달라지며 MAIN/A/B/C 두 항목 이상을 연결한다.
   const delveConditions=freeTopicMode?[
-    {name:`${aMaterial}의 경로 해독`,condition:`A의 RouteState로 진입해 RiskState·ResourceState가 바뀐 이유를 확인하고 B의 대응을 시험한다.`,insight:`${first.principle} 원리를 A의 선택과 B의 결과를 비교해 발견한다.`,effect:`B에서 비용이 다른 대응을 선택한 뒤 WorldAccessState에 새 접근 조건을 반영한다. 실패하면 원래 RouteState를 유지한다.`,links:['A','B','C']},
-    {name:`${bMaterial}의 귀환 흔적`,condition:`B가 RouteState·RiskState를 갱신한 뒤 A의 이전 진입 장소를 다시 방문해 차이를 확인한다.`,insight:`${second.principle} 원리 때문에 같은 A 행동도 재방문에서는 다른 조건으로 판정됨을 발견한다.`,effect:`다음 A에서 위험을 낮추는 우회 RouteState 또는 정보 회복을 선택한다. 재방문 전에는 해금하지 않는다.`,links:['MAIN','A','B']},
-    {name:`${cMaterial1}·${cMaterial2}의 이중 단서`,condition:`C의 두 소재가 각각 A의 RiskState와 B의 ResourceState를 바꾸는 사례를 관찰한 뒤 순서를 비교한다.`,insight:`${third.principle} / ${fourth.principle} 두 원리가 결합될 때 ${secondaryGenre}의 해석이 다음 행동 허용 여부를 바꾼다.`,effect:`단서 해석을 선택해 IntentState를 갱신하고 B의 다른 대응을 연다. 조건 미달이면 기존 행동을 유지한다.`,links:['B','C','MAIN']},
+    {name:`${aKeyword}의 경로 해독`,condition:`A의 RouteState로 진입해 RiskState·ResourceState가 바뀐 이유를 확인하고 B의 대응을 시험한다.`,insight:`${first.principle} 원리를 A의 선택과 B의 결과를 비교해 발견한다.`,effect:`B에서 비용이 다른 대응을 선택한 뒤 WorldAccessState에 새 접근 조건을 반영한다. 실패하면 원래 RouteState를 유지한다.`,links:['A','B','C']},
+    {name:`${bKeyword}의 귀환 흔적`,condition:`B가 RouteState·RiskState를 갱신한 뒤 A의 이전 진입 장소를 다시 방문해 차이를 확인한다.`,insight:`${second.principle} 원리 때문에 같은 A 행동도 재방문에서는 다른 조건으로 판정됨을 발견한다.`,effect:`다음 A에서 위험을 낮추는 우회 RouteState 또는 정보 회복을 선택한다. 재방문 전에는 해금하지 않는다.`,links:['MAIN','A','B']},
+    {name:`${cKeyword1}·${cKeyword2}의 이중 단서`,condition:`C의 두 소재가 각각 A의 RiskState와 B의 ResourceState를 바꾸는 사례를 관찰한 뒤 순서를 비교한다.`,insight:`${third.principle} / ${fourth.principle} 두 원리가 결합될 때 ${secondaryGenre}의 해석이 다음 행동 허용 여부를 바꾼다.`,effect:`단서 해석을 선택해 IntentState를 갱신하고 B의 다른 대응을 연다. 조건 미달이면 기존 행동을 유지한다.`,links:['B','C','MAIN']},
     {name:`${profile.a}·${profile.b}의 역전`,condition:`A의 위험 선택을 바꾼 두 결과에 동일한 B 대응을 적용해 RouteState·RiskState를 비교한다.`,insight:`${aMaterial}의 불리한 결과가 ${bMaterial}의 다른 조건에서는 유리해지는 실제 인과를 발견한다.`,effect:`A로 재진입할 때 WorldAccessState에 반대 경로를 기록해 다른 해결을 선택한다. 실패한 시도는 기존 상태를 보존한다.`,links:['A','B','MAIN']}
   ]:[
     {name:'금기와 기회의 교차',condition:`${aMaterial}의 제약과 ${bMaterial}의 대응을 같은 지역에서 순서대로 시험한다.`,insight:`${first.principle} 상황을 ${second.gameGrammar} 방식으로 해석한다.`,effect:`${profile.a}에서 평소에는 불가능했던 대안 경로와 선택을 연다.`,links:['A','B','C']},
