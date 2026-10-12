@@ -823,6 +823,31 @@ export function computeVibeSeedProposal(target){
     EXILE_RETURN:'서사시의 추방과 귀환',MARTYRDOM_MOVEMENT:'순교와 집단 결속',PILGRIMAGE_TRANSFORMATION:'순례와 인물 변화',
     FORTUNE_REVERSAL:'비극과 희극의 운명 반전',ABSURD_BUREAUCRACY:'풍자 속 관료제',NAME_AND_REPUTATION_POWER:'영웅서사의 이름과 평판'
   };
+  // 자유주제에서만 사용하는 열린 창작 소재 후보. 기존 일반 시드와 저장된 소재 풀은 변경하지 않는다.
+  const freeCreativeSources=freeTopicMode?[
+    {id:"SCIENCE_GRAVITY",label:"물리학·궤도 역학",source:"SCIENCE_PHYSICS_GRAVITY",principle:"중력과 거리의 차이가 같은 힘에서도 이동 경로를 다르게 만든다.",gameGrammar:"위치와 거리 조건에 따라 접근 가능한 경로와 위험이 달라진다."},
+    {id:"SCIENCE_ECOLOGY",label:"생태학·상호의존",source:"SCIENCE_ECOLOGY_RELATIONS",principle:"생물과 환경은 서로 영향을 주어 하나의 변화가 다른 관계를 흔든다.",gameGrammar:"한 자원의 사용이 다른 생물의 행동과 자원 경로도 바꾼다."},
+    {id:"SCIENCE_INFORMATION",label:"정보과학·전달 지연",source:"SCIENCE_INFORMATION_THEORY",principle:"정보는 전달 시점과 신뢰도에 따라 서로 다른 결정을 낳는다.",gameGrammar:"단서 수신 순서에 따라 협력 가능 여부와 대응 경로가 달라진다."},
+    {id:"SCIENCE_CHEMISTRY",label:"화학·촉매 작용",source:"SCIENCE_CHEMISTRY_CATALYSIS",principle:"촉매의 존재가 같은 물질의 반응 경로와 조건을 바꿀 수 있다.",gameGrammar:"가상의 제작 규칙에서 보조 재료가 조합 순서와 장치 동작을 바꾼다."},
+    {id:"SCIENCE_EVOLUTION",label:"진화생물학·적응",source:"SCIENCE_EVOLUTION_ADAPTATION",principle:"환경 압력에 따른 생존 방식의 차이가 다음 세대의 특성을 바꾼다.",gameGrammar:"반복되는 행동에 적이 적응해 다음 탐색과 대응의 조건이 변한다."},
+    {id:"SCIENCE_TIME",label:"물리학·상대 시간",source:"SCIENCE_RELATIVITY_TIME",principle:"관찰 위치와 상대 운동이 시간·사건 순서를 이해하는 조건이 된다.",gameGrammar:"가상의 세계에서 관찰 경로별 사건 단서와 판정 시점을 다르게 만든다."},
+    {id:"HISTORY_TECHNOLOGY",label:"산업사·발명 확산",source:"HISTORY_TECHNOLOGY_CHANGE",principle:"새 도구의 보급은 생산 방식뿐 아니라 노동과 교류 관계도 바꾼다.",gameGrammar:"장치의 새로운 쓰임을 발견하면 제작·거래·이동 경로가 함께 변한다."},
+    {id:"HISTORY_TRADE",label:"교역사·항로 개척",source:"HISTORY_TRADE_EXCHANGE",principle:"교역로는 물자의 흐름과 함께 정보와 협력 관계를 새로 만든다.",gameGrammar:"교역 통로를 열면 자원 교환과 인물 관계가 함께 변한다."},
+    {id:"HISTORICAL_JANG",label:"장영실의 관측과 발명",source:"HISTORICAL_PERSON_JANG_YEONG_SIL",principle:"관측과 발명으로 새로운 도구의 쓰임과 측정 방식을 찾는다.",gameGrammar:"관찰 기록을 바탕으로 장치 사용 방법과 경로의 접근 조건을 바꾼다."},
+    {id:"HISTORICAL_ADA",label:"에이다 러브레이스의 알고리즘적 상상",source:"HISTORICAL_PERSON_ADA_LOVELACE",principle:"추상적 절차를 조합하면 같은 기계도 다른 문제를 풀 수 있다.",gameGrammar:"행동 순서와 계산 규칙의 조합이 자동화의 결과와 목표를 바꾼다."},
+    {id:"HISTORICAL_EXPLORER",label:"역사적 탐험가의 기록",source:"HISTORICAL_EXPLORER_RECORDS",principle:"새로 발견한 장소의 기록은 과거에 그린 지도의 의미도 바꾼다.",gameGrammar:"관측 단서를 반영하면 이미 방문한 장소에서 새 경로가 나타난다."},
+    {id:"NARRATIVE_UNRELIABLE",label:"서사·믿을 수 없는 화자",source:"NARRATIVE_UNRELIABLE_NARRATOR",principle:"서술자의 제한된 관점은 동일 사건의 의미와 책임을 달리 전달한다.",gameGrammar:"설명자의 신뢰도를 판별해 조사 순서와 대화 선택 조건을 바꾼다."},
+    {id:"NARRATIVE_BRANCH",label:"서사·분기와 결과",source:"NARRATIVE_BRANCH_CAUSALITY",principle:"작은 결정이 뒤따르는 사건의 참여자와 원인·결말을 바꾼다.",gameGrammar:"앞서 선택한 사건이 다음 장소와 등장인물의 행동 가능 조건을 바꾼다."},
+    {id:"NARRATIVE_FORESHADOW",label:"문학·복선과 회수",source:"LITERATURE_FORESHADOW_PAYOFF",principle:"초반의 징후는 나중 사건에서 다른 의미와 원인으로 되돌아온다.",gameGrammar:"이전에 확인한 단서로 후반 위험의 전조와 다른 대응을 해금한다."},
+    {id:"PHILOSOPHY_ETHICS",label:"윤리철학·책임의 딜레마",source:"PHILOSOPHY_ETHICS_DILEMMA",principle:"하나의 이익을 선택하면 다른 가치의 책임과 기회비용이 발생한다.",gameGrammar:"어떤 가치를 우선했는지에 따라 NPC 반응과 행동 조건을 바꾼다."},
+    {id:"PHILOSOPHY_IDENTITY",label:"존재철학·변화하는 정체성",source:"PHILOSOPHY_EXISTENTIAL_IDENTITY",principle:"변화 이후에도 무엇이 같은 존재인지에 관한 판단이 달라질 수 있다.",gameGrammar:"도구와 관계를 바꾸어도 유지할 자격과 권한의 범위를 선택하게 한다."},
+    {id:"ART_PERSPECTIVE",label:"미술·원근과 시점",source:"ART_PERSPECTIVE_PERCEPTION",principle:"관찰 위치에 따라 같은 공간의 형태와 숨은 단서를 다르게 인식한다.",gameGrammar:"보는 각도를 바꾸면 공간 퍼즐의 통로와 선택지가 달라진다."},
+    {id:"MUSIC_RHYTHM",label:"음악·리듬과 합주",source:"MUSIC_RHYTHM_HARMONY",principle:"서로 다른 박자의 조합은 새로운 리듬과 긴장·해소를 만든다.",gameGrammar:"소리의 입력 순서와 박자가 장치·NPC의 반응 시점을 바꾼다."},
+    {id:"NATURE_TIDE",label:"자연과학·조석 변화",source:"NATURE_TIDES_CYCLE",principle:"주기적인 수면 변화는 같은 공간의 접근성과 이동 조건을 바꾼다.",gameGrammar:"물높이의 주기에 맞춰 통행 시간과 자원 위치를 다시 선택한다."},
+    {id:"NATURE_SEASONS",label:"자연·계절과 생태 순환",source:"NATURE_SEASONAL_ECOLOGY",principle:"계절의 변화는 생물의 이동과 자원 이용 관계를 바꾼다.",gameGrammar:"계절의 징후를 읽고 채집 경로와 위협 대응을 바꾼다."},
+    {id:"SOCIAL_TRUST",label:"사회학·집단 신뢰",source:"SOCIAL_TRUST_COOPERATION",principle:"공동체의 신뢰는 반복된 약속의 이행과 배신에 따라 달라진다.",gameGrammar:"협력의 실제 결과가 동료 모집과 공동 임무의 조건을 바꾼다."},
+    {id:"CULTURE_TRANSLATION",label:"문화·언어와 번역",source:"CULTURE_LANGUAGE_CONTEXT",principle:"같은 표현도 문화적 맥락이 달라지면 의미와 반응이 달라질 수 있다.",gameGrammar:"언어 단서를 해석하면 거래·동맹·임무의 접근 조건이 달라진다."}
+  ]:[];
   // 명시된 소재는 최우선이며, 부족한 창작 소재만 게임별 인과 맥락으로 보충한다.
   // 오픈소스·사내 모듈은 원리 참고에 한정하고 외부 모델 호출은 없다.
   const explicitIds=uniq((freeTopicMode?[]:(target.materials||[])).flatMap(row=>row.causalDNA||[]))
@@ -855,19 +880,20 @@ export function computeVibeSeedProposal(target){
   const hash=value=>{let n=2166136261;for(const ch of value)n=Math.imul(n^ch.codePointAt(0),16777619)>>>0;return n;};
   // 자유주제의 소재 선택은 게임 ID/요청 개정만 사용한다. 옛 장르·주제·고정 장르별 소재 우선순위를 배제한다.
   const compositionKey=freeTopicMode?[target.requestId,target.topicRevision||'',variance]:[target.requestId,category,requestedName,ownerBrief,variance];
-  const orderedPool=[...CAUSAL_DNA_LIBRARY].sort((a,b)=>
+  const creativeSourcePool=freeTopicMode?[...CAUSAL_DNA_LIBRARY,...freeCreativeSources]:CAUSAL_DNA_LIBRARY;
+  const orderedPool=[...creativeSourcePool].sort((a,b)=>
     hash([...compositionKey,a.id].join('|'))-hash([...compositionKey,b.id].join('|')));
   const genreChoices=genreMaterialIds[profile.genre]||[];
   const optionalIds=freeTopicMode?orderedPool.map(row=>row.id):variance>0
     ?[...orderedPool.map(row=>row.id),...genreChoices]
     :[...genreChoices,...orderedPool.map(row=>row.id)];
   const ids=uniq([...explicitIds,...materialHints,...optionalIds]);
-  const orderedMaterials=ids.map(id=>CAUSAL_DNA_LIBRARY.find(row=>row.id===id)).filter(Boolean);
+  const orderedMaterials=ids.map(id=>creativeSourcePool.find(row=>row.id===id)).filter(Boolean);
   const distinctSources=orderedMaterials.filter((row,index)=>orderedMaterials.findIndex(candidate=>candidate.source===row.source)===index);
   const chosen=(freeTopicMode?[...distinctSources,...orderedMaterials.filter(row=>!distinctSources.includes(row))]:orderedMaterials).slice(0,4);
   if(chosen.length<4)throw new Error('VIBE_NATIVE_DESIGN_MATERIALS_INSUFFICIENT');
   const [first,second,third,fourth]=[chosen[0],chosen[1],chosen[2]||chosen[0],chosen[3]||chosen[1]];
-  const named=row=>materialNames[row.id]||row.id.replaceAll('_',' ');
+  const named=row=>materialNames[row.id]||row.label||row.id.replaceAll('_',' ');
   const aMaterial=named(first),bMaterial=named(second),cMaterial1=named(third),cMaterial2=named(fourth);
   const distinct=chosen[0].id!==chosen[1].id&&cMaterial1!==cMaterial2;
   // 정식 소재는 모두 보존하고 표시용 세계·발견 명칭만 소재의 핵심 명사로 압축한다.
