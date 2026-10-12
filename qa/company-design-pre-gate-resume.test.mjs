@@ -204,7 +204,8 @@ test('design target selection never waits for three other games to validate the 
     };
     runInNewContext(source,{
       fs:{readFileSync:file=>{if(file.startsWith('tools/'))return 'current engine';if(file in files)return JSON.stringify(files[file]);throw new Error('missing '+file);},existsSync:()=>false},
-      path,createHash,process:{env:{}},console:{log:line=>output.push(line),error:()=>{}}
+      path,createHash,execFileSync:()=>'',process:{env:{COMPANY_RUNTIME_BRANCH:'company-runtime'}},
+      console:{log:line=>output.push(line),error:()=>{}}
     });
     const targets=JSON.parse(output.find(line=>line.startsWith('targets=')).slice('targets='.length));
     assert.equal(targets.length,limit||6,'missing engine canary must not hide independent pending games');
@@ -1257,11 +1258,8 @@ test('design runtime scheduler requeues structurally stale strict PASS and memoi
   ]);
   let reads=0;
   const check=allowed=>runInNewContext(scheduler,{
-    fs:{
-      existsSync:file=>file==='design/demo'||files.has(file),
-      readdirSync:()=>[{name:'2026-10-10',isDirectory:()=>true}],
-      readFileSync:file=>{reads++;return files.get(file);}
-    },
+    designDatesFor:gameId=>gameId==='demo'?['2026-10-10']:[],
+    readDesignJson:file=>{reads++;const source=files.get(file);return source?JSON.parse(source):null;},
     path,resetGameIds:new Set(),resetTimestamp:0,
     evaluateMinimumDesignContract:()=>({pass:allowed})
   });
@@ -1319,4 +1317,125 @@ test('A and B keep every shared state key in both directions',()=>{
   assert.deepEqual(Array.from(edges.find(row=>row.fromId==='A'&&row.toId==='B').stateKeys),['risk','resource']);
   assert.deepEqual(Array.from(edges.find(row=>row.fromId==='B'&&row.toId==='A').stateKeys),['route']);
   assert.match(edges.find(row=>row.fromId==='A'&&row.toId==='B').stateChange,/취소·조건 미충족이면 출력과 후속 선택을 보존/);
+});
+
+test('design resolver reads only indexed strict evidence, never the entire runtime design tree',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const overlay=workflow.slice(workflow.indexOf('- name: Load latest company runtime state'),workflow.indexOf('- name: Synchronize active owner design reset seeds'));
+  assert.match(overlay,/COMPANY_RUNTIME_DESIGN_EVIDENCE=LAZY_READ_ONLY/);
+  assert.doesNotMatch(overlay,/git checkout "origin\/\$COMPANY_RUNTIME_BRANCH" -- "\$runtime_path"/);
+  assert.doesNotMatch(overlay,/game-seed-state\.json design; do/);
+  const section=workflow.slice(workflow.indexOf('- name: Resolve central-policy active incomplete GAME_SEED targets'));
+  const source=section.slice(section.indexOf('import fs'),section.indexOf('\n          NODE')).replace(/^\s*import .*;\s*$/gm,'');
+  const now=new Date().toISOString();
+  const root='design/ready/2026-10-12/';
+  const exactEvidence={
+    [root+'cycle-status.json']:{baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}},
+    [root+'strict-design-review.json']:{reviewedAt:now,verdict:'PASS',totalScore:92,hardFailures:[]},
+    [root+'design-revised.json']:{content:{identity:'ready',creativeGrammar:{}}},
+    [root+'design-checkpoint.json']:{status:'COMPLETE'},
+  };
+  const tree=[...Object.keys(exactEvidence),root+'core-artbook.json','design/pending/2026-10-12/GAME_DESIGN.md'].join('\n');
+  const reads=[],output=[];
+  const files={
+    'company-learning/platform-release-roadmap.json':{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:null,externalMatrixBatchMax:256,internalArtificialConcurrencyCapsForbidden:true}},
+    'company-directive.json':{},
+    'game-seed-state.json':{seeds:[
+      {gameId:'ready',seedId:'seed-ready',status:'ACTIVE',createdAt:'2026-10-12'},
+      {gameId:'pending',seedId:'seed-pending',status:'ACTIVE',createdAt:'2026-10-12'},
+    ]},
+    'owner-design-reset-queue.json':{requests:[]},
+  };
+  runInNewContext(source,{
+    fs:{readFileSync:file=>{if(file.startsWith('tools/'))return 'unchanged engine';if(file in files)return JSON.stringify(files[file]);throw new Error('unexpected local read '+file);}},
+    path,createHash,evaluateMinimumDesignContract:()=>({pass:true}),
+    execFileSync:(program,args)=>{
+      assert.equal(program,'git');
+      if(args[0]==='ls-tree')return tree;
+      assert.equal(args[0],'show');
+      const name=args[1].split(':').slice(1).join(':');
+      reads.push(name);
+      if(!Object.hasOwn(exactEvidence,name))throw new Error('unexpected design blob '+name);
+      return JSON.stringify(exactEvidence[name]);
+    },
+    process:{env:{COMPANY_RUNTIME_BRANCH:'company-runtime'}},
+    console:{log:line=>output.push(line),error:()=>{}},
+  });
+  const targets=JSON.parse(output.find(line=>line.startsWith('targets=')).slice('targets='.length));
+  assert.deepEqual(targets.map(t=>t.game_id),['pending']);
+  assert.deepEqual(new Set(reads),new Set([root+'cycle-status.json',root+'strict-design-review.json',root+'design-revised.json']));
+  assert.equal(reads.length,3,'each needed blob is read once, checkpoint and artbook are not fetched');
+});
+
+test('design persistence uses index-only runtime worktrees without deleting unrelated files',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const checkpoint=workflow.slice(workflow.indexOf('persist_design_checkpoint() {'),workflow.indexOf('      - name: Resolve deterministic-or-model design candidate'));
+  assert.match(checkpoint,/git worktree add --detach --no-checkout "\$worktree"/);
+  assert.match(checkpoint,/git -C "\$worktree" read-tree HEAD/);
+  assert.match(checkpoint,/if \[ -f \/tmp\/design-progress\.json \]; then git -C "\$worktree" add -- "\$progress_path"; fi/);
+  const final=workflow.slice(workflow.indexOf('      - name: Persist validated design evidence to company runtime branch'),workflow.indexOf('      - name: Dispatch per-game promotion reconciliation'));
+  assert.match(final,/git worktree add --detach --no-checkout "\$runtime_worktree"/);
+  assert.match(final,/git -C "\$runtime_worktree" read-tree HEAD/);
+  assert.match(final,/git -C "\$runtime_worktree" show HEAD:game-seed-state\.json/);
+  const minimum=workflow.slice(workflow.indexOf('      - name: Persist minimum dual-platform design before strict review'),workflow.indexOf('      - name: Apply strict 30-minute design review'));
+  assert.match(minimum,/git worktree add --detach --no-checkout "\$worktree"/);
+  assert.match(minimum,/git -C "\$worktree" read-tree HEAD/);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-sparse-index-'));
+  const git=(cwd,...args)=>spawnSync('git',args,{cwd,encoding:'utf8'});
+  try{
+    assert.equal(git(dir,'init','-q').status,0);
+    assert.equal(git(dir,'config','user.name','qa').status,0);
+    assert.equal(git(dir,'config','user.email','qa@example.com').status,0);
+    fs.mkdirSync(path.join(dir,'design','one'),{recursive:true});
+    fs.writeFileSync(path.join(dir,'design','one','status.json'),'original');
+    fs.writeFileSync(path.join(dir,'game-seed-state.json'),'saved');
+    fs.writeFileSync(path.join(dir,'unrelated-file.json'),'keep');
+    assert.equal(git(dir,'add','.').status,0);
+    assert.equal(git(dir,'commit','-qm','base').status,0);
+    const worktree=path.join(dir,'checkout');
+    assert.equal(git(dir,'worktree','add','--detach','--no-checkout',worktree,'HEAD').status,0);
+    assert.equal(git(worktree,'read-tree','HEAD').status,0);
+    fs.mkdirSync(path.join(worktree,'design','one'),{recursive:true});
+    fs.writeFileSync(path.join(worktree,'design','one','status.json'),'changed');
+    assert.equal(git(worktree,'add','--','design/one/status.json').status,0);
+    assert.equal(git(worktree,'commit','-qm','only game design').status,0);
+    const other=git(worktree,'show','HEAD:unrelated-file.json');
+    assert.equal(other.status,0,other.stderr);
+    assert.equal(other.stdout,'keep');
+    assert.equal(git(worktree,'show','HEAD:game-seed-state.json').stdout,'saved');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('strict-score fan-in uses sparse review checkout without suppressing other game evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('      - name: Bind latest post-reset strict design scores once'),workflow.indexOf('      - name: Continue seed supply and immediately repeat failed design gates'));
+  assert.match(block,/git fetch --no-tags --depth=1 --filter=blob:none/);
+  assert.match(block,/git sparse-checkout init --no-cone/);
+  assert.match(block,/git sparse-checkout set --no-cone '\/game-seed-state\.json' '\/game-catalog\.json' '\/design\/\*\/\*\/strict-design-review\.json'/);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'design-score-sparse-'));
+  const git=(...args)=>spawnSync('git',args,{cwd:dir,encoding:'utf8'});
+  try{
+    assert.equal(git('init','-qb','main').status,0);
+    assert.equal(git('config','user.name','qa').status,0);
+    assert.equal(git('config','user.email','qa@example.com').status,0);
+    fs.writeFileSync(path.join(dir,'readme.md'),'source');
+    assert.equal(git('add','.').status,0);
+    assert.equal(git('commit','-qm','main').status,0);
+    assert.equal(git('checkout','-qb','runtime').status,0);
+    fs.mkdirSync(path.join(dir,'design','first','2026-10-12'),{recursive:true});
+    fs.writeFileSync(path.join(dir,'game-seed-state.json'),'{}');
+    fs.writeFileSync(path.join(dir,'game-catalog.json'),'{}');
+    fs.writeFileSync(path.join(dir,'design','first','2026-10-12','strict-design-review.json'),'{}');
+    fs.writeFileSync(path.join(dir,'design','first','2026-10-12','design-checkpoint.json'),'large-content');
+    assert.equal(git('add','.').status,0);
+    assert.equal(git('commit','-qm','runtime').status,0);
+    assert.equal(git('checkout','-q','main').status,0);
+    assert.equal(git('sparse-checkout','init','--no-cone').status,0);
+    assert.equal(git('sparse-checkout','set','--no-cone','/game-seed-state.json','/game-catalog.json','/design/*/*/strict-design-review.json').status,0);
+    assert.equal(git('checkout','-q','-B','score','runtime').status,0);
+    assert.equal(fs.existsSync(path.join(dir,'game-seed-state.json')),true);
+    assert.equal(fs.existsSync(path.join(dir,'design','first','2026-10-12','strict-design-review.json')),true);
+    assert.equal(fs.existsSync(path.join(dir,'design','first','2026-10-12','design-checkpoint.json')),false);
+    assert.equal(git('show','HEAD:design/first/2026-10-12/design-checkpoint.json').stdout,'large-content');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });

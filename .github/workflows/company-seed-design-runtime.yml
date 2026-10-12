@@ -106,12 +106,13 @@ jobs:
             exit 0
           fi
           git fetch --no-tags --depth=1 --filter=blob:none origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
-          for runtime_path in game-seed-state.json design; do
-            if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
-              git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
-            fi
-          done
-          git reset -- game-seed-state.json design >/dev/null 2>&1 || true
+          # 설계 트리 전체 checkout은 수천 개 blob을 순차 다운로드하므로 금지한다.
+          # 대상 판정은 아래 기존 resolver가 검수 증거만 필요할 때 git show로 읽는다.
+          if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" 2>/dev/null; then
+            git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > game-seed-state.json
+          fi
+          git reset -- game-seed-state.json >/dev/null 2>&1 || true
+          echo 'COMPANY_RUNTIME_DESIGN_EVIDENCE=LAZY_READ_ONLY'
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
@@ -186,6 +187,7 @@ jobs:
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';
           import path from 'node:path';
+          import {execFileSync} from 'node:child_process';
           import {createHash} from 'node:crypto';
           import {evaluateMinimumDesignContract} from './tools/company-minimum-design-contract.mjs';
           const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -201,6 +203,39 @@ jobs:
           if(!unboundedByPolicy&&(!Number.isInteger(Number(configuredWip))||Number(configuredWip)<1))throw new Error('CENTRAL_GAME_WIP_MAX_INVALID');
           const designWipMax=unboundedByPolicy?externalBatchMax:Math.min(Number(configuredWip),externalBatchMax);
           const state=(()=>{try{return JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{return{seeds:[]};}})();
+          // 원본 브랜치에서 설계 인덱스만 읽고, 전체 design 디렉터리는 내려받지 않는다.
+          const runtimeRef='origin/'+process.env.COMPANY_RUNTIME_BRANCH;
+          const designFiles=execFileSync('git',['ls-tree','-r','--name-only',runtimeRef,'design'],{
+            encoding:'utf8',maxBuffer:32*1024*1024
+          }).split(/\r?\n/).filter(Boolean);
+          const designPaths=new Set(designFiles);
+          const datesByGame=new Map();
+          for(const file of designFiles){
+            const match=/^design\/([a-z0-9-]+)\/(\d{4}-\d{2}-\d{2})\/(?:cycle-status|strict-design-review|design-revised|design-checkpoint)\.json$/.exec(file);
+            if(!match)continue;
+            if(!datesByGame.has(match[1]))datesByGame.set(match[1],new Set());
+            datesByGame.get(match[1]).add(match[2]);
+          }
+          for(const [id,dates] of datesByGame)datesByGame.set(id,[...dates].sort().reverse());
+          const designDatesFor=gameId=>datesByGame.get(gameId)||[];
+          const designJsonCache=new Map();
+          const readDesignJson=file=>{
+            if(!designPaths.has(file))return null;
+            if(designJsonCache.has(file))return designJsonCache.get(file);
+            let raw;
+            try{
+              raw=execFileSync('git',['show',runtimeRef+':'+file],{
+                encoding:'utf8',maxBuffer:16*1024*1024,stdio:['ignore','pipe','ignore']
+              });
+            }catch{
+              // 기존 증거를 읽지 못했는데 설계 PASS가 없다고 처리하면 중복 설계가 생성된다.
+              throw new Error('DESIGN_RUNTIME_EVIDENCE_READ_FAILED:'+file);
+            }
+            let value=null;
+            try{value=JSON.parse(raw);}catch{}
+            designJsonCache.set(file,value);
+            return value;
+          };
           const ownerReset=(()=>{try{return JSON.parse(fs.readFileSync('owner-design-reset-queue.json','utf8'));}catch{return{requests:[]};}})();
           const activeResetIds=new Set((ownerReset.requests||[])
             .filter(row=>String(row?.status||'').trim().toUpperCase()==='ACTIVE')
@@ -226,16 +261,14 @@ jobs:
             const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
             const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed.gameId));
-            if(!fs.existsSync(gameRoot)){latestStrictPassCache.set(gameId,null);return null;}
+            if(!designDatesFor(gameId).length){latestStrictPassCache.set(gameId,null);return null;}
             try{
-              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
+              const dates=designDatesFor(gameId);
               for(const date of dates){
                 const base=path.join(gameRoot,date);
-                const statusPath=path.join(base,'cycle-status.json');
-                const strictPath=path.join(base,'strict-design-review.json');
-                if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
-                const status=JSON.parse(fs.readFileSync(statusPath,'utf8'));
-                const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                const status=readDesignJson(path.join(base,'cycle-status.json'));
+                const review=readDesignJson(path.join(base,'strict-design-review.json'));
+                if(!status||!review)continue;
                 const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
                 if(resetAt){
                   if(evidenceAt&&evidenceAt<resetAt)continue;
@@ -244,9 +277,8 @@ jobs:
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
                 if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){
                   const revisedPath=path.join(base,'design-revised.json');
-                  if(!fs.existsSync(revisedPath))continue;
-                  let revised;
-                  try{revised=JSON.parse(fs.readFileSync(revisedPath,'utf8'));}catch{continue;}
+                  const revised=readDesignJson(revisedPath);
+                  if(!revised)continue;
                   // 과거 strict PASS도 현재 V5 기본 설계·양 플랫폼 계약이 유효해야 재사용한다.
                   // 미완성 원본은 PASS로 캐싱하지 않고 기존 자동 설계 재작성 대상으로 돌린다.
                   if(!evaluateMinimumDesignContract(revised,{seed,requireGrammar:true}).pass)continue;
@@ -256,7 +288,9 @@ jobs:
                   return verified;
                 }
               }
-            }catch{}
+            }catch(error){
+              if(String(error?.message||'').startsWith('DESIGN_RUNTIME_EVIDENCE_READ_FAILED:'))throw error;
+            }
             latestStrictPassCache.set(gameId,null);
             return null;
           };
@@ -294,13 +328,13 @@ jobs:
             const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
             const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed?.gameId||''));
-            if(!fs.existsSync(gameRoot))return 1;
+            const dates=designDatesFor(String(seed?.gameId||''));
+            if(!dates.length)return 1;
             try{
-              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
                 const checkpointPath=path.join(gameRoot,date,'design-checkpoint.json');
-                if(!fs.existsSync(checkpointPath))continue;
-                const checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));
+                const checkpoint=readDesignJson(checkpointPath);
+                if(!checkpoint)continue;
                 const checkpointAt=Date.parse(checkpoint.updatedAt||checkpoint.lastSuccessfulModelCallAt||checkpoint.createdAt||'')||0;
                 if(resetAt){
                   if(checkpointAt&&checkpointAt<resetAt)continue;
@@ -316,7 +350,9 @@ jobs:
                 });
                 return pass?0:1;
               }
-            }catch{}
+            }catch(error){
+              if(String(error?.message||'').startsWith('DESIGN_RUNTIME_EVIDENCE_READ_FAILED:'))throw error;
+            }
             return 1;
           };
           const checkpointResumePriority=seed=>{
@@ -324,13 +360,13 @@ jobs:
             const resetAt=resetGameIds.has(String(seed?.gameId||'').trim())?resetTimestamp:0;
             const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
             const gameRoot=path.join('design',String(seed?.gameId||''));
-            if(!fs.existsSync(gameRoot))return 1;
+            const dates=designDatesFor(String(seed?.gameId||''));
+            if(!dates.length)return 1;
             try{
-              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
                 const checkpointPath=path.join(gameRoot,date,'design-checkpoint.json');
-                if(!fs.existsSync(checkpointPath))continue;
-                const checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));
+                const checkpoint=readDesignJson(checkpointPath);
+                if(!checkpoint)continue;
                 const checkpointAt=Date.parse(checkpoint.updatedAt||checkpoint.lastSuccessfulModelCallAt||checkpoint.createdAt||'')||0;
                 if(resetAt){
                   if(checkpointAt&&checkpointAt<resetAt)continue;
@@ -341,7 +377,9 @@ jobs:
                 if(['COMPLETE','PASS','DONE','DESIGN_BASELINE_READY'].includes(status))return 1;
                 return 0;
               }
-            }catch{}
+            }catch(error){
+              if(String(error?.message||'').startsWith('DESIGN_RUNTIME_EVIDENCE_READ_FAILED:'))throw error;
+            }
             return 1;
           };
           const preservationOnly=String(process.env.PRESERVATION_ONLY||'').trim().toLowerCase()==='true';
@@ -599,13 +637,15 @@ jobs:
               git fetch origin "$COMPANY_RUNTIME_BRANCH"
               git worktree remove -f "$worktree" >/dev/null 2>&1 || true
               rm -rf "$worktree"
-              git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
+              git worktree add --detach --no-checkout "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
+              git -C "$worktree" read-tree HEAD
               mkdir -p "$worktree/$(dirname "$checkpoint_path")"
               cp /tmp/design-checkpoint.json "$worktree/$checkpoint_path"
               if [ -f /tmp/design-progress.json ]; then cp /tmp/design-progress.json "$worktree/$progress_path"; fi
               git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
               git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
-              git -C "$worktree" add -- "$checkpoint_path" "$progress_path"
+              git -C "$worktree" add -- "$checkpoint_path"
+              if [ -f /tmp/design-progress.json ]; then git -C "$worktree" add -- "$progress_path"; fi
               if [ -f /tmp/design-seed.json ]; then
                 cp /tmp/design-seed.json "$worktree/$seed_path"
                 git -C "$worktree" add -- "$seed_path"
@@ -820,7 +860,9 @@ jobs:
             git fetch origin "$COMPANY_RUNTIME_BRANCH"
             git worktree remove --force "$worktree" 2>/dev/null || true
             rm -rf "$worktree"
-            git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git worktree add --detach --no-checkout "$worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git -C "$worktree" read-tree HEAD
+            mkdir -p "$(dirname "$worktree/$game_path")"
             git -C "$worktree" config user.name 'jaewoon-minimum-design'
             git -C "$worktree" config user.email 'minimum-design@users.noreply.github.com'
             git -C "$worktree" checkout "$GITHUB_SHA" -- "$game_path" 2>/dev/null || cp -R "$game_path" "$(dirname "$worktree/$game_path")/"
@@ -903,11 +945,13 @@ jobs:
             git worktree remove --force "$runtime_worktree" 2>/dev/null || true
             rm -rf "$runtime_worktree"
             git worktree prune
-            git worktree add --detach "$runtime_worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git worktree add --detach --no-checkout "$runtime_worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git -C "$runtime_worktree" read-tree HEAD
             git -C "$runtime_worktree" config user.name 'jaewoon-seed-design'
             git -C "$runtime_worktree" config user.email 'seed-design@users.noreply.github.com'
             git -C "$runtime_worktree" checkout "$generated_commit" -- "$game_path"
             if [ "$seed_changed" = 1 ]; then
+              git -C "$runtime_worktree" show HEAD:game-seed-state.json > "$runtime_worktree/game-seed-state.json"
               TARGET_GAME_ID="${{ matrix.target.game_id }}" \
               CANDIDATE_SEED_STATE="/tmp/seed-design-candidate-${{ matrix.target.game_id }}.json" \
               RUNTIME_SEED_STATE="$runtime_worktree/game-seed-state.json" \
@@ -988,7 +1032,10 @@ jobs:
           git config user.email 'design-score-sync@users.noreply.github.com'
           pushed=0
           for attempt in 1 2 3 4; do
-            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git fetch --no-tags --depth=1 --filter=blob:none origin "+refs/heads/$COMPANY_RUNTIME_BRANCH:refs/remotes/origin/$COMPANY_RUNTIME_BRANCH"
+            # 전체 design 브랜치 대신 동기화에 필요한 점수 증거와 상태만 checkout.
+            git sparse-checkout init --no-cone
+            git sparse-checkout set --no-cone '/game-seed-state.json' '/game-catalog.json' '/design/*/*/strict-design-review.json'
             git checkout -B design-score-sync "origin/$COMPANY_RUNTIME_BRANCH"
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
