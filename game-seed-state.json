@@ -49431,10 +49431,10 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-      "lifecycleState": "DEVELOPMENT_CONFIRMED",
-      "updatedAt": "2026-10-12T02:22:20.011Z",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
+      "lifecycleState": "MINIMUM_DESIGN_REQUIRED",
+      "updatedAt": "2026-10-12T00:05:09.094Z",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -51396,7 +51396,7 @@
         "GAMEPLAY_SKETCH C requires two distinct PRIMARY and SECONDARY genres that causally change gameplay",
         "GAMEPLAY_SKETCH C themes must causally change A/B gameplay and story/world"
       ],
-      "productionTier": 2,
+      "productionTier": 3,
       "selectedPlatform": "ROBLOX",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -51405,28 +51405,16 @@
       "platformExecutionMode": "ROBLOX_UNITY_CONCURRENT_SAME_GAME",
       "minimumDesignContract": {
         "version": 1,
-        "pass": true,
-        "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-        "date": "2026-10-12"
+        "pass": false,
+        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED"
       },
       "promotion": {
-        "from": "DESIGN_ONLY",
-        "to": "DEVELOPMENT_CONFIRMED",
-        "reason": "MINIMUM_DUAL_PLATFORM_DESIGN_READY",
-        "requestedPlatform": "ROBLOX",
-        "concurrentTargetPlatforms": [
-          "ROBLOX",
-          "UNITY"
-        ],
-        "targetSourcePaths": {
-          "ROBLOX": "roblox-games/seed-roblox-simulator-tycoon-i-adopt-me",
-          "UNITY": "unity-games/seed-roblox-simulator-tycoon-i-adopt-me"
-        },
-        "designBaselineSource": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-        "designDate": "2026-10-12",
+        "from": "DEVELOPMENT_CONFIRMED",
+        "to": "DESIGN_ONLY",
+        "reason": "OWNER_RESET_FRESH_MINIMUM_DESIGN_REQUIRED",
         "strictDesignReviewRequiredForAdmission": false,
         "strictDesignReviewContinuesInParallel": true,
-        "promotedAt": "2026-10-12T02:22:20.011Z"
+        "updatedAt": "2026-10-12T00:05:09.553Z"
       },
       "strictDesignReviewRefreshRequired": true,
       "ROBLOX_GENRE": "Strategy",
@@ -51437,7 +51425,7 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
       "ROBLOX_GENRE_DISPLAY_KO": "전략 · 타워 디펜스 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-11T23:32:17.174Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-10-12T02:22:01.439Z",
       "strictDesignReview": {
         "verdict": "PASS",
         "totalScore": 97.2,
@@ -51445,17 +51433,7 @@
         "evidencePath": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.028Z",
-      "platformDesignProfiles": {
-        "ROBLOX": {
-          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/ROBLOX"
-        },
-        "UNITY": {
-          "source": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-10-12/design-revised.json",
-          "jsonPointer": "/content/platformProfiles/UNITY"
-        }
-      }
+      "strictDesignReviewUpdatedAt": "2026-10-11T23:40:44.028Z"
     },
     {
       "version": 2,
