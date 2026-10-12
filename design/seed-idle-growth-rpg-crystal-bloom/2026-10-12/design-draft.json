@@ -59,15 +59,11 @@
   "authorModel": "vibe-native:causal-design-v1",
   "singleAuthor": true,
   "preGate": {
-    "pass": false,
-    "totalScore": 78.4,
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "criticalAxisFailures": [
-      "PLATFORM_FIT_DESIGN"
-    ],
-    "attempts": 2
+    "pass": true,
+    "totalScore": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "attempts": 0
   },
   "content": {
     "identity": "수정의 개화. 서사시의 추방과 귀환·순례와 인물 변화 롤플레잉. 수정의 개화에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환과 전투와 장비 운용 × 순례와 인물 변화이 서로 결과를 되돌려 바꾸며 롤플레잉·추리의 판단이 실제 세계 상태를 변화시킨다.",
@@ -1018,10 +1014,10 @@
       "durationRationale": "한 판의 상태 전이를 연속된 장면으로 나누고 30분 세션의 탐색·반작용·발견을 분리한다. 시간 배분은 설계 가정이며 실제 플레이 측정 전이다."
     },
     "platformFitPlan": {
-      "targetPlatform": "ROBLOX",
-      "inputModel": "이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.",
-      "performanceBudget": "원본 Roblox Luau 서버·클라이언트의 복제·물리·렌더·메모리·화면 내 오브젝트 예산을 모바일 런타임 측정으로 확정한다.",
-      "sessionConstraints": "1분 첫 행동, 5분 첫 인과 피드백, 15분 교차 선택, 30분 이상 발견의 실제 지속성은 런타임에서 측정한다."
+      "targetPlatform": "UNITY",
+      "inputModel": "유니티 네이티브 앱 호환 기록: Input System 모바일 터치·화면 안전영역·카메라와 중단 복귀 입력을 명시한다. 유니티 웹 제작은 금지한다.",
+      "performanceBudget": "유니티 앱 모바일 메모리·GPU·발열·배터리·장면 전환 예산은 오너 보류 해제 후 네이티브 기기에서 검증한다. WebGL 빌드는 만들지 않는다.",
+      "sessionConstraints": "첫 행동·시스템 왕복·숙련 발견과 중단 복귀의 실제 소요 시간은 해당 플랫폼 네이티브 런타임에서 측정한다."
     },
     "platformProfiles": {
       "ROBLOX": {
@@ -1039,21 +1035,14 @@
       "UNITY": {
         "platform": "UNITY",
         "inputModel": "Unity Input System with touch-first controls, safe-area UI, gamepad/keyboard fallback and app lifecycle-safe input recovery.",
-        "sessionModel": "유니티 3차원 웹 세션에서 현재 목표와 지역·진행 상태를 유지하며 일시중단과 재진입을 검증한다.",
+        "sessionModel": "유니티 네이티브 앱은 현재 오너 보류다. 향후 승인된 앱 개발 시 기존 세션과 중단·복귀 의미를 유지한다.",
         "multiplayerRuntime": "Unity app COOP networking using validated transport/session ownership, reconnect and join/leave synchronization.",
         "performanceBudget": "Android mobile budget covering memory, GPU, thermal load, battery, loading, texture/compression, pooling and GC pressure.",
         "uiUx": "Responsive Unity UI with device safe areas, touch targets, orientation/readability rules and native-app pause/resume behavior.",
         "saveAndNetwork": "Versioned local save plus validated backend/cloud synchronization only when required by the approved multiplayer/persistence design.",
-        "platformContentAdaptation": "같은 유니티 원본 프로젝트의 3차원 장면·카메라·메시·조명·동작을 웹 브라우저에 맞게 적응한다.",
-        "internalReleaseTarget": "실제 유니티 웹 빌드를 독립 브라우저와 모바일에서 검증한 뒤 상위 단계로 전달한다.",
-        "validationEvidence": "정확한 유니티 웹 빌드로 3차원 장면·모바일 터치·저장 및 실제 플레이를 독립 검사한다.",
-        "unityWebSpatialPresentation": {
-          "dimension": "3D",
-          "worldDepth": "실제 메시와 삼각형·입체 건물·캐릭터가 월드 좌표의 전후 깊이에서 이동하고 상호작용한다.",
-          "cameraAndOcclusion": "3차원 카메라가 실제 원근·높낮이·앞뒤 가림을 표현하며 2차원 스프라이트를 공간 객체로 위장하지 않는다.",
-          "lightingAndMaterials": "3차원 기하에 표면 재질과 광원·그림자 반응을 적용하고 모바일 그래픽 한계를 실기기에서 확인한다.",
-          "mobileWebglEvidence": "같은 유니티 원본에서 생성한 웹 빌드를 실제 모바일 브라우저로 플레이하고 깊이·터치·화면 잘림을 캡처 검증한다."
-        }
+        "platformContentAdaptation": "로블록스 원본과 분리된 새로운 게임 규칙은 생성하지 않는다. 유니티 네이티브 앱 적응은 오너 보류 해제 후에만 진행한다.",
+        "internalReleaseTarget": "유니티 네이티브 앱 제작·내부 배포는 오너 보류다. 유니티 웹 빌드 대상은 제외한다.",
+        "validationEvidence": "현재 유니티 제작 PASS를 주장하지 않는다. 보류 해제 후 정확한 네이티브 앱 실행·저장·QA 증거를 별도로 검증한다."
       }
     },
     "visualDirection": "그리스 비극의 자기실현 예언와 철학의 변증법의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.",
@@ -1085,7 +1074,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
@@ -1102,7 +1091,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
@@ -1119,7 +1108,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
@@ -1136,7 +1125,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
@@ -1153,7 +1142,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
@@ -1170,7 +1159,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         },
         {
@@ -1187,7 +1176,7 @@
           "decision": "AUTHOR",
           "selectionReason": "확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.",
           "improvement": "실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.",
-          "platformAdaptation": "내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.",
+          "platformAdaptation": "로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.",
           "validation": "실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다."
         }
       ]
@@ -1384,8 +1373,8 @@
       "progressionAndEconomy": "progressionLoop: 퀘스트와 인물 관계 × 서사시의 추방과 귀환의 변화가 전투와 장비 운용 × 순례와 인물 변화에서 새로운 선택을 열고 다음 A의 경로에 영향을 준다.; resourceFlow: 현재 게임의 실제 획득원과 소비처를 소스에 연결한 후 선택 비용을 검증한다. 임의 보상이나 저장값을 추가하지 않는다.; balanceRules: 한쪽 선택이 언제나 이득이 되지 않도록 위험·정보·기회비용을 함께 비교하고 기존 원본 수치는 바꾸지 않는다.",
       "sessionFailureRecovery": "failureStates: 퀘스트와 인물 관계 × 서사시의 추방과 귀환의 위험을 읽지 못해 유효 행동과 진입 경로가 막힌다. / 전투와 장비 운용 × 순례와 인물 변화의 반작용을 잘못 선택해 목표 접근 조건이 사라진다.; retryFlow: 직전 유효 목표 상태를 다시 확인하고 얻은 정보를 이용해 다른 경로·시스템 선택으로 재시도한다. 기존 저장 정책을 보존한다.; riskPressure: 초반에는 A의 선택 위험을, 중반에는 B의 반작용을, 후반에는 C 장르의 정보·관계 제약을 함께 판단하게 한다.; recoveryRules: 진행이 막히면 이전 안전 구역과 재선택 가능한 행동을 제공하며 저장·보상 손실 수치는 원본 규칙만 따른다.",
       "uiMenuAndOnboarding": "hudPriorities: 세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.; touchAndInput: 이동과 행동 동시 입력, 길게 누르기와 중복 터치 방지, 뒤로가기 복구를 분리 검증한다.; readability: 장르별 위험과 사용 가능한 행동을 모양·문장·움직임으로 중복 표시하며 색상만으로 구분하지 않는다.; accessibility: 글자 크기·대비·진동과 소리 설정을 분리하고 실패 원인과 회복 방법을 읽을 수 있게 제공한다.; menuStructure: 타이틀→계속하기 또는 새 게임→본편→장비·지도·설정→실패 복구 또는 결과의 흐름에서 현재 게임에 필요 없는 메뉴는 제외한다.; convenienceDecisions: 같은 선택 반복 시 확인 단계를 줄이되 위험·자원 소모·저장과 관련된 실제 판단은 제거하지 않는다.",
-      "inputCameraAccessibility": "이동·상호작용·선택·확인을 모바일 터치와 키보드에서 동일하게 수행하고 3D 카메라 가림을 검증한다.",
-      "presentationAndAudio": "visualIdentity: 캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.; audioIdentity: 탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.; gameplayFeedbackSync: 실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.; assetBindings: family: AUDIO; role: AUDIO의 인과 표현 소재; bodyPlan: 플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태; behavior: 퀘스트와 인물 관계 × 서사시의 추방과 귀환와 전투와 장비 운용 × 순례와 인물 변화의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.; presentation: 그리스 비극의 자기실현 예언와 철학의 변증법의 차이를 조명·표면·동작으로 구분한다.; ruleIds: VIBE_MAIN; useLocation: 서사시의 추방과 귀환의 첫 선택 공간에서 세계 반응을 표시한다.; assetId: ; decision: AUTHOR; selectionReason: 확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.; improvement: 실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.; platformAdaptation: 내부 원본은 보존하고 로블록스 및 유니티 실행 구조에 맞게 독립적으로 적응한다.; validation: 실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다. / family: CHARACTER; role: CHARACTER의 인과 표현 소재; bodyPlan: 플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태; be",
+      "inputCameraAccessibility": "유니티 네이티브 앱 호환 기록: Input System 모바일 터치·화면 안전영역·카메라와 중단 복귀 입력을 명시한다. 유니티 웹 제작은 금지한다.",
+      "presentationAndAudio": "visualIdentity: 캐릭터·지역·위험·아이템 표현은 C의 두 소재에 근거한 하나의 3D 스타일로 통일한다.; audioIdentity: 탐색·선택·경고·성공·실패 음악과 효과음을 세계 상태 전이에 맞춰 구분한다.; gameplayFeedbackSync: 실제 게임 판정 이벤트가 확정된 다음 애니메이션·시각효과·오디오·카메라를 동기화해 게임 규칙의 권한을 유지한다.; assetBindings: family: AUDIO; role: AUDIO의 인과 표현 소재; bodyPlan: 플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태; behavior: 퀘스트와 인물 관계 × 서사시의 추방과 귀환와 전투와 장비 운용 × 순례와 인물 변화의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.; presentation: 그리스 비극의 자기실현 예언와 철학의 변증법의 차이를 조명·표면·동작으로 구분한다.; ruleIds: VIBE_MAIN; useLocation: 서사시의 추방과 귀환의 첫 선택 공간에서 세계 반응을 표시한다.; assetId: ; decision: AUTHOR; selectionReason: 확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.; improvement: 실제 네이티브 형상·리깅·표면·동작의 부조화와 모바일 비용을 비교 검토한다.; platformAdaptation: 로블록스 실행 원본을 우선하고, 유니티 네이티브 앱은 오너 보류 상태의 호환 설계로만 유지한다. 유니티 웹은 제작하지 않는다.; validation: 실제 월드에서 역할 구분과 프레임·모바일 터치 품질을 캡처하고 독립 검증한다. / family: CHARACTER; role: CHARACTER의 인과 표현 소재; bodyPlan: 플레이 대상의 실제 공간",
       "multiplayerPersistence": "COOP; COOP에서 두 이용자가 같은 세계 상태를 읽고 선택 결과를 서버에서 확인하며 이탈·재접속 후 정확히 동기화해야 한다.",
       "expansionSpace": "milestone: 초반 선택에 따른 접근 경로와 위험 재구성; newGameplay: 퀘스트와 인물 관계의 새로운 지역에서 이전 인과 선택을 다시 해석한다. 첫 진입에서는 위험을 읽고 다음 행동에 필요한 단서를 얻는다.; systemImpact: VIBE_A의 기존 Luau 책임 함수에서 RouteState·RiskState 입력 → RiskState·ResourceState 출력 → VIBE_B의 다음 선택으로 연결한다. 저장·밸런스·보상 의미를 유지한다.; trigger: 기존 첫 진입 조건을 만족하고 수정의 개화의 목표를 확인한 뒤 퀘스트와 인물 관계 × 서사시의 추방과 귀환의 접근 가능한 선택을 제시한다.; playerChoice: 인물의 의뢰와 이해관계를 읽고 다음 퀘스트 경로를 선택하면서 떠났다가 돌아온 지역이 플레이어의 과거 선택 때문에 다른 규칙과 관계로 재구성된다.; ruleIds: VIBE_MAIN / VIBE_A / VIBE_B; stateKeys: RouteState / RiskState / ResourceState; failureRecovery: 조건 미충족·취소·재접속 시 기존 진행과 저장을 보존하고 기존 재시도 경로로 복귀한다. 보상 중복 지급과 선행조건 건너뛰기를 검사한다.; validationEvidence: 동일 시작 상태에서 퀘스트와 인물 관계 × 서사시의 추방과 귀환의 실행·대안 선택·취소를 각각 비교해 새 선택과 후속 상태가 달라지는지 확인한다. 기존 책임 함수의 실제 소스 변경과 정확한 개정의 F0~F9 증거로 확인하며 설계 숫자를 런타임 증거로 사용하지 않는다. / milestone: 중반 두 시스템의 반작용과 대응 조건 충돌; newGameplay: 전투와 장비 운용의 새 상대는 기존 상태를 증폭하거나 반전한다. 중간 갈등에서는 서로 다른 "
     },
@@ -1399,8 +1388,8 @@
         "MULTIPLAYER_INTENT"
       ],
       "expansionLimit": "GAMEPLAY_CHANGES_REQUIRE_SHARED_ORIGINAL_REVISION",
-      "webRule": "게임당 하나의 공통 설계 원본을 사용한다. WEB은 같은 MAIN/A/B/c/@·규칙·상태·진행·멀티를 입력·화면·성능·저장 전송에 맞게 구현한다. 별도 원본을 생성하지 않으며 Unity WebGL은 같은 Unity 프로젝트를 사용한다.",
-      "unityRule": "동일 공통 원본과 디자이너가 작성한 규칙을 Unity에서 구현한다. 입력·물리 표현·카메라·UI·성능·저장 전송·런타임 검증만 플랫폼에 맞게 적용한다. 게임 규칙 확장은 공통 원본 개정으로 돌아간다.",
+      "webRule": "웹은 현재 플랫폼 제작 대상이 아니다. 과거 webCanonicalDesign 필드는 기록 호환용 참고 뷰일 뿐, 별도 게임이나 Unity WebGL 빌드를 생성하지 않는다.",
+      "unityRule": "Unity 네이티브 앱은 오너 보류 상태다. 과거 플랫폼 프로필은 기록 호환을 위해 유지하되 개발·배포·WebGL 빌드는 실행하지 않는다. 보류 해제 후 공통 원본과 규칙을 보존한다.",
       "robloxRule": "기존 Roblox 원본의 규칙과 사용자 요청을 공통 원본에 보존한다. platformProfiles.ROBLOX와 robloxBuildProfile은 같은 원본의 구현·배포·검증 방식이며 독립 게임 설계가 아니다. 다른 플랫폼 실패는 해당 플랫폼의 수정·재시도로 분리한다."
     }
   }
