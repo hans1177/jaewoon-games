@@ -2813,3 +2813,19 @@ test('every canonical queue writer stages storage parts, restores before executi
   const provenance=fs.readFileSync(root+'/vibe2-merged-pr-provenance.yml','utf8');
   assert.doesNotMatch(provenance,/storage-pack|\.vibe2\/queue\//);
 });
+
+test('24H lossless queue checkpoint follows accepted advisory learning and precedes auxiliary production',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  const advisory=workflow.indexOf('VIBE2_VERIFIED_ADVISORY_CHECKPOINT=PUSHED');
+  const migrate=workflow.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs storage-migrate');
+  const checkpoint=workflow.indexOf('VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=PUSHED');
+  const auxiliary=workflow.indexOf('node --check /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs');
+  assert.ok(advisory>=0 && migrate>advisory && checkpoint>migrate && auxiliary>checkpoint);
+  const saving=workflow.slice(migrate,auxiliary);
+  assert.match(saving,/storage-pack --queue=\.vibe2\/queue\.json/);
+  assert.match(saving,/git add -A -- \.vibe2\/queue\n\s*git add \.vibe2\/queue\.json\n\s*node .*storage-unpack/);
+  assert.match(saving,/if git push origin HEAD:vibe2-unreal-core; then/);
+  assert.match(saving,/VIBE2_QUEUE_STORAGE_EARLY_CHECKPOINT=STALE_CONTROL_REF_RETRY[\s\S]*?continue/);
+  assert.match(saving,/VIBE2_QUEUE_TASKS_REMOVED=0/);
+  assert.equal((workflow.match(/storage-migrate/g)||[]).length,1);
+});
