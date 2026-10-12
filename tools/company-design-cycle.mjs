@@ -304,6 +304,9 @@ const checkpointInputContext={
   discardPolicy:directive.discardPolicy?.DESIGN_ONLY||null
 };
 const checkpointFingerprint=createHash('sha256').update(JSON.stringify(checkpointInputContext)).digest('hex');
+// 체크포인트 재사용도 최신 오너 지시와 창작 모드에 종속된다.
+const activeOwnerDesignEventId=clean(designEvolutionBrief?.ownerIntent?.eventId||seed.ownerRequestInstanceId||seed.ownerDirectiveRevision||seed.ownerResetRevision||'');
+const activeDesignTopicMode=clean(seed.designTopicMode||'');
 const previousDesignerSeed=readJson(designerSeedPath,null);
 if(previousDesignerSeed&&(previousDesignerSeed.fingerprint!==checkpointFingerprint||previousDesignerSeed.engineDigest!==engineDigest))fs.rmSync(designerSeedPath,{force:true});
 let designCheckpoint=readJson(checkpointPath,null);
@@ -360,6 +363,8 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
     fingerprint:checkpointFingerprint,
     policyDigest,
     engineDigest,
+    ownerDesignEventId:activeOwnerDesignEventId||null,
+    designTopicMode:activeDesignTopicMode||null,
     status:'IN_PROGRESS',
     phases:designCheckpoint.phases,
     tasks:designCheckpoint.tasks,
@@ -385,7 +390,7 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_MIGRATED=${previousContractVersion===2?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'}|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
 }else if(!checkpointReusable){
-  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,ownerDesignEventId:activeOwnerDesignEventId||null,designTopicMode:activeDesignTopicMode||null,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   writeJson(checkpointPath,designCheckpoint);
   console.log('DESIGN_CHECKPOINT_RESET=YES');
 }else{
@@ -395,6 +400,8 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   designCheckpoint.slowPhases=designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{};
   designCheckpoint.completedPhases=Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[];
   designCheckpoint.engineDigest=engineDigest;
+  designCheckpoint.ownerDesignEventId=activeOwnerDesignEventId||null;
+  designCheckpoint.designTopicMode=activeDesignTopicMode||null;
   designCheckpoint.status='IN_PROGRESS';
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);

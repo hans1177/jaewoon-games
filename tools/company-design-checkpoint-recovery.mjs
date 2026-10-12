@@ -72,6 +72,11 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
   const seed=activeSeed(seedState,gameId);
   if(!seed)throw new Error(`DESIGN_CHECKPOINT_RECOVERY_ACTIVE_SEED_REQUIRED ${gameId}`);
   if(clean(checkpoint.seedId)!==clean(seed.seedId))throw new Error(`DESIGN_CHECKPOINT_RECOVERY_SEED_MISMATCH ${clean(checkpoint.seedId)} != ${clean(seed.seedId)}`);
+  // 같은 seedId라도 오너가 새 주제·설계를 지시하면 지난 PASS를 최신 작업으로 재사용할 수 없다.
+  const activeOwnerDesignEventId=clean(seed.ownerRequestInstanceId||seed.ownerDirectiveRevision||seed.ownerResetRevision||'');
+  if(clean(checkpoint.ownerDesignEventId)!==activeOwnerDesignEventId)throw new Error('DESIGN_CHECKPOINT_RECOVERY_OWNER_EVENT_STALE');
+  const activeDesignTopicMode=clean(seed.designTopicMode||'');
+  if(activeDesignTopicMode&&clean(checkpoint.designTopicMode)!==activeDesignTopicMode)throw new Error('DESIGN_CHECKPOINT_RECOVERY_TOPIC_MODE_STALE');
 
   const draft=checkpoint?.phases?.designer_draft;
   if(!draft||typeof draft!=='object'||Array.isArray(draft))throw new Error('DESIGN_CHECKPOINT_RECOVERY_DRAFT_MISSING');
@@ -105,6 +110,7 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
   const authorModel=clean(checkpoint.effectiveDesignerModel)||clean(checkpoint.effectiveDesignerProvider)||'CHECKPOINT_MODEL';
   const draftFile={
     version:5,gameId,date,productionClass:'DESIGN_ONLY',gameSeedId:clean(seed.seedId),
+    ownerDesignEventId:activeOwnerDesignEventId||null,designTopicMode:activeDesignTopicMode||null,
     authorRole:'DESIGN_AUTHOR_CHECKPOINT',authorModel,
     status:'DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT',
     content:deepClone(draft),
@@ -112,6 +118,7 @@ export function materializeDeterministicCheckpointCandidate({gameId,date,root='.
   };
   const revisedFile={
     version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:clean(seed.seedId),
+    ownerDesignEventId:activeOwnerDesignEventId||null,designTopicMode:activeDesignTopicMode||null,
     authorRole:'DESIGN_AUTHOR_CHECKPOINT',authorModel,sameModelAsDraft:true,
     appliedConsensusCount:0,unresolvedConflictCount:0,heldCount:0,status:'DESIGN_BASELINE_CANDIDATE',
     content:revised,
