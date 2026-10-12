@@ -521,6 +521,30 @@ jobs:
               --input=/tmp/system-ai-external-learning-feed.json \
               --output=.vibe2/external-ai-distilled-knowledge.json | tee /tmp/vibe2-external-ai-distillation.log
 
+            # Checkpoint *only* independently verified advisory learning before later
+            # queue work: a >100 MiB task queue must never erase accepted learning.
+            # Use the existing Vibe2 control ref/knowledge store; no direct main write.
+            if grep -Eq '^VIBE2_EXTERNAL_AI_ACCEPTED=[1-9][0-9]*$' /tmp/vibe2-external-ai-distillation.log; then
+              git add -- .vibe2/external-ai-distilled-knowledge.json
+              if ! git diff --cached --quiet -- .vibe2/external-ai-distilled-knowledge.json; then
+                staged="$(git diff --cached --name-only)"
+                test "$staged" = '.vibe2/external-ai-distilled-knowledge.json'
+                git commit -m 'vibe2: checkpoint independently verified advisory learning [skip ci]'
+                if git push origin HEAD:vibe2-unreal-core; then
+                  echo 'VIBE2_VERIFIED_ADVISORY_CHECKPOINT=PUSHED'
+                else
+                  # Re-read canonical control/QA evidence on a newly fetched exact ref.
+                  echo 'VIBE2_VERIFIED_ADVISORY_CHECKPOINT=STALE_CONTROL_REF_RETRY'
+                  sleep 2
+                  continue
+                fi
+              else
+                echo 'VIBE2_VERIFIED_ADVISORY_CHECKPOINT=ALREADY_PERSISTED'
+              fi
+            else
+              echo 'VIBE2_VERIFIED_ADVISORY_CHECKPOINT=NO_NEW_VERIFIED_CANDIDATES'
+            fi
+
             node --check /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs
             node /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs \
               --queue=/tmp/vibe2-company-runtime-queue.json \
@@ -734,6 +758,24 @@ jobs:
             console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=YES');
           } else {
             console.log('VIBE2_QUEUE_SCHEMA_MIGRATED=NO');
+          }
+          NODE
+
+            # The queue is already minified; pushing a blob above GitHub's 100 MiB
+            # hard limit cannot succeed. Keep every task intact and fail closed with
+            # measured evidence rather than burning unlimited retries on GH001.
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='.vibe2/queue.json';
+          const bytes=fs.statSync(file).size;
+          const githubBlobMaxBytes=100*1024*1024;
+          console.log('VIBE2_QUEUE_SERIALIZED_BYTES='+bytes);
+          console.log('VIBE2_QUEUE_GITHUB_BLOB_MAX_BYTES='+githubBlobMaxBytes);
+          if(bytes>githubBlobMaxBytes){
+            console.error('VIBE2_QUEUE_GIT_BLOB_LIMIT_BLOCKED='+bytes);
+            console.error('VIBE2_QUEUE_COMPACTION_REQUIRES_LOSSLESS_DURABLE_HISTORY_MIGRATION');
+            console.error('VIBE2_QUEUE_TASKS_REMOVED=0');
+            process.exit(1);
           }
           NODE
 
