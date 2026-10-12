@@ -184,6 +184,34 @@ const catalog={games:[
   {id:'third-web',name:'Third Web',webPath:'/web-games/third-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}
 ]};
 
+test('planner reads one current central policy snapshot per cycle and refreshes after each cycle',()=>{
+  const root=tempRepo();
+  const policyFile=path.resolve(root,'company-learning/platform-release-roadmap.json');
+  const initial=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+  const originalRead=fs.readFileSync;
+  let policyReads=0;
+  // [검증] 호출 횟수만 관찰하며 기획기/정책 접근 구현은 변경하지 않는다.
+  fs.readFileSync=function(file,...args){
+    if(typeof file==='string'&&path.resolve(file)===policyFile)policyReads++;
+    return originalRead.call(fs,file,...args);
+  };
+  try{
+    const args={status:{projects:[]},catalog:{games:[]},queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4};
+    fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:2}}),'utf8');
+    const first=planVibe2AutonomousTasks(args);
+    assert.equal(first.planningBacklog.distinctGameFlow.target,2);
+    assert.equal(policyReads,1,'same planning cycle must not re-read large main policy');
+    fs.writeFileSync(policyFile,JSON.stringify({...initial,developmentSpeedExecution:{distinctGameDevelopmentTarget:5}}),'utf8');
+    const second=planVibe2AutonomousTasks(args);
+    assert.equal(second.planningBacklog.distinctGameFlow.target,5,'next planning cycle must see changed policy');
+    assert.equal(policyReads,2,'next planning cycle must read the policy exactly once again');
+  }finally{
+    fs.readFileSync=originalRead;
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
+
 
 test('build-up directive persistence keeps platform currents independent and compatibility current prefers autonomous contract',()=>{
   const legacyUnity={
