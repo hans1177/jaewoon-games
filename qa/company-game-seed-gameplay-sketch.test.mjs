@@ -611,3 +611,48 @@ test('free MAIN is synthesized after independent A and B, fused C genres and exp
     assert.deepEqual(computeVibeSeedProposal({...target,gameName:'옛 포근섬 왕국',ownerBrief:'이전 주제 재사용'}),result);
   }
 });
+
+test('cozy fresh design reuses only the verified old seed A gameplay system, not genre, themes or MAIN',()=>{
+  const base={requestId:'cozy-island',category:'CASUAL',platform:'ROBLOX',
+    designTopicMode:'VIBE_FREE_TOPIC',topicRevision:'OWNER-COZY-A-SYSTEM-ONLY-20261012-4',materials:[]};
+  const aOnly={scope:'A_SYSTEM_ONLY',systemFamily:'직접 채집과 주민 작업 배분',
+    playerChoice:'직접 자원을 채집하거나 주민에게 맡길 작업의 대상과 우선순위를 선택',
+    source:'game-catalog.json#cozy-island.description'};
+  const without=computeVibeSeedProposal(base);
+  const fresh=computeVibeSeedProposal({...base,aSystemReference:aOnly});
+  const legacyPoison=computeVibeSeedProposal({...base,aSystemReference:aOnly,
+    gameName:'포근섬: 작은 왕국 키우기',ownerBrief:'왕조 계승과 주민 병영 5개 거점 점령',
+    coreLoop:['과거 집 꾸미기','과거 생활 공간 탐색','과거 시드 정답'],
+    materials:[{causalDNA:['DYNASTIC_INHERITANCE','PATRONAGE_NETWORK']}],
+    category:'CASUAL'});
+  assert.deepEqual(fresh,legacyPoison,'old game content must never alter the new composition');
+  const fusion=fresh.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
+  const control=without.gameplaySketch.novelGameGrammar.gameplaySystemFusion;
+  assert.equal(fusion.majorAxes[0].systemFamily,aOnly.systemFamily);
+  assert.match(fusion.majorAxes[0].playerChoice,/직접 자원을 채집하거나 주민에게 맡길 작업/);
+  assert.notEqual(fusion.majorAxes[1].systemFamily,aOnly.systemFamily);
+  assert.deepEqual(fusion.majorAxes[1],control.majorAxes[1],
+    'B gameplay family and independently selected B creative material cannot inherit the old system');
+  assert.deepEqual(fusion.themeFusion,control.themeFusion,
+    'C creative sources and primary/secondary genres cannot inherit the old system');
+  assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.causalDNAs,
+    without.gameplaySketch.novelGameGrammar.causalDNAs);
+  assert.deepEqual(fresh.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3),
+    without.gameplaySketch.novelGameGrammar.delveLayer.elements.slice(0,3));
+  assert.notEqual(fresh.distinctIdentity,without.distinctIdentity);
+  assert.notEqual(fresh.gameName,without.gameName);
+  assert.match(fresh.distinctIdentity,/MAIN은 A\(/);
+  assert.match(fresh.distinctIdentity,/C\(메인/);
+  assert.match(fresh.distinctIdentity,/@\(/);
+  assert.ok(!fresh.distinctIdentity.includes('포근섬: 작은 왕국 키우기'));
+  assert.ok(!fresh.distinctIdentity.includes('왕조 계승과 주민 병영'));
+  assert.equal(fresh.gameplaySketch.novelGameGrammar.emergentGenre.grammarFormula,
+    'MAIN × A × B × C + @');
+  const sketch=normalizeGameplaySketch({...base,aSystemReference:aOnly},fresh,fresh.coreLoop,fresh.gameName);
+  const seed={...legacySeed(),GAMEPLAY_SKETCH:sketch,CORE_LOOP:fresh.coreLoop,
+    DISTINCT_IDENTITY:fresh.distinctIdentity,CORE_FUN_TO_LEARN:fresh.coreFunToLearn,
+    INITIAL_TARGET_PLATFORM:fresh.initialTargetPlatform,INITIAL_PLAY_MODE:fresh.initialPlayMode,
+    MULTIPLAYER_DESIGN_MODE:fresh.multiplayerDesignMode,
+    CROSS_PLATFORM_EXPANSION_VALUE:fresh.crossPlatformExpansionValue};
+  assert.equal(validateGameSeed(seed).pass,true,'the fresh basic design must satisfy the seed contract');
+});
