@@ -463,12 +463,14 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
   assert.equal(nativeSource.includes('127.0.0.1:11434'),false);
   assert.equal(nativeSource.includes('requestLocalDesignerRaw'),false);
   assert.equal(nativeSource.includes('callLocalDesignerModel'),false);
-  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION','KINGDOM']){
+  for(const category of ['ACTION_SURVIVAL_ROGUELITE','SINGLE_DEFENSE_STRATEGY','PUZZLE','INFECTION','KINGDOM','CASUAL']){
     const sourceIds=CAUSAL_DNA_LIBRARY.slice(0,5).map(row=>row.id);
     const target={requestId:'native-qa-'+category,category,platform:'ROBLOX',materials:[
       {materialId:'MAT-001',causalDNA:sourceIds.slice(0,3)},
       {materialId:'MAT-002',causalDNA:sourceIds.slice(2,5)}
     ]};
+    // 자유주제는 기존 개발의 CASUAL 명칭과 독립적으로 MAIN/A/B/C/@를 새로 작성한다.
+    if(category==='CASUAL'){target.designTopicMode='VIBE_FREE_TOPIC';target.topicRevision='FREE-NATIVE-QUALITY-1';}
     const proposal=computeVibeSeedProposal(target);
     if(category==='KINGDOM')proposal.gameplaySketch.novelGameGrammar.delveLayer.elements.push(
       {name:'주민의 이중 약속',discoveryCondition:'수확을 기다리는 주민에게 경비와 생산을 번갈아 맡겨 관계 변화를 비교한다.',masteryOrInsight:'같은 주민의 과거 역할이 새 거점의 협상 조건을 바꾸는 원리를 배운다.',gameplayEffect:'정복 대신 생산 협약으로 거점 접근권을 얻는 선택이 열린다.',connectsTo:['MAIN','C']},
@@ -483,6 +485,7 @@ console.log('DESIGN_REQUIRED_GRAMMAR_MULTIPLAYER_UNITY_WEB_DEPTH=PASS');
       TARGET_SESSION_MINUTES:30,TARGET_SESSION_DIRECTION:'30분 상태·위험·선택의 성장',
       INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:proposal.multiplayerDesignMode
     };
+    if(category==='CASUAL'){seed.designTopicMode='VIBE_FREE_TOPIC';seed.ownerResetRevision=target.topicRevision;}
     let sourceText='';
     if(category==='INFECTION'){
       const humans=['A','B','C'],monsters=['X','Y','Z'];
