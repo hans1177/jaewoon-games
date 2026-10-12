@@ -199,10 +199,10 @@ test('central development orchestrator runs Unity Web floor before new Roblox an
   assert.match(admission,/MINIMUM_DESIGN_CONTRACT_REQUIRED/);
   assert.match(admission,/DUAL_PLATFORM_DESIGN_PROFILE_REQUIRED/);
   assert.match(development,/eligible_json:/);
-  assert.match(development,/unity_web_json:/);
-  assert.match(development,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
-  assert.match(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
+  assert.doesNotMatch(development,/unity_web_json:/);
+  assert.doesNotMatch(development,/UNITY_WEB_FLOOR_BOOTSTRAP_IDS/);
+  assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-first-stage-build\.yml/);
+  assert.doesNotMatch(development,/uses: \.\/\.github\/workflows\/unity-web-floor-source-bootstrap\.yml/);
   assert.match(admission,/upper-platform-development-readiness\.json/);
   assert.match(admission,/READINESS_SOURCE_STALE/);
   assert.match(development,/uses: \.\/\.github\/workflows\/company-development-roblox-runtime\.yml/);
