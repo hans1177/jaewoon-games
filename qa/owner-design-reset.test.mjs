@@ -558,6 +558,20 @@ test('design runtime lazily restores only validated active owner baselines befor
   assert.ok(messages.includes('OWNER_DESIGN_BASELINE_LOAD_MODE=TARGET_FILES_ONLY'));
   reads.length=0;
   writes.length=0;
+  const aSeed='design/cozy-island/2026-09-22/design-revised.json';
+  execute([{gameId:'cozy-island',designRequest:{topicMode:'VIBE_FREE_TOPIC',baselineSource:'',
+    aSystemReference:{scope:'A_SYSTEM_ONLY',source:aSeed}}}]);
+  assert.deepEqual(reads,['origin/company-runtime:'+aSeed],
+    'the free redesign may download the exact original design only for A seed system extraction');
+  assert.deepEqual(writes.map(row=>row.file),[aSeed]);
+  reads.length=0;
+  writes.length=0;
+  assert.throws(()=>execute([{gameId:'cozy-island',designRequest:{topicMode:'VIBE_FREE_TOPIC',
+    aSystemReference:{scope:'A_SYSTEM_ONLY',source:'design/another-game/2026-09-22/design-revised.json'}}}]),
+    /OWNER_DESIGN_A_SYSTEM_ONLY_PATH_INVALID/);
+  assert.equal(reads.length,0);
+  reads.length=0;
+  writes.length=0;
   assert.throws(()=>execute([{gameId:'daechung-rpg',designRequest:{baselineSource:'design/daechung-rpg/../unsafe.json'}}]),/OWNER_DESIGN_BASELINE_PATH_INVALID/);
   assert.equal(reads.length,0);
   assert.equal(writes.length,0);
