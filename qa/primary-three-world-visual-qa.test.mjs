@@ -37,7 +37,11 @@ test('대충 RPG는 5개 대형 지역과 보스 실루엣을 재사용한 수�
  assert.match(server,/BossCompanionRoster/);
  assert.match(server,/ActiveBossCompanions/);
  assert.match(server,/VillageHouse/);
- for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','MarketStall','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
+ for(const marker of ['RPG_FANTASY_PORTAL_WORLD_V5','RPG_STYLIZED_TOY_FANTASY_R15','MedievalAssetArmor','MedievalVillageHouse','ChiefCape','SwordGuard','HealerHood','SnowMound','SnowBeastBody','SnowBeastMuzzle','WolfBody','GolemBody','BanditTorso','KnightTorso'])assert.match(server,new RegExp(marker));
+ // Native imported market props replaced the old primitive MarketStall label.
+ assert.match(server,/assetProp\(f,ASSETS\.City,\{"market","stall","cart"\}/);
+ assert.match(server,/native.Name="NativeLibraryActor"/);
+ assert.match(server,/task.spawn\(bindNativeNpcVisual,r,nativeId\)/);
  assert.doesNotMatch(server,/local r=ppart\(parent,name,Vector3\.new\(3\.1,4\.2,2\.1\)\*scale/);
  assert.match(config,/BossCompanions=\{/);
 });
