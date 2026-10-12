@@ -2,7 +2,7 @@
   "version": 1,
   "kind": "tester-debug-tickets",
   "policy": "UNIFIED_WEB_NATIVE_POST_RELEASE_TESTER_DEBUG_INTAKE",
-  "updatedAt": "2026-10-12T02:41:22.457Z",
+  "updatedAt": "2026-10-12T02:56:24.021Z",
   "tickets": [
     {
       "id": "bug-75c7e2ad02f8ebe0d834",
@@ -127,15 +127,19 @@
       "evidence": [
         "roblox-source-bootstrap:source-generation-failed",
         "{\"sourceRevision\":\"957db34d959c4525db5e9e948cb076e7e2f1a034\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COMPETITIVE_SCORE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED"
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|CONFIG_MULTIPLAYER_PROFILE_REQUIRED|SERVER_MULTIPLAYER_BROADCAST_REQUIRED|SERVER_COMPETITIVE_SCORE_REQUIRED|CLIENT_MULTIPLAYER_SYNC_REQUIRED",
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_PLAY_MODE_PROFILE_REQUIRED|SERVER_COOP_SHARED_OBJECTIVE_REQUIRED",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
       "repairEligible": true,
       "status": "OPEN",
       "createdAt": "2026-09-23T10:27:18.034Z",
-      "updatedAt": "2026-09-24T05:00:54.476Z",
-      "occurrenceCount": 114
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 115,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false
     },
     {
       "id": "bug-2cfb0882ff23baaef682",
@@ -775,8 +779,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-09-26T04:43:41.874Z",
-      "updatedAt": "2026-10-12T02:41:22.454Z",
-      "occurrenceCount": 30
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 31
     },
     {
       "id": "bug-9435eb3559169c01c615",
@@ -7566,7 +7570,8 @@
         "{\"sourceRevision\":\"07b3a4ae18d2a9bf8c0d0f789cbe4cd42f593fdf\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-runtime-evidence-pending",
         "{\"sourceRevision\":\"494e05c337444551c11bf56795d433b07d0308df\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"34c0ee4cb18ebf2fdabfd5481b8d73a283f52717\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -7575,8 +7580,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T13:05:37.714Z",
-      "updatedAt": "2026-10-12T02:41:22.454Z",
-      "occurrenceCount": 10
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 11
     },
     {
       "id": "bug-035dc6fe2d7d30a8af0e",
@@ -7594,7 +7599,8 @@
         "roblox-source-promotion-pending",
         "roblox-runtime-evidence-pending",
         "{\"sourceRevision\":\"f17cde0b7329efb0b5b91fde9147cef1d3ea84c0\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
-        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":\"9079774b46a74ae770574e23daba30c38664e2cc\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -7603,8 +7609,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T13:05:37.714Z",
-      "updatedAt": "2026-10-12T02:41:22.454Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-cef9d026fb7e3388b60e",
@@ -7773,8 +7779,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T13:05:37.714Z",
-      "updatedAt": "2026-10-11T23:02:45.095Z",
-      "occurrenceCount": 35
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 36
     },
     {
       "id": "bug-c595160fc80a8773aadf",
@@ -7790,7 +7796,8 @@
         "roblox-source-bootstrap:existing-source-studio-asset-binding-required:ROBLOX_STUDIO_ASSET_BINDING_REFRESH_REQUIRED",
         "{\"sourceRevision\":\"afbb92536eb3aa4c5014597d7fcf5acb215041f6\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
         "roblox-runtime-evidence-pending",
-        "{\"sourceRevision\":\"09d3e2e2a949fa9bf5631f31b344baaac6a769e5\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+        "{\"sourceRevision\":\"09d3e2e2a949fa9bf5631f31b344baaac6a769e5\",\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
       ],
       "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
       "route": "FOCUSED_REPAIR_AND_RECOVERY",
@@ -7799,8 +7806,8 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-11T13:05:37.714Z",
-      "updatedAt": "2026-10-11T16:07:03.916Z",
-      "occurrenceCount": 9
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 10
     },
     {
       "id": "bug-eeff338771d1ea0e9b06",
@@ -8123,7 +8130,79 @@
       "externalReleaseBlockingOnly": false,
       "status": "OPEN",
       "createdAt": "2026-10-12T02:41:22.454Z",
-      "updatedAt": "2026-10-12T02:41:22.454Z",
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 2
+    },
+    {
+      "id": "bug-1914c95bbdae27625f92",
+      "gameId": "cozy-island",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-static-revalidation-failed",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-12T02:56:24.018Z",
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-5fb32d2c05ee6a34483f",
+      "gameId": "human-go",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-static-revalidation-failed",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-12T02:56:24.018Z",
+      "updatedAt": "2026-10-12T02:56:24.018Z",
+      "occurrenceCount": 1
+    },
+    {
+      "id": "bug-eb83ec2636f91acaa5e8",
+      "gameId": "party-rpg",
+      "surface": "ROBLOX",
+      "phase": "NATIVE_RUNTIME_OR_REGRESSION",
+      "severity": "LOW",
+      "category": "UNKNOWN",
+      "signature": "existing-source-static-revalidation-failed",
+      "reproduction": "RERUN_EXACT_ROBLOX_SOURCE_BUILD_PREFLIGHT_STAGE_AND_CAPTURE_COMPILER_PACKAGE_OR_F0_EVIDENCE",
+      "responsibleFiles": [],
+      "evidence": [
+        "roblox-source-bootstrap:existing-source-static-revalidation-failed:CONFIG_GENRE_PROFILE_REQUIRED",
+        "{\"sourceRevision\":null,\"buildSourceRevision\":null,\"artifactIdentity\":null,\"buildPreflightPassed\":false,\"foundationF0Passed\":false}"
+      ],
+      "exactFailedStage": "TARGET_PLATFORM_SOURCE_BIND",
+      "route": "FOCUSED_REPAIR_AND_RECOVERY",
+      "repairEligible": true,
+      "internalFlowBlocking": true,
+      "externalReleaseBlockingOnly": false,
+      "status": "OPEN",
+      "createdAt": "2026-10-12T02:56:24.018Z",
+      "updatedAt": "2026-10-12T02:56:24.018Z",
       "occurrenceCount": 1
     }
   ]
