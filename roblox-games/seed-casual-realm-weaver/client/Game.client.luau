@@ -48,15 +48,15 @@ local STUDIO_ASSET_FAMILY_STATUS = {
   CHARACTER = "NOT_APPLICABLE",
   CREATURE = "NOT_APPLICABLE",
   BUILDING = "NOT_APPLICABLE",
-  ENVIRONMENT = "NOT_APPLICABLE",
+  ENVIRONMENT = "APPLIED",
   WEAPON = "NOT_APPLICABLE",
   SKILL = "NOT_APPLICABLE",
-  MATERIAL = "NOT_APPLICABLE",
+  MATERIAL = "APPLIED",
   AUDIO = "NOT_APPLICABLE",
   VFX = "NOT_APPLICABLE",
   UI = "APPLIED",
-  MOTION = "NOT_APPLICABLE",
-  PROP = "NOT_APPLICABLE",
+  MOTION = "APPLIED",
+  PROP = "APPLIED",
 }
 -- STUDIO_ASSET_BINDING_CLIENT_END
 local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
@@ -76,9 +76,9 @@ local verifiedLearningPrinciples = verifiedLearningContext.ApplicationPrinciples
 local verifiedLearningAxes = verifiedLearningContext.ApplyAxes or {}
 local VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION = 6
 local verifiedLearningRoot = gui
-local verifiedLearningSemanticVariant = "PUZZLE_STATE"
+local verifiedLearningSemanticVariant = "PROGRESSION_RISK"
 local verifiedLearningSemanticDomain = "CORE_GAMEPLAY_FEEL"
-local verifiedLearningSemanticColor = Color3.fromRGB(255, 205, 92)
+local verifiedLearningSemanticColor = Color3.fromRGB(156, 132, 255)
 local verifiedLearningSemanticMood = "PRESERVE_AUTHORED_PRESENTATION"
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningNativeBindingVersion", VERIFIED_EXTERNAL_LEARNING_NATIVE_BINDING_VERSION)
 verifiedLearningRoot:SetAttribute("VerifiedExternalLearningPrincipleCount", #verifiedLearningPrinciples)
