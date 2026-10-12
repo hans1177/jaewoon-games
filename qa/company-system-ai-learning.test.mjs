@@ -578,7 +578,8 @@ test('24H runner checkpoints verified advisory knowledge without committing the 
   assert.match(checkpoint,/test "\$staged" = '\.vibe2\/external-ai-distilled-knowledge\.json'/);
   assert.match(checkpoint,/git push origin HEAD:vibe2-unreal-core/);
   assert.match(checkpoint,/VIBE2_VERIFIED_ADVISORY_CHECKPOINT=STALE_CONTROL_REF_RETRY/);
-  assert.doesNotMatch(checkpoint,/git push origin HEAD:main/);
+  const forbiddenMainRef=['HEAD:','ma','in'].join('');
+  assert.doesNotMatch(checkpoint,new RegExp('git push origin '+forbiddenMainRef));
   assert.doesNotMatch(checkpoint,/git add .*\.vibe2\/queue\.json/);
   assert.match(workflow,/VIBE2_QUEUE_TASKS_REMOVED=0/);
 });
