@@ -133,6 +133,9 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
     }
     if(typeof value!=='string')return;
     const text=clean(value);
+    // 유틸: 문법의 정확한 참조 역할은 설명문이 아니다. 실제 시스템·선택·출처는 아래 표준 검수로 확인한다.
+    if(path==='creativeGrammar.b.existingSystemReference.scope'&&text==='B_SUPPORTING_REFERENCE_ONLY')return;
+    if(path==='creativeGrammar.existingGameSystemRole'&&text==='B_SUPPORTING_REFERENCE')return;
     // 기존 표현 개선 계약이 생성하는 추적 ID는 설명용 임시 표식이 아니다.
     if(/^implementationTraceability\[\d+\]\.designElement$/.test(path)&&['ASSET_ADAPTATION','LIVING_MOTION_AND_ANIMATION_FEEL','VFX_AUDIO_CAMERA_POLISH_MOBILE'].includes(text))return;
     if((!identifier&&/^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}$/.test(text))||/\b(?:TODO|TBD|PLACEHOLDER)\b|작성 예정|추후 작성|^미정$/i.test(text)){
@@ -159,6 +162,14 @@ export function validateDesignAuthoringContent({design={},seed={},fields=Object.
       const gameRows=basicDesignMethod.gameGenreClassification;
       const materialRows=basicDesignMethod.materialClassification;
       const a=grammar?.a||{},b=grammar?.b||{};
+      const reference=b.existingSystemReference;
+      if(a.existingSystemReference||grammar.existingGameSystemRole&&grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
+        ||reference&&(reference.scope!=='B_SUPPORTING_REFERENCE_ONLY'||grammar.existingGameSystemRole!=='B_SUPPORTING_REFERENCE'
+          ||!textReady(reference.systemFamily,1)||!textReady(reference.playerChoice,1)||!textReady(reference.source,1))
+        ||grammar.existingGameSystemRole&&!reference){
+        reject('DESIGN_STANDARD_CLASSIFICATION_INVALID','CATEGORY_IDENTITY',['creativeGrammar'],{},
+          '기존 게임 시스템은 새 B 중심 시스템을 대체하지 않고 B 안의 보조 참조로만 기록한다. 원본 시스템·선택·출처를 적고 A·C·D·@의 생성 근거로 사용하지 않는다.');
+      }
       const aGenre=gameRows.find(row=>row.representative===a.gameGenre);
       const bGenre=gameRows.find(row=>row.representative===b.gameGenreRepresentative);
       const aMaterial=materialRows.find(row=>row.broad===a.material);
@@ -749,5 +760,6 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     pendingSeedStillRequiresCreativeDesign:pendingIntakeV5,
   };
 }
+
 
 

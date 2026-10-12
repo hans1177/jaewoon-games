@@ -543,6 +543,7 @@ const CREATIVE_THEME={type:'object',required:['name','kind','gameplayEffect'],pr
 },additionalProperties:false};
 const CREATIVE_AXIS={type:'object',required:['system','material','materialDomain','stateChange','gameGenre','gameRole'],properties:{
   gameGenre:{type:'string',minLength:2},gameRole:{type:'string',enum:['PRIMARY','SUPPORTING']},gameGenreRepresentative:{type:'string'},materialPath:RULE_IDS,supportingReason:{type:'string',minLength:20},
+  existingSystemReference:{type:'object',required:['scope','systemFamily','playerChoice','source'],properties:{scope:{type:'string',const:'B_SUPPORTING_REFERENCE_ONLY'},systemFamily:{type:'string',minLength:1},playerChoice:{type:'string',minLength:1},source:{type:'string',minLength:1}},additionalProperties:false},
   system:{type:'string',minLength:2,maxLength:180},material:{type:'string',minLength:2,maxLength:180},
   materialDomain:{type:'string',minLength:2,maxLength:180},stateChange:{type:'string',minLength:20,maxLength:700}
 },additionalProperties:false};
@@ -579,6 +580,7 @@ const CREATIVE_GRAMMAR={type:'object',required:['standardVersion','materialHiera
     nextEvent:{type:'string',minLength:20,maxLength:700}
   },additionalProperties:false},
   standardVersion:{type:'integer',const:1},materialHierarchyVersion:{type:'integer',const:2},
+  existingGameSystemRole:{type:'string',const:'B_SUPPORTING_REFERENCE'},
   dCreations:{type:'array',minItems:1,items:{type:'object',required:['id','materialPath','pathReason','sourceFeature','action','condition','consequence','risk','creation','gameplayEffect','genreRoles','linkedElements'],properties:{...Object.fromEntries(['sourceFeature','action','condition','consequence','risk'].map(key=>[key,{type:'string',minLength:4}])),id:{type:'string',minLength:1},materialPath:{type:'array',minItems:3,maxItems:3,items:{type:'string',minLength:1}},pathReason:{type:'string',minLength:15},creation:{type:'string',minLength:30},gameplayEffect:{type:'string',minLength:25},genreRoles:{type:'array',minItems:2,maxItems:2,items:{type:'string',enum:['PRIMARY','SECONDARY']}},linkedElements:{type:'array',minItems:2,items:{type:'string',enum:['A','B']}}},additionalProperties:false}},
   cGenres:{type:'array',minItems:2,maxItems:2,items:CREATIVE_GENRE},
   cGenreInterlock:{type:'string',minLength:30,maxLength:900},
@@ -1254,13 +1256,25 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 // 파일명: tools/company-design-cycle.mjs / 메인: 바이브 자체 인과 설계 연산
 let nativeDesignVariation=0;
 function computeVibeNativeDesign(){
-  const freeTopicMode=seed.designTopicMode==='VIBE_FREE_TOPIC';
-  const original=freeTopicMode?{}:seed.originalDesignContext?.content||{};
+  const ownerFreeTopic=seed.designTopicMode==='VIBE_FREE_TOPIC';
+  const original=ownerFreeTopic?{}:seed.originalDesignContext?.content||{};
   // 원본 소재명이 존재하는 것만으로 완성된 설계라고 보지 않는다. 검증된 문법만 그대로 재사용한다.
   const preserved=Boolean(original.creativeGrammar?.a?.material&&original.creativeGrammar?.b?.material
     &&validateDesignAuthoringContent({design:{creativeGrammar:original.creativeGrammar},seed,fields:['creativeGrammar']}).length===0);
   const materialIds=new Set(seed.SEED_MATERIAL_IDS||[]);
   const materials=(seedState.seedMaterials||[]).filter(row=>materialIds.has(row.materialId));
+  // 메인: 기존 게임의 플레이 시스템은 B 안의 보조 참고로만 인계한다. B의 중심 시스템은 새 문법으로 생성한다. 제목·소재·세계관은 새 A/C/D/@의 선택 근거가 아니다.
+  const existingLoop=Array.isArray(original.coreLoop)&&original.coreLoop.length?original.coreLoop:Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];
+  const existingSystem=seed.B_SYSTEM_REFERENCE||seed.A_SYSTEM_REFERENCE;
+  const existingGameDesign=Boolean(seed.originalDesignContext||existingSystem||seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION||(typeof catalogGame!=='undefined'&&catalogGame));
+  const bSystemReference=typeof basicDesignMethod!=='undefined'&&basicDesignMethod&&existingGameDesign&&!(seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE')?{
+    scope:'B_SUPPORTING_REFERENCE_ONLY',
+    systemFamily:clean(existingSystem?.systemFamily||original.creativeGrammar?.a?.system||existingLoop[0]),
+    playerChoice:clean(existingSystem?.playerChoice||original.creativeGrammar?.a?.stateChange||existingLoop.join(' → ')),
+    gameGenre:clean(existingSystem?.gameGenre||original.creativeGrammar?.a?.gameGenre),
+    source:clean(seed.DESIGN_BASELINE_SOURCE||seed.originalDesignContext?.source||seed.seedId)
+  }:null;
+  const freeTopicMode=ownerFreeTopic||Boolean(bSystemReference);
   const computed=computeVibeSeedProposal({
     requestId:gameId,category:seed.GAME_CATEGORY,platform:seed.INITIAL_TARGET_PLATFORM,
     gameName:freeTopicMode?'':clean(seed.gameName||game.name),
@@ -1270,7 +1284,8 @@ function computeVibeNativeDesign(){
     materials:freeTopicMode?[]:materials,variant:nativeDesignVariation,
     designTopicMode:freeTopicMode?'VIBE_FREE_TOPIC':'ORIGINAL_CONTEXT',
     topicRevision:freeTopicMode?seed.ownerResetRevision:'',
-    aSystemReference:freeTopicMode?seed.A_SYSTEM_REFERENCE:null,
+    aSystemReference:!basicDesignMethod&&freeTopicMode?seed.A_SYSTEM_REFERENCE:null,
+    bSystemReference,
     basicDesignMethod:typeof basicDesignMethod==='undefined'?null:basicDesignMethod,
     discoveryCount:seed.designDiscoveryCount
   });
@@ -1295,7 +1310,7 @@ function computeVibeNativeDesign(){
     &&signature.reduce((total,from)=>total+signature.filter(to=>from!==to
       &&Array.isArray(from?.stateOutputs)&&Array.isArray(to?.stateInputs)
       &&from.stateOutputs.some(key=>to.stateInputs.includes(key))).length,0)>=5;
-  const rulePlan=originalRoles?structuredClone(signature):[
+  const rulePlan=originalRoles&&!bSystemReference?structuredClone(signature):[
     {id:'VIBE_MAIN',grammarRole:'MAIN',name:mainName,
       purpose:freeTopicMode?shorten(`${main.purpose} WorldAccessState·IntentState가 출발 RouteState를 결정한다.`,410):shorten(`${main.purpose} 게임의 반복 목표와 세계의 접근 가능성을 상태로 관리한다.`,410),
       playerChoice:shorten(`${main.playerAction} 이후 다음 행동의 위험과 보상을 직접 선택한다.`,410),
@@ -1339,7 +1354,7 @@ function computeVibeNativeDesign(){
     stateChange:shorten(`${edge.from.id} 출력 ${edge.keys.join('·')} → ${edge.to.id} 입력. 후속 선택: ${edge.to.playerChoice} 가능 여부·위험을 전후 비교한다. 취소·조건 미충족이면 출력과 후속 선택을 보존한다. 결과는 연결된 다음 규칙으로 전달하며 기존 저장·보상 수치는 유지한다.`,350)
   }));
   // 접수용 반복문을 설계 원본으로 승격하지 않는다. 문법 검증된 원본 또는 현재 문법 연산의 루프만 사용한다.
-  const baseLoop=preserved&&originalRoles&&Array.isArray(original.coreLoop)&&original.coreLoop.length>=3
+  const baseLoop=preserved&&originalRoles&&!bSystemReference&&Array.isArray(original.coreLoop)&&original.coreLoop.length>=3
     ?original.coreLoop.slice(0,8):computed.coreLoop;
   const coreLoop=baseLoop.map(value=>shorten(value,330));
   const identity=freeTopicMode?shorten(`${name}. MAIN은 A(${a.systemFamily} × ${a.sourceMaterial})와 독립적인 B(${b.systemFamily} × ${b.sourceMaterial})의 양방향 RiskState·ResourceState·RouteState 변화, C(메인 ${c.genres[0].name} × 보조 ${c.genres[1].name})의 판정 차이, @(${delve[0].name})가 여는 새 WorldAccessState를 합성한 결과다.`,950):shorten(`${name}. ${grammar.emergentGenre.name}. ${mainName}에서 ${a.name}과 ${b.name}이 서로 결과를 되돌려 바꾸며 ${c.genres[0].name}·${c.genres[1].name}의 판단이 실제 세계 상태를 변화시킨다.`,950);
@@ -1367,7 +1382,7 @@ function computeVibeNativeDesign(){
       worldChange:shorten(`${grammar.storyWorldBindings.regionRule} ${c.jointWorldRule}`),
       nextEvent:shorten(`${grammar.storyWorldBindings.storyRule} 다음 사건은 직전 세계·관계 상태를 읽고 발생한다.`)
     },
-    cThemes:c.themes.map(t=>({name:t.name,kind:'MATERIAL',gameplayEffect:shorten(t.causalEffect,590)})),
+    cThemes:(c.themes||[]).map(t=>({name:t.name,kind:'MATERIAL',gameplayEffect:shorten(t.causalEffect,590)})),
     cGenres:c.genres.map(g=>({role:g.role,name:g.name,gameplayEffect:shorten(g.gameplayEffect,630)})),
     cGenreInterlock:shorten(c.genreInterlock),
     cWorldAndGameplayEffect:shorten(`${grammar.worldRule} ${c.jointWorldRule} ${c.abGameplayEffect}`),
@@ -1444,6 +1459,8 @@ function computeVibeNativeDesign(){
     const selection=computed.basicDesignSelection;
     creativeGrammar.standardVersion=selection.standardVersion;
     creativeGrammar.materialHierarchyVersion=selection.materialHierarchyVersion;
+    if(bSystemReference)creativeGrammar.existingGameSystemRole='B_SUPPORTING_REFERENCE';
+    if(selection.existingSystemReference)creativeGrammar.b.existingSystemReference=selection.existingSystemReference;
     Object.assign(creativeGrammar.a,selection.a,{materialDomain:selection.a.material});
     Object.assign(creativeGrammar.b,selection.b,{materialDomain:selection.b.materialPath.join('→')});
     creativeGrammar.dCreations=selection.dSources.map((source,index)=>({
@@ -1497,11 +1514,11 @@ function computeVibeNativeDesign(){
       linkedElements:['A','B','C'],ruleIds:[roles.A.id,roles.B.id],regionIds
     }),
     ...(creativeGrammar.dCreations||[]).map((creation,index)=>detail('D',{
-      creationId:creation.id,when:`${creation.id}의 기록이 A 행동 후 남고 B 판정 조건을 만족할 때 실행한다.`,
-      where:`${regions[index%regions.length].name}의 기록 장치에서 출발해 다른 지역의 반응과 비교한다.`,
+      creationId:creation.id,when:`${creation.condition} 조건을 만족하고 A의 결과가 B의 판단에 전달될 때 실행한다.`,
+      where:`${regions[index%regions.length].name}에서 ${creation.materialPath[2]}의 ${creation.sourceFeature}와 A·B의 행동 조건을 확인한다.`,
       what:creation.creation,how:creation.gameplayEffect,
       why:`${creation.pathReason} ${creativeGrammar.cGenreInterlock}`,
-      result:`${creation.id}에서 확인한 기록만 다음 A 선택에 반영한다. 새 단서는 해당 D의 @ 발견 조건으로 전달한다.`,
+      result:`${creation.action} 행동의 ${creation.consequence} 결과를 다음 A 선택에 반영한다. ${creation.risk} 위험과 달라진 조건은 해당 D의 @ 콘텐츠 연구·창작·개발로 전달한다.`,
       linkedElements:['A','B'],ruleIds:[roles.A.id,roles.B.id],regionIds
     })),
     ...creativeGrammar.delveDiscoveries.map((discovery,index)=>{
@@ -1519,6 +1536,7 @@ function computeVibeNativeDesign(){
     })
   ];
   if(creativeGrammar.standardVersion){
+    creativeGrammar.delveGrowthRule=shorten(basicDesignMethod.contentDepthContract.primaryPurposeKo+' '+[9,3,8].map(index=>basicDesignMethod.contentDepthContract.rulesKo[index]).join(' '),700);
     const cDetail=creativeGrammar.fiveWOneH.find(row=>row.element==='C');
     cDetail.what=`C 작품 장르: ${creativeGrammar.cGenres.map(row=>row.name).join(' + ')}. ${creativeGrammar.cWorldAndGameplayEffect}`;
     cDetail.how=creativeGrammar.cGenres.map(row=>`${row.name}: ${row.gameplayEffect}`).join(' ');
@@ -1643,7 +1661,7 @@ function computeVibeNativeDesign(){
     const role=asset?clean(asset.role||asset.subfamily):`${family}의 인과 표현 소재`;
     return {family,role,bodyPlan:'플레이 대상의 실제 공간 크기·실루엣·역할을 반영한 3차원 형태',
       behavior:`${a.name}와 ${b.name}의 상태 반응에 맞춰 움직임과 상호작용이 달라진다.`,
-      presentation:`${c.themes[0].name}와 ${c.themes[1].name}의 차이를 조명·표면·동작으로 구분한다.`,
+      presentation:computed.basicDesignSelection?`${creativeGrammar.dCreations.map(row=>row.materialPath[2]).join('·')}의 특징을 조명·표면·동작으로 구분한다.`:`${c.themes[0].name}와 ${c.themes[1].name}의 차이를 조명·표면·동작으로 구분한다.`,
       ruleIds:[rules[index%rules.length].id],useLocation:`${regions[index%2].name}에서 세계 반응을 표시한다.`,
       assetId:asset?asset.id:'',decision:asset?'ADAPT':'AUTHOR',
       selectionReason:asset?'현재 회사 라이브러리의 라이선스·등록 정보가 확인된 후보를 기존 역할에 맞춰 적응한다.':'확인된 호환 후보가 없으므로 자산 제작 대상이며 재사용과 라이선스 확인이 우선이다.',
@@ -1717,7 +1735,7 @@ function computeVibeNativeDesign(){
         :'로블록스 서버·클라이언트의 복제·물리·렌더·메모리·화면 내 오브젝트 예산을 모바일 런타임에서 검증한다.',
       sessionConstraints:'첫 행동·시스템 왕복·숙련 발견과 중단 복귀의 실제 소요 시간은 해당 플랫폼 네이티브 런타임에서 측정한다.'
     },
-    visualDirection:shorten(`${c.themes[0].name}와 ${c.themes[1].name}의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.`),
+    visualDirection:shorten(computed.basicDesignSelection?`${creativeGrammar.dCreations.map(row=>row.materialPath[2]).join('·')}의 특징을 3차원 공간의 실루엣·재질·광원으로 표현하고 작품 주·보조 장르의 위험 신호를 구분한다.`:`${c.themes[0].name}와 ${c.themes[1].name}의 법칙을 3차원 공간의 실루엣·재질·광원으로 표현하고 주·보조 장르의 위험 신호를 구분한다.`),
     mobileUx:'터치 조이스틱·행동·뒤로가기와 필수 상태를 안전 여백 안에 배치하고 조작·카메라·화면 잘림을 모바일에서 확인한다.',
     uxAccessibilityPlan:{
       hudPriorities:'세계 상태·위험·현재 행동과 되돌릴 수 있는 선택을 플레이 화면에서 먼저 읽게 한다.',
@@ -2160,6 +2178,7 @@ console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTI
 console.log('PAID_AI_ALLOWED=NO');
 console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'VIBE_NATIVE_FUNCTION'}`);
 console.log('DESIGN_GATE_PROVIDER=DETERMINISTIC_EVIDENCE_ENGINE');
+
 
 
 
