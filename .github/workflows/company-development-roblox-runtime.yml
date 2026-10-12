@@ -2201,9 +2201,14 @@ jobs:
           for(const item of q.items||[]){
             if(requested&&String(item.gameId||'').trim()!==requested)continue;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
+            // 비공개 게시로 개발 레인이 닫혀도 기존 정확 후보의 실행 검수는 끝까지 이어간다.
+            const pendingRuntimeQa=roadmap.developmentAccess?.ROBLOX==='ALWAYS_ALLOWED'
+              &&item.robloxBuildOrPackagePassed===true&&item.robloxBuildPreflightPassed===true&&item.robloxFoundationF0Passed===true
+              &&item.robloxRuntimeCandidateEvidence?.published===true
+              &&(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion);
             const concurrentDefault=platformDevelopmentEligible(item,'ROBLOX');
             const secondaryOwnerFocus=!concurrentDefault&&ownerFocusedSecondaryPlatformEligible(item,roadmap,'ROBLOX');
-            if(!concurrentDefault&&!secondaryOwnerFocus)continue;
+            if(!concurrentDefault&&!secondaryOwnerFocus&&!pendingRuntimeQa)continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             const revision=String(secondaryOwnerFocus?item.ownerFocusRobloxSourceCommit:item.robloxSourceCommit||'').trim();
             const artifact=String(secondaryOwnerFocus?item.ownerFocusRobloxBuildArtifactIdentity:item.robloxBuildArtifactIdentity||'').trim();

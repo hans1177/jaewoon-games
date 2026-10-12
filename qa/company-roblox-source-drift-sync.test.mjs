@@ -17,12 +17,14 @@ test('exact published F0 candidate resumes existing runtime QA without crossing 
   const code=step.match(/state="\$\(node --input-type=module <<'NODE'\n([\s\S]*?)\n          NODE/)[1].replace(/^\s*import .*;\n/gm,'');
   const revision='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
   const row={gameId:'daechung-rpg',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',robloxSourceCommit:revision,robloxBuildSourceRevision:revision,robloxBuildArtifactIdentity:artifact,robloxBuildOrPackagePassed:true,robloxBuildPreflightPassed:true,robloxFoundationF0Passed:true,robloxFoundationF0Evidence:{pass:true,sourceRevision:revision,artifactIdentity:artifact},robloxRuntimeCandidateEvidence:{published:true,sourceRevision:revision,artifactIdentity:artifact,versionNumber:38,placeId:'1',universeId:'2'},robloxRuntimePassed:false};
-  const invoke=(patch={},requested='daechung-rpg')=>{
+  const invoke=(patch={},requested='daechung-rpg',developmentEligible=true)=>{
     const written={};
-    runInNewContext(code,{fs:{readFileSync:file=>JSON.stringify(file.includes('dispatch-queue')?{items:[{...row,...patch},{...row,gameId:'other-game'}]}:{}),writeFileSync:(file,data)=>{written[file]=data;}},process:{env:{REQUESTED_GAME_ID:requested,ROBLOX_RUNTIME_HARNESS_VERSION:'8'},stdout:{write(){}}},ownerFocusedSecondaryPlatformEligible:()=>false,platformDevelopmentEligible:()=>true});
+    runInNewContext(code,{fs:{readFileSync:file=>JSON.stringify(file.includes('dispatch-queue')?{items:[{...row,...patch},{...row,gameId:'other-game'}]}:{developmentAccess:{ROBLOX:'ALWAYS_ALLOWED'}}),writeFileSync:(file,data)=>{written[file]=data;}},process:{env:{REQUESTED_GAME_ID:requested,ROBLOX_RUNTIME_HARNESS_VERSION:'8'},stdout:{write(){}}},ownerFocusedSecondaryPlatformEligible:()=>false,platformDevelopmentEligible:()=>developmentEligible});
     return written['/tmp/roblox-runtime-qa-ready-ids'];
   };
   assert.equal(invoke(),'daechung-rpg\n');
+  assert.equal(invoke({robloxInternalReleaseReady:true},'daechung-rpg',false),'daechung-rpg\n');
+  assert.equal(invoke({robloxInternalReleaseReady:true,robloxFoundationF0Passed:false},'daechung-rpg',false),'');
   assert.equal(invoke({},''),'daechung-rpg\nother-game\n');
   for(const patch of [{robloxFoundationF0Passed:false},{robloxFoundationF0Evidence:{...row.robloxFoundationF0Evidence,pass:false}},{robloxFoundationF0Evidence:{...row.robloxFoundationF0Evidence,sourceRevision:'c'.repeat(40)}},{robloxRuntimeCandidateEvidence:{...row.robloxRuntimeCandidateEvidence,published:false}},{robloxRuntimeCandidateEvidence:{...row.robloxRuntimeCandidateEvidence,artifactIdentity:'sha256:'+'c'.repeat(64)}},{robloxRuntimeSecurityHold:true},{robloxQualityBuildUpRequired:true,robloxQualityBuildUpSourceRevision:revision},{robloxRuntimePassed:true,robloxRuntimeHarnessVersion:'8'}])assert.equal(invoke(patch),'');
   assert.match(step,/gh workflow run company-development-roblox-post-runtime-qa\.yml/);
